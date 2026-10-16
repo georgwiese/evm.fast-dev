@@ -1279,3 +1279,29 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - The memzero loop bounds are conditional on its three entry registers. Earlier
   loops, whole-procedure call/length accounting and the complete guest certificate
   remain open. claim.json is still infinity; no full verification is claimed.
+
+### Concrete sufficient clock and equivalent bounded execution checked
+
+- memzero-bounded.log passed all 1364 jobs: 13.05s elapsed, max child RSS
+  2,083,868 KiB, peak observed host used 3.130 GiB. BasicTimeout proves a basic
+  block's timeout leaves zero clock. LoopTimeout lifts that fact to loops by
+  induction on source clock, and rules out timeout when the initial clock is
+  strictly above the consumed-clock bound. ClockAgreement compares any two
+  non-timeout runs at a common enlarged clock using the fixed evaluateAddClock
+  theorem, preserving every final state field except unused clock.
+- MemzeroTailClock.enough_clock checks the explicit clock
+  3*(length.toNat-index.toNat+1)+1 for the actual byte tail. bounded_paid also
+  provides its flattening Work/Paid witness. MemzeroTailBounded.bounded_execution
+  proves that every original non-timeout run has an execution at this explicit
+  budget with identical result and full state after erasing unused clock, plus
+  the 29*(remaining+1) Work derivation. This closes the initial-clock gap for
+  this loop only; it is still not a whole memzero/guest bound.
+- Failure history: loop-timeout.log failed from ambiguous exitLoop resolution;
+  memzero-clock.log and clock-agreement.log stopped at a redundant tactic in
+  that helper. Qualified the Stack semantics name and removed the redundant
+  split. Only the final successful memzero-bounded.log is indexed for these
+  five new modules. No explicit sorry/admit/axiom or unchecked tactic added.
+- All 2907 indexed module hashes match (4757 printed facts); allowed axioms only.
+  Static batches remain live: Stack completed Chunk44 (45/52 overall), Crep
+  completed Chunk6 (7/52). Disk 56%, ~129 GiB free; host used ~2.4 GiB.
+  No full audit/verifier, external contact, push, PR or Yukon submission.

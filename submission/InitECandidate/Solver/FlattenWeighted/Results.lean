@@ -2,8 +2,7 @@ import InitECandidate.Solver.FlattenWeighted.Sequence
 import InitECandidate.Solver.FlattenBound.Arithmetic
 import Flapjack.Compiler.Backend.StackToLab.Proofs.FlattenCorrect.If
 
-/-! All six conditional flattening shapes, preserving bounded sub-run
-witnesses and paying for at most two extra branch/join instructions. -/
+/-! Result transport and prefix composition retain explicit execution credits. -/
 namespace InitECandidate.Solver.FlattenWeighted
 open Flapjack.Compiler.Backend
 open Flapjack Flapjack.Compiler.Backend.LabLang Flapjack.Compiler.Backend.LabSem

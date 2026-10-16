@@ -1127,3 +1127,48 @@ Successful targeted build resources (wall time includes shared-slot waiting):
 Latest indexed fixed-code prefixes: Stack Chunk33, Word Chunk42. Other
 static builds and Word optimizer entry remain live in the shared four-slot pool.
 Disk is 55%, ~131 GiB free, below the required stop threshold.
+
+## Weighted control rules and Word optimizer clock equality
+
+- flatten-weighted-control-v2.log passed (758 jobs, 1:46.47 elapsed,
+  max child RSS 1,869,368 KiB, peak host used 5.114 GiB). Returning calls
+  use callee+continuation+1 credits; selected conditionals use branch+1;
+  loops use body+reentry with no maximum-body factor. All printed axioms
+  are permitted. The v1 failure was an identifier substitution error in the
+  returning-call proof and is excluded.
+- Strengthened tail calls to require work only for the actual findCode result.
+  The initial source-only Work/workPaid proof passed in
+  flatten-weighted-work.log (809 jobs, 1:13.84, 1,869,908 KiB max child RSS,
+  4.465 GiB peak host used). The final extension adds raw calls and conditional
+  procedure jumps. Its first entry build failed on an insufficiently unfolded
+  getVarImm expression; the corrected v2 whole-entry build is live. Only the
+  final successful log may be used to index the changed Work source.
+- WordToWordBound.Entry passed in wordword-entry-v2.log (1338 jobs,
+  1:02.33, 2,211,096 KiB max child RSS, 4.054 GiB peak host used).
+  entryRunsAgree and compiledEntry preserve clock, result, full FFI and
+  stackMax through the actual full compiler under its existing eligibility
+  assumptions. The original failed log had ambiguous compile name resolution
+  and a final pair equality mismatch; both were corrected, with no axiom bypass.
+- This remains incremental proof work. The fixed guest's total source work,
+  compiler initial relations, and final finite-K certificate remain open.
+  No explicit sorry/admit/axiom/native_decide is present in new source files.
+
+### Weighted whole-entry build completed
+
+- flatten-weighted-entry-v2.log passed all 1363 jobs (3:04.04 elapsed,
+  max child RSS 2100812 KiB, peak host used 6.591 GiB).
+  This supersedes the pending status above. All 14 FlattenWeighted source
+  modules are now indexed against their current hashes with permitted axioms.
+- workPaid covers the explicit source-only Work rules including selected
+  branches, loops, tail/return/exception calls, conditional jumps and raw calls.
+  weightedCallCorrect retains the original whole-entry result/FFI obligations
+  and produces an actual Lab run with extra clock <=4*(entryCredits+haltCredits).
+  Its source-work premises and original state/code/result hypotheses still
+  need to be established for the fixed guest. No final finite K is claimed.
+- initializationTail_work constructs Work 11996 for the concrete 11,995-node,
+  one-tick literal tail, independent of installed procedure sizes and clock.
+- Latest indexed static prefixes: Stack Chunk35 (36/52), Word Chunk47 (48/52).
+  Stack/Word/Crep static processes remain live under the shared four-slot pool.
+  Disk remains 55%, ~130 GiB free. Incremental policy check passed and all
+  2552 indexed source hashes matched (4173 printed axiom checks).
+  No full audit/verifier, push, PR, external contact or Yukon submit was run.

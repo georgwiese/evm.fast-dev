@@ -824,6 +824,58 @@ The whole initializer still requires its setup calls and control flow.
 state relation with `extra <= 4*credits`. `paidSeq` adds credits of actual
 sub-runs; `paidCallTail` passes the selected callee's credits without a
 maximum-body-size factor. Neither assumes the target run as a premise.
-Next: returning/exception calls and loops, then assemble a source-work
-judgment and relate it to gas/input work. Local callback composition rules
-are intermediate lemmas, not the final weighted compiler theorem.
+Returning/exception calls, selected branches and loops are now checked.
+The source-only Work derivation and soundness theorem, including raw calls
+and conditional jumps, passed together with the whole-entry wrapper. The next major obligation is a gas/input bound on Work for
+the fixed guest, plus initial-state/compiler integration. A generic source-work
+soundness theorem alone does not discharge that bound.
+
+
+### Explicit credit rules and remaining integration
+
+The weighted control rules use these budgets (the extra Lab clock is <=4 credits):
+
+- Sequence: first credits + continuation credits; the latter is required only
+  for the actual source `none` result.
+- Conditional: selected branch credits +1. The premise uses the actual source
+  register/immediate test; no work is required for the unselected branch.
+- Loop: body credits + recursive reentry credits. The target back jump consumes
+  the same clock as source reentry, so there is no added back-edge credit.
+- Tail call/raw call: selected callee/body credits. Tail calls use the actual
+  findCode result, not an all-installed-procedures maximum.
+- Returning call: callee credits + selected return/exception continuation credits
+  +1, paying for setup and any join. Continuations are required only for matching
+  source result labels.
+- Conditional procedure jump: selected callee credits +1; the extra credit also
+  covers the fall-through comparison.
+
+`Work` contains source evaluations, lookups, branch tests, and recursive work
+derivations only. `workPaid` derives the target witness from it. Work does not
+supply a guest-wide numeric ceiling automatically; gas, parsing, witness probing,
+rollback, memory and output invariants must establish that ceiling. Install is
+not a supported successful Work constructor; the fixed no-install condition and
+compiler entry relations remain integration obligations.
+
+The Word optimizer wrapper is now checked for the actual full compile function:
+source/target entry runs agree on final clock, result, full FFI and stackMax under
+noInstall/noAlloc/noMt, empty-stack and GC assumptions. These eligibility
+assumptions and the native/certifying compiler bridge are still required.
+
+
+The final weighted entry wrapper is now checked:
+
+```lean
+-- Schematic: original FlattenCallCorrect state/code/result hypotheses retained.
+weightedCallCorrect firstCredit haltCredit entryWork haltWork :
+  originalEntryHypotheses → ∃ extra result final,
+    extra ≤ 4 * (firstCredit + haltCredit) ∧
+    LabSem.evaluate { target with clock := target.clock - 1 + extra } =
+      (result, final) ∧ originalResultAndFfiConclusion
+```
+
+The premises `entryWork` and `haltWork` are derivations about actual source
+runs; they are not target simulation assumptions. The optional halt procedure
+is charged only after a matching return-to-label source result. The concrete
+initializer-tail Work derivation is also checked. Next quantitative work must
+connect fixed-guest gas/input invariants to these credits (or transport an
+appropriate earlier-stage work potential through the preceding passes).

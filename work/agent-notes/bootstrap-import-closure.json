@@ -1,0 +1,14 @@
+{
+  "InitECandidate.Proofs.BootstrapTrace": {
+    "candidate_modules": 47123,
+    "source_bytes": 1824308527,
+    "built_candidate_modules": 0,
+    "scope": "candidate imports only; external and trusted imports omitted"
+  },
+  "InitECandidate.Solver.BootstrapCost": {
+    "candidate_modules": 15,
+    "source_bytes": 122217,
+    "built_candidate_modules": 10,
+    "scope": "candidate imports only; external and trusted imports omitted"
+  }
+}

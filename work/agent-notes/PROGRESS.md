@@ -842,3 +842,61 @@ Completed-run resource records for the Word cost revision:
 - wordstack-callhistory-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:56.76; Maximum resident set size (kbytes): 1615212; Exit status: 1; sampled host memory peak 4.876 GiB.
 - wordstack-callnone: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:03.04; Maximum resident set size (kbytes): 2700004; Exit status: 1; sampled host memory peak 5.440 GiB.
 - wordstack-callnone-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:50.79; Maximum resident set size (kbytes): 2027280; Exit status: 0; sampled host memory peak 4.260 GiB.
+
+
+## Word-to-Stack handler and full recursive assembly
+
+- Previous status-only turn supplied fresh build evidence: handler history had
+  completed successfully. Continued the existing proof work; no goal reset.
+- Flat/Install boundary cases passed (wordstack-flat.log, 830 jobs).
+- HandlerHypotheses and HandlerCallee passed (wordstack-handler-callee.log,
+  967 jobs); the forgetful map and both continuations passed
+  (wordstack-handler-cont.log, 968 jobs). HandlerClock, HandlerBranches and
+  HandlerHistory passed (wordstack-handler-history.log, 975 jobs).
+- The full handler-present Call passed (wordstack-handler.log, 977 jobs).
+  Both continuations retain all original source guards and resource/result
+  relations. The source call decrement pays callee plus selected continuation
+  local cost; each is bounded by the code/subprogram ceiling.
+- Call.lean and Assembly.lean passed (wordstack-assembly.log, 1131 jobs).
+  The numerical simulation is now proved for all 26 Word evaluator cases,
+  including the literal four Call induction hypotheses. No assumed target run
+  or remaining induction callback occurs in the assembled theorem.
+- Entry.lean additionally bounds the whole entry clock by
+  (2*limit+1)*source.clock and derives matching compiled result, complete FFI
+  and final clock when the source post-state stays within its stack limit.
+  The original Halt-2/overflow alternative is retained in compCall.
+- Initial initialization build failed because moving the proof to Solver lost
+  the enclosing WordToStackProofs namespace. Added its explicit open; the v2
+  build checks the complete initialization and compiled-entry wrappers.
+  Failed wordstack-entry.log is excluded from successful evidence.
+- All completed main theorem axiom reports use only propext, Classical.choice,
+  Quot.sound. No explicit source sorry/admit or new axiom was introduced.
+- Ongoing fixed batches share the original four slots and 24 GiB memory guard.
+  Last indexed: Padded Chunk46 (47/54), StackStatic Chunk15 (16/52),
+  WordStatic Chunk9 (10/52). Fixed Word limit=4 and initial guest obligations
+  remain; no finite certificate or full verification is claimed.
+- wordstack-flat: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:42.98; Maximum resident set size (kbytes): 1799492; Exit status: 0; sampled host memory peak 4.121 GiB.
+- wordstack-handler-callee: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:29.93; Maximum resident set size (kbytes): 1962552; Exit status: 0; sampled host memory peak 4.179 GiB.
+- wordstack-handler-cont: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:16.29; Maximum resident set size (kbytes): 2000368; Exit status: 0; sampled host memory peak 4.047 GiB.
+- wordstack-handler-history: Elapsed (wall clock) time (h:mm:ss or m:ss): 2:45.06; Maximum resident set size (kbytes): 2134388; Exit status: 0; sampled host memory peak 4.558 GiB.
+- wordstack-handler: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:39.26; Maximum resident set size (kbytes): 1979556; Exit status: 0; sampled host memory peak 4.794 GiB.
+- wordstack-assembly: Elapsed (wall clock) time (h:mm:ss or m:ss): 2:34.31; Maximum resident set size (kbytes): 1987612; Exit status: 0; sampled host memory peak 4.404 GiB.
+- wordstack-entry: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:42.14; Maximum resident set size (kbytes): 2122252; Exit status: 1; sampled host memory peak 3.831 GiB.
+
+- wordstack-entry-v2.log passed all 1350 jobs. Entry, actual initial-relation
+  construction and compiledEntry are now checked. Call/Assembly axiom print
+  names were qualified and rebuilt for consistent evidence indexing.
+- wordstack-entry-v2: elapsed 2:54.47; peak child RSS 2,125,596 KiB;
+  sampled host memory peak 4.921 GiB; exit 0. The generic entry multiplier
+  2*limit+1 is proved; its use at limit 4 for the fixed guest remains conditional
+  on unfinished code, initialization and source stack-space obligations.
+- Refreshed completed fixed prefixes: Padded Chunk47 (48/54), StackStatic
+  Chunk16 (17/52), WordStatic Chunk11 (12/52). Manifest now has 1499 modules
+  and 2186 printed main facts; all recorded SHA256 values match current source.
+- Incremental package/import/token policy passes with claim infinity; this is
+  not comparator verification. Disk remains 53%, with about 136 GiB free.
+  No push, PR, Yukon submission or full audit/verifier. No open explicit sorrys.
+- Inspected the next Crep-to-Loop gap: expression comparisons have extra ticks,
+  While pays condition and administrative work, and calls pay argument and
+  handler work. Added the expression-first proof order to PHASE2-PLAN.md;
+  no numerical Crep-to-Loop theorem has been claimed or added yet.

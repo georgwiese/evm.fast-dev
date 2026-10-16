@@ -1,8 +1,8 @@
 # Phase 2: finite clock proof plan
 
 Status: Phase 1 measurements, bounded Lab-to-RISC-V simulation, quantitative
-Stack flattening, StackAlloc, restricted StackRemove and full StackRawCall
-clock bounds are checked. Fixed-layout/code checks and whole-guest
+Stack flattening, StackAlloc, restricted StackRemove, full StackRawCall and
+full Word-to-Stack clock bounds are checked. Fixed-layout/code checks and whole-guest
 initialization remain in progress. Earlier compiler passes and the guest-wide
 source potential remain unfinished. No finite certificate yet; the submission
 still claims infinity.
@@ -103,9 +103,11 @@ Planning estimates, not completion promises:
   interference and both assertion predicates. The earlier 1–2 week estimate
   was too pessimistic: systematic witness retention built 30 component modules
   and the aggregate theorem in 1m06s after dependencies were available.
-- Crep→Loop extra clocks and Word→Stack: recursive simulations with multiple
-  call/handler branches; roughly 1–3 weeks each, subject to discovering reusable
-  quantitative lemmas. Pan→Crep and Loop→Word need not be reproved for extra fuel.
+- Word→Stack: the full recursive bound is now checked (see the weighted
+  overhead section below). Fixed-program eligibility and initialization remain.
+- Crep→Loop extra clocks: recursive simulation with call/handler branches; the
+  original estimate was roughly 1–3 weeks, subject to reusable quantitative
+  lemmas. Pan→Crep and Loop→Word need not be reproved for extra fuel.
 - Stack transformations, flattening and Lab→target: roughly 2–4 weeks combined,
   provided instruction cost bounds are available. Word optimizer/allocator
   clock changes require a separate audit rather than assuming they are free.
@@ -589,11 +591,59 @@ The proof derives code preservation through the callee and pop, restores the
 full caller relation, and retains timeout, allocation-failure, terminal and
 exception-result paths. HandlerState provides checked eligibility extraction
 and a forgetful map to the original simulation for reusing pure state helpers.
-The handler-present Call and final recursive assembly still remain. Fixed-code
-initialization and the guest-wide source-clock potential remain separate.
+The handler-present Call and full recursive assembly now pass (see below).
+Fixed-code initialization and the guest-wide source-clock potential remain separate.
 
 StackStatic/Fixed.lean now contains explicit equality and CodeSafe goals for
 Raw.stack and Alloc.stack. It is unverified; the running 53-target stack driver
 only ends at Programs. Before checking Fixed after those chunks, inspect the
 Raw/Alloc umbrella import costs and retain the shared resource guard. No full
 baseline audit or verifier is authorized.
+
+
+## Full Word-to-Stack bound assembled
+
+The handler-present Call is now checked end to end, including normal and
+exception continuations, timeout and allocation-failure paths. It preserves
+all original result/resource conclusions. The source call decrement pays the
+callee local cost and whichever continuation is executed; both are <= limit.
+Handler clock monotonicity also bounds terminal outcomes that skip continuations.
+
+Call.lean connects the tail, no-handler and handler-present returning cases to
+the literal four evaluate_ind hypotheses. Assembly.lean discharges all 26
+constructors without a remaining callback or assumed target execution:
+
+```lean
+InitECandidate.Solver.WordToStackBound.compCorrect ac limit :
+  ∀ program source, Simulation ac limit program source
+```
+
+wordstack-assembly.log passes all 1131 jobs; the main theorem uses only propext,
+Classical.choice and Quot.sound. Simulation includes CodeSafe/no-Install/ceiling
+premises and the original state relation and compilation guards. This closes
+the recursive pass proof, not the fixed initial-state obligations or guest
+source-clock bound. Entry, Initialization and CompileEntry now pass together (wordstack-entry-v2.log,
+1350 jobs). Entry.compCall proves extra <= 2*limit*(source.clock-post.clock) and
+total <= (2*limit+1)*source.clock, retaining matching-result and Halt-2/overflow
+alternatives. Entry.entrySimulation excludes the latter under an explicit
+source post-stack bound and preserves the exact compiled result, complete FFI
+and final clock. initialRelation derives the full relation from actual native
+compilation, initStateOk, conventions, stub absence and bitmap prefix;
+compiledEntry composes those results. The generic entry multiplier is proved,
+so limit=4 gives 9 once fixed WordStatic and the complete initialization/stack
+premises are discharged. The 826-body fixed check is still in progress.
+
+
+## Next quantitative pass: Crep-to-Loop
+
+Fresh source inspection of NCompileCorrect and CompExpPreservesEval confirms
+that the expression compiler's existential clock is a separate obligation:
+comparison compilation adds one cutRes tick; the While false branch adds two
+beyond its condition-expression overhead; Call adds argument-expression work
+and up to three administrative ticks on a handler path. These are inspected
+witness formulas, not checked Solver bounds. Before adapting the program
+induction, strengthen expression/list simulations with a syntactic cost and
+retain all state/memory/globals/code/locals relations. Then use a local-cost
+plus spent-clock budget for Seq/Call/While, with installed-body and subprogram
+ceilings as in Word-to-Stack. Do not infer a universal constant solely from
+constructor text or discard exception/timeout branches.

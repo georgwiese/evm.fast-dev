@@ -932,3 +932,27 @@ Completed-run resource records for the Word cost revision:
   Initial builds exposed tactic-pattern, Bool rewrite and projection/name
   resolution errors; failed logs are excluded. No explicit sorry/admit added.
 - word-ceiling-corrected: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:02.18; Maximum resident set size (kbytes): 1872984; Exit status: 0; sampled host memory peak 3.805 GiB.
+
+- StraightClock passed after fully qualifying Loop state-update names and
+  reducing result projections. ExpressionCost passed after qualifying the
+  architecture type and normalizing addition order. ExpressionSimulation
+  needed a reserved identifier renamed from syntax to compiledShape.
+- creploop-expression-v4.log passes all 156 jobs. Seven main facts across three
+  modules are checked: cut clock budget; all straight Loop executions;
+  compiler expression/list charge and eligibility; nested sequence charge;
+  scalar and list expression simulation with bounded extra. Source comparison
+  count is sufficient for all expression constructors, including memory loads,
+  shifts and arithmetic. All original relations and guards are retained.
+- Only propext, Classical.choice and Quot.sound occur in successful axiom
+  reports. There are no explicit open sorry/admit declarations. Failed earlier
+  logs contain Lean recovery sorryAx and are excluded from successful evidence.
+- Latest indexed batches: Padded Chunk50 (51/54), StackStatic Chunk21 (22/52),
+  corrected WordStatic Chunk17 (18/52). Batches remain active; claim infinity.
+  Incremental policy passes; no full audit/verifier, push, PR or submission.
+- creploop-straight: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:46.93; Maximum resident set size (kbytes): 1360484; Exit status: 1; sampled host memory peak 3.803 GiB.
+- creploop-straight-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:22.74; Maximum resident set size (kbytes): 1368948; Exit status: 1; sampled host memory peak 4.116 GiB.
+- creploop-expression: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.51; Maximum resident set size (kbytes): 1405748; Exit status: 1; sampled host memory peak 3.685 GiB.
+- creploop-expression-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:51.38; Maximum resident set size (kbytes): 1532420; Exit status: 1; sampled host memory peak 4.260 GiB.
+- creploop-expression-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:36.56; Maximum resident set size (kbytes): 1378000; Exit status: 1; sampled host memory peak 4.025 GiB.
+- creploop-expression-v4: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:56.25; Maximum resident set size (kbytes): 1390220; Exit status: 0; sampled host memory peak 4.298 GiB.
+- Evidence manifest: 1745 modules and 2621 main facts; all source SHA256 hashes match.

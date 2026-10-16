@@ -47,6 +47,9 @@
     "submission/InitECandidate/Solver/BoundedTrace.lean",
     "submission/InitECandidate/Solver/ClockBounds.lean",
     "submission/InitECandidate/Solver/ConstCost.lean",
+    "submission/InitECandidate/Solver/CrepToLoopBound/ExpressionCost.lean",
+    "submission/InitECandidate/Solver/CrepToLoopBound/ExpressionSimulation.lean",
+    "submission/InitECandidate/Solver/CrepToLoopBound/StraightClock.lean",
     "submission/InitECandidate/Solver/EncoderBound.lean",
     "submission/InitECandidate/Solver/EncoderClock.lean",
     "submission/InitECandidate/Solver/FlattenBound/Arithmetic.lean",
@@ -2816,6 +2819,7 @@
     "submission/InitECandidate/Solver/WordToStackBound/CallState.lean",
     "submission/InitECandidate/Solver/WordToStackBound/CallTail.lean",
     "submission/InitECandidate/Solver/WordToStackBound/CheckCode.lean",
+    "submission/InitECandidate/Solver/WordToStackBound/CheckCodeMonotone.lean",
     "submission/InitECandidate/Solver/WordToStackBound/Clock.lean",
     "submission/InitECandidate/Solver/WordToStackBound/CodeBufferWrite.lean",
     "submission/InitECandidate/Solver/WordToStackBound/Common.lean",
@@ -2852,8 +2856,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/ShareInst.lean",
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean"
   ],
-  "package_entries": 59691,
-  "package_bytes": 2248588742,
+  "package_entries": 59696,
+  "package_bytes": 2248612250,
   "claim": {
     "K": "infinity"
   },

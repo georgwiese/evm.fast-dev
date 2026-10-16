@@ -1001,6 +1001,8 @@
     "submission/InitECandidate/Solver/GuestWork/ChargeGasCost.lean",
     "submission/InitECandidate/Solver/GuestWork/ChargeGasEntry.lean",
     "submission/InitECandidate/Solver/GuestWork/ChargeGasTail.lean",
+    "submission/InitECandidate/Solver/GuestWork/ExtendMemoryAllocRestore.lean",
+    "submission/InitECandidate/Solver/GuestWork/ExtendMemoryAllocTransfer.lean",
     "submission/InitECandidate/Solver/GuestWork/ExtendMemoryBlock.lean",
     "submission/InitECandidate/Solver/GuestWork/ExtendMemoryCalls.lean",
     "submission/InitECandidate/Solver/GuestWork/ExtendMemoryCapacityEntry.lean",
@@ -1011,9 +1013,13 @@
     "submission/InitECandidate/Solver/GuestWork/ExtendMemorySetup.lean",
     "submission/InitECandidate/Solver/GuestWork/ExtendMemoryTransfer.lean",
     "submission/InitECandidate/Solver/GuestWork/ExtendMemoryZero.lean",
+    "submission/InitECandidate/Solver/GuestWork/FrameAllocAllClocks.lean",
+    "submission/InitECandidate/Solver/GuestWork/FrameAllocBlock.lean",
     "submission/InitECandidate/Solver/GuestWork/FrameAllocBounded.lean",
+    "submission/InitECandidate/Solver/GuestWork/FrameAllocCall.lean",
     "submission/InitECandidate/Solver/GuestWork/FrameAllocCost.lean",
     "submission/InitECandidate/Solver/GuestWork/FrameAllocEntry.lean",
+    "submission/InitECandidate/Solver/GuestWork/FrameAllocState.lean",
     "submission/InitECandidate/Solver/GuestWork/FrameArena.lean",
     "submission/InitECandidate/Solver/GuestWork/GasAccounting.lean",
     "submission/InitECandidate/Solver/GuestWork/MemzeroAligned.lean",
@@ -3836,8 +3842,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 60681,
-  "package_bytes": 2249964316,
+  "package_entries": 60687,
+  "package_bytes": 2250063930,
   "claim": {
     "K": "infinity"
   },

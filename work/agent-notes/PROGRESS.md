@@ -1787,3 +1787,54 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   Do not automatically resume local allocator work. No overall go decision,
   new proof holes or proof modules; claim remains infinity. Full verification
   remains unrun and prohibited on this host under the standing instructions.
+
+### 2026-10-17 — resumed task; joint witness-table feasibility gate remains REVISE
+
+- User requested completion of bound.md's entire task. Inspected the contract,
+  submission/isolation requirements, existing evidence, actual source tables,
+  decoder slices and fixed Named/Padded hot paths. No finite certificate was
+  completed. Claim stays infinity; no candidate/proof/ROM/dependency edits,
+  Lean builds, Spike runs, network contact, PR, push or submission.
+- Added witness-table-budget.py and its JSON evidence. Under explicit valid,
+  non-full, fixed-capacity append-only table invariants, derived on paper:
+  raw occupied probes R <= D(D-1)/2; find occupied probes F <= R +
+  sum_r (m_r-1)*r <= R+(N-D)*D; combined <= D(N-1). Later Q lookups cost at
+  most QD occupied visits plus Q empty-slot tests; Q remains unknown.
+- Derived the necessary distinct-preimage byte constraint without assuming
+  Keccak injectivity/randomness: L(D)=sum_k max(0,D-sum_{j<=k}256^j), with
+  4N+L(D)<=B conditional on decoder/input correspondence. Two maps need two
+  namespaces; using L(D_state+D_code) would be unsound. The aggregate bound
+  implemented for two namespaces conservatively adds cross-table probes.
+- Stipulated literal paths through immutable Padded79/185/188 give 10 encoded
+  instructions per occupied raw probe, 17/20/23/26 per aligned 32-byte memeq
+  mismatch, 26 for equality, 89 per full occupied find mismatch and 83 per
+  matching find. Proposed selected Named raw Work15 improves syntax price 37.
+  These are unformalized inspection counts, not evaluator theorems. The
+  state/ABI/alignment/memory/range/non-timeout and simulation premises remain.
+- Exact dimension-relaxation maximization, B=134217712 with headers omitted:
+  89F+10R gives 21004777811675496 at N=23025715,D=14060301, about 2.33 times
+  Kmax before empty-slot tests, hashing, allocation or any other guest work.
+  Raw Work15 alone through 4*24 prices 256942111467506400. The maximum joint
+  combined-probe allowance is 356864062595716. These are failures of the
+  proposed upper bound, not constructed collision inputs, runtime lower
+  bounds or proofs of impossibility. The tighter numerical gate still fails.
+- Validation: guarded v3 run, logs/witness-table-review-v3.log (empty stderr),
+  .time (exit 0, 0.80s elapsed, 28284 KiB max individual RSS), matching
+  -resources.jsonl. All 186368 small table executions, 2050048 later queries
+  and 1616 independent brute-force optimizer comparisons passed. V1/V2 also
+  succeeded; V3 adds the matching-find path. All 3834 indexed proof-source
+  hashes matched. No new Lean proof evidence was indexed or claimed.
+- Incremental check-solver-policy.py passed, including the previously unrefreshed
+  allocator modules: 60687 complete-package entries, 2250063930 bytes. This is
+  not a trusted axiom audit, overlay-size acceptance, build verification or
+  isolated comparator replay. Host-used memory around 2.27 GiB; disk 57% used,
+  126 GiB available. No heavy process was launched.
+- Updated bound.md's top checklist and added Section 3.R5 with the joint
+  argument, exact arithmetic, literal-path premises and remaining terms.
+  Followed R4's failure/revision gate rather than resuming allocator lemmas.
+  Fixed Named79/185/188/190 .olean dependencies are absent; no expensive pilot
+  was launched on a failing budget. A hash-family-specific aggregate
+  probe/comparison-prefix bound or a justified alternative map refinement is
+  needed, followed by later-query, gas, global invariant and compiler/target
+  composition proofs. Read-only nodedb maps provide a possible narrower
+  implementation-refinement scope, but that design is not implemented.

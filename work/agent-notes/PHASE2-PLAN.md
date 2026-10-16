@@ -497,3 +497,28 @@ pilot also passes with permitted axioms only. The larger procedure 713 pilot
 is running. After it completes, generate per-procedure checks and aggregate
 in bounded chunks; full Raw/Alloc initial-state and oracle instantiation still
 remain. These results do not certify any finite guest-wide K yet.
+
+The larger procedure 713 pilot now passes (remove-direct-large.log). Generated
+checks cover all 826 numbered procedures, with existing pilots reused for 64
+and 713, and 52 list chunks. Only the pilot batch has been attempted so far;
+the first chunk hit the default recursion limit when exposing its Alloc list.
+The generator now raises maxRecDepth for chunk aggregation, and the retry is
+running. The generated aggregate still needs an explicit connection to the
+fixed Raw.stack/Alloc.stack declarations and initialized state/oracle premises.
+
+## Earlier passes: extra clocks cannot all be zero
+
+Inspection of pinned WordToStack proofs finds witnesses of one extra clock in
+ShareInst.lean (both shared-memory cases, lines 404 and 548) and Raise.lean
+(line 543). StackRawCall/Proofs/CompCorrect/Seq/Optimized.lean similarly uses
+`clock + (if released < allocated then 1 else 0)` when an optimized tail call
+grows its frame. A zero-offset theorem for either unrestricted pass would not
+follow from these proofs. Neither pass has a new bounded theorem yet.
+
+For StackRawCall, a prospective induction can reserve one unit of source clock
+in call cases: `extra + callCredit <= source.clock - post.clock`, where
+callCredit is one for positive-clock call/rawCall and zero otherwise. Then
+the optimized stackFree/call sequence can spend that reserved unit on frame
+growth. This needs a checked pilot and all recursive cases before use.
+WordToStack needs corresponding accounting for shared-memory and raise work.
+The guest-wide gas/input potential remains a separate substantial obligation.

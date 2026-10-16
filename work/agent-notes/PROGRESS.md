@@ -1007,3 +1007,35 @@ Completed-run resource records for the Word cost revision:
 - The actual arithmetic-simplifying compiled-entry wrapper is now in progress;
   it aims for total target clock <= (2*limit+4)*source.clock. Fixed Crep ceiling,
   remaining compiler composition and guest source-clock bound remain open.
+
+## Actual Crep compiler entry and complete padded layout
+
+- `CrepToLoopBound.compiledEntry` passed in `creploop-entry.log` (224 jobs,
+  81.65s elapsed, 1,498,804 KiB child RSS, 3.680GiB peak host used RAM).
+  It uses actual compileProgHOLExact output and transports the source run
+  through crepArithSimpProgCorrect. Given the original initial relations,
+  distinct function names, empty source locals, entry lookup/label, code
+  equalities and CodeSafe on the simplified code, it supplies target clock
+  <= (2*limit+4)*source.clock, exact result mapping and full final FFI equality.
+  All printed axioms are permitted. The fixed simplified code ceiling is still
+  an explicit obligation, not established by the entry theorem.
+- The padded driver terminated after 3:19:07 at Chunk53: it is the empty final
+  append-list group, and the generator had emitted no import plus a stray
+  comma in its simp list. No actual section bound failed. Corrected generator
+  and empty chunk; regeneration changes no other generated source bytes.
+- `padded-final.log` now succeeds (10,416 jobs, 54.01s elapsed,
+  6,962,976 KiB maximum child RSS, 4.185GiB peak observed host used RAM).
+  The 832 actual padded sections (IDs 0,1,2,4,5,6 and 64..889) all satisfy
+  LineBound 24. Correction to the informal update: 890 is the end of the ID
+  range, not the section count. All 54 chunk aggregates, fixedPaddedProgram
+  layout and padded_riscv are checked with permitted axioms.
+- `padded_riscv` discharges the extra static-code/layout premises and gives
+  <=402*Lab source clock; the original state relation and Lab execution are
+  still premises. Literal list equality to the metadata declaration and actual
+  initial-state integration remain outside this result. No final certificate.
+- Fixed StackStatic and corrected WordStatic batches continue under the same
+  four-slot pool. Latest indexed prefixes are Stack Chunk27 (28/52) and Word
+  Chunk31 (32/52). Disk now 55%, 133GiB free, safely below the 85% stop limit.
+- No explicit sorry/admit/axiom/native_decide in new sources. Failed build
+  recovery terms are excluded. claim.json remains infinity; no verifier, full
+  audit, external submission or push was run.

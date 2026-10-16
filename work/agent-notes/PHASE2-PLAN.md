@@ -2,7 +2,7 @@
 
 Status: Phase 1 measurements, bounded Lab-to-RISC-V simulation, quantitative
 Stack flattening, StackAlloc, restricted StackRemove, full StackRawCall and
-full Word-to-Stack and Crep-to-Loop clock bounds are checked. Fixed-layout/code checks and whole-guest
+full Word-to-Stack and Crep-to-Loop clock bounds are checked. The complete padded-layout check is finished; fixed code checks and whole-guest
 initialization remain in progress. Earlier compiler passes and the guest-wide
 source potential remain unfinished. No finite certificate yet; the submission
 still claims infinity.
@@ -744,3 +744,24 @@ Checked with 200 jobs in `creploop-assembly-v2.log`, permitted axioms only.
 Next gate: actual compileProgHOLExact entry, including crepSimpMapcsHOL; then
 certify the fixed simplified Crep code ceiling and compose with earlier/later
 passes. The guest-wide source potential remains an independent major obligation.
+
+
+### Actual Crep compiler entry and padded-layout completion
+
+`CrepToLoopBound.compiledEntry` is checked for the actual arithmetic-simplifying
+compileProgHOLExact pipeline, with target total clock <=(2L+4)*source.clock.
+It preserves exact result and full FFI state. Its CodeSafe premise is on the
+simplified source code; the fixed Crep literal ceiling must still be certified.
+
+All 832 actual padded section declarations now satisfy LineBound 24. The empty
+last append-list chunk required a generator fix; no actual section failed.
+The aggregate fixedPaddedProgram and padded_riscv theorem are checked, yielding
+402*Lab clock conditional on the original state relation/execution. Integration
+must still identify this copied append tree with Metadata.paddedProgram and
+construct the concrete initial relation; the aggregate alone is not that bridge.
+
+Next concrete work: finish ongoing Stack/Word static aggregates; certify the
+fixed simplified Crep code ceiling; audit/transport the clock-preserving earlier
+passes and Word optimizations; discharge entry/initialization premises for each
+bound. Continue the guest-wide gas/input/witness potential in parallel with that
+logical plan (within the same resource pool, without spawning agents).

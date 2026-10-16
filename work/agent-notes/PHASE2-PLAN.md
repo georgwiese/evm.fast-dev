@@ -972,3 +972,48 @@ target execution premise is introduced. Next concrete integration is the other
 memzero loops and the whole-procedure entry; the 32-byte/8-byte guards require
 an index/length bound that prevents wrapping before comparison. Later, length
 and invocation counts must be tied to actual guest gas/input/state invariants.
+
+
+### All memzero loops and suffix composition checked
+
+The actual aligned 32-byte loop, aligned 8-byte loop, and unaligned 8-byte
+loop now have body-outcome, no-wrap rank, Work, consumed-clock and normal-exit
+proofs. The guard preconditions explicitly require index<=length and
+length.toNat+stride<2^64. Store failure cannot continue and is not excluded by
+an extra domain/success assumption. The unaligned byte-store proof follows
+actual memory updates one at a time and stops on the first failure.
+
+LoopExit lifts the invariant and Break-0 postcondition to normal loop exit.
+BlockBound composes actual programs via seq/ite/basic rules while retaining
+source Work, consumed clock, normal postconditions and zero clock on timeout.
+BlockReclock then gives an equivalent explicit-clock execution of a composed
+block. These interfaces passed ordinary Lean builds with allowed axioms.
+
+MemzeroSuffix.suffixBound checks the actual unaligned loop, final byte tail
+and return as a unit. Its bound is 85*(length/8+1)+245 credits and
+3*(length/8+1)+27 consumed clock. The byte tail contributes only 232 credits
+and 24 clock because the preceding loop's checked normal exit leaves <8 bytes.
+The complete Named78 procedure is checking in memzero-entry-v2.log after an
+explicit type-parameter correction in the aligned branch summary. Proposed
+whole bound: 61*(length/32+1)+116*(length/8+1)+270 credits and
+3*(length/32+1)+6*(length/8+1)+35 initial clock. Guest-wide length/call-count
+invariants and other procedures remain required for a final finite certificate.
+
+### Complete fixed memzero bound now checked
+
+The pending status above is superseded by memzero-entry-v2.log (1375 successful
+jobs) and memzero-linear.log (1376 successful jobs). MemzeroEntry.entryBound and
+bounded_execution cover the entire actual Named78.2 body, preserving the exact
+result and whole final state apart from unused clock. The only new arithmetic
+entry restriction is length.toNat+32<2^64; the base/length registers are the
+actual procedure arguments. Memory-store failures remain represented by the
+original evaluator and need no success assumption.
+
+For caller integration, bounded_execution_linear proves an equivalent run at
+M+44 initial Stack clock with 17*M+447 Work credits whenever length<=M and
+M+32<2^64. This is a useful composable per-call summary, not a target-step bound.
+The next guest work must establish maximum length and aggregate call counts
+from actual input/gas/state invariants, and cover other major routines such as
+copying, decoding and gas-accounted execution. The direct Stack approach now
+has a complete concrete procedure pilot plus checked composition/reclocking
+rules, rather than only isolated loop ranks.

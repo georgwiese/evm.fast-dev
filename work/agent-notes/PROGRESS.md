@@ -1305,3 +1305,76 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   Static batches remain live: Stack completed Chunk44 (45/52 overall), Crep
   completed Chunk6 (7/52). Disk 56%, ~129 GiB free; host used ~2.4 GiB.
   No full audit/verifier, external contact, push, PR or Yukon submission.
+
+## Whole-memzero composition in progress
+
+- Previous goal turn was progress: committed the checked byte-tail bound and
+  equivalent bounded execution. Revalidated both static drivers live; neither
+  was restarted. Disk remains 56%, with the shared four-slot / 24-GiB guard.
+- MemzeroWord proves the actual aligned 8-byte body's register/guard outcomes;
+  MemzeroWordRank uses remainingWords=(length-index)/8, proves no counter wrap
+  under length.toNat+8<2^64, and shows normal exit leaves fewer than eight bytes.
+  Work is 31 per iteration including a final body; consumed clock is <=3 per
+  iteration. memzero-word-rank-v2.log passed (4.62s, max child RSS 2,090,524 KiB,
+  peak host used 3.110 GiB). This follows failed first pilots from the exact
+  BitVec literal mismatch and a missing rewrite; failed logs are not indexed.
+- MemzeroQuad/QuadRank cover the actual aligned 32-byte body and loop, with
+  61 credits per iteration, rank (length-index)/32, and remainder<32 on normal
+  exit. The body build passed in memzero-quad.log (26.11s, 2,175,752 KiB child
+  RSS, 4.223 GiB host used); its rank passed in memzero-blocks.log.
+- MemzeroBytes/BytesRank cover the actual unaligned 8-byte body, including all
+  eight memory stores. Generated proof splits store results in execution order:
+  failure exits immediately; success supplies the next actual memory. No store
+  success/domain premise is assumed. Work=85 per iteration; normal exit leaves
+  fewer than eight bytes. memzero-blocks.log passed (10.91s, 2,171,600 KiB child
+  RSS, 3.255 GiB host used); memzero-bytes-rank.log passed (42.92s, 2,097,200 KiB
+  child RSS, 3.332 GiB host used). Generator: generate-memzero-bytes.py.
+- LoopExit proves normal-exit invariant composition for actual loops. BlockBound
+  packages source Work, consumed clock, normal postcondition and zero clock on
+  timeout; checked seq/ite/basic/weakening rules compose these without target
+  execution premises. BlockReclock supplies equivalent explicit-clock execution.
+- MemzeroSuffix composes the actual unaligned loop, final byte tail and return.
+  The final tail uses at most 232 credits/24 clock because its predecessor
+  leaves fewer than eight bytes. Full suffix bound is
+  85*(length/8+1)+245 credits, 3*(length/8+1)+27 consumed clock.
+  memzero-suffix-v2.log passed (32.98s, 2,110,888 KiB child RSS, 4.847 GiB host
+  used). Earlier suffix attempt failed on literal-program rewrites and a missing
+  evaluate_skip rewrite; corrected, with only the final successful log indexed.
+- MemzeroAligned and MemzeroEntry are now checking. Proposed complete-procedure
+  bound is 61*(length/32+1)+116*(length/8+1)+270 credits and
+  3*(length/32+1)+6*(length/8+1)+34 consumed clock, with one extra initial clock.
+  These final two modules are not yet recorded as proved. No explicit proof
+  holes, extra axioms or unchecked tactics were introduced.
+- The length premise and the number of calls still need to come from actual
+  guest invariants. Other guest procedures and whole-entry integration remain
+  open. claim.json remains infinity; no full verification is claimed.
+
+### Complete fixed memzero procedure checked
+
+- memzero-entry-v2.log passed all 1375 jobs (1:09.62 elapsed, max child RSS
+  2,109,104 KiB, peak observed host used 3.920 GiB). The first entry build stopped
+  at an omitted C/F annotation in a branch contract; corrected before this run.
+- MemzeroEntry.entryBound covers all of Named78.2, including initialization,
+  optional aligned loops, unaligned stores, short byte tail and return. It
+  requires the actual base/length argument registers and length.toNat+32<2^64.
+  It introduces no successful-store, target-run or missing-invariant premise.
+  Its actual source Work bound is 61*(length/32+1)+116*(length/8+1)+270;
+  consumed clock is <=3*(length/32+1)+6*(length/8+1)+34. bounded_execution
+  supplies the run with one more initial clock, preserving original result and
+  the entire final state after erasing unused clock, including memory and FFI.
+- MemzeroLinear proves Work<=17*length+447 and consumed clock<=length+43.
+  bounded_execution_linear accepts a caller-proved maximum M with length<=M
+  and M+32<2^64 and gives an equivalent actual execution at M+44 initial Stack
+  clock with 17*M+447 Work credits. memzero-linear.log passed all 1376 jobs
+  (18.32s elapsed, max child RSS 2,088,748 KiB, peak host used 3.229 GiB).
+  These are source-clock/work statements, not a final target-step count.
+- All 3188 indexed source hashes match, with 5189 printed facts and permitted
+  axioms only. No explicit sorry/admit/axiom/native_decide remains in the new
+  source files; failed-build recovery output is excluded from the index.
+- Stack completed all 52 chunks and Programs; the final equality/code-safety
+  connection to the actual fixed Raw/Alloc tables is still building. Crep has
+  completed Chunk15 (16/52). Both original resumed drivers are confirmed live,
+  with the same shared four-slot pool. Disk remains 56%, ~127 GiB free.
+- The whole guest still needs caller length/call-count invariants, bounds for
+  other work, and initial-state/compiler/target integration. claim.json remains
+  infinity. No full audit/verifier, network contact, push, PR or Yukon submit.

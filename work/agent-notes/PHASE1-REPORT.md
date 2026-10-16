@@ -1,133 +1,181 @@
 # Phase 1: baseline step counts
 
-Status: setup underway; no new guest execution measurements yet.
+Measured on 2026-10-16. The current guest passes all 33,614 EEST records.
+These are Spike measurements, not a certified evaluator bound. Phase 2 has
+checked cost lemmas but no finite certificate; claim.json remains infinity.
 
-The repository reports 33,614 records, minimum 48,236, maximum 12,288,467,569
-and rounded mean 8,980,596 Spike instructions for its zero-RAM run. These are
-historical claims, not reproduced measurements. The referenced results file
-and ELF were not present in this checkout.
+## Artifact and reproducibility
 
-## Measurement distinctions
+Installed the pinned Flapjack compiler, Spike submodule, cross-binutils and
+public EEST fixtures after the user authorized installing missing dependencies.
+Fixture release: execution-specs `tests-zkevm@v21.0.1`. Flapjack revision:
+`034bb5a1ed0b757082768d5406206bd2f8e31b7c`. Commands, failed attempts and
+resource measurements are in PROGRESS.md and its logs directory.
 
-`tools/spike/spike_run.cc` measures the difference in `minstret` around the
-whole run, including runtime stubs and the host trap handler. `handler.s` uses
-WFI to stop instruction batches at halt. The formal evaluator dispatches FFI
-and cache operations through hooks. A direct count conversion must account for
-each stub's expansion and the halt handler; it cannot use the corpus maximum
-as a certified K. Accelerator host computation is not charged as RV steps.
+The rebuilt ELF **does not match BASELINE.json**. Current artifacts:
 
-BootstrapTrace proves 23,120 *ASM* operations, but each may encode multiple
-RV instructions. Its evaluator theorem hides the target count existentially.
-The documented 23,127 hardware steps are not yet independently reproduced.
+| Artifact | SHA-256 |
+|---|---|
+| guest/build/guest.elf | af59ed6b844728699f84d400c4195e3765e1829465ae1fb6b6149fa869a1215e |
+| Guest/guest.pp.pnk (matches fresh CPP output) | 414d70d031f9e367ad9e5c70bc6dbd523238a3c542fba59a09aed866f3e5f860 |
+| Guest/Ast.lean | 21925d793b4159c30406a4d48a7402d4a2cdc23e0189201342aa89778d4534ed |
+| Current ROM, 950,344 bytes | 22a1dd0963f12a3492e647b2626101fad2312dfcff813978b8ff1aca9897d7cc |
 
-## Static candidates for expensive work
+The ROM reconstructed from submission Prefix/Bytes/Suffix literals is byte-for-byte
+identical to `objcopy -O binary guest/build/guest.elf`. This was a file comparison,
+not a Lean artifact-equality proof. The source and AST hashes also differ from
+BASELINE.json, so historical counts are comparisons, not exact reproductions.
 
-- `compute_jumpdests` scans contract code on every frame creation, including
-  a warm call. Code bytes scanned need charging to call count and code size.
-- `htab_hash` folds 64-bit chunks with XOR before its final avalanche.
-  Equal folds collide at every table capacity. Probing, insertion, growth,
-  deletion and rollback therefore require adversarial rather than average bounds.
-- `input_blob` copies eight bytes per loop before schema validation; the length
-  check uses INPUT_MAX_BYTES. Invalid lengths trap with covered code 8.
-- Witness processing, withdrawals, system calls, output and startup need costs
-  independent of user transaction gas. System transactions receive 30M gas.
-- Memory growth/copy, U256 arithmetic, precompile implementations and call
-  access-set merging still need measurements and a path-by-path audit.
+## Full EEST results
 
-No measured worst steps/gas ratio or defensible numeric coefficients a,b,c
-are available yet. A linear envelope can absorb bounded quadratic costs only
-after bounding their domains; a fitted average is not such a bound.
+| Population | Records | Minimum | Maximum | Mean Spike instructions |
+|---|---:|---:|---:|---:|
+| All records | 33,614 | 48,245 | 12,288,467,579 | 8,980,605.947 |
+| Declared gas ≤ 200M | 32,444 | 48,245 | 4,654,270,509 | 8,478,606.534 |
 
-## Current-source checks
+33,605 PASS(full), nine PASS(malformed), no failures. Historical minimum 48,236,
+maximum 12,288,467,569 and rounded mean 8,980,596 are respectively nine, ten and
+approximately ten instructions lower. The corpus maximum has declared gas
+334,862,111 and is outside the challenge's gas premise. The covered maximum is
+`29895_test_valid_gas_g2msm_fork_Amsterdam-discount_table_6_of_8-blockchain_test_from_state_test-precom`.
 
-The converted corpus has exactly 33,614 records (fresh conversion).
-Current CPP output matches Guest/guest.pp.pnk: SHA-256
-`414d70d031f9e367ad9e5c70bc6dbd523238a3c542fba59a09aed866f3e5f860`.
-Current Guest/Ast.lean SHA-256:
-`21925d793b4159c30406a4d48a7402d4a2cdc23e0189201342aa89778d4534ed`.
-Both differ from BASELINE.json. Reconstructing the exact literal byte lists
-(Prefix000..001, Bytes000..220, Suffix000..010) gives 950,344 bytes, SHA-256
-`22a1dd0963f12a3492e647b2626101fad2312dfcff813978b8ff1aca9897d7cc`.
-No Lean artifact-equality proof was run for this reconstruction.
+The highest observed ratio among covered cases is **5,168.308 instructions per
+payload gasUsed**, from BN254 pairing case
+`28355_test_pairing_test_fork_Amsterdam-blockchain_test_from_state_test-d5-g0__b0`:
+770,000,402 instructions, gasUsed 148,985, declared limit 14,012,015, input 6,093
+bytes. This ratio includes startup and all block work. gasUsed is the input
+payload's claim, not an independently instrumented EVM consumption counter.
+The declared limit is parsed with the fixed Guest.GasLimit reader's offsets and
+zero-extension semantics. Passing fixture checks do not prove a universal bound.
 
-Binutils disassembly of the current literals gives data endpoints 0xa0020000
-and 0xa0029048: 4,617 copy iterations. The 208-byte startup has 52 RV64
-instructions, including a five-instruction copy loop. Static execution count
-is therefore 52 + 5*(4617-1) = 23,132, not the historical 23,127. The current
-Guest/Bookkeeping.lean agrees with the literals; the documentation is stale.
-The data pointer delta accounts for five more bootstrap instructions.
-A Spike breakpoint measurement is planned to check this static count.
+Full joined per-fixture data: `work/baseline-steps/steps-and-gas.json`.
+Compact tracked summary: `work/agent-notes/eest-summary.json`.
+Run: 14 workers, 10m39.17s wall; maximum child RSS 148,216 KiB; sampled process
+group RSS sum 644,268 KiB (shared pages may be counted repeatedly); at least
+26,038,372 KiB host memory available; disk at most 44% during that run.
 
-The witness decoder explicitly limits each code blob to 65,536 bytes
-(types.h MAX_BYTES_PER_CODE; ssz.pnk decode_bytes_list). This bounds the code
-scan even for arbitrary pre-state witnesses; relying only on CREATE's size
-limit would have missed that separate obligation. Oversized synthetic code
-inputs test early rejection, not huge executable contracts.
+## Spike and the formal clock
 
-## Fresh measurements (current artifact, 2026-10-16)
+`evaluateTargetHOL` is noncomputable. Its classical decisions and predicate-valued
+memory domains prevent direct Lean #eval. No executable mirror/agreement proof
+was built, so there is no measured formal-clock count here.
 
-Built guest ELF SHA-256:
-`af59ed6b844728699f84d400c4195e3765e1829465ae1fb6b6149fa869a1215e`.
-`objcopy -O binary` output is byte-identical to the reconstructed submitted ROM.
-ELF build: 21.87 s; maximum child RSS 901,228 KiB. The historical ELF hash does
-not match, so the new corpus result will be a current-revision measurement.
+Source inspection of TargetSem/Evaluate.lean and InitE/MachineInitialization.lean:
+ordinary dispatch performs one native `next` and consumes one clock unit after
+state/code/frame checks; FFI, cache and terminal dispatch each consume one unit.
+Crypto computation inside the oracle has no additional evaluator clock cost.
+Spike counts retired instructions in the concrete runtime stubs and trap handler.
+For example, a crypto CSR/return stub plus its two-instruction dispatch slot is
+four Spike instructions versus one formal foreign-call transition. PTRS2 and
+PTRS5 ABI wrappers use respectively 11 and 17 instructions including the slot.
+The terminal handler and cache stub also need separate corrections. Thus there
+is no single constant to subtract from every corpus count. A formal comparison
+must prove state/ABI agreement and count each dispatch kind; it cannot simply
+assert that Spike and evaluator clocks agree.
 
-A breakpoint at native entry 0x80001190 measures **23,132** retired bootstrap
-instructions, agreeing with the disassembly calculation. Empty malformed input
-then halts at 48,245 instructions with normal batching, 48,244 with single-step
-breakpoint mode. Repeated runs reproduce the one-count difference: fine mode
-stops immediately when the handler stores the halt flag; normal batches execute
-the following WFI. Spike execute.cc increments instret for that WFI. All corpus
-and synthetic counts below use normal batching. This is a harness-boundary
-difference, not nondeterminism or a guest-speed change.
+Current bootstrap disassembly copies 4,617 words. Its 52 static instructions
+include a five-instruction loop, giving 52 + 5*(4617−1) = **23,132** executed
+RV instructions. A Spike breakpoint at native entry 0x80001190 measured exactly
+23,132. The existing BootstrapTrace theorem's 23,120 is an *ASM-operation*
+count; encodings can contain multiple RV instructions. Its evaluator theorem
+currently hides the native count existentially. Historical documentation's
+23,127 hardware count is stale for these bytes.
 
-Whole-guest synthetic inputs (all process exits zero; outputs recorded, no
-conformance claim for arbitrary synthetic blocks):
+Normal batched execution of empty malformed input gives 48,245; single-step
+breakpoint mode gives 48,244. Repeated runs agree: the fine loop polls the halt
+flag immediately after its store, whereas the normal batch retires the following
+WFI (Spike execute.cc counts it). All results in the tables use normal batching.
 
-| Input | Input bytes / count | Spike instructions |
+## Whole-guest synthetic blocks and malformed inputs
+
+These use the exact current guest ELF. Exits were zero and output bytes were
+saved, but arbitrary synthetic blocks have no EEST conformance assertion.
+
+| Input, all declared gas zero | Input bytes / entries | Instructions |
 |---|---:|---:|
-| malformed empty | 0 | 48,245 |
-| malformed zeros | 1,024 | 49,411 |
-| malformed zeros | 1,048,576 | 1,227,907 |
-| malformed zeros | 16,777,216 | 18,922,627 |
-| malformed zeros at arena limit | 134,217,712 | 151,043,185 |
-| advertised length one byte too large | 134,217,713 | 47,137 |
-| structured SSZ, zero gas, 1 withdrawal | 1 withdrawal | 145,308 |
-| structured SSZ, zero gas, 256 withdrawals | 256 withdrawals | 2,100,011 |
-| structured SSZ, zero gas, 4,096 withdrawals | 4,096 withdrawals | 31,501,167 |
+| malformed empty | 0 bytes | 48,245 |
+| malformed zeros | 1,048,576 bytes | 1,227,907 |
+| malformed zeros | 16,777,216 bytes | 18,922,627 |
+| malformed zeros at arena limit | 134,217,712 bytes | 151,043,185 |
+| advertised length too large | 134,217,713 bytes | 47,137 |
+| structured payload with withdrawals, no headers | 4,096 withdrawals | 31,501,167 |
+| duplicate 64 KiB witness codes, one header | 256 entries | 110,913,261 |
+| duplicate 64 KiB witness codes, one header | 2,047 entries / 134,161,654 bytes | 885,793,643 |
+| distinct 32-byte witness codes, one header | 65,536 entries | 89,329,386 |
+| distinct 32-byte witness codes, one header | 1,048,576 entries / 37,750,010 bytes | 1,426,789,894 |
 
-Zero-filled malformed inputs have declared gas zero. Bulk copying after the
-small-input boundary has measured slope 9/8 = 1.125 instructions/byte. This
-does not cover other decoders. Withdrawal cases include payload hashing but
-may reject before executing withdrawals; do not infer execution cost from them.
-Oversized input transport is clipped to the host's visible arena while retaining
-the original length word. This matches the fixed host's address clipping; it
-avoids a Spike loader fault outside the arena. The guest reports trap marker
-and code in the saved output; its formal outcome has not been kernel-evaluated.
+Bulk malformed copying has measured slope 9/8 instructions per byte. Oversized
+transport is clipped to the host-visible arena while retaining the original
+length word, avoiding writes outside the arena by the Spike loader. The formal
+input type is unbounded; any proof must justify this observational reduction.
 
-## Library diagnostics (separate executable)
+The first structured cases have no headers: failure byte 3 rejects them before
+witness ingestion or withdrawal execution. They measure decoding/payload hashing.
+The later cases use a public passing fixture's RLP header (provenance saved).
+All have failure byte **4**, after nodedb_build for state and code, at the empty
+transaction check. They establish that witness hashing/table construction runs
+at zero user gas. They do not execute the EVM. Distinct code hashes are ordinary
+hash outputs, not deliberately colliding table keys.
 
-`microbench.pnk` includes unchanged guest library functions with a diagnostic
-main. This is not the challenge program and does not prove full-block reachability.
-Measured steps include its own startup and driver. Incremental costs subtract
-the zero-iteration case with identical size.
+## Library and opcode diagnostics
 
-| Work | Measured incremental Spike cost |
+`work/agent-notes/microbench.pnk` includes unchanged guest functions with a new
+main. This separate executable is not the challenge program. Counts include
+loop/operand setup; incremental costs subtract an identical zero-iteration run.
+
+| Work | Incremental instructions |
 |---|---:|
-| 64 KiB all-JUMPDEST bitmap, 10 rebuilds | 11,184,130 (17.066/byte per rebuild) |
-| 64 KiB aligned memcpy, 10 copies | 348,890 (0.53236/byte per copy) |
-| 64 KiB unaligned memcpy, 10 copies | 2,949,800 (4.50104/byte per copy) |
+| 64 KiB all-JUMPDEST bitmap, ten rebuilds | 11,184,130 (17.066/byte/rebuild) |
+| 64 KiB aligned memcpy, ten copies | 348,890 (0.53236/byte/copy) |
+| 64 KiB unaligned memcpy, ten copies | 2,949,800 (4.50104/byte/copy) |
 | 1,024 colliding 52-byte keys via htab_set | 56,598,966 |
 | 4,096 colliding 52-byte keys via htab_set | 895,378,232 |
 
-Hash-table cost approaches about **53.4 N² instructions** in this measured
-range, including growth. Keys vary two equal 64-bit chunks, so the XOR fold
-and final hash are identical for all keys, not merely for the initial capacity.
-A generous 100-gas-per-insertion attribution would give about 2,186 instructions
-per gas at N=4096, but this is a diagnostic quotient: no EVM gas was actually
-charged by the harness, and a full transaction has additional costs.
-The repeated-call bitmap cost alone is about 11,184 instructions per 100 gas
-for a 64 KiB callee, ignoring additional CALL setup and operand gas.
+The keys vary two equal 64-bit chunks: htab_hash XOR-folds them, so all hashes
+collide at every capacity. Measured cost approaches **53.4 N²** including growth.
+This is a library construction; full-block reachability/gas accounting is unproved.
+A bitmap rebuild costs about 1,118,413 instructions. Attributing only a warm
+CALL's 100 gas would yield 11,184 instructions/gas, but that excludes operand,
+call setup and other transaction charges, so it is not a measured block ratio.
 
-Raw records: work/baseline-steps/synthetic-run/results.json and
-work/baseline-steps/microbench-run/results.json. Full corpus run is ongoing.
+Direct opcode calls, maximum over three operand patterns, incremental instructions
+per gas actually charged by those opcode functions: ADD 185.67, MUL 241.4,
+DIV 1,288.4, MOD 1,288.8, ADDMOD 883, MULMOD 1,493.75, EXP 158.75. The diagnostic
+includes operand setup and excludes dispatcher/operand-opcode gas. These are
+samples, not maxima over all U256 operands. In the corpus, software pairing and
+multiscalar multiplication dominate the expensive cases; accelerators' internal
+host runtime is outside both the native instruction count and formal clock.
+
+## Candidate envelope and uncertainty
+
+A deliberately loose **proof-planning target**, not a proven bound, is
+
+    K_design(G, B) = 10,000,000·G + 10,000,000·B + 1,000,000,000,000
+
+where G is declared gas and B is the visible input length, capped only after
+proving the oversized-input rejection case. At G=200,000,000 and B=134,217,712
+this is **3,343,177,120,000,000**, below 9,007,199,254,740,985. The coefficients
+are slack allocated for proof engineering, not regression estimates or measured
+worst-case constants. Confidence that this is a universal bound is **low**;
+confidence in the reported execution measurements is high. Do not put this K
+in claim.json without the missing proof. A quadratic or multivariate potential
+may be necessary before reducing bounded domains to a linear envelope.
+
+Key unresolved charging obligations:
+
+- Collision chains, table growth, deletion and rollback require adversarial
+  bounds. Expected constant-time hashing is inapplicable.
+- Every frame rebuilds jump destinations. SSZ and CREATE both enforce the
+  65,536-byte code limit, but repeated sequential calls remain possible. The
+  63/64 rule bounds nested forwarding, not total calls or rescans by itself.
+- Memory expansion has quadratic gas, while copy alignment changes instruction
+  cost. Gas pools, refunds and failed execution paths need precise invariants.
+- System calls have independent 30M gas budgets. Witness, input, output,
+  withdrawals and initialization need non-user-gas terms.
+- ALLOC-AUDIT/JOURNAL-BOUND contain older memory-layout and trap assumptions.
+  The current challenge excludes outcomes 1, 6 and 7; traps 4 and 5 remain
+  covered. Read the actual definitions rather than importing the old envelope.
+
+Tracked measurements: synthetic-measurements.json, witness-measurements.json,
+microbench-measurements.json, opcode-measurements.json. Raw outputs and generated
+input files remain under work/baseline-steps. No full audit or verifier was run.

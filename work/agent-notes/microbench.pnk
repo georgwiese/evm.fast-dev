@@ -52,6 +52,39 @@ fun 1 main() {
     }
     answer = count;
   }
+  /* Direct opcode-path diagnostics. The library charges real opcode gas,
+     but operand setup and this driver loop are not EVM instructions. */
+  if (mode >=+ 4) && (mode <=+ 10) {
+    u256_ws_init();
+    ev = scratch_alloc(EV_SIZE);
+    memzero(ev, EV_SIZE);
+    var 1 stk = scratch_alloc(1024);
+    st ev + EV_STACK, stk;
+    st ev + EV_STACK_CAP, 32;
+    st ev + EV_GAS_LEFT, 200000000;
+    var U256 divisor = <4294967297, 0, 0, 0>;
+    if size == 1 { divisor = <ALLONES, ALLONES, ALLONES, 2147483647>; }
+    if size == 2 { divisor = <1, 0, 0, 0>; }
+    while i <+ count {
+      if (mode == 8) || (mode == 9) { stack_push(divisor); }
+      if (mode == 8) || (mode == 9) {
+        stack_push(U256_ONES);
+      } else {
+        stack_push(divisor);
+      }
+      stack_push(U256_ONES);
+      if mode == 4 { op_add(); }
+      if mode == 5 { op_mul(); }
+      if mode == 6 { op_div(); }
+      if mode == 7 { op_mod(); }
+      if mode == 8 { op_addmod(); }
+      if mode == 9 { op_mulmod(); }
+      if mode == 10 { op_exp(); }
+      var U256 result = stack_pop();
+      i = i + 1;
+    }
+    answer = lds 1 (ev + EV_REGULAR_GAS_USED);
+  }
   !stw OUTPUT_ADDR, answer;
   !stw OUTPUT_ADDR + 8, heap_ptr;
   @halt(@base, 0, @base, 0);

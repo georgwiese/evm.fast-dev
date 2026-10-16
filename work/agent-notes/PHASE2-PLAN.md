@@ -1,6 +1,7 @@
 # Phase 2: finite clock proof plan
 
-Status: dependency installation underway. No finite certificate yet.
+Status: Phase 1 measurements complete. Dependencies installed; seven cost/bookkeeping
+modules checked. No finite certificate yet; the submission still claims infinity.
 
 ## Strategies and sequence
 
@@ -78,7 +79,7 @@ optimizations and register allocation, and Stack transformations. The seven
 headline languages do not account for these intermediate passes.
 
 The generic ClockBounds pilot now builds and its printed axiom sets are allowed.
-TargetClock is the next pilot: a one-step halt and bound-preserving prefix
+TargetClock is also checked: a one-step halt and bound-preserving prefix
 composition for evaluateTargetHOL itself. This reduces terminal off-by-one
 uncertainty but does not discharge the guest-wide clock bound.
 
@@ -93,8 +94,11 @@ Planning estimates, not completion promises:
 
 - Clock bookkeeping and terminal dispatch pilot: completed in this session.
 - Explicit bootstrap / encoder cost: 17 encoder constructor groups, with
-  state-validity and interference assertions. A useful single instruction
-  pilot is days of proof work; the full bounded encoder is roughly 1–2 weeks.
+  state-validity and interference assertions. Skip, Memory and Loc were specialized successfully in this session, so
+  the earlier days-per-pilot estimate was too pessimistic. Their existing proofs
+  construct explicit small witnesses; retaining them is a tractable local edit.
+  Branches, variable-width constants and composition remain; estimate 1–3 days
+  for bootstrap coverage and 1–2 weeks for the full encoder, subject to checking.
 - Crep→Loop extra clocks and Word→Stack: recursive simulations with multiple
   call/handler branches; roughly 1–3 weeks each, subject to discovering reusable
   quantitative lemmas. Pan→Crep and Loop→Word need not be reproved for extra fuel.
@@ -114,6 +118,36 @@ lemmas, not a route to claiming success. Direct target cost summaries remain
 a possible alternative, but need machine-state invariants and coverage proofs.
 
 Current checked TargetClock statements are concrete Lean, not pseudocode; all
-three main theorem axiom lists are the permitted standard three. The next
-nontrivial encoder pilot must retain the assertion witness n explicitly
-(EncoderStepState currently discards it into an existential n+1).
+three main theorem axiom lists are the permitted standard three. The checked SkipCost, MemoryCost and LocCost modules retain the assertion
+witness explicitly: respectively n=0, n=0, n=1, corresponding to 1, 1 and 2
+native transitions. Each derives fetch/decode/execution from asmStep and the
+initial relation, and retains both assertion predicates and all interference
+environments. Main theorem axiom lists contain only the standard three.
+EncoderStepState currently discards this counter into an existential n+1;
+EncoderClock now carries it through the actual evaluator bridge;
+RiscVEvaluatorCosts checks the three corresponding exact evaluator prefixes.
+
+
+## Current implementation order and proof obligations
+
+1. Checked ClockBounds, TargetClock, SkipCost, MemoryCost and LocCost. No open
+   sorry. Exact native costs do not themselves assert evaluator dispatch costs.
+2. Checked EncoderClock.evaluator_exact: an exposed counter n yields a shift of
+   n+1 in evaluateTargetHOL, retaining interference and findNextInterference.
+   This adapts the pinned proof without changing the dependency.
+3. Checked RiscVEvaluatorCosts specializes the three constructors. Extend exact encoder
+   witnesses for constants, integer binops and bootstrap branches. Compose a
+   weighted trace and prove the current bootstrap's numerical cost.
+4. Attempt a direct target cost potential for guest loops, alongside the source
+   potential route. Prefer reusable summaries of library functions over a full
+   quantitative reproof of all optimization passes if this avoids duplicated
+   invariants. This is an approach choice, not a claim that such summaries exist.
+5. Prove gas/input/state-size invariants and termination bounds. Measurements
+   revealed zero-gas witness work and quadratic collision chains; a gas-only
+   potential is infeasible. A coefficient inferred from EEST is also infeasible.
+6. Only after those obligations, compose the finite certificate and update K.
+
+The numerical planning envelope in PHASE1-REPORT is deliberately unproved.
+Its arithmetic fits under the score cap, but neither the affine shape nor its
+coefficients have a guest-wide justification. A source clock bound and compiler
+cost transfer remain necessary; none is supplied by the pilot assumptions.

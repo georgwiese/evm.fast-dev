@@ -77,7 +77,7 @@ private theorem compCorrectMeasure {width : Nat} [NeZero width] {C F : Type} :
     have simulation : BoundedSimulation 0 (s.clock - post.clock) (comp info (.inst instruction)) info t post r := by
       simpa only [BoundedSimulation, Nat.add_comm] using
         evaluateCompInst instruction info s t post r hypothesis
-    exact ⟨by simpa only [compTop] using simulation, simulation⟩
+    exact ⟨by simpa only [compTop, callCredit] using simulation, simulation⟩
   case seq first second =>
     apply compCorrectSeq first second info s t post r
     · intro i target out res h

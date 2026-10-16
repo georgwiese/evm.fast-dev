@@ -1,8 +1,11 @@
 # Phase 2: finite clock proof plan
 
-Status: Phase 1 measurements and the generic bounded Lab-to-RISC-V simulation
-and quantitative Stack flattening are checked under explicit code/size
-invariants. Fixed-layout checks remain in progress. No finite certificate yet; the submission still claims infinity.
+Status: Phase 1 measurements, bounded Lab-to-RISC-V simulation, quantitative
+Stack flattening, StackAlloc, restricted StackRemove and full StackRawCall
+clock bounds are checked. Fixed-layout/code checks and whole-guest
+initialization remain in progress. Earlier compiler passes and the guest-wide
+source potential remain unfinished. No finite certificate yet; the submission
+still claims infinity.
 
 ## Strategies and sequence
 
@@ -48,8 +51,9 @@ theorem prefix_within
 -- ∃ sourceClock, sourceClock ≤ sourceBound input ∧ SourceExecAt sourceClock ...
 ```
 
-Every new Lean module belongs under InitECandidate/Solver. Use two-slot limited
-Lake builds and print axioms for main theorems. No full baseline audit/verifier.
+Every new Lean module belongs under InitECandidate/Solver. Use the existing
+shared four-slot limited Lake pool (raised after measured memory headroom) and
+print axioms for main theorems. No full baseline audit/verifier.
 Record failed approaches and every open sorry in PROGRESS.md.
 
 ## Pinned pass audit (source inspection, not a new proof)
@@ -523,15 +527,17 @@ growth. This needs a checked pilot and all recursive cases before use.
 WordToStack needs corresponding accounting for shared-memory and raise work.
 The guest-wide gas/input potential remains a separate substantial obligation.
 
-The StackRawCall credit approach is now implemented provisionally under
+The StackRawCall credit approach is now kernel checked under
 Solver/StackRawCallBound. BoundedSimulation adds `extra + credit <= allowance`
 to the original existential witnesses, retaining the actual evaluator, full
 state relation and the timeout/Halt-2 stack-space exceptions. Call/rawCall
 credit is one at nonzero source clock; other constructors reserve zero.
-The intended whole-pass theorem has `allowance = source.clock - post.clock`
+The whole-pass theorem has `allowance = source.clock - post.clock`
 for both compTop and comp. Its entry wrapper derives the actual compiled-code
-relation from distinct keys and sourceCode, and aims for `clock + extra <=
+relation from distinct keys and sourceCode, and proves `clock + extra <=
 2 * clock` with identical complete FFI state. All constructors, loops, return
-and exception continuations have been prepared. The initial optimized-sequence
-pilot is compiling dependencies; none of this new pass is yet recorded as
-checked. A successful complete build and printed axiom audit are required.
+and exception continuations are included in the well-founded recursive proof.
+rawcall-entry-v4.log passes all 810 jobs; all printed main theorem axioms are
+among propext, Classical.choice and Quot.sound. This is a compiler-pass clock
+bound, not yet a RISC-V step bound for the fixed guest. Its fixed-program code
+and initialization premises still need composition with the other stages.

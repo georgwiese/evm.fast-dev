@@ -1,0 +1,59 @@
+/* Library diagnostics, NOT the challenge artifact. Build with guest/build.sh.
+   Include the exact guest functions, rename its entry point, add a small driver.
+   Input: three little-endian words: mode, count, size. */
+#define main baseline_main
+#include "../../guest/src/main.pnk"
+#undef main
+
+fun 1 main() {
+  mem_init();
+  var {1,1} inp = input_blob();
+  if inp.1 <+ 24 { trap_with(8); }
+  var mode = lds 1 inp.0;
+  var count = lds 1 (inp.0 + 8);
+  var size = lds 1 (inp.0 + 16);
+  var i = 0;
+  var answer = 0;
+  /* All keys have the same XOR fold and are distinct. Values are nonzero. */
+  if mode == 0 {
+    var 1 t = htab_new(52, 4);
+    var 1 key = alloc(56);
+    memzero(key, 56);
+    while i <+ count {
+      st key + 24, i;
+      st key + 32, i;
+      htab_set(t, key, i + 1);
+      i = i + 1;
+    }
+    answer = htab_count(t);
+  }
+  /* Rebuild a JUMPDEST bitmap repeatedly; release scratch between calls. */
+  if mode == 1 {
+    var 1 code = alloc(size);
+    while i <+ size { st8 code + i, 91; i = i + 1; }
+    var 1 mark = scratch_mark();
+    i = 0;
+    while i <+ count {
+      var 1 bitmap = compute_jumpdests(code, size);
+      answer = lds 1 bitmap;
+      scratch_release(mark);
+      i = i + 1;
+    }
+  }
+  /* Compare aligned and unaligned copy costs. */
+  if (mode == 2) || (mode == 3) {
+    var 1 src = alloc(size + 8);
+    var 1 dst = alloc(size + 8);
+    memzero(src, size + 8);
+    var offset = mode - 2;
+    while i <+ count {
+      memcpy(dst + offset, src + offset, size);
+      i = i + 1;
+    }
+    answer = count;
+  }
+  !stw OUTPUT_ADDR, answer;
+  !stw OUTPUT_ADDR + 8, heap_ptr;
+  @halt(@base, 0, @base, 0);
+  return 0;
+}

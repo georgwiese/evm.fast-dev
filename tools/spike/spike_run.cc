@@ -606,7 +606,9 @@ int main(int argc, char** argv) {
       if ((uint64_t)n > steps_left) n = (size_t)steps_left;
       if (have_break_pc && !break_hit && p->get_state()->pc == break_pc) {
         break_hit = true;
-        fprintf(stderr, "SPIKE_BREAK_PC hit pc=0x%llx\n", (unsigned long long)break_pc);
+        fprintf(stderr, "SPIKE_BREAK_PC hit pc=0x%llx minstret_delta=%llu\n",
+                (unsigned long long)break_pc,
+                (unsigned long long)(p->get_state()->minstret->read() - minstret_start));
         print_regs(p);
         // fall through: execute the insn at break_pc, then continue
       }

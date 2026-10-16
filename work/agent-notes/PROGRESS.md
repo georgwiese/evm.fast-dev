@@ -982,3 +982,28 @@ Completed-run resource records for the Word cost revision:
   padded Chunk52 (53/54 chunks), StackStatic Chunk24 (25/52 chunks), corrected
   WordStatic Chunk25 (through 26/52 procedure chunks, plus final aggregates).
   No final fixed-program invariant or finite certificate is claimed.
+
+## Full recursive Crep-to-Loop bound checked
+
+- `creploop-assembly-v2.log` succeeded (200 jobs, 58.48s elapsed,
+  1,700,296 KiB child RSS, 3.577GiB peak host used RAM).
+- `simulateLeaf` derives the original simulation witness bound from compiled
+  straight-line charge and endpoint clock relations; it preserves every
+  original memory, globals, code, locals and result conclusion.
+- `simulateCall` covers both tail and returning calls, errors excluded exactly
+  as in the original theorem, normal returns, matching/mismatching exception
+  handlers, timeout and final FFI results. A source decrement pays callee local
+  cost, handler local cost and at most three administrative cuts.
+- `compileCorrect` assembles all nineteen source constructors via the actual
+  evaluator induction principle, retaining literal guarded call/loop hypotheses.
+  No callback simulation is left as a theorem premise. Result:
+  `extra <= (2*limit+3)*(source.clock-post.clock) + cost program`, conditional
+  on the code ceiling and current program ceiling, plus all original relations.
+- The first assembly attempt failed only on unfolding emptyLocals clock and
+  specifying the post-state of code-invariance transport. The corrected run
+  prints only propext, Classical.choice and Quot.sound for all main theorems.
+- Evidence manifest now has 1,970 modules / 3,031 main facts, all source hashes
+  rechecked. This is incremental proof evidence, not isolated verification.
+- The actual arithmetic-simplifying compiled-entry wrapper is now in progress;
+  it aims for total target clock <= (2*limit+4)*source.clock. Fixed Crep ceiling,
+  remaining compiler composition and guest source-clock bound remain open.

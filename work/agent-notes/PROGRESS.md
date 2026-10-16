@@ -489,3 +489,32 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   flattening cases, then assemble its recursion with explicit static/callee-size
   invariants. The coarse syntax budget is not known to fit the final score cap;
   retain per-function costs if uniform maximum-body bounds become too loose.
+
+
+### Recursive bounded Stack flattening
+
+- Added and checked 15 further FlattenBound modules: RemainingLeaves, Guarded,
+  Arithmetic, Ffi, ShMem, If, Loop, Jumps, CallTail, StateInvariant, Syntax,
+  CallBudget, CallReturn, Assembly, WholeCall. The recursive theorem now covers
+  all installation-free programs with explicit program/code/oracle size bounds.
+  The original semantic/state/register/label guards remain in each theorem.
+- Checked extra-clock budget: 4*((M+1)*(initial-final)+nodes program).
+  Whole-entry execution additionally handles the return-to-halting procedure:
+  ck <= 4*((M+1)*initial+2*M), Lab initial clock = initial-1+ck.
+  This is not a finite guest certificate or an instantiated artifact bound.
+- Successful logs (including queue/dependency time, peak child RSS KiB):
+  flatten-simple 4m39.51s / 1,977,508; flatten-flow-v2 13.41s / 1,983,108;
+  flatten-jumps 13.41s / 1,955,912; flatten-state 21.71s / 1,853,888;
+  flatten-return-v2 40.01s / 1,987,380; flatten-assembly-v2 16.62s / 1,930,288.
+  WholeCall passed in flatten-whole-v2.log (timing recorded separately below).
+- Fixed failed attempts: ancestor namespace qualification, missing leaf import,
+  reserved `prefix` identifier, and unconstrained source-state metavariables in
+  clock arithmetic. Failed logs' recovery sorryAx are not accepted proof evidence.
+  Main theorems in the successful build closure use only permitted axioms.
+- Added reproducible local evidence-index and incremental Solver policy scripts.
+  They do not replace the verifier. Padded checks through chunk16 have completed;
+  full layout build is still running in shared four-slot pool run-mo46tz1p.
+  Disk 48%; sampled available RAM approximately 25 GiB. No independent pool.
+- Open explicit sorrys: none. Solution.lean/claim.json unchanged (infinity).
+  No full audit/verifier, push, PR or submission. Finite K remains unfinished.
+- WholeCall final build: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:29.65; Maximum resident set size (kbytes): 2022192; Exit status: 0.

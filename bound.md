@@ -1,10 +1,10 @@
 # Status — update this section frequently
 
-**Checkpoint: 2026-10-16, branch `agent/baseline-steps`, proof commit `04603be4d`; feasibility review completed after handoff commit `4e5596c18`.**
+**Checkpoint: 2026-10-17, branch `agent/baseline-steps`, proof commit `04603be4d`; joint witness-table review based on handoff commit `77d0a0133`.**
 **The goal is NOT complete. `claim.json` still says infinity. No finite K has been proved.**
-**Review decision: REVISE before further bulk proof work.** The existing coarse cost method exceeds the score cap on a conservative witness-table budget. This is a failure of that proposed bound, **not a proof that the challenge or baseline is impossible**. A tighter table-work argument is the first spending gate for Sol.
+**Review decision: REVISE; the joint witness-table gate still fails.** Distinct-preimage byte accounting, duplicate multiplicities and both scans are now included. Even proposed literal-path prices of 89 instructions per search probe and 10 per raw probe give a relaxed construction allowance of **21,004,777,811,675,496**, about **2.33 times the entire score cap**, before later queries or other work. This is a failure of a proposed upper bound, **not a reachable runtime counterexample or proof of impossibility**. See Section 3.R5.
 
-The user paused open-ended proof work to save credits, then authorized this bounded review and handoff update. The review ran no Lean builds or new Spike benchmarks. It does not restart the full proof campaign.
+The user resumed the task on 2026-10-17. The required first gate was investigated with exact arithmetic, fixed-literal inspection and finite-model checks. No Lean build, new Spike benchmark, network operation or full verification was run. Section 3.R4 directs a stop/revision when this gate lacks a credible budget; it has not earned a go decision.
 
 Future agent: update this checklist after each meaningful result, failed feasibility test, change of approach, and before ending a work session. Keep it understandable without reading the rest of this file. For each newly completed item, give a short evidence pointer. Keep assumptions and verification limitations visible. Do not estimate progress by counting generated files. The earlier “30%” was a low-confidence conversational estimate, not a project metric.
 
@@ -25,7 +25,8 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [x] Identified the exact Named Stack initial state and a route through existing compiler proof components. The interfaces in Section 3.R2 are **designs, not newly checked theorems**. Avoid redoing quantitative proofs of the earlier compiler passes.
 - [x] Audited the major work categories and found six independent system calls, two user gas counters, and unmetered witness-table construction before transaction/header validation. Several global bounds remain unknown; see Section 3.R3.
 - [x] Ran a cheap numerical pilot: the current basic-block accounting assigns 37 Work credits to one raw insertion probe body. At the existing conversion rates, a triangular probe allowance for 3,728,269 records costs **24,686,375,150,371,392**, already about **2.74 times the entire score cap**, before other work. Collision reachability is unproved; this diagnoses an overly loose upper bound. Evidence: [budget script](work/agent-notes/feasibility-budget.py), [results](work/agent-notes/feasibility-budget.json), Section 3.R1.
-- [ ] **Sol's first task:** resolve the witness-table budget in one bounded session using Section 3.R4. Return a justified improvement, a concrete obstacle, or an inconclusive result. Do not resume the allocator/memory-expansion sequence first.
+- [x] Completed Section 3.R4's first witness-table investigation. Derived `F ≤ D(D−1)/2 + Σ(m_r−1)r`, `R ≤ D(D−1)/2`, hence `F+R ≤ D(N−1)`, and the distinct-preimage length constraint. These are paper arguments under explicit table invariants, **not Lean theorems**. Inspected the fixed Padded79/185/188 paths and checked the relaxation against 186,368 small table executions, 2,050,048 later queries and 1,616 independent optimizer comparisons. Evidence: [script](work/agent-notes/witness-table-budget.py), [results](work/agent-notes/witness-table-budget.json), Section 3.R5.
+- [ ] Resolve the revised blocker: improve the generic probe allowance using facts about the **actual Keccak-derived bucket family**, or justify an implementation/refinement alternative. Instruction pricing alone has not made the generic allowance fit. Later-query count `Q` remains unknown.
 - [ ] If that gate passes, instantiate the thin compiler/entry interfaces and test one complete path. A numerical improvement alone is not a global feasibility result.
 - [ ] Close the remaining coverage/budget unknowns and establish a credible total **K < 9,007,199,254,740,985** before scaling implementation. **No overall go decision has been earned.**
 
@@ -36,10 +37,10 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [ ] Complete the capacity-growth path and any other local summaries **actually required by the chosen global proof**; prove their entry premises at every use.
 - [ ] Connect bounded execution through the actual compiler artifacts, bootstrap, oracle/FFI, and matching-result relation.
 - [ ] Prove a literal finite K below the score cap; make `submission.K`, `claimedScore`, and `claim.json` agree; prove admission and the fixed certificate with only permitted axioms.
-- [ ] Refresh policy/transport checks for the final package. The last recorded incremental policy check predates the final six allocator modules; it is not a full verification.
+- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (60,687 full-package entries; 2,250,063,930 bytes); this is not isolated verification or a final overlay check.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 
-**Next action for Sol:** take the bounded assignment in Section 3.R4. **Current principal risk:** a generic quadratic collision bound combined with coarse compiler cost factors is too expensive; even a tighter table bound will leave substantial global invariant and composition work. Read the top checklist after every meaningful update.
+**Next action:** resolve the specific collision/query or map-refinement obligations in Section 3.R5 before bulk local proofs. **Current principal risk:** the generic quadratic collision allowance remains too expensive even under much tighter proposed path prices; later queries and the global invariant/composition are still open. Read the top checklist after every meaningful update.
 
 ---
 
@@ -197,6 +198,174 @@ If the table gate cannot be made credible, possible revisions are:
 - A watchdog that rejects after a budget can avoid bounding long **rejecting** executions only if every accepting source run is proved to finish before the cutoff and the modified code is proved equivalent before it. It does not remove the accepting-run/table problem, and arbitrarily capping witness counts can reject valid accepted inputs. Treat it as a separate proof design, not a shortcut already justified here.
 
 After a positive table gate, check I1–I5 on one complete path before increasing local-proof volume. Then complete the other rows in R3 and obtain an overall go decision. There is still no basis for promising a short path to the final certificate on a cheaper agent.
+
+### R5. Joint witness-table investigation, 2026-10-17: REVISE
+
+**Result:** the Section R4 investigation is complete; the numerical gate has
+not passed. The new bound separates input records, distinct hashes, duplicate
+multiplicities, both scans and later queries. Much tighter proposed instruction
+prices still leave the generic collision relaxation above the cap. No new Lean
+theorem, changed ROM, finite claim or runtime counterexample results from this
+review. The user requested the entire task; that end-to-end task remains open.
+
+Reproduce the offline calculation and finite-model checks with:
+
+```bash
+python3 work/agent-notes/witness-table-budget.py --self-test
+```
+
+The checked output is [witness-table-budget.json](work/agent-notes/witness-table-budget.json).
+The script reads fixed Named/Padded literals, records their hashes, and rechecks
+all 3,834 previously indexed proof-source hashes (zero mismatches). Its arithmetic
+is exact Python integer arithmetic. Its regression checks are **not** guest or
+Lean verification. No cryptographic assumption or measured Spike price is used.
+
+**Table argument, derived on paper.** Let `N` be the record count, `D` the number
+of distinct 32-byte hash keys, and `m_r` the multiplicity of the key first
+inserted at distinct-key ordinal `r`, with `1 ≤ r ≤ D` and `Σ m_r = N`.
+Assume a valid non-full table, fixed capacity/home function, exact key equality,
+no deletion, and no intervening memory corruption. Each fresh insertion before
+ordinal `r` can visit at most `r−1` occupied slots in each scan. A stored key's
+successful search path does not lengthen on later insertion: all slots preceding
+its position were already occupied and stay occupied. Every repeat of ordinal
+`r` therefore visits at most `r` occupied slots. Consequently:
+
+```text
+T = D(D−1)/2
+F ≤ T + Σ_r (m_r−1)r ≤ T + (N−D)D   -- find_slot, including matching slots
+R ≤ T                                -- raw insertion; repeats do not call it
+F + R ≤ D(N−1)
+empty-slot tests during construction = 2D
+later Q lookups: occupied-slot visits ≤ QD, empty-slot tests ≤ Q
+```
+
+These are conditional mathematical bounds, not established invariants of the
+fixed execution. The constructor chooses `cap ≥ 2N+2`, so if its range/table
+invariants hold it cannot reach `htab_grow`: the growth condition tests twice
+the new distinct count. Proving that the allocator, pointer arithmetic, used
+bytes and keys satisfy those invariants remains necessary. The later-query
+bound requires read-only tables; it does **not** bound `Q` by `N` or `D`.
+For two witness tables, sum the per-table bounds; cross-table pairs do not probe
+one another. Other dynamic tables require their own arguments.
+
+**Joint byte constraint, derived on paper.** Distinct hash outputs have distinct
+representative preimages because Keccak is deterministic. This implication
+requires neither injectivity nor collision resistance. There are only
+`A_k = Σ_{j=0}^k 256^j` byte strings of length at most `k`. Thus the total lengths
+of representatives are at least `L(D) = Σ_{k≥0} max(0,D−A_k)`. In this input
+range that is exactly:
+
+```text
+L(D) = (D−1)_+ + (D−257)_+ + (D−65793)_+ + (D−16843009)_+
+4N + L(D) ≤ B
+```
+
+The four bytes per record are the SSZ offsets. The readable decoder checks
+monotone offsets and forms disjoint adjacent slices. Transfer of those checks
+and the effective copied-input envelope `B ≤ 134,217,712` to the fixed execution
+is still unproved, including malformed/wrapped-length cases. Fixed headers and
+all duplicate payload lengths are omitted, making this a relaxation. Empty
+duplicates are permitted; they are never counted as new distinct preimages.
+This bound says nothing about simultaneous realizability of distinct Keccak
+hashes and long bucket clusters.
+
+Distinctness is per table. The same preimage may occur in both tables, so using
+`L(D_state + D_code)` would be invalid. A safe aggregate replacement is
+`L₂(D) = Σ_k max(0,D−2A_k)` with `D = D_state + D_code` and `N` the combined
+record count. Applying aggregate `F(N,D)`/`R(D)` further adds fictitious
+cross-table probes. The JSON labels that conservative two-namespace relaxation;
+it does not claim to find the actual worst split.
+
+**Actual hot-path inspection, not kernel-checked cost.** The script follows
+explicitly stipulated branches through the fixed `Padded79`, `Padded185` and
+`Padded188` literals, counts non-label lines and encoded four-byte words, and
+rejects unrecognized transfers. The relevant premises include aligned 32-byte
+keys, the real call ABI, safe stack, valid loads/stores and the ordinary
+comparison-return path. No general malformed-state execution bound is asserted.
+
+| Cost unit | Prior checked interface / newly inspected price | Status |
+|---|---|---|
+| Whole raw Named body 192 | `Work.basic`: 37 credits, then `4 × 24` for extra-clock pricing only | Existing general theorem; numerical syntax inspection; no instantiated hot-loop theorem |
+| Occupied raw Named path | 8 instructions, 3 skips, 1 tick, 1 continue, 1 conditional; proposed Work15 using selected branches/sequences | Source inspection; needs all-clock/control-transfer proof |
+| Occupied raw Padded path | 10 non-label lines, each one encoded instruction, at label `188.10` | Literal path; no target evaluator/state-relation proof |
+| Aligned 32-byte memeq | 17/20/23/26 instructions for first mismatch in word 0/1/2/3; 26 for equality | Literal stipulated paths through `Padded79` |
+| Occupied find mismatch | 60 caller non-label lines plus 26 callee lines; three extra encoded words (`longMul`, two `locValue`); total **89** | Literal path; safe-stack and return premises unproved |
+| Occupied find match | Corresponding total **83** | Literal path; using 89 for all visits is conservative |
+
+Each encoded ordinary instruction should consume one target evaluator transition
+only after the relevant fetch, interference, cache/dispatch and machine-state
+premises are supplied. These prices do **not** follow from `padded_riscv` just by
+substituting a smaller coefficient. A replacement weighted simulation retaining
+its full relation is needed. The proposed Work15 still pays **1,440 extra target
+steps per probe** through the existing `4 × 24` route, excluding base clock.
+
+**Exact arithmetic.** The script maximizes each stated dimension relaxation by
+splitting at the preimage-length thresholds and `D mod 4`; within each piece
+the weighted objective is quadratic. Independent brute-force searches validate
+the optimizer for small alphabets/budgets, including every tier used there.
+`B` below is the full effective input bound with headers omitted.
+
+| One-table relaxation at B=134,217,712 | N | D | Occupied term |
+|---|---:|---:|---:|
+| Maximize `F+R`, price one per visit | 18,890,847 | 18,890,846 | 356,864,062,595,716 visits |
+| Maximize old raw-only extra-clock price `3552R` | 18,890,847 | 18,890,846 | 633,790,541,619,849,120 target steps |
+| Maximize proposed raw-only extra-clock price `1440R` | 18,890,847 | 18,890,846 | 256,942,111,467,506,400 target steps |
+| Maximize proposed literal-path price `89F+10R` | 23,025,715 | 14,060,301 | **21,004,777,811,675,496** proposed target steps |
+
+In the last row `F=224,902,444,504,764` and `R=98,846,025,075,150`.
+Repeated queries make the weighted optimum occur with fewer distinct keys and
+many duplicates. A duplicate's final matching comparison saves six instructions
+relative to 89; that refinement is linear in `N−D` and cannot explain this
+quadratic budget excess. The two-namespace aggregate `89F+10R` allowance is
+21,025,446,398,591,943. Neither value is a reachable execution lower bound.
+
+At the maximum one-table combined-visit allowance, the entire cap minus startup
+can afford only 25 target transitions per occupied visit on average. A quarter
+of the cap affords six. The existing Work route fails by much more; even the
+new proposed literal price fails by about 2.33 times the full cap. Therefore
+the generic size/distinctness bound plus these path prices does **not** pass
+the witness gate. This does not rule out a sharper aggregate comparison/bucket
+bound for the actual hash family, or an alternative target implementation.
+
+Keep the missing total explicit:
+
+```text
+K ≤ startup + input/SSZ + witness_build + later_queries/trie
+            + user_gas_work + six_system_calls + other_tables/journals
+            + failure/unwind/cleanup/output + compiler_entry/return_overhead
+```
+
+Only the conditional 23,132-step startup theorem is numerically settled here.
+`Q`, the later-query aggregate and the other global work/clock terms remain
+unknown. There is no numerical margin or overall go decision.
+
+**Concrete revised obligation.** For the unchanged ROM, a sufficient next
+result would bound the aggregate weighted probe/comparison-prefix work of
+Keccak-derived keys, including duplicates and later reads, under actual input
+and guest invariants. A small average-load assertion or a probe-body rank alone
+does not supply that result. Without it, do not fund another round of the same
+coarse local contracts.
+
+An implementation alternative can be scoped to the two read-only witness maps:
+`nodedb_build` has two callers; `nodedb_lookup` is their lookup interface, with
+two trie call sites and one code-state call site. A stable radix-sorted index
+on 32-byte hashes could make construction linear in `32N` and lookup logarithmic
+in `D`, with the last duplicate record winning. This is a **design**, not an
+implemented or proved replacement. It requires a new ROM, extensional map
+refinement, allocation/separation and covered failure/observation proofs, new
+compiler artifacts and a whole-program budget. Every public output byte must
+still match on accepting runs, and new memory exhaustion cannot replace a
+covered source success. No permission-dependent external step is blocking this work;
+the missing mathematical/refinement argument is the blocker.
+
+**Validation and stop condition.** The script passed 186,368 exhaustive small
+table executions, 2,050,048 subsequent lookups (including absent keys and wrap),
+and 1,616 comparisons with an independent brute-force optimizer. The successful
+guarded run is `logs/witness-table-review-v3.{log,time}` with matching resource
+JSONL. No Lean pilot was launched: the arithmetic gate failed, and the selected
+fixed `Named79/185/188/190.olean` dependencies are absent. The incremental policy
+check also passed; it is not a trusted audit or isolated verification. Keep the
+live claim at infinity and retain the unfinished certificate checklist above.
 
 ### Review protocol for subsequent sessions
 

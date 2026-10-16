@@ -1021,14 +1021,15 @@
     "submission/InitECandidate/Solver/StackRemoveDirect/Assembly.lean",
     "submission/InitECandidate/Solver/StackRemoveDirect/CheckCode.lean",
     "submission/InitECandidate/Solver/StackRemoveDirect/Entry.lean",
+    "submission/InitECandidate/Solver/StackRemoveDirect/Large.lean",
     "submission/InitECandidate/Solver/StackRemoveDirect/Pilot.lean",
     "submission/InitECandidate/Solver/StackRemoveDirect/Safety.lean",
     "submission/InitECandidate/Solver/SupportedCosts.lean",
     "submission/InitECandidate/Solver/TargetClock.lean",
     "submission/InitECandidate/Solver/WeightedTrace.lean"
   ],
-  "package_entries": 57862,
-  "package_bytes": 2246542341,
+  "package_entries": 57863,
+  "package_bytes": 2246543162,
   "claim": {
     "K": "infinity"
   },

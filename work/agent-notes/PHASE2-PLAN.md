@@ -489,3 +489,11 @@ check the actual Alloc64 body and runtime stub list as a pilot, certify all
 826 procedure literals in resource-bounded chunks, and connect the checked list
 to the actual Alloc.stack and initializer/code relation. The generic copy bound
 remains independently useful but does not itself prove stub unreachability.
+
+
+The direct-call recursive theorem, entry/initialization wrapper and Boolean-list
+to sparse-tree invariant lemma now pass. The fixed Raw64/Alloc64/runtime-stub
+pilot also passes with permitted axioms only. The larger procedure 713 pilot
+is running. After it completes, generate per-procedure checks and aggregate
+in bounded chunks; full Raw/Alloc initial-state and oracle instantiation still
+remain. These results do not certify any finite guest-wide K yet.

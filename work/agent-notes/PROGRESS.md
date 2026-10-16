@@ -627,3 +627,40 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - remove-copy: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:24.31; Maximum resident set size (kbytes): 1620684; Exit status: 0.
 - remove-store-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:17.79; Maximum resident set size (kbytes): 2029492; Exit status: 0.
 - fixed-stubs-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.99; Maximum resident set size (kbytes): 1509152; Exit status: 0.
+
+
+### Direct-call alternative for the installed but unused copy stub
+
+- Enhanced the reproducible text scan: both Raw and Alloc contain zero Sum.inr
+  targets and zero direct/raw/jump calls or locValue references to label 6.
+  This remains text evidence; the fixed-code kernel pilot is pending.
+- Prepared StackRemoveDirect Safety/Assembly/Entry with explicit direct-call
+  restrictions. Installed body 6 is unrestricted; every reachable call must
+  avoid it. Other installed and oracle bodies must satisfy the predicate.
+  The original full simulation and resultBudget bound are retained.
+- Prepared CheckCode to connect the Boolean list check to sparse-tree lookup
+  invariants, and Pilot for actual Raw64, Alloc64 and runtime AllocStubs.
+- Initial Safety helper attempts could not unfold the recursive call predicate
+  until option/target cases were exposed; the corrected build is in progress.
+- Live builds: padded-all parent 890709/session 83802; remove-direct-v2/session
+  61973 is finishing pilot dependencies after its Safety failure; corrected
+  remove-direct-v3/session 9094 checks Entry and CheckCode separately. All share
+  the same four-slot locks. No independent limiter pools were introduced.
+- Padded build has completed through chunk33; peak sampled host use 6.601 GiB,
+  maximum disk use 50%. Finite certificate remains unfinished, claim infinity.
+
+- remove-direct-v3.log now passes (1,063 jobs): Safety, CheckCode, recursive
+  compCorrect and initializedEntry. All printed main theorem axioms permitted.
+  The <=1 bound now allows an arbitrary installed body at key 6 while proving
+  that the restricted current program only looks up certified keys.
+- remove-direct-pilot.log passes (1,274 jobs): actual Raw64 is StackAlloc-eligible,
+  actual Alloc64 satisfies the direct-call class, and all actual AllocStubs at
+  keys other than 6 satisfy it. These are kernel checks, not scan inferences.
+- Started larger actual-procedure pilot 713 in session 84720, log
+  remove-direct-large.log. It uses the same four-slot pool and 24 GiB guard.
+  Large.lean remains pending and is excluded from checked evidence until a
+  successful completed build. Full fixed-program class certification is next.
+- remove-direct-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:58.28; Maximum resident set size (kbytes): 2325440; Exit status: 0.
+- remove-direct-pilot: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.18; Maximum resident set size (kbytes): 2232552; Exit status: 0.
+- Latest completed padded target: END 36/57 InitECandidate.Solver.LabBound.Padded.Chunk34 325.03s. Parent/session unchanged.
+- Sampled padded-run host peak 6.758 GiB; disk peak 50%.

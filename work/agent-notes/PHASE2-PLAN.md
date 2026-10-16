@@ -401,3 +401,36 @@ preserving that condition through code/oracle history. Then certify actual
 fixed-code invariants, accounting for small runtime procedures as well as
 numbered procedure modules. StackAlloc (the earlier heap-lowering pass),
 WordToStack, CrepToLoop and the guest-wide source potential remain separate.
+
+## Recursive Stack removal checked
+
+StackRemoveBound.Assembly.compCorrect now closes all constructor cases under
+`eligible`-style `supported program = true` and `StateSafe source` premises.
+The predicate excludes Install and StoreConsts recursively; StateSafe checks
+installed bodies and every compile-oracle extension. Evaluation preservation
+uses the imported exact code/oracle-history theorem. Heap Alloc is impossible
+under this pass's original state relation; its original error guard remains.
+
+The actual compiled execution has extra clock <= resultBudget result, where
+resultBudget is 1 for Halt and 0 for every other result. Seq, loop reentry,
+return continuations and exception handlers preserve zero extra clock on their
+continuing prefix, so the bound does not grow with recursion or input length.
+Every memory/register/stack/FFI guard and full original postrelation remains.
+All printed main theorem axioms are permitted.
+
+Entry.entrySimulation specializes this to the whole entry call at any chosen
+source clock. Entry.initializedEntry additionally prefixes the actual
+initializer execution, using existing InitClock.evaluateInitCodeClock; the
+initializer uses no Stack clock. This theorem still requires the initializer
+run and the full relation it establishes. It does not assume or certify that
+the fixed guest satisfies its preconditions.
+
+Next is StackAlloc (heap-allocation lowering). Its 25 nonrecursive cases expose
+zero witnesses in the source proofs. The new ZeroGoal retains the exact target
+override, original Pre and Post and adds ck=0. A recursive theorem should cover
+program/code/oracle syntax excluding Alloc, StoreConsts and Install; the fixed
+Raw text scan supports testing this class but does not discharge it. Preserve
+those restrictions at actual recursive evaluation sites. Calls remain necessary
+even if the compiler leaves most eligible syntax unchanged, because target code,
+flags, registers and compiler/oracle fields change. No blanket identity proof
+for the evaluator is being assumed.

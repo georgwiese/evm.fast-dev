@@ -1663,3 +1663,55 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   branch joins and complete extend_memory; global ABI/arena initialization and
   preservation, gas-paid total work, input/state work and runtime unwind paths;
   whole-program compiler composition and the finite certificate.
+
+### Complete zero/no-growth entry paths and growth suffix setup checked
+
+- Previous turn classified as progress: committed checked handler-frame and
+  final-length suffix proofs. This turn adds six checked modules.
+- BlockSelected evaluates the actual conditional by branchChoice. iteCases
+  supplies each branch with its selected-test hypothesis; iteSelected requires
+  only the reachable branch's bound. Invalid tests fail immediately.
+- BlockPrefix.basicPrefix composes the actual right-associated DAG from basic
+  blocks and a bounded tail. It charges the sum of per-block nodes/ticks,
+  propagates a proved normal state transition and stops on failed prefixes.
+- ExtendMemoryNoGrowth covers actual capacity comparison264 and suffix364
+  through the final memzero/store/return, when reg12 capacity >= reg10 next
+  length. Work17*M+534, consumed clockM+47, bounded replayM+48.
+- ExtendMemoryEntry extends this to COMPLETE Named484.2 for nonzero expansion
+  within existing capacity: Work17*M+569, consumed clockM+50, replayM+51.
+  Ready spells out entry registers, installed code, safe prologue, metadata,
+  frame/length/capacity memory cells and domains, actual capacity comparison,
+  and amount<=M. It is conditional on these concrete source-state premises;
+  they are not yet established globally. Failed later memory operations remain
+  included by the suffix bounds. Whole final state agrees apart from clock.
+- ExtendMemoryZero covers COMPLETE Named484.2 with amount0 and word stack/
+  metadata registers: Work21, consumed clock1, replay2. No installed callee,
+  valid memory, safe-stack or valid return-location premise is needed. Stack
+  overflow halts and malformed return locations are included; the actual
+  zero-length path cannot continue into frame reads/allocation/memzero.
+- ExtendMemoryCapacityEntry checks actual suffix248 immediately after allocator
+  return. It reads the memory base, computes base+capacity and nextCapacity-
+  capacity, saves next capacity, executes capacity memzero and EV_MEM_CAP store,
+  and supplies the saved logical-length bound for the final suffix.
+  Work17*clearMaximum+529, consumed clockclearMaximum+46. Ready explicitly
+  requires the allocator-restored registers, relevant lookup cells/domains and
+  bounded saved word. No domain premise for the intermediate stack save is
+  needed. Handler-metadata separation and clear-length bound remain explicit.
+- Successful shared-four-slot guarded builds (elapsed,peak RSS KiB,sampled
+  host-used GiB): block-selected-v2 4.04s/1763788/1.113;
+  extend-memory-no-growth-v2 4.61s/2113996/1.097;
+  extend-memory-entry-v4 5.69s/2143628/1.598 (includes BlockPrefix);
+  extend-memory-zero-v2 5.28s/2140020/1.400;
+  extend-memory-capacity-entry-v2 5.40s/2157184/1.608.
+- Failed attempts excluded: selected-branch rewriting and vacuous alternative;
+  reserved identifier prefix and namespaced basic resolution; no-growth syntax
+  node count; Bool test normalization; clock-stability structure reconstruction;
+  return-match splitting; final stack/metadata lookup simplification. All were
+  corrected. No explicit proof holes. Incremental policy passed,3828 indexed
+  source hashes match,5887 printed permitted-axiom facts. Disk57%,126GiB free.
+- Next: turn the allocator success-path proof into a composable all-clock bound
+  (including insufficient-clock timeouts), then prove its actual caller setup,
+  save/restore and pointer-cell separation establish CapacityEntry.Ready. Growth
+  arithmetic, whole-guest ABI/arena/gas/input invariants, runtime unwind and the
+  final compiler/certificate composition remain open. Claim stays infinity;
+  full audit/verifier and outside-server operations remain unrun.

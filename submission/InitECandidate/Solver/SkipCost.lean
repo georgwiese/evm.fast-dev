@@ -158,7 +158,7 @@ theorem skip_state_one (s1 s2 : AsmState 64) (ms : riscv_state)
     (h : asmStep riscvTarget.config s1 (.inst .skip) s2 ∧
       targetStateRel riscvTarget s1 ms) :
     targetStateRel riscvTarget s2 (riscvTarget.next ms) := by
-  have identity : interferenceOk (fun _ state : riscv_state => state)
+  have identity : interferenceOk (fun (_ : Nat) (state : riscv_state) => state)
       (riscvTarget.proj s1.memDomain) := by
     intro index state
     rfl

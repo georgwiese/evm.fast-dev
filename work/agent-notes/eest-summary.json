@@ -1,0 +1,29 @@
+{
+  "records": 33614,
+  "counted_passing": 33614,
+  "classes": {
+    "PASS(full)": 33605,
+    "PASS(malformed)": 9
+  },
+  "minimum": 48245,
+  "maximum": 12288467579,
+  "mean": 8980605.947343368,
+  "covered_gas_records": 32444,
+  "covered_minimum": 48245,
+  "covered_maximum": 4654270509,
+  "covered_mean": 8478606.534274442,
+  "highest_instructions_per_payload_gas": {
+    "label": "28355_test_pairing_test_fork_Amsterdam-blockchain_test_from_state_test-d5-g0__b0",
+    "case_id": "cfaf1f801a9c791dc0b414896df41b2bbab98e0d1322a20de57e0611a8ec0b41",
+    "classification_source": "eest-run",
+    "class": "PASS(full)",
+    "spike_instructions": 770000402,
+    "input_bytes": 6093,
+    "input_sha256": "82aaacd0577d3b6c8bb71d6873a30bf50c4f35aa7e92643360e5ebc04a97ea03",
+    "declared_gas_limit": 14012015,
+    "payload_gas_used": 148985,
+    "covered_gas": true
+  },
+  "highest_ratio": 5168.308232372387,
+  "units": "Spike minstret delta; gasUsed is a payload claim"
+}

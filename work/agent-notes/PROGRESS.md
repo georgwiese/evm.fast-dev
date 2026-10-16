@@ -102,3 +102,64 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - New resource wrapper samples process-group RSS (shared pages counted multiple
   times), host MemAvailable and filesystem use every five seconds and stops
   its process group above 85% disk. Smoke check passed.
+
+## Encoder pilot refinement
+
+- SkipCost dependency build first used two slots, then four after observing
+  only 5.5 GiB whole-host use; original log/resources retained.
+- First complete elaboration checked skip_encoder_exact with only the standard
+  three axioms, but skip_state_one failed: a lambda annotation incorrectly
+  assigned riscv_state to the time index. Lean's error recovery printed sorryAx
+  for that failed theorem. This was a failed build, not an accepted proof.
+  Corrected the index to Nat; retry pending. No explicit sorry was written.
+- Added MemoryCost and LocCost by exposing existing witnesses in the pinned
+  proofs (one memory transition and two address-load transitions). Both pending
+  builds; neither is being claimed checked yet.
+- Arithmetic diagnostic harness v2 built and all 42 opcode runs exited zero.
+  Measured charged gas directly from EV_REGULAR_GAS_USED. Largest diagnostic
+  incremental ratio: MULMOD 1493.75 Spike instructions / opcode gas (includes
+  driver operand setup, excludes EVM dispatcher and its operand opcode gas).
+- Full EEST has 33,613 completed outputs; final deposit-high-count case running.
+
+### Full corpus and expanded diagnostics completed
+
+- Full EEST run: 33,614/33,614, with 33,605 PASS(full), nine PASS(malformed),
+  zero failures. Wall 10m39.17s, max child RSS 148,216 KiB. Joined fixture gas
+  and counts with baseline-step-report.py into work/baseline-steps/steps-and-gas.json.
+  Summary tracked as eest-summary.json. Min 48,245, max 12,288,467,579, mean
+  8,980,605.947; 32,444 gas-covered records, max 4,654,270,509. Highest ratio
+  5,168.308 instructions/payload gasUsed, pairing fixture 28355. GasUsed is a
+  payload claim, not independent runtime gas instrumentation.
+- Expanded microbench: 42 opcode cases completed, all process rc=0; measured
+  function-charged gas from output, subtracted zero-iteration instructions.
+  Tracked opcode-measurements.json, separate ELF hash preserved. Maximum among
+  sampled MULMOD operands 1,493.75 instructions/opcode gas; this includes driver
+  setup and is not a whole-transaction bound.
+- Added --witness-header generator mode, using the last header of a public
+  passing fixture (witness-header.hex and witness-header-source.json). Eight
+  whole-guest inputs, all rc=0, failure debug byte 4. Source inspection confirms
+  nodedb_build executes before empty-transaction rejection. Initial descriptions
+  predicted block-hash rejection; corrected to the observed earlier check.
+  Largest duplicate-code input: 885,793,643 instructions / 134,161,654 bytes.
+  1,048,576 distinct 32-byte codes: 1,426,789,894 / 37,750,010 bytes. Declared gas
+  zero in all. Saved witness-measurements.json. Earlier headerless synthetic
+  cases fail with code 3 before witness ingestion; report now states this.
+- SkipCost retry succeeded (4.44s, max child RSS 2,162,208 KiB), both printed
+  main theorem axiom sets allowed. The earlier lambda annotation failure was
+  corrected; there is no remaining sorryAx in a successful build.
+- MemoryCost and LocCost build succeeded: 1,145 jobs including dependencies,
+  four slots, wall 2m48.34s, max child RSS 3,423,000 KiB. Main theorem axioms
+  exactly propext, Classical.choice, Quot.sound. Exact native costs 1 and 2.
+- Rewrote PHASE1-REPORT with current measurements, artifact drift, clock mapping,
+  adversarial limitations and an explicitly unproved numeric planning envelope.
+  Revised Phase 2 effort estimates based on successful constructor pilots.
+- Next: EncoderClock, explicit assertion-counter-to-evaluator bridge. Its build
+  is running with two slots. No finite certificate and no full verification.
+  Open sorry list: none in written source; pending builds are not yet verified.
+- EncoderClock built successfully: 27.08s, max child RSS 2,104,752 KiB, permitted
+  three axioms. RiscVEvaluatorCosts first build exposed a config eta-equivalence
+  mismatch, fixed by the pinned riscvConfig_encode lemma. Retry succeeded; its
+  four main theorems have only permitted axioms. No open sorry; error recovery
+  sorryAx from the failed elaboration is absent from the successful retry.
+- Six reporting tests passed. Resource guards: Memory/Loc sampled group RSS sum
+  peaked at 10,837,048 KiB; host available never below 23,726,028 KiB; disk 45%.

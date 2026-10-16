@@ -2,12 +2,19 @@
   "kind": "text_scan_not_kernel_proof",
   "stages": {
     "Raw": {
-      "file_count": 826,
+      "file_count": 827,
       "totals": {
-        "storeConsts": 0,
+        "storeConsts": 1,
         "install": 0,
         "alloc": 0,
         "stackAlloc": 9933
+      },
+      "text_reference_counts": {
+        "indirect_sum_target": 0,
+        "direct_label_6": 0,
+        "raw_call_6": 0,
+        "jump_lower_6": 0,
+        "location_6": 0
       },
       "files": [
         {
@@ -8269,16 +8276,33 @@
             "alloc": 0,
             "stackAlloc": 1
           }
+        },
+        {
+          "path": "submission/InitECandidate/Proofs/BackendStages/RawStubs.lean",
+          "sha256": "a2b1605e44532dab8cdcf2ae87090fd143fa789dd4e13856fcae95b2fb1a2018",
+          "counts": {
+            "storeConsts": 1,
+            "install": 0,
+            "alloc": 0,
+            "stackAlloc": 0
+          }
         }
       ]
     },
     "Alloc": {
-      "file_count": 826,
+      "file_count": 827,
       "totals": {
-        "storeConsts": 0,
+        "storeConsts": 1,
         "install": 0,
         "alloc": 0,
         "stackAlloc": 9933
+      },
+      "text_reference_counts": {
+        "indirect_sum_target": 0,
+        "direct_label_6": 0,
+        "raw_call_6": 0,
+        "jump_lower_6": 0,
+        "location_6": 0
       },
       "files": [
         {
@@ -16540,16 +16564,33 @@
             "alloc": 0,
             "stackAlloc": 1
           }
+        },
+        {
+          "path": "submission/InitECandidate/Proofs/BackendStages/AllocStubs.lean",
+          "sha256": "56285dad7c1b67e4bb667b9e31ccc62be46308dec2f6ad4803dc291d44f357fb",
+          "counts": {
+            "storeConsts": 1,
+            "install": 0,
+            "alloc": 0,
+            "stackAlloc": 0
+          }
         }
       ]
     },
     "Removed": {
-      "file_count": 826,
+      "file_count": 827,
       "totals": {
         "storeConsts": 0,
         "install": 0,
         "alloc": 0,
         "stackAlloc": 0
+      },
+      "text_reference_counts": {
+        "indirect_sum_target": 0,
+        "direct_label_6": 0,
+        "raw_call_6": 0,
+        "jump_lower_6": 0,
+        "location_6": 0
       },
       "files": [
         {
@@ -24805,6 +24846,16 @@
         {
           "path": "submission/InitECandidate/Proofs/BackendStages/Removed99.lean",
           "sha256": "ec6af5b4097a9b56ba37250690a3f567502e004c256af92eb783003164dc439d",
+          "counts": {
+            "storeConsts": 0,
+            "install": 0,
+            "alloc": 0,
+            "stackAlloc": 0
+          }
+        },
+        {
+          "path": "submission/InitECandidate/Proofs/BackendStages/RemovedStubs.lean",
+          "sha256": "edacc11a7f1ea3e1902d439304e34de6a3688399d5b20376d3298be7bf718c5b",
           "counts": {
             "storeConsts": 0,
             "install": 0,

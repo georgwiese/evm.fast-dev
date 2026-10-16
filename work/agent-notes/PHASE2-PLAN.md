@@ -1,8 +1,8 @@
 # Phase 2: finite clock proof plan
 
 Status: Phase 1 measurements and the generic bounded Lab-to-RISC-V simulation
-are checked. Fixed-layout checks and quantitative Stack flattening are in
-progress. No finite certificate yet; the submission still claims infinity.
+and quantitative Stack flattening are checked under explicit code/size
+invariants. Fixed-layout checks remain in progress. No finite certificate yet; the submission still claims infinity.
 
 ## Strategies and sequence
 
@@ -326,3 +326,47 @@ A uniform maximum-body multiplier may be too loose for the final score cap.
 Keep syntax/spent-clock accounting explicit and retain per-function charges
 if later composition exceeds the cap; no feasible final K is inferred from
 this pilot's arithmetic.
+
+## Recursive Stack flattening checked
+
+The pilot budget now holds for every constructor under `ProgramOk M p` and
+`StateOk M s`. ProgramOk bounds structural nodes and excludes Install. StateOk
+requires ProgramOk for every installed body and every possible compile-oracle
+extension. `stateOk_evaluate` derives preservation from the existing exact
+code/oracle-history theorem; the compile-oracle premise is explicit and still
+needs discharge for the guest's initial state.
+
+`FlattenBound.Assembly.boundedPropAll` has checked type:
+
+```lean
+ProgramOk limit prog → StateOk limit source → BoundedProp limit prog source
+```
+
+BoundedProp retains all original flattening hypotheses and its exact simulation
+conclusion, with extra clock at most
+`4*((limit+1)*(source.clock-finalSource.clock)+nodes prog)`.
+This covers Seq, six conditional flattenings, loops, direct/raw/tail calls,
+returning calls and handlers, FFI, shared memory, and all leaves. Install is
+excluded by ProgramOk; guarded stack/store/allocation operations are impossible
+under the original flattening state relation. Calls and loop reentry discharge
+the original clock/size induction measure, not an assumed recursion bound.
+
+`FlattenBound.WholeCall.boundedCallCorrect` also passes: whole-entry Lab
+execution uses initial clock `source.clock-1+ck` with
+`ck ≤ 4*((limit+1)*source.clock+2*limit)`. It retains the original result class,
+FFI and return-to-halting-procedure premise, including timeouts. The second
+body in a return-to-halt run consumes no source clock by that original premise;
+its syntax cost is explicitly included. All printed axioms are permitted.
+
+Next obligations: bound the actual removed Stack bodies and compile oracle;
+bridge the precise fixed artifacts/initial states; quantify StackRemove,
+StackAlloc and earlier passes; prove the source gas/input work potential.
+The uniform maximum-body budget may exceed the score cap after composition.
+It is a checked intermediate bound, not an asserted feasible final K.
+
+StackRemove inspection suggests most instructions and successful stack-space
+operations use zero extra source clock; allocation failure uses one and halts.
+Its recursive arbitrary-count allocation proof propagates the final witness
+without adding one per chunk. Expose this bound next, retaining its guards and
+full state relation. This observation is source inspection until a new proof
+build succeeds; it does not yet establish a whole-pass bound.

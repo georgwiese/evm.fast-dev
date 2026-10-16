@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "scope": "Incremental import/token check of all Solver files using verifier/check_submission.py imports and allowed modules; whole-tree entry/size checks; fixed files unchanged since prior full policy pass",
+  "scope": "Incremental import/token check of all Solver files using verifier/check_submission.py imports and allowed modules; whole-tree entry/size checks; fixed files rely on prior full policy pass",
   "prior_full_policy": "logs/submission-policy.log",
   "checked_files": [
     "submission/InitECandidate/Solver/BinopImmediateCost.lean",
@@ -49,9 +49,24 @@
     "submission/InitECandidate/Solver/ConstCost.lean",
     "submission/InitECandidate/Solver/EncoderBound.lean",
     "submission/InitECandidate/Solver/EncoderClock.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Arithmetic.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Assembly.lean",
+    "submission/InitECandidate/Solver/FlattenBound/CallBudget.lean",
+    "submission/InitECandidate/Solver/FlattenBound/CallReturn.lean",
+    "submission/InitECandidate/Solver/FlattenBound/CallTail.lean",
     "submission/InitECandidate/Solver/FlattenBound/Common.lean",
     "submission/InitECandidate/Solver/FlattenBound/Control.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Ffi.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Guarded.lean",
+    "submission/InitECandidate/Solver/FlattenBound/If.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Jumps.lean",
     "submission/InitECandidate/Solver/FlattenBound/Leaves.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Loop.lean",
+    "submission/InitECandidate/Solver/FlattenBound/RemainingLeaves.lean",
+    "submission/InitECandidate/Solver/FlattenBound/ShMem.lean",
+    "submission/InitECandidate/Solver/FlattenBound/StateInvariant.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Syntax.lean",
+    "submission/InitECandidate/Solver/FlattenBound/WholeCall.lean",
     "submission/InitECandidate/Solver/JumpCmpNearCost.lean",
     "submission/InitECandidate/Solver/JumpNearCost.lean",
     "submission/InitECandidate/Solver/LabBound/Asm.lean",
@@ -964,8 +979,8 @@
     "submission/InitECandidate/Solver/TargetClock.lean",
     "submission/InitECandidate/Solver/WeightedTrace.lean"
   ],
-  "package_entries": 57796,
-  "package_bytes": 2246083954,
+  "package_entries": 57811,
+  "package_bytes": 2246200280,
   "claim": {
     "K": "infinity"
   },

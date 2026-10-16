@@ -956,3 +956,29 @@ Completed-run resource records for the Word cost revision:
 - creploop-expression-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:36.56; Maximum resident set size (kbytes): 1378000; Exit status: 1; sampled host memory peak 4.025 GiB.
 - creploop-expression-v4: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:56.25; Maximum resident set size (kbytes): 1390220; Exit status: 0; sampled host memory peak 4.298 GiB.
 - Evidence manifest: 1745 modules and 2621 main facts; all source SHA256 hashes match.
+
+## Crep-to-Loop control flow and leaf clock costs
+
+- Added the program local cost, recursive ceiling and code-map invariant.
+  `Simulation` retains the original compiler, evaluator and all state/memory/
+  globals/code/result/locals relations, adding
+  `extra <= (2*limit+3)*(source.clock-post.clock) + cost program`.
+- The complete Seq, Dec, If and While case proofs now build. While pays for
+  the condition/body from its source-clock decrement and telescopes repeated
+  iterations. Tick uses the original exact zero-offset construction.
+- `LeafCost` proves the actual compiled nonrecursive/non-Tick statements are
+  straight and their clock charge is at most the source program's local cost.
+  The semantic leaf wrapper, full Call case and recursive assembly are being
+  checked separately; these drafts are not yet indexed as proven.
+- Successful check: `creploop-control-v5.log`, 178 jobs, 57.94s elapsed,
+  1,428,172 KiB maximum child RSS, 4.566GiB peak host used RAM. All printed main facts have only permitted
+  axioms. Same shared four-slot pool and 24GiB host-memory guard; disk 54%.
+- Earlier control attempts failed on option reduction, reserved `prefix`,
+  unsupported tactic `exacts`, a redundant tactic, a Nat transitivity name,
+  explicit decremented-state inference, and an unconstrained budget metavariable.
+  Failed logs (including Lean recovery `sorryAx`) are excluded from evidence.
+  No explicit sorry/admit/axiom/native_decide was added to Solver sources.
+- Revalidated all three fixed batches live. Indexed completed prefixes:
+  padded Chunk52 (53/54 chunks), StackStatic Chunk24 (25/52 chunks), corrected
+  WordStatic Chunk25 (through 26/52 procedure chunks, plus final aggregates).
+  No final fixed-program invariant or finite certificate is claimed.

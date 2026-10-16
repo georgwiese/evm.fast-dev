@@ -718,3 +718,15 @@ local program cost/ceiling and code invariant, then bound the original
 Seq/Dec/If/While/Call witness compositions. The pure/straight compiler shape
 could also recover leaf bounds from existing whole-program simulations,
 avoiding re-proving their memory and primitive semantics.
+
+
+### Crep-to-Loop control-flow implementation
+
+The program bound now has checked Seq/Dec/If/While cases, code preservation,
+clock nonincrease, numerical composition lemmas and a zero-offset Tick case.
+The rate `2*limit+3` covers one bounded callee/body plus one bounded handler/
+condition and up to three administrative cuts per source decrement.
+`LeafCost` checks actual compiled statement syntax against expression budgets;
+a semantic wrapper recovers its existing existential overhead by comparing
+endpoint clocks. Full Call and evaluate-induction assembly are the next gate.
+The fixed Crep code ceiling and initial state relations remain separate tasks.

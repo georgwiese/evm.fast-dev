@@ -11,6 +11,7 @@ import hashlib
 import json
 from pathlib import Path
 import statistics
+from collections import Counter
 
 
 def le(blob, offset, width):
@@ -42,11 +43,18 @@ def summary(rows):
     ratios = [r for r in passing if r["payload_gas_used"] and r["covered_gas"]]
     highest = max(ratios, key=lambda r: r["spike_instructions"] / r["payload_gas_used"],
                   default=None)
+    covered_counts = [r["spike_instructions"] for r in passing if r["covered_gas"]]
     return dict(records=len(rows), counted_passing=len(counts),
+                classes=dict(Counter(r["class"] for r in rows)),
                 minimum=min(counts, default=None), maximum=max(counts, default=None),
                 mean=statistics.mean(counts) if counts else None,
                 covered_gas_records=sum(r["covered_gas"] for r in rows),
+                covered_minimum=min(covered_counts, default=None),
+                covered_maximum=max(covered_counts, default=None),
+                covered_mean=statistics.mean(covered_counts) if covered_counts else None,
                 highest_instructions_per_payload_gas=highest,
+                highest_ratio=(highest["spike_instructions"] / highest["payload_gas_used"])
+                if highest else None,
                 units="Spike minstret delta; gasUsed is a payload claim")
 
 

@@ -63,7 +63,9 @@ No isolated verification or finite-score success is claimed.
   2,110,584 KiB. All three main theorems print exactly the allowed standard
   three axioms. No sorry. This checks terminal clock cost and prefix transport,
   not a finite certificate.
-- check_submission.py passed (structural/policy check only).
+- check_submission.py completed: ok=true, infinity, 56,831 entries,
+  2,245,005,068 bytes, no errors. Structural/policy only, not proof verification.
+  An earlier premature pass entry was corrected while the check was pending.
 - Preprocessed source and AST hashes differ from BASELINE.json. The current
   ROM is 950,344 bytes, not historical 950,336. Actual startup pointer and
   Bookkeeping agree at 0xa0029048; inferred bootstrap RV count is 23,132.
@@ -75,3 +77,28 @@ No isolated verification or finite-score success is claimed.
 
 GNU time RSS figures above are the maximum individual child/process RSS, not
 aggregate parallel process memory. Total-RAM snapshots are separate observations.
+
+## Fresh executable and measurements
+
+- Compiler six-slot continuation succeeded: 2,150 jobs, 8m12.99s, maximum
+  child RSS 2,474,792 KiB. Earlier two-slot build time is additional and not
+  included in this continuation's time file.
+- Guest and library harness built successfully with limited Lake wrappers:
+  guest 21.87s / 901,228 KiB max child RSS; harness 21.72s / 867,404 KiB.
+- Guest ELF hash af59ed6b844728699f84d400c4195e3765e1829465ae1fb6b6149fa869a1215e.
+  Extracted ROM equals the committed literals byte-for-byte. BASELINE.json's
+  historical ELF does not match. No challenge source or fixed proof files changed.
+- Full EEST run launched with 14 workers through disk/resource guard.
+  This uses the same eest-run command as eest-spike-full.sh after explicit
+  fixture fetching/conversion and build. Full results pending.
+- All 16 whole-guest synthetic runs and 33 library diagnostic runs exited zero.
+  Measurements and caveats are in PHASE1-REPORT.md and tracked small JSON summaries.
+  No synthetic conformance or formal-evaluator execution is claimed.
+- Measured bootstrap 23,132. Normal vs fine stepping differs by one final WFI
+  retirement; repeated checks establish 48,245 vs 48,244 for empty input.
+- Started a stronger encoder pilot, SkipCost: copy the pinned Skip proof locally
+  and expose its actual assertion witness zero, meaning one native transition.
+  Its build is pending. No sorry introduced.
+- New resource wrapper samples process-group RSS (shared pages counted multiple
+  times), host MemAvailable and filesystem use every five seconds and stops
+  its process group above 85% disk. Smoke check passed.

@@ -86,3 +86,34 @@ The source evaluator is noncomputable (predicate-valued domains and classical
 decisions); target Evaluate.lean is explicitly noncomputable too. Direct #eval
 is therefore unavailable. A measured executable mirror would require a proved
 agreement theorem before its counts could certify this evaluator.
+
+## Feasibility and effort estimates
+
+Planning estimates, not completion promises:
+
+- Clock bookkeeping and terminal dispatch pilot: completed in this session.
+- Explicit bootstrap / encoder cost: 17 encoder constructor groups, with
+  state-validity and interference assertions. A useful single instruction
+  pilot is days of proof work; the full bounded encoder is roughly 1–2 weeks.
+- Crep→Loop extra clocks and Word→Stack: recursive simulations with multiple
+  call/handler branches; roughly 1–3 weeks each, subject to discovering reusable
+  quantitative lemmas. Pan→Crep and Loop→Word need not be reproved for extra fuel.
+- Stack transformations, flattening and Lab→target: roughly 2–4 weeks combined,
+  provided instruction cost bounds are available. Word optimizer/allocator
+  clock changes require a separate audit rather than assuming they are free.
+- Guest potential/source bound: roughly 2–6+ weeks, with the highest uncertainty.
+  Worst-case table probes, rollback, refunds, malformed offsets and independent
+  system gas need formal invariants. Measurements do not discharge these.
+- Final composition: small once quantitative hypotheses exist, but a full
+  certificate check may exceed this machine's permitted build resources.
+
+No short proof follows from the existing existential clock witnesses: their
+quantifiers supply no numerical upper bound. Finite effective-input enumeration
+also gives no useful bound below Yukon's limit. Retain these as explanatory
+lemmas, not a route to claiming success. Direct target cost summaries remain
+a possible alternative, but need machine-state invariants and coverage proofs.
+
+Current checked TargetClock statements are concrete Lean, not pseudocode; all
+three main theorem axiom lists are the permitted standard three. The next
+nontrivial encoder pilot must retain the assertion witness n explicitly
+(EncoderStepState currently discards it into an existential n+1).

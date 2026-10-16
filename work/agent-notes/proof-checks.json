@@ -38,12 +38,148 @@
       "sha256": "65d8adba99e99f3d1d3d951d0c4b07d53a8a5613872d787b75891f07a8add1f9"
     },
     {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/AddCarry.lean",
+      "sha256": "7609990d4431b849fd0077665c3410fe1003710874ddc2b6f81730edd3aa91a1"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/AddOverflow.lean",
+      "sha256": "cd69a3f1e243d98c381a60caf27b59e94c2a6502fad17c4899d1221213bd2d23"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Call/Far.lean",
+      "sha256": "bf910db7f72bc0301275add4d21ac4081e15efbb19a6b62bec3b01171fcff027"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Call/Near.lean",
+      "sha256": "003a019bcfcd3f037c49976c2706f8326567feea0f628bebe94330aa625eeb80"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Call.lean",
+      "sha256": "a5a00ebe85a31a63fde5b5050cd6ad4183636a4774f270d72e22fb1ed7495e97"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Div.lean",
+      "sha256": "c0d5fb6e2e9c157a965621c07c655747d460dac85255005f824d724df0340e11"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Jump/Far.lean",
+      "sha256": "8dab2f340f369b88e3c3494a82b7306cc96fb481b2d0b0e3d0184d98c5b3a5fc"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Jump/Near.lean",
+      "sha256": "e58ad8331139ce60795f4a36aea96d19aceac5aaa51ba5362c48d7479f83ada4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Jump.lean",
+      "sha256": "3312232554eec043e172a6dbe9684407f19ec561578cf6146f9c120578271795"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp/FarImm.lean",
+      "sha256": "158f5e538aeb575ec8f60435c566e1d3740ed83d16f24fe335f0987f00380f4a"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp/FarReg.lean",
+      "sha256": "27eddb222a3506391528f19937fc90c033952b834cd5e68d1565ee75e5f61cf5"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp/FarRegTest.lean",
+      "sha256": "437471ed74c166b2b846a2cb35bb76c179e68485295c69cb95a5c1fb1fdfe1c4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp/Near.lean",
+      "sha256": "2e70608cc3f2b2b41646289e1603fb92cb63aeb2489dcf944499c7acc80f56ae"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp/NearImm.lean",
+      "sha256": "6f95cbdbd7696c3106ba43566d7851b4dd3359fb8dbc9522f923e1d92009b8bd"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp/NearReg.lean",
+      "sha256": "c6a38fb9fc7248917b0425299703a746201f85487714963e8c5d104ebb2bc821"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp/NearRegTest.lean",
+      "sha256": "98d82f3ae2e834f774821a41a362ce011ca7ba7f40e37aafb761b752af912ae2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp.lean",
+      "sha256": "2d303b9befa3ab32e9cd83a91d9ee04f56cf6eab7464222b471f42409c3e9409"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpReg.lean",
+      "sha256": "8c69371bc586556f17c7a30742ba09b50a2418102da056fcddd7c71220d0f1b9"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/LongMul.lean",
+      "sha256": "a6144e5a66a611c05c4101902538a0641a0f065788278d45d8102e280fe543a3"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Rejected.lean",
+      "sha256": "7230287f3f84d61143f27440b774127dd7deb35c297cdba4b3e79c419146e7b2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Shift.lean",
+      "sha256": "b2914d27af3a3c9370a6acc71197e6d29164da735b4321c5f40de2cba1c2806e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/ShiftAsrImmediate.lean",
+      "sha256": "6ceebf544952679d295b12ff26f9df0bad6a0e2ba31deee2ee26cda821b19818"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/ShiftAsrRegister.lean",
+      "sha256": "9ce82f9977e5ca2b9bae076c05cd2549821f871a3170dcbfd70d4f500f9dd11a"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/ShiftLslImmediate.lean",
+      "sha256": "a44737120c3b9869f2792fb81801aa4826bf1d04a702bfec7524975088ef5778"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/ShiftLslRegister.lean",
+      "sha256": "3fcb53380ffe551d9856e4b866cd8d2db382dc332c2c7c800f2aa250a1a8f753"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/ShiftLsrImmediate.lean",
+      "sha256": "c21d40c04989c6525d4694d71ce7548f2ee591391056f3ab097bf47d960d798e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/ShiftLsrRegister.lean",
+      "sha256": "e2ba7cf06bbf9ba0e2fa551fcae0b764d95086525a99e3c161afcb4aad4289e7"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/ShiftRorImmediate.lean",
+      "sha256": "08f2cb766f1ab6c58d48eae9f270a7e3cdd0715d77fe6f21c2759100d281326e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/ShiftRorRegister.lean",
+      "sha256": "a67fa7fbe6ab15235791c2756d7cdba1c99cf04af6bdb124d478f9940621af45"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/SubOverflow.lean",
+      "sha256": "72b094ab6a6b8d4c5332a9b9958f77d18ce720b61421b51fd3743545807e5baa"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder.lean",
+      "sha256": "190bfbe4d6139815d104aa2ee3164e8247bfa66693958ce95123c7e5fbbbccac"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedStep.lean",
+      "sha256": "32698a5215b02024c46ce2b30a827be25aa439914429597db60657109c53c1a6"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedTrace.lean",
+      "sha256": "a44a06393ee045b24875428ef6511c35d490de37b438aec767f4209acb4d14cb"
+    },
+    {
       "path": "submission/InitECandidate/Solver/ClockBounds.lean",
       "sha256": "c2d82271fc43b23bc27a8f963fa4854778960426f17894120e0c956a42743903"
     },
     {
       "path": "submission/InitECandidate/Solver/ConstCost.lean",
       "sha256": "b6f3e8107458d21081ce4c332b99a096e5f85676ab7fefc7c0429729c0d533d9"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/EncoderBound.lean",
+      "sha256": "e5e29b4912092784a4b27feba1e5d99541a2e9c5161d375f4faf6ca040565778"
     },
     {
       "path": "submission/InitECandidate/Solver/EncoderClock.lean",
@@ -58,12 +194,20 @@
       "sha256": "8f5040de3fe34e3ec401a9de96bd49dffb4d85372a119cb5775c308a0c328b14"
     },
     {
+      "path": "submission/InitECandidate/Solver/LabCost.lean",
+      "sha256": "1a6b42e67fa8c76f0eb5cae49c5251c335dd4ab029b829d91162849449636b82"
+    },
+    {
       "path": "submission/InitECandidate/Solver/LocCost.lean",
       "sha256": "71cd14c1a48f301e11db800e7e27730967e9b55293b6e3752d5b40564e3a7d19"
     },
     {
       "path": "submission/InitECandidate/Solver/MemoryCost.lean",
       "sha256": "8432933b0d1c9678af8b2bc8ee7ebcdd30706bc226b5ce36a74f1dac1bad44f2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/NopCost.lean",
+      "sha256": "dedba4453d485e607803c6294f0c4bc90f49a7eccb413f798b933f1aa1e03d9e"
     },
     {
       "path": "submission/InitECandidate/Solver/RiscVEvaluatorCosts.lean",
@@ -143,7 +287,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.SkipCost.skip_encoder_exact",
@@ -152,7 +296,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.SkipCost.skip_state_one",
@@ -161,7 +305,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.MemoryCost.memory_encoder_exact",
@@ -170,7 +314,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.LocCost.loc_encoder_exact",
@@ -179,7 +323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.RiscVEvaluatorCosts.from_encoder",
@@ -188,7 +332,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.RiscVEvaluatorCosts.skip_one",
@@ -197,7 +341,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.RiscVEvaluatorCosts.memory_one",
@@ -206,7 +350,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.RiscVEvaluatorCosts.loc_two",
@@ -215,7 +359,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.WeightedTrace.evaluator",
@@ -224,14 +368,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.WeightedTrace.total_le",
       "axioms": [
         "propext"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.ConstCost.encoder_exact",
@@ -240,7 +384,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.ConstCost.length_le_six",
@@ -249,7 +393,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.BinopRegisterCost.encoder_exact",
@@ -258,7 +402,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.BinopImmediateCost.encoder_exact",
@@ -267,7 +411,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.ShiftLslImmediateCost.encoder_exact",
@@ -276,7 +420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpNearCost.encoder_exact",
@@ -285,7 +429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpCmpNearCost.encoder_exact",
@@ -294,7 +438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.SupportedCosts.encoder",
@@ -303,7 +447,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.SupportedCosts.cost_le_six",
@@ -312,7 +456,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.SupportedCosts.trace_bound",
@@ -321,7 +465,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-startup.log"
+      "successful_log": "lab-cost-audit.log"
     },
     {
       "theorem": "InitECandidate.Solver.BootstrapCost.bytes_match",
@@ -490,6 +634,420 @@
         "Quot.sound"
       ],
       "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_shiftLslImmediate",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_addcarry",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_shiftLsrImmediate",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_div",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_shiftAsrImmediate",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_shiftLslRegister",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_shiftAsrRegister",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_shiftRorRegister",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_shiftRorImmediate",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_shiftLsrRegister",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_longdiv",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_addoverflow",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_suboverflow",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.Jump.near_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.near_immediate_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.near_register_test_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.far_register_false_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.far_register_true_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.far_register_simple_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_shift",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_jumpReg",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.far_register_test_false_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.far_register_test_true_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.far_register_test_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_longmul",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.near_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.Call.near_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.Jump.far_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.Call.far_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_call",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.far_immediate_false_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.far_immediate_true_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.far_immediate_case",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_jump",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder_bounded_jumpCmp",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.encoder",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.EncoderBound.step",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.NopCost.evaluateNopSteps",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.NopCost.asmStepImpEvaluateStepNop",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedStep.evaluator",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedStep.contract",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedTrace.evaluator",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.LabCost.stepOfLine",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.LabCost.stepNopOfLineMem",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.LabCost.stepNopOfLine",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BoundedEncoder.JumpCmp.near_reg_simple",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "lab-cost-audit.log"
     }
   ]
 }

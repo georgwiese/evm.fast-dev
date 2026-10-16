@@ -1,6 +1,6 @@
 # Phase 2: finite clock proof plan
 
-Status: Phase 1 measurements complete. Dependencies installed; 22 cost/bookkeeping
+Status: Phase 1 measurements complete. Dependencies installed; 58 cost/bookkeeping
 modules checked. No finite certificate yet; the submission still claims infinity.
 
 ## Strategies and sequence
@@ -62,7 +62,7 @@ Paths below are relative to `.lake/packages/flapjack/Flapjack/`.
 | Loop → Word | `RelationsExact` equates clocks; `CompileCorrect.PropertyAt` evaluates at the original target state | No extra clock in this simulation, but generated straight-line work still costs target transitions later. |
 | Word → Stack | `CompCorrect.Seq.Simulation`: exists `extraClock`, run at `target.clock + extraClock`; Seq sums the two extras | Bound call setup, spills, loops, allocation and each constructor's witness. |
 | Stack → Lab | `FlattenCorrect.Statement.FlattenConcl`: exists `ck`, run or shift at `t1.clock + ck` | Must include Stack lowering/stack removal before flattening; source clock alone omits straight-line work. |
-| Lab → RISC-V | `CompileCorrect.Common.CompileCorrectFor`: exists `k`, run target at `s1.clock + k` | `compileCorrect_step` uses `k' + l - 1`; bound encoder witness `l` for each instruction. |
+| Lab → RISC-V | `CompileCorrect.Common.CompileCorrectFor`: exists `k`, run target at `s1.clock + k` | Encoder witness and NOP-padded line bounds now checked in Solver. The full recursive simulation still hides its total offset. |
 | Bootstrap | `BootstrapAsmComposition.checked_trace_evaluator`: exists count and lower bound `code.length ≤ count` | Lower bound does not yield the needed upper bound. Each encoded step witness must be strengthened. |
 
 Exact inspected entry files: Pancake/Proofs/PanToCrep/PcCompileCorrect.lean,
@@ -93,13 +93,11 @@ agreement theorem before its counts could certify this evaluator.
 Planning estimates, not completion promises:
 
 - Clock bookkeeping and terminal dispatch pilot: completed in this session.
-- Explicit bootstrap / encoder cost: 17 encoder constructor groups, with
-  state-validity and interference assertions. Skip, Memory and Loc were specialized successfully in this session, so
-  the earlier days-per-pilot estimate was too pessimistic. Their existing proofs
-  construct explicit small witnesses; retaining them is a tractable local edit.
-  Bootstrap branches, variable-width constants and composition are now checked,
-  including the actual initial-state execution. Full encoder coverage remains;
-  the earlier 1–2 week estimate is subject to further checking.
+- Explicit bootstrap / encoder cost: complete. All 17 constructor groups have
+  a checked ceiling of 16 native transitions, retaining state validity,
+  interference and both assertion predicates. The earlier 1–2 week estimate
+  was too pessimistic: systematic witness retention built 30 component modules
+  and the aggregate theorem in 1m06s after dependencies were available.
 - Crep→Loop extra clocks and Word→Stack: recursive simulations with multiple
   call/handler branches; roughly 1–3 weeks each, subject to discovering reusable
   quantitative lemmas. Pan→Crep and Loop→Word need not be reproved for extra fuel.
@@ -141,7 +139,8 @@ RiscVEvaluatorCosts checks the three corresponding exact evaluator prefixes.
    BootstrapStartup now discharges the actual initial-state checks and identifies
    installedAsm as the endpoint, for any submission with the baseline ROM,
    anchor, ordinary FFI count and nonwrapping MMIO offsets.
-4. Attempt a direct target cost potential for guest loops, alongside the source
+4. Complete Lab-to-target recursive cost transfer using the checked full encoder
+   and padded-line summaries. Then attempt a direct target cost potential for guest loops, alongside the source
    potential route. Prefer reusable summaries of library functions over a full
    quantitative reproof of all optimization passes if this avoids duplicated
    invariants. This is an approach choice, not a claim that such summaries exist.
@@ -206,8 +205,44 @@ This is a checked theorem, with no supplied execution/trace/guard premises.
 The small metadata equalities remain explicit parameters; this development
 does not import or rebuild baselineSubmission's full artifact closure.
 
-Next work must address the native guest body: extend quantitative encoder
-coverage to all used forms and prove bounded control-flow/library summaries,
-or build the source gas/input potential and quantitative compiler transfer.
-The bootstrap milestone does not supply either guest-wide bound. It does not
-prove a finite certificate; claim.json and Solution.lean remain unchanged.
+The next native-body layer is now partly checked: full encoder coverage and
+padded compiler lines, described below. Bounded control-flow/library summaries
+or the source gas/input potential plus quantitative compiler transfer remain
+necessary. No current theorem proves a finite certificate; claim.json and
+Solution.lean remain unchanged.
+
+## Complete encoder and Lab line bounds
+
+BoundedEncoder.encoder checks, for every HolAsm constructor and the original
+asmStep/targetStateRel premises:
+
+```lean
+∃ n, n + 1 ≤ 16 ∧ EncoderClock.EncoderAt riscvTarget s1 s2 ms i n
+```
+
+The ceiling is deliberately loose. Branch outcomes may choose different n;
+therefore BoundedTrace.evaluator composes existential per-state costs rather
+than assuming a fixed counter per instruction. A checked ordinary trace of m
+ASM operations yields a real evaluateTargetHOL prefix with m <= count <= 16*m,
+with the final state relation and every remaining clock preserved.
+
+EncoderBound.Contract/step make this interface polymorphic for compiler proofs;
+BoundedStep.contract supplies the actual RISC-V contract at bound=16.
+NopCost.evaluateNopSteps proves n NOPs cost at most bound*n.
+NopCost.asmStepImpEvaluateStepNop proves a non-call padded line costs at most
+bound*(bytes.length+1), retaining the original memory/frame/control premises.
+LabCost.stepOfLine, stepNopOfLineMem and stepNopOfLine lift those bounds through
+the existing compiler state relation and fetched-line encoding checks. They
+also preserve findNextInterference, needed by oracleTie_step.
+
+Remaining Lab-to-target work is concrete: strengthen CompileCorrectFor and
+compileCorrect_step, then the Asm/Control/Cbw/ShareMem/CallFfi cases, before
+assembling source-clock induction. Bound fetched target line sizes explicitly.
+The Install case can change target code and cannot silently reuse a fixed line
+ceiling; either prove a stable size invariant or prove installation is absent
+for the fixed guest. Neither obligation is currently discharged. FFI and cache
+dispatch need their own costs; they are not ordinary ASM trace steps.
+
+These lemmas remove a quantitative gap at the final compiler stage. They do
+not bound the guest's Lab clock from gas/input, nor the preceding passes' clock
+expansion. Those are still the dominant unfinished certificate obligations.

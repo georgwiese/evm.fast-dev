@@ -1,8 +1,10 @@
 # Status — update this section frequently
 
-**Checkpoint: 2026-10-16, branch `agent/baseline-steps`, proof commit `04603be4d`.**
+**Checkpoint: 2026-10-16, branch `agent/baseline-steps`, proof commit `04603be4d`; feasibility review completed after handoff commit `4e5596c18`.**
 **The goal is NOT complete. `claim.json` still says infinity. No finite K has been proved.**
-The user paused proof work to save credits. This document is a handoff, not authorization to restart expensive work. Resume proof development only when requested.
+**Review decision: REVISE before further bulk proof work.** The existing coarse cost method exceeds the score cap on a conservative witness-table budget. This is a failure of that proposed bound, **not a proof that the challenge or baseline is impossible**. A tighter table-work argument is the first spending gate for Sol.
+
+The user paused open-ended proof work to save credits, then authorized this bounded review and handoff update. The review ran no Lean builds or new Spike benchmarks. It does not restart the full proof campaign.
 
 Future agent: update this checklist after each meaningful result, failed feasibility test, change of approach, and before ending a work session. Keep it understandable without reading the rest of this file. For each newly completed item, give a short evidence pointer. Keep assumptions and verification limitations visible. Do not estimate progress by counting generated files. The earlier “30%” was a low-confidence conversational estimate, not a project metric.
 
@@ -17,13 +19,15 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [x] Checked allocation at every initial clock, the real allocator call, its return continuation, and saved-state transfer. **Caller setup and the global invariants establishing their premises remain open.**
 - [x] Committed all proof work through `04603be4d`. The evidence index contains 3,834 module hashes and 5,898 printed theorem facts; these counts are not percentages. No proof build was left running at that checkpoint.
 
-## Next, before substantial additional proof work
+## Feasibility review completed; next spending gate
 
-- [ ] Perform the bounded feasibility review in Section 3. **Do not simply continue adding routine lemmas.**
-- [ ] Write explicit theorem interfaces connecting the exact challenge premises to a bounded execution of the fixed program. Identify every missing initial-state, code, oracle, invariant, and result relation.
-- [ ] Inventory all reachable work that user gas does not pay for; check malformed/oversized input, independent system gas, adversarial state/witness work, and error cleanup.
-- [ ] Produce a dimensionally correct numerical budget with justified maxima and explicit unknowns; show a credible route to **K < 9,007,199,254,740,985**. The old uniform-multiplier route is too loose to adopt without new evidence.
-- [ ] Run at most a few small feasibility pilots, targeting the largest uncertainty, and record a go/revise/no-go decision. No go decision has yet been earned.
+- [x] Rechecked all 3,834 indexed proof-source hashes: no mismatches. Claim remains infinity, worktree was clean at review start, and no proof build was running. This checks checkpoint integrity, not verification.
+- [x] Identified the exact Named Stack initial state and a route through existing compiler proof components. The interfaces in Section 3.R2 are **designs, not newly checked theorems**. Avoid redoing quantitative proofs of the earlier compiler passes.
+- [x] Audited the major work categories and found six independent system calls, two user gas counters, and unmetered witness-table construction before transaction/header validation. Several global bounds remain unknown; see Section 3.R3.
+- [x] Ran a cheap numerical pilot: the current basic-block accounting assigns 37 Work credits to one raw insertion probe body. At the existing conversion rates, a triangular probe allowance for 3,728,269 records costs **24,686,375,150,371,392**, already about **2.74 times the entire score cap**, before other work. Collision reachability is unproved; this diagnoses an overly loose upper bound. Evidence: [budget script](work/agent-notes/feasibility-budget.py), [results](work/agent-notes/feasibility-budget.json), Section 3.R1.
+- [ ] **Sol's first task:** resolve the witness-table budget in one bounded session using Section 3.R4. Return a justified improvement, a concrete obstacle, or an inconclusive result. Do not resume the allocator/memory-expansion sequence first.
+- [ ] If that gate passes, instantiate the thin compiler/entry interfaces and test one complete path. A numerical improvement alone is not a global feasibility result.
+- [ ] Close the remaining coverage/budget unknowns and establish a credible total **K < 9,007,199,254,740,985** before scaling implementation. **No overall go decision has been earned.**
 
 ## Remaining implementation and acceptance work
 
@@ -35,7 +39,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [ ] Refresh policy/transport checks for the final package. The last recorded incremental policy check predates the final six allocator modules; it is not a full verification.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 
-**Next action on resumption:** complete the feasibility review and report its uncertainties before spending another long run on local proofs. **Current principal risk:** substantial checked groundwork may still fail to compose into an affordable global bound.
+**Next action for Sol:** take the bounded assignment in Section 3.R4. **Current principal risk:** a generic quadratic collision bound combined with coarse compiler cost factors is too expensive; even a tighter table bound will leave substantial global invariant and composition work. Read the top checklist after every meaningful update.
 
 ---
 
@@ -78,7 +82,123 @@ Change the progress measure to **closed end-to-end obligations**. Before startin
 
 If these answers are unclear, work on the interfaces or feasibility calculation first. Do not restart completed static scans, generate more per-procedure bounds indiscriminately, or polish the cheapest successful path while leaving a required failure path unbounded.
 
-## 3. Cheap feasibility review: the first work to do
+## 3. Feasibility review and the next bounded assignment
+
+### R1. Completed review: decision and decisive arithmetic
+
+**Decision: REVISE.** Retain weighted Named Stack accounting as a possible framework, but do not scale the existing `basic → 4*Work → 24*LabClock` recipe across the whole guest. The simple uniform compiler-multiplier route also remains unsuitable. This review has identified a specific failed budget, not established an acceptable complete replacement budget.
+
+The inspected witness path is:
+
+```text
+main → decode_stateless_input → htr_new_payload_request → run_attempt
+     → decode/hash witness headers → nodedb_build(state) → nodedb_build(code)
+     → state_init → empty-transaction check → payload_header / block-size check
+     → block-hash/header validation → execute_block
+```
+
+See `guest/src/main.pnk`, `guest/src/fork.pnk:923`, `guest/src/mpt.pnk:214`, and `guest/src/lib/htab.pnk:269`. These readable files guide the analysis; the final proof must concern the fixed AST/compiled artifacts. `nodedb_build` chooses a power-of-two capacity at least `2*n+2` and calls `htab_set` on each preimage's Keccak hash. Each absent-key insertion scans twice: `htab_find_slot`, then `htab_insert_raw`. This specific constructor preallocates enough capacity to avoid growth if its invariants hold; generic dynamic tables elsewhere do grow. Do not charge every witness insertion a resize, and do not assume hash probes are constant-time.
+
+There is no schema limit smaller than the input envelope on state/code witness counts. Four offset bytes per item give the loose count ceiling `floor(B/4)`, conditional on proving the decoder/input connection. This is **not** a distinct-key ceiling that can be attained with empty items: identical empty preimages have identical keys. Keep item count, distinct keys, byte lengths, duplicate multiplicities and probe-chain lengths separate. The earlier measured 52-byte XOR-collision microbenchmark does not establish reachability of adversarial 32-byte *Keccak-derived* witness keys.
+
+The numerical pilot inspected the fixed `Named188` (`htab_insert_raw`) loop `NamedBody188_193 = .loop NamedBody188_192`. The body has 35 syntax nodes and 2 `ticks` under the existing definitions, so `Work.basic` prices it at 37 credits. The [small parser/arithmetic script](work/agent-notes/feasibility-budget.py) recomputes this and checks the stored source hashes. This result is source inspection and exact integer arithmetic, **not a newly kernel-checked loop theorem**. It counts the basic syntax, including branches and code after early control transfer; a path-sensitive bound can improve it.
+
+With the present `workPaid` and `padded_riscv` the extra-credit price is `37*4*24 = 3552` target steps per body. Consider the ordinary adversarial insertion allowance `P=N*(N-1)/2` occupied probes for **one** of the scans. The table below omits fixed headers in N, the other scan, final empty-slot checks, base clock, hashing, allocation, and the rest of the guest:
+
+| Hypothetical record envelope | N from B=134,217,712 | P | `3552*P` |
+|---|---:|---:|---:|
+| 4-byte offsets only; loose schema envelope | 33,554,428 | 562,949,802,426,378 | 1,999,597,698,218,494,656 |
+| 4-byte offset + 32-byte preimage; restricted scenario | 3,728,269 | 6,949,993,004,046 | 24,686,375,150,371,392 |
+| 4-byte offset + 64-byte preimage; restricted scenario | 1,973,789 | 1,947,920,521,366 | 6,919,013,691,892,032 |
+
+These are **conditional budget calculations**, not constructed inputs and not runtime lower bounds. In particular, the first row combines a very loose count envelope with a collision allowance without a joint realizability proof. The 36- and 68-byte rows are scenarios, not restrictions the challenge grants. Failing this upper-bound calculation means we must tighten a bound or change the approach; it does not show an input takes more than K. Even leaving room for ordinary fixed headers does not explain away the 36-byte row's factor of 2.74.
+
+Useful exact ceilings, before unresolved overhead:
+
+```text
+Kmax = 9,007,199,254,740,984
+floor((Kmax - 23,132) / 24) = 375,299,968,946,577 Lab clocks
+floor((Kmax - 23,132) / 96) = 93,824,992,236,644 Work credits
+```
+
+In the 36-byte scenario, the raw scan alone can afford at most about **13.5 Work credits per occupied probe**, versus the basic rule's 37, if it consumes the *entire* remaining score. The other scan and all other work still need room. In the loose 4-byte scenario, even one Work credit per probe would exceed the cap. Therefore merely shaving the 37-credit body is not a sufficient plan for all inputs. Joint size/distinctness/multiplicity bounds and/or much more precise target pricing are needed. No cryptographic randomness, collision resistance, or average-case complexity assumption is available as an axiom.
+
+### R2. Concrete compiler interfaces: plausible plumbing, still unproved
+
+The source-to-Named connection is not a missing compiler *theory*: the pinned dependency exposes the relevant components. It is missing as an instantiated theorem for this challenge. The intended accounting point is **the named state `s3`, entering procedure 0**, including initialization stubs. It is **not** the earlier Stack state returned as `fullMakeInit(...).1`, and not just `main` or the list of 826 ordinary procedures.
+
+Read these local dependency files in this order; all are under `.lake/packages/flapjack/Flapjack/`:
+
+1. `Compiler/Backend/StackToLab/Proofs/FullMakeInitSemantics.lean`: `s3`, `s2`, `stateRel_s3`, `locToPc_start`, `stageLab`, and `assemble`. `s3` is `MakeInit.makeInit` on `StackNames.compileHOL` of the removed/allocated/raw-call program. `assemble` contains the semantic equalities across raw-call, allocation and removal; `stageLab` contains the explicit `hnames` equality across renaming. Expose these intermediate equalities in a Solver theorem, preserving their hypotheses. Do not infer an intermediate execution by reversing the final machine correctness theorem.
+2. `Pancake/Proofs/PanToTarget/AssemblyWordToStack.lean`: `panToTargetWordChain`; `AssemblyLabChain.lean`: `panToTargetLabSemantics`; `AssemblyTopResource.lean`: `panToTargetInitStage` and `panToTargetLabSemanticsResource`. These expose the initial memory/code facts and the resource-limit extension. Reuse the baseline's actual stack-depth check to eliminate the allowed extra resource-limit behavior; source coverage alone does not remove a compiler-side resource-limit alternative.
+3. `Compiler/Backend/StackToLab/Proofs/FlattenSemantics.lean`: `stackRuns`, `stackEntryClass`, `stackSemIsWrapper`. They give an explicit way to extract a terminating entry-call execution from the Named behavior equality, preserving events. `stackEntryClass` handles final FFI, word halt and return to `.loc 1 0`.
+4. `Compiler/Backend/StackToLab/Proofs/FlattenCallCorrect.lean`: `callNoneInlCases` strips the clock tick of the artificial entry call; `flattenCallCorrect` shows how a return to the halt stub is handled. Its clock is existential, so adapt its assembly using `workPaid` rather than invoking it as a quantitative bound.
+
+Here are the proposed interfaces, with all outstanding obligations visible. They are **design signatures**, not compiled Lean declarations. Let `L(input, installed)` be the actual initial Lab state constructed in the existing compiler proof after the 23,132-step bootstrap. Let `S(input, installed)` be its `FullMakeInitSemantics.s3`, with the fixed code/configuration and empty dynamic-code oracle. `installed` must be the machine state produced by that bootstrap, not an arbitrary state. Both states use `Guest.HostMemory` as the FFI state type and `LabToTarget.Config` as the compiler configuration type.
+
+| Interface to implement | Required statement / explicit missing premises |
+|---|---|
+| **I1: Named behavior** | From exact covered source termination and actual bootstrap/installation facts, prove `StackSemEvaluate.semantics 0 S = .terminate outcome events`. Discharge fixed compilation equalities, all initialization assumptions, `mainFirst` transport, and stack/resource-limit side conditions. Then extract an entry execution and use `callNoneInlCases` to obtain the body at code lookup 0. |
+| **I2: Whole-entry budget** | For that actual body `p0`, prove `BlockBound p0 EntryPre (fun _ => True) W C` for every input under the challenge gas/source/coverage premises. A precise stable entry predicate is `EntryPre st := {st with clock := 0} = {S with clock := 0}`. Prove the global invariant internally from this entry; do not leave it as an extra certificate assumption. A stronger theorem covering uncovered inputs is optional. |
+| **I3: Bounded replay** | Apply `BlockBound.boundedExecution` to I1's body execution: at body clock `C+1`, retain the same result and final FFI/events, and obtain `Work p0 ... W`. Preserve the initial state except clock; prove stability of `EntryPre`. `C` is consumed body clock, not source Pancake clock. |
+| **I4: Named → Lab** | Use `stateRel_s3`, `locToPc_start`, and `StateRel.stateRelClock` to pair the reclocked entry state with L. `FlattenHyps` additionally needs the actual run, non-error result, calling convention, installed flattened body and valid labels; `relCode` supplies the body-specific installation/convention facts when the relation holds. Apply `workPaid`. Handle the `.result (.loc 1 0)` case with a separately budgeted halt-stub continuation; direct `.finalFFI` and word-halt cases have terminal conclusions already. |
+| **I5: Lab → actual machine** | Supply `oracleTie` and the full Lab/ASM/machine `stateRel` for the actual post-bootstrap machine, padded code and labels, at each required Lab clock. `padded_riscv` gives at most 24 times the bounded Lab clock. The logical Lab source code need not literally equal the padded target program: preserve the relation that connects them. Compose using the quantified clock shift in `BootstrapStartup.evaluator`/`TargetClock.bounded_prefix_halt`. |
+| **I6: Certificate** | Carry exact terminal outcome/events or an explicitly proved matching relation through I1–I5, then use `matchingResult_refl`/oracle replay as appropriate. Change only K in the baseline submission initially, prove admission and configuration/initial-state identities, and use the same literal in the certificate and claim. |
+
+For a whole-body bound, a conservative **proposed** arithmetic interface is
+
+```text
+LabBudget ≤ C + 1 + 4*W + H
+K ≤ 23,132 + 24*(C + 1 + 4*W + H)
+```
+
+Here H is the as-yet-uninstantiated extra Lab budget for the return/halt-stub continuation and any remaining entry assembly. The procedure-0 body bound must already include compiler initialization, guest global initialization and the whole guest. H must not hide another execution of those routines. This expression has not been checked as a complete composition theorem. Match the entry-call `k-1` convention explicitly before choosing H. The previous cost factors 256, 35 and 2 are **not multiplied in again** when W and C measure the final Named program.
+
+Assessment: these interfaces are coherent enough to justify a *small* composition pilot after the numerical gate. They are not grounds for claiming the source-to-Named bridge is done. Extracting the precise equalities from `assemble` is substantially better scoped than re-proving the whole compiler quantitatively.
+
+### R3. First-pass work inventory and useful reductions
+
+This is a source-level coverage audit, not an exhaustive loop proof. All rows need transfer to the fixed AST/Named execution and all word arithmetic needs range/no-wrap facts.
+
+| Work family | Concrete finding / possible resource | Missing argument |
+|---|---|---|
+| Input copy and malformed input | `input_blob` checks the loaded 64-bit length against 134,217,712 before copying and calls `trap_with(8)` on excess. The host length is `BitVec.ofNat 64 input.length`. | Prove the framed-length/read relation. Lists of length ≥2^64 can wrap to a small length; do not claim every oversized mathematical list traps. Model the copied prefix and padding, including at most seven bytes read beyond the effective length. |
+| Declared gas | Both first offsets are checked for equality to fixed sizes: 16 at the top container, 44 at NewPayloadRequest. Thus any path reaching a successful payload decode reads gas at blob position **474 = 2+16+44+412**. `declaredGasLimit_of_decode` already relates the pure mirror to the reader. | Prove the actual guest checks/loads imply the same bytes and that the gas field lies within the effective copied length. This narrower load/guard proof may be cheaper than full decoder equivalence. No mismatch was established in this review. |
+| SSZ/payload hashing and witness headers | Variable lists have four-byte offset entries; withdrawals use 44 bytes; witness headers have count ≤256 and each ≤1024 bytes. Payload hashing happens before later block validation. | Aggregate bytes and item visits across hashing/tree construction, temporary allocation and early exceptions. Do not apply the later 8MiB RLP block check to earlier decoding/hashing or to witness data. |
+| Witness tables | Two `nodedb_build` calls precede empty-transaction and block-hash checks; item lengths capped at 1024 for nodes, 65536 for code, but item count is not gas-metered. Capacity is based on *all* items, including duplicates. | Joint count/distinctness/probe/byte bounds; cost of **both** scans; later lookups; table invariants and allocation. This is the first numerical blocker. |
+| User execution gas | `check_transaction` checks remaining regular and state budgets separately against the same block limit. `process_transaction` accounts regular gas before refund and state usage separately. | Global range/conservation invariant for both counters; nested forwarding, state-gas spill/refund and rollback. A local `charge_gas` lemma alone is insufficient, and a blanket 5/4 refund multiplier is not derived for this implementation. |
+| System execution | `execute_block` has two unchecked calls; `process_general_purpose_requests` has four checked calls. Each uses 30M regular gas and an initial `16*97920` state reservoir. Total initial allowances: 180M and 9,400,320. | Prove those are the only invocations on this path, and account for reservoirs/credits without treating refundable state gas as a monotone counter. These numbers are not yet a total executed-work bound. |
+| EVM dispatch, calls, creation, precompiles | Continuing instruction cycles need gas/rank arguments; calls can rescan code and merge child access sets. Oracle crypto internals do not cost target instructions; guest-side crypto and marshaling do. | Aggregate opcode/call counts, byte lengths and precompile work, including zero-charge exits and exceptional paths. Bound the sum of copied/scanned/cleared bytes, not arena size times every call. |
+| Trie and state processing | Witness decoding uses explicit traversal stacks. The source comment says reference-side cycle guards are not modeled; do not assume a tree or cryptographic acyclicity. Persistent node allocation may provide a rank on continuing expansion. | Handle repeated references, malformed/cyclic graphs, lookups and later root recomputation. Excluded OOM outcomes do not justify omitting costly covered runs just below exhaustion. Reused frame/scratch memory does not bound cumulative work by physical arena size. |
+| Withdrawals, journals and BAL | Withdrawals are unmetered by user gas. BAL sorting is merge sort in `sort_elems`, but other updates/removals, table scans and per-item encoding remain. | Stage-sensitive size bounds and aggregate journal/state/BAL work; bound deletion/back-shift and repeated scans explicitly. |
+| Output and cleanup | Rejects need matching covered nonacceptance; accepting runs need all output bytes. Normal output is serialized by the fixed main routine. | Cost and result contracts for every covered handler/unwind path; exclude only outcomes excluded by `coveredOutcome`. |
+
+The challenge gas reader is not currently the most suspicious obstruction: the fixed first-offset checks suggest a fairly direct successful-decode connection. The dominant unresolved invariant is **aggregate adversarial table/trie/state work plus gas conservation**, rather than the final memory-expansion allocator bridge.
+
+### R4. Sol's first bounded assignment and stop conditions
+
+Give Sol this assignment together with the whole file:
+
+> Read the top checklist and Sections 3.R1–R4. Work only on the witness-table feasibility gate first. In one focused session (suggested cap: 60 minutes), derive a source-level joint bound in input bytes B, number of records N, distinct hashes D and multiplicities for construction and subsequent lookups. Do not assume cryptographic randomness, do not mistake the 52-byte-key microbenchmark for witness reachability, and include both scans in `htab_set`. Price the dominant scans using the actual Named/Lab/encoded loops, separating current proved prices from proposed tighter prices. Report exact arithmetic against the score cap and all remaining terms. Update this file's status and stop with go-to-next-pilot / revise / inconclusive. Do not finish more allocator lemmas, regenerate static compiler scans, or launch full builds.
+
+Suggested order within that assignment:
+
+1. Start with the reproduced [budget JSON](work/agent-notes/feasibility-budget.json), `Named185` (find), `Named188` (raw insertion), `Named190` (set) and the actual `memeq` callee from the [function index](work/agent-notes/guest-function-index.json). Recompute the **joint** dimension/probe allowance before building proofs. `N(N-1)/2` is a useful all-distinct collision allowance, not a bound for all repeated lookup patterns; duplicates can repeatedly query the end of a cluster.
+2. Determine whether path-sensitive Work plus a more precise Lab/encoder cost suffices on paper. The existing 24 factor includes worst-case encoder and padding allowances on every line. Investigate weighted costs for the hot loops while retaining the full simulation relation; do not substitute measured Spike counts into formal target costs. Lowering one factor does not solve an oversized probe count automatically.
+3. Give each unbounded remainder a symbol: at minimum input/SSZ work, witness build, later table/trie queries, gas-driven execution, system execution, cleanup/output, and startup. A proposal that allocates the whole cap to witness insertion has not passed. Recommend substantial headroom (for example a witness-build budget ≤ one quarter of Kmax); this is a planning gate, not a challenge rule.
+4. Only if the arithmetic has a credible route, check **one** useful Lean pilot: a hot-loop cost/rank contract with its exact entry invariant, or the semantic bridge exposing Named `s3`. Choose whichever is the largest remaining risk. First inspect dependency availability: `Named188.olean` was absent at review time even though the broad static checks were complete. A leaf import can trigger a large fixed-proof dependency build. If the required build is expensive, record that and stop rather than importing `Solution` or weakening the invariant.
+
+**Pass this gate** only with a defensible dominant-term budget and a named proof obligation for each remainder. It need not be a complete proof, but it must say which facts are proved, derived on paper, or still conjectured. **Inconclusive** is an acceptable bounded-session outcome. Do not label a failing upper bound a runtime counterexample. A no-go for the fixed-ROM route needs a stronger reason than this review establishes.
+
+If the table gate cannot be made credible, possible revisions are:
+
+- Keep the ROM, replace coarse Work/target prices with an execution-weighted cost proof and tighter aggregate data-structure bounds. This is the least disruptive candidate; the total must still fit without average-case assumptions.
+- Change the implementation to a map with provable worst-case lookup bounds. This requires new ROM under Solver and a semantic refinement proof back to the fixed source, including failures; existing baseline correctness cannot simply be reused. Do not start this larger project without a new feasibility estimate.
+- A watchdog that rejects after a budget can avoid bounding long **rejecting** executions only if every accepting source run is proved to finish before the cutoff and the modified code is proved equivalent before it. It does not remove the accepting-run/table problem, and arbitrarily capping witness counts can reject valid accepted inputs. Treat it as a separate proof design, not a shortcut already justified here.
+
+After a positive table gate, check I1–I5 on one complete path before increasing local-proof volume. Then complete the other rows in R3 and obtain an overall go decision. There is still no basis for promising a short path to the final certificate on a cheaper agent.
+
+### Review protocol for subsequent sessions
 
 Recommended initial spending limit: one focused review session, roughly 60–90 minutes, plus at most three small targeted builds if needed. This is a planning limit, not permission to run expensive jobs. If the review remains inconclusive, record exactly why; do not turn it silently into another multi-hour proof campaign.
 
@@ -166,17 +286,17 @@ Choose based on the coverage/budget table, not this list's order. Completing ano
 
 **Decision:** proceed only when the interfaces are coherent, no required work category is ignored, and the numerical route is credible. “Go” does not mean the proof is done. If inconclusive or no-go, write the evidence and propose a specific alternative; do not keep generating the same class of local facts. Do not change ROM or dependencies merely to make existing tests pass.
 
-Maintain this decision record when the review is performed:
+Maintain this decision record after each review (current review: Sections R1–R4 above):
 
 | Review item | Current answer | Evidence needed to change it |
 |---|---|---|
-| Decision | **Not evaluated end to end; no go decision yet** | Completed interfaces, coverage inventory, numerical budget, and targeted pilots |
-| Preferred route | Weighted Named Stack accounting is a candidate | Applicable source-to-Named entry connection and a manageable global invariant |
-| Uniform total Stack Work bound | Unknown | Potential proof/design covering all required work, with concrete worst-case dimensions |
+| Decision | **REVISE; coarse witness budget fails; overall feasibility unresolved** | Joint table-work budget, then instantiated interfaces and remaining coverage/budget rows |
+| Preferred route | Named `s3`, procedure 0, with tighter hot-path accounting if affordable | Existing semantic stages exposed as I1; a successful numerical gate and a manageable global invariant |
+| Uniform total Stack Work bound | Unknown; naive raw-probe pricing already too large | Joint data-structure bounds and/or improved execution-weighted costs; no average-case assumptions |
 | Uniform replay/base clock bound | Unknown | Whole-entry clock/rank argument, including failure/unwind paths |
-| Final composed target coefficient/additive terms | Not instantiated | Thin composition theorem retaining every state/oracle/result premise |
-| Numerical margin to score cap | Unknown | Exact total with no unbudgeted dominant term |
-| Next review result to report | Largest unresolved assumption and the cheapest way to test it | A specific lemma, code-path analysis, or diagnostic—not a general plan to “prove more” |
+| Final composed target coefficient/additive terms | Individual 4, 24 and 23,132 facts exist; `C+1+4W+H` assembly is unproved | I1–I5, including halt-stub H, actual code, state and oracle relations |
+| Numerical margin to score cap | No credible total; the 36-byte raw-scan scenario alone prices at 2.74 times Kmax | Exact revised total with all dominant terms budgeted |
+| Next review result to report | Witness construction and later-query budget, or a precise unresolved obstacle | Bounded Sol assignment in R4; do not proceed automatically to local allocation proofs |
 
 Do not treat finite memory, classical choice, or finiteness of a reduced input set as an escape hatch. Even if they give existence of a maximum, the task still needs a concrete bound below the score cap; the required finite-state/input reduction itself must also be proved.
 

@@ -1632,3 +1632,34 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   global arena/ABI initialization and preservation, state/input work and runtime
   unwind costs remain open. The new memory monotonicity contract reduces saved
   length aliasing obligations; it does not discharge these whole-guest premises.
+
+### Actual memory-expansion caller setup and final suffix checked
+
+- ExtendMemorySetup.frame_setup checks the actual 24-byte handler-frame setup
+  (NamedBody484_183). Normal completion preserves installed code, clock, domains,
+  argument/metadata/heap registers and the saved logical-length word, while
+  updating the stack pointer. Its explicit separation premise distinguishes
+  the saved slot from the handler-metadata store.
+- ExtendMemoryBlock checks actual capacity call block219 and suffix237 with a
+  meaningful postcondition carrying the saved logical-length bound into reg11.
+  Work bounds remain 17*clearMaximum+499 and +517, with consumed clock
+  clearMaximum+44 and +45. Clear length and saved logical length remain distinct.
+- ExtendMemoryLength checks the entire actual final suffix363, including its
+  pointer loads and base computation, using only installed memzero code and
+  reg11 <= maximum. Invalid pointer loads stop early. Work <=17*maximum+527,
+  consumed clock <=maximum+46; non-timeout executions replay at maximum+47
+  with the same result and complete final state apart from clock.
+- Successful guarded shared-four-slot builds: extend-memory-block-v3.log,
+  1399 jobs,15.64s,peak RSS2,151,724KiB; extend-memory-length.log,1398 jobs,
+  4.48s,peak RSS2,122,972KiB. All main axiom prints contain only permitted axioms.
+- Failed setup/block attempts (extend-memory-setup,extend-memory-block,
+  extend-memory-block-v2) were excluded from evidence. Fixed ambiguous getVarImm,
+  a Prop mistakenly compared to true, and domain/address hypotheses containing
+  +0 that simp normalized only in the goal. No explicit proof holes remain.
+- Incremental policy passed; all3822 indexed source hashes match;5870 printed
+  facts. Disk57%,126GiB free. Claim remains infinity. No full verifier/audit,
+  outside-server contact, push, PR or Yukon submission was performed.
+- Still open: earlier caller saves/allocator-return premises, zero/no-growth
+  branch joins and complete extend_memory; global ABI/arena initialization and
+  preservation, gas-paid total work, input/state work and runtime unwind paths;
+  whole-program compiler composition and the finite certificate.

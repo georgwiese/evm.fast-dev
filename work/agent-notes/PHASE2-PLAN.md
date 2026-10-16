@@ -1132,3 +1132,19 @@ separately. The current memory summary is an unsigned upper-bound property,
 not exact memory/frame correctness. Global ABI/arena initialization, zero-length
 and error/unwind paths, nested release/transfer, gas payment and total state/input
 processing remain essential obligations for a finite K below the score cap.
+
+### Handler setup and final logical-extension suffix checked
+
+The actual capacity-clearing handler setup now transfers the bounded saved
+logical length across its marker, handler-frame reservation, memzero call,
+return continuation and capacity store (ExtendMemorySetup/ExtendMemoryBlock).
+The normal postcondition supplies the reg11 bound needed by the final suffix.
+ExtendMemoryLength covers actual suffix363, including its pointer lookup and
+address computation, with Work17*M+527 and bounded replay at M+47. Failed
+pointer reads stop early; no valid-pointer premise is needed for this cost fact.
+
+Next establish the saved-length and clear-length premises from the actual
+allocator return and earlier saves, then join growth/no-growth/zero-length
+paths. These local bounds remain conditional on installed callee code and
+length bounds, and do not yet supply the whole-program gas/input invariant or
+a target-evaluator certificate. The claim remains infinity.

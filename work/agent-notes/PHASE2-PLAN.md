@@ -2,7 +2,7 @@
 
 Status: Phase 1 measurements, bounded Lab-to-RISC-V simulation, quantitative
 Stack flattening, StackAlloc, restricted StackRemove, full StackRawCall and
-full Word-to-Stack clock bounds are checked. Fixed-layout/code checks and whole-guest
+full Word-to-Stack and Crep-to-Loop clock bounds are checked. Fixed-layout/code checks and whole-guest
 initialization remain in progress. Earlier compiler passes and the guest-wide
 source potential remain unfinished. No finite certificate yet; the submission
 still claims infinity.
@@ -730,3 +730,17 @@ condition and up to three administrative cuts per source decrement.
 a semantic wrapper recovers its existing existential overhead by comparing
 endpoint clocks. Full Call and evaluate-induction assembly are the next gate.
 The fixed Crep code ceiling and initial state relations remain separate tasks.
+
+
+### Full Crep-to-Loop simulation completed
+
+`CrepToLoopBound.compileCorrect` now proves the proposed Simulation for every
+program and source state, given CodeSafe and the program ceiling. All nineteen
+constructors are assembled from actual guarded evaluator induction. Call uses
+its source decrement to pay both callee and handler ceilings plus three cuts;
+While pays its condition/body and telescopes recursive iterations. The leaf
+wrapper reuses original semantics and independently bounds compiled clock charge.
+Checked with 200 jobs in `creploop-assembly-v2.log`, permitted axioms only.
+Next gate: actual compileProgHOLExact entry, including crepSimpMapcsHOL; then
+certify the fixed simplified Crep code ceiling and compose with earlier/later
+passes. The guest-wide source potential remains an independent major obligation.

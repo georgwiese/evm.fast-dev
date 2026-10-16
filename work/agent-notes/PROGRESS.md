@@ -1562,3 +1562,73 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   True as their normal postcondition: they do not yet establish frame memory,
   saved-register recovery, exact EV_MEM_LEN/CAP updates or preservation through
   nested calls. Global gas, input/state processing and all unwind paths remain.
+
+### Complete memzero memory effect and first-call state transfer checked
+
+- Previous goal turn made checked progress (cffc8228d). This turn strengthens
+  the actual callee/caller state contracts needed for whole memory-expansion
+  composition; it does not complete the finite certificate.
+- LoopFrame lifts any clock-independent state observation through an actual
+  loop on non-timeout exits. LocalFrame adds a structural register/code check
+  including loops, word stores and byte stores. BasicFrame's primitive proof
+  is now public and supports store8. MemzeroFrame applies this to actual
+  Named78.2: registers1,11,24,25,26 and code are preserved on every non-timeout
+  exit, including errors. Entered-register facts include actual call link setup.
+- ZeroMemory.Below says every existing word remains a word with no larger
+  unsigned value. Proved reflexivity, transitivity, saved-bound transfer, whole
+  word zero updates and zero-byte stores for either endianness. ZeroProgram and
+  ZeroStoreProgram lift these facts through actual sequences, branches, loops,
+  read-only leaves and literal-zero/store pairs, including failed operations
+  and exhausted clocks. These are source-evaluator theorems, not assumed memory
+  specifications or target-execution premises.
+- MemzeroMemory.clears now covers the COMPLETE actual Named78.2 with no initial
+  register, alignment, length, domain or address-separation premise. Every
+  existing word remains a word with unsigned value <= its initial value, for
+  every execution (including timeouts/errors). The structural proof checks all
+  14 actual zero/store pairs: four quad words, one aligned word, eight unaligned
+  bytes and one tail byte, plus all surrounding control flow. Reproduce with
+  python3 work/agent-notes/generate-memzero-memory.py. The generator is untrusted
+  scaffolding; Lean checks each application against the immutable Named78 DAG.
+- MemzeroMemory.saved_length consequently preserves a numeric upper bound on
+  any saved word even if zeroing overlaps that slot. This is useful for cost
+  accounting; it does not assert exact memory equality or correct application
+  values after overlap.
+- ExtendMemoryRestore.capacity_restore proves the actual return continuation
+  NamedBody484_202 restores a bounded register11 from its saved slot, code,
+  stack+24 and metadata register25 on normal completion. It requires the saved
+  slot differ from the handler-metadata store; no memory-domain success premise
+  is required because a failed load/store cannot complete normally.
+- capacity_call_saved_length combines that continuation with the actual first
+  memzero call214, real link setup, no-exception result, protected-register
+  proof and whole-body memory effect. Normal completion carries the saved
+  logical-extension bound through arbitrary overlapping zero writes. The
+  cleared-capacity length and separately saved logical length are distinct.
+- ExtendMemoryTransfer.capacity_call_bound combines cost17*clearMaximum+465,
+  clockclearMaximum+44 with the new meaningful postcondition: installed
+  memzero code, restored stack/metadata, and register11 <= savedMaximum.
+  capacity_tail_bound proves the actual following EV_MEM_CAP store block236
+  preserves this postcondition on normal completion, with Work18/clock1.
+  The caller's earlier allocator/setup and complete control-flow join remain.
+- Successful checks (all guarded shared-four-slot limited-lake builds):
+  zero-memory-frame-v2.log1352jobs5.29s,RSS2,131,208KiB,observedhost1.416GiB;
+  zero-store-program.log805jobs7.28s,RSS1,819,956KiB,observedhost1.299GiB;
+  memzero-memory.log1351jobs4.69s,RSS2,088,916KiB,observedhost1.117GiB;
+  extend-memory-restore-v3.log1395jobs11.35s,RSS2,136,020KiB,host1.613GiB;
+  final extend-memory-transfer.log1397jobs7.29s,RSS2,143,252KiB,host1.343GiB.
+  Host maxima are sampled observations, especially for the short builds.
+- Excluded failed attempts: local-frame/v2 (Bool/projection normalization and
+  eliminated variable names); memzero-frame and zero-memory-frame (reserved
+  identifier, List membership normalization and missing NeZero parameters);
+  zero-program (uninferred phantom C/F result parameters); extend-memory-restore
+  (tactics running after simplification closed failed-domain branches). All are
+  corrected in the successful dependency closure. No explicit proof holes.
+- Incremental policy passed. All3819 indexed module hashes matched,5863 printed
+  facts, all with permitted axioms. Disk57%,~126GiB free. No build is running.
+  Full verifier/audit, outside-server contact, push/PR/Yukon submission remain
+  unrun; claim.json remains infinity.
+- Next: establish beforeCall for the actual caller save/setup and allocator
+  continuation, propagate afterCall through the capacity branch, and combine
+  zero-length/no-growth paths with the final call suffix. Gas-paid total work,
+  global arena/ABI initialization and preservation, state/input work and runtime
+  unwind costs remain open. The new memory monotonicity contract reduces saved
+  length aliasing obligations; it does not discharge these whole-guest premises.

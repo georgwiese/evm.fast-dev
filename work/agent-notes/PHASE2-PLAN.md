@@ -1107,3 +1107,28 @@ that transfer against actual memzero memory effects and caller restore code,
 then connect the allocator guards, zero-length/no-growth paths and both suffixes.
 Do not treat passing call-site bounds as a proof of full memory expansion, gas
 payment, nested frame behavior or the final finite certificate.
+
+### Memzero effects now support caller invariant transfer
+
+The complete fixed memzero has a checked memory summary independent of initial
+registers, address/length/domain validity and alignment: every initial word
+remains a word with no larger unsigned value after any execution, including
+error and timeout. Structural proof checks each of its14literal-zero/store
+pairs and actual loops. Separate checked facts preserve return/length/stack/
+metadata/heap-base registers and code on non-timeout exits.
+
+This closes a useful part of the saved-state transfer: the actual first
+memzero call214 and return continuation202 restore a register11 bounded by the
+saved logical extension, even if zeroing overlaps that saved slot. The one
+remaining local separation premise is between that slot and the compiler's
+handler-metadata store. Restored stack/metadata and installed code are carried
+too. ExtendMemoryTransfer.capacity_call_bound combines this postcondition with
+the prior call cost; capacity_tail_bound preserves it through actual block236.
+
+Next prove beforeCall from the actual earlier save/setup and allocator return,
+then join the capacity-growth and no-growth branches into full extend_memory.
+The cleared-capacity bound and saved logical-extension bound must be tracked
+separately. The current memory summary is an unsigned upper-bound property,
+not exact memory/frame correctness. Global ABI/arena initialization, zero-length
+and error/unwind paths, nested release/transfer, gas payment and total state/input
+processing remain essential obligations for a finite K below the score cap.

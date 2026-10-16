@@ -28,3 +28,24 @@ No new `sorry` introduced. Existing submission still claims infinity.
 Outstanding: measurements, pass cost bounds, source gas/input clock bound,
 composition below the Yukon numeric limit, finite certificate and axiom checks.
 No isolated verification or finite-score success is claimed.
+
+## First checked pilot and fixture preparation
+
+- All 33,614 fixture inputs converted successfully with no selection cap.
+- `ClockBounds` built with the pinned Lean and limited Lake (one slot alongside
+  two compiler-build slots; observed total used RAM below 6 GiB). Build: 2.50 s,
+  maximum child RSS 827,812 KiB (`clock-bounds.time`). Initial attempt failed
+  because `prefix` is a Lean keyword; renamed to `prefixCost`. No sorry used.
+- `prefix_within` and `transport_within` have no axioms;
+  `finite_family_bound` uses only propext and Quot.sound. This is a bookkeeping
+  pilot, not a quantitative compiler theorem or finite certificate.
+- Added step/gas report tool; six framing/offset/count tests pass. Gas used is
+  explicitly marked as the payload claim, not measured EVM execution gas.
+- Generated 16 synthetic full-guest inputs, including malformed blobs up to
+  the arena boundary and zero-user-gas witness/withdrawal workloads. Not run yet.
+- Added TargetClock pilot for actual evaluator terminal dispatch and bounded
+  prefixes; build pending. No open sorry, but not yet typechecked.
+- Initial commit needed a Git author identity. Local commits use explicit
+  `Codex <codex@localhost>` command-local settings; global config unchanged.
+- gh fixture download failed for lack of authentication. Public HTTPS curl
+  fetched the same release asset (591 MiB), then extraction/conversion succeeded.

@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "scope": "Incremental import check of all Solver files using verifier/check_submission.py imports and allowed modules; whole-tree entry/size checks; fixed files unchanged since prior full policy pass",
+  "prior_full_policy": "logs/submission-policy.log",
+  "checked_files": [
+    "submission/InitECandidate/Solver/BinopImmediateCost.lean",
+    "submission/InitECandidate/Solver/BinopRegisterCost.lean",
+    "submission/InitECandidate/Solver/BootstrapCost.lean",
+    "submission/InitECandidate/Solver/BootstrapEncoding.lean",
+    "submission/InitECandidate/Solver/ClockBounds.lean",
+    "submission/InitECandidate/Solver/ConstCost.lean",
+    "submission/InitECandidate/Solver/EncoderClock.lean",
+    "submission/InitECandidate/Solver/JumpCmpNearCost.lean",
+    "submission/InitECandidate/Solver/JumpNearCost.lean",
+    "submission/InitECandidate/Solver/LocCost.lean",
+    "submission/InitECandidate/Solver/MemoryCost.lean",
+    "submission/InitECandidate/Solver/RiscVEvaluatorCosts.lean",
+    "submission/InitECandidate/Solver/ShiftLslImmediateCost.lean",
+    "submission/InitECandidate/Solver/SkipCost.lean",
+    "submission/InitECandidate/Solver/SupportedCosts.lean",
+    "submission/InitECandidate/Solver/TargetClock.lean",
+    "submission/InitECandidate/Solver/WeightedTrace.lean"
+  ],
+  "package_entries": 56846,
+  "package_bytes": 2245102181,
+  "claim": {
+    "K": "infinity"
+  },
+  "errors": [],
+  "not_a_full_verification": true
+}

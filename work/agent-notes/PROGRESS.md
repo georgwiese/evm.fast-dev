@@ -205,3 +205,40 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   the encoder output equals the submitted prefix's first 208 bytes. Axioms are
   propext and Quot.sound. This is a kernel-checked byte equality, distinct from
   the earlier full-ROM file comparison; no execution claim follows from it alone.
+
+### Bootstrap cost milestone checked
+
+- The pinned JumpStep's broad Mathlib.Tactic closure contains 2,708 Mathlib
+  modules. Built the cache utility with two slots and requested only that
+  closure. No network artifact download was needed: 896 remaining files were
+  already cached locally. Stopped owned build group 858854 before unpacking;
+  cache get completed in 8.58s wall (4.389s unpack), max child RSS 843,752 KiB.
+  No pinned source was changed. New solver proofs were built locally; dependency
+  artifacts are ordinary mathlib cache artifacts. This is not comparator replay.
+- Near jump and near simple register comparison exact cost lemmas pass. Fixed
+  namespace lookup after moving them out of their original parent namespace.
+  SupportedCosts.encoder, cost_le_six and trace_bound pass with permitted axioms.
+- BootstrapCost final retry passed: wall 16.37s, max child RSS 5,106,900 KiB.
+  The membership proof required the actual left-associated append disjunction.
+  bytes_match and exact_total depend on propext/Quot.sound; evaluator depends
+  only on propext/Classical.choice/Quot.sound. No error-recovery sorryAx remains.
+- The checked cost is 23,132 formal steps, CONDITIONAL on the original ASM step
+  checks, memory/FFI guards and initial relation. The numerical sum and ROM
+  prefix equality are closed. This is not a certificate for the full guest.
+- Saved proof-checks.json with hashes of all 17 new modules and printed main
+  theorem axiom sets from successful builds. No sorry, native_decide or new
+  axiom declarations occur in Solver sources. Submission K remains infinity.
+- Static package policy check is running separately. It does not build Lean,
+  audit proof axioms or perform comparator verification. No full verifier run.
+- Stopped the redundant whole-tree policy rescan after 3m32.56s (max child RSS
+  210,168 KiB); its per-character comment scanner rereads the fixed 2.245 GB
+  library. That interrupted run has no success result. Instead, verified the
+  fixed submission files are unchanged since the prior successful full policy
+  check and applied the official import parser/allowlist to all 17 Solver files,
+  plus current whole-package entry/size checks. Incremental result: ok=true,
+  no errors, 56,846 entries, 2,245,102,181 bytes. Scope is explicit in
+  policy-check.json. This is not proof verification and did not write a score.
+- Final lightweight BootstrapCost closure: 16 candidate modules, 122,811 source
+  bytes, all built (external dependencies omitted). Source state contains no
+  open sorry. The full finite-K certificate remains unfinished; next work is
+  actual startup guards, then guest-wide cost invariants/quantitative transfer.

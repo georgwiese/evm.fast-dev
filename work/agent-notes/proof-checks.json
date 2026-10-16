@@ -10,12 +10,32 @@
       "sha256": "72ac4dc2479e9ca08ee982e40d16c84969a0f35758433d01630351e35492b96a"
     },
     {
+      "path": "submission/InitECandidate/Solver/BootstrapChecks.lean",
+      "sha256": "06b25cb967214f9697bb5527dfaf05bd404009538b7c8724659b278b7c97317d"
+    },
+    {
       "path": "submission/InitECandidate/Solver/BootstrapCost.lean",
       "sha256": "b76f5eeaf812ebd774365a45e07b2e65464a9da2c83b05bd3de2e8c091f36ad6"
     },
     {
       "path": "submission/InitECandidate/Solver/BootstrapEncoding.lean",
       "sha256": "134ccbdf4b35aa9ef098aeee2998b53a700d256d0138169d09429ffeb9b28518"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BootstrapMachine.lean",
+      "sha256": "318fbe7e3b1073ba1ed0f093b0f6b7b265294b28e78c023d92faaa0f886135c6"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BootstrapRegion.lean",
+      "sha256": "bc441b440ea62ba0fb350149b1d48531e96b860ccf160d644884d0feffcf7e70"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BootstrapStartup.lean",
+      "sha256": "a6603462ae9885a70e181523d70d8b7250d36d13ec8001bfa48587c5af0cb6d5"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BootstrapTailChecks.lean",
+      "sha256": "65d8adba99e99f3d1d3d951d0c4b07d53a8a5613872d787b75891f07a8add1f9"
     },
     {
       "path": "submission/InitECandidate/Solver/ClockBounds.lean",
@@ -74,24 +94,6 @@
     {
       "theorem": "InitECandidate.Solver.ClockBounds.prefix_within",
       "axioms": [],
-      "successful_log": "clock-bounds.log"
-    },
-    {
-      "theorem": "InitECandidate.Solver.ClockBounds.transport_within",
-      "axioms": [],
-      "successful_log": "clock-bounds.log"
-    },
-    {
-      "theorem": "InitECandidate.Solver.ClockBounds.finite_family_bound",
-      "axioms": [
-        "propext",
-        "Quot.sound"
-      ],
-      "successful_log": "clock-bounds.log"
-    },
-    {
-      "theorem": "InitECandidate.Solver.ClockBounds.prefix_within",
-      "axioms": [],
       "successful_log": "target-clock.log"
     },
     {
@@ -141,7 +143,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.SkipCost.skip_encoder_exact",
@@ -150,7 +152,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.SkipCost.skip_state_one",
@@ -159,7 +161,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.MemoryCost.memory_encoder_exact",
@@ -168,7 +170,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.LocCost.loc_encoder_exact",
@@ -177,7 +179,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.RiscVEvaluatorCosts.from_encoder",
@@ -186,7 +188,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.RiscVEvaluatorCosts.skip_one",
@@ -195,7 +197,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.RiscVEvaluatorCosts.memory_one",
@@ -204,7 +206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.RiscVEvaluatorCosts.loc_two",
@@ -213,7 +215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.WeightedTrace.evaluator",
@@ -222,14 +224,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.WeightedTrace.total_le",
       "axioms": [
         "propext"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.ConstCost.encoder_exact",
@@ -238,7 +240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.ConstCost.length_le_six",
@@ -247,7 +249,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.BinopRegisterCost.encoder_exact",
@@ -256,7 +258,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.BinopImmediateCost.encoder_exact",
@@ -265,7 +267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.ShiftLslImmediateCost.encoder_exact",
@@ -274,7 +276,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpNearCost.encoder_exact",
@@ -283,7 +285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpCmpNearCost.encoder_exact",
@@ -292,7 +294,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.SupportedCosts.encoder",
@@ -301,7 +303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.SupportedCosts.cost_le_six",
@@ -310,7 +312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.SupportedCosts.trace_bound",
@@ -319,7 +321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.BootstrapCost.bytes_match",
@@ -327,15 +329,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
-    },
-    {
-      "theorem": "InitECandidate.Solver.BootstrapCost.bytes_match",
-      "axioms": [
-        "propext",
-        "Quot.sound"
-      ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.BootstrapCost.exact_total",
@@ -343,7 +337,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
     },
     {
       "theorem": "InitECandidate.Solver.BootstrapCost.evaluator",
@@ -352,7 +346,150 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "bootstrap-cost-checked.log"
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapRegion.ffi_disjoint",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapRegion.guards",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapChecks.prelude_checked",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapChecks.copy_checked",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapChecks.copy_endpoint",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapChecks.prelude_region",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapChecks.copy_region",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapTailChecks.tail_checked",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapTailChecks.tail_guards",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapMachine.initial_related",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapMachine.program_domain",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapMachine.ffi_above",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapStartup.checked",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapStartup.region",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapStartup.endpoint",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.BootstrapStartup.evaluator",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "bootstrap-startup.log"
     }
   ]
 }

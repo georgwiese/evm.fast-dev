@@ -5,8 +5,13 @@
   "checked_files": [
     "submission/InitECandidate/Solver/BinopImmediateCost.lean",
     "submission/InitECandidate/Solver/BinopRegisterCost.lean",
+    "submission/InitECandidate/Solver/BootstrapChecks.lean",
     "submission/InitECandidate/Solver/BootstrapCost.lean",
     "submission/InitECandidate/Solver/BootstrapEncoding.lean",
+    "submission/InitECandidate/Solver/BootstrapMachine.lean",
+    "submission/InitECandidate/Solver/BootstrapRegion.lean",
+    "submission/InitECandidate/Solver/BootstrapStartup.lean",
+    "submission/InitECandidate/Solver/BootstrapTailChecks.lean",
     "submission/InitECandidate/Solver/ClockBounds.lean",
     "submission/InitECandidate/Solver/ConstCost.lean",
     "submission/InitECandidate/Solver/EncoderClock.lean",
@@ -21,8 +26,8 @@
     "submission/InitECandidate/Solver/TargetClock.lean",
     "submission/InitECandidate/Solver/WeightedTrace.lean"
   ],
-  "package_entries": 56846,
-  "package_bytes": 2245102181,
+  "package_entries": 56851,
+  "package_bytes": 2245207387,
   "claim": {
     "K": "infinity"
   },

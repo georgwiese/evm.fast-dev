@@ -242,3 +242,61 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   bytes, all built (external dependencies omitted). Source state contains no
   open sorry. The full finite-K certificate remains unfinished; next work is
   actual startup guards, then guest-wide cost invariants/quantitative transfer.
+
+### Continuation: discharge actual bootstrap checks
+
+- Previous goal turn classified as progress: committed measured corpus evidence,
+  exact encoder/evaluator costs, and the conditional 23,132-step bootstrap proof.
+- Further static import inspection found the large closure enters via
+  BootstrapCopyGuards → BaselineInstallationFacts → ArtifactFacts. The existing
+  BootstrapCodeFacts, BootstrapStraightLine and BootstrapCopyTrace closures have
+  respectively 246, 255 and 248 candidate modules (about 6.1–6.2 MB source).
+  Reusing those ASM checks is feasible without the 47,123-module artifact build.
+- Added BootstrapChecks to bridge the old run/Checked definitions to the new
+  quantitative trace, reuse the actual prelude/copy-loop checks and endpoints,
+  and derive static PC/domain regions. Build pending while ROM dependencies build.
+- BootstrapRegion passed (two slots): static PC/domain regions and an FFI-entry
+  lower bound imply the original evaluator guards. Printed axioms permitted.
+- Adapted the fixed BootstrapTailChecks into Solver, replacing configuration-
+  dependent guards by 32 closed domain/PC-region facts while retaining every
+  original ASM step proof. Reproduction script: adapt-tail-checks.py. An initial
+  greedy regex assertion failed before writing a file; corrected the generator.
+- Added BootstrapMachine to relate arbitrary public-input initial states to the
+  fixed ASM memory model and derive program-domain/FFI-range facts from small
+  submission metadata equalities and nonwrapping MMIO offsets. Not built yet.
+- Started with two Lean slots, then resumed the owned build group 873544 at four
+  after measured host RAM stayed about 5.4 GiB. New target is BootstrapTailChecks;
+  full audit, full verifier and artifact proof closure remain excluded.
+- Open explicit sorrys: none. New modules other than BootstrapRegion are pending
+  compilation and must not yet be described as checked.
+
+### Actual startup bound checked
+
+- BootstrapChecks and BootstrapTailChecks built successfully. Four-slot tail
+  dependency build: 7m15.93s wall, max child RSS 5,032,992 KiB. Sampled summed
+  process RSS peaked at 17,646,996 KiB (shared pages counted repeatedly); minimum
+  host MemAvailable was 24,132,580 KiB. Disk stayed at 46%.
+- BootstrapMachine needed the LabToTarget namespace, function extensionality
+  for its memory domain equality, a nonshadowing MMIO membership name and a
+  final arithmetic step. BootstrapStartup needed run_append in its checked
+  trace composition. Intermediate failed builds contained Lean error-recovery
+  sorryAx; none is accepted as evidence. Final successful log supersedes them.
+- BootstrapStartup now proves the real initial machine reaches a state related
+  to installedAsm after an exact 23,132-step evaluator prefix, for every public
+  input and FFI state. Its only premises describe the ROM/configuration fields;
+  no ASM execution, dispatch guards or initial relation remain as hypotheses.
+- Final two-slot build: 7.96s wall, max child RSS 4,512,732 KiB; all four main
+  BootstrapStartup axioms lists contain only propext, Classical.choice and
+  Quot.sound. Logs: bootstrap-startup.log, bootstrap-startup.time. Five new
+  modules bring the Solver total to 22. proof-checks.json records hashes and
+  46 distinct printed theorem axiom sets from successful builds.
+- Startup's candidate-only import closure is 276 modules / 6,452,842 source
+  bytes, all built. Full artifact closure remains excluded. A first diagnostic
+  import scanner stopped at leading block comments and undercounted 241;
+  corrected whole-file import-line traversal gives the recorded 276.
+- Incremental official import-parser/allowlist check and whole-tree package
+  metadata checks pass. Fixed files remain unchanged since the prior full
+  policy pass. This is not comparator verification and no score was written.
+- Open explicit sorrys: none. Finite-K certificate remains unfinished. Next
+  obligation is the guest body cost bound and its relation to gas/input/state;
+  a startup prefix alone cannot justify the numerical planning envelope.

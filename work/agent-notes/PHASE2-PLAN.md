@@ -1,6 +1,6 @@
 # Phase 2: finite clock proof plan
 
-Status: Phase 1 measurements complete. Dependencies installed; 17 cost/bookkeeping
+Status: Phase 1 measurements complete. Dependencies installed; 22 cost/bookkeeping
 modules checked. No finite certificate yet; the submission still claims infinity.
 
 ## Strategies and sequence
@@ -97,8 +97,9 @@ Planning estimates, not completion promises:
   state-validity and interference assertions. Skip, Memory and Loc were specialized successfully in this session, so
   the earlier days-per-pilot estimate was too pessimistic. Their existing proofs
   construct explicit small witnesses; retaining them is a tractable local edit.
-  Branches, variable-width constants and composition remain; estimate 1–3 days
-  for bootstrap coverage and 1–2 weeks for the full encoder, subject to checking.
+  Bootstrap branches, variable-width constants and composition are now checked,
+  including the actual initial-state execution. Full encoder coverage remains;
+  the earlier 1–2 week estimate is subject to further checking.
 - Crep→Loop extra clocks and Word→Stack: recursive simulations with multiple
   call/handler branches; roughly 1–3 weeks each, subject to discovering reusable
   quantitative lemmas. Pan→Crep and Loop→Word need not be reproved for extra fuel.
@@ -137,7 +138,9 @@ RiscVEvaluatorCosts checks the three corresponding exact evaluator prefixes.
    This adapts the pinned proof without changing the dependency.
 3. Checked RiscVEvaluatorCosts, SupportedCosts and BootstrapCost cover the
    bootstrap instruction forms and compose their exact 23,132-step sum.
-   Next discharge the actual initial-state checks and identify the endpoint.
+   BootstrapStartup now discharges the actual initial-state checks and identifies
+   installedAsm as the endpoint, for any submission with the baseline ROM,
+   anchor, ordinary FFI count and nonwrapping MMIO offsets.
 4. Attempt a direct target cost potential for guest loops, alongside the source
    potential route. Prefer reusable summaries of library functions over a full
    quantitative reproof of all optimization passes if this avoids duplicated
@@ -182,8 +185,29 @@ length for evaluateTargetHOL, conditional on WeightedTrace.Checked, Guards and
 the initial ASM/machine relation. All main theorem axiom sets are recorded in
 proof-checks.json; none exceeds the permitted three. There are no open sorrys.
 
-The next obligation is to discharge those checks for the actual loaded machine
-without importing the 47,123-module artifact closure. This cost milestone does
-not bound the native guest body or prove a finite certificate. The source gas/
-input potential and a quantitative compiler transfer (or direct target summaries)
-remain outstanding; claim.json and Solution.lean are unchanged.
+Those startup checks are now discharged in BootstrapStartup. The fixed
+BootstrapStraightLine and BootstrapCopyTrace proofs avoid ArtifactFacts, so they
+can be reused within this machine's limits. BootstrapTailChecks adapts the 32
+tail instruction checks to closed PC/domain regions; BootstrapRegion derives
+FFI dispatch guards from them. BootstrapMachine proves the initial relation for
+arbitrary input, and BootstrapStartup.evaluator composes the exact prefix:
+
+```lean
+-- Parameters: sub.code = InitECandidate.code, sub.anchorPc = nativePc,
+-- sub.first = 20, and each nativePc + MMIO entry offset < 2^64.
+∃ post,
+  (∀ clock, evaluateTargetHOL sub.machineConfig io (23132 + clock)
+    (sub.initialState input) =
+      evaluateTargetHOL sub.machineConfig io clock post) ∧
+  targetStateRel riscvTarget installedAsm post
+```
+
+This is a checked theorem, with no supplied execution/trace/guard premises.
+The small metadata equalities remain explicit parameters; this development
+does not import or rebuild baselineSubmission's full artifact closure.
+
+Next work must address the native guest body: extend quantitative encoder
+coverage to all used forms and prove bounded control-flow/library summaries,
+or build the source gas/input potential and quantitative compiler transfer.
+The bootstrap milestone does not supply either guest-wide bound. It does not
+prove a finite certificate; claim.json and Solution.lean remain unchanged.

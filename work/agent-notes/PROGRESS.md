@@ -199,3 +199,9 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - With four-slot memory still ~6 GiB, stopped only owned group 850852 and resumed
   the same target with six slots. This also picks up the corrected ConstCost
   source. Disk remains 45%; resource samples saved for both continuations.
+- Split the literal bootstrap encoding into BootstrapEncoding so its byte check
+  can run independently of the branch library build. After removing unused
+  namespace opens and renaming Lean's reserved `prefix` identifier, it builds:
+  the encoder output equals the submitted prefix's first 208 bytes. Axioms are
+  propext and Quot.sound. This is a kernel-checked byte equality, distinct from
+  the earlier full-ROM file comparison; no execution claim follows from it alone.

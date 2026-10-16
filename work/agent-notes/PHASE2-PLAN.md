@@ -541,3 +541,28 @@ rawcall-entry-v4.log passes all 810 jobs; all printed main theorem axioms are
 among propext, Classical.choice and Quot.sound. This is a compiler-pass clock
 bound, not yet a RISC-V step bound for the fixed guest. Its fixed-program code
 and initialization premises still need composition with the other stages.
+
+## Word-to-Stack weighted overhead pilot
+
+Source inspection confirms that shared-memory instructions and Raise need one
+extra target clock without consuming a source clock. Proposed cost counts these
+leaves, adds sequential costs, takes the maximum branch/return/handler cost,
+and carries a loop body's cost. Other primitive costs are zero. CodeSafe limit
+requires no Install in installed bodies and each body's cost <= limit; the
+existing noInstallEvaluateConstCode theorem preserves this invariant. The new
+Simulation retains every original premise and compCorrectResult branch while
+adding `extra <= limit * (source.clock - sourcePost.clock) + cost program`.
+One source call or loop-reentry decrement can pay for a body's cost <= limit.
+
+scan-word-cost.py scans the actual 826 optimized Word literals: 13 ShareInst,
+669 Raise, no Install or MustTerminate, and at most four charged leaves in any
+one literal (Data66). This is text evidence only. Pilot.lean will kernel-check
+cost <= 4 and noInstall for actual optimized66 and the large optimized713.
+If the complete code and recursive theorem are certified at limit 4, an entry
+call with zero syntactic cost would have target clock <= 5 * source clock.
+This conditional estimate is not yet a theorem or a finite guest certificate.
+
+Prepared Cost/Common, constructive one-clock ShareInst and Raise strengthenings,
+arithmetic budget composition, Seq and If. The initial ShareInst/Raise pilot is
+compiling dependencies. Calls, handlers, loops, other leaves and full assembly
+remain to be adapted and checked; fixed program/code integration also remains.

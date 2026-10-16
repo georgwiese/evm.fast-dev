@@ -879,3 +879,50 @@ is charged only after a matching return-to-label source result. The concrete
 initializer-tail Work derivation is also checked. Next quantitative work must
 connect fixed-guest gas/input invariants to these credits (or transport an
 appropriate earlier-stage work potential through the preceding passes).
+
+
+### Padding cost tightened: fixed Lab multiplier 24
+
+`NopBound.riscv_one` reuses the checked native Skip assertion to prove one
+actual evaluator transition per NOP. `riscv_padding` also proves that each
+encoded NOP occupies four bytes. `NopCostTight` retains the original source
+step, byte-memory, interference and complete state-relation obligations, but
+bounds a padded instruction by `encoderBound + bytes.length / 4`.
+
+The complete LabBoundTight simulation now uses
+
+    rate encoderBound lineBytes = encoderBound + lineBytes / 4 + 2.
+
+The extra two cover the existing terminal/foreign-call accounting. All ordinary,
+control, shared-memory, code-buffer-write and FFI cases, evaluator induction,
+RISC-V specialization and the fixed padded-program wrapper passed Lean.
+`LabBoundTight.padded_riscv` gives target clock <=24*Lab clock using the checked
+832-section layout with lineBytes=24, instead of the earlier multiplier 402.
+This retains the original full relation and oracle premises; it does not identify
+the concrete initial state or supply the Lab execution by itself.
+
+This 16.75-fold tightening helps the eventual envelope, but does not rescue
+multiplication of all global source ceilings. Keeping the old flattening ceiling
+12,091 and other current factors would still yield 20,802,539,520 per source
+clock, leaving only 432,985 clock units below the cap before additive costs.
+That is conditional arithmetic, not a guest bound. Continue execution-weighted
+accounting and concrete source invariants.
+
+### Loop ranking interface
+
+`FlattenWeighted.loopWorkOfRank` now proves `(rank(source)+1)*perBody` credits
+for a loop when an actual-source invariant supplies per-body Work and is
+preserved with a strictly smaller rank on every continuing reentry. It accounts
+for the final body execution as well as repeated iterations. `loopPaidOfRank`
+transports this to the original flattening execution witness. The rank and body
+budget must still be proved for actual guest loops. A companion theorem for
+consumed source clock is being checked, because extra flattening work and
+source clock consumption are distinct costs.
+
+### Fixed Word ceiling completed
+
+All 826 individual Word procedure checks, all 52 chunks, the program aggregate
+and literal equality with StackAnalysis.outputs passed in the corrected v2 run.
+`WordStatic.fixedWordCodeSafe` proves the ceiling 17 and no-Install invariant
+for that actual code table; the existing Word-to-Stack entry factor is therefore
+35 once its remaining initial-state/compile premises are supplied.

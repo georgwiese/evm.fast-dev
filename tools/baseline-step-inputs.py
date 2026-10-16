@@ -11,22 +11,49 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import struct
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("output", type=Path)
     ap.add_argument("--large", action="store_true", help="include 16 MiB and arena-limit inputs")
+    ap.add_argument("--microbench", action="store_true",
+                    help="generate inputs for work/agent-notes/microbench.pnk instead")
     args = ap.parse_args()
     helpers = runpy.run_path(str(Path(__file__).with_name("ssz-inputs.py")))
     args.output.mkdir(parents=True, exist_ok=True)
     rows = []
 
+    if args.microbench:
+        for mode, sizes, counts in [
+                (0, [0], [0, 16, 64, 256, 1024, 4096]),
+                (1, [64, 1024, 65536], [0, 1, 10]),
+                (2, [32, 1024, 65536], [0, 1, 10]),
+                (3, [32, 1024, 65536], [0, 1, 10])]:
+            for size in sizes:
+                for count in counts:
+                    label = f"mode-{mode}-size-{size}-count-{count}"
+                    name = label + ".bin"
+                    (args.output / name).write_bytes(
+                        helpers["pack"](struct.pack("<QQQ", mode, count, size)))
+                    rows.append(dict(label=label, input_file=name, mode=mode,
+                                     count=count, size=size))
+        (args.output / "manifest.json").write_text(json.dumps(rows, indent=2) + "\n")
+        print(f"generated {len(rows)} library diagnostic inputs")
+        return
+
     def write(label, blob, purpose):
         path = args.output / (label + ".bin")
-        path.write_bytes(helpers["pack"](blob))
+        packed = helpers["pack"](blob)
+        # Spike prepends eight metadata bytes and writes the whole file. Keep
+        # only the fixed host arena's visible bytes for oversized abstract blobs,
+        # while retaining the original length word for input_blob's rejection.
+        clipped = len(packed) > 134217720
+        path.write_bytes(packed[:134217720])
         rows.append(dict(label=label, input_file=path.name, input_bytes=len(blob),
-                         input_sha256=hashlib.sha256(blob).hexdigest(), purpose=purpose))
+                         input_sha256=hashlib.sha256(blob).hexdigest(), purpose=purpose,
+                         transport_clipped_to_arena=clipped))
 
     sizes = [0, 8, 1024, 65536, 1048576]
     if args.large:

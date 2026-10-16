@@ -49,6 +49,9 @@
     "submission/InitECandidate/Solver/ConstCost.lean",
     "submission/InitECandidate/Solver/EncoderBound.lean",
     "submission/InitECandidate/Solver/EncoderClock.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Common.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Control.lean",
+    "submission/InitECandidate/Solver/FlattenBound/Leaves.lean",
     "submission/InitECandidate/Solver/JumpCmpNearCost.lean",
     "submission/InitECandidate/Solver/JumpNearCost.lean",
     "submission/InitECandidate/Solver/LabBound/Asm.lean",
@@ -961,8 +964,8 @@
     "submission/InitECandidate/Solver/TargetClock.lean",
     "submission/InitECandidate/Solver/WeightedTrace.lean"
   ],
-  "package_entries": 57792,
-  "package_bytes": 2246064843,
+  "package_entries": 57796,
+  "package_bytes": 2246083954,
   "claim": {
     "K": "infinity"
   },

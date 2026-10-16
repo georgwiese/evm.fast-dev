@@ -447,3 +447,45 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   (transfer static-code premise through stateRel), 54 section chunks, combined
   PaddedProgram, and PaddedRiscV (402 times Lab source clock). All but the two
   section pilots are still pending; no finite certificate is claimed.
+- Checkpoint commit da09324b4 contains the largest-section proof, all generated
+  layout modules (with pending status documented), generator/driver and memory
+  guard. Full build remains running; do not restart it. At this checkpoint,
+  StaticTarget and chunks 0–7 have completed. This certifies 118 sections in
+  those chunks plus section 713 independently. record-padded-progress.py records
+  only the log prefix ending at a completed END marker; the active suffix is
+  excluded. All printed axiom sets in completed chunks are permitted.
+- Current complete-layout process: tool session 83802, logs/padded-all.log and
+  padded-all-resources.jsonl. Shared limiter directory is
+  .lake/lean-limit/run-mo46tz1p (four slots). Any concurrent Lean work must reuse
+  those locks through LEAN_LIMIT_REAL, LEAN_LIMIT_LOCK_DIR and LEAN_LIMIT_SLOTS,
+  not launch an independent four-slot pool. Maximum sampled whole-host used
+  memory so far: 6.13 GiB; disk still 47%.
+- Added FlattenBound.Common/Leaves/Control and checked them. Common counts
+  structural syntax nodes without literal/register magnitudes and telescopes
+  spent clock across Seq. The proposed extra-clock budget is
+  4*((limit+1)*(initialClock-finalClock)+nodes program). BoundedConcl retains the
+  entire original flattening conclusion with this extra numerical condition.
+  There is no theorem asserting this budget for all programs yet.
+- Skip, Halt, Inst and Tick cases now retain their actual 0/1 extra-clock
+  witnesses. The checked Seq rule composes bounded sub-runs and their clocks,
+  preserving the existing full evaluator/state/install/label hypotheses. The
+  rule has explicit bounded-sub-run premises; it is not a recursive all-program
+  theorem. Calls, loops, conditionals, remaining leaves, static code preservation
+  and the callee/body size invariant remain unfinished.
+- Stack pilot fixes: removed nonexistent Mathlib.Tactic.Omega import; qualified
+  StackToLab.flattenHOL and opened Backend after moving namespaces; split
+  optional call/handler tuple constructors in nodes_positive. Initial failed
+  logs contain Lean error-recovery sorryAx and are not accepted evidence.
+  Final flatten-control-v5.log passed, 57.00s including limiter queue time, max
+  individual child RSS 1,963,532 KiB. Eight printed main theorem axiom sets are
+  all subsets of propext/Classical.choice/Quot.sound. The initial dependency
+  build took 2m24.66s but failed on the subsequently fixed import.
+- proof-checks.json now records 199 checked modules and 246 main theorem axiom
+  sets. Incremental policy check covers all 960 Solver files, including pending
+  generated layout modules, and passes; that is not a build or verifier claim.
+  Solution.lean/claim.json remain unchanged at infinity. No full audit/verifier,
+  push, PR or submission. Open explicit sorrys: none.
+- Next: monitor the existing chunk build, extend the quantitative Stack
+  flattening cases, then assemble its recursion with explicit static/callee-size
+  invariants. The coarse syntax budget is not known to fit the final score cap;
+  retain per-function costs if uniform maximum-body bounds become too loose.

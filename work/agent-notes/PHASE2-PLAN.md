@@ -1,7 +1,8 @@
 # Phase 2: finite clock proof plan
 
-Status: Phase 1 measurements complete. Dependencies installed; 70 cost/bookkeeping
-modules checked. No finite certificate yet; the submission still claims infinity.
+Status: Phase 1 measurements and the generic bounded Lab-to-RISC-V simulation
+are checked. Fixed-layout checks and quantitative Stack flattening are in
+progress. No finite certificate yet; the submission still claims infinity.
 
 ## Strategies and sequence
 
@@ -309,3 +310,19 @@ source-clock information so sequential costs telescope. Static source code
 (no Install) and a bound on all callee bodies must be maintained across calls.
 This invariant is proposed only; neither the multiplier nor its preservation
 is yet proved.
+
+## Checked Stack flattening pilot
+
+FlattenBound.Common defines operand-independent syntax node counts and the
+extra-clock budget `4*((limit+1)*(initial-final)+nodes program)`. The Seq
+arithmetic lemma telescopes spent clocks. Leaves checks the actual exposed
+witnesses for Skip, Halt, Inst and Tick; Control checks numerical composition
+and the Seq rule from bounded simulations of its actual sub-runs. All eight
+printed main theorem axiom sets are permitted. This does not establish the
+budget for arbitrary programs: remaining cases, call/loop recursion, static
+code preservation and callee/body bounds still need proofs.
+
+A uniform maximum-body multiplier may be too loose for the final score cap.
+Keep syntax/spent-clock accounting explicit and retain per-function charges
+if later composition exceeds the cap; no feasible final K is inferred from
+this pilot's arithmetic.

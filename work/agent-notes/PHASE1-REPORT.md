@@ -23,7 +23,9 @@ The rebuilt ELF **does not match BASELINE.json**. Current artifacts:
 
 The ROM reconstructed from submission Prefix/Bytes/Suffix literals is byte-for-byte
 identical to `objcopy -O binary guest/build/guest.elf`. This was a file comparison,
-not a Lean artifact-equality proof. The source and AST hashes also differ from
+not a Lean proof of the entire ROM equality. Later, Solver.BootstrapEncoding
+kernel-checked the encoding equality for the first 208 bootstrap bytes. The
+source and AST hashes also differ from
 BASELINE.json, so historical counts are comparisons, not exact reproductions.
 
 ## Full EEST results

@@ -12,10 +12,10 @@ def keepsInst {width : Nat} [NeZero width] (reg : Nat) : HolInst width → Bool
   | .skip => true
   | .const dest _ | .arith (.binop _ dest _ _) | .arith (.shift _ dest _ _) => decide (dest ≠ reg)
   | .mem .load dest _ => decide (dest ≠ reg)
-  | .mem .store _ _ => true
+  | .mem .store _ _ | .mem .store8 _ _ => true
   | _ => false
 
-private theorem instFrame {width : Nat} [NeZero width] {C F : Type}
+theorem instFrame {width : Nat} [NeZero width] {C F : Type}
     (instruction : HolInst width) (reg : Nat) (supported : keepsInst reg instruction = true)
     (source post : StackSemStateFiniteExact width C F)
     (execution : StackSemInst.instHOL instruction source = some post) :
@@ -126,3 +126,5 @@ termination_by sizeOf prog
 
 end InitECandidate.Solver.FlattenWeighted
 #print axioms InitECandidate.Solver.FlattenWeighted.normalFrame
+
+#print axioms InitECandidate.Solver.FlattenWeighted.instFrame

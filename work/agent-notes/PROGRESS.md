@@ -798,3 +798,47 @@ Completed-run resource records for the Word cost revision:
 - wordstack-weighted-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:53.49; Maximum resident set size (kbytes): 1742204; Exit status: 1; sampled host memory peak 6.268 GiB.
 - wordstack-weighted-v4: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:25.81; Maximum resident set size (kbytes): 1734976; Exit status: 1; sampled host memory peak 6.273 GiB.
 - wordstack-loop: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.93; Maximum resident set size (kbytes): 1896900; Exit status: 0; sampled host memory peak 4.834 GiB.
+
+### Checked no-handler returning Call and started full Word literal checks
+
+- Previous goal turn was progress: weighted Loop and Clock passed and were
+  committed (2f1a148eb; resource note 58988a346). Revalidated all active drivers
+  and the long-running ceiling pilot at this turn's start.
+- wordstack-weighted-v5.log passed all 1007 jobs. The revised Cost, ShareInst,
+  Raise, Seq, If, tail Call, buffer/register/heap leaves and first WordStatic
+  chunk are now indexed against current sources. optimized713's new ceiling
+  passed; earlier superseded evidence has been replaced with fresh checks.
+- Started the full WordStatic driver, session 33422, word-static-all.log, 54
+  targets: 52 chunks, Programs, Fixed. It shares the same four-slot pool and
+  24 GiB host-memory guard. Completed through Chunk3 when last indexed.
+- wordstack-leaves.log passed 958 jobs; wordstack-more.log passed 912. Control,
+  Inst, LocValue, MoveFull, Return, Alloc, FFI and StoreConsts bounds are checked.
+  Returning pilot wordstack-returning-pilot.log passed 951 jobs.
+- wordstack-callnone-v2.log passed 972 jobs: code/clock preservation after pop;
+  return and handler eligibility extraction; forgetting a bounded simulation;
+  guarded returning callee and continuation simulations; restored caller
+  history; source-tail clock monotonicity; complete no-handler returning Call.
+  The total extra bound is (2*limit)*(source.clock-sourcePost.clock), since a
+  call's local cost is zero. All original result/resource branches remain.
+- Initial CallState failed on a reserved binder name, then on unfolding ceiling
+  with an unknown optional handler. Explicit option cases and definitional
+  changes fixed it. Failed callstate/callhistory/callnone logs are excluded from
+  verification evidence; no explicit source sorrys or extra axioms were added.
+- Flat/Install boundary cases are being checked in wordstack-flat.log, session
+  93702. Handler-present Call, final pass induction, fixed initialization and
+  whole-guest bounds remain. A finite certificate is not yet available.
+- Prepared StackStatic/Fixed.lean equality and CodeSafe statements for actual
+  Raw.stack and Alloc.stack, unverified. The existing stack driver snapshot has
+  53 targets and does not include this new module. Inspect umbrella dependency
+  costs before its later limited build; do not run the full audit/verifier.
+- Latest indexed fixed batches: padded Chunk45 (46/54), StackStatic Chunk13
+  (14/52), WordStatic Chunk3 (4/52). No push, PR or submission; claim stays infinity.
+- wordstack-weighted-v5: Elapsed (wall clock) time (h:mm:ss or m:ss): 12:05.03; Maximum resident set size (kbytes): 11095980; Exit status: 0; sampled host memory peak 12.296 GiB.
+- wordstack-leaves: Elapsed (wall clock) time (h:mm:ss or m:ss): 17:24.79; Maximum resident set size (kbytes): 1869248; Exit status: 0; sampled host memory peak 10.465 GiB.
+- wordstack-more: Elapsed (wall clock) time (h:mm:ss or m:ss): 13:28.66; Maximum resident set size (kbytes): 1934428; Exit status: 0; sampled host memory peak 5.835 GiB.
+- wordstack-returning-pilot: Elapsed (wall clock) time (h:mm:ss or m:ss): 7:55.81; Maximum resident set size (kbytes): 1935712; Exit status: 0; sampled host memory peak 5.690 GiB.
+- wordstack-callstate: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:03.68; Maximum resident set size (kbytes): 1619136; Exit status: 1; sampled host memory peak 4.620 GiB.
+- wordstack-callhistory: Elapsed (wall clock) time (h:mm:ss or m:ss): 3:04.07; Maximum resident set size (kbytes): 3004636; Exit status: 1; sampled host memory peak 5.526 GiB.
+- wordstack-callhistory-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:56.76; Maximum resident set size (kbytes): 1615212; Exit status: 1; sampled host memory peak 4.876 GiB.
+- wordstack-callnone: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:03.04; Maximum resident set size (kbytes): 2700004; Exit status: 1; sampled host memory peak 5.440 GiB.
+- wordstack-callnone-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:50.79; Maximum resident set size (kbytes): 2027280; Exit status: 0; sampled host memory peak 4.260 GiB.

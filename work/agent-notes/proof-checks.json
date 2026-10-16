@@ -3874,8 +3874,16 @@
       "sha256": "b9a174417ef82c1c502bb4419ee4f556bd5a7b87e9d23ae6911d2d85f04b0d2d"
     },
     {
+      "path": "submission/InitECandidate/Solver/FlattenWeighted/BlockPrefix.lean",
+      "sha256": "d8c575da6caa3285760e936591563ceca6c323e2fa57ad8d6cf9280836797364"
+    },
+    {
       "path": "submission/InitECandidate/Solver/FlattenWeighted/BlockReclock.lean",
       "sha256": "781c316780ee41db6a339a21528c076c16c3de49b00ae595f8c931ff09d0506a"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/FlattenWeighted/BlockSelected.lean",
+      "sha256": "810e02e18b5f078fe21f2236940857b733f5d290703c5d17895372a8466b80c2"
     },
     {
       "path": "submission/InitECandidate/Solver/FlattenWeighted/CallClock.lean",
@@ -3990,8 +3998,20 @@
       "sha256": "0c8699d8176f3d83cc0e887fd76bc35d42115f09d5b656e320ed3a4223b86c9b"
     },
     {
+      "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryCapacityEntry.lean",
+      "sha256": "3d2a7e2367300235afc8bc41177767cf177d4cef0a87b3d4ab3b75f177394474"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryEntry.lean",
+      "sha256": "3d6eaf207418964b935ab12f9609d7466e8643cf050556167f9851ece7253847"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryLength.lean",
       "sha256": "cc48a6a3d58afbcb1a177661c9ce492b353b2430c69c20f6a6c52afecac1da11"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryNoGrowth.lean",
+      "sha256": "f0d9df872a21a1519036f648cd3e305b6f298ade2685588f7514cdf285c1dca6"
     },
     {
       "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryRestore.lean",
@@ -4004,6 +4024,10 @@
     {
       "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryTransfer.lean",
       "sha256": "5923d31fa92e38278569b73fb3a2193b525042e171f03debc55c88defb7cfd72"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryZero.lean",
+      "sha256": "b12ba08a127dbfe1e03d142d7f8b19128334fc2ac55792da73f885831b0ae7e0"
     },
     {
       "path": "submission/InitECandidate/Solver/GuestWork/FrameAllocBounded.lean",
@@ -43836,7 +43860,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.basicClock",
@@ -43845,7 +43869,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.basicPaid",
@@ -43854,7 +43878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidOfBounded",
@@ -43863,7 +43887,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidMono",
@@ -43872,7 +43896,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.initializationTail_basic",
@@ -43911,7 +43935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidSeq",
@@ -43920,7 +43944,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.straightBounded",
@@ -43929,7 +43953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk31Eligible",
@@ -46058,7 +46082,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidConclComposeSome",
@@ -46067,7 +46091,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidConclResult",
@@ -46076,7 +46100,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidConclVloc",
@@ -46085,7 +46109,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidCallPropagate",
@@ -46094,7 +46118,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidCallRet",
@@ -46103,7 +46127,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidConclStay",
@@ -46112,7 +46136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidIf",
@@ -46121,7 +46145,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidIfSelected",
@@ -46130,7 +46154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidLoopReentry",
@@ -46139,7 +46163,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidLoop",
@@ -46148,7 +46172,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk34Eligible",
@@ -47248,7 +47272,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidRawCall",
@@ -47257,7 +47281,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.weightedCallCorrect",
@@ -47275,7 +47299,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk35Eligible",
@@ -50053,7 +50077,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.loopPaidOfRank",
@@ -50062,7 +50086,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.loopClockOfRank",
@@ -50071,7 +50095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk39Eligible",
@@ -51618,21 +51642,21 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_nodes",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_ticks",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_work",
@@ -51641,7 +51665,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_clock",
@@ -51650,7 +51674,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_continues",
@@ -51659,7 +51683,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_decreases",
@@ -51668,7 +51692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.loop_work",
@@ -51677,7 +51701,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.loop_clock",
@@ -51686,7 +51710,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk43Eligible",
@@ -52273,7 +52297,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.reclockAgreement",
@@ -52282,7 +52306,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.loopTimeoutClock",
@@ -52291,7 +52315,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.basicLoop_noTimeout",
@@ -52300,7 +52324,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.bounded_execution",
@@ -52914,7 +52938,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.BlockBound.basic",
@@ -52923,7 +52947,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.BlockBound.weaken",
@@ -52932,7 +52956,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.BlockBound.ite",
@@ -52941,7 +52965,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.BlockBound.boundedExecution",
@@ -52950,7 +52974,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.loopNormalExit",
@@ -52959,28 +52983,28 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.body_basic",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.body_nodes",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.body_ticks",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.body_work",
@@ -52989,7 +53013,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.body_clock",
@@ -52998,7 +53022,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.body_outcome",
@@ -53007,7 +53031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.body_decreases",
@@ -53016,7 +53040,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.loop_exit",
@@ -53025,7 +53049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.loop_work",
@@ -53034,7 +53058,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroBytes.loop_clock",
@@ -53043,28 +53067,28 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.body_basic",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.body_nodes",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.body_ticks",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.body_work",
@@ -53073,7 +53097,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.body_clock",
@@ -53082,7 +53106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.body_outcome",
@@ -53091,7 +53115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.body_decreases",
@@ -53100,7 +53124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.loop_exit",
@@ -53109,7 +53133,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.loop_work",
@@ -53118,7 +53142,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroQuad.loop_clock",
@@ -53127,7 +53151,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroSuffix.byteLoopBound",
@@ -53136,7 +53160,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroSuffix.tailLoopBound",
@@ -53145,7 +53169,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroSuffix.tailSuffixBound",
@@ -53154,7 +53178,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroSuffix.suffixBound",
@@ -53163,28 +53187,28 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.body_basic",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.body_nodes",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.body_ticks",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.body_work",
@@ -53193,7 +53217,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.body_clock",
@@ -53202,7 +53226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.body_outcome",
@@ -53211,7 +53235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.body_decreases",
@@ -53220,7 +53244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.loop_exit",
@@ -53229,7 +53253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.loop_work",
@@ -53238,7 +53262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroWord.loop_clock",
@@ -53247,7 +53271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk45Eligible",
@@ -55534,7 +55558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroAligned.wordLoopBound",
@@ -55543,7 +55567,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroAligned.alignedBound",
@@ -55552,7 +55576,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroAligned.branchBound",
@@ -55561,7 +55585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroEntry.entryBound",
@@ -55570,7 +55594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroEntry.bounded_execution",
@@ -55579,7 +55603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk50Eligible",
@@ -56528,7 +56552,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroEntry.consumedBudget_linear",
@@ -56536,7 +56560,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroEntry.bounded_execution_linear",
@@ -56545,7 +56569,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawProgram_eq_stack",
@@ -62232,7 +62256,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.returningCallTimeout",
@@ -62241,7 +62265,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.loopNoException",
@@ -62250,7 +62274,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.noException",
@@ -62259,7 +62283,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroCall.no_exception",
@@ -62268,7 +62292,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroCall.callBound",
@@ -62277,7 +62301,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.normalFrame",
@@ -62286,7 +62310,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCalls.capacityCallBound",
@@ -62295,7 +62319,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCalls.lengthCallBound",
@@ -62304,7 +62328,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCalls.lengthBlockBound",
@@ -62313,7 +62337,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCalls.suffixBound",
@@ -62322,7 +62346,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCalls.bounded_suffix",
@@ -62331,7 +62355,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCalls.capacityBlockBound",
@@ -62340,7 +62364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCalls.capacitySuffixBound",
@@ -62349,7 +62373,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCalls.bounded_capacity_suffix",
@@ -62358,7 +62382,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.instFrame",
@@ -62366,7 +62390,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.localFrame",
@@ -62375,7 +62399,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.loopFrame",
@@ -62384,7 +62408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-transfer.log"
+      "successful_log": "extend-memory-entry-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryRestore.capacity_restore",
@@ -62393,7 +62417,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryRestore.capacity_call_saved_length",
@@ -62402,7 +62426,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryTransfer.capacity_call_bound",
@@ -62411,7 +62435,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryTransfer.capacity_tail_bound",
@@ -62420,7 +62444,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroFrame.protected_register",
@@ -62429,7 +62453,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroFrame.entered_register",
@@ -62438,7 +62462,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroMemory.clears",
@@ -62447,7 +62471,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroMemory.saved_length",
@@ -62456,24 +62480,24 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Below.refl",
       "axioms": [],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Below.trans",
       "axioms": [],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.wordUpdate",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.zeroByte_le",
@@ -62481,7 +62505,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.byteStore",
@@ -62489,12 +62513,12 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Below.bound",
       "axioms": [],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.seqAt",
@@ -62503,7 +62527,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Clears.seq",
@@ -62512,7 +62536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Clears.ite",
@@ -62521,7 +62545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Clears.loop",
@@ -62530,7 +62554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Clears.leaf",
@@ -62539,7 +62563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Clears.skipAfter",
@@ -62548,7 +62572,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.wordStoreZero",
@@ -62557,7 +62581,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.byteStoreZero",
@@ -62566,7 +62590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Clears.wordStoreThen",
@@ -62575,7 +62599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ZeroMemory.Clears.byteStoreThen",
@@ -62584,14 +62608,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryLength.after_capacity_ready",
       "axioms": [
         "propext"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryLength.call_suffix_bound",
@@ -62600,7 +62624,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryLength.length_suffix_bound",
@@ -62609,7 +62633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryLength.bounded_length_suffix",
@@ -62618,7 +62642,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-length.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryBlock.capacity_block_bound",
@@ -62627,7 +62651,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-block-v3.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryBlock.capacity_suffix_bound",
@@ -62636,7 +62660,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-block-v3.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.ExtendMemorySetup.frame_setup",
@@ -62645,7 +62669,159 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "extend-memory-block-v3.log"
+      "successful_log": "extend-memory-capacity-entry-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.FlattenWeighted.BlockBound.basicPrefix",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.FlattenWeighted.evaluate_branchChoice",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.FlattenWeighted.BlockBound.iteCases",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.FlattenWeighted.BlockBound.iteSelected",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCapacityEntry.setup_transfer",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-capacity-entry-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCapacityEntry.capacity_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-capacity-entry-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryCapacityEntry.capacity_to_length",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-capacity-entry-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryEntry.entry_transfer",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryEntry.entry_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryEntry.bounded_entry",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryNoGrowth.selected",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryNoGrowth.branch_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryNoGrowth.suffix_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryNoGrowth.bounded_suffix",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryZero.exits",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-zero-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryZero.entry_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-zero-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryZero.bounded_entry",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-zero-v2.log"
     }
   ]
 }

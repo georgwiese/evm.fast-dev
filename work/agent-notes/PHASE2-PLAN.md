@@ -1148,3 +1148,24 @@ allocator return and earlier saves, then join growth/no-growth/zero-length
 paths. These local bounds remain conditional on installed callee code and
 length bounds, and do not yet supply the whole-program gas/input invariant or
 a target-evaluator certificate. The claim remains infinity.
+
+### Full zero and no-growth cases now checked
+
+ExtendMemoryZero bounds the complete fixed routine at zero expansion by Work21
+and replay clock2, including stack-overflow and invalid-return exits.
+ExtendMemoryEntry bounds the complete nonzero no-growth case by Work17*M+569
+and replay M+51 under explicit entry ABI, lookup-cell/domain, length and capacity
+facts. Both cover the actual Named484.2, not a substituted smaller program.
+
+ExtendMemoryCapacityEntry covers the actual growth suffix248 after allocator
+return, through capacity clearing and capacity storage, and transfers the saved
+logical-length bound needed by final suffix363. Its bound is Work17*clearM+529
+and clockclearM+46. The allocator call/setup and its restored memory/register
+facts are the remaining local connection for the growth case. First generalize
+FrameAllocEntry's checked successful run to a composable bound for every initial
+clock, including insufficient-clock timeouts; then connect actual call134 and
+continuation116, preserving the saved slots and metadata/frame cells needed by
+CapacityEntry.Ready. Prove growth arithmetic and outer save/setup next.
+
+No whole-guest ABI/arena initialization or preservation, global gas accounting,
+input/state bound, unwind bound or finite certificate is claimed.

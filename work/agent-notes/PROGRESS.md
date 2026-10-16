@@ -1039,3 +1039,57 @@ Completed-run resource records for the Word cost revision:
 - No explicit sorry/admit/axiom/native_decide in new sources. Failed build
   recovery terms are excluded. claim.json remains infinity; no verifier, full
   audit, external submission or push was run.
+
+## Crep simplification ceiling and fixed-code pilot
+
+- `creploop-simplify-v4.log` passed (142 jobs, 76.16s elapsed,
+  1,445,596 KiB maximum child RSS, 3.808GiB peak observed host used RAM).
+  `simplifyExpCost`, `simplifyExpsCost`, `simplifyCost`, `simplifyCeiling`
+  prove arithmetic simplification cannot increase the program ceiling.
+  `entriesSafe_codeSafe`, `codeSafe_simplify`, `entriesSafe_simplifiedCode`
+  transport list checks to the actual simplified code map. All use only
+  propext and Quot.sound. Earlier attempts failed on unfolding and pattern
+  branch naming; recovery sorryAx logs are excluded, no explicit sorry added.
+- Added reproducible planning scan `scan-crep-ceiling-dag.py`: all 826 literal
+  DAGs parsed, maximum ceiling 126 at procedure 533. Next largest is 60 at
+  procedure 15. This is untrusted planning evidence, NOT a certified bound.
+- `crep-static-pilot.log` is building main procedure 0 and maximum procedure
+  533 against the actual fixed imports. Their dependency chains include
+  frontend declaration/translation proofs; the build remains live.
+- Generated ordinary `decide` checks for all 826 procedures, 52 chunks and
+  the full outputs-list equality/code invariant. These generated proof scripts
+  are pending Lean validation. `build-crep-static.py` and its progress recorder
+  support resumable bounded chunks under the same shared resource pool. The
+  full Crep batch has NOT been started while the pilot is active.
+- Inspected WordToWord.Proofs.CompileSemantics: its Pancake-facing theorem
+  needs no extra clock under noInstallCode/noAllocCode/noMtCode, empty stack,
+  code relation/domain and GC assumptions. Started WordToWordBound.Entry to
+  retain clock and stackMax in addition to result/FFI and derive code relation
+  from the actual full compiler. `wordword-entry.log` is still building; no
+  success is claimed for this new wrapper yet.
+
+## Uniform-bound feasibility audit and strategy adjustment
+
+- Reproducible `scan-flatten-nodes.py` evaluates the same syntax-node recurrence
+  as FlattenBound.nodes on the 826 individual Named procedure literal DAGs.
+  Stub IDs 0,1,2,4,5,6 have no individual Named files and are explicitly recorded
+  as excluded; this is not a full-code upper-bound proof. Largest parsed body:
+  Named713, 12,091 nodes. A corresponding kernel equality pilot is building.
+- Conditional composition arithmetic yields coefficient 348,442,536,960 per
+  source-clock unit for current uniform factors (Crep 256, Word 35, RawCall 2,
+  flattening limit 12,091, Lab 402). Even ignoring additive costs the Yukon
+  cap admits only 25,849 source-clock units. This is not a guest execution
+  bound or a formally composed compiler theorem; it exposes the excessive
+  slack in the uniform maximum-body route.
+- Updated Phase 2 plan to pursue execution-weighted costs, beginning with
+  flattening: charge actual callees/loop iterations their own work rather than
+  the largest initializer's body on every source-clock decrement. Keep existing
+  checked bounds as fallback/reference. Do not declare a feasible finite K from
+  multiplying global ceilings. The guest gas/input work proof remains open.
+- `flatten-fixed-size.log`, `wordword-entry.log`, `crep-static-pilot.log`,
+  `stack-static-all.log`, and `word-static-v2.log` are targeted builds sharing
+  exactly four Lean slots, not five independent slot pools. The resource guards
+  remain 24GiB host RAM and 85% disk. Current disk 55%, ~132GiB free.
+- Latest indexed completed prefixes: StackStatic Chunk30, WordStatic Chunk37.
+  New generated Crep checks and pending wrapper/size pilots are not in the
+  successful-proof manifest. No explicit sorry/admit/axiom/native_decide added.

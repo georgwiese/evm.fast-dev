@@ -201,7 +201,7 @@ theorem compCorrectShareInst {width : Nat} [NeZero width] {C F : Type}
     (ac : AsmConfigExact width) (limit : Nat) (op : WordMemOp) (v : Nat) (exp : WordLangExpHOL (BitVec width))
     (source : WordSemStateFiniteExact width (Nat × C) F) :
     Simulation ac limit (.shareInst op v exp) source := by
-  intro _ _ _ k f frame sourcePost target result bs bsPost n nPost compiled lens premises
+  intro safe supported bounded k f frame sourcePost target result bs bsPost n nPost compiled lens premises
   obtain ⟨execution, notError, related, conventions, flat, compilation, -, -, -, -,
     maxBound⟩ := premises
   rcases flatExpConventionsShareInstExpSimp flat with ⟨ad, rfl⟩ | ⟨ad, offset, rfl⟩

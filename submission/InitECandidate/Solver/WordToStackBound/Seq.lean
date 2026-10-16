@@ -15,9 +15,7 @@ theorem compCorrectSeqFirstNonNone {width : Nat} [NeZero width] {C F : Type}
     Simulation ac limit (.seq first second) source := by
   intro safe supported bounded k f frame sourcePost target result bs bsPost n nPost compiled lens premises
   have supportedParts := seqSupported supported
-  have costParts : cost first ≤ limit ∧ cost second ≤ limit := by
-    simp only [cost] at bounded
-    omega
+  have costParts := seqCeiling first second limit bounded
   rcases premises with ⟨execution, notError, related, conventions, flat,
     compilation, lengthBound, bitmapBound, bitmapPrefix, labels, maxBound⟩
   rcases firstCompile : compNative ac false first (bs, n) (k, f, frame) with
@@ -83,9 +81,7 @@ theorem compCorrectSeqFirstNone {width : Nat} [NeZero width] {C F : Type}
   classical
   intro safe supported bounded k f frame sourcePost target result bs bsPost n nPost compiled lens premises
   have supportedParts := seqSupported supported
-  have costParts : cost first ≤ limit ∧ cost second ≤ limit := by
-    simp only [cost] at bounded
-    omega
+  have costParts := seqCeiling first second limit bounded
   rcases premises with ⟨execution, notError, related, conventions, flat,
     compilation, lengthBound, bitmapBound, bitmapPrefix, labels, maxBound⟩
   rcases firstCompile : compNative ac false first (bs, n) (k, f, frame) with
@@ -159,7 +155,7 @@ theorem compCorrectSeqFirstNone {width : Nat} [NeZero width] {C F : Type}
           simp only [Option.map_some, ne_eq, Option.some.injEq]
           exact Ne.symm ((haltEqCompileResult value).2 dimension)
       refine ⟨clock, targetMiddle, some (.halt (.word 2)),
-        extendBudget limit source.clock middle.clock sourcePost.clock clock
+        extendBudget (2 * limit) source.clock middle.clock sourcePost.clock clock
           (cost first) (cost second) secondDecrease budget, ?_, ?_⟩
       · rw [StackSemEvaluate.evaluate_seq, StackSemEvaluateClock.fixClockEvaluate, targetRun]
         rfl
@@ -213,7 +209,7 @@ theorem compCorrectSeqFirstNone {width : Nat} [NeZero width] {C F : Type}
         rw [handlerEq] at conclusion
         exact conclusion
       refine ⟨clock + secondClock, targetPost, targetResult,
-        composeBudget limit source.clock middle.clock sourcePost.clock clock secondClock
+        composeBudget (2 * limit) source.clock middle.clock sourcePost.clock clock secondClock
           (cost first) (cost second) firstDecrease secondDecrease budget secondBudget,
         ?_, finalConclusion⟩
       rw [StackSemEvaluate.evaluate_seq, StackSemEvaluateClock.fixClockEvaluate]

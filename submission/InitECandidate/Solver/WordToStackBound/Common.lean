@@ -12,7 +12,7 @@ open Flapjack.WordToStackProofs.CompCorrect
 def Simulation {width : Nat} [NeZero width] {C F : Type}
     (ac : AsmConfigExact width) (limit : Nat) (program : WordLangProgHOL (BitVec width))
     (source : WordSemStateFiniteExact width (Nat × C) F) : Prop :=
-  CodeSafe limit source.code → noInstallSubprogsHOL program = true → cost program ≤ limit →
+  CodeSafe limit source.code → noInstallSubprogsHOL program = true → ceiling program ≤ limit →
   ∀ (k f frame : Nat)
     (sourcePost : WordSemStateFiniteExact width (Nat × C) F)
     (target : StackSemStateFiniteExact width C F)
@@ -30,7 +30,7 @@ def Simulation {width : Nat} [NeZero width] {C F : Type}
       maxVarHOL program < 2 * frame + 2 * k) →
     ∃ (extraClock : Nat) (targetPost : StackSemStateFiniteExact width C F)
       (targetResult : Option (StackSemResult width)),
-      extraClock ≤ limit * (source.clock - sourcePost.clock) + cost program ∧
+      extraClock ≤ (2 * limit) * (source.clock - sourcePost.clock) + cost program ∧
       StackSemEvaluate.evaluate (compiled, {target with clock := target.clock + extraClock}) =
         (targetResult, targetPost) ∧
       compCorrectResult ac k f frame source sourcePost targetPost result targetResult lens

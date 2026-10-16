@@ -10,5 +10,23 @@
     "source_bytes": 122811,
     "built_candidate_modules": 16,
     "scope": "candidate imports only; external and trusted imports omitted"
+  },
+  "InitECandidate.Proofs.BootstrapStraightLine": {
+    "candidate_modules": 255,
+    "source_bytes": 6244000,
+    "built_candidate_modules": 255,
+    "scope": "candidate imports only; external and trusted imports omitted"
+  },
+  "InitECandidate.Proofs.BootstrapCopyTrace": {
+    "candidate_modules": 248,
+    "source_bytes": 6158418,
+    "built_candidate_modules": 248,
+    "scope": "candidate imports only; external and trusted imports omitted"
+  },
+  "InitECandidate.Solver.BootstrapStartup": {
+    "candidate_modules": 276,
+    "source_bytes": 6452842,
+    "built_candidate_modules": 276,
+    "scope": "candidate imports only; external and trusted imports omitted"
   }
 }

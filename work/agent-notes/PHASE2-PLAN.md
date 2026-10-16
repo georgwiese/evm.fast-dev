@@ -522,3 +522,16 @@ the optimized stackFree/call sequence can spend that reserved unit on frame
 growth. This needs a checked pilot and all recursive cases before use.
 WordToStack needs corresponding accounting for shared-memory and raise work.
 The guest-wide gas/input potential remains a separate substantial obligation.
+
+The StackRawCall credit approach is now implemented provisionally under
+Solver/StackRawCallBound. BoundedSimulation adds `extra + credit <= allowance`
+to the original existential witnesses, retaining the actual evaluator, full
+state relation and the timeout/Halt-2 stack-space exceptions. Call/rawCall
+credit is one at nonzero source clock; other constructors reserve zero.
+The intended whole-pass theorem has `allowance = source.clock - post.clock`
+for both compTop and comp. Its entry wrapper derives the actual compiled-code
+relation from distinct keys and sourceCode, and aims for `clock + extra <=
+2 * clock` with identical complete FFI state. All constructors, loops, return
+and exception continuations have been prepared. The initial optimized-sequence
+pilot is compiling dependencies; none of this new pass is yet recorded as
+checked. A successful complete build and printed axiom audit are required.

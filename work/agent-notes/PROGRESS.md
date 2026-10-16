@@ -676,3 +676,25 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - User asked progress: measurement phase complete; finite proof substantially unfinished. Guest-wide gas/input potential, earlier-pass bounds and final composition remain. claim.json stays infinity. No explicit source sorrys introduced.
 - remove-direct-large: Elapsed (wall clock) time (h:mm:ss or m:ss): 7:51.37; Maximum resident set size (kbytes): 4954564; Exit status: 0; sampled peak used host memory 8.311 GiB.
 - stack-static-pilot-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:52.92; Maximum resident set size (kbytes): 2358088; Exit status: 0; sampled peak used host memory 5.741 GiB.
+
+### StackRawCall bounded induction in progress
+
+- Previous goal turn made concrete progress: first StackStatic batch passed,
+  generator and driver committed, full sequential check started. Revalidated
+  both live drivers (padded PID 890709 and StackStatic PID 965512).
+- Added provisional StackRawCallBound modules for reserved call credits,
+  optimized/standard sequences, primitive leaves, instructions, conditionals,
+  loops, raw/tail/returning calls, exceptions, jumps, recursive assembly and
+  actual compiled-code entry simulation. Original evaluator/state/guard
+  conclusions are retained. No new explicit source sorry or axiom.
+- Proposed extra bound is source.clock - post.clock; positive-clock calls
+  reserve one unit so frame-growth optimization can spend it. Entry target
+  clock is intended <= 2 * source clock with identical full FFI state.
+- Initial Optimized pilot runs in session 79158, rawcall-optimized.log, sharing
+  the existing four-slot pool. Dependencies are still compiling; these new
+  Solver modules are not yet successful proof evidence. Full assembly build
+  will follow this pilot. Source gas/input bound and earlier-pass work remain.
+- Added record-stack-static-progress.py, which indexes only completed chunk
+  logs against unchanged source hashes, excluding a running/failing suffix.
+  StackStatic has completed chunks0–1 (32 procedures); padded through chunk36
+  (37/54). Latest measured host use ~6.2 GiB, disk 50%.

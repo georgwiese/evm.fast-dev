@@ -786,3 +786,15 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   a full verifier or audit. No explicit source sorry/admit/native_decide/axiom;
   claim.json stays infinity. No push, PR or submission. Host memory last 4.6 GiB,
   disk 52%, with all auxiliary builds sharing the original four-slot pool.
+
+Completed-run resource records for the Word cost revision:
+
+- wordstack-pilot: Elapsed (wall clock) time (h:mm:ss or m:ss): 11:01.45; Maximum resident set size (kbytes): 2193996; Exit status: 0; sampled host memory peak 7.568 GiB.
+- word-cost-literals: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:53.64; Maximum resident set size (kbytes): 2472348; Exit status: 1; sampled host memory peak 7.176 GiB.
+- word-cost-literals-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:26.40; Maximum resident set size (kbytes): 1671336; Exit status: 0; sampled host memory peak 7.246 GiB.
+- wordstack-cases: Elapsed (wall clock) time (h:mm:ss or m:ss): 2:56.44; Maximum resident set size (kbytes): 2297312; Exit status: 1; sampled host memory peak 7.090 GiB.
+- word-static-pilot: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:05.42; Maximum resident set size (kbytes): 1783564; Exit status: 1; sampled host memory peak 6.829 GiB.
+- wordstack-weighted-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:49.92; Maximum resident set size (kbytes): 1739748; Exit status: 1; sampled host memory peak 6.590 GiB.
+- wordstack-weighted-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:53.49; Maximum resident set size (kbytes): 1742204; Exit status: 1; sampled host memory peak 6.268 GiB.
+- wordstack-weighted-v4: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:25.81; Maximum resident set size (kbytes): 1734976; Exit status: 1; sampled host memory peak 6.273 GiB.
+- wordstack-loop: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.93; Maximum resident set size (kbytes): 1896900; Exit status: 0; sampled host memory peak 4.834 GiB.

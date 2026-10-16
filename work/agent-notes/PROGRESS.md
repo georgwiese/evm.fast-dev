@@ -1093,3 +1093,37 @@ Completed-run resource records for the Word cost revision:
 - Latest indexed completed prefixes: StackStatic Chunk30, WordStatic Chunk37.
   New generated Crep checks and pending wrapper/size pilots are not in the
   successful-proof manifest. No explicit sorry/admit/axiom/native_decide added.
+
+## Execution-weighted flattening: basic blocks, sequences, and tail calls
+
+- The whole Named713 size equality passed: 12,091 nodes. The first weighted
+  initializer pilot failed because the entire procedure is not call-free:
+  it has two calls and four ticks. That failed log is excluded from evidence.
+- Corrected the pilot to NamedBody713_12077, its large initialization tail:
+  ordinary kernel-checked decide proves 11,995 nodes and one tick. basicClock
+  bounds clock consumption; basicPaid proves PaidProp 11,996 for every source
+  state. The extra Lab clock is therefore <=47,984 for this actual tail run,
+  conditional on the original flattening hypotheses. This is not yet a bound
+  for the entire initializer or the guest.
+- Straight.lean handles call-free/loop-free supported programs without a
+  global code-size ceiling. Common/Sequence retain all original simulation
+  payloads and add explicit credits for actual sequence sub-runs.
+- Results/CallTail passed: tail-call entry carries the callee's credits with
+  no additional overhead credit, because both source and target consume a
+  clock. The actual findCode lookup, nonerror conditions and state/code
+  relations are preserved. No maximum-callee-size premise remains.
+- Returning-call, conditional and loop credit composition drafts are checking
+  in flatten-weighted-control.log. They are not successful evidence yet.
+- No explicit sorry/admit/axiom/native_decide was introduced. Failed Lean
+  recovery terms are excluded from successful proof evidence. claim.json is
+  still infinity; no full audit/verifier, network contact or submission ran.
+
+Successful targeted build resources (wall time includes shared-slot waiting):
+- flatten-fixed-size: 4:35.74; max child RSS 3374232 KiB; peak host used 5.757 GiB.
+- flatten-straight: 1:27.32; max child RSS 1848076 KiB; peak host used 4.602 GiB.
+- flatten-weighted-pilot-v2: 2:17.47; max child RSS 2861380 KiB; peak host used 5.111 GiB.
+- flatten-weighted-tail: 1:28.59; max child RSS 1783484 KiB; peak host used 4.667 GiB.
+
+Latest indexed fixed-code prefixes: Stack Chunk33, Word Chunk42. Other
+static builds and Word optimizer entry remain live in the shared four-slot pool.
+Disk is 55%, ~131 GiB free, below the required stop threshold.

@@ -787,8 +787,8 @@ need to be supplied in composition.
 
 `scan-flatten-nodes.py` scans the 826 individual Named Stack procedure literal DAGs
 (stub IDs have no individual Named files and are explicitly excluded). The largest
-has 12,091 syntax nodes (Named713, the straight-line BLS constant initializer).
-A kernel size pilot is building; the scan itself is not proof. Combining the
+has 12,091 syntax nodes (Named713, the BLS constant initializer).
+The 12,091-node equality is now kernel checked; the scan itself is not proof. Combining the
 candidate Crep factor 256, corrected Word factor 35, RawCall factor 2, direct
 StackRemove additive 1, current whole-call flattening budget and Lab factor 402
 would give linear coefficient
@@ -810,3 +810,20 @@ must bound those weighted executions. Tighten Lab instruction costs by actual
 encoded line shape where needed; do not just multiply all global maxima and
 present the result as a feasible finite K. The source work proof is still a
 major independent obligation, not solved by the compiler cost lemmas.
+
+
+### Checked execution-weighted pilot
+
+The entire BLS initializer contains calls. Its main tail NamedBody713_12077
+is basic, has 11,995 syntax nodes and one tick. All three equalities and
+`PaidProp 11996 initializationTail source` are checked; this means at most
+47,984 extra Lab clock steps under the original flattening hypotheses.
+The whole initializer still requires its setup calls and control flow.
+
+`PaidConcl credits` retains the original target execution, result, FFI and
+state relation with `extra <= 4*credits`. `paidSeq` adds credits of actual
+sub-runs; `paidCallTail` passes the selected callee's credits without a
+maximum-body-size factor. Neither assumes the target run as a premise.
+Next: returning/exception calls and loops, then assemble a source-work
+judgment and relate it to gas/input work. Local callback composition rules
+are intermediate lemmas, not the final weighted compiler theorem.

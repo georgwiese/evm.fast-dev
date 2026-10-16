@@ -53,7 +53,7 @@ theorem compiledEntry {width : Nat} [NeZero width] {C F : Type}
     (remaining : List (Option (Spt Nat)))
     (source sourceFinal : WordSemStateFiniteExact width C F)
     (start : Nat) (result : Option (WordSemResult width))
-    (compiled : compile config assembly inputs = (remaining, outputs))
+    (compiled : Flapjack.Compiler.Backend.WordToWord.compile config assembly inputs = (remaining, outputs))
     (gc : Flapjack.Compiler.Backend.WordSimp.gcFunConstOk source.gcFun)
     (noInstall : noInstallCode source.code) (noAlloc : noAllocCode source.code)
     (noMt : noMtCode source.code) (stack : source.stack = [])
@@ -70,7 +70,7 @@ theorem compiledEntry {width : Nat} [NeZero width] {C F : Type}
   have related := no_mt_code_rel_ext _ _ ⟨noMtInputs, extended⟩
   have domain : sptDomain (sptFromAList inputs) = sptDomain (sptFromAList outputs) := by
     have expansion := compiled
-    simp only [compile, Prod.mk.injEq] at expansion
+    simp only [Flapjack.Compiler.Backend.WordToWord.compile, Prod.mk.injEq] at expansion
     obtain ⟨_, rfl⟩ := expansion
     funext n
     simp only [sptDomain, sptLookup_sptFromAList]
@@ -86,7 +86,7 @@ theorem compiledEntry {width : Nat} [NeZero width] {C F : Type}
   change (evaluate (.call none (some start) [0] none)
     { source with code := sptFromAList outputs }).1 = result ∧ _ at agree
   rw [targetRun] at agree
-  exact ⟨targetFinal, by simpa only [agree.1] using targetRun, agree.2⟩
+  exact ⟨targetFinal, congrArg (fun r => (r, targetFinal)) agree.1, agree.2⟩
 
 end InitECandidate.Solver.WordToWordBound
 #print axioms InitECandidate.Solver.WordToWordBound.entryRunsAgree

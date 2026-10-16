@@ -18,7 +18,8 @@ variable {width : Nat} [NeZero width] {C F : Type}
 /-- `Call` case without a return handler (a tail call). -/
 theorem paidCallTail (credits : Nat) (s1 : StackSemStateFiniteExact width C F) (dest : Nat ⊕ Nat)
     (handler : Option (HolProg width × Nat × Nat))
-    (callee : s1.clock ≠ 0 → ∀ key prog, sptLookup key s1.code = some prog →
+    (callee : s1.clock ≠ 0 → ∀ prog,
+      StackSemControl.findCode dest s1.regs s1.code = some prog →
       PaidProp credits prog (StackSemStateOps.decClock s1)) :
     PaidProp credits (.call none dest handler) s1 := by
   rintro t r s2 n l cs bs t1 ⟨ev, nerr, rel, -, inst, -⟩
@@ -61,7 +62,7 @@ theorem paidCallTail (credits : Nat) (s1 : StackSemStateFiniteExact width C F) (
       { t1 with pc := pc', clock := t1.clock - 1 } := StateRel.stateRelDecClock rel
   have lt : MeasureLt prog (StackSemStateOps.decClock s1) (.call none dest none) s1 :=
     .inl (by simp [StackSemStateOps.decClock]; omega)
-  have ph := callee h0 d prog hlook true (some x') s' d (StackAlloc.nextLabHOL prog 2) [] []
+  have ph := callee h0 prog hfind true (some x') s' d (StackAlloc.nextLabHOL prog 2) [] []
     { t1 with pc := pc', clock := t1.clock - 1 }
     ⟨e2, nerr, rel', caP, instP, by simp [entry]⟩
   exact paidConclComposeSome credits credits (runEnter (by omega) step) rfl rfl rfl rfl rfl

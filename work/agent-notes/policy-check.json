@@ -973,10 +973,14 @@
     "submission/InitECandidate/Solver/FlattenWeighted/Common.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/FixedInitializer.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/If.lean",
+    "submission/InitECandidate/Solver/FlattenWeighted/InitializerWork.lean",
+    "submission/InitECandidate/Solver/FlattenWeighted/Jumps.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/Loop.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/Results.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/Sequence.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/Straight.lean",
+    "submission/InitECandidate/Solver/FlattenWeighted/WholeCall.lean",
+    "submission/InitECandidate/Solver/FlattenWeighted/Work.lean",
     "submission/InitECandidate/Solver/JumpCmpNearCost.lean",
     "submission/InitECandidate/Solver/JumpNearCost.lean",
     "submission/InitECandidate/Solver/LabBound/Asm.lean",
@@ -3764,8 +3768,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 60607,
-  "package_bytes": 2249347688,
+  "package_entries": 60611,
+  "package_bytes": 2249371994,
   "claim": {
     "K": "infinity"
   },

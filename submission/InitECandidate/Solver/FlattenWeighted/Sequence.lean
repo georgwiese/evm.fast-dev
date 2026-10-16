@@ -2,8 +2,8 @@ import InitECandidate.Solver.FlattenWeighted.Common
 import InitECandidate.Solver.FlattenBound.Control
 import Flapjack.Compiler.Backend.StackToLab.Proofs.FlattenCorrect.Control
 
-/-! Composition retains the numerical witnesses and telescopes spent source
-clock. The Seq rule assumes bounded simulations for its actual sub-runs. -/
+/-! Composition retains the execution witnesses and adds explicit credits.
+The Seq rule requires a continuation only when the first source run returns none. -/
 namespace InitECandidate.Solver.FlattenWeighted
 open Flapjack.Compiler.Backend
 open Flapjack Flapjack.Compiler.Backend.LabLang Flapjack.Compiler.Backend.LabSem

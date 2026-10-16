@@ -1172,3 +1172,36 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   Disk remains 55%, ~130 GiB free. Incremental policy check passed and all
   2552 indexed source hashes matched (4173 printed axiom checks).
   No full audit/verifier, push, PR, external contact or Yukon submit was run.
+
+## Mixed native instruction and NOP padding costs
+
+- Identified unnecessary slack in the old 402*Lab clock result: each padding
+  byte was charged at the worst-case full-instruction encoder bound 16.
+- NopBound proves the restricted NOP assertion contract with one actual
+  evaluator/native transition, using the existing checked Skip proof. Its
+  PaddingContract also checks the four-byte NOP encoding. NopCostTight and
+  LabCostTight derive the real padded-prefix witness <=bound+bytes.length/4,
+  preserving memory, arbitrary interference and complete target state relations.
+- The complete LabBoundTight family passed in lab-tight.log (10,428 jobs,
+  mostly cached dependency replays; 3:19.15 elapsed, max child RSS 6,585,376 KiB,
+  peak observed host used 5.853 GiB). padded_riscv gives <=24*Lab clock for the
+  checked fixed padded program, a 16.75-fold improvement over 402. All printed
+  axioms are permitted. This is an incremental targeted build, not a full audit
+  or verifier run. Initial-state integration and actual Lab execution remain
+  premises.
+- The earlier nop-tight.log pilot passed with a weaker bytes-count bound;
+  only the final current sources from lab-tight.log are indexed. The adaptation
+  script adapt-lab-tight.py reproduces the full Lab case family from the checked
+  prior local proofs; only cost interfaces/arithmetic changed.
+- loopWorkOfRank/loopPaidOfRank passed in flatten-loop-rank.log (811 jobs,
+  29.63s elapsed, 1,753,992 KiB max child RSS, 5.598 GiB peak host used).
+  This gives (rank+1)*perBody credits under a genuine source body budget and
+  decreasing invariant. It is not yet a guest-loop invariant. The companion
+  consumed-clock rank theorem is checking in flatten-loop-clock-rank.log.
+- Corrected WordStatic v2 finished all 54 targets, including the actual outputs
+  equality and fixedWordCodeSafe 17. Total v2 elapsed 1:08:57, max child RSS
+  4,124,344 KiB, peak observed host used 6.805 GiB. The prior failed ceiling-4
+  batch remains excluded. Latest indexed Stack prefix is Chunk38 (39/52).
+- Crep pilot and Stack static batch remain live in the same four-slot pool.
+  claim.json remains infinity. No explicit sorry/admit/native_decide/axiom,
+  network contact, full audit/verifier, push, PR or Yukon submission was added.

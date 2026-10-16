@@ -576,9 +576,24 @@ source decrement pays for the next body allowance. All original timeout,
 overflow, exit, return and exception conclusions are retained. This is a guarded
 inductive case, not yet the assembled recursive Word-to-Stack theorem.
 
-The combined revised Seq/If/tail-call/shared-memory/leaf build and first
-WordStatic chunk are still running. The larger optimized713 ceiling check is
-costly; its earlier local-cost pilot does not prove this new ceiling. Additional
-zero-extra-clock leaf proofs and returning-call callee/continuation pilots are
-being built. Returning calls, handlers and full assembly remain; fixed-code
-equality to StackAnalysis.outputs and initialization also remain.
+The combined revised Seq/If/tail-call/shared-memory/leaf build passed all 1007
+jobs, including WordStatic.Chunk0 and both ceiling pilots. All remaining simple
+leaf builds also passed (wordstack-leaves.log, 958 jobs; wordstack-more.log,
+912 jobs). The full WordStatic driver is now checking 52 chunks followed by
+Programs and Fixed; only completed chunks count as checked.
+
+The no-handler returning Call is now bounded end to end under the guarded IHs
+(wordstack-callnone-v2.log, 972 jobs). Its callee and continuation each carry
+local cost <= limit; callBudget pays their sum from one source decrement.
+The proof derives code preservation through the callee and pop, restores the
+full caller relation, and retains timeout, allocation-failure, terminal and
+exception-result paths. HandlerState provides checked eligibility extraction
+and a forgetful map to the original simulation for reusing pure state helpers.
+The handler-present Call and final recursive assembly still remain. Fixed-code
+initialization and the guest-wide source-clock potential remain separate.
+
+StackStatic/Fixed.lean now contains explicit equality and CodeSafe goals for
+Raw.stack and Alloc.stack. It is unverified; the running 53-target stack driver
+only ends at Programs. Before checking Fixed after those chunks, inspect the
+Raw/Alloc umbrella import costs and retain the shared resource guard. No full
+baseline audit or verifier is authorized.

@@ -198,6 +198,14 @@
       "sha256": "af5766ec2b852f71824eda1d261deefc4238f1a506fd2cc33707f28e65e1809b"
     },
     {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Chunk5.lean",
+      "sha256": "a87f5edb69015b14be2ba014f4bb7e23dc08cbfd1cb1c29dcb51f1cfcddd8961"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Chunk6.lean",
+      "sha256": "8720b2d26fb7b8b443b05b6dbe64008a4aeeca75703750f49c19cb196e5dc005"
+    },
+    {
       "path": "submission/InitECandidate/Solver/CrepStatic/Procedure0.lean",
       "sha256": "2df2c23fd47146e29a3dfae1cd18675d8c6a4ba1af595ecc95fd6d781ec40ae9"
     },
@@ -210,8 +218,56 @@
       "sha256": "e2fe99a722fc6beb8176c57ebe3312d229be46a756cd580560d90ffcbff4126d"
     },
     {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure100.lean",
+      "sha256": "396085ed94025585718ccc1faecb62920ca2a05ca21eb8ddc4a57f048aca2a08"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure101.lean",
+      "sha256": "b51878e21a2ab8dfeb741db184ee141c6bf2e86364f3493b35e027e52b60ca40"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure102.lean",
+      "sha256": "b8025bd2ac28983f10460ff00100a66b1202a727abdc1c564305178ec37d4100"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure103.lean",
+      "sha256": "24421b2d83653ed79872eac9c904d1048517c658a958fdd9c86f8f2ad8f49916"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure104.lean",
+      "sha256": "9e68cffbfc84bc9a7fad0dfd598b08977794dec9bd28f1fa0927653dd223689a"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure105.lean",
+      "sha256": "d6ae5a6bfa3aad9f002d3ed240d75090586958bfcdeef7816442bd26ecfe87f4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure106.lean",
+      "sha256": "4b7c30c9257e60a47392db1b1163816bb708abffce068a5c6ffc504b1a30915e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure107.lean",
+      "sha256": "9040113580242832d9a1f5415b1ef071cf18ec6f5da0c33fcb30912c6141aeb1"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure108.lean",
+      "sha256": "cf8b3caf6fe74be7f9d7423acd462777685415be8f8e6683799b736207a98235"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure109.lean",
+      "sha256": "87989a2cea07c10aa9df0903f9a82ca2a60ce6b7169a7e65948470cbb29038c7"
+    },
+    {
       "path": "submission/InitECandidate/Solver/CrepStatic/Procedure11.lean",
       "sha256": "354b9784d91d5becc5d56b954b16d4bf5730754119a029c797398846094796d6"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure110.lean",
+      "sha256": "5d0edf3efe00af99b23139917aee66a6f0cc670770f1a9623ae51b79837a7ced"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure111.lean",
+      "sha256": "a5df23a1a8fbcde2cc59edfbca65bbda0c58b586bddcae24f332503617553fa9"
     },
     {
       "path": "submission/InitECandidate/Solver/CrepStatic/Procedure12.lean",
@@ -518,8 +574,88 @@
       "sha256": "bc0479ccdbb6ca45fb80cdf5634d3c05e6a2f23426984ac3ec558f9fd85bc971"
     },
     {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure80.lean",
+      "sha256": "6649bc836b013484c73caf94288eb2ffc43ab4e71686ec617fa82afd1e7433ea"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure81.lean",
+      "sha256": "76b3ef95802a09c9a82a629a107177d8a4b5b656a7c9140c65b23d7a7a12e0da"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure82.lean",
+      "sha256": "147334df341eb474b7d4dd923cca46cdb2ef5b127b67a365161a532e7f80b832"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure83.lean",
+      "sha256": "2d606abe26ebea7d9ea22485061666423c9d7dbe7c48f9fd902f8ca536f09c1b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure84.lean",
+      "sha256": "2b2ea1522f1231f25cbccee782a98fdeacea70244f89125540fcbd1f7c7c5a59"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure85.lean",
+      "sha256": "8739ec8a98b16457d212cc76c981b4f1ecd5cd4dce38db14eb39a699650c31a6"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure86.lean",
+      "sha256": "ed6b23b97edb2e29a8f3bfb6839b36fc80ce931d42793130c349b9ea7102981c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure87.lean",
+      "sha256": "39c89c0364eb5d430909a9e2ff5246a5caca3bf3df75b714d9a970dc6ea803ae"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure88.lean",
+      "sha256": "3258a630c95f026f37e40aca5e43b0f4edcb621eb6323d3e435ff3ad3bab805b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure89.lean",
+      "sha256": "79fc45598bf765af453fe248c028681d3f15141f4da7273b109834a583688317"
+    },
+    {
       "path": "submission/InitECandidate/Solver/CrepStatic/Procedure9.lean",
       "sha256": "ab7a518f783b0c6d50c11dfaacfd49554926a57bb365fe6ae58c8511d7eeb61a"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure90.lean",
+      "sha256": "58c75bfd2f31c838b7016b1ca3697e32227e6540f95c41b9b319be53632b70b2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure91.lean",
+      "sha256": "a49914595abed0b0f73cdb840df98ba1655a32389ea6dfcb17d24cece830a490"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure92.lean",
+      "sha256": "1cd7d639675756083c5be6348e009b887be469f97b966e6b17928559dd1c9eeb"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure93.lean",
+      "sha256": "8cbaf4229217184000f41e1e015647e3762e62848992bc941cdc92cd8b3f0df5"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure94.lean",
+      "sha256": "281f8a2c666ecacf775a866f1f92a20eabd38ddf2a5517043dd78235d4622f49"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure95.lean",
+      "sha256": "5c043d1a30811cac43316adc869db73e52dd58db17f8d345303d2276eb17f01b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure96.lean",
+      "sha256": "12bf8ace059474b632bc19db7b64152cd37f180383825e90bef84a9f54380663"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure97.lean",
+      "sha256": "595381c94caad4ed59a6fcb549d496648e3876923cd43a6498ac48a249fe127c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure98.lean",
+      "sha256": "bc2ec66df14cb68c15ff971d6e5754403e9e76cffa32235570b5fc71f623d786"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure99.lean",
+      "sha256": "3935715f5707f330d14ef107b5591e6cee5d03e388519d6d30dcdae37bc76256"
     },
     {
       "path": "submission/InitECandidate/Solver/CrepToLoopBound/Assembly.lean",
@@ -682,12 +818,20 @@
       "sha256": "e755a178b0b582bc964f412af85b48185304ad95e8ac5b06bd6f3d03eb177276"
     },
     {
+      "path": "submission/InitECandidate/Solver/FlattenWeighted/BasicTimeout.lean",
+      "sha256": "3cdc923c73bc0dcef66153f2450b2c3cac136d5117055e10f8f4e410307b0efd"
+    },
+    {
       "path": "submission/InitECandidate/Solver/FlattenWeighted/CallReturn.lean",
       "sha256": "2c9676f5a3e41904d912947ff808ecfcf7091819de636ea77fb8d4b342d8ff94"
     },
     {
       "path": "submission/InitECandidate/Solver/FlattenWeighted/CallTail.lean",
       "sha256": "19c0db8a7aed8b0fa2ff818be7ed1749328183b646972fecae4c2b31d0694bb6"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/FlattenWeighted/ClockAgreement.lean",
+      "sha256": "36f73c3f85fd0312251aa7c3c41e811cd149a5658acab6c8a08f551b087fb13c"
     },
     {
       "path": "submission/InitECandidate/Solver/FlattenWeighted/Common.lean",
@@ -722,6 +866,10 @@
       "sha256": "9c093b7fe754e4ab62f297c60b30bbd75c46eebccc6938b931f23b519d489cbd"
     },
     {
+      "path": "submission/InitECandidate/Solver/FlattenWeighted/LoopTimeout.lean",
+      "sha256": "f26d3c3f80a2d52e7584cbf9cea2a30bc79be6db3cbc69c60c2177e4516ddbb2"
+    },
+    {
       "path": "submission/InitECandidate/Solver/FlattenWeighted/Results.lean",
       "sha256": "77e6d4eb88de01b93d77346bfe2eb2a7b90bbd405056d13ba3e7056e59af15ac"
     },
@@ -744,6 +892,14 @@
     {
       "path": "submission/InitECandidate/Solver/GuestWork/MemzeroTail.lean",
       "sha256": "6185d0e344bcac1fdb262f9caeb1f8598c10dbc6917abf43bce02801eb3a4b17"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GuestWork/MemzeroTailBounded.lean",
+      "sha256": "8ca76f1334a2bc694cc360eaaf390534572546098216216154cce08fbbf29c44"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GuestWork/MemzeroTailClock.lean",
+      "sha256": "ed9bd8ccb4ab740473c7c901c067d73f1acae21aec3512c9886c68009378d65a"
     },
     {
       "path": "submission/InitECandidate/Solver/GuestWork/MemzeroTailRank.lean",
@@ -4866,6 +5022,10 @@
       "sha256": "06b7c5d78871669c88fc1b0754eb89c5f81d4b14f8158fd07f6e2b57facd2634"
     },
     {
+      "path": "submission/InitECandidate/Solver/StackStatic/Chunk44.lean",
+      "sha256": "141f640370d5e8471c1c967e0041a2ae43fb4d4a558ee9c624669794e87d99a4"
+    },
+    {
       "path": "submission/InitECandidate/Solver/StackStatic/Chunk5.lean",
       "sha256": "a1f7f45137d9f34a71b3dbc556ded567599f31dfa03ae57de7cf510c0be33b79"
     },
@@ -7602,12 +7762,76 @@
       "sha256": "0b60795a89331096776a839d4165772d16e7fefcf77f689933de3dab7b936fc7"
     },
     {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure768.lean",
+      "sha256": "f9c507fd1d8506df407f020738f5fca26d4001700543170c10ba69b8853b83a2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure769.lean",
+      "sha256": "63e6140d7d377e74f5a3ab504d4a2f13bd981cb30ab7e0efdecad5f9b02c9bbc"
+    },
+    {
       "path": "submission/InitECandidate/Solver/StackStatic/Procedure77.lean",
       "sha256": "79fa63289d2700f8c9067ce272fba8d67ea5cd165c922aac2d89595d87a96304"
     },
     {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure770.lean",
+      "sha256": "c22c4100b9a4fa42cb13db6d409b97d89af7bbe1da734bbc29d1868d3e9f3433"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure771.lean",
+      "sha256": "e377541d4db2cecfaafe25b9ec00d8abf21e6ceb0921c4d0af2661b425a494a2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure772.lean",
+      "sha256": "9d622b0b88a6b6a9504c835b6cd5f3197abad93a31875ce51097241f4a6adfb0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure773.lean",
+      "sha256": "e2ea7d2737a48d411d6e4d14136dda017c11147105420aee58ea33086317791c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure774.lean",
+      "sha256": "6d2b82f7a3614d8b9369f9b6af29a9a50883b670d0f1f17f8e57282bd0999d91"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure775.lean",
+      "sha256": "aebc622b1d6056c627c8509aaeff8131394d702fbea6d28dd0506078f6fb7c4c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure776.lean",
+      "sha256": "4fddd920519cb30c3e030a0f3acc5b29688cb41b669c83965938b1688645d442"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure777.lean",
+      "sha256": "c69982af4f66cc680d22ea6f90315b6e2127cdafe2002d4a337c5f461785a5af"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure778.lean",
+      "sha256": "8f69f609fafb99c84c34a975beacf5777cbae6503760797a1f68ff58ead75804"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure779.lean",
+      "sha256": "0a4d9e348300cd54b8edf9d1864dbf66394d38a70ad7d231def25aaa2964bc0c"
+    },
+    {
       "path": "submission/InitECandidate/Solver/StackStatic/Procedure78.lean",
       "sha256": "84f0a58089169f10c9773705029c770f05aecee72eabf4114019ff6542904e14"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure780.lean",
+      "sha256": "bbaa1df3bb9406ee0738f4e2590f03d97bd9eb1c76b2d8b3c215d1a78972afae"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure781.lean",
+      "sha256": "ce0b8da70f5cd2fce95c72677365f99be49b08361ab46610148ae174c57dbac4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure782.lean",
+      "sha256": "f36f0475acd0978d0ed6245d5744aa04dd75ed91ccee633c487cf1d576e6992c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure783.lean",
+      "sha256": "c50f59fb1d3e41f5554caf649aeeabb48e953fddd47446ef72fe39b37690b79f"
     },
     {
       "path": "submission/InitECandidate/Solver/StackStatic/Procedure79.lean",
@@ -39952,7 +40176,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.basicClock",
@@ -39961,7 +40185,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.basicPaid",
@@ -39970,7 +40194,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidOfBounded",
@@ -39979,7 +40203,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidMono",
@@ -39988,7 +40212,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.initializationTail_basic",
@@ -40027,7 +40251,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidSeq",
@@ -40036,7 +40260,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.straightBounded",
@@ -40045,7 +40269,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk31Eligible",
@@ -42174,7 +42398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidConclComposeSome",
@@ -42183,7 +42407,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidConclResult",
@@ -42192,7 +42416,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidConclVloc",
@@ -42201,7 +42425,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidCallPropagate",
@@ -42210,7 +42434,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidCallRet",
@@ -42219,7 +42443,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidConclStay",
@@ -42228,7 +42452,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidIf",
@@ -42237,7 +42461,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidIfSelected",
@@ -42246,7 +42470,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidLoopReentry",
@@ -42255,7 +42479,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidLoop",
@@ -42264,7 +42488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk34Eligible",
@@ -43364,7 +43588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.paidRawCall",
@@ -43373,7 +43597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.weightedCallCorrect",
@@ -43391,7 +43615,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk35Eligible",
@@ -46169,7 +46393,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.loopPaidOfRank",
@@ -46178,7 +46402,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.FlattenWeighted.loopClockOfRank",
@@ -46187,7 +46411,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk39Eligible",
@@ -47784,21 +48008,21 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_nodes",
       "axioms": [
         "propext"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_ticks",
       "axioms": [
         "propext"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_work",
@@ -47807,7 +48031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_clock",
@@ -47816,7 +48040,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_continues",
@@ -47825,7 +48049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.body_decreases",
@@ -47834,7 +48058,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.loop_work",
@@ -47843,7 +48067,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.loop_clock",
@@ -47852,7 +48076,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "memzero-tail-v9.log"
+      "successful_log": "memzero-bounded.log"
     },
     {
       "theorem": "InitECandidate.Solver.StackStatic.rawChunk43Eligible",
@@ -48465,6 +48689,681 @@
       ],
       "successful_log": "crep-static-all.log",
       "completed_through": "END 5/54 InitECandidate.Solver.CrepStatic.Chunk4 140.88s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.FlattenWeighted.basicTimeoutClock",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memzero-bounded.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.FlattenWeighted.reclockAgreement",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memzero-bounded.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.FlattenWeighted.loopTimeoutClock",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memzero-bounded.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.FlattenWeighted.basicLoop_noTimeout",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memzero-bounded.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.bounded_execution",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memzero-bounded.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.enough_clock",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memzero-bounded.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.MemzeroTail.bounded_paid",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memzero-bounded.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackStatic.rawChunk44Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackStatic.allocChunk44Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw768Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc768Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw769Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc769Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw770Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc770Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw771Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc771Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw772Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc772Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw773Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc773Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw774Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc774Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw775Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc775Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw776Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc776Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw777Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc777Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw778Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc778Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw779Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc779Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw780Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc780Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw781Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc781Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw782Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc782Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.raw783Eligible",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.StackRemoveDirect.alloc783Supported",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "stack-static-v3.log",
+      "completed_through": "END 5/14 InitECandidate.Solver.StackStatic.Chunk44 179.39s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.chunk5Safe",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.chunk6Safe",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling100",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling101",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling102",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling103",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling104",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling105",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling106",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling107",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling108",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling109",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling110",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling111",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling80",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling81",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling82",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling83",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling84",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling85",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling86",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling87",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling88",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling89",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling90",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling91",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling92",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling93",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling94",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling95",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling96",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling97",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling98",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CrepStatic.ceiling99",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "crep-static-all.log",
+      "completed_through": "END 7/54 InitECandidate.Solver.CrepStatic.Chunk6 67.18s"
     }
   ]
 }

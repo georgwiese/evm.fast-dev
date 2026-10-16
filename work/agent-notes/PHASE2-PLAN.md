@@ -955,3 +955,20 @@ Next, prove zero clock on timeout and apply the clock bound with an initial cloc
 strictly above 3*(remaining+1); clock-extension determinism can then compare this
 bounded run with an arbitrary terminating run. This avoids assuming that a
 consumed-clock bound alone supplies a small initial execution clock.
+
+### Sufficient initial clock closed for the byte-tail pilot
+
+`FlattenWeighted.basicTimeoutClock` and `loopTimeoutClock` prove the zero-clock
+property on timeout. `basicLoop_noTimeout` converts a consumed-clock bound into
+a sufficient initial clock. `reclockAgreement` compares two non-timeout runs
+via the fixed clock-extension theorem and proves equal results and equal whole
+final states after setting unused clock to zero.
+
+`GuestWork.MemzeroTail.bounded_execution` now gives the actual byte loop a run at
+`3*(length.toNat-index.toNat+1)+1` clock with the original result and full state
+apart from unused clock, together with `29*(remaining+1)` Work credits. All
+these statements passed in memzero-bounded.log. No minimal-clock assumption or
+target execution premise is introduced. Next concrete integration is the other
+memzero loops and the whole-procedure entry; the 32-byte/8-byte guards require
+an index/length bound that prevents wrapping before comparison. Later, length
+and invocation counts must be tied to actual guest gas/input/state invariants.

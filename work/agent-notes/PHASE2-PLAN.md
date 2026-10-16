@@ -765,3 +765,48 @@ fixed simplified Crep code ceiling; audit/transport the clock-preserving earlier
 passes and Word optimizations; discharge entry/initialization premises for each
 bound. Continue the guest-wide gas/input/witness potential in parallel with that
 logical plan (within the same resource pool, without spawning agents).
+
+
+### Fixed Crep ceiling and Word optimizer gate
+
+Arithmetic simplification is now proved nonincreasing for expression cost,
+program cost and recursive ceiling. List checks imply CodeSafe for both the
+original and simplified source code. The planning scan of all 826 fixed Crep
+DAGs suggests L=126, hence an entry multiplier of 256; ordinary Lean `decide`
+checks are generated and the first/main and maximum pilots are building.
+Do not treat the scan or generated statements as proof.
+
+The pinned WordToWord.Proofs.CompileSemantics already proves equal-clock
+entry runs for no-Install/no-Alloc/no-MustTerminate source code, despite the
+more general CompileWordToWord theorem's existential offset. A new entry wrapper
+is being checked to expose clock, result, full FFI and stackMax for the actual
+full compiler; the fixed eligibility and native/certifying compiler bridge still
+need to be supplied in composition.
+
+### Numerical feasibility changes the next strategy
+
+`scan-flatten-nodes.py` scans the 826 individual Named Stack procedure literal DAGs
+(stub IDs have no individual Named files and are explicitly excluded). The largest
+has 12,091 syntax nodes (Named713, the straight-line BLS constant initializer).
+A kernel size pilot is building; the scan itself is not proof. Combining the
+candidate Crep factor 256, corrected Word factor 35, RawCall factor 2, direct
+StackRemove additive 1, current whole-call flattening budget and Lab factor 402
+would give linear coefficient
+
+    402 * (4*12091 + 5) * 2 * 35 * 256 = 348442536960.
+
+Even ignoring additive costs this leaves only floor(9007199254740984/coefficient)
+=25,849 source-clock units below Yukon's cap. This is conditional arithmetic:
+fixed ceilings, original compiler premises, the end-to-end composition and any
+source-clock lower/upper bound are not established by it. Nevertheless it makes
+the uniform maximum-body approach an implausible final certificate route.
+
+Change the next quantitative strategy: retain the checked uniform simulations
+as fallback/reference results, but develop execution-weighted cost accounting,
+starting with Stack flattening. Charge each actual callee/body execution its
+own cost, so one large straight-line initializer is paid when it runs rather
+than on every unrelated source-clock decrement. Source gas/input potentials
+must bound those weighted executions. Tighten Lab instruction costs by actual
+encoded line shape where needed; do not just multiply all global maxima and
+present the result as a feasible finite K. The source work proof is still a
+major independent obligation, not solved by the compiler cost lemmas.

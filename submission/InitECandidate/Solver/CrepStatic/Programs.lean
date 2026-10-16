@@ -1,0 +1,69 @@
+import InitECandidate.Solver.CrepStatic.Chunk0
+import InitECandidate.Solver.CrepStatic.Chunk1
+import InitECandidate.Solver.CrepStatic.Chunk2
+import InitECandidate.Solver.CrepStatic.Chunk3
+import InitECandidate.Solver.CrepStatic.Chunk4
+import InitECandidate.Solver.CrepStatic.Chunk5
+import InitECandidate.Solver.CrepStatic.Chunk6
+import InitECandidate.Solver.CrepStatic.Chunk7
+import InitECandidate.Solver.CrepStatic.Chunk8
+import InitECandidate.Solver.CrepStatic.Chunk9
+import InitECandidate.Solver.CrepStatic.Chunk10
+import InitECandidate.Solver.CrepStatic.Chunk11
+import InitECandidate.Solver.CrepStatic.Chunk12
+import InitECandidate.Solver.CrepStatic.Chunk13
+import InitECandidate.Solver.CrepStatic.Chunk14
+import InitECandidate.Solver.CrepStatic.Chunk15
+import InitECandidate.Solver.CrepStatic.Chunk16
+import InitECandidate.Solver.CrepStatic.Chunk17
+import InitECandidate.Solver.CrepStatic.Chunk18
+import InitECandidate.Solver.CrepStatic.Chunk19
+import InitECandidate.Solver.CrepStatic.Chunk20
+import InitECandidate.Solver.CrepStatic.Chunk21
+import InitECandidate.Solver.CrepStatic.Chunk22
+import InitECandidate.Solver.CrepStatic.Chunk23
+import InitECandidate.Solver.CrepStatic.Chunk24
+import InitECandidate.Solver.CrepStatic.Chunk25
+import InitECandidate.Solver.CrepStatic.Chunk26
+import InitECandidate.Solver.CrepStatic.Chunk27
+import InitECandidate.Solver.CrepStatic.Chunk28
+import InitECandidate.Solver.CrepStatic.Chunk29
+import InitECandidate.Solver.CrepStatic.Chunk30
+import InitECandidate.Solver.CrepStatic.Chunk31
+import InitECandidate.Solver.CrepStatic.Chunk32
+import InitECandidate.Solver.CrepStatic.Chunk33
+import InitECandidate.Solver.CrepStatic.Chunk34
+import InitECandidate.Solver.CrepStatic.Chunk35
+import InitECandidate.Solver.CrepStatic.Chunk36
+import InitECandidate.Solver.CrepStatic.Chunk37
+import InitECandidate.Solver.CrepStatic.Chunk38
+import InitECandidate.Solver.CrepStatic.Chunk39
+import InitECandidate.Solver.CrepStatic.Chunk40
+import InitECandidate.Solver.CrepStatic.Chunk41
+import InitECandidate.Solver.CrepStatic.Chunk42
+import InitECandidate.Solver.CrepStatic.Chunk43
+import InitECandidate.Solver.CrepStatic.Chunk44
+import InitECandidate.Solver.CrepStatic.Chunk45
+import InitECandidate.Solver.CrepStatic.Chunk46
+import InitECandidate.Solver.CrepStatic.Chunk47
+import InitECandidate.Solver.CrepStatic.Chunk48
+import InitECandidate.Solver.CrepStatic.Chunk49
+import InitECandidate.Solver.CrepStatic.Chunk50
+import InitECandidate.Solver.CrepStatic.Chunk51
+
+namespace InitECandidate.Solver.CrepStatic
+open Flapjack InitECandidate.Solver.CrepToLoopBound
+set_option maxRecDepth 100000
+
+def crepProgram : List (Basis.Pure.MlString.MlString × List Nat × CrepProgHOL 64) := chunk0 ++ (chunk1 ++ (chunk2 ++ (chunk3 ++ (chunk4 ++ (chunk5 ++ (chunk6 ++ (chunk7 ++ (chunk8 ++ (chunk9 ++ (chunk10 ++ (chunk11 ++ (chunk12 ++ (chunk13 ++ (chunk14 ++ (chunk15 ++ (chunk16 ++ (chunk17 ++ (chunk18 ++ (chunk19 ++ (chunk20 ++ (chunk21 ++ (chunk22 ++ (chunk23 ++ (chunk24 ++ (chunk25 ++ (chunk26 ++ (chunk27 ++ (chunk28 ++ (chunk29 ++ (chunk30 ++ (chunk31 ++ (chunk32 ++ (chunk33 ++ (chunk34 ++ (chunk35 ++ (chunk36 ++ (chunk37 ++ (chunk38 ++ (chunk39 ++ (chunk40 ++ (chunk41 ++ (chunk42 ++ (chunk43 ++ (chunk44 ++ (chunk45 ++ (chunk46 ++ (chunk47 ++ (chunk48 ++ (chunk49 ++ (chunk50 ++ (chunk51 ++ [])))))))))))))))))))))))))))))))))))))))))))))))))))
+
+theorem crepProgramSafe : entriesSafe 126 crepProgram = true := by
+  simp only [entriesSafe, crepProgram, List.all_append, List.all_nil,
+    chunk0Safe, chunk1Safe, chunk2Safe, chunk3Safe, chunk4Safe, chunk5Safe, chunk6Safe, chunk7Safe, chunk8Safe, chunk9Safe, chunk10Safe, chunk11Safe, chunk12Safe, chunk13Safe, chunk14Safe, chunk15Safe, chunk16Safe, chunk17Safe, chunk18Safe, chunk19Safe, chunk20Safe, chunk21Safe, chunk22Safe, chunk23Safe, chunk24Safe, chunk25Safe, chunk26Safe, chunk27Safe, chunk28Safe, chunk29Safe, chunk30Safe, chunk31Safe, chunk32Safe, chunk33Safe, chunk34Safe, chunk35Safe, chunk36Safe, chunk37Safe, chunk38Safe, chunk39Safe, chunk40Safe, chunk41Safe, chunk42Safe, chunk43Safe, chunk44Safe, chunk45Safe, chunk46Safe, chunk47Safe, chunk48Safe, chunk49Safe, chunk50Safe, chunk51Safe, Bool.and_true]
+
+theorem crepCodeSafe : CodeSafe 126 (alistToFmapCodeExact crepProgram) :=
+  entriesSafe_codeSafe 126 crepProgram crepProgramSafe
+
+end InitECandidate.Solver.CrepStatic
+#print axioms InitECandidate.Solver.CrepStatic.crepProgramSafe
+#print axioms InitECandidate.Solver.CrepStatic.crepCodeSafe

@@ -428,9 +428,64 @@ the fixed guest satisfies its preconditions.
 Next is StackAlloc (heap-allocation lowering). Its 25 nonrecursive cases expose
 zero witnesses in the source proofs. The new ZeroGoal retains the exact target
 override, original Pre and Post and adds ck=0. A recursive theorem should cover
-program/code/oracle syntax excluding Alloc, StoreConsts and Install; the fixed
-Raw text scan supports testing this class but does not discharge it. Preserve
+program/code/oracle syntax excluding Alloc, Install and stubbed StoreConsts;
+StoreConsts with no stub must be included (see the runtime-stub correction below). Preserve
 those restrictions at actual recursive evaluation sites. Calls remain necessary
 even if the compiler leaves most eligible syntax unchanged, because target code,
 flags, registers and compiler/oracle fields change. No blanket identity proof
 for the evaluator is being assumed.
+
+
+## Runtime-stub correction and zero-clock StackAlloc completion
+
+The numbered-procedure scan was incomplete. Extending it to RawStubs and
+AllocStubs finds one StoreConsts in each, at runtime label 6, with no stub
+argument. BitmapImageFacts.bitmap_count states the fixed bitmap length is
+4,614, so an empty-bitmap impossibility argument is invalid. The <=1 restricted
+StackRemove theorem remains correct but cannot yet be instantiated for the
+whole installed guest. No unreachability claim has been proved.
+
+StackAllocBound.Assembly.zeroCompCorrect now passes kernel checking. It
+retains the original allocation pass Pre/Post, actual compiled execution and
+register extension, and needs zero extra clock. Its eligible predicate excludes
+Alloc, Install and StoreConsts with a present stub argument; it includes the
+actual runtime StoreConsts with none. Code and compile-oracle eligibility are
+preserved at recursive call, return, exception and loop sites. The fixed complete
+Raw program still needs kernel-certified eligibility and initial Pre premises.
+
+StackRemoveBound.CopyEach.copyEachBound now checks an exact count:
+`allowance + index = finalIndex`. copyPatternFinalLe proves the final index is
+at most the bitmap length when the starting index is within it. CopyLoop's
+successful outer copy has `allowance <= bitmaps.length - index`, proved using
+that exact advance and the outer recursion's index progression. Original
+execution, register alternatives and separated heap/frame assertions remain.
+The StoreConsts constructor strengthening is being checked next; its intended
+bound is `extra <= source.bitmaps.length`.
+
+Do not multiply this bitmap bound into every source clock without checking the
+resulting end-to-end constant against the Yukon cap. The guest-wide source
+potential and tighter accounting for when constant copying occurs remain
+necessary. Options are a recursive budget counting copy occurrences, or a
+proved separation of startup copying from ordinary guest execution. Neither
+has yet been proved. Generic bounded component theorems alone do not certify K.
+
+
+## Tighter route: certify direct calls avoiding the constant-copy stub
+
+A broader source-text scan of all numbered Raw/Alloc procedures and runtime
+stubs finds no Sum.inr targets and no direct/raw/jump calls to label 6. This
+suggests the StoreConsts stub is generated but unused. The scan is not proof.
+A new StackRemoveDirect program predicate prohibits indirect calls and every
+call/jump to label 6, as well as Install/StoreConsts in reachable bodies.
+Its CodeSafe predicate requires supported syntax only at keys other than 6.
+Thus it explicitly permits the actual StoreConsts body to remain installed.
+The recursive proof will discharge each lookup using the current program's
+call restriction; no location/memory invariant is needed when calls are direct.
+Oracle code is checked under the same restriction, preserved by evaluation.
+
+If the theorem and actual fixed syntax checks pass, use its <=1 result-dependent
+bound instead of multiplying every source clock by the bitmap length. Next:
+check the actual Alloc64 body and runtime stub list as a pilot, certify all
+826 procedure literals in resource-bounded chunks, and connect the checked list
+to the actual Alloc.stack and initializer/code relation. The generic copy bound
+remains independently useful but does not itself prove stub unreachability.

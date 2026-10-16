@@ -29,6 +29,9 @@ for log_name in args.logs:
         axioms = [a.strip() for a in axiom_text.split(',') if a.strip()]
         assert set(axioms) <= allowed, (name, axioms)
         facts[name] = {'theorem': name, 'axioms': axioms, 'successful_log': path.name}
+    for name in re.findall(r"'([^']+)' does not depend on any axioms", log):
+        if name.startswith('InitECandidate.Solver.'):
+            facts[name] = {'theorem': name, 'axioms': [], 'successful_log': path.name}
 record_path = notes / 'proof-checks.json'
 record = json.loads(record_path.read_text())
 modules = {entry['path']: entry for entry in record['modules']}

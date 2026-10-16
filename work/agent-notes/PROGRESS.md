@@ -582,3 +582,48 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   Solution.lean/claim.json remain unchanged at infinity. Finite K unfinished.
 - remove-assembly: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:51.18; Maximum resident set size (kbytes): 2364164; Exit status: 0.
 - remove-entry-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.26; Maximum resident set size (kbytes): 2005144; Exit status: 0.
+
+
+### Allocation lowering completed; constant-copy runtime stub accounted for
+
+- StackAllocBound leaves, Seq/If/Loop, all call forms, safety preservation and
+  Assembly passed in alloc-assembly-v3.log (421 jobs). zeroCompCorrect retains
+  the original compiler/state contract and proves zero extra clock. Eligible
+  syntax excludes Alloc, Install and StoreConsts with some stub, allowing none.
+- Fixed draft errors: scoped `open Classical in` accidentally omitted the
+  NeZero variable, explicit existential goals omitted ck=0, jump constructors
+  needed explicit width, and a moved Pre.setVar helper needed qualified use.
+  Failed logs with recovery sorryAx are excluded from accepted evidence.
+- Corrected the scan to include runtime stub files. Each of Raw and Alloc has
+  one StoreConsts (label 6); Removed has none. All have zero Install/heap Alloc.
+  The previous <=1 StackRemove theorem excludes StoreConsts and therefore
+  cannot directly instantiate the complete guest. The installed bitmap has
+  4,614 words according to fixed BitmapImageFacts, so it is not empty.
+- CopyEach exact index/extra-clock equality and final-index upper bound passed.
+  CopyLoop's allowance <= remaining bitmap length passed in remove-copy.log.
+  Every printed main axiom set is permitted. Full execution and heap assertions
+  were retained. StoreConsts constructor and StackAlloc entry wrappers pending.
+- All builds reuse the four-slot lock pool run-mo46tz1p under the 24 GiB host
+  memory guard. Disk currently 49%; sampled host use around 5-7 GiB.
+- Full padded layout driver remains live; completed through chunk29 (30/54).
+- No explicit sorrys introduced. Full audit/verifier were not run. No push,
+  PR or submission. Solution.lean and claim.json still claim infinity.
+
+- StoreConsts strengthening passed in remove-store-v2.log (995 jobs), keeping
+  full execution and state relation with extra <= source.bitmaps.length.
+- StackAlloc entrySimulation passed in alloc-entry-v2.log (422 jobs): source
+  and target entry calls use exactly the same clock and have identical FFI.
+- fixed-stubs-v3.log passed (1,522 jobs): actual RawStubs eligibility, kernel
+  computation of bitmap length 4,614, numeric StoreConsts specialization and
+  preservation of bitmap data under an oracle adding no words. Numeric fixed
+  bitmap equality remains an explicit premise of the specialization.
+- FixedBitmap's first attempt exceeded default reduction depth; raised only its
+  theorem's maxRecDepth. Normalized dependent result matches by cases. The
+  bitmap invariant needed its oracle predicate exposed before simplification.
+  Failed builds are not counted as checked evidence.
+- Recorder now handles Lean's no-axioms output as an empty axiom set.
+- alloc-assembly-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.50; Maximum resident set size (kbytes): 1804676; Exit status: 0.
+- alloc-entry-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.66; Maximum resident set size (kbytes): 1721404; Exit status: 0.
+- remove-copy: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:24.31; Maximum resident set size (kbytes): 1620684; Exit status: 0.
+- remove-store-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:17.79; Maximum resident set size (kbytes): 2029492; Exit status: 0.
+- fixed-stubs-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.99; Maximum resident set size (kbytes): 1509152; Exit status: 0.

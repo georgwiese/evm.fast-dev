@@ -300,3 +300,57 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - Open explicit sorrys: none. Finite-K certificate remains unfinished. Next
   obligation is the guest body cost bound and its relation to gas/input/state;
   a startup prefix alone cannot justify the numerical planning envelope.
+
+### Continuation: complete encoder coverage and compiler line costs
+
+- Previous goal turn was progress: committed the actual bootstrap prefix and
+  its checked configuration/initial-state bridge as 54b152296. Worktree was
+  clean at continuation start; host used 4.3 GiB RAM, disk 46%, 16 CPUs.
+- Inspection of every pinned encoder constructor found explicit small witnesses
+  already constructed before existential hiding. Adapted 30 component modules
+  under Solver/BoundedEncoder, retaining original hypotheses, interference and
+  both assertion predicates while adding n+1 <= 16. Generator is
+  adapt-bounded-encoder.py; the dependency itself remains unchanged.
+- BoundedEncoder.encoder covers every HolAsm constructor (including impossible
+  LongDiv via the original asmOk contradiction). It built on the first attempt:
+  two slots, 1m06.13s wall, max child RSS 3,840,868 KiB. The aggregate theorem
+  and every printed component use only the permitted three axioms.
+- Added BoundedTrace.evaluator: any checked ordinary ASM trace has an evaluator
+  prefix count between code.length and 16*code.length, with the full endpoint
+  relation. Initial nil proof needed simp for 0+clock; corrected build passes.
+- Added BoundedStep preserving both evaluator and findNextInterference clock
+  shifts, and EncoderBound.Contract/step as the generic quantitative interface.
+  BoundedStep needed the AsmSem namespace; its evaluator and 16-step contract
+  now pass. No actual execution is assumed by these encoder contracts.
+- NopCost adapts the original generic padding proof: n padding NOPs cost at most
+  bound*n, and a padded non-call instruction costs at most bound*(bytes.length+1).
+  Two arithmetic proof fixes (Nat.mul_succ orientation and distribution in the
+  goal) resolved initial errors. Both main theorems now build with permitted
+  axioms. Generator: adapt-nop-cost.py.
+- LabCost carries these bounds through the actual compiler state relation and
+  fetched line memory/encoding checks. Its dependency build is running with two
+  slots; no full baseline audit or verifier is involved. Until it finishes,
+  LabCost is unverified. Open explicit sorrys: none; intermediate failed logs
+  containing error-recovery sorryAx are not evidence of successful proofs.
+- LabCost's initial build needed an explicit Backend namespace after moving it
+  out of the pinned namespace. Corrected build passed: 9.16s wall, max child RSS
+  3,925,732 KiB. Its three main theorems and all new aggregate/trace/contract
+  theorems print only the three permitted axioms. The first dependency run took
+  1m29.80s and failed only at LabCost; it is not counted as successful validation.
+- The successful encoder build sampled peak summed RSS 5,536,548 KiB and minimum
+  host MemAvailable 26,447,132 KiB; final LabCost build sampled 4,332,816 KiB and
+  26,984,052 KiB respectively. Disk stayed at 46%.
+- Updated proof-checks.json: 58 Solver modules, 469,844 source bytes, 92 distinct
+  printed theorem axiom sets. Recursive source scan finds no explicit sorry,
+  native_decide or axiom declaration. Incremental policy checks pass, fixed
+  submission files remain unchanged, and every recorded module has a built
+  olean. This is still local Lean checking, not comparator verification.
+- Open explicit sorrys: none. The 16-step bound applies to each valid ordinary
+  ASM operation, not an EVM opcode or a complete guest execution. Recursive
+  Lab-to-target composition, target-line size invariants (especially Install),
+  preceding pass expansions and the guest gas/input potential remain open.
+  claim.json remains infinity; no full certificate has been claimed or scored.
+
+- Added the near-register comparison axiom print omitted by the generator's
+  name filter, resolving its trailing-blank-line diff warning. Final aggregate
+  audit build passed (lab-cost-audit.log); git diff --check is clean.

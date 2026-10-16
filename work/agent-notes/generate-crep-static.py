@@ -70,7 +70,7 @@ end {NS}
 ''')
 imports='\n'.join(f'import {NS}.Chunk{i}' for i in range(52))
 entries=' ++ ('.join(f'chunk{i}' for i in range(52))+' ++ []'+')'*51
-facts=', '.join(f'chunk{i}Safe' for i in range(52))
+facts=', '.join(f'(show chunk{i}.all (fun entry => decide (ceiling entry.2.2 ≤ {limit})) = true from chunk{i}Safe)' for i in range(52))
 write(OUT/'Programs.lean',f'''{imports}
 
 namespace {NS}

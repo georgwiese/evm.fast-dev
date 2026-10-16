@@ -664,3 +664,15 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - remove-direct-pilot: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.18; Maximum resident set size (kbytes): 2232552; Exit status: 0.
 - Latest completed padded target: END 36/57 InitECandidate.Solver.LabBound.Padded.Chunk34 325.03s. Parent/session unchanged.
 - Sampled padded-run host peak 6.758 GiB; disk peak 50%.
+
+### Fixed Raw/Alloc syntax certification and status update
+
+- Large procedure 713 passed in remove-direct-large.log (1,273 jobs); both main axioms are propext. Recorded as successful evidence.
+- Generated 824 new per-procedure checks, 52 chunks and one aggregate. Procedures 64 and 713 reuse the checked pilots. Generated full-program equality to fixed umbrella declarations is still pending.
+- First chunk initially hit Lean default recursion depth at Alloc conjunction conversion. Raised chunk maxRecDepth in the generator; stack-static-pilot-v2.log passed all 1,352 jobs, including chunk0 (procedures 64–79) and StackAllocBound.CheckCode. Failed first log is not counted as successful evidence.
+- Started sequential stack-static-all driver (52 chunks plus Programs), sharing run-mo46tz1p four-slot limiter and 24 GiB host guard with the existing padded driver. Uncompleted chunks are not checked claims.
+- Padded driver completed through chunk35 (36/54 chunks). Disk is 50%; no full audit/verifier, external publication or submission run.
+- Inspected earlier-pass witnesses: WordToStack shared-memory/raise and StackRawCall growing tail-frame optimization can need an extra clock. Recorded bounded-induction proposal in PHASE2-PLAN.md; no new theorem for those passes yet.
+- User asked progress: measurement phase complete; finite proof substantially unfinished. Guest-wide gas/input potential, earlier-pass bounds and final composition remain. claim.json stays infinity. No explicit source sorrys introduced.
+- remove-direct-large: Elapsed (wall clock) time (h:mm:ss or m:ss): 7:51.37; Maximum resident set size (kbytes): 4954564; Exit status: 0; sampled peak used host memory 8.311 GiB.
+- stack-static-pilot-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:52.92; Maximum resident set size (kbytes): 2358088; Exit status: 0; sampled peak used host memory 5.741 GiB.

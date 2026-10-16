@@ -27,6 +27,7 @@ for record in scan['procedures']:
     literal = ROOT / f'submission/InitECandidate/Proofs/FrontendStages/Crep/Data{n}.lean'
     assert hashlib.sha256(literal.read_bytes()).hexdigest() == record['sha256']
     write(OUT / f'Procedure{n}.lean', f'''import InitECandidate.Solver.CrepToLoopBound.ProgramCost
+import InitECandidate.Proofs.CrepKernelComputation
 import InitECandidate.Proofs.FrontendStages.Crep.Data{n}
 
 namespace InitECandidate.Solver.CrepStatic
@@ -35,7 +36,10 @@ open InitECandidate.Proofs.FrontendStages.Crep
 set_option maxRecDepth 1000000
 set_option maxHeartbeats 0
 
-theorem ceiling{n} : ceiling output{n}.2.2 ≤ {limit} := by decide
+theorem ceiling{n} : ceiling output{n}.2.2 ≤ {limit} := by
+  dsimp only [output{n}]
+  rw [InitECandidate.Proofs.CrepKernelComputation.crepProgToHOL_function_eq]
+  decide
 
 end InitECandidate.Solver.CrepStatic
 #print axioms InitECandidate.Solver.CrepStatic.ceiling{n}

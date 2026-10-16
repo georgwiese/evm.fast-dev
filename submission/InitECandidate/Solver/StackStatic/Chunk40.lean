@@ -21,7 +21,7 @@ namespace InitECandidate.Solver.StackStatic
 open Flapjack Flapjack.Compiler.Backend.StackLang InitECandidate.Proofs.BackendStages
 open InitECandidate.Solver.StackRemoveDirect
 set_option maxRecDepth 100000
-
+set_option maxHeartbeats 0
 def rawChunk40 : List (Nat × HolProg 64) := [(704, raw704), (705, raw705), (706, raw706), (707, raw707), (708, raw708), (709, raw709), (710, raw710), (711, raw711), (712, raw712), (713, raw713), (714, raw714), (715, raw715), (716, raw716), (717, raw717), (718, raw718), (719, raw719)]
 def allocChunk40 : List (Nat × HolProg 64) := [Alloc704, Alloc705, Alloc706, Alloc707, Alloc708, Alloc709, Alloc710, Alloc711, Alloc712, Alloc713, Alloc714, Alloc715, Alloc716, Alloc717, Alloc718, Alloc719]
 

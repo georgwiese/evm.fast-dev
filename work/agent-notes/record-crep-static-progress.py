@@ -29,6 +29,10 @@ for name, axiom_text in re.findall(r"'([^']+)' depends on axioms:\s*\[([^]]*)\]"
     assert set(axioms) <= allowed, (name, axioms)
     facts[name] = axioms
 
+for name in re.findall(r"'([^']+)' does not depend on any axioms", log):
+    if name.startswith("InitECandidate.Solver."):
+        facts[name] = []
+
 path = NOTES / "proof-checks.json"
 record = json.loads(path.read_text())
 modules = {x["path"]: x for x in record["modules"]}

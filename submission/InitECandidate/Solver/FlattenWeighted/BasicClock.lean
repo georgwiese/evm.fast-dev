@@ -10,7 +10,7 @@ open Flapjack.Compiler.Backend.StackToLab.Proofs.FlattenCorrect
 /-- Basic instruction blocks whose only clock-consuming leaf is Tick. -/
 def basic {width : Nat} [NeZero width] : HolProg width → Bool
   | .seq first second | .ite _ _ _ first second => basic first && basic second
-  | .skip | .inst _ | .tick | .ret _ | .halt _ | .locValue _ _ _ => true
+  | .skip | .inst _ | .tick | .ret _ | .halt _ | .locValue _ _ _ | .break _ | .continue _ => true
   | _ => false
 
 def ticks {width : Nat} [NeZero width] : HolProg width → Nat
@@ -68,6 +68,8 @@ theorem basicClock {width : Nat} [NeZero width] {C F : Type}
   | tick =>
     rw [evaluate_tick]
     split <;> simp only [ticks, StackSemStateOps.emptyEnv, StackSemStateOps.decClock, Prod.snd] <;> omega
+  | «break» label => simp [evaluate_break, ticks]
+  | «continue» label => simp [evaluate_continue, ticks]
   | locValue register first second =>
     rw [evaluate_locValue]
     split <;> simp [ticks, StackSemStateOps.setVar]

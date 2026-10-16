@@ -63,7 +63,7 @@ namespace {namespace}
 open Flapjack Flapjack.Compiler.Backend.StackLang InitECandidate.Proofs.BackendStages
 open InitECandidate.Solver.StackRemoveDirect
 set_option maxRecDepth 100000
-
+{chr(10).join(["set_option maxHeartbeats 0"] if index == 40 else [])}
 def rawChunk{index} : List (Nat × HolProg 64) := {expressions['Raw']}
 def allocChunk{index} : List (Nat × HolProg 64) := {expressions['Alloc']}
 

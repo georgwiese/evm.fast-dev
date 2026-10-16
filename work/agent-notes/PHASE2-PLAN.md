@@ -927,3 +927,31 @@ and literal equality with StackAnalysis.outputs passed in the corrected v2 run.
 `WordStatic.fixedWordCodeSafe` proves the ceiling 17 and no-Install invariant
 for that actual code table; the existing Word-to-Stack entry factor is therefore
 35 once its remaining initial-state/compile premises are supplied.
+
+### Structural Crep checks and concrete guest-loop pilot
+
+The two Crep static pilots now pass with ceiling 126 after replacing the local
+cost definitions' sizeOf recursion by structural recursion and rewriting the
+fixed program codec to its structural counterpart. The complete Crep compiler
+entry simulation rebuilt successfully. The full fixed-code batch is running;
+126 is not yet established for all 826 procedures. Stack's static batch resumed
+at Chunk40 after its aggregate hit the default heartbeat limit.
+
+The next source-invariant pilot is the actual final memzero byte loop,
+NamedBody78_233/234. Its basic body has 27 nodes and at most two syntactic ticks,
+so Work 29 is immediate. The remaining register-level proof must establish
+that every continuing run preserves registers 10/11 and changes register 12
+from index to index+1, with index<length. Then length.toNat-index.toNat is a
+strictly decreasing rank with no wraparound. This would yield 29*(remaining+1)
+work credits and 3*(remaining+1) consumed Stack clock. These are conditional
+loop-entry bounds: earlier memzero loops, the whole-call invariant, bounds on
+its length and call count, and guest-wide gas/input accounting remain necessary.
+
+The concrete memzero byte-tail pilot is now checked (memzero-tail-v9.log).
+`body_continues`, `body_decreases`, `loop_work` and `loop_clock` establish the
+register invariant and both bounds above for the fixed code. This closes the
+first actual guest-loop ranking obligation, but not the whole memzero procedure.
+Next, prove zero clock on timeout and apply the clock bound with an initial clock
+strictly above 3*(remaining+1); clock-extension determinism can then compare this
+bounded run with an arbitrary terminating run. This avoids assuming that a
+consumed-clock bound alone supplies a small initial execution clock.

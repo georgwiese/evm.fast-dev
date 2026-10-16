@@ -8,10 +8,11 @@ from pathlib import Path
 import hashlib
 import json
 import re
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 NOTES = ROOT / "work/agent-notes"
-log_path = NOTES / "logs/stack-static-all.log"
+log_path = NOTES / "logs" / (sys.argv[1] if len(sys.argv) > 1 else "stack-static-all.log")
 log = log_path.read_text()
 completed = list(re.finditer(r"^END \d+/\d+ .+$", log, re.M))
 if not completed:
@@ -27,6 +28,10 @@ for name, axiom_text in re.findall(r"'([^']+)' depends on axioms:\s*\[([^]]*)\]"
     axioms = [a.strip() for a in axiom_text.split(",") if a.strip()]
     assert set(axioms) <= allowed, (name, axioms)
     facts[name] = axioms
+
+for name in re.findall(r"'([^']+)' does not depend on any axioms", log):
+    if name.startswith("InitECandidate.Solver."):
+        facts[name] = []
 
 path = NOTES / "proof-checks.json"
 record = json.loads(path.read_text())

@@ -51,6 +51,17 @@
     "submission/InitECandidate/Solver/EncoderClock.lean",
     "submission/InitECandidate/Solver/JumpCmpNearCost.lean",
     "submission/InitECandidate/Solver/JumpNearCost.lean",
+    "submission/InitECandidate/Solver/LabBound/Asm.lean",
+    "submission/InitECandidate/Solver/LabBound/Assembly.lean",
+    "submission/InitECandidate/Solver/LabBound/CallFfi.lean",
+    "submission/InitECandidate/Solver/LabBound/Cbw.lean",
+    "submission/InitECandidate/Solver/LabBound/CheckLayout.lean",
+    "submission/InitECandidate/Solver/LabBound/Common.lean",
+    "submission/InitECandidate/Solver/LabBound/Control.lean",
+    "submission/InitECandidate/Solver/LabBound/Layout.lean",
+    "submission/InitECandidate/Solver/LabBound/PaddedPilot.lean",
+    "submission/InitECandidate/Solver/LabBound/ShareMem.lean",
+    "submission/InitECandidate/Solver/LabBound.lean",
     "submission/InitECandidate/Solver/LabCost.lean",
     "submission/InitECandidate/Solver/LocCost.lean",
     "submission/InitECandidate/Solver/MemoryCost.lean",
@@ -62,8 +73,8 @@
     "submission/InitECandidate/Solver/TargetClock.lean",
     "submission/InitECandidate/Solver/WeightedTrace.lean"
   ],
-  "package_entries": 56891,
-  "package_bytes": 2245470148,
+  "package_entries": 56903,
+  "package_bytes": 2245569273,
   "claim": {
     "K": "infinity"
   },

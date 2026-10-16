@@ -915,9 +915,10 @@ for a loop when an actual-source invariant supplies per-body Work and is
 preserved with a strictly smaller rank on every continuing reentry. It accounts
 for the final body execution as well as repeated iterations. `loopPaidOfRank`
 transports this to the original flattening execution witness. The rank and body
-budget must still be proved for actual guest loops. A companion theorem for
-consumed source clock is being checked, because extra flattening work and
-source clock consumption are distinct costs.
+budget must still be proved for actual guest loops. The companion `loopClockOfRank` is now checked too: consumed source clock is
+at most `(rank(source)+1)*(perBodyClock+1)`. It retains final unused clock;
+extra flattening work and source clock consumption are distinct costs.
+A later entry proof must also choose a sufficiently small initial clock.
 
 ### Fixed Word ceiling completed
 

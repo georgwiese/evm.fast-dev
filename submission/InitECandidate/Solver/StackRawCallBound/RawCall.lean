@@ -19,12 +19,12 @@ theorem compCorrectRawCall {width : Nat} [NeZero width] {C F : Type}
     (calleeIH : BoundedRawCalleeIH C F dest source)
     (hypothesis : StackSemEvaluate.evaluate (.rawCall dest, source) =
       (result, resultState) ∧ result ≠ some .error ∧ stateRel info source target) :
-    BoundedSimulation (callCredit (.rawCall dest) source.clock) (source.clock - resultState.clock) (compTop info (.rawCall dest)) info target resultState result ∧
-    BoundedSimulation (callCredit (.rawCall dest) source.clock) (source.clock - resultState.clock) (comp info (.rawCall dest)) info target resultState result := by
+    BoundedSimulation (callCredit (width := width) (.rawCall dest) source.clock) (source.clock - resultState.clock) (compTop info (.rawCall dest)) info target resultState result ∧
+    BoundedSimulation (callCredit (width := width) (.rawCall dest) source.clock) (source.clock - resultState.clock) (comp info (.rawCall dest)) info target resultState result := by
   obtain ⟨execution, nonerror, relation⟩ := hypothesis
-  change BoundedSimulation (callCredit (.rawCall dest) source.clock) (source.clock - resultState.clock) (.rawCall dest) info target resultState result ∧
-    BoundedSimulation (callCredit (.rawCall dest) source.clock) (source.clock - resultState.clock) (.rawCall dest) info target resultState result
-  suffices simulation : BoundedSimulation (callCredit (.rawCall dest) source.clock) (source.clock - resultState.clock) (.rawCall dest) info target resultState result by
+  change BoundedSimulation (callCredit (width := width) (.rawCall dest) source.clock) (source.clock - resultState.clock) (.rawCall dest) info target resultState result ∧
+    BoundedSimulation (callCredit (width := width) (.rawCall dest) source.clock) (source.clock - resultState.clock) (.rawCall dest) info target resultState result
+  suffices simulation : BoundedSimulation (callCredit (width := width) (.rawCall dest) source.clock) (source.clock - resultState.clock) (.rawCall dest) info target resultState result by
     exact ⟨simulation, simulation⟩
   rw [StackSemEvaluate.evaluate_rawCall] at execution
   cases lookup : sptLookup dest source.code with
@@ -79,7 +79,7 @@ theorem compCorrectRawCall {width : Nat} [NeZero width] {C F : Type}
         have addedNonzero : target.clock + clock ≠ 0 := by omega
         simp only [StackSemEvaluate.evaluate_rawCall, targetLookup, destSeq,
           addedNonzero, if_false,
-          StackProps.EvaluateAddClock.decClock_addClock target clock targetNonzero,
+          Flapjack.Compiler.Backend.StackProps.EvaluateAddClock.decClock_addClock target clock targetNonzero,
           targetExecution, bad, Bool.false_eq_true, if_false]
 
 

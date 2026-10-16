@@ -27,6 +27,7 @@ theorem entrySimulation {width : Nat} [NeZero width] {C F : Type}
       {source with clock := clock}
       {source with clock := clock, code := sptFromAList (compile code)}
       (collectInfo code .ln) result post ⟨run, nonError, relation⟩).2
+  change extra + (if clock = 0 then 0 else 1) ≤ clock - post.clock at budget
   refine ⟨extra, {targetPost with stackSpace := space}, by omega, by omega, ?_, ?_⟩
   · simpa only [comp] using targetRun
   · obtain ⟨_, _, equality, _⟩ := postRelation

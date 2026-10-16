@@ -86,7 +86,7 @@ theorem compCorrectCallTail {width : Nat} [NeZero width] {C F : Type}
               rw [StackSemEvaluate.evaluate_call]
               simp only [targetLookup, addedNonzero, if_false]
               rw [StackSemEvaluateClock.fixClockEvaluate]
-              simp only [StackProps.EvaluateAddClock.decClock_addClock target clock targetNonzero,
+              simp only [Flapjack.Compiler.Backend.StackProps.EvaluateAddClock.decClock_addClock target clock targetNonzero,
                 targetExecution, bad, Bool.false_eq_true, if_false]
 
 

@@ -99,7 +99,7 @@ theorem compCorrectJumpLower {width : Nat} [NeZero width] {C F : Type}
             simp only [StackSemEvaluate.evaluate_jumpLower,
               getVar_targetClock info source target relation, firstRead, secondRead,
               lower, if_true, findCode, targetLookup, addedNonzero, if_false,
-              StackProps.EvaluateAddClock.decClock_addClock target clock targetNonzero,
+              Flapjack.Compiler.Backend.StackProps.EvaluateAddClock.decClock_addClock target clock targetNonzero,
               targetExecution, bad, Bool.false_eq_true, if_false]
     · rename_i notLower
       obtain ⟨rfl, rfl⟩ := Prod.mk.inj execution

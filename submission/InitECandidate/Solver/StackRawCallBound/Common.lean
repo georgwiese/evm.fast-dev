@@ -6,7 +6,7 @@ open Flapjack.Compiler.Backend.StackRawCall
 
 /-- A positive-clock call reserves its own source-clock decrement. An enclosing
 optimized tail sequence may spend this credit on its extra frame-growth tick. -/
-def callCredit {width : Nat} (program : HolProg width) (clock : Nat) : Nat :=
+def callCredit {width : Nat} [NeZero width] (program : HolProg width) (clock : Nat) : Nat :=
   match program with
   | .call .. | .rawCall .. => if clock = 0 then 0 else 1
   | _ => 0

@@ -698,3 +698,17 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   logs against unchanged source hashes, excluding a running/failing suffix.
   StackStatic has completed chunks0–1 (32 procedures); padded through chunk36
   (37/54). Latest measured host use ~6.2 GiB, disk 50%.
+
+### StackRawCall full bounded pass and entry checked
+
+- rawcall-entry-v4.log passed all 810 jobs. All 20 new modules and 46 printed main theorem checks are covered by that successful log.
+- Full compCorrect proves both actual compTop and comp executions with extra + callCredit <= source.clock - post.clock. The original entire state relation, evaluator equation and exceptional stack-space guards remain. The recursive induction covers every constructor, calls, returns, handlers and loops.
+- entrySimulation derives the actual compiled-code initial relation and execution from distinct keys, sourceCode and the source run; extra <= clock - post.clock and clock + extra <= 2*clock, preserving complete FFI state. This is a clock bound for this compiler pass, not a guest-wide target step certificate.
+- Corrected missing NeZero parameter and explicit width in raw-call credit; qualified a StackProps helper outside its original namespace; unfolded instruction credit and an updated-state clock projection before arithmetic. Earlier failed logs include Lean error-recovery sorryAx and are excluded from successful evidence. No explicit source sorrys or additional axioms.
+- Full audit/verifier, push, PR and Yukon submission remain unrun. claim.json remains infinity. Both fixed-code batch drivers remain active under the shared four-slot pool. Disk last measured 51%; host use 5.1 GiB.
+- rawcall-optimized: Elapsed (wall clock) time (h:mm:ss or m:ss): 7:21.02; Maximum resident set size (kbytes): 1562552; Exit status: 1; sampled peak used host memory 6.601 GiB.
+- rawcall-entry: Elapsed (wall clock) time (h:mm:ss or m:ss): 3:04.26; Maximum resident set size (kbytes): 1889556; Exit status: 1; sampled peak used host memory 5.272 GiB.
+- rawcall-entry-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:04.61; Maximum resident set size (kbytes): 1601692; Exit status: 1; sampled peak used host memory 4.950 GiB.
+- rawcall-entry-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:02.91; Maximum resident set size (kbytes): 1848868; Exit status: 1; sampled peak used host memory 4.603 GiB.
+- rawcall-entry-v4: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:47.05; Maximum resident set size (kbytes): 1874164; Exit status: 0; sampled peak used host memory 4.419 GiB.
+- Latest completed fixed batches: StackStatic chunk5 (96 procedures) and padded chunk39 (40/54 chunks). Both processes remain live.

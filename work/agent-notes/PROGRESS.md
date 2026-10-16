@@ -1205,3 +1205,17 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Crep pilot and Stack static batch remain live in the same four-slot pool.
   claim.json remains infinity. No explicit sorry/admit/native_decide/axiom,
   network contact, full audit/verifier, push, PR or Yukon submission was added.
+
+### Consumed-clock loop rank bound completed
+
+- flatten-loop-clock-rank.log passed all 812 jobs (58.01s elapsed,
+  max child RSS 1,758,512 KiB, peak host used 4.533 GiB).
+  loopClockOfRank proves source.clock <= final.clock +
+  (rank(source)+1)*(perBodyClock+1), retaining final unused clock. Together
+  with loopWorkOfRank this separates source-clock and extra flattening costs.
+  Neither theorem supplies the invariant for any fixed guest loop, and neither
+  asserts a minimal-clock entry run. Printed axioms are permitted.
+- Word static batch is complete. Stack static and Crep pilot remain live;
+  no duplicate Crep batch was started while the pilot was still running.
+  Disk is now 56%, ~130 GiB free; host used memory is about 3.3 GiB.
+  All work remains local, claim.json infinity, and no full verification is claimed.

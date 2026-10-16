@@ -370,3 +370,34 @@ Its recursive arbitrary-count allocation proof propagates the final witness
 without adding one per chunk. Expose this bound next, retaining its guards and
 full state relation. This observation is source inspection until a new proof
 build succeeds; it does not yet establish a whole-pass bound.
+
+## Stack-removal pilot: zero clocks for continuing runs
+
+StackRemoveBound.Allocation now checks the arbitrary-count recursive allocator:
+extra clock <= 1, and extra clock = 0 whenever the requested space is available.
+StackRemoveBound.Free checks extra clock = 0 for arbitrary-count release.
+The original arithmetic/overflow guards and complete post-state relation remain.
+No cost is assigned per chunk: successful chunks consume no Stack clock.
+
+Space expresses the constructor budget as `resultBudget result`, equal to 1
+for a Halt result and 0 otherwise. Seq has been checked with that budget: its
+continuing first run contributes zero, so the total stays at resultBudget.
+Atoms, Control, Instructions, Locations, CodeBufferWrite and ShMemOp also pass.
+This suggests a <=1 whole-pass bound for the guest's static program class,
+but recursive calls, remaining constructors and invariant closure are unfinished.
+
+A reproducible text scan of the 826 Raw and 826 Alloc procedure files finds
+zero StoreConsts, Install and heap Alloc constructors, and 9,933 StackAlloc
+occurrences in each stage. The 826 Removed files contain none of those four.
+This is not kernel certification and excludes the small runtime procedures.
+StoreConsts must not be silently ignored: its generic proof introduces a
+copyLoop allowance that depends on bitmap-driven copying. Either certify its
+absence for the complete installed code/oracle or bound that loop separately.
+
+Conditional and loop rules now also pass with the same result budget.
+Next: finish remaining leaves and bounded call cases;
+assemble induction under explicit exclusion of StoreConsts and Install,
+preserving that condition through code/oracle history. Then certify actual
+fixed-code invariants, accounting for small runtime procedures as well as
+numbered procedure modules. StackAlloc (the earlier heap-lowering pass),
+WordToStack, CrepToLoop and the guest-wide source potential remain separate.

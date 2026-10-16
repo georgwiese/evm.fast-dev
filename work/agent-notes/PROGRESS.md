@@ -518,3 +518,41 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - Open explicit sorrys: none. Solution.lean/claim.json unchanged (infinity).
   No full audit/verifier, push, PR or submission. Finite K remains unfinished.
 - WholeCall final build: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:29.65; Maximum resident set size (kbytes): 2022192; Exit status: 0.
+
+
+### Stack-removal allocation and sequential pilot
+
+- Committed the complete bounded flattening/whole-entry work as 0a5d88c33.
+- StackRemoveBound Allocation and Free pass. Allocation's exact guarded
+  statement retains extra <=1 and available space -> extra=0 for arbitrary
+  counts; Free retains extra=0. Original source/output/state guards preserved.
+- Space and Seq pass with resultBudget=1 for Halt, 0 otherwise. A continuing
+  first run is proved to have zero extra clock, avoiding accumulation across Seq.
+- Atoms, Control, Instructions, Locations, CodeBufferWrite and ShMemOp pass.
+  Conditional/loop checks were started separately with the same shared limiter.
+  There is no recursive whole-pass StackRemove theorem yet.
+- Fixed allocation proof normalization by splitting the register lookup after
+  rewriting the imported successful-chunk execution; pretty-printed equal
+  match expressions were not definitionally identical after moving namespaces.
+  An attempted convert tactic was unavailable in this import closure and was
+  replaced with elementary rewrites/case splits. Space needed NeZero and an
+  explicit Backend namespace. All failure logs are excluded from evidence.
+- scan-stack-constructors.py records source hashes and text constructor counts.
+  For 826 Raw and 826 Alloc numbered procedures: zero StoreConsts/Install/Alloc,
+  9,933 StackAlloc occurrences. Removed has none of these. This is a text scan,
+  not a kernel theorem, and excludes small runtime/bootstrap procedures.
+  Generic StoreConsts has a copyLoop allowance and remains an explicit proof
+  obligation unless its absence is certified for the entire code/oracle.
+- Padded layout checks through chunk20 completed (21 of 54 chunks), with the
+  same parent session 83802 and lock directory run-mo46tz1p. Continue, do not
+  restart. Peak sampled host used RAM 6.601 GiB; maximum disk usage 48%.
+- Open explicit sorrys: none. No full audit/verifier, push, PR or submission.
+  Solution.lean/claim.json still infinity. The finite-K certificate is unfinished.
+- remove-space-strong: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:35.34; Maximum resident set size (kbytes): 1496568; Exit status: 0.
+- remove-seq: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:31.39; Maximum resident set size (kbytes): 1531004; Exit status: 0.
+- remove-leaves: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:52.49; Maximum resident set size (kbytes): 1507272; Exit status: 0.
+- Conditional and loop rules passed in remove-flow.log; result-dependent bounds
+  survive loop reentry because continuing body runs have zero extra clock.
+- remove-flow: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:29.17; Maximum resident set size (kbytes): 1599944; Exit status: 0.
+- Evidence index: 447 checked modules and 536 printed main theorem axiom sets.
+  Incremental Solver policy check passes; this is not official verification.

@@ -7,6 +7,11 @@ initialization remain in progress. Earlier compiler passes and the guest-wide
 source potential remain unfinished. No finite certificate yet; the submission
 still claims infinity.
 
+Correction: the full fixed Word scan rejected ceiling 4 at procedure 287.
+Five expanded DAGs need higher ceilings, up to 17; their corrected individual
+bounds are kernel-checked. The resumed aggregate is checking global limit 17,
+so the conditional Word-to-Stack entry multiplier is now 35, not 9.
+
 ## Strategies and sequence
 
 1. Inspect actual pinned pass proofs, recording quantifiers and clock offsets.
@@ -647,3 +652,29 @@ retain all state/memory/globals/code/locals relations. Then use a local-cost
 plus spent-clock budget for Seq/Call/While, with installed-body and subprogram
 ceilings as in Word-to-Stack. Do not infer a universal constant solely from
 constructor text or discard exception/timeout branches.
+
+
+## Corrected fixed Word ceiling
+
+The original full WordStatic driver stopped at Chunk13: Lean's decide proved
+`ceiling optimized287.2.2 <= 4` false. This is a real failed bound, not a tactic
+or resource failure. The general Word-to-Stack theorem is unaffected.
+scan-word-ceiling-dag.py now follows named subprogram references and computes
+both local cost and ceiling for 824 DAG-format literals, rejecting unknown
+shapes; Data64/713 use different formats and retain their already-checked
+ceiling <= 4 lemmas. This is an untrusted planning scan, not a proof.
+
+The five ceilings above four are 287:11, 380:7, 387:8, 874:17, 880:9.
+word-ceiling-corrected.log passes all five upper bounds with ordinary decide,
+plus no-Install and entriesSafe_mono (633 jobs). Existing <=4 procedure facts
+are retained; affected chunks use their own larger bound, and Programs lifts
+all chunks to global 17. The driver resumed at Chunk13 in word-static-v2.log;
+only completed prefixes count as evidence. The new conditional entry factor
+is 2*17+1=35. This still does not certify all 826 bodies or a finite guest K.
+
+For Crep-to-Loop, a shorter expression route is now being tested: prove that
+loop-free/call-free Loop code consumes at most its syntactic cut/tick count,
+prove expression compilation emits such code with one cut per source
+comparison, then recover a bound on the existing simulation's extra witness
+from its initial/final clock equalities. This preserves all original expression
+relations and avoids copying every memory/expression simulation proof.

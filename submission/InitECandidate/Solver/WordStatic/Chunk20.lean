@@ -23,9 +23,25 @@ set_option maxRecDepth 100000
 
 def chunk20 : List (Nat × Nat × WordLangProgHOL (BitVec 64)) := [optimized384, optimized385, optimized386, optimized387, optimized388, optimized389, optimized390, optimized391, optimized392, optimized393, optimized394, optimized395, optimized396, optimized397, optimized398, optimized399]
 
-theorem chunk20Safe : entriesSafe 4 chunk20 = true := by
-  change ((noInstallSubprogsHOL optimized384.2.2 && decide (ceiling optimized384.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized385.2.2 && decide (ceiling optimized385.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized386.2.2 && decide (ceiling optimized386.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized387.2.2 && decide (ceiling optimized387.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized388.2.2 && decide (ceiling optimized388.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized389.2.2 && decide (ceiling optimized389.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized390.2.2 && decide (ceiling optimized390.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized391.2.2 && decide (ceiling optimized391.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized392.2.2 && decide (ceiling optimized392.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized393.2.2 && decide (ceiling optimized393.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized394.2.2 && decide (ceiling optimized394.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized395.2.2 && decide (ceiling optimized395.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized396.2.2 && decide (ceiling optimized396.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized397.2.2 && decide (ceiling optimized397.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized398.2.2 && decide (ceiling optimized398.2.2 ≤ 4)) && ((noInstallSubprogsHOL optimized399.2.2 && decide (ceiling optimized399.2.2 ≤ 4)) && true)))))))))))))))) = true
-  simp only [noInstall384, ceiling384, noInstall385, ceiling385, noInstall386, ceiling386, noInstall387, ceiling387, noInstall388, ceiling388, noInstall389, ceiling389, noInstall390, ceiling390, noInstall391, ceiling391, noInstall392, ceiling392, noInstall393, ceiling393, noInstall394, ceiling394, noInstall395, ceiling395, noInstall396, ceiling396, noInstall397, ceiling397, noInstall398, ceiling398, noInstall399, ceiling399, decide_true, Bool.true_and]
+theorem chunk20Safe : entriesSafe 8 chunk20 = true := by
+  change ((noInstallSubprogsHOL optimized384.2.2 && decide (ceiling optimized384.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized385.2.2 && decide (ceiling optimized385.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized386.2.2 && decide (ceiling optimized386.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized387.2.2 && decide (ceiling optimized387.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized388.2.2 && decide (ceiling optimized388.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized389.2.2 && decide (ceiling optimized389.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized390.2.2 && decide (ceiling optimized390.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized391.2.2 && decide (ceiling optimized391.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized392.2.2 && decide (ceiling optimized392.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized393.2.2 && decide (ceiling optimized393.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized394.2.2 && decide (ceiling optimized394.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized395.2.2 && decide (ceiling optimized395.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized396.2.2 && decide (ceiling optimized396.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized397.2.2 && decide (ceiling optimized397.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized398.2.2 && decide (ceiling optimized398.2.2 ≤ 8)) && ((noInstallSubprogsHOL optimized399.2.2 && decide (ceiling optimized399.2.2 ≤ 8)) && true)))))))))))))))) = true
+  have bound384 : ceiling optimized384.2.2 ≤ 8 := ceiling384.trans (by decide)
+  have bound385 : ceiling optimized385.2.2 ≤ 8 := ceiling385.trans (by decide)
+  have bound386 : ceiling optimized386.2.2 ≤ 8 := ceiling386.trans (by decide)
+  have bound387 : ceiling optimized387.2.2 ≤ 8 := ceiling387.trans (by decide)
+  have bound388 : ceiling optimized388.2.2 ≤ 8 := ceiling388.trans (by decide)
+  have bound389 : ceiling optimized389.2.2 ≤ 8 := ceiling389.trans (by decide)
+  have bound390 : ceiling optimized390.2.2 ≤ 8 := ceiling390.trans (by decide)
+  have bound391 : ceiling optimized391.2.2 ≤ 8 := ceiling391.trans (by decide)
+  have bound392 : ceiling optimized392.2.2 ≤ 8 := ceiling392.trans (by decide)
+  have bound393 : ceiling optimized393.2.2 ≤ 8 := ceiling393.trans (by decide)
+  have bound394 : ceiling optimized394.2.2 ≤ 8 := ceiling394.trans (by decide)
+  have bound395 : ceiling optimized395.2.2 ≤ 8 := ceiling395.trans (by decide)
+  have bound396 : ceiling optimized396.2.2 ≤ 8 := ceiling396.trans (by decide)
+  have bound397 : ceiling optimized397.2.2 ≤ 8 := ceiling397.trans (by decide)
+  have bound398 : ceiling optimized398.2.2 ≤ 8 := ceiling398.trans (by decide)
+  have bound399 : ceiling optimized399.2.2 ≤ 8 := ceiling399.trans (by decide)
+  simp only [noInstall384, bound384, noInstall385, bound385, noInstall386, bound386, noInstall387, bound387, noInstall388, bound388, noInstall389, bound389, noInstall390, bound390, noInstall391, bound391, noInstall392, bound392, noInstall393, bound393, noInstall394, bound394, noInstall395, bound395, noInstall396, bound396, noInstall397, bound397, noInstall398, bound398, noInstall399, bound399, decide_true, Bool.true_and]
 
 end InitECandidate.Solver.WordStatic
 #print axioms InitECandidate.Solver.WordStatic.chunk20Safe

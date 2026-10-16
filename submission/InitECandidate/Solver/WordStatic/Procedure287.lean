@@ -7,7 +7,7 @@ open Flapjack InitECandidate.Proofs.StackAnalysis
 set_option maxRecDepth 1000000
 set_option maxHeartbeats 0
 
-theorem ceiling287 : ceiling optimized287.2.2 ≤ 4 := by decide
+theorem ceiling287 : ceiling optimized287.2.2 ≤ 11 := by decide
 theorem noInstall287 : noInstallSubprogsHOL optimized287.2.2 = true := by decide
 
 end InitECandidate.Solver.WordToStackBound

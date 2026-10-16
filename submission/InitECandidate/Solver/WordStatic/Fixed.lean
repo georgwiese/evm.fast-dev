@@ -8,7 +8,7 @@ set_option maxRecDepth 100000
 theorem wordProgram_eq_outputs : wordProgram = InitECandidate.Proofs.StackAnalysis.outputs := by
   rfl
 
-theorem fixedWordCodeSafe : CodeSafe 4 (sptFromAList InitECandidate.Proofs.StackAnalysis.outputs) := by
+theorem fixedWordCodeSafe : CodeSafe 17 (sptFromAList InitECandidate.Proofs.StackAnalysis.outputs) := by
   rw [← wordProgram_eq_outputs]
   exact wordCodeSafe
 

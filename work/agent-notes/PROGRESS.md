@@ -900,3 +900,35 @@ Completed-run resource records for the Word cost revision:
   While pays condition and administrative work, and calls pay argument and
   handler work. Added the expression-first proof order to PHASE2-PLAN.md;
   no numerical Crep-to-Loop theorem has been claimed or added yet.
+
+
+## Fixed Word ceiling correction and Crep-to-Loop expression work
+
+- Previous goal turn made concrete progress: full Word-to-Stack proof and
+  compiled entry were committed as 66b01bf9c. Revalidated live fixed batches
+  and current resources before continuing; 16 CPUs, 3.0 GiB host memory used,
+  filesystem 53% / 136 GiB free at this turn's start.
+- The original WordStatic driver terminated on a real false proposition:
+  ceiling optimized287.2.2 <= 4. Its successful prefix ends at Chunk12 (13/52).
+  Failed suffix evidence, including recovery sorryAx, is excluded.
+- Added scan-word-ceiling-dag.py to follow subprogram references in 824 named
+  DAG literals. Data64/713 have different syntax and retain checked <=4 facts.
+  Scan maximum is 17, with five larger-than-four procedures: 287=11, 380=7,
+  387=8, 874=17, 880=9. This scanner is not trusted as a proof.
+- word-ceiling-corrected.log passes all five corrected decide upper bounds,
+  their no-Install facts, and CheckCodeMonotone.entriesSafe_mono (633 jobs).
+  Existing <=4 lemmas remain unchanged. Five chunks use their local larger
+  ceiling, while Programs/Fixed now target global 17. Thus the conditional
+  entry multiplier is 35; the earlier fixed multiplier 9 is superseded.
+- Added --start-chunk to the WordStatic driver and a log argument to its
+  evidence recorder. Resumed at Chunk13 in word-static-v2.log, session 99237,
+  using the same four-slot pool and 24 GiB host-memory guard. The original
+  terminated log is preserved. The corrected Chunk13 has passed.
+- Drafted CrepToLoopBound.StraightClock, ExpressionCost and ExpressionSimulation.
+  Intended route: bound clock consumed by Loop code without loops/calls,
+  certify that expression compilation emits one cut per source comparison,
+  then bound the existing expression simulation's existential extra clock.
+  These modules are still under development and not yet recorded as checked.
+  Initial builds exposed tactic-pattern, Bool rewrite and projection/name
+  resolution errors; failed logs are excluded. No explicit sorry/admit added.
+- word-ceiling-corrected: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:02.18; Maximum resident set size (kbytes): 1872984; Exit status: 0; sampled host memory peak 3.805 GiB.

@@ -556,3 +556,29 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - remove-flow: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:29.17; Maximum resident set size (kbytes): 1599944; Exit status: 0.
 - Evidence index: 447 checked modules and 536 printed main theorem axiom sets.
   Incremental Solver policy check passes; this is not official verification.
+
+
+### Complete bounded StackRemove constructor and entry simulation
+
+- Added remaining memory/store/FFI/bitmap cases, direct/raw/tail calls, returning
+  calls and handlers, Safety, Call assembly and recursive Assembly. All pass.
+  The theorem retains actual compiled execution and original postconditions
+  with extra <=1 for Halt and extra=0 otherwise. The continuing-prefix zero
+  bound prevents costs accumulating across Seq, loops and returning calls.
+- Safety explicitly excludes Install and StoreConsts in the current program,
+  installed code and every compile-oracle extension; stateSafe_evaluate proves
+  preservation. Actual fixed guest/initial-state instantiation is still pending.
+- Entry.entrySimulation and initializedEntry pass. Initialization neutrality
+  comes from the existing evaluated initializer clock theorem. The actual
+  initializer run and full state relation remain premises, not assumptions
+  claimed true for the guest without proof.
+- Failed attempts fixed ancestor namespaces for CallReturnNone/StackMemory,
+  Bool.and_eq_true_iff versus the simplifier equality, and a `decide` invocation
+  with free variables (replaced by simplification). Failed logs excluded.
+- Started StackAllocBound.Common/Leaves (zero-extra-clock target contract and
+  25 nonrecursive cases); dependency build is running in the shared limiter.
+  Prepared guarded Safety and Seq/If/Loop rules; these are not yet checked.
+- Open explicit sorrys: none. No full audit/verifier, push, PR or submission.
+  Solution.lean/claim.json remain unchanged at infinity. Finite K unfinished.
+- remove-assembly: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:51.18; Maximum resident set size (kbytes): 2364164; Exit status: 0.
+- remove-entry-v2: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:04.26; Maximum resident set size (kbytes): 2005144; Exit status: 0.

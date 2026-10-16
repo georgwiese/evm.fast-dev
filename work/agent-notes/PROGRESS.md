@@ -1499,3 +1499,66 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   allocator success alone does not bound every extend_memory path. Also need
   successful-call composition, runtime unwind cost, nested releases/transfers,
   global Ready preservation, initial gas validation and positive-charge coverage.
+
+### Crep fixed table and actual returning memzero call bounds completed
+
+- Previous goal turn made checked progress (commit819b10f08). This turn
+  completed the Crep static table and integrated actual returning calls into
+  local memory-work bounds; it did not complete the whole-guest certificate.
+- Confirmed original Crep driver1123880 live through the last procedure chunks,
+  then confirmed it terminal after all52chunks passed and Programs failed.
+  The failure was a simplifier mismatch: entriesSafe was unfolded in the goal
+  but the chunk lemmas were still stated through entriesSafe. Programs and its
+  generator now supply explicitly typed List.all forms of those same lemmas.
+  No procedure ceiling or bound was relaxed.
+- crep-static-final.log passed5362jobs, including Programs, Fixed and equality
+  to the actual fixed Crep.outputs. L126 and the simplified fixed-code safety
+  premise are now checked for all826procedures. This closes a static premise of
+  the existing Crep->Loop entry bound (factor256); initial state, whole source
+  work and cross-pass integration are still required. The original job took
+  56:26.24, maxchildRSS3,659,540KiB, peak observed host used8.079GiB, ending at
+  the aggregate failure. Targeted final repair took53.41s,
+  maxchildRSS2,049,884KiB, peakhost2.554GiB. No Crep job remains live.
+- Added NoException.noException with structural noRaise check and checked loop
+  lifting. It excludes exception results for the actual local evaluator,
+  including malformed registers/memory and timeouts. MemzeroCall.no_exception
+  applies it to the complete fixed Named78.2. This makes the actual caller
+  exception handlers unreachable without assuming a target run or omitting
+  source error/timeout cases.
+- Added returningCallClock and returningCallTimeout: the actual returning-call
+  evaluator costs one setup clock plus callee and selected return clocks, and
+  leaves zero clock on timeout given the corresponding local properties.
+  These support MemzeroCall.callBound, including installed code, actual link
+  register setup, callee work, normal continuation and arbitrary unreachable
+  exception-handler code.
+- BasicFrame.normalFrame checks a restricted integer/basic instruction fragment
+  and proves normal completion preserves a protected register and code. It
+  permits failed setup to stop early and requires no success/domain assumption.
+  This discharges register10/11 and code preservation through actual call setup.
+- ExtendMemoryCalls now covers actual Named484 call214 (capacity clearing) and
+  call325 (logical-length clearing), then their complete setup blocks219/330
+  and store suffixes237/354. Given actual input length<=M, M+32<2^64, registers
+  10/11 and installed Named78, EACH suffix has Work<=17*M+517, consumed Stack
+  clock<=M+45, and an equivalent non-timeout execution at M+46 initial clock,
+  preserving the full original final state apart from unused clock. Capacity
+  suffix stores EV_MEM_CAP; length suffix stores EV_MEM_LEN and returns. These
+  are subprogram bounds, not a bound for full extend_memory or all its callers.
+- Successful evidence: call-clock.log814jobs26.88s,RSS1,775,612KiB,
+  peakhost2.762GiB; memzero-call.log1379jobs32.44s,RSS2,098,616KiB,
+  peakhost2.480GiB; final extend-memory-calls-v7.log1388jobs4.89s,
+  RSS2,141,020KiB, peak observed host used1.114GiB (short run, sampled guard).
+  All use the standard24GiB guard and shared four-slot limiter.
+- Failed logs excluded: no-exception (ambiguous exitLoop namespace); basic-frame
+  throughv3 and extend-memory-calls throughv5 (Option.join/bind normalization,
+  explicit store-state equality elimination, finite syntax-count normalization,
+  setup-node arithmetic). Final successful log replays the corrected dependencies.
+  No explicit proof holes remain; all recorded axiom sets are permitted.
+- Incremental policy passed; all3810 indexed module hashes matched,5836 printed
+  facts. Disk57%,~126GiB free. Full verifier/audit and external actions remain
+  unrun. claim.json remains infinity.
+- Next: prove the actual argument-size and saved-state transfer across the
+  allocator and first memzero, then compose full extend_memory, including its
+  zero-length and no-capacity-growth paths. Existing call suffix contracts have
+  True as their normal postcondition: they do not yet establish frame memory,
+  saved-register recovery, exact EV_MEM_LEN/CAP updates or preservation through
+  nested calls. Global gas, input/state processing and all unwind paths remain.

@@ -1081,3 +1081,29 @@ bounds alone are also insufficient for a good total bound: repeated calls,
 frame release/reuse, gas accounting, error unwinds and non-arena memzero callers
 must still be covered. Initial arena values, successful guard selection and ABI
 invariants remain obligations at the whole-guest level.
+
+### Crep table complete; actual call composition checked
+
+All52Crep chunks and the final fixed-table equality/safety facts are now checked.
+The actual fixed Crep code ceiling is126, supplying the static premise for the
+existing factor256 Crep->Loop entry theorem. The earlier aggregate failure was
+only a mismatch between folded chunk lemmas and unfolded List.all; repaired
+without changing any bound. Word and Stack tables are also complete.
+
+Returning-call clock/timeout lemmas now compose the actual memzero body with its
+compiler return continuation. A structural no-exception proof for Named78 makes
+its caller's exception handler unreachable. The static register-frame check
+covers actual setup's normal exits; failed setup still stops early in the bound.
+Both compiled memzero-call suffixes of extend_memory are checked, including
+setup, restore and following store: Work17*M+517, consumed clockM+45, bounded
+replay atM+46, with an actual input length<=M and installed callee code. Keeping
+M symbolic permits later charging by actual lengths instead of multiplying a
+full-arena worst case by every call.
+
+The whole extend_memory theorem remains open. In particular the current suffix
+postcondition is True; it is sufficient for local costs but does not transfer
+the frame/length/capacity/saved-memory invariant across the first call. Prove
+that transfer against actual memzero memory effects and caller restore code,
+then connect the allocator guards, zero-length/no-growth paths and both suffixes.
+Do not treat passing call-site bounds as a proof of full memory expansion, gas
+payment, nested frame behavior or the final finite certificate.

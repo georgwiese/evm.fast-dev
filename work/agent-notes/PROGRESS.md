@@ -163,3 +163,39 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   sorryAx from the failed elaboration is absent from the successful retry.
 - Six reporting tests passed. Resource guards: Memory/Loc sampled group RSS sum
   peaked at 10,837,048 KiB; host available never below 23,726,028 KiB; disk 45%.
+
+### Quantitative bootstrap coverage (in progress)
+
+- WeightedTrace.evaluator now composes exact assertion counters into a sum of
+  actual evaluateTargetHOL prefix costs. Uniform bounds compose with ASM trace
+  length. Retry passed in 4.64s, max child RSS 2,301,088 KiB. Initial errors were
+  a zero-addition reduction and nonlinear arithmetic normalization, both fixed.
+  Axioms: evaluator standard three; total_le only propext.
+- Added exact-counter adaptations for integer Binop Reg/Imm, LSL immediate,
+  constants, near jumps and near simple register comparisons. Retained source
+  step/relation, full interference and both assertion predicates. Initial local
+  let-bound counters needed dsimp before introducing the environment; corrected.
+  Binop Reg/Imm and LSL builds now pass with permitted axioms.
+- ConstCost retry passes with permitted axioms, including the length ≤ 6 lemma.
+  Fixed a local abbreviation preventing the length rewrite and reduced a
+  singleton-list goal before decision. Original branches emit 1, 2 or 6 steps.
+- Added SupportedCosts, WeightedTrace and BootstrapCost. The latter copies only
+  the 40 bootstrap ASM blocks into a lightweight module and checks equality to
+  the first 208 literal prefix bytes. It aims to prove the 23,132-step sum and
+  an evaluator theorem conditional on local ASM checks/FFI guards. These checks
+  are not yet imported or discharged for the actual initial state.
+- Two-slot bootstrap encoder build was stopped via its own process group
+  846781 and resumed at four slots after RAM remained ~5.4 GiB, disk 45%.
+  The pinned JumpStep imports Mathlib.Tactic, so this pulls a substantial new
+  dependency closure. No pinned sources modified. Current build targets only
+  Solver.BootstrapCost, not the full audit or certificate.
+- Open explicit sorry list: none. Pending/failed elaborations are not accepted
+  proofs; only the successful module builds above have been counted as checked.
+- Read-only import-closure count: fixed Proofs.BootstrapTrace reaches 47,123
+  candidate modules / 1,824,308,527 source bytes. New Solver.BootstrapCost reaches
+  15 candidate modules / 122,217 source bytes (external dependencies excluded).
+  Saved bootstrap-import-closure.json. Avoided building the fixed trace because
+  its ArtifactFacts dependency approaches the prohibited full baseline build.
+- With four-slot memory still ~6 GiB, stopped only owned group 850852 and resumed
+  the same target with six slots. This also picks up the corrected ConstCost
+  source. Disk remains 45%; resource samples saved for both continuations.

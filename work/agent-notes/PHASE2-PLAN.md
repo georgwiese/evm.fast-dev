@@ -151,3 +151,24 @@ The numerical planning envelope in PHASE1-REPORT is deliberately unproved.
 Its arithmetic fits under the score cap, but neither the affine shape nor its
 coefficients have a guest-wide justification. A source clock bound and compiler
 cost transfer remain necessary; none is supplied by the pilot assumptions.
+
+## Trace-composition progress
+
+WeightedTrace.evaluator now proves the exact sum of exposed encoder counters
+plus one per ASM operation, preserving the actual evaluator's quiet prefix.
+ConstCost covers all U64 constants (at most six native instructions); Binop
+Reg/Imm and LSL immediate costs are checked at one step. Near branch/jump
+specializations and their bootstrap assembly are building. BootstrapCost is
+explicitly conditional on the local ASM validity and evaluator guards; checking
+its numerical sum alone will not prove startup from the challenge initial state.
+The lightweight layout avoids the fixed BootstrapProgram module's broad image
+and compiler imports; equality to the literal prefix is a separate obligation.
+
+The fixed BootstrapTrace import is not a safe shortcut on this machine: a static
+import traversal reaches 47,123 candidate modules (1.82 GB source) via ArtifactFacts.
+That approaches the prohibited full baseline build. Do not build it merely to
+reuse the initial-state guards. Instead, specialize/reprove the required guards
+using the fixed literal prefix and a small memory-domain interface under Solver;
+connect that interface to the actual machine configuration separately. The new
+lightweight cost module's candidate closure has only 15 modules. External
+Mathlib imports still have a substantial first-build cost.

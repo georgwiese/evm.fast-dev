@@ -1449,3 +1449,53 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   (5475 printed facts); no explicit proof holes or unchecked tactics were added.
   Crep remains live through Chunk31 (32/52). Stack is complete. Full verifier,
   full audit, external contact, push, PR and Yukon submission remain unrun.
+
+### Actual frame allocator and scratch-arena bounds checked
+
+- Previous goal turn was a verified wait: PID1123880 was confirmed live while
+  answering the status request. This turn made new checked proof progress.
+- Added FrameAllocEntry.updates for actual Named71.2 (frame_mem_alloc): both
+  success guards, metadata and stack safety are explicit premises; execution
+  returns the old pointer, restores the stack pointer, stores the rounded new
+  frame pointer, consumes exactly four Stack clock units, preserves domain/FFI
+  and changes no memory outside the frame-pointer cell and saved-return cell.
+- FrameAllocCost.work proves Work 58 for that actual path, using the real
+  conditionals to exclude their trapping call branches. Reproducible generator:
+  python3 work/agent-notes/generate-frame-alloc-cost.py. FrameAllocBounded.Ready
+  packages the ABI/domain/non-alias/guard facts; bounded_allocate gives an
+  equivalent actual execution with four initial clock units and Work 58,
+  preserving all final state apart from unused clock.
+- FrameArena proves the request is <=12,578,816 bytes if the frame pointer and
+  scratch pointer satisfy the explicit fixed arena limits and ordering. Its
+  mask_toNat and rounded_bounds prove exact eight-byte rounding without wrap.
+  allocate_in_arena applies these facts to actual Named71 execution: the stored
+  pointer covers the request, has at most seven padding bytes, is aligned and
+  remains <=scratch. These are conditional local invariants, not a proof that
+  guest initialization and every call preserve the arena assumptions.
+- FrameArena.bounded_memzero connects a successful allocator guard and arena
+  invariant to the actual Named78 memzero summary: initial Stack clock
+  12,578,860 and Work 213,840,319 suffice for that request length, preserving the
+  original non-timeout result and complete final state apart from unused clock.
+  These numbers are not RV64 target steps or a whole-guest K; other memory
+  regions/callers remain unbounded by this theorem.
+- Build command: the standard guarded shared-four-slot limited-lake invocation,
+  target InitECandidate.Solver.GuestWork.FrameArena. Final frame-arena-v3.log
+  passed 1386 jobs, elapsed23.05s, max child RSS2,160,404KiB, peak observed host
+  used2.565GiB. Earlier frame-alloc-cost.log passed1363jobs,49.85s,
+  maxchildRSS2,197,808KiB,peakhost3.480GiB. All printed axioms permitted.
+- Failed attempts excluded from evidence: frame-alloc-entry.log/v2/v3 exposed
+  an extra compiler word-mask operation, AndOp-vs-HAnd simplification, then
+  residual stack-restoration/mask equalities. Fixed with explicit kernel facts.
+  frame-arena-v2.log lacked the explicit toNat form of pointer ordering for
+  omega; v3 supplies it. No explicit proof holes remain. Disabled only noisy
+  unused-simp-argument lint in the generated cost proof, preserving its proof.
+- Incremental policy passed. All3656 indexed source hashes match,5669 printed
+  facts. Crep job PID1123880 remains live; indexed throughChunk42 (43/52).
+  Disk57%,~126GiB free. Full verifier/audit, external contact and publication
+  remain unrun; claim remains infinity.
+- Next integration: actual extend_memory=Named484 (381 DAG definitions) has
+  two memzero calls: ncap-cap after frame_mem_alloc, then expand_by regardless
+  of capacity growth. The latter needs the frame length/capacity invariant;
+  allocator success alone does not bound every extend_memory path. Also need
+  successful-call composition, runtime unwind cost, nested releases/transfers,
+  global Ready preservation, initial gas validation and positive-charge coverage.

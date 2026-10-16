@@ -1061,3 +1061,23 @@ whole final state apart from unused clock at exactly two initial Stack clock
 units, with Work 49. It uses the actual guard and code; the Ready/affordable
 premises are still obligations for the global caller invariant. The complete
 Stack table checks and this per-call result do not imply a finite guest score.
+
+### Frame allocator and arena connection checked
+
+The actual frame_mem_alloc success path (Named71.2) now has Work58, exact
+four-clock consumption and equivalent bounded execution. Ready exposes both
+allocation guards, metadata, stack safety, domains and non-alias assumptions.
+FrameArena.allocate_in_arena proves its stored pointer covers the request,
+adds at most seven bytes, is aligned and stays below scratch under the explicit
+arena invariant. FrameArena.bounded_memzero supplies a concrete per-call bound
+for that allocation's amount. No global arena preservation is asserted.
+
+Next compose these summaries through extend_memory (Named484). Its capacity
+increase zeros ncap-cap after allocation; its second memzero zeros expand_by
+and also runs when no allocation occurs. Prove the current frame's length and
+capacity invariant, no-wrap arithmetic and caller-register transfer through
+actual calls. The source program alone does not establish these facts. Arena
+bounds alone are also insufficient for a good total bound: repeated calls,
+frame release/reuse, gas accounting, error unwinds and non-arena memzero callers
+must still be covered. Initial arena values, successful guard selection and ABI
+invariants remain obligations at the whole-guest level.

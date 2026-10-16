@@ -1748,3 +1748,42 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - User requested commit and stop due to credits. No build remains running.
   Claim remains infinity; no finite certificate, full verifier/audit, push,
   PR or Yukon submission. The goal is paused, not complete.
+
+### 2026-10-16 — bounded feasibility review for the Sol handoff
+
+- User authorized the proposed feasibility review and update of bound.md, not
+  an open-ended restart of proof development. Reviewed the fixed contract,
+  weighted cost interfaces, compiler initialization/semantic assembly, and
+  guest parsing, gas, hash-table and state-processing paths. No Lean build,
+  new Spike run, installation, network contact or submission operation.
+- Decision: REVISE. The existing uniform compiler factors remain too coarse.
+  The weighted route also fails a specific coarse witness-table calculation:
+  Named188 raw probe body 192 has 35 nodes and 2 ticks, so Work.basic prices 37 credits;
+  at 4 extra Lab clocks per credit and factor 24 to target, a triangular probe
+  allowance for 3,728,269 records prices 24,686,375,150,371,392 transitions before
+  the other scan, base clock or other guest work. This is an inadequate upper
+  bound, NOT a runtime lower bound, constructed collision input, or proof that
+  a finite certificate is impossible. Joint distinctness/bytes/multiplicity
+  bounds and/or tighter cost accounting remain necessary.
+- Added feasibility-budget.py and its JSON output: reproducible offline integer
+  arithmetic and restricted fixed-loop syntax inspection, not a Lean proof.
+  The run also rehashed all 3,834 indexed Solver modules: zero mismatches.
+  No whole-review elapsed-time/RSS telemetry was collected; only read-only
+  source inspection and this small Python calculation ran. At review start:
+  host-used RAM 2.2 GiB, disk 57%, 126 GiB available, no active proof builds.
+- Located the exact desired Named entry as FullMakeInitSemantics.s3 at
+  procedure 0, not fullMakeInit's returned earlier-stage state. bound.md now
+  identifies the existing assembly equalities to expose and spells out I1–I6,
+  including source behavior, body replay, all state/oracle premises, halt-stub
+  overhead and target/certificate assembly. They are design interfaces, not
+  newly checked theorems.
+- Additional findings: successful decoder guards fix the gas field at byte 474;
+  actual execution-to-reader correspondence is still open. Input length is a
+  64-bit reduction of arbitrary list length, so huge lengths can wrap. Six
+  system calls have 180M total initial regular gas and 9,400,320 initial state
+  reservoir, subject to proof of conservation/call-count invariants. Witness
+  construction precedes current-payload validation and consumes no user gas.
+- Sol's next task is the bounded witness-budget gate in bound.md Section 3.R4.
+  Do not automatically resume local allocator work. No overall go decision,
+  new proof holes or proof modules; claim remains infinity. Full verification
+  remains unrun and prohibited on this host under the standing instructions.

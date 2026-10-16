@@ -1,0 +1,63 @@
+{
+  "scope": "Source inspection and integer arithmetic; not kernel verification, not a whole-program bound, not a lower bound on actual runtime",
+  "reviewed_proof_checkpoint": "04603be4d",
+  "score_max": 9007199254740984,
+  "bootstrap_steps": 23132,
+  "input_visible_byte_bound_pending_formal_connection": 134217712,
+  "indexed_module_hashes_checked": 3834,
+  "indexed_module_hash_mismatches": [],
+  "probe_source": "submission/InitECandidate/Proofs/BackendStages/Named188.lean",
+  "probe_source_sha256": "b87da575ceefd70ca6ea9e231660202f3acea8ab29f073e65eba3c127bc24820",
+  "probe_body": "NamedBody188_192",
+  "basic_nodes": 35,
+  "basic_ticks": 2,
+  "basic_work_credits_per_body": 37,
+  "target_price_for_these_extra_work_credits_only": 3552,
+  "max_lab_clock_after_bootstrap": 375299968946577,
+  "max_work_ignoring_base_clock_and_entry": 93824992236644,
+  "old_uniform_source_multiplier": 20802539520,
+  "system_regular_gas_in_six_calls": 180000000,
+  "system_initial_reservoir_in_six_calls": 9400320,
+  "cases": [
+    {
+      "hypothetical_bytes_per_record": 4,
+      "loose_record_count_ignoring_fixed_headers": 33554428,
+      "one_scan_triangular_occupied_probe_allowance": 562949802426378,
+      "basic_credits_times_4_times_24_only": 1999597698218494656,
+      "maximum_integer_target_cost_per_probe_using_all_remaining_budget": 16,
+      "maximum_integer_work_credits_per_probe_ignoring_base_clock": 0
+    },
+    {
+      "hypothetical_bytes_per_record": 7,
+      "loose_record_count_ignoring_fixed_headers": 19173958,
+      "one_scan_triangular_occupied_probe_allowance": 183820323105903,
+      "basic_credits_times_4_times_24_only": 652929787672167456,
+      "maximum_integer_target_cost_per_probe_using_all_remaining_budget": 49,
+      "maximum_integer_work_credits_per_probe_ignoring_base_clock": 0
+    },
+    {
+      "hypothetical_bytes_per_record": 36,
+      "loose_record_count_ignoring_fixed_headers": 3728269,
+      "one_scan_triangular_occupied_probe_allowance": 6949993004046,
+      "basic_credits_times_4_times_24_only": 24686375150371392,
+      "maximum_integer_target_cost_per_probe_using_all_remaining_budget": 1296,
+      "maximum_integer_work_credits_per_probe_ignoring_base_clock": 13
+    },
+    {
+      "hypothetical_bytes_per_record": 68,
+      "loose_record_count_ignoring_fixed_headers": 1973789,
+      "one_scan_triangular_occupied_probe_allowance": 1947920521366,
+      "basic_credits_times_4_times_24_only": 6919013691892032,
+      "maximum_integer_target_cost_per_probe_using_all_remaining_budget": 4624,
+      "maximum_integer_work_credits_per_probe_ignoring_base_clock": 48
+    }
+  ],
+  "caveats": [
+    "Count bounds ignore fixed headers; large count and all-colliding distinct hashes are not proved simultaneously reachable.",
+    "The four-byte record envelope allows empty duplicate preimages; it is not a distinct-key bound. Joint byte, distinctness and multiplicity constraints matter.",
+    "The 36-byte row is a restricted scenario of 32-byte preimages plus offsets; it is not a bound on all witness records.",
+    "htab_set also scans in htab_find_slot; the priced term omits that, empty-slot tests, hashing, setup, base clock and the rest of the guest.",
+    "Failure of this upper-bound calculation does not establish any runtime lower bound, impossibility of finite K, or impossibility of a tighter proof.",
+    "Source hash agreement rechecks integrity, not Lean proofs or the verifier."
+  ]
+}

@@ -1169,3 +1169,19 @@ CapacityEntry.Ready. Prove growth arithmetic and outer save/setup next.
 
 No whole-guest ABI/arena initialization or preservation, global gas accounting,
 input/state bound, unwind bound or finite certificate is claimed.
+
+### Pause checkpoint: allocator call and state transfer
+
+FrameAllocAllClocks/Block now provide the all-clock guarded allocator bound
+Work58/clock4, with only return or timeout possible. FrameAllocCall gives actual
+call134 plus continuation116 Work82/clock5. FrameAllocState and
+ExtendMemoryAllocRestore/Transfer preserve code, domains, caller registers and
+saved capacity/expansion across the actual call, with an explicit memory write
+footprint and separation premises.
+
+Next connect that saved-state theorem to ExtendMemoryCapacityEntry.Ready using
+preservation of the metadata, frame and memory-base lookup cells. Then prove
+actual earlier save/setup establishes the allocator ABI/guards and protected
+cells. Full growth arithmetic, whole-guest invariants, gas/input/state and
+unwind accounting, compiler composition and the finite certificate remain open.
+Paused at the user's request to save credits; no active build remains.

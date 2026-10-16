@@ -3990,6 +3990,14 @@
       "sha256": "33bcb230bcef4ba69be5d085b1dd98b7f8f2420cc4222c0e782e9eb5464c9ae4"
     },
     {
+      "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryAllocRestore.lean",
+      "sha256": "b154122518883aabbe3f781a301d257ba92bf3b9ad746c1622f1b4495f00877d"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryAllocTransfer.lean",
+      "sha256": "8f41b6234a18a50189c96b70d3d6f20d716b3473c3b0146131273a6ee3e40b90"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GuestWork/ExtendMemoryBlock.lean",
       "sha256": "1696a42be813e5221d60f8e8779a9fc2d08b9fd4b025f2fd333b2fbd9b820635"
     },
@@ -4030,8 +4038,20 @@
       "sha256": "b12ba08a127dbfe1e03d142d7f8b19128334fc2ac55792da73f885831b0ae7e0"
     },
     {
+      "path": "submission/InitECandidate/Solver/GuestWork/FrameAllocAllClocks.lean",
+      "sha256": "f8878449ac89ca591ab06c7fbe51f26664b286f73063be87b8d549ac6042b026"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GuestWork/FrameAllocBlock.lean",
+      "sha256": "7d86aa60bc470d34bccac80126252294d251c1db73dd015610a2e25979d3afa3"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GuestWork/FrameAllocBounded.lean",
       "sha256": "95ba275fd2dac31ff374b3dca7031779d2e3f6c6205a083cd5fb88faaf8b58a8"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GuestWork/FrameAllocCall.lean",
+      "sha256": "ef122dca91cdc508e53b9b0102303abfa52a448f27a77a1cee0693b8e3c4291d"
     },
     {
       "path": "submission/InitECandidate/Solver/GuestWork/FrameAllocCost.lean",
@@ -4040,6 +4060,10 @@
     {
       "path": "submission/InitECandidate/Solver/GuestWork/FrameAllocEntry.lean",
       "sha256": "d47151a37314af871554f5568d879fa0f89ae0837cbe843a735400dd45382fa0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GuestWork/FrameAllocState.lean",
+      "sha256": "ecda31489716b269741c00f34828cb3cd66e693e4917eaca240d92d40943d541"
     },
     {
       "path": "submission/InitECandidate/Solver/GuestWork/FrameArena.lean",
@@ -59143,7 +59167,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-arena-v3.log"
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.FrameAllocEntry.work",
@@ -59152,7 +59176,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-arena-v3.log"
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GuestWork.FrameAllocEntry.updates",
@@ -59161,7 +59185,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-arena-v3.log"
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.CrepStatic.chunk32Safe",
@@ -62822,6 +62846,105 @@
         "Quot.sound"
       ],
       "successful_log": "extend-memory-zero-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryAllocRestore.restore",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryAllocTransfer.normal_returns",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.ExtendMemoryAllocTransfer.saved_state",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.FrameAllocEntry.work_all_clocks",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.FrameAllocEntry.small_timeout",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.FrameAllocEntry.outcome",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.FrameAllocEntry.no_exception",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.FrameAllocEntry.entry_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.FrameAllocCall.call_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.FrameAllocCall.extend_memory_call_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GuestWork.FrameAllocEntry.preserved",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "extend-memory-alloc-transfer-v2.log"
     }
   ]
 }

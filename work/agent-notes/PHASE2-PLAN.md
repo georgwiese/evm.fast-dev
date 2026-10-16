@@ -1017,3 +1017,47 @@ from actual input/gas/state invariants, and cover other major routines such as
 copying, decoding and gas-accounted execution. The direct Stack approach now
 has a complete concrete procedure pilot plus checked composition/reclocking
 rules, rather than only isolated loop ranks.
+
+### Fixed Stack tables completed
+
+StackStatic.Fixed now passed: the Raw eligibility and Alloc supported-code
+checks cover every procedure and runtime stub, and their local program lists
+are proved equal to the actual fixed Raw.stack and Alloc.stack. This closes
+those fixed-table premises of the existing zero-extra allocation and direct
+removal simulations. Crep's full static check is still running.
+
+### Connecting cost summaries to gas accounting
+
+Memzero has callers in memory expansion, copying, decoding/state construction
+and crypto, so a standalone per-call bound is insufficient. The next pilot is
+the actual charge_gas procedure (output408 / Named472): prove its affordable
+path subtracts amount from gas-left and adds amount to regular-gas-used while
+preserving the frame pointer and other memory. Metadata/domain/disjointness
+premises must be exposed, then established by the global guest invariant. A
+successful local update proof does not cover out-of-gas unwinding, nested-frame
+gas transfers, or initial gas validation.
+
+### Affordable gas-charge pilot checked
+
+ChargeGasEntry.updates and work now cover the actual affordable Named472.2
+execution: exact gas-left/gas-used stores, unchanged other memory and FFI,
+correct return, two consumed Stack clock units, and Work 49. GasAccounting.charge
+lifts these machine-word updates to exact Nat accounting under amount<=gas and
+gas+used<2^64. Ready exposes the metadata/global/frame-domain/non-aliasing facts
+that the global guest invariant must supply. Positive charges strictly decrease
+the actual frame's gas-left rank; zero charges and nested-frame gas transfers
+still need separate treatment. Out-of-gas unwinding is not covered by this
+successful-path summary.
+
+The fixed-source function index now identifies frame_mem_alloc (Named71),
+memory_gas_cost (Named481), extend_memory (Named484) and charge_with_memory
+(Named485). These are the immediate route from caller memory lengths and
+arena/gas checks to the checked memzero cost summary. Source comments alone
+are not evidence of those invariants; prove them against the actual code.
+
+The affordable-charge replay wrapper is now checked too:
+GasAccounting.bounded_charge preserves the original non-timeout result and
+whole final state apart from unused clock at exactly two initial Stack clock
+units, with Work 49. It uses the actual guard and code; the Ready/affordable
+premises are still obligations for the global caller invariant. The complete
+Stack table checks and this per-call result do not imply a finite guest score.

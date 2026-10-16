@@ -990,6 +990,11 @@
     "submission/InitECandidate/Solver/FlattenWeighted/Straight.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/WholeCall.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/Work.lean",
+    "submission/InitECandidate/Solver/GuestWork/ChargeGasBounded.lean",
+    "submission/InitECandidate/Solver/GuestWork/ChargeGasCost.lean",
+    "submission/InitECandidate/Solver/GuestWork/ChargeGasEntry.lean",
+    "submission/InitECandidate/Solver/GuestWork/ChargeGasTail.lean",
+    "submission/InitECandidate/Solver/GuestWork/GasAccounting.lean",
     "submission/InitECandidate/Solver/GuestWork/MemzeroAligned.lean",
     "submission/InitECandidate/Solver/GuestWork/MemzeroBytes.lean",
     "submission/InitECandidate/Solver/GuestWork/MemzeroBytesRank.lean",
@@ -3804,8 +3809,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 60649,
-  "package_bytes": 2249726252,
+  "package_entries": 60654,
+  "package_bytes": 2249750414,
   "claim": {
     "K": "infinity"
   },

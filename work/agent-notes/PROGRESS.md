@@ -1378,3 +1378,74 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - The whole guest still needs caller length/call-count invariants, bounds for
   other work, and initial-state/compiler/target integration. claim.json remains
   infinity. No full audit/verifier, network contact, push, PR or Yukon submit.
+
+## Stack fixed-table checks completed; gas-update invariant pilot
+
+- Revalidated the prior turn as progress: the complete fixed memzero procedure
+  and its linear caller interface are committed and checked. Both existing
+  static drivers were live at the start of this turn; no duplicate was launched.
+- stack-static-v3.log completed all 14 resumed targets, including all remaining
+  chunks, Programs and Fixed (32:04.81 elapsed, max child RSS 5,386,096 KiB).
+  All 52 chunks are now checked across the original successful prefix and v3.
+  fixedRawCodeSafe/fixedAllocCodeSafe are connected to the actual fixed tables
+  by rawProgram_eq_stack/allocProgram_eq_stack. All printed axioms are permitted.
+  Crep checking remains live. No full verifier or audit was run.
+- Inspected actual memzero callers in guest/src. Memory expansion, copy padding,
+  jump-destination bitmaps, state allocation and cryptographic code all call it;
+  a per-call maximum does not establish their total work. Focus moved to the
+  actual charge_gas counter update (Crep output408 / Named472).
+- ChargeGasTail is a draft proof for its exact post-guard suffix; first build
+  failed only on the final arbitrary-address frame condition, corrected by
+  introducing its non-aliasing hypotheses before simplification. ChargeGasEntry
+  is now checking the whole affordable path with explicit metadata, frame,
+  domain and disjointness premises. These drafts are not yet indexed as success.
+  They do not claim the global guest supplies those premises or that out-of-gas
+  unwinding is bounded. No explicit sorry/admit/axiom/native_decide was added.
+
+### Actual affordable gas-charge accounting checked
+
+- charge-gas-cost.log passed all 1360 jobs (8.64s elapsed, max child RSS
+  2,129,112 KiB, peak host used 2.658 GiB). ChargeGasTail.updates proves the two
+  exact memory stores and their frame condition. ChargeGasEntry.updates proves
+  the complete affordable path of actual Named472.2, from metadata/global/frame
+  reads through guard, gas-left subtraction, gas-used addition and return.
+  ChargeGasEntry.work proves Work 49 from the real comparison selecting the
+  affordable branch, without changing or bounding the unselected unwind call.
+- gas-accounting.log passed all 1361 jobs (10.61s, max child RSS 2,082,600 KiB,
+  peak host used 2.959 GiB). GasAccounting.Ready lists the concrete metadata,
+  domain, register and non-aliasing assumptions. charge proves exact natural
+  gas consumption, gas-used increment and conservation of their sum under
+  amount<=gas and gas+used<2^64, plus exact two-clock consumption and Work 49.
+  A positive-charge rank corollary is checked, without asserting every guest
+  iteration contains a positive charge.
+- Earlier charge-gas-entry.log failed from an omitted Asm namespace, a generic
+  order lemma with the wrong BitVec order instance and an ambiguous shift-amount
+  literal. Explicit Nat shift and toNat order facts fixed the proof. Failed logs
+  are not indexed. The bounded replay wrapper initially failed from using decide
+  on goals containing free variables; replaced with reflexivity/simplification
+  and checking in charge-gas-bounded-v2.log.
+- Added a reproducible navigation index of all 826 fixed function names, Crep
+  procedure IDs, corresponding Named Stack labels and source hashes. It is not
+  proof evidence. Handles multiline name literals (the initial ad-hoc search
+  missed those). Relevant next mappings: frame_mem_alloc=Named71,
+  memory_gas_cost=Named481, extend_memory=Named484, charge_with_memory=Named485.
+- Stack resumed batch peak observed host used was 9.114 GiB, below the guard.
+  The complete Stack table checks are indexed. Crep is still running, latest
+  indexed prefix Chunk28 (29/52). Disk is 57%, ~127 GiB free.
+- These new per-call proofs do not establish global Ready, initial gas validation,
+  gas transfers/refunds, positive-charge coverage, or total memory work. Those
+  remain necessary for the finite certificate. claim.json remains infinity.
+
+### Two-clock charge replay completed
+
+- charge-gas-bounded-v2.log passed all 1366 jobs (9.79s elapsed, max child RSS
+  2,073,272 KiB, peak host used 2.735 GiB). bounded_charge gives the actual
+  affordable charge_gas procedure an equivalent execution at exactly two
+  initial Stack clock units and Work 49, preserving all final state fields
+  apart from unused clock. It retains the concrete Ready and affordable-path
+  hypotheses; it does not require a target execution or assume a small original
+  source clock. Printed axioms are permitted.
+- Incremental Solver policy check passed. All 3466 indexed source hashes match
+  (5475 printed facts); no explicit proof holes or unchecked tactics were added.
+  Crep remains live through Chunk31 (32/52). Stack is complete. Full verifier,
+  full audit, external contact, push, PR and Yukon submission remain unrun.

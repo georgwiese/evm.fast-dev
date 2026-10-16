@@ -712,3 +712,26 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - rawcall-entry-v3: Elapsed (wall clock) time (h:mm:ss or m:ss): 1:02.91; Maximum resident set size (kbytes): 1848868; Exit status: 1; sampled peak used host memory 4.603 GiB.
 - rawcall-entry-v4: Elapsed (wall clock) time (h:mm:ss or m:ss): 0:47.05; Maximum resident set size (kbytes): 1874164; Exit status: 0; sampled peak used host memory 4.419 GiB.
 - Latest completed fixed batches: StackStatic chunk5 (96 procedures) and padded chunk39 (40/54 chunks). Both processes remain live.
+
+### Word-to-Stack weighted overhead pilot
+
+- Previous goal turn was progress: full StackRawCall and actual entry simulation
+  passed, committed as 9e09ce5c6. Both existing fixed batch drivers revalidated
+  live at the start of this turn (PIDs 890709 and 965512).
+- Prepared WordToStackBound cost and CodeSafe predicates, preservation using
+  the pinned no-Install evaluator theorem, full original simulation plus
+  numerical bound, constructive one-clock ShareInst and Raise proofs,
+  sequence budget arithmetic/composition and If selection. No explicit sorry.
+- Proposed allowance: limit*(source.clock-post.clock)+cost(program). Cost counts
+  only ShareInst/Raise, adds Seq, takes branch/continuation maxima. A source
+  call/reentry decrement pays for a body bounded by limit. No installed body
+  may contain Install; this explicit obligation still needs fixed-code proof.
+- Reproducible text scan (scan-word-cost.py, word-cost-scan.json) of all 826
+  actual optimized Word literals finds 13 ShareInst and 669 Raise, no Install
+  or MustTerminate; maximum charged-leaf count is 4 in Data66. This is not a
+  kernel proof. Prepared actual optimized66/713 cost/noInstall pilots.
+- ShareInst/Raise pilot running in session 45024, wordstack-pilot.log, under
+  existing four-slot shared pool and 24 GiB guard. New bounded modules are
+  unverified until successful builds. Seq/If and literal pilots not run yet.
+- Resource check before work: host used 4.1 GiB, disk 51%, 143 GiB free. No
+  full verifier/audit, push, PR or submission. claim.json remains infinity.

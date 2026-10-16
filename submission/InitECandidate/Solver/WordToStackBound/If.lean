@@ -7,6 +7,15 @@ open Flapjack.Compiler.Backend.WordToStack.Native
 open Flapjack.WordToStackProofs Flapjack.WordToStackProofs.CompCorrect
 open Flapjack.WordToStackProofs.CompCorrect.If
 
+private theorem physicalOperandEven {width : Nat} [NeZero width]
+    (operand : WordRegImm (BitVec width))
+    (physical : everyVarImmHOL isPhyVar operand = true) :
+    OperandEven operand := by
+  cases operand with
+  | reg other => simpa [everyVarImmHOL,isPhyVar,OperandEven] using physical
+  | imm word => trivial
+
+
 def OriginalInductionHypotheses {width : Nat} [NeZero width] {C F : Type}
     (ac : AsmConfigExact width) (limit : Nat) (comparison : Cmp) (register : Nat)
     (operand : WordRegImm (BitVec width))
@@ -75,7 +84,9 @@ theorem compCorrectIf {width : Nat} [NeZero width] {C F : Type}
   have selectedCost : cost (if value then first else second) ≤
       cost (.ite comparison register operand first second) := by
     cases value <;> simp [cost]
-  have selectedBound := selectedCost.trans bounded
+  have ceilingParts := ifCeiling comparison register operand first second limit bounded
+  have selectedBound : ceiling (if value then first else second) ≤ limit := by
+    cases value <;> simp only [Bool.false_eq_true, if_false, if_true] <;> omega
   have conventionParts := conventions
   simp only [postAllocConventionsHOL,everyVarHOL,everyStackVarHOL,
     callArgConventionHOL,Bool.and_eq_true] at conventionParts

@@ -11,7 +11,7 @@ theorem compCorrectRaise {width : Nat} [NeZero width] {C F : Type}
     (ac : AsmConfigExact width) (limit : Nat) (name : Nat)
     (source : WordSemStateFiniteExact width (Nat × C) F) :
     Simulation ac limit (.raise name) source := by
-  intro _ _ _ k f frame sourcePost target result bs bsPost n nPost compiled lens premises
+  intro safe supported bounded k f frame sourcePost target result bs bsPost n nPost compiled lens premises
   rcases premises with ⟨execution,notError,related,conventions,flat,compilation,
     lengthBound,bitmapBound,bitmapPrefix,labels,maxBound⟩
   have compiledEq := congrArg Prod.fst compilation

@@ -545,24 +545,40 @@ and initialization premises still need composition with the other stages.
 ## Word-to-Stack weighted overhead pilot
 
 Source inspection confirms that shared-memory instructions and Raise need one
-extra target clock without consuming a source clock. Proposed cost counts these
-leaves, adds sequential costs, takes the maximum branch/return/handler cost,
-and carries a loop body's cost. Other primitive costs are zero. CodeSafe limit
-requires no Install in installed bodies and each body's cost <= limit; the
-existing noInstallEvaluateConstCode theorem preserves this invariant. The new
+extra target clock without consuming a source clock. Local cost counts these
+leaves, adds sequential costs, takes the maximum branch cost and carries a loop
+body's cost. A call has zero local cost: its source decrement pays for its
+callee and the one selected return/exception continuation. The separate ceiling
+is the maximum local cost over every subprogram, including continuations.
+CodeSafe limit requires no Install in installed bodies and each body's ceiling
+<= limit; noInstallEvaluateConstCode preserves this invariant. The revised
 Simulation retains every original premise and compCorrectResult branch while
-adding `extra <= limit * (source.clock - sourcePost.clock) + cost program`.
-One source call or loop-reentry decrement can pay for a body's cost <= limit.
+adding `extra <= (2*limit) * (source.clock - sourcePost.clock) + cost program`.
+The multiplier reserves enough for both callee and continuation local costs;
+loop reentry needs only one such cost.
 
-scan-word-cost.py scans the actual 826 optimized Word literals: 13 ShareInst,
-669 Raise, no Install or MustTerminate, and at most four charged leaves in any
-one literal (Data66). This is text evidence only. Pilot.lean will kernel-check
-cost <= 4 and noInstall for actual optimized66 and the large optimized713.
-If the complete code and recursive theorem are certified at limit 4, an entry
-call with zero syntactic cost would have target clock <= 5 * source clock.
-This conditional estimate is not yet a theorem or a finite guest certificate.
+scan-word-cost.py finds 13 ShareInst and 669 Raise constructor occurrences in
+the actual 826 optimized Word files, no Install or MustTerminate, and at most
+four charged constructor occurrences per file. These are NOT expanded-syntax
+upper bounds: Data65 reuses a named Raise body in many calls. Lean rejected the
+old accumulated-cost <= 4 claim for Data65, although optimized66/713 passed.
+This falsified the original scan-based global estimate and motivated the call
+accounting change above. The scanner now explicitly records this limitation.
+Pilot.lean and generated WordStatic modules check the new ceiling <= 4 and
+noInstall independently in Lean. If all code and the full recursive theorem
+pass at limit 4, a zero-cost entry call would have target clock <= 9*source
+clock. This conditional estimate is not a theorem or finite guest certificate.
 
-Prepared Cost/Common, constructive one-clock ShareInst and Raise strengthenings,
-arithmetic budget composition, Seq and If. The initial ShareInst/Raise pilot is
-compiling dependencies. Calls, handlers, loops, other leaves and full assembly
-remain to be adapted and checked; fixed program/code integration also remains.
+The revised Cost and budget helpers, Tick/MustTerminate cases and the full Loop
+case now pass (wordstack-loop.log, 848 jobs). Loop uses the actual successful
+entry cut, body clock decrease, and clock-preserving exit cut; the recursive
+source decrement pays for the next body allowance. All original timeout,
+overflow, exit, return and exception conclusions are retained. This is a guarded
+inductive case, not yet the assembled recursive Word-to-Stack theorem.
+
+The combined revised Seq/If/tail-call/shared-memory/leaf build and first
+WordStatic chunk are still running. The larger optimized713 ceiling check is
+costly; its earlier local-cost pilot does not prove this new ceiling. Additional
+zero-extra-clock leaf proofs and returning-call callee/continuation pilots are
+being built. Returning calls, handlers and full assembly remain; fixed-code
+equality to StackAnalysis.outputs and initialization also remain.

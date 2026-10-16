@@ -17,13 +17,13 @@ for path in paths:
               for name in ("shareInst", "raise", "install", "mustTerminate")}
     records.append({"path": str(path.relative_to(ROOT)),
                     "sha256": hashlib.sha256(data).hexdigest(), "counts": counts,
-                    "text_leaf_cost_upper_hint": counts["shareInst"] + counts["raise"]})
+                    "charged_constructor_occurrences": counts["shareInst"] + counts["raise"]})
 result = {
-    "description": "Text scan of fixed optimized Word literals. Counts are not a kernel proof or a code-map integration theorem.",
+    "description": "Text scan of fixed optimized Word literals. Named subprograms may be reused; these counts are NOT upper bounds on expanded syntax cost, kernel proofs, or a code-map integration theorem.",
     "files": len(records),
-    "max_text_leaf_cost_upper_hint": max(r["text_leaf_cost_upper_hint"] for r in records),
+    "max_charged_constructor_occurrences": max(r["charged_constructor_occurrences"] for r in records),
     "records": records,
 }
 (ROOT / "work/agent-notes/word-cost-scan.json").write_text(json.dumps(result, indent=2) + "\n")
-print(json.dumps({"files": len(records), "max_text_leaf_cost_upper_hint": result["max_text_leaf_cost_upper_hint"],
+print(json.dumps({"files": len(records), "max_charged_constructor_occurrences": result["max_charged_constructor_occurrences"],
                   "totals": {name: sum(r["counts"][name] for r in records) for name in records[0]["counts"]}}))

@@ -735,3 +735,54 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   unverified until successful builds. Seq/If and literal pilots not run yet.
 - Resource check before work: host used 4.1 GiB, disk 51%, 143 GiB free. No
   full verifier/audit, push, PR or submission. claim.json remains infinity.
+
+### Word-to-Stack cost correction and current status
+
+- The first fixed-code batch disproved the original cost <= 4 estimate for
+  optimized65. Textual constructor counts undercount shared named subprograms
+  when expanded; the scan is not an upper bound. Previous pilot successes did
+  not establish the universal fixed-code obligation.
+- Revised local cost assigns calls zero, while a recursive ceiling bounds
+  every subprogram including call continuations. The proposed recursive extra
+  bound is now (2*limit)*(source.clock-post.clock)+cost(program), paying for
+  both a callee and its selected continuation from the source call decrement.
+  The fixed ceiling <= 4 checks and full recursive theorem remain unproved.
+- wordstack-weighted-v2/v3/v4 failed in cost_le_ceiling and are not verification
+  evidence. v5 removes unnecessary simplification after constructor cases;
+  session 42743 runs the revised cases and WordStatic.Chunk0 in the existing
+  shared four-slot pool with the 24 GiB resource guard. The full WordStatic
+  driver has not started. Earlier successful proof manifest entries whose
+  source changed must be refreshed after a successful revised build.
+- Padded and StackStatic batch logs continue advancing. End-to-end finite K,
+  whole-guest source bounds, and compiler composition remain outstanding.
+  claim.json remains infinity; no full verification or submission was run.
+
+### Checked weighted Word-to-Stack loop case and expanded leaf work
+
+- Previous goal turn made progress: corrected cost_le_ceiling and launched v5,
+  then recorded the false original cost estimate and revised accounting.
+- wordstack-loop.log passed 848 jobs in 13.93s, maximum process RSS 1,896,900 KiB.
+  Revised Cost, generic budget arithmetic, Tick/MustTerminate and LoopBudget/Loop
+  are indexed with printed axioms limited to propext, Classical.choice, Quot.sound.
+  The Loop proof derives cut clock/code preservation, source-tail clock decrease,
+  body and recursive simulations, and the paid recursive allowance. Full original
+  result/resource clauses, including timeout, overflow and exception origin, remain.
+- Prepared zero-extra-clock Control, Inst, LocValue, MoveFull, Return, Alloc, FFI
+  and StoreConsts cases by extending the original constructive witnesses. The
+  leaf (session 90156) and more-leaf (session 59850) builds remain active. Their
+  successful individual lines are not treated as completed-build evidence yet.
+- Revised v5 session 42743 is still active. Cost and several procedures/cases
+  have passed; Pilot's optimized713 ceiling computation is still live. Existing
+  launchers wait on their preferred shared slot while that calculation runs;
+  no processes were restarted and no extra slot pool was opened.
+- Prepared returning-call InductionHypotheses, bounded simulateCalleeBodyAt and
+  executeReturningContinuation; session 1775, wordstack-returning-pilot.log.
+  Remaining returning-call/handler assembly and full recursive pass theorem
+  are not implemented. The guarded Loop case alone is not the whole theorem.
+- Refreshed completed fixed batches through padded Chunk44 (45/54) and StackStatic
+  Chunk12 (13/52). Both drivers remain live. Removed superseded CheckCode/Pilot/
+  Raise/ShareInst evidence entries until revised successful logs can replace them.
+- Incremental Solver import/token and package policy check passed. This is not
+  a full verifier or audit. No explicit source sorry/admit/native_decide/axiom;
+  claim.json stays infinity. No push, PR or submission. Host memory last 4.6 GiB,
+  disk 52%, with all auxiliary builds sharing the original four-slot pool.

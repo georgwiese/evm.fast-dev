@@ -354,3 +354,57 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
 - Added the near-register comparison axiom print omitted by the generator's
   name filter, resolving its trailing-blank-line diff warning. Final aggregate
   audit build passed (lab-cost-audit.log); git diff --check is clean.
+
+### Continuation: recursive Lab-to-target clock transfer
+
+- Previous goal turn was progress: committed complete encoder, trace and padded
+  line bounds as 2b04d4704. Clean worktree at restart; 4.3 GiB RAM used, disk 46%.
+- Added LabBound.Common with LineBound (adjacent physical PC displacement),
+  NoInstall (no fetched dynamic installer), rate B L = B*(L+1)+2, and a bounded
+  replacement for CompileCorrectFor/compileCorrect_step. It retains the original
+  evaluator, oracle tie, compiler relation, encoder correctness and non-error
+  premises. The target clock is bounded by rate times the source Lab clock.
+- Adapted Asm, Control, Cbw, ShareMem and CallFfi cases plus strong clock
+  induction. Dynamic Install is excluded using the explicit NoInstall premise;
+  no cost or correctness conclusion is assumed for it. Ordinary calls rejected
+  by the existing compiler line relation remain rejected for the same reason.
+- All recursive cases and Assembly built, using only the permitted three
+  axioms. Main fixes: namespace ambiguity after relocation, indentation in
+  generated applications, reserved identifier prefix, and explicit post-FFI
+  machine configurations so early type inference did not select the old FFI
+  oracle. Original dependency files remain unchanged. Generator:
+  adapt-lab-bound.py (five case modules); Common and Assembly are direct proofs.
+- LabBound.riscv built: under LineBound code L and NoInstall source.code, the
+  actual RISC-V target reaches the related Lab result/FFI state within
+  (16*(L+1)+2)*source.clock. No identity-interference assumption is added.
+- Layout.lineBound_of_lengths, noInstall_of_lines and noInstall_of_similar
+  built. These reduce the two extra premises to local syntax facts and transfer
+  installation absence along the existing codeSimilar relation. Initial layout
+  errors were a missing LabProps namespace and induction argument order; fixed.
+- Text-only inspection of all 832 fixed Padded sections finds 205,014 encoded
+  lines, 904,196 encoded bytes, maximum line size 24, matching length annotations,
+  and no Install token. Stored padded-layout-scan.json. This is not a Lean proof;
+  if the syntax facts are certified, the Lab multiplier is 402.
+- Static import traversal: Padded64 reaches 13 candidate modules / 3,775,165
+  bytes; all Padded sections together reach 5,587 modules / 471,066,768 bytes.
+  This is smaller than the forbidden full artifact closure but still substantial.
+  Started a two-slot fixed-section pilot before attempting the complete set.
+  PaddedPilot and the final computable checker are pending. Open explicit sorrys:
+  none. Failed intermediate logs with error-recovery sorryAx are not validation.
+- The layout checker required renaming the reserved identifier section; fixed.
+  CheckLayout.programFits_spec now checks both LineBound and NoInstall from its
+  Boolean test. PaddedPilot.padded64_fits passed with only propext. Pilot and
+  dependency build: 1m53.06s wall, max child RSS 4,213,024 KiB, disk at most 47%.
+  Sampled summed RSS peaked at 5,160,620 KiB; minimum host MemAvailable was
+  25,444,532 KiB.
+- Final combined LabBound/PaddedPilot audit passed in 7.37s, max child RSS
+  3,861,548 KiB. All recorded main axioms are permitted. proof-checks.json and
+  incremental policy-check.json updated (69 modules, 568,969 bytes, 110 distinct
+  recorded theorem axiom sets); no new explicit sorry/native_decide/
+  axiom declarations. No full verifier or score run was attempted.
+- The whole-program line bound is still unproved: only section 64 is certified.
+  Next validate a largest section's build resources, then certify all 832 using
+  the local Boolean checker and assemble their syntax facts. The existing
+  codeSimilar relation can transfer NoInstall to the source Lab program.
+  The preceding passes and guest gas/input work bound remain necessary for a
+  finite certificate; claim.json remains infinity. Open explicit sorrys: none.

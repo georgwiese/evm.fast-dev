@@ -1,6 +1,6 @@
 # Phase 2: finite clock proof plan
 
-Status: Phase 1 measurements complete. Dependencies installed; 58 cost/bookkeeping
+Status: Phase 1 measurements complete. Dependencies installed; 69 cost/bookkeeping
 modules checked. No finite certificate yet; the submission still claims infinity.
 
 ## Strategies and sequence
@@ -62,7 +62,7 @@ Paths below are relative to `.lake/packages/flapjack/Flapjack/`.
 | Loop → Word | `RelationsExact` equates clocks; `CompileCorrect.PropertyAt` evaluates at the original target state | No extra clock in this simulation, but generated straight-line work still costs target transitions later. |
 | Word → Stack | `CompCorrect.Seq.Simulation`: exists `extraClock`, run at `target.clock + extraClock`; Seq sums the two extras | Bound call setup, spills, loops, allocation and each constructor's witness. |
 | Stack → Lab | `FlattenCorrect.Statement.FlattenConcl`: exists `ck`, run or shift at `t1.clock + ck` | Must include Stack lowering/stack removal before flattening; source clock alone omits straight-line work. |
-| Lab → RISC-V | `CompileCorrect.Common.CompileCorrectFor`: exists `k`, run target at `s1.clock + k` | Encoder witness and NOP-padded line bounds now checked in Solver. The full recursive simulation still hides its total offset. |
+| Lab → RISC-V | `CompileCorrect.Common.CompileCorrectFor`: exists `k`, run target at `s1.clock + k` | Solver now checks the full recursive bound for static code with bounded encoded line lengths. Fixed-program layout premises and earlier clocks remain to be certified. |
 | Bootstrap | `BootstrapAsmComposition.checked_trace_evaluator`: exists count and lower bound `code.length ≤ count` | Lower bound does not yield the needed upper bound. Each encoded step witness must be strengthened. |
 
 Exact inspected entry files: Pancake/Proofs/PanToCrep/PcCompileCorrect.lean,
@@ -139,8 +139,10 @@ RiscVEvaluatorCosts checks the three corresponding exact evaluator prefixes.
    BootstrapStartup now discharges the actual initial-state checks and identifies
    installedAsm as the endpoint, for any submission with the baseline ROM,
    anchor, ordinary FFI count and nonwrapping MMIO offsets.
-4. Complete Lab-to-target recursive cost transfer using the checked full encoder
-   and padded-line summaries. Then attempt a direct target cost potential for guest loops, alongside the source
+4. Lab-to-target recursive cost transfer is checked under explicit static-code
+   and line-size premises. Certify those premises for all fixed padded sections,
+   then propagate quantitative bounds through preceding passes. Also attempt
+   a direct target cost potential for guest loops, alongside the source
    potential route. Prefer reusable summaries of library functions over a full
    quantitative reproof of all optimization passes if this avoids duplicated
    invariants. This is an approach choice, not a claim that such summaries exist.
@@ -235,14 +237,43 @@ LabCost.stepOfLine, stepNopOfLineMem and stepNopOfLine lift those bounds through
 the existing compiler state relation and fetched-line encoding checks. They
 also preserve findNextInterference, needed by oracleTie_step.
 
-Remaining Lab-to-target work is concrete: strengthen CompileCorrectFor and
-compileCorrect_step, then the Asm/Control/Cbw/ShareMem/CallFfi cases, before
-assembling source-clock induction. Bound fetched target line sizes explicitly.
-The Install case can change target code and cannot silently reuse a fixed line
-ceiling; either prove a stable size invariant or prove installation is absent
-for the fixed guest. Neither obligation is currently discharged. FFI and cache
-dispatch need their own costs; they are not ordinary ASM trace steps.
+LabBound now strengthens CompileCorrectFor and compileCorrect_step, adapts
+Asm/Control/Cbw/ShareMem/CallFfi, and assembles strong induction on the source
+clock. Terminal and returning FFI dispatch are included. Install can change
+target code, so the new theorem explicitly assumes no source position invokes
+it. It does not silently reuse a line ceiling across installation or assign
+dynamic installation a guessed cost.
 
-These lemmas remove a quantitative gap at the final compiler stage. They do
-not bound the guest's Lab clock from gas/input, nor the preceding passes' clock
-expansion. Those are still the dominant unfinished certificate obligations.
+The checked RISC-V conclusion is:
+
+```lean
+-- Full original oracleTie, evaluate, non-error and stateRel premises;
+-- plus mc.target = riscvTarget, LineBound code limit, NoInstall source.code.
+∃ count post, count ≤ (16 * (limit + 1) + 2) * source.clock ∧
+  evaluateTargetHOL mc source.ffi count ms = (res, post, finalSource.ffi)
+```
+
+LineBound is an upper bound on each adjacent posVal displacement. Layout proves
+it from bounded individual line lengths and zero-width labels; it also proves
+NoInstall from line syntax and transfers it along codeSimilar. CheckLayout is
+a computable Boolean check with a kernel-proved specification covering both
+premises. PaddedPilot.padded64_fits certifies one actual fixed target section
+at limit=24 using ordinary decide and only propext.
+
+The text scan of all 832 Padded literals found 205,014 encoded lines / 904,196
+bytes, maximum length 24 and no Install token. This suggests multiplier 402,
+but the whole-program facts are not yet kernel-certified. The fixed Padded
+imports have a 5,587-module / 471 MB candidate source closure. The first-section
+pilot took 1m53s and peak child RSS 4.0 GiB. Test a largest section before the
+complete layout build, and keep disk/RAM monitoring in place.
+
+The multiplier 402 is a deliberately loose intermediate bound, not a claim
+that the final K will fit Yukon's cap. If composing it with adversarial work
+potentials exceeds the cap, retain encoded-length/one-step-NOP costs rather
+than the current uniform 16-per-operation padding ceiling. That refinement
+must be proved; no tighter multiplier is currently claimed.
+
+This removes the recursive quantitative gap at the final compiler stage for
+the stated static-code class. Fixed-program instantiation is still pending.
+It does not bound the guest's Lab clock from gas/input or the preceding passes'
+clock expansion. Those remain the dominant unfinished certificate obligations.

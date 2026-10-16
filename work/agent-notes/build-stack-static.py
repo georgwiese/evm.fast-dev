@@ -5,6 +5,7 @@ Run inside tools/limited-lake.py and baseline-resource-run.py. Sequential
 chunks limit the number of waiting processes; a failure stops the driver.
 """
 from pathlib import Path
+import argparse
 import subprocess
 import time
 
@@ -12,8 +13,12 @@ ROOT = Path(__file__).resolve().parents[2]
 CHUNKS = ROOT / "submission/InitECandidate/Solver/StackStatic"
 paths = sorted(CHUNKS.glob("Chunk*.lean"), key=lambda p: int(p.stem[5:]))
 assert [p.stem for p in paths] == [f"Chunk{i}" for i in range(52)]
-modules = [f"InitECandidate.Solver.StackStatic.{p.stem}" for p in paths]
-modules.append("InitECandidate.Solver.StackStatic.Programs")
+ap = argparse.ArgumentParser()
+ap.add_argument('--start-chunk', type=int, default=0)
+args = ap.parse_args()
+assert 0 <= args.start_chunk < 52
+modules = [f"InitECandidate.Solver.StackStatic.{p.stem}" for p in paths[args.start_chunk:]]
+modules.extend(["InitECandidate.Solver.StackStatic.Programs", "InitECandidate.Solver.StackStatic.Fixed"])
 for i, module in enumerate(modules):
     start = time.monotonic()
     print(f"BEGIN {i + 1}/{len(modules)} {module}", flush=True)

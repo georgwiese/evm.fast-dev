@@ -1219,3 +1219,63 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   no duplicate Crep batch was started while the pilot was still running.
   Disk is now 56%, ~130 GiB free; host used memory is about 3.3 GiB.
   All work remains local, claim.json infinity, and no full verification is claimed.
+
+## Fixed-code check recovery and concrete memzero loop pilot
+
+- Revalidated the prior status-only turn. All three old pilot/static processes
+  were terminal, so no live build was restarted. Stack stopped at Chunk40's
+  default heartbeat limit after completing Chunk39. Crep's first two pilots
+  failed because ordinary decide could not reduce well-founded conversion/cost
+  definitions, not because a ceiling counterexample was found.
+- Changed the local Crep expression-cost mutual recursion to structural recursion
+  and exposed the fixed structural codec equation in each static procedure proof.
+  crep-static-pilot-v3.log passed all 2106 jobs, including the complete Crep entry
+  proof and both pilots (0 and 533): 59.51s elapsed, max child RSS 1,679,744 KiB,
+  peak observed host used 2.911 GiB. Updated the generator and started the full
+  826-procedure/52-chunk Crep batch, still requiring its final Fixed aggregate.
+- Stack Chunk40 now has unlimited heartbeats. The resumable driver also builds
+  Fixed after Programs; its first launch (stack-static-v2.log) failed immediately
+  from an argument-parsing ordering typo, corrected before the v3 launch.
+  stack-static-v3.log resumed at Chunk40 and has completed through Chunk42.
+  Crep has completed through Chunk2. Both share the existing four-slot limiter
+  and 24-GiB host-used-memory guard; disk remains 56%.
+- BasicClock now treats break/continue as clock-neutral basic constructors.
+  Its module and the existing initializer Work proof rebuilt successfully, but
+  the combined memzero pilot logs remain failed and are not indexed as success.
+- Started an actual-code memzero byte-tail proof over Named78's body 233,
+  not a replacement program. Nodes=27, syntactic ticks=2, and Work=29; the open
+  proof obligation is that a continuing body preserves base/length and increments
+  index under the unsigned index<length guard. Draft rank/loop theorems depend
+  on that obligation. Iterations memzero-tail through v6 failed at elaboration,
+  simplification or case elimination; v7 is checking. Their recovery sorryAx
+  output is failed-build evidence only. No explicit sorry/admit/axiom was added,
+  and these draft main theorems are not recorded as proved.
+- No full audit/verifier, external contact, push, PR or Yukon submission.
+  claim.json remains infinity; source whole-entry invariants remain unsolved.
+
+### Actual memzero byte-loop rank checked
+
+- memzero-tail-v9.log passed all 1369 jobs (11.87s elapsed, max child RSS
+  2,100,944 KiB, peak host used 4.564 GiB). This supersedes the draft status above.
+  MemzeroTail.body_continues proves preservation of base/length, increment of
+  index and index<length for the actual body. MemzeroTailRank.body_decreases
+  proves unsigned increment cannot wrap and the remaining-byte rank decreases.
+  loop_work gives 29*(remaining+1) credits; loop_clock gives consumed clock
+  <=3*(remaining+1). Every printed axiom is permitted. No extra memory-validity
+  assumption is needed: store failure cannot satisfy continuation.
+- The simplification obstacle was resolved using a sequence equation with the
+  proven clock clamp removed and matching the exact BitVec byte literal in the
+  store case split. v8 built the body but failed on two redundant simp calls in
+  the rank arithmetic; v9 replaced those with explicit natural-number goals.
+  Failed v1-v8 logs are excluded from success indexing.
+- BasicClock's break/continue extension and existing initializer proof are also
+  indexed from this successful combined build. All 2851 indexed source hashes
+  match, with 4682 printed facts. Latest static prefixes: Stack Chunk43,
+  Crep Chunk4. Both processes remain live under the shared four-slot pool.
+- New work in progress: BasicTimeout/LoopTimeout prove zero final clock on a
+  timeout, so a consumed-clock bound can select a concrete sufficient initial
+  clock. The first BasicTimeout build failed on a missing rewrite in the sequence
+  case; corrected and checking. Neither new module is yet indexed as checked.
+- The memzero loop bounds are conditional on its three entry registers. Earlier
+  loops, whole-procedure call/length accounting and the complete guest certificate
+  remain open. claim.json is still infinity; no full verification is claimed.

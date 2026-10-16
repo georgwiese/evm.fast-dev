@@ -12,12 +12,12 @@ mutual
     | .cmp _ first second => expCost first + expCost second + 1
     | .shift _ first second => expCost first + expCost second
     | _ => 0
-  termination_by e => sizeOf e
+  termination_by structural e => e
 
   def expsCost {width : Nat} [NeZero width] : List (CrepExpHOL width) → Nat
     | [] => 0
     | e :: es => expCost e + expsCost es
-  termination_by es => sizeOf es
+  termination_by structural es => es
 end
 
 def CodeCost {width : Nat} [NeZero width] (code : List (HolLoopProg width)) (budget : Nat) : Prop :=

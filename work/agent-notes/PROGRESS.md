@@ -49,3 +49,29 @@ No isolated verification or finite-score success is claimed.
   `Codex <codex@localhost>` command-local settings; global config unchanged.
 - gh fixture download failed for lack of authentication. Public HTTPS curl
   fetched the same release asset (591 MiB), then extraction/conversion succeeded.
+
+## Installation and target-evaluator pilot
+
+- Spike source pinned at 55b4658dbf574ba0b714083ec436ce2cb5be1998 built
+  successfully with make -j4: 6m21.87s, maximum child RSS 689,984 KiB.
+  Driver build succeeded. Added opt-in breakpoint minstret_delta logging;
+  rebuilt successfully. Default execution/counting is unchanged.
+- Compiler build restarted from completed artifacts with six slots after
+  observing about 5–7 GiB total used RAM and two Lean RSS values 1.6–1.7 GiB.
+  Original two-slot log retained. TargetClock used two additional limited slots.
+- TargetClock built successfully (79 jobs), 3m14.95s, maximum child RSS
+  2,110,584 KiB. All three main theorems print exactly the allowed standard
+  three axioms. No sorry. This checks terminal clock cost and prefix transport,
+  not a finite certificate.
+- check_submission.py passed (structural/policy check only).
+- Preprocessed source and AST hashes differ from BASELINE.json. The current
+  ROM is 950,344 bytes, not historical 950,336. Actual startup pointer and
+  Bookkeeping agree at 0xa0029048; inferred bootstrap RV count is 23,132.
+  These checked source/artifact discrepancies mean exact historical count
+  reproduction cannot be assumed for the present checkout.
+- Added library diagnostic harness (not the challenge artifact), with colliding
+  table keys, bitmap rebuilding and aligned/unaligned copying. Execution pending.
+- Latest observed filesystem use 44%; no 85% threshold breach.
+
+GNU time RSS figures above are the maximum individual child/process RSS, not
+aggregate parallel process memory. Total-RAM snapshots are separate observations.

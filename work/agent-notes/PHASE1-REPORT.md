@@ -37,3 +37,29 @@ The documented 23,127 hardware steps are not yet independently reproduced.
 No measured worst steps/gas ratio or defensible numeric coefficients a,b,c
 are available yet. A linear envelope can absorb bounded quadratic costs only
 after bounding their domains; a fitted average is not such a bound.
+
+## Current-source checks
+
+The converted corpus has exactly 33,614 records (fresh conversion).
+Current CPP output matches Guest/guest.pp.pnk: SHA-256
+`414d70d031f9e367ad9e5c70bc6dbd523238a3c542fba59a09aed866f3e5f860`.
+Current Guest/Ast.lean SHA-256:
+`21925d793b4159c30406a4d48a7402d4a2cdc23e0189201342aa89778d4534ed`.
+Both differ from BASELINE.json. Reconstructing the exact literal byte lists
+(Prefix000..001, Bytes000..220, Suffix000..010) gives 950,344 bytes, SHA-256
+`22a1dd0963f12a3492e647b2626101fad2312dfcff813978b8ff1aca9897d7cc`.
+No Lean artifact-equality proof was run for this reconstruction.
+
+Binutils disassembly of the current literals gives data endpoints 0xa0020000
+and 0xa0029048: 4,617 copy iterations. The 208-byte startup has 52 RV64
+instructions, including a five-instruction copy loop. Static execution count
+is therefore 52 + 5*(4617-1) = 23,132, not the historical 23,127. The current
+Guest/Bookkeeping.lean agrees with the literals; the documentation is stale.
+The data pointer delta accounts for five more bootstrap instructions.
+A Spike breakpoint measurement is planned to check this static count.
+
+The witness decoder explicitly limits each code blob to 65,536 bytes
+(types.h MAX_BYTES_PER_CODE; ssz.pnk decode_bytes_list). This bounds the code
+scan even for arbitrary pre-state witnesses; relying only on CREATE's size
+limit would have missed that separate obligation. Oversized synthetic code
+inputs test early rejection, not huge executable contracts.

@@ -31,9 +31,9 @@ Status: dependency installation underway. No finite certificate yet.
 ```lean
 -- Preserve the entire evaluator result under a known prefix cost.
 theorem prefix_within
-    (shift : ∀ clock, before (prefix + clock) = after clock)
+    (shift : ∀ clock, before (prefixCost + clock) = after clock)
     (run : ∃ clock, clock ≤ budget ∧ after clock = result) :
-    ∃ clock, clock ≤ prefix + budget ∧ before clock = result
+    ∃ clock, clock ≤ prefixCost + budget ∧ before clock = result
 
 -- For each pass, instantiate Rel/Exec with its actual pinned definitions.
 -- Rel src dst → ExecSrc src fuel result →
@@ -49,3 +49,40 @@ theorem prefix_within
 Every new Lean module belongs under InitECandidate/Solver. Use two-slot limited
 Lake builds and print axioms for main theorems. No full baseline audit/verifier.
 Record failed approaches and every open sorry in PROGRESS.md.
+
+## Pinned pass audit (source inspection, not a new proof)
+
+Paths below are relative to `.lake/packages/flapjack/Flapjack/`.
+
+| Pass | Current clock relation | Numerical gap |
+|---|---|---|
+| Pancake → Crep | `panToCrepStateRelFiniteExact` equates initial/final clocks; `pcCompileCorrectAt` runs the target without added fuel | No extra clock in this pass. Clock counts calls/loop iterations/ticks, not all expression work. |
+| Crep → Loop | `NCompileCorrect.PropertyAt`: exists `extra`, evaluate at `target.clock + extra`, relate final states | Bound `extra` for every constructor, including compiled expression/control expansion. |
+| Loop → Word | `RelationsExact` equates clocks; `CompileCorrect.PropertyAt` evaluates at the original target state | No extra clock in this simulation, but generated straight-line work still costs target transitions later. |
+| Word → Stack | `CompCorrect.Seq.Simulation`: exists `extraClock`, run at `target.clock + extraClock`; Seq sums the two extras | Bound call setup, spills, loops, allocation and each constructor's witness. |
+| Stack → Lab | `FlattenCorrect.Statement.FlattenConcl`: exists `ck`, run or shift at `t1.clock + ck` | Must include Stack lowering/stack removal before flattening; source clock alone omits straight-line work. |
+| Lab → RISC-V | `CompileCorrect.Common.CompileCorrectFor`: exists `k`, run target at `s1.clock + k` | `compileCorrect_step` uses `k' + l - 1`; bound encoder witness `l` for each instruction. |
+| Bootstrap | `BootstrapAsmComposition.checked_trace_evaluator`: exists count and lower bound `code.length ≤ count` | Lower bound does not yield the needed upper bound. Each encoded step witness must be strengthened. |
+
+Exact inspected entry files: Pancake/Proofs/PanToCrep/PcCompileCorrect.lean,
+Pancake/Proofs/PanToCrep/StateRelFiniteSupport.lean,
+Pancake/CrepToLoop/Proofs/NCompileCorrect/Property.lean,
+Pancake/LoopToWord/Proofs/CompileCorrect/Property.lean,
+Pancake/LoopToWord/Proofs/RelationsExact.lean,
+Compiler/Backend/WordToStack/Proofs/CompCorrect/Seq.lean,
+Compiler/Backend/StackToLab/Proofs/FlattenCorrect/Statement.lean, and
+Compiler/Backend/LabToTarget/CompileCorrect/Common.lean.
+
+The complete chain also includes frontend simplifications, Loop and Word
+optimizations and register allocation, and Stack transformations. The seven
+headline languages do not account for these intermediate passes.
+
+The generic ClockBounds pilot now builds and its printed axiom sets are allowed.
+TargetClock is the next pilot: a one-step halt and bound-preserving prefix
+composition for evaluateTargetHOL itself. This reduces terminal off-by-one
+uncertainty but does not discharge the guest-wide clock bound.
+
+The source evaluator is noncomputable (predicate-valued domains and classical
+decisions); target Evaluate.lean is explicitly noncomputable too. Direct #eval
+is therefore unavailable. A measured executable mirror would require a proved
+agreement theorem before its counts could certify this evaluator.

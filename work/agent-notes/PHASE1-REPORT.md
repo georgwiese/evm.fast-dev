@@ -79,8 +79,11 @@ Current bootstrap disassembly copies 4,617 words. Its 52 static instructions
 include a five-instruction loop, giving 52 + 5*(4617−1) = **23,132** executed
 RV instructions. A Spike breakpoint at native entry 0x80001190 measured exactly
 23,132. The existing BootstrapTrace theorem's 23,120 is an *ASM-operation*
-count; encodings can contain multiple RV instructions. Its evaluator theorem
-currently hides the native count existentially. Historical documentation's
+count; encodings can contain multiple RV instructions. Its existing evaluator theorem
+hides the native count existentially. New Solver.BootstrapCost proves an exact
+23,132-step evaluator prefix conditional on the ASM checks and memory/FFI
+guards; those guards have not yet been discharged for the challenge initial
+state in the new proof. Historical documentation's
 23,127 hardware count is stale for these bytes.
 
 Normal batched execution of empty malformed input gives 48,245; single-step

@@ -6,9 +6,9 @@
     "scope": "candidate imports only; external and trusted imports omitted"
   },
   "InitECandidate.Solver.BootstrapCost": {
-    "candidate_modules": 15,
-    "source_bytes": 122217,
-    "built_candidate_modules": 10,
+    "candidate_modules": 16,
+    "source_bytes": 122811,
+    "built_candidate_modules": 16,
     "scope": "candidate imports only; external and trusted imports omitted"
   }
 }

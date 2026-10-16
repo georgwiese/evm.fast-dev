@@ -1,6 +1,6 @@
 # Phase 2: finite clock proof plan
 
-Status: Phase 1 measurements complete. Dependencies installed; seven cost/bookkeeping
+Status: Phase 1 measurements complete. Dependencies installed; 17 cost/bookkeeping
 modules checked. No finite certificate yet; the submission still claims infinity.
 
 ## Strategies and sequence
@@ -135,9 +135,9 @@ RiscVEvaluatorCosts checks the three corresponding exact evaluator prefixes.
 2. Checked EncoderClock.evaluator_exact: an exposed counter n yields a shift of
    n+1 in evaluateTargetHOL, retaining interference and findNextInterference.
    This adapts the pinned proof without changing the dependency.
-3. Checked RiscVEvaluatorCosts specializes the three constructors. Extend exact encoder
-   witnesses for constants, integer binops and bootstrap branches. Compose a
-   weighted trace and prove the current bootstrap's numerical cost.
+3. Checked RiscVEvaluatorCosts, SupportedCosts and BootstrapCost cover the
+   bootstrap instruction forms and compose their exact 23,132-step sum.
+   Next discharge the actual initial-state checks and identify the endpoint.
 4. Attempt a direct target cost potential for guest loops, alongside the source
    potential route. Prefer reusable summaries of library functions over a full
    quantitative reproof of all optimization passes if this avoids duplicated
@@ -158,7 +158,7 @@ WeightedTrace.evaluator now proves the exact sum of exposed encoder counters
 plus one per ASM operation, preserving the actual evaluator's quiet prefix.
 ConstCost covers all U64 constants (at most six native instructions); Binop
 Reg/Imm and LSL immediate costs are checked at one step. Near branch/jump
-specializations and their bootstrap assembly are building. BootstrapCost is
+specializations and their bootstrap assembly are now checked. BootstrapCost is
 explicitly conditional on the local ASM validity and evaluator guards; checking
 its numerical sum alone will not prove startup from the challenge initial state.
 The lightweight layout avoids the fixed BootstrapProgram module's broad image
@@ -170,5 +170,20 @@ That approaches the prohibited full baseline build. Do not build it merely to
 reuse the initial-state guards. Instead, specialize/reprove the required guards
 using the fixed literal prefix and a small memory-domain interface under Solver;
 connect that interface to the actual machine configuration separately. The new
-lightweight cost module's candidate closure has only 15 modules. External
+lightweight cost module's candidate closure has only 16 modules. External
 Mathlib imports still have a substantial first-build cost.
+
+## Checked bootstrap milestone
+
+BootstrapEncoding.bytes_match proves that the 40 ASM blocks encode to the
+submitted ROM's first 208 bytes. BootstrapCost.exact_total proves the weighted
+trace sum is 23,132. BootstrapCost.evaluator proves an exact prefix of that
+length for evaluateTargetHOL, conditional on WeightedTrace.Checked, Guards and
+the initial ASM/machine relation. All main theorem axiom sets are recorded in
+proof-checks.json; none exceeds the permitted three. There are no open sorrys.
+
+The next obligation is to discharge those checks for the actual loaded machine
+without importing the 47,123-module artifact closure. This cost milestone does
+not bound the native guest body or prove a finite certificate. The source gas/
+input potential and a quantitative compiler transfer (or direct target summaries)
+remain outstanding; claim.json and Solution.lean are unchanged.

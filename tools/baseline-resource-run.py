@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a command with periodic resource evidence and an 85% disk stop guard.
+"""Run a command with resource evidence, disk and optional memory stop guards.
 
 RSS is a sampled sum across the process group and double-counts shared pages;
 MemAvailable is whole-host evidence, not per-command peak RAM. GNU time can be
@@ -41,16 +41,29 @@ def sample(group, directory):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--max-used-memory-gib", type=float,
+                    help="stop if MemTotal minus MemAvailable exceeds this many GiB")
     ap.add_argument("log", type=Path)
     ap.add_argument("command", nargs=argparse.REMAINDER)
     args = ap.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
     if not command:
         ap.error("supply a command after --")
+    if args.max_used_memory_gib is not None and args.max_used_memory_gib < 0:
+        ap.error("--max-used-memory-gib must be nonnegative")
     args.log.parent.mkdir(parents=True, exist_ok=True)
+    def limit_reason(point):
+        if point["disk_used_percent"] > 85:
+            return "disk use exceeds 85%"
+        if args.max_used_memory_gib is not None and (
+                point["MemTotalKiB"] - point["MemAvailableKiB"] >
+                args.max_used_memory_gib * 1024 * 1024):
+            return f"host used memory exceeds {args.max_used_memory_gib:g} GiB"
+        return None
     # Check before launching, not only after the first sampling interval.
-    if sample(-1, args.log.parent)["disk_used_percent"] > 85:
-        raise SystemExit("disk use exceeds 85%; command not started")
+    reason = limit_reason(sample(-1, args.log.parent))
+    if reason:
+        raise SystemExit(f"{reason}; command not started")
     process = subprocess.Popen(command, start_new_session=True)
     with args.log.open("w") as log:
         try:
@@ -58,8 +71,12 @@ def main():
                 point = sample(process.pid, args.log.parent)
                 log.write(json.dumps(point) + "\n")
                 log.flush()
-                if point["disk_used_percent"] > 85:
-                    os.killpg(process.pid, signal.SIGTERM)
+                reason = limit_reason(point)
+                if reason:
+                    try:
+                        os.killpg(process.pid, signal.SIGTERM)
+                    except ProcessLookupError:
+                        pass
                     try:
                         process.wait(timeout=10)
                     except subprocess.TimeoutExpired:
@@ -69,7 +86,7 @@ def main():
                         os.killpg(process.pid, signal.SIGKILL)
                     except ProcessLookupError:
                         pass
-                    raise SystemExit("disk use exceeds 85%; stopped process group")
+                    raise SystemExit(f"{reason}; stopped process group")
                 try:
                     code = process.wait(timeout=5)
                     break

@@ -38,12 +38,20 @@
       "sha256": "65d8adba99e99f3d1d3d951d0c4b07d53a8a5613872d787b75891f07a8add1f9"
     },
     {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder.lean",
+      "sha256": "190bfbe4d6139815d104aa2ee3164e8247bfa66693958ce95123c7e5fbbbccac"
+    },
+    {
       "path": "submission/InitECandidate/Solver/BoundedEncoder/AddCarry.lean",
       "sha256": "7609990d4431b849fd0077665c3410fe1003710874ddc2b6f81730edd3aa91a1"
     },
     {
       "path": "submission/InitECandidate/Solver/BoundedEncoder/AddOverflow.lean",
       "sha256": "cd69a3f1e243d98c381a60caf27b59e94c2a6502fad17c4899d1221213bd2d23"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Call.lean",
+      "sha256": "a5a00ebe85a31a63fde5b5050cd6ad4183636a4774f270d72e22fb1ed7495e97"
     },
     {
       "path": "submission/InitECandidate/Solver/BoundedEncoder/Call/Far.lean",
@@ -54,12 +62,12 @@
       "sha256": "003a019bcfcd3f037c49976c2706f8326567feea0f628bebe94330aa625eeb80"
     },
     {
-      "path": "submission/InitECandidate/Solver/BoundedEncoder/Call.lean",
-      "sha256": "a5a00ebe85a31a63fde5b5050cd6ad4183636a4774f270d72e22fb1ed7495e97"
-    },
-    {
       "path": "submission/InitECandidate/Solver/BoundedEncoder/Div.lean",
       "sha256": "c0d5fb6e2e9c157a965621c07c655747d460dac85255005f824d724df0340e11"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/Jump.lean",
+      "sha256": "3312232554eec043e172a6dbe9684407f19ec561578cf6146f9c120578271795"
     },
     {
       "path": "submission/InitECandidate/Solver/BoundedEncoder/Jump/Far.lean",
@@ -70,8 +78,8 @@
       "sha256": "e58ad8331139ce60795f4a36aea96d19aceac5aaa51ba5362c48d7479f83ada4"
     },
     {
-      "path": "submission/InitECandidate/Solver/BoundedEncoder/Jump.lean",
-      "sha256": "3312232554eec043e172a6dbe9684407f19ec561578cf6146f9c120578271795"
+      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp.lean",
+      "sha256": "2d303b9befa3ab32e9cd83a91d9ee04f56cf6eab7464222b471f42409c3e9409"
     },
     {
       "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp/FarImm.lean",
@@ -100,10 +108,6 @@
     {
       "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp/NearRegTest.lean",
       "sha256": "98d82f3ae2e834f774821a41a362ce011ca7ba7f40e37aafb761b752af912ae2"
-    },
-    {
-      "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpCmp.lean",
-      "sha256": "2d303b9befa3ab32e9cd83a91d9ee04f56cf6eab7464222b471f42409c3e9409"
     },
     {
       "path": "submission/InitECandidate/Solver/BoundedEncoder/JumpReg.lean",
@@ -158,10 +162,6 @@
       "sha256": "72b094ab6a6b8d4c5332a9b9958f77d18ce720b61421b51fd3743545807e5baa"
     },
     {
-      "path": "submission/InitECandidate/Solver/BoundedEncoder.lean",
-      "sha256": "190bfbe4d6139815d104aa2ee3164e8247bfa66693958ce95123c7e5fbbbccac"
-    },
-    {
       "path": "submission/InitECandidate/Solver/BoundedStep.lean",
       "sha256": "32698a5215b02024c46ce2b30a827be25aa439914429597db60657109c53c1a6"
     },
@@ -192,6 +192,10 @@
     {
       "path": "submission/InitECandidate/Solver/JumpNearCost.lean",
       "sha256": "8f5040de3fe34e3ec401a9de96bd49dffb4d85372a119cb5775c308a0c328b14"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/LabBound.lean",
+      "sha256": "a57e485c592c0fae6ee624e0d40c553c4d9974eeae8eede4aad179cb3865b0fd"
     },
     {
       "path": "submission/InitECandidate/Solver/LabBound/Asm.lean",
@@ -226,16 +230,16 @@
       "sha256": "bad9449d38f4871e417fdc60be92143c6cc9b21f3938515496ea4d6b25e72656"
     },
     {
+      "path": "submission/InitECandidate/Solver/LabBound/PaddedLarge.lean",
+      "sha256": "357f095d8b7283d0aa3b11399df235a42d618f4940e9175b3fc04f732eae7e9c"
+    },
+    {
       "path": "submission/InitECandidate/Solver/LabBound/PaddedPilot.lean",
       "sha256": "14072cb568bc79d6db1414e551a89904f93dd0d3529419b713769a1c04833137"
     },
     {
       "path": "submission/InitECandidate/Solver/LabBound/ShareMem.lean",
       "sha256": "c63b76b98f2000a5e372edfc0ef7115cf6a9650ad0562cb57b9089ee199bf44f"
-    },
-    {
-      "path": "submission/InitECandidate/Solver/LabBound.lean",
-      "sha256": "a57e485c592c0fae6ee624e0d40c553c4d9974eeae8eede4aad179cb3865b0fd"
     },
     {
       "path": "submission/InitECandidate/Solver/LabCost.lean",
@@ -1250,6 +1254,13 @@
         "propext"
       ],
       "successful_log": "lab-bound-audit.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.LabBound.padded713_fits",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "padded-large.log"
     }
   ]
 }

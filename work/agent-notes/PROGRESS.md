@@ -408,3 +408,42 @@ aggregate parallel process memory. Total-RAM snapshots are separate observations
   codeSimilar relation can transfer NoInstall to the source Lab program.
   The preceding passes and guest gas/input work bound remain necessary for a
   finite certificate; claim.json remains infinity. Open explicit sorrys: none.
+
+## Complete padded-layout certification (in progress)
+
+- Added a largest-section pilot, PaddedLarge.padded713_fits. Its fixed source
+  declaration is 1,552,457 bytes, the largest of the 832 Padded modules. The
+  limited two-slot build is still running; no success is claimed yet.
+- Added optional --max-used-memory-gib to baseline-resource-run.py. It checks
+  MemTotal minus MemAvailable before launch and while sampling, and terminates
+  only the owned process group on a breach. Existing disk >85% guard remains.
+  Validated zero-GiB preflight rejection without starting the child, propagation
+  of child exit 7 at limit 24 GiB, valid resource JSON, and py_compile.
+- Generated 830 additional section theorems, reusing the checked section 64
+  pilot and pending section 713 pilot, plus 54 chunks and PaddedProgram. Each
+  proof imports its fixed section and uses ordinary decide. The combined list
+  preserves the exact section order and append tree from Metadata.LiteralFacts
+  without importing that module's extra FFI/shmem proofs. These generated files
+  are pending builds; proof-checks.json is not updated for them.
+- Existing lineOk allows arbitrary NOP padding, so its encoding validity does
+  not supply the desired maximum line length. Retain literal layout checks.
+  Added a sequential chunk driver to avoid launching thousands of blocked Lean
+  jobs in a single Lake invocation; the inherited limiter still permits parallel
+  builds within each chunk. No full audit/verifier is planned.
+- Next-pass inspection: Stack flattening charges no source clock for straight-
+  line instructions/conditionals, while calls and loop reentry consume clock.
+  A proposed quantitative invariant needs structural program-node counts, a
+  maximum callee-body size, and spent source clock (initial minus final), not
+  initial clock alone. Lean sizeOf includes numeric operands and is unsuitable
+  as a useful numeric program bound. This is a plan, not a proved estimate.
+- Open explicit sorrys: none. claim.json and Solution.lean remain unchanged.
+- Largest-section pilot passed: 9m25.48s, peak child RSS 4,277,204 KiB;
+  peak sampled group RSS 6,233,884 KiB;
+  maximum host used memory 7.127 GiB;
+  maximum disk usage 47%. Main theorem axioms: only propext.
+  proof-checks.json now includes this successful module (70 total).
+- Started complete layout build with four shared limiter slots, justified by the
+  measured memory headroom, and 24 GiB / 85% stop guards. Includes StaticTarget
+  (transfer static-code premise through stateRel), 54 section chunks, combined
+  PaddedProgram, and PaddedRiscV (402 times Lab source clock). All but the two
+  section pilots are still pending; no finite certificate is claimed.

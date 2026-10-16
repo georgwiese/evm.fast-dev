@@ -1,6 +1,6 @@
 # Phase 2: finite clock proof plan
 
-Status: Phase 1 measurements complete. Dependencies installed; 69 cost/bookkeeping
+Status: Phase 1 measurements complete. Dependencies installed; 70 cost/bookkeeping
 modules checked. No finite certificate yet; the submission still claims infinity.
 
 ## Strategies and sequence
@@ -277,3 +277,35 @@ This removes the recursive quantitative gap at the final compiler stage for
 the stated static-code class. Fixed-program instantiation is still pending.
 It does not bound the guest's Lab clock from gas/input or the preceding passes'
 clock expansion. Those remain the dominant unfinished certificate obligations.
+
+## Complete fixed-layout build in progress
+
+PaddedLarge certifies the largest fixed section, 713, at limit 24. Build wall
+time including dependencies: 9m25.48s, peak child RSS 4.08 GiB, peak whole-host
+used memory 7.13 GiB, disk at most 47%; only propext in the main theorem.
+
+The generator now emits all section checks and combines them in 54 chunks.
+The exact metadata list order/append tree is retained, using the original
+Padded declarations. The later equality to Metadata.paddedProgram remains an
+artifact-integration obligation; no compiler-output equality is assumed.
+StaticTarget transfers NoInstall through the existing full stateRel, and the
+pending PaddedRiscV theorem specializes the checked simulation to multiplier
+402 without an extra source-static premise.
+
+The full layout build runs sequential chunk requests inside one four-slot
+limiter, with host-memory >24 GiB and disk >85% stop guards. Slot increase is
+supported by the measured largest-section pilot. Generated modules are not
+counted as checked until their Lean builds and printed axiom sets succeed.
+This is the 5,587-module padded-section closure, not the prohibited full audit
+or baseline verifier.
+
+For the next Stack-to-Lab flattening stage, the inspected proof spends extra
+clock on straight-line instructions and conditional/join jumps; calls and
+loop reentry decrease source clock. A promising strengthening bounds extra
+clock by a constant times structural program-node count plus a maximum callee
+body size times spent source clock. Use a new node count ignoring literal and
+register magnitudes: Lean sizeOf includes those operands. Preserve final
+source-clock information so sequential costs telescope. Static source code
+(no Install) and a bound on all callee bodies must be maintained across calls.
+This invariant is proposed only; neither the multiplier nor its preservation
+is yet proved.

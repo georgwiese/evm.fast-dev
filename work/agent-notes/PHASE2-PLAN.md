@@ -678,3 +678,43 @@ prove expression compilation emits such code with one cut per source
 comparison, then recover a bound on the existing simulation's extra witness
 from its initial/final clock equalities. This preserves all original expression
 relations and avoids copying every memory/expression simulation proof.
+
+
+The proposed Crep program budget is
+`extra <= (2*limit+3)*(source.clock-post.clock) + localCost program`.
+The expression component is the recursively counted number of comparisons.
+Proposed local costs: Seq adds; Dec adds its initializer expression cost;
+If adds its condition cost, the larger branch cost and one cut; While has
+condition cost plus two (its body is separately covered by the subprogram
+ceiling); Call has argument-expression cost, with its source decrement paying
+callee, optional handler and at most three administrative ticks. A separate
+ceiling must include loop bodies and handlers, and bound installed source code.
+These program-level definitions and budget are still proposed, not proved.
+The checked original witness formulas motivating them are in
+NCompileCorrect/While.lean (false exit +2, break +1, recursive sum) and
+NCompileCorrect/Call.lean (return +1, normal handler +3, terminal handler +1).
+
+
+## Crep-to-Loop expression bounds checked
+
+creploop-expression-v4.log passes all 156 jobs. StraightClock.straightClock
+bounds consumed clock of every loop-free/call-free Loop execution, including
+failure/timeout, by a syntax charge: Seq adds, If takes the larger branch plus
+one, Mark preserves, Tick costs one, other supported leaves cost zero.
+cutResClockBudget proves each live-variable cut costs at most one.
+
+ExpressionCost defines expCost/expsCost as source comparison counts and proves
+that compileExpHOLExact/compileExpsHOLExact always emit straight code with
+exactly that charge, independently of context and temporary numbers.
+ExpressionSimulation then strengthens the existing exact expression/list
+simulations with extra <= expCost/expsCost. It derives the witness bound from
+the straight execution theorem and original initial/final clock equalities;
+all original hypotheses and seven target evaluation/relation conclusions
+remain. No new semantic assumptions or callback simulations are introduced.
+All seven printed main facts use only the permitted axioms.
+
+This closes the expression overhead obligation. Next: define the proposed
+local program cost/ceiling and code invariant, then bound the original
+Seq/Dec/If/While/Call witness compositions. The pure/straight compiler shape
+could also recover leaf bounds from existing whole-program simulations,
+avoiding re-proving their memory and primitive semantics.

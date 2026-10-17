@@ -3966,3 +3966,74 @@ Complete paired Keccak256 checkpoint (2026-10-17):
   still need proof. No whole-map/context equivalence established yet.
 - All global gas/state/Q/heap/compiler/target/finite certificate work remains;
   continue autonomously after checkpoint, not a stop point.
+
+Actual joint record loops and lookup agreement checkpoint (2026-10-17):
+- MutableTable.WitnessBuildSetFfi strengthens original after-hash setter suffix
+  with actual target.ffi=source.ffi, earlier memory frame. RecordHash accepts
+  supplied actual hash-call run, actual clock/local/control/Protected frame,
+  then proves full literal original recordBody; retains key=WordKeys.key of
+  actual hashed scratch, target FFI equality to hashed state and all q<T frame.
+- WitnessRadix.ConstructorStepExact retains target=suffixState from actual
+  after-hash copy/stores. ConstructorRecordHash accepts actual hash run and
+  retains concrete digest/canonical suffix state/FFI. ConstructorPublicFrame
+  proves arbitrary earlier query words unaffected by all six real writes,
+  using exact write_cells footprint, write_bounds and no-wrap.
+- WitnessBuildRadixStep.paired_record_step derives both actual hash argument
+  reads from own Records/FixedData, actual paired allocated Keccak call, equal
+  digest words/key and both complete recordBody executions. Advances original
+  Built/Records and candidate Prefix/FixedData/Mapped/Locals with common key,
+  each own clock/control bounds, equal FFI and public memory. Existing Context
+  and HashContext bundle required helper code and buffer/arena facts. No full
+  code/global/private memory equality required; current buffers and chosen
+  public region precede current table/private write pools explicitly.
+- WitnessBuildKeyHistory keyRecords=range-map(keyFor(ofNat i),real recordAddr i),
+  KeysMatch exact original-history equality; empty and snoc preserve it using
+  actual setKey_earlier and setKey_current (including duplicate digests).
+- WitnessBuildRadixLoop.paired_record_loop complete actual original and radix
+  record whiles from same N and explicit contexts/arenas/public ownership.
+  Final original Built/History/Records, candidate Prefix/FixedData/Mapped,
+  KeysMatch full observed histories, equal FFI/public memory, own source clock
+  bounds/non-index locals/control. Induction calls actual paired record_step;
+  no per-record run or crypto oracle assumed.
+- WitnessBuildDictionaryAgreement decodes real history record addresses and
+  proves sliceEntries equals OrdinalTree.entries keyFor sliceFor(ordinals N).
+  WitnessLookupAgreement.paired_dictionary_lookup complete actual bodies both
+  return identical last matching slice tuple for every query alignment. Uses
+  original Built/History/Records/KeysMatch plus actual radix QueryMemory.Represents,
+  root cells and code/ABI/byte-view/clock premises; both preserve memory/FFI.
+  Original<=6*N+3, candidate<=262 Pan clocks, never target certificate prices.
+- Success constructor-hash-steps-v1.log1325,constructor-record-hash-frame-v1.log
+  859,mutable-witness-radix-step-v2.log1350,mutable-witness-key-history-v2.log
+  1317,mutable-witness-radix-loop-v1.log1354,mutable-witness-dictionary-agreement-v2.log
+  1343,mutable-witness-lookup-agreement-v1.log1345; all allowed axioms.
+  Index4589/7518,policy61454/2253325560bytes. Account37%,0reset credits;
+  host1.5GiBused/29available,disk58%/123GiBfree. Infinity,no full verifier.
+- Failed drafts: avoid reserved `public` binder; use inRegion. Importing old
+  record modules means do not redeclare recordPrice. Refer ordinals with open
+  WitnessRadix.BackingLayout and set local Classical.propDecidable for function
+  keys in theorem statements. Rewrite prior KeysMatch only on lhs via calc:
+  unrestricted rw changes input.length inside rhs and breaks map matching.
+- NEXT allocation and finish connection. Actual two constructors allocate same
+  pool extent/capacity, so heap_ptr can remain equal across replacement. Their
+  current private table bytes differ after construction. Old private tables
+  below later T mean global equality q<T is too strong; region must exclude
+  old private tables while including buffers/other public allocations.
+- Candidate Constructor.finish calls helper_built and yields actual tree from
+  synchronized Prefix. Its existing control retains FFI, but no outside-private
+  memory frame is exported. Need strengthen actual helper/public footprint,
+  then lift paired records + finish + table return/scopes/initial allocation.
+  Actual decoder read-only input slice bounds must establish BufferRegion
+  agreement and nonalias premises (Context.before only state/pad/out<R).
+- Inspected helper pipeline: HelperCall→HelperBuilt→HelperExecution→HelperCore→
+  LoopTermination. LoopResult records execution/representation/control/clocks
+  but no memory frame. LoopTermination has four canonical cases: terminal
+  finish leafPost, terminal resume resumePost, uniform unaryPost, split
+  SplitCount.post. Add public-frame lemmas on these exact transforms and
+  strengthen a parallel loop/helper result without modifying fixed imports.
+  Unary probably only locals/clock; leaf stores context.dest; split scatter/
+  copy/branch/pending writes into private pools. Full Invariant.atLayout
+  supplies exact addresses/pool bounds. Existing old proof library untouched.
+- Main obligation still incomplete: joint full constructors/callers, map lifetime/
+  ownership and whole-context refinement, runtime mutable maps20/52/60 bytes,
+  global gas/state/Q/heap potential, source/compiler/startup/target finite K.
+  Do not stop after this checkpoint; continue original task autonomously.

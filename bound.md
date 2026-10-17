@@ -12,6 +12,19 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked actual paired original/radix witness-record iteration and
+  entire record loops. Both observe identical keys and FFI histories; original
+  insertion history equals radix key-prefix entries in ordinal order, including
+  duplicates. Built/Records and Prefix/FixedData/Mapped invariants advance;
+  chosen public memory remains equal. Original/radix source clocks bounded
+  separately; no target K. Actual original/radix lookup bodies now provably
+  return the same last matching slice from synchronized history and represented
+  radix tree, at all query alignments. Allocation/radix-finish public frames,
+  initial input ownership/layout reachability and whole-context replacement
+  remain open. Logs mutable-witness-radix-loop-v1.log1354targets and
+  mutable-witness-lookup-agreement-v1.log1345, allowed axioms. Index4589/7518,
+  policy61454/2253325560bytes. Infinity; no finite K/full verification/go.
+
 - [x] Checked complete paired keccak256 body and real caller: actual zeroing,
   all full blocks, remainder declaration, final padding/absorption, both
   digest-output paths and all scopes. Equal selected buffer memory gives

@@ -12,6 +12,20 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked actual U256 equality body/caller and both literal SSTORE state-fee
+  guards. Given honest original/current/next values, actual0/1 predicates
+  satisfy charge+old per-slot debt=refund+new debt. A conditional zero-start
+  ledger never refunds more than charged. `gas-storage-classify-v3.log`
+  1164targets, permitted axioms. Backend/journal/created-account invariants,
+  actual fee/rollback projection and global signed state use remain open.
+- [x] Checked conditional block-gas accounting before ordinary refund,
+  reservation/completed-counter bounds and a final uncommitted transaction.
+  Actual BO_GAS_USED store is identified in the fixed AST and executes with
+  natural no-wrap addition under the200M bound. Source TX_BASE is12000, not
+  21000; conditional completed-count ceiling16666. Fee/pool/state premises are
+  still open. `gas-block-accounting-v1.log`1165targets, permitted axioms;
+  index4469/7263, incremental policy61333entries/2252730199bytes, infinity.
+
 - [x] Checked actual successful-child counter/spill repayment prefix. The
   literal child-error caller, spill addition, mutable minimum and three real
   repayment stores produce parent regularBudget=old parent+old child, under

@@ -2691,3 +2691,43 @@ Variable-list entry checkpoint (2026-10-17):
   avoids simp key mismatch AndOp.and vs notation and survives first=0 rewrite.
   badFirst is Prop: define its Decidable instance explicitly for theorem ifs.
   Prefer plain simp with split conditions over simp_all to avoid recursive simp.
+
+
+Variable-list actual record-body checkpoint (2026-10-17):
+- PairedScalar dynamic flattened addresses/read32 supports actual p+i*4+byte AST.
+  StepProgram actual closed loop/finalstore shapes; OffsetRead six real expression
+  reads. Layout.Plan inputptr/array/start/length/count, positivecount,4count<=len,
+  contained encoded slice, sourceBase/inputalign/arrayalign/fresh-after-input+
+  allocroom16count. It is explicit entry geometry, not reachable startup facts.
+- Layout provescount<2^31, dynamic read extent, exact row/length-cell natural
+  addresses, ordinary mapping and every record store preserves copied input.
+- Checks actual three-way offset check and signed loop/hasPrevious tests. The
+  literal9223372036854775808 sign hypotheses are needed for simp matching2^63.
+- StepStores whole optional prior-length store/current pointer store/localprev+i
+  updates. ValidStep/ValidBody actual entire accepted record body incl scalar
+  scope even atclock0; FaultBody actual rejection SszErr23 before any store,
+  exact scope and1callclock, HeapInput/nonlocal frame. Unroll activewhile retains
+  actualclockclamp+allresults. Walk exact model with iteration_clock/control/i/
+  prev/otherlocals andwalk clock/control/otherlocal frames.
+- ScalarScope declare_execute +HeapInput.bind/restore andScopeLookup restore_other
+  factor opaque-state proofs. This fixed a kernel20k timeout in ValidBody (25s)
+  without raising heartbeat/resource limits; newValidBody checked2.4s. Avoid
+  reconstructing whole scoped byte-frame proofs inline over large symbolicstate.
+- Successful joint input-varlist-walk-v1.log1283 targets, only allowed axioms.
+  Account18%,0resetcredits, watcheractive. Fullfiniteclaim remainsinfinity.
+- NEXT AnyLoop: actual loop alloffsets normal orSszErr23, cost<=rounds+1, exact
+  normalwalk and every ValidAt/HeapInput/control frame. Normalstatecost=rounds.
+  UsePlan.count_small forsign. Add previousIndex:0<index -> previous=currentWord
+  input plan.start(index-1); useOffsets.ValidAt first total (currentWord input
+  plan.start) index. Valid_body/fault_body run atdecClocksource. NormalIHnext
+  iteration_index/previous/other/control preserve allformals. Faultpaid2 incl
+  activewhileclock; normalnextpaid=ihpaid+1. Fault memory may retain prior record
+  writes, so useBackingLayout.control (stripslocals/memory/clock) +HeapInput,
+  not emptyLocals=initial-onlyclock over wholeloop.
+- Next recordcell memory representation, final length store/return, actualalloc
+  andcaller ABI; then fixed_list_count/udivmod and actual payload gasstore/global.
+- New struct fields require each name on its own line (`start length count :Nat`
+  instead declares a function field). Multiline record memory RHS needsparens.
+- Unroll loop_test_read returnsQueryBranch.eval whilewhile_total uses evalHOLFinite:
+  add typed finiteTest:=test before rw. Faultbody useguarded.trans(if_posbad) to
+  produce typed rejection; simp noProgress can occur at a folded local alias.

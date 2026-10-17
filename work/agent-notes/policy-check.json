@@ -2265,6 +2265,13 @@
     "submission/InitECandidate/Solver/LabCostTight.lean",
     "submission/InitECandidate/Solver/LocCost.lean",
     "submission/InitECandidate/Solver/MemoryCost.lean",
+    "submission/InitECandidate/Solver/MutableTable/FindChain32.lean",
+    "submission/InitECandidate/Solver/MutableTable/FindChainBuild.lean",
+    "submission/InitECandidate/Solver/MutableTable/FindProgram.lean",
+    "submission/InitECandidate/Solver/MutableTable/FindStep32.lean",
+    "submission/InitECandidate/Solver/MutableTable/FindTail32.lean",
+    "submission/InitECandidate/Solver/MutableTable/MaskedPath.lean",
+    "submission/InitECandidate/Solver/MutableTable/Probe.lean",
     "submission/InitECandidate/Solver/NopBound.lean",
     "submission/InitECandidate/Solver/NopCost.lean",
     "submission/InitECandidate/Solver/NopCostTight.lean",
@@ -4478,8 +4485,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61333,
-  "package_bytes": 2252730199,
+  "package_entries": 61341,
+  "package_bytes": 2252767802,
   "claim": {
     "K": "infinity"
   },

@@ -3451,3 +3451,33 @@ Storage debt guards and block accounting checkpoint (2026-10-17):
   plus root init and backend/state-ledger coupling; continue joint table/heapQ
   costs and original/radix/target composition. Local algebra cannot substitute
   for the full reachable-state invariant.
+
+Original mutable32-byte table scan checkpoint (2026-10-17):
+- MutableTable.Probe exact bitmask/modulus and masked increment for any
+  power-of-two capacity below2^64. Distinct occupied prefix slots before a
+  cycle, count bound from order-list coverage, and empty within count proved
+  without hash randomness or cryptographic assumptions.
+- FindProgram exact fixed htab_find_slot AST; actual used-byte condition and
+  masked increment reads checked. FindStep32 actual32-byte comparison argument
+  expressions and real fixed memeq environment/body/caller at any alignment;
+  actual eq guard early return or increment, scope restore, memory/control
+  frames and<=5call/comparison clocks. No comparator run is a premise.
+- Chain32 concrete memory views along the probe path, exact first-match answer.
+  Actual while executes in<=6*occupied-prefix clocks (one while plus<=5call),
+  including early matches and empty stop. FindTail32 actual absent-cap return.
+  FindChainBuild derives an executable chain from actual prefix loads/views;
+  first empty derived using binary used-array and occupied-order coverage.
+  MaskedPath links indices to the exact word increment; full scan's bound
+  <=6*order.length follows from physical table premises, with pure memory.
+- Successful mutable-masked-path-v2.log1107targets,4.44s,max child
+  RSS1898920KiB, only permitted axioms. Index4476/7284. Failed drafts fixed
+  implicit nodup_range parameter, UInt8.size type annotations, local-frame
+  transport, evalHOLFinite wrappers, typed returned constructors, let/projection
+  simplification and explicit pathIndex unfolding. Failed logs not indexed.
+- Policy61341entries/2252767802bytes, infinity. Host1.4GiB used/29available,
+  disk58%/124GiB free; account31%, reset credits0. No full verification.
+- Open: actual header/hash/caller setup; general20/52/60-byte comparison;
+  constructors/mutators preserving used/order/key/heap ownership and lookup
+  semantics; original/radix dictionary refinement; protected gas frames and
+  full global gas/state/source/target/certificate. Pan clocks are not target
+  prices; this result neither establishes a finite K nor a global go.

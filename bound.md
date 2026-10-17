@@ -12,6 +12,18 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked actual original32-byte table find scan and absent-cap return,
+  including real memeq ABI/body/call at all key alignments, early equality,
+  masked increment and lexical restoration. From explicit physical table
+  premises (binary used bytes, occupied-order coverage, room, power-of-two
+  capacity, key/query views, code and clocks), scan costs<=6*occupiedCount
+  Pan clocks and preserves memory/control outside locals/clock. Probe slots
+  are distinct before wrap and the first empty lies within occupiedCount.
+  `mutable-masked-path-v2.log`1107targets, permitted axioms; index4476/7284.
+  Header/hash/caller setup, mutations maintaining the representation, other
+  key lengths, last-wins map refinement and target pricing remain open.
+  Policy61341entries/2252767802bytes, infinity; no full verification.
+
 - [x] Checked actual U256 equality body/caller and both literal SSTORE state-fee
   guards. Given honest original/current/next values, actual0/1 predicates
   satisfy charge+old per-slot debt=refund+new debt. A conditional zero-start

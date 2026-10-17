@@ -3388,3 +3388,33 @@ Conditional nested decay and scenario checkpoint (2026-10-17):
 - Continue successful-child spill repayment and protected gas cells through
   logs/table merges, whole trace/initialization and signed state/block ledger;
   numerical pilot has not earned a whole-program feasibility go.
+
+Successful-child gas prefix and conditional forest checkpoint (2026-10-17):
+- Repayment actual declaration, mutable minimum, three stores and arbitrary
+  continuation/scope restoration checked. Gas+used+spill preserved. Failedv1
+  fixed destructured evaluator pair losing its equation; v2 success.
+- ChildSuccessProgram exact fixed AST decomposition separates literal
+  child-error call, spill addition, repayment and real log/delete-set suffix.
+  ChildSuccess actual prefix executes with exact memory/control and explicit
+  frame separation. Under combined budget<2^64, parent resulting regular budget
+  equals both previous budgets combined. No source clocks beyond actual child
+  error call1; later suffix not priced or assumed to preserve gas words.
+  Failed drafts fixed Option.map normalization, explicit write aliases and
+  memory projection normalization before omega. Success gas-child-success-v4
+  1116targets,14.39s,max child RSS1892748KiB, permitted axioms only.
+- MergeBudget counting model handles arbitrary sequential/nested call forests,
+  unlike single-wave scenarios. propagation<=depth*productions; weighted work
+  <=(maxKeys+1)*maxDepth*totalGas/productionPrice under paid-production/depth
+  premises. This does not assume sum of initially declared root gas<=block gas.
+  Literal maxKeys6000,depth538,total380M,price5000 gives245368888000units.
+  Hypothetical3552/unit gives871550290176000, before rehash/copy/otherwork.
+  Actual occupancy, production payment, forest/merge coupling and target prices
+  unproved. Local theorem is conditional; no global gas allowance or K earned.
+- Success gas-merge-budget-v1.log1173targets,4.43s,max child RSS1926756KiB,
+  permitted axioms. Index4464/7236. Policy61328entries/2252704190bytes, infinity.
+  Host1.3GiB used/29GiB available,disk58%,124GiB free. No full verification.
+- Continue protected frames/initialization/state-debt ledger and joint table/Q
+  gate. Trie decode queries can be paired with parent slice-array slots
+  (16bytes/slot, branch16of17 or extension1of2), rather than assuming every
+  query immediately allocates32bytes. Root/code queries need separate budgets;
+  heap lifetimes/release and event coupling remain open, not a proven count.

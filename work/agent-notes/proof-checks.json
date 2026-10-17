@@ -4014,6 +4014,14 @@
       "sha256": "f69bfa560b2b45d55de25e0aaa0afade2b43d966574004daba4f60b776435c04"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/ChildSuccess.lean",
+      "sha256": "641bd92a1bb23ca6d27997f3d8d08f4afda1944d123d3e2e691b81c5f76abd97"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/ChildSuccessProgram.lean",
+      "sha256": "e86eed5d6383824429ae95bf9552e0c16361636226fb4cea39234fddeea110c5"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GasBudget/ForwardBudget.lean",
       "sha256": "4541e7af43cfda71db2d21aa94311f80a4f92ea06b946ac44dcab6a9cd43b02b"
     },
@@ -4032,6 +4040,10 @@
     {
       "path": "submission/InitECandidate/Solver/GasBudget/Halt.lean",
       "sha256": "00969e96b5a6b0184d1e7d654b5870cc8128ac5d9b45eff34d3d75cad5384792"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/MergeBudget.lean",
+      "sha256": "e07816cdfdd71dae7b37ce3d348a210848b8a6fe34f3f0a0fd2aaf240692c815"
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/Minimum.lean",
@@ -4056,6 +4068,10 @@
     {
       "path": "submission/InitECandidate/Solver/GasBudget/RegularChargeCall.lean",
       "sha256": "ddfa22e8a2f25dfa9220cd863b89ffda27edf0c8cdf22f8a0bc85540b2bc553e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/Repayment.lean",
+      "sha256": "0a5dac278b94addc49228192495ba68461cefc205e97a2beaeb80be4e52f7120"
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/SaturatingAdd.lean",
@@ -76275,7 +76291,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refund_call",
@@ -76284,7 +76300,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refill_call",
@@ -76293,7 +76309,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.address_read",
@@ -76302,7 +76318,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.frame_read",
@@ -76311,14 +76327,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
       "axioms": [
         "propext"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
@@ -76327,7 +76343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.selected_number",
@@ -76335,7 +76351,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.environment",
@@ -76344,7 +76360,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.call_execute",
@@ -76353,7 +76369,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.body_shape",
@@ -76362,7 +76378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.execute",
@@ -76371,7 +76387,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.preserves_regular_budget",
@@ -76379,7 +76395,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.body_shape",
@@ -76388,7 +76404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.execute",
@@ -76397,7 +76413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.preserves_regular_budget",
@@ -76405,7 +76421,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.body_shape",
@@ -76414,7 +76430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.execute",
@@ -76423,7 +76439,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.environment",
@@ -76432,7 +76448,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.call_execute",
@@ -76441,7 +76457,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.first_execute",
@@ -76450,7 +76466,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.execute",
@@ -76459,7 +76475,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.preserves_regular_budget",
@@ -76468,7 +76484,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.call_execute",
@@ -76477,7 +76493,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed_call",
@@ -76486,7 +76502,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed",
@@ -76495,7 +76511,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.body_shape",
@@ -76504,7 +76520,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.spill_execute",
@@ -76513,7 +76529,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.execute",
@@ -76522,7 +76538,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.budget_transfer",
@@ -76531,7 +76547,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.call_execute",
@@ -76540,7 +76556,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.returned_budget_bound",
@@ -76549,7 +76565,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.body_shape",
@@ -76558,7 +76574,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.child_read",
@@ -76567,7 +76583,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.sum_execute",
@@ -76576,14 +76592,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.stored_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.body_shape",
@@ -76592,7 +76608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.execute",
@@ -76601,7 +76617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.preserves_regular_budget",
@@ -76609,7 +76625,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.call_execute",
@@ -76618,7 +76634,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.body_shape",
@@ -76627,7 +76643,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.execute",
@@ -76636,7 +76652,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.failed",
@@ -76645,7 +76661,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.quantitative",
@@ -76653,7 +76669,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.call_execute",
@@ -76662,7 +76678,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.failed_call",
@@ -76671,7 +76687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.stipend_update_execute",
@@ -76680,7 +76696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.after_zero_execute",
@@ -76689,7 +76705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.execute",
@@ -76698,7 +76714,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.forwarded_number",
@@ -76706,7 +76722,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.environment",
@@ -76715,7 +76731,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.call_execute",
@@ -76724,7 +76740,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.cap_execute",
@@ -76733,7 +76749,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.temporary_away",
@@ -76742,7 +76758,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.Inputs.of_locals",
@@ -76751,7 +76767,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.Inputs.bind",
@@ -76760,7 +76776,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.after_need_execute",
@@ -76769,7 +76785,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.after_stipend_execute",
@@ -76778,7 +76794,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.body_shape",
@@ -76787,7 +76803,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.cap_number",
@@ -76795,7 +76811,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.capped_number",
@@ -76803,7 +76819,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.stipend_bound",
@@ -76811,7 +76827,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.forward_counter_number",
@@ -76820,7 +76836,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.used_debit_budget",
@@ -76828,7 +76844,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.stipend_funded_by_value_fee",
@@ -76836,7 +76852,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ForwardPrefix.execute",
@@ -76845,7 +76861,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ForwardPrefix.opcode_sites",
@@ -76854,7 +76870,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ForwardPrefix.opcode_zero_costs",
@@ -76863,7 +76879,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.U256Zero.mixed_zero",
@@ -76871,7 +76887,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.U256Zero.execute",
@@ -76880,7 +76896,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.U256Zero.call_execute",
@@ -76889,7 +76905,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.execute",
@@ -76898,7 +76914,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.ge_left",
@@ -76906,7 +76922,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.call_execute",
@@ -76915,7 +76931,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.value_fee_lower",
@@ -76923,7 +76939,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ValueFee.arguments_read",
@@ -76932,7 +76948,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ValueFee.execute",
@@ -76941,7 +76957,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ValueFee.failed",
@@ -76950,7 +76966,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ValueFee.opcode_fee_sites",
@@ -76959,7 +76975,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ValueFee.opcode_zero_values",
@@ -76968,7 +76984,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ValueFee.zero_stipend",
@@ -76976,7 +76992,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.NestedDecay.cap_mono",
@@ -76984,7 +77000,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.NestedDecay.stipend_compensation",
@@ -76992,7 +77008,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.NestedDecay.child_bound",
@@ -77000,7 +77016,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.NestedDecay.calculator_child_bound",
@@ -77008,7 +77024,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.NestedDecay.affine_edge",
@@ -77016,7 +77032,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.NestedDecay.geometric_chain",
@@ -77024,14 +77040,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.NestedDecay.depth_literal",
       "axioms": [
         "propext"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.NestedDecay.chain_depth",
@@ -77039,7 +77055,74 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-nested-decay-v1.log"
+      "successful_log": "gas-merge-budget-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildSuccess.execute_prefix",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-success-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildSuccess.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-success-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Repayment.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-success-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Repayment.preserves_regular_budget",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-success-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.MergeBudget.propagation_bound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-merge-budget-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.MergeBudget.work_bound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-merge-budget-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.MergeBudget.paid_work_bound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-merge-budget-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.MergeBudget.scenario_380M",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-merge-budget-v1.log"
     }
   ]
 }

@@ -16,7 +16,8 @@
     "guest/src/evm_calls.pnk": "c0f015aa9eee5d6d8cc971b9fc6fe5adba4b1d4a95ed3f3c712dd6363ec26398",
     "guest/src/state.pnk": "3040be5fd32c2cf8bed0c402d8e0dcc59998a5114b1aeea2a1852de91bbc4bb7",
     "guest/src/lib/htab.pnk": "a1bd4c62aedfe01fd8e8547e60979e39ae5f2dda0688a2d941f625ef66eeece2",
-    "submission/InitECandidate/Solver/GasBudget/NestedDecay.lean": "e179093515ae1ee2c53b7d81d85ccb3b255680dabf6180718d0c063f95f9060b"
+    "submission/InitECandidate/Solver/GasBudget/NestedDecay.lean": "e179093515ae1ee2c53b7d81d85ccb3b255680dabf6180718d0c063f95f9060b",
+    "submission/InitECandidate/Solver/GasBudget/MergeBudget.lean": "e07816cdfdd71dae7b37ce3d348a210848b8a6fe34f3f0a0fd2aaf240692c815"
   },
   "checked_algebra": {
     "log": "gas-nested-decay-v1.log",
@@ -96,6 +97,53 @@
       "target_prices_verified": false,
       "runtime_wave_coupling_proved": false
     }
+  },
+  "conditional_forest_envelopes": {
+    "formula": "(per_root_maximum_keys+1)*maximum_depth*total_production_events",
+    "proof_log": "gas-merge-budget-v1.log",
+    "cases": {
+      "gas380000000-depth538": {
+        "units": 245368888000,
+        "hypothetical_price_sensitivity": {
+          "512": 125628870656000,
+          "1000": 245368888000000,
+          "3552": 871550290176000
+        }
+      },
+      "gas380000000-depth1024": {
+        "units": 467021824000,
+        "hypothetical_price_sensitivity": {
+          "512": 239115173888000,
+          "1000": 467021824000000,
+          "3552": 1658861518848000
+        }
+      },
+      "gas500000000-depth538": {
+        "units": 322853800000,
+        "hypothetical_price_sensitivity": {
+          "512": 165301145600000,
+          "1000": 322853800000000,
+          "3552": 1146776697600000
+        }
+      },
+      "gas500000000-depth1024": {
+        "units": 614502400000,
+        "hypothetical_price_sensitivity": {
+          "512": 314625228800000,
+          "1000": 614502400000000,
+          "3552": 2182712524800000
+        }
+      }
+    },
+    "premises": [
+      "Every merge insertion is traced to a production event inside that child subtree.",
+      "Each production event is propagated at most once along each enclosing call edge.",
+      "Actual occupancy<=30M/5000 for each frame, from per-root paid production accounting.",
+      "Aggregate production*5000<=the assumed gas allowance; no sum of declared root gas is assumed.",
+      "Actual call depth bound and positive-charge/event coupling.",
+      "Rehash/raw insertion, deletion and copy work are additional; no target price is verified."
+    ],
+    "runtime_coupling_proved": false
   },
   "remaining_premises": [
     "Actual parent regular budget bounded by its root seed through all success/failure paths.",

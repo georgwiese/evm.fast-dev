@@ -4976,3 +4976,10 @@ Whole paired witness constructor checkpoint (2026-10-17):
   backward-shift deletion/truncation, full gas/phase/target accounting remain.
   No finite whole runtime bound or full verification; pinned program unchanged.
   Account last3%,0manual reset credits. Continue with actual generic probes.
+
+
+### Original20/52-byte lookup bodies and callers
+
+Checked the complete original htab_find_slot and htab_get bodies/callers, including real header reads, uniform mapped-byte hash/comparator calls at every alignment, masked start, all collisions, scopes and actual value reads. A binary-used covering list D<capacity yields a finite probe chain without a distribution assumption. Find caller allowance8D+2/12D+2; get caller8D+3/12D+3 source clocks for20/52bytes. All nonlocal state is pure. Physical representation, room/mapping/no-wrap/code/clock premises remain explicit. Runtime facts do not claim full key dictionary semantics, mutation invariants, whole runtime or target K. Successful find-sized-build-v1.log1111jobs, find-sized-call-v1.log1117jobs, get-sized-call-v1.log1129jobs; final log includes the full retained changed closure and permitted printed axioms. Pinned baseline and infinity claim unchanged.
+
+Original membership body/caller also checked: real htab_has returns0or1 through its actual capacity test after all probes; same8D+3/12D+3 source-clock allowance and pure nonlocal state. has-sized-call-v1.log1132jobs, exit0, permitted axioms. Inspection of original constructors also identifies28/60-byte indexed keys; fallback hash/aligned comparisons at those widths remain to be covered.

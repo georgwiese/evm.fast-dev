@@ -2917,3 +2917,23 @@ Empty constructor and whole bytes-list caller checkpoint (2026-10-17):
   rootnormalrun. RevisitcredibleglobalQ/mutablecache/gas/heapcostfeasibilitybefore
   scalingfurther; actualtargetK/source-map equivalence stillunproved.
   Claiminfinity, nofullverifier. Account21%,0resetcredits watcheractive.
+
+Global resource spending-gate revisit (2026-10-17):
+- Exact offlineglobal-resource-pilot.py/json,2160bruteforceselfchecks passed.
+  Sourcehashesrecorded, whole_bound=false. Jointcold*D+100Wgasmodel vs independent
+  maxima; G380M/500M scenarios notexecutedgastheorems. One-mapstorage380M
+ 176097514634visits, acct122372849151; postwithdraw335544basekeys+120M
+  warmwindow402652800000visits. No fullscore/certificatearithmeticclaimed.
+- ActualGcoldAccount3000 (notexternalstandard2600), storage2100,warm100.
+- RLPblock8MiBguard precedeswithdrawalprocessing; minwithdrawRLP25 yieldspaper
+  Nwd<=335544 onceactualquotient/no-wrap proved. UnmeteredSSZearlierstill128MiB.
+- htab_del backwardshiftlinear, notper-shiftfullreinsertion. Includehash/copy.
+- Persistentheap31092374808bytes, hypothetical32bytes/query971636712queries;
+  pairingnotproved. _decode_step RLParr allocations/compact path allocations;
+  zeroextensionrejected; _decode_witness_node scratchrestoreonly; cache storage
+  decodebeforetemporarykeyhashheapmark. Needallpersistentvsreleasedlifetimes.
+- Decisioninconclusiveglobalgo unearned; no newactualcounterexample. BoundR7
+  listsneededpremises. NEXT quantitativepilotactualsmallnonzerodivisor math
+  fromrealUDivMod64-loop (neededactualcounts notjustshape/cost), withdrawalRLP
+  length/cap thenjointgas/mapmultiplicity/heap Q. RootwitnessSSZ connectionstill
+  open,butavoidblindlyscalinglocallemmaswhileglobalauditremainsincomplete.

@@ -1,0 +1,146 @@
+{
+  "whole_bound": false,
+  "certificate": false,
+  "sources": {
+    "guest/src/evm.pnk": "ae92f8427624c87f83f8514234e166e9d602f85cf3c92805989c0f0472c90ce7",
+    "guest/src/fork.pnk": "eb6ee62f0a8b0d9d16d545771791adeb40dcd7190f17fa0091c0c24da5a2e274",
+    "guest/src/block.pnk": "4f1fca2679187b73519cd1139a20cabb65e7c1dfceedc1498edab9dce6aaf0c2",
+    "guest/src/state.pnk": "3040be5fd32c2cf8bed0c402d8e0dcc59998a5114b1aeea2a1852de91bbc4bb7",
+    "guest/src/mpt.pnk": "34e7bba81dc84c88883b15370f91c3225db2a1f1c5781a01ade9e4dcc073ae54",
+    "guest/src/lib/htab.pnk": "a1bd4c62aedfe01fd8e8547e60979e39ae5f2dda0688a2d941f625ef66eeece2",
+    "guest/src/lib/rlp.pnk": "b6bfaea76c632ebaefecc0d2ac204e7c53273eee5d404a8cdd08be1b9f1038ac",
+    "guest/src/config.h": "e7fab1bf6e188bd80b7309fc2ebca2b5d682e16b99e4a63be2d42b4ec3851f7b",
+    "guest/src/types.h": "0fe51fb35234bf40dda37e0b2a3271074600157472d3d01de06a5f105a7b85a1"
+  },
+  "exact_arithmetic": {
+    "block_size": 8388608,
+    "withdrawal_min_rlp": 25,
+    "withdrawal_count_relaxation": 335544,
+    "persistent_heap_bytes": 31092374808,
+    "hypothetical_one_query_per32_allocated_bytes": 971636712
+  },
+  "arithmetic_status": "The integers are exact. Their full-run premises below are unproved.",
+  "self_test_cases": 2160,
+  "cases": {
+    "gas380000000-cold2100": {
+      "joint": {
+        "cost": 176097514634,
+        "distinct": 92683,
+        "warm_queries": 1853657,
+        "gas": 380000000,
+        "cold": 2100,
+        "warm": 100,
+        "preexisting": 0,
+        "first_price": 1,
+        "repeat_price": 1,
+        "spent": 380000000,
+        "note": "Dimension relaxation only; runtime multiplicities and global gas conservation are unproved."
+      },
+      "independent_product": 687617600000,
+      "joint_priced_sensitivity": {
+        "512": 90161927492608,
+        "1000": 176097514634000,
+        "3552": 625498371979968
+      },
+      "max_target_price_if_only_cost": 51148
+    },
+    "gas380000000-cold3000": {
+      "joint": {
+        "cost": 122372849151,
+        "distinct": 64407,
+        "warm_queries": 1867790,
+        "gas": 380000000,
+        "cold": 3000,
+        "warm": 100,
+        "preexisting": 0,
+        "first_price": 1,
+        "repeat_price": 1,
+        "spent": 380000000,
+        "note": "Dimension relaxation only; runtime multiplicities and global gas conservation are unproved."
+      },
+      "independent_product": 481330800000,
+      "joint_priced_sensitivity": {
+        "512": 62654898765312,
+        "1000": 122372849151000,
+        "3552": 434668360184352
+      },
+      "max_target_price_if_only_cost": 73604
+    },
+    "gas500000000-cold2100": {
+      "joint": {
+        "cost": 304877987804,
+        "distinct": 121951,
+        "warm_queries": 2439029,
+        "gas": 500000000,
+        "cold": 2100,
+        "warm": 100,
+        "preexisting": 0,
+        "first_price": 1,
+        "repeat_price": 1,
+        "spent": 500000000,
+        "note": "Dimension relaxation only; runtime multiplicities and global gas conservation are unproved."
+      },
+      "independent_product": 1190475000000,
+      "joint_priced_sensitivity": {
+        "512": 156097529755648,
+        "1000": 304877987804000,
+        "3552": 1082926612679808
+      },
+      "max_target_price_if_only_cost": 29543
+    },
+    "gas500000000-cold3000": {
+      "joint": {
+        "cost": 211864364405,
+        "distinct": 84746,
+        "warm_queries": 2457620,
+        "gas": 500000000,
+        "cold": 3000,
+        "warm": 100,
+        "preexisting": 0,
+        "first_price": 1,
+        "repeat_price": 1,
+        "spent": 500000000,
+        "note": "Dimension relaxation only; runtime multiplicities and global gas conservation are unproved."
+      },
+      "independent_product": 833330000000,
+      "joint_priced_sensitivity": {
+        "512": 108474554575360,
+        "1000": 211864364405000,
+        "3552": 752542222366560
+      },
+      "max_target_price_if_only_cost": 42513
+    },
+    "post-withdrawal-system-window": {
+      "cost": 402652800000,
+      "distinct": 0,
+      "warm_queries": 1200000,
+      "gas": 120000000,
+      "cold": 3000,
+      "warm": 100,
+      "preexisting": 335544,
+      "first_price": 1,
+      "repeat_price": 1,
+      "spent": 120000000,
+      "note": "Dimension relaxation only; runtime multiplicities and global gas conservation are unproved."
+    }
+  },
+  "source_observations": [
+    "The actual cold account constant is3000, not2600; warm100 and cold storage2100.",
+    "htab_del uses backward shifts, not repeated full reinsertions.",
+    "block_rlp_length precedes block-content trie construction and process_withdrawals; cap8MiB.",
+    "withdrawal_rlp_len contains fixed address cost21, three positive scalar lengths and positive list header.",
+    "_decode_step rejects empty extension paths and allocates record arrays; _decode_witness_node releases scratch, not persistent heap.",
+    "ws_storage_trie decodes before the temporary key-hash heap_mark/heap_release scope."
+  ],
+  "required_unproved_premises": [
+    "Exact actual division/count and RLP-length no-wrap proofs before deriving withdrawal_count<=335544.",
+    "Conservation of executed regular/state gas over user refunds, six system calls, nesting and rollback.",
+    "Joint cold/warm resources for every map, including access-list warming and free withdrawals.",
+    "All table probe/rehash/backward-delete/copy multiplicities and inter-phase cache sizes.",
+    "Persistent allocation accounting excludes only scoped temporary arenas with separate cumulative bounds.",
+    "Pair every nonterminal immutable-db query with appropriate successful persistent allocation or bounded root call.",
+    "Nonzero trie path progress and acyclic returned mutable graphs derived from execution, not crypto assumptions.",
+    "Actual weighted compiler/target pricing and final budget for all other work, events, bootstrap and terminals."
+  ],
+  "decision": "No new impossibility or reachable runtime counterexample established. Global go remains unearned. Use joint resource accounting; do not multiply independent maxima or treat scenarios as K."
+}

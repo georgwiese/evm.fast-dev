@@ -29,14 +29,15 @@ theorem withdrawals_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
       next.clock=source.clock-paid ∧
       UDivMod.frozen next=UDivMod.frozen (transactionFieldsStored source cursor records transactionCount) ∧
       Blob.HeapInput next input pointer ∧
-      evaluateHOLFiniteState next afterWithdrawals=(some (.returned value),innerPost) ∧ post=restore source "nwd" innerPost := by
+      evaluateHOLFiniteState next afterWithdrawals=(some (.returned value),innerPost) ∧ post=restore source "nwd" innerPost ∧
+      (count.toNat=(balances-withdrawals).toNat/44 ∧ (balances-withdrawals).toNat%44=0) := by
   obtain ⟨prefixRun,prefixHeap⟩:=transaction_stores source input pointer cursor records transactionCount heap pl txs domain pointerAligned cursorAligned
     pointerLower cursorAfter cursorRoom
   let stored:=transactionFieldsStored source cursor records transactionCount
   have args:=withdrawal_arguments stored withdrawals balances w b
   have tailRun : evaluateHOLFiniteState stored withdrawalCall=(some (.returned value),post):=prefixRun.symm.trans run
   rw [transactions_shape.2.2.2] at tailRun
-  obtain ⟨next,innerPost,count,paid,bound,localsEq,countBound,clock,frame,nextRun,postEq⟩:=FixedList.caller_normal stored post
+  obtain ⟨next,innerPost,count,paid,bound,localsEq,countBound,clock,frame,nextRun,postEq,arithmetic⟩:=FixedList.caller_normal stored post
     (balances-withdrawals) 44#64 9223372036854775807#64 (by decide) divisionCode failCode exceptionShape code
     "nwd" withdrawalArguments afterWithdrawals args enough value tailRun
   have memoryEq:=congrArg PanSemStateFiniteExact.memory frame
@@ -46,7 +47,7 @@ theorem withdrawals_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   have endianEq:=congrArg PanSemStateFiniteExact.be frame
   change next.be=stored.be at endianEq
   exact ⟨next,innerPost,count,paid,bound,localsEq,countBound,clock,frame,
-    Blob.HeapInput.of_fields stored next input pointer memoryEq.symm domainEq.symm endianEq.symm prefixHeap,nextRun,postEq⟩
+    Blob.HeapInput.of_fields stored next input pointer memoryEq.symm domainEq.symm endianEq.symm prefixHeap,nextRun,postEq,arithmetic (by decide)⟩
 
 end InitECandidate.Solver.Input.Payload
 

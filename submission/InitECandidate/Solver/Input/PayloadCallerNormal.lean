@@ -34,14 +34,14 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       Blob.HeapInput next input pointer ∧ next.memory (cursor+88#64)=.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
       source.clock-((input.length%2^64)/4+76)≤next.clock ∧ next.clock≤source.clock ∧
       next.code=source.code ∧ next.memaddrs=source.memaddrs ∧ next.eshapes=source.eshapes ∧
-      evaluateHOLFiniteState next continuation=(some (.returned value),innerPost) ∧ post=restore source name innerPost := by
+      evaluateHOLFiniteState next continuation=(some (.returned value),innerPost) ∧ post=restore source name innerPost ∧ next.memory (cursor+56#64)=.word (BitVec.ofNat 64 (withdrawalCount input)) := by
   classical
   obtain ⟨callee,called,p,n⟩:=environment source.code.lookup (pointer+62#64) length payloadCode
   obtain ⟨bodyPost,returned,bodyRun⟩:=CallNormal.callee_return source post (ofString name) .one (ofString "decode_payload") expressions
     (values (pointer+62#64) length) body continuation callee .one args called (by omega) value run
   let entry:=callEntryStateHOLFinite source callee
   have entryHeap : Blob.HeapInput entry input pointer:=Blob.HeapInput.of_fields source entry input pointer rfl rfl rfl heap
-  obtain ⟨valueEq,gasCell,bodyHeap,bodyLower,bodyUpper⟩:=body_normal entry bodyPost input pointer cursor length entryHeap p n inside domain
+  obtain ⟨valueEq,gasCell,bodyHeap,bodyLower,bodyUpper,countCell⟩:=body_normal entry bodyPost input pointer cursor length entryHeap p n inside domain
     pointerAligned cursorAligned pointerLower cursorAfter cursorRoom heapGlobal allocCode array arrayGlobal arrayAligned arrayLower arrayBefore
     offsetCode divisionCode failCode exceptionShape varCode fixedCode (by change (input.length%2^64)/4+76≤source.clock-1; omega) returned bodyRun
   have shapePass : (shapeEqHOL (shapeOfHOLExact returned) .one && shapeEqHOL (shapeOfHOLExact returned) .one)=true := by
@@ -54,7 +54,7 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have result : (evaluateHOLFiniteState next continuation).1=some (.returned value):=congrArg Prod.fst normal
   have postEq : post=restore source name (evaluateHOLFiniteState next continuation).2:=(congrArg Prod.snd normal).symm
   have fields:=evaluation_fields entry bodyPost body (some (.returned returned)) bodyRun
-  refine ⟨next,(evaluateHOLFiniteState next continuation).2,?_,?_,gasCell,?_,?_,fields.2.2.2,fields.1,fields.2.2.1,Prod.ext result rfl,postEq⟩
+  refine ⟨next,(evaluateHOLFiniteState next continuation).2,?_,?_,gasCell,?_,?_,fields.2.2.2,fields.1,fields.2.2.1,Prod.ext result rfl,postEq,countCell⟩
   · change source.locals.update (ofString name,returned)=source.locals.update (ofString name,.val (.word cursor))
     rw [valueEq]
   · exact Blob.HeapInput.of_fields bodyPost next input pointer rfl rfl rfl bodyHeap

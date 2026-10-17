@@ -4117,3 +4117,44 @@ Whole paired witness constructor checkpoint (2026-10-17):
 - Entire goal STILL incomplete: no whole-context replacement or global gas/
   state/Q/heap/resource/compiler/startup/target bound, runtime mutable maps
  20/52/60bytes unresolved, claim infinity. Continue autonomously; no stop point.
+
+
+### 2026-10-17 — real witness constructor callers, null empty arrays, decoded geometry
+
+- WitnessBuildEnvironments derives shared finite ABI locals from each actual
+  nodedb_build code entry. WitnessBuildRadixCall completes both ignored calls
+  and arbitrary decCall continuations with actual returned table pointers,
+  caller local restoration and equal globals, FFI/public memory. Whole-program
+  caller reachability remains conditional. Successful mutable-radix-call-v1.log
+  1410targets, permitted axioms. Source price+1 remains a Pan clock allowance.
+- Empty decoder returns array pointer0,count0. General paired constructor
+  correctly assumes positive record arena and cannot cover this case.
+  ConstructorEmptyPublic executes candidate zero case using an unused ghost
+  record arena at table, actual capacity4/allocation/empty helper/return. Adds
+  full globals/FFI and every earlier-memory frame. Original WitnessBuildEmpty
+  does the actual matching capacity/allocation/zeroing/skip-loop/return, with
+  empty physical Built invariant. Neither reads records or hashes.
+- WitnessBuildEmptyRadixCall.paired_empty_call handles arbitrary incoming array
+  pointer (including0), ignored and scoped returned calls with shared ABI.
+  Ready ghost plan, original empty Built and candidate actual empty tree/root,
+  equal globals/FFI/public memory, own source allowance43/44 survive callers.
+- Input.VarList.RecordGeometry proves real pointer natural address and item
+  extent inside encoded input for every index, including zero-length end items;
+  Arena and record end+8<=actual array. Does not bound mathematical input.length.
+  ConstructorData derives nonempty array positivity/alignment/range, raw pointer
+  cells without requiring input byte reads, and each real Keccak input arena.
+  Fixed state/pad/output arenas and their startup origins remain premises.
+- BufferRegionBelow gives actual raw and aligned accesses in a selected prefix,
+  allowing old private tables outside public equality after the first map.
+- Successful radix-empty-public-v2.log923,mutable-empty-v1.log1359,
+  mutable-empty-radix-call-v2.log1376,input-record-geometry-v1.log1302,
+  decoded-constructor-data-v1.log1326targets. Permitted printed axioms only.
+  Failed empty-public-v1 needed explicit update-value reduction and untyped
+  congrArg intermediate for capFrame projection; failed paired-empty-v1 lacked
+  MemoryRegionAgreement import. Failed logs not indexed.
+- Host1.4GiBused/29available,disk58%/123GiBfree. Account40%,0resetcredits.
+  All checks use resource guard24GiB and one limiter slot, no full verifier.
+- NEXT adapt decoded pointer/length cells and buffer/public layout to the actual
+  constructor entry; then preserve the first private dictionary while building
+  the second and compose both actual run_attempt decCalls. Global/target bound,
+  whole-program replacement and finite K remain open. Claim infinity. Continue.

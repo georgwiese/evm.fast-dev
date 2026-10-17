@@ -4925,3 +4925,27 @@ Whole paired witness constructor checkpoint (2026-10-17):
 - Next: general original mutable-table runtime/ownership contracts for20/52/60
   byte keys, then connect root message to active-frame and global gas ledgers;
   preserve pinned program and no numerical ceiling.
+
+
+### 2026-10-17 — actual20/52-byte hash and aligned comparison callers
+
+- HashSized proves actual aligned and unaligned20/52-byte unrolled hash cores,
+  including all byte macros, word assembly, XOR folds and final avalanche.
+  Execution wraps actual h/w declarations/scopes; Call proves actual two-word
+  ABI and one caller source clock, exact result and pure canonical frame.
+  Reproducible proof-syntax generator generate-hash-sized.py changes no program.
+- MemeqSizedProgram checks real20/52-byte fast blocks. Fast executes complete
+  actual memeq body through every early mismatch/success and i scope. Reads
+  discharges every comparison/alignment expression from concrete input words,
+  tail bytes and locals; Call proves actual three-word ABI and one caller clock.
+- Successful hash-sized-call-v1.log1194jobs (also root MSG, frame_open, fresh
+  records), memeq-sized-call-v1.log1092jobs (both new key-helper closures).
+  Explicit exit0, permitted axioms. Failed hash-sizedv1/v2 were finite numeral
+  normalization; memeq-fastv1 used Value where evaluator result was required;
+  both corrected and failed logs unindexed. No source/ROM/semantics change.
+- Remaining: unaligned variable-length byte-loop comparison;60-byte hash;
+  actual generic map probes/insertion/growth/backshift deletion/order/truncation
+  and cumulative ownership/counts. Input/read/code/clock entry conditions remain
+  explicit; helpers do not establish whole runtime or target instruction work.
+- Inventory/policy/evidence refreshed. Infinity, no whole finite K/full verifier.
+  Account3%,0manual reset credits. Continue full original runtime plan.

@@ -46,6 +46,8 @@
 
 **New checked persistent records:** both original te_new (200bytes) and msg_new (176bytes) bodies/callers derive real alloc and clear executions, initialize every word to zero, reserve exactly their sizes for aligned incoming heap cursors and preserve every outside word. Each actual caller consumes10source clocks. Entry code/heap/room/domain/clock premises remain explicit. Successful fresh-record-call-v1.log1065jobs, exit0, permitted axioms. Actual warm-map preprocessing and cross-callee message ownership remain open.
 
+**New checked account/storage key helpers:** the actual htab_hash20/52-byte aligned and unaligned bodies and callers now execute with exact results and unchanged memory/FFI; both unrolled sizes cost one caller source clock. Actual aligned memeq20/52-byte bodies/callers execute every word/tail-byte comparison and early return, also one caller source clock. Input/code/clock/read premises remain explicit. No uniform byte-loop fallback,60-byte hash, mutable-map growth/deletion/ownership or global query aggregate is claimed yet. Successful hash-sized-call-v1.log1194jobs and memeq-sized-call-v1.log1092jobs, exit0, permitted axioms. Source clocks omit straight-line work and are not target K.
+
 **Immediate next work:** prove later message/map preprocessing memory frames and connect the capped root MSG word to the actual active frame/global regular-gas ledger, then successful-child memory frames/merges, rollback and block reservation/counter facts. Preserve the original program and account for parser/failure paths, mutable maps and trie/query progress. Transport the resulting phase counts to the unchanged baseline target; no numerical ceiling applies.
 
 

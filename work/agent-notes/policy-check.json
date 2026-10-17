@@ -2396,6 +2396,9 @@
     "submission/InitECandidate/Solver/MutableTable/HashAligned32.lean",
     "submission/InitECandidate/Solver/MutableTable/HashCall32.lean",
     "submission/InitECandidate/Solver/MutableTable/HashMemory32.lean",
+    "submission/InitECandidate/Solver/MutableTable/HashSized.lean",
+    "submission/InitECandidate/Solver/MutableTable/HashSizedCall.lean",
+    "submission/InitECandidate/Solver/MutableTable/HashSizedExecution.lean",
     "submission/InitECandidate/Solver/MutableTable/HashUnaligned32.lean",
     "submission/InitECandidate/Solver/MutableTable/HashWordBytes.lean",
     "submission/InitECandidate/Solver/MutableTable/HeaderData.lean",
@@ -2428,6 +2431,10 @@
     "submission/InitECandidate/Solver/MutableTable/LayoutUpdate32.lean",
     "submission/InitECandidate/Solver/MutableTable/LayoutWrites32.lean",
     "submission/InitECandidate/Solver/MutableTable/MaskedPath.lean",
+    "submission/InitECandidate/Solver/MutableTable/MemeqSizedCall.lean",
+    "submission/InitECandidate/Solver/MutableTable/MemeqSizedFast.lean",
+    "submission/InitECandidate/Solver/MutableTable/MemeqSizedProgram.lean",
+    "submission/InitECandidate/Solver/MutableTable/MemeqSizedReads.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryFrame.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryValueCall.lean",
     "submission/InitECandidate/Solver/MutableTable/ModelFrame32.lean",
@@ -4538,8 +4545,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61399,
-  "package_bytes": 2253129715,
+  "package_entries": 61406,
+  "package_bytes": 2253199617,
   "claim": {
     "K": "infinity"
   },

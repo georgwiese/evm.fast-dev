@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.PureGuard
+import InitECandidate.Solver.Input.LocalLoopSummary
 
 namespace InitECandidate.Solver.Input
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -9,10 +10,19 @@ inductive LocalPrefix (key : MlS) : ProgHOL 64 → Prop where
   | skip : LocalPrefix key .skip
   | assign (name : MlS) (expression : ExpHOL 64) (other : key ≠ name) :
       LocalPrefix key (.assign .local name expression)
+  | store (address value : ExpHOL 64) : LocalPrefix key (.store address value)
+  | call (destination : Option MlS) (function : MlS) (arguments : List (ExpHOL 64))
+      (other : ∀ name, destination = some name → key ≠ name) :
+      LocalPrefix key (.call (some (destination.map (fun name => (.local, name)), none)) function arguments)
+  | dec (name : MlS) (shape : ShapeHOL) (expression : ExpHOL 64) {rest : ProgHOL 64}
+      (other : key ≠ name) (tail : LocalPrefix key rest) :
+      LocalPrefix key (.dec name shape expression rest)
   | seq {left right : ProgHOL 64} (first : LocalPrefix key left) (second : LocalPrefix key right) :
       LocalPrefix key (.seq left right)
   | ite (test : ExpHOL 64) {left right : ProgHOL 64}
       (first : LocalPrefix key left) (second : LocalPrefix key right) : LocalPrefix key (.ite test left right)
+  | loop (test : ExpHOL 64) {body : ProgHOL 64} (safe : LocalPrefix key body) :
+      LocalPrefix key (.while test body)
   | decCall (name : MlS) (shape : ShapeHOL) (function : MlS) (arguments : List (ExpHOL 64))
       {rest : ProgHOL 64} (other : key ≠ name) (tail : LocalPrefix key rest) :
       LocalPrefix key (.decCall name shape function arguments rest)
@@ -30,12 +40,10 @@ private theorem lookup_restore_other (map : HolFiniteMapExact MlS (ValueHOL 64))
 
 /-- On normal continuation the tracked binding is preserved. No program in
 this class can return its caller's value, even when a helper fails. -/
-theorem LocalPrefix.summary {F : Type} {key : MlS} {program : ProgHOL 64}
-    (safe : LocalPrefix key program) (source : PanSemStateFiniteExact 64 F) :
-    ((evaluateHOLFiniteState source program).1 = none →
-      (evaluateHOLFiniteState source program).2.locals.lookup key = source.locals.lookup key) ∧
-      ∀ value, (evaluateHOLFiniteState source program).1 ≠ some (.returned value) := by
+theorem LocalPrefix.summary_full {F : Type} {key : MlS} {program : ProgHOL 64}
+    (safe : LocalPrefix key program) (source : PanSemStateFiniteExact 64 F) : LocalSummary key program source := by
   classical
+  unfold LocalSummary
   induction safe generalizing source with
   | skip => simp [evaluateHOLFiniteState_skip]
   | assign name expression other =>
@@ -45,6 +53,60 @@ theorem LocalPrefix.summary {F : Type} {key : MlS} {program : ProgHOL 64}
     · split
       · simpa only [setKvarHOLFinite] using
           And.intro (fun _ => lookup_set_other source key name _ other) (by simp)
+      · simp
+  | store address value =>
+    rw [evaluateHOLFiniteState_store]
+    split
+    · split
+      · split <;> simp
+      · simp
+    · simp
+  | call destination function arguments other =>
+    rw [evaluateHOLFiniteState_call]
+    split
+    · simp
+    · split
+      · simp
+      · split
+        · simp
+        · generalize computed : evaluateHOLFiniteState (callEntryStateHOLFinite source _) _ = output
+          obtain ⟨result, target⟩ := output
+          cases result with
+          | none => simp
+          | some result =>
+            cases result with
+            | returned returned =>
+              simp only
+              split
+              · cases destination with
+                | none => simp
+                | some name =>
+                  simp only [Option.map_some]
+                  split
+                  · simp only [setKvarHOLFinite]
+                    exact ⟨fun _ => lookup_set_other _ key name returned (other name rfl), by simp⟩
+                  · simp
+              · simp
+            | error => simp
+            | timeOut => simp
+            | «break» => simp
+            | «continue» => simp
+            | exception identifier payload => simp
+            | finalFfi event => simp
+  | dec name shape expression other tail tailIH =>
+    rw [evaluateHOLFiniteState_dec_total]
+    simp only
+    split
+    · simp
+    · split
+      · rename_i value read valid
+        let declared := setVarHOLFinite name value source
+        have info := tailIH declared
+        constructor
+        · intro normal
+          exact (lookup_restore_other _ key name _ other).trans
+            ((info.1 normal).trans (lookup_set_other source key name value other))
+        · exact info.2
       · simp
   | seq first second firstIH secondIH =>
     rw [evaluateHOLFiniteState_seq_line780]
@@ -73,6 +135,8 @@ theorem LocalPrefix.summary {F : Type} {key : MlS} {program : ProgHOL 64}
           · simpa only [if_neg zero] using firstIH source
       | rStruct fields => simp
       | nStruct name fields => simp
+  | loop test safe bodyIH =>
+    exact while_local_summary key test _ bodyIH source
   | decCall name shape function arguments other tail tailIH =>
     rw [evaluateHOLFiniteState_decCall_fixClockRewrite]
     split
@@ -108,6 +172,14 @@ theorem LocalPrefix.summary {F : Type} {key : MlS} {program : ProgHOL 64}
             | exception identifier payload => simp
             | finalFfi event => simp
 
+/-- Public normal-path summary retained for existing callers. -/
+theorem LocalPrefix.summary {F : Type} {key : MlS} {program : ProgHOL 64}
+    (safe : LocalPrefix key program) (source : PanSemStateFiniteExact 64 F) :
+    ((evaluateHOLFiniteState source program).1 = none →
+      (evaluateHOLFiniteState source program).2.locals.lookup key = source.locals.lookup key) ∧
+      ∀ value, (evaluateHOLFiniteState source program).1 ≠ some (.returned value) :=
+  ⟨(safe.summary_full source).1, (safe.summary_full source).2.1⟩
+
 /-- Expose the actual continuation state after a normal prefix. -/
 theorem LocalPrefix.normal_continue {F : Type} {key : MlS} {program : ProgHOL 64}
     (safe : LocalPrefix key program) (source post : PanSemStateFiniteExact 64 F)
@@ -128,3 +200,5 @@ end InitECandidate.Solver.Input
 
 #print axioms InitECandidate.Solver.Input.LocalPrefix.summary
 #print axioms InitECandidate.Solver.Input.LocalPrefix.normal_continue
+
+#print axioms InitECandidate.Solver.Input.LocalPrefix.summary_full

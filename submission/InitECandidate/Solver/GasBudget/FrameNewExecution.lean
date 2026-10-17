@@ -54,8 +54,9 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
         memory := target.memory
         clock := source.clock - (WitnessRadix.Zero.price (JumpDest.bitmapBytes words.length.toNat) + 37 + spent)} ∧
       regularBudget target.memory (framePointer scratch) = words.gas.toNat ∧
-      ∀ cell ∈ suffixCells message ⟨words.code, words.length, addresses, keys, addressCount, keyCount⟩,
-        target.memory cell.1 = source.memory cell.1 := by
+      (∀ cell ∈ suffixCells message ⟨words.code, words.length, addresses, keys, addressCount, keyCount⟩,
+        target.memory cell.1 = source.memory cell.1) ∧
+      ∀ query, Arenas.Outside lower scratch query → target.memory query = source.memory query := by
   let suffixWords : SuffixWords := ⟨words.code, words.length, addresses, keys, addressCount, keyCount⟩
   let freshState := fresh source scratch lower words
   obtain ⟨frameNumber, frameAligned, stackNumber, stackAligned, memoryNumber, memoryAligned,
@@ -108,7 +109,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
      (output.1, freshRestore source scratch lower output.2)) at prefixRun
   rw [suffixRun] at prefixRun
   let target := freshRestore source scratch lower suffixTarget
-  refine ⟨target, spent, spentBound, ?_, ?_, ?_, ?_⟩
+  refine ⟨target, spent, spentBound, ?_, ?_, ?_, ?_, ?_⟩
   · rw [actual_fresh_prefix]
     exact prefixRun
   · change emptyLocalsHOLFinite suffixTarget = _
@@ -127,6 +128,16 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     change suffixTarget.memory cell.1 = source.memory cell.1
     rw [suffixKept cell.1 (suffix_protected_safe (memoryPointer lower) (framePointer scratch) cell.1 (inputProtected cell member) memoryOrder frameFits)]
     exact fresh_memory_away source scratch lower words cell.1 (inputSeparate cell member)
+  · intro query outside
+    have protectedRead : SuffixProtected (memoryPointer lower) (framePointer scratch) query := by
+      rcases outside with below | high
+      · exact Or.inl (by omega)
+      · exact Or.inr (by omega)
+    change suffixTarget.memory query = source.memory query
+    rw [suffixKept query (suffix_protected_safe (memoryPointer lower) (framePointer scratch) query protectedRead memoryOrder frameFits)]
+    apply fresh_memory_away
+    intro offset inside
+    exact suffix_protected_away (memoryPointer lower) (framePointer scratch) query offset protectedRead memoryOrder frameFits inside
 
 end InitECandidate.Solver.GasBudget.FrameNew
 

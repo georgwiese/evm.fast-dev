@@ -4854,3 +4854,31 @@ Whole paired witness constructor checkpoint (2026-10-17):
   full verification or claim change. Account2%,0manual reset credits. Continue
   capped root mgas through actual TE/MSG stores and caller initialization,
   then child merges/rollback/block signed ledger and unchanged target work.
+
+
+### 2026-10-17 — actual capped root gas reaches TE and MSG memory
+
+- LocalPrefix now covers actual stores, standalone/assigned helper calls,
+  ordinary declarations and while loops. LocalLoopSummary proves preservation
+  by evaluator-clock induction, denying escaping return/break/continue; this
+  does not assume body success or establish an iteration/runtime budget.
+  Existing LocalPrefix.summary API retained; summary_full supplies stronger
+  loop information. LocalPathTactics constructs kernel-checked structural
+  proofs for actual ASTs, failing on unsupported instructions.
+- RootTeProgram/Normal checks exact post-split prefix through TE_GAS; actual
+  normal store derives base-word read, mapping, exact write and physical cap.
+  RootMsgProgram/Normal covers the full actual prefix through MSG_GAS,
+  including both access-list loops and optional blob/setcode branches. Actual
+  validator/root split gives storedGas.toNat+intrinsicRegular.toNat<=16777216.
+- Neither theorem prices preprocessing or proves later mutable-map/helper
+  preservation of MSG_GAS. That ownership/reachability gap remains explicit.
+- FrameNew complete body/caller strengthened with a memory frame for every
+  word outside its incoming live arena, to support parent/global accounting.
+- Successful root-msg-normal-v2.log1161jobs, explicit exit0, allowed axioms.
+  Root-te-normal-v1, local-loop-prefix-v2, root-msg-program-v1 also successful.
+  Failed development logs are not indexed. Evidence refreshed on successful
+  combined current sources; counts are not task-completion metrics.
+- Continue message/map ownership and active frame_open, successful-child
+  merges/rollback/block signed accounting, then phase/unchanged target bounds.
+  Pinned program unchanged; infinity, no whole finite K or full verification.
+  Account last2%,0manual reset credits; no numerical ceiling.

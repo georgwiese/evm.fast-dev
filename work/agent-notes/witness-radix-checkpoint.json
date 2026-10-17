@@ -441,6 +441,42 @@
     "submission/InitECandidate/Solver/WitnessRadix/WordWrites.lean": {
       "bytes": 3512,
       "sha256": "ad93b859ea4ff36f33ef1e17afb91976d4a5a58818be76b60a7451b19df94c65"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitLoop.lean": {
+      "bytes": 3529,
+      "sha256": "56b1c1345a476f0b5569413e2dfebeca7c47d8f698283c2a262d0708714cce29"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitCountInputs.lean": {
+      "bytes": 6038,
+      "sha256": "ed95af1f8a1958e3c539d365e9357d858a43d7934f3e5fd657946854c0e110d1"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitScopePost.lean": {
+      "bytes": 1763,
+      "sha256": "77a725bc9c6c46a6f0f41dcc7776c39afe76be53e60acce592f5d69200c146c6"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitScopeInputs.lean": {
+      "bytes": 5376,
+      "sha256": "b3de46107c99586a53c6da12650274cd91fe6f42ad475af915c4ad9fde4f1d97"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryFootprint.lean": {
+      "bytes": 4870,
+      "sha256": "34593fe8f888ac3b3722cb6a8e8b2356be8ddff42113dba99ad2d9811e32c85f"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitScopeExecution.lean": {
+      "bytes": 4830,
+      "sha256": "22cc2f5b9b13d76179fd2784930864d5ae9438485c02f246b0b2f89b85caf400"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitCountExecution.lean": {
+      "bytes": 6301,
+      "sha256": "7647058616286fd8b00f5e9561ea8cb73bcabb256252ffadd35cc579efa9e6ad"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitScopeState.lean": {
+      "bytes": 3626,
+      "sha256": "cf15bbd64be80c6b32c32f3d34167105f7d258e0d2b7f7b05ff44f6b5c86e901"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemoryAgreement.lean": {
+      "bytes": 1806,
+      "sha256": "47ff6bc51d5aa02570361dbd474a8dfc1b87f1a00e43c7d01b3d61834cb9a6e5"
     }
   },
   "development_artifacts": {
@@ -473,7 +509,10 @@
     "witness-radix-build-cases-v2.log",
     "witness-radix-terminal-loop-finish-v2.log",
     "witness-radix-outer-transitions-v1.log",
-    "witness-radix-sort-allocation-checkpoint-v1.log"
+    "witness-radix-sort-allocation-checkpoint-v1.log",
+    "witness-radix-count-copy-v1.log",
+    "witness-radix-split-loop-memory-v1.log",
+    "witness-radix-query-footprint-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -627,6 +666,8 @@
     "terminal_continue": "complete literal leaf store plus protected suffix reads/pop, scoped restoration and actual outer-while resumption, one outer clock",
     "unary": "complete literal count scope and outer-while resumption, exact unchanged memory/restored temporary counters, input.length + 1 source clocks",
     "allocation": "literal captured-node scope, seven concrete mapped stores, five persistent local updates, exact full poststate and outside-write frame; no source clocks",
-    "sort_prefix": "both actual index resets + stable scatter + copy before arbitrary continuation; exact sorted primary/backup memories, final index and other-local frame, 2*input.length source clocks"
+    "sort_prefix": "both actual index resets + stable scatter + copy before arbitrary continuation; exact sorted primary/backup memories, final index and other-local frame, 2*input.length source clocks",
+    "split": "complete actual count/cursor scopes, non-unary test, scatter/copy/allocation and outer-while resumption; exact memory and five persistent locals; 3*input.length + 1 source clocks; parent ownership/no-wrap/mapped premises explicit",
+    "subtree_frame": "actual lookup memory representation preserved by agreement on its concrete recursive read footprint, including aligned key-byte words"
   }
 }

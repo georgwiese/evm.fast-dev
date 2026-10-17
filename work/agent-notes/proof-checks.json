@@ -11818,6 +11818,10 @@
       "sha256": "25b336339efbdf1ad9257bd95807df257d2853e769598a0d9069fb76495950df"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/MemoryAgreement.lean",
+      "sha256": "47ff6bc51d5aa02570361dbd474a8dfc1b87f1a00e43c7d01b3d61834cb9a6e5"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/MemoryBytes.lean",
       "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763"
     },
@@ -11868,6 +11872,10 @@
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/QueryExecution.lean",
       "sha256": "bf7ed6b64e140aa7d04ef6d84ef5d729417d843529c485f1e1817c1da9d36c9c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryFootprint.lean",
+      "sha256": "34593fe8f888ac3b3722cb6a8e8b2356be8ddff42113dba99ad2d9811e32c85f"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/QueryFunction.lean",
@@ -11974,8 +11982,36 @@
       "sha256": "20ddea3d0b1fab67eb15ba739c562190739319c861b661695dbd4b3b3ea7ea66"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitCountExecution.lean",
+      "sha256": "7647058616286fd8b00f5e9561ea8cb73bcabb256252ffadd35cc579efa9e6ad"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitCountInputs.lean",
+      "sha256": "ed95af1f8a1958e3c539d365e9357d858a43d7934f3e5fd657946854c0e110d1"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitLoop.lean",
+      "sha256": "56b1c1345a476f0b5569413e2dfebeca7c47d8f698283c2a262d0708714cce29"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/SplitProgram.lean",
       "sha256": "fb104dfb348cf837b1a8a5ca9e543dfbb939acf1bf0bf7ec815b845285169e23"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitScopeExecution.lean",
+      "sha256": "22cc2f5b9b13d76179fd2784930864d5ae9438485c02f246b0b2f89b85caf400"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitScopeInputs.lean",
+      "sha256": "b3de46107c99586a53c6da12650274cd91fe6f42ad475af915c4ad9fde4f1d97"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitScopePost.lean",
+      "sha256": "77a725bc9c6c46a6f0f41dcc7776c39afe76be53e60acce592f5d69200c146c6"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitScopeState.lean",
+      "sha256": "cf15bbd64be80c6b32c32f3d34167105f7d258e0d2b7f7b05ff44f6b5c86e901"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/StateSteps.lean",
@@ -63364,7 +63400,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.queryVisits_buildIndex",
@@ -63372,7 +63408,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_lookup",
@@ -63380,7 +63416,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_query_visits",
@@ -63388,7 +63424,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lookup_build",
@@ -63396,7 +63432,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.height_build",
@@ -63404,7 +63440,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.leaves_build",
@@ -63412,7 +63448,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.buildVisits_bound",
@@ -63420,7 +63456,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.branches_buildIndex",
@@ -63428,7 +63464,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.buildIndex_key_pool_fits",
@@ -63436,7 +63472,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.partition_buffers_fit",
@@ -63444,7 +63480,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -63452,7 +63488,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.prefix_pending_separate",
@@ -63460,7 +63496,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_branch_separate",
@@ -63468,7 +63504,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.branch_cells_injective",
@@ -63476,7 +63512,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Program.nonFunctions_preserved",
@@ -63504,17 +63540,17 @@
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_solver_radix_index",
       "axioms": [],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_build",
       "axioms": [],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_lookup",
       "axioms": [],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.writeBlock_get",
@@ -63583,7 +63619,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryEmpty.empty_table",
@@ -63592,7 +63628,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -63600,7 +63636,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -63608,7 +63644,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.lookup",
@@ -63617,7 +63653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.query_visits",
@@ -63626,7 +63662,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Graph.lookup_represents",
@@ -63635,7 +63671,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Graph.lookup_built",
@@ -63644,7 +63680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.implementation_bit",
@@ -63653,7 +63689,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_nonzero",
@@ -63661,7 +63697,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_odd",
@@ -63670,7 +63706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_decode",
@@ -63678,7 +63714,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.expand_decreases",
@@ -63791,7 +63827,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -63800,7 +63836,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -63809,7 +63845,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -63818,7 +63854,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -63827,7 +63863,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -63836,7 +63872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -63845,7 +63881,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -63854,7 +63890,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -63863,7 +63899,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -63872,7 +63908,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -63881,7 +63917,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.loop_shape",
@@ -63890,7 +63926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.eval_digit",
@@ -63899,7 +63935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.assign_child",
@@ -63908,7 +63944,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branch_code",
@@ -63917,7 +63953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branchPost_eq",
@@ -63926,7 +63962,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branch_iteration",
@@ -63935,7 +63971,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -63943,7 +63979,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -63951,7 +63987,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -63960,7 +63996,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -63969,7 +64005,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -63978,7 +64014,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -63986,7 +64022,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -63995,7 +64031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -64004,7 +64040,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_ready_of_memory",
@@ -64013,7 +64049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_byteAt",
@@ -64022,7 +64058,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -64031,7 +64067,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -64040,7 +64076,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -64049,7 +64085,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -64058,7 +64094,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -64067,7 +64103,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -64076,7 +64112,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -64085,7 +64121,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.memory_execute",
@@ -64094,7 +64130,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_memory",
@@ -64103,7 +64139,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.aligned_offset",
@@ -64111,7 +64147,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -64119,7 +64155,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -64128,7 +64164,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -64137,7 +64173,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -64146,7 +64182,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -64155,7 +64191,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.environment",
@@ -64164,7 +64200,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_of_fields",
@@ -64173,7 +64209,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryExecution.loop_execute",
@@ -64209,7 +64245,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.after_miss",
@@ -64218,7 +64254,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.after_hit",
@@ -64227,7 +64263,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.comparison_return",
@@ -64236,7 +64272,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.leaf_iteration",
@@ -64245,7 +64281,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.read_ordinal",
@@ -64254,7 +64290,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.read_arguments",
@@ -64263,7 +64299,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.read_record",
@@ -64272,7 +64308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.leaf_return",
@@ -64281,7 +64317,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLoop.branch",
@@ -64308,7 +64344,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryMemory.query_digit",
@@ -64317,7 +64353,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bind_other",
@@ -64326,7 +64362,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -64335,7 +64371,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.body_execute",
@@ -64344,7 +64380,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.loop_execute",
@@ -64353,7 +64389,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.copyState_frame",
@@ -64362,7 +64398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.copyState_index",
@@ -64371,7 +64407,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.copied_rows",
@@ -64379,7 +64415,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildProgram.copy_body_shape",
@@ -64388,7 +64424,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildProgram.copy_loop_shape",
@@ -64397,7 +64433,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.rows_store_away",
@@ -64405,7 +64441,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.copyMemory_away",
@@ -64413,7 +64449,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.body_execute",
@@ -64422,7 +64458,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.digit_read",
@@ -64431,7 +64467,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.loop_execute",
@@ -64440,7 +64476,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.counter_frame",
@@ -64449,7 +64485,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.body_shape",
@@ -64458,7 +64494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.loop_shape",
@@ -64467,7 +64503,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.iteration",
@@ -64476,7 +64512,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.body_shape",
@@ -64485,7 +64521,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.loop_shape",
@@ -64494,7 +64530,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.execute",
@@ -64503,7 +64539,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -64512,7 +64548,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-query-footprint-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordScatter.scatter_eq_blocks",
@@ -64520,7 +64556,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.body_execute",
@@ -64529,7 +64565,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.bucket_execute",
@@ -64538,7 +64574,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.state_zero",
@@ -64547,7 +64583,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.state_one",
@@ -64556,7 +64592,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.loop_execute",
@@ -64565,7 +64601,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.loop_partition",
@@ -64574,7 +64610,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.post_frame",
@@ -64583,7 +64619,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.post_byteView",
@@ -64592,7 +64628,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.post_rows",
@@ -64601,7 +64637,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.ready_next",
@@ -64610,7 +64646,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.state_frame",
@@ -64619,7 +64655,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.state_index",
@@ -64628,7 +64664,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.iteration",
@@ -64637,7 +64673,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.bind_lookup_other",
@@ -64646,7 +64682,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEquations.treeAt_empty_iff",
@@ -64688,7 +64724,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.core_shape",
@@ -64697,7 +64733,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.declarations_execute",
@@ -64706,7 +64742,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEquations.step",
@@ -64814,7 +64850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TerminalProgram.terminal_finish",
@@ -64841,7 +64877,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TerminalProgram.after_store_shape",
@@ -64850,7 +64886,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TerminalProgram.terminal_test",
@@ -64859,7 +64895,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-outer-transitions-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TerminalProgram.ordinal_read",
@@ -64868,7 +64904,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-outer-transitions-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PopProgram.cells_store",
@@ -64884,7 +64920,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-outer-transitions-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TerminalProgram.terminal_continue",
@@ -64911,7 +64947,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-outer-transitions-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.UnaryProgram.count_scope_unary",
@@ -64920,7 +64956,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-outer-transitions-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.UnaryProgram.main_loop_unary",
@@ -64929,7 +64965,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-outer-transitions-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.UnaryProgram.remaining_shape",
@@ -64938,7 +64974,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.UnaryProgram.after_count_shape",
@@ -64947,7 +64983,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SplitProgram.body_execute",
@@ -64956,7 +64992,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SplitProgram.allocation_execute",
@@ -64965,7 +65001,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SplitProgram.branchMemory_words",
@@ -64990,7 +65026,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SplitProgram.restore_branch",
@@ -64999,21 +65035,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.copyMemory_append",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.copyMemory_start",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.wordAddress_ne",
@@ -65021,7 +65057,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.partition_cross",
@@ -65029,7 +65065,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.backup_rows",
@@ -65037,7 +65073,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SortProgram.copied_run",
@@ -65046,7 +65082,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SortProgram.execute",
@@ -65055,7 +65091,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SortProgram.sorted_frame",
@@ -65064,7 +65100,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SortProgram.sorted_outside_cursors",
@@ -65073,7 +65109,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SortProgram.scattered_run",
@@ -65082,7 +65118,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SortProgram.scattered_memory",
@@ -65091,7 +65127,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SplitProgram.split_shape",
@@ -65100,7 +65136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SplitProgram.allocation_shape",
@@ -65109,7 +65145,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_at",
@@ -65125,6 +65161,130 @@
         "Quot.sound"
       ],
       "successful_log": "witness-radix-sort-allocation-checkpoint-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-query-footprint-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_of_cells",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-query-footprint-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitCount.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitCount.after_count_split",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitCount.main_loop_split",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitCount.iteration_clock",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitScope.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitScope.sort_inputs",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitScope.restore_post",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitScope.post_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitScope.allocation_locals",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.SplitScope.allocation_mapped",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-split-loop-memory-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryMemory.leaf_cells_of_agreement",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "witness-radix-query-footprint-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryMemory.represents_of_agreement",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-query-footprint-v1.log"
     }
   ]
 }

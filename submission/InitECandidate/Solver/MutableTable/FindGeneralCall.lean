@@ -30,11 +30,11 @@ theorem general_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tabl
     ∃ paid value, paid ≤ generalProbePrice kind * order.length + (KeyHash.hashPrice kind + 1) ∧ value.toNat ≤ p.capacity.toNat ∧
       evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "htab_find_slot") expressions continuation) =
         (let output := evaluateHOLFiniteState (bind {source with clock := source.clock - paid} name value) continuation
-         (output.1, restore source name output.2)) := by
+         (output.1, restore source name output.2)) ∧ Selection source p value := by
   obtain ⟨callee, called, tLocal, keyLocal⟩ := environment source.code.lookup table p.key findCode
   let entry := callEntryStateHOLFinite source callee
   have entryCells := HeaderData.with_locals source entry table p cells rfl rfl tLocal keyLocal
-  obtain ⟨paid, value, bound, valueBound, result, frame⟩ := general_find entry table p kind entryCells keyLength bits small capacity order room
+  obtain ⟨paid, value, bound, valueBound, result, frame, selected⟩ := general_find entry table p kind entryCells keyLength bits small capacity order room
     binary covered fits mapped queryFits queryMapped hashCode memeqCode little
     (by change generalProbePrice kind * order.length + (KeyHash.hashPrice kind) ≤ source.clock - 1; omega)
   let post := (evaluateHOLFiniteState entry body).2
@@ -42,7 +42,7 @@ theorem general_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tabl
   have callerFrame : emptyLocalsHOLFinite post = emptyLocalsHOLFinite {source with clock := source.clock - 1 - paid} := frame
   have actual := Input.CallNormal.pure_return_execute source post name (ofString "htab_find_slot") expressions _ body continuation callee value paid args called (by omega) run callerFrame
   have subtract : source.clock - 1 - paid = source.clock - (paid + 1) := by omega
-  exact ⟨paid + 1, value, by omega, valueBound, by simpa only [subtract] using actual⟩
+  exact ⟨paid + 1, value, by omega, valueBound, by simpa only [subtract] using actual, Selection.of_fields entry source p value rfl rfl rfl selected⟩
 
 end InitECandidate.Solver.MutableTable.Find
 

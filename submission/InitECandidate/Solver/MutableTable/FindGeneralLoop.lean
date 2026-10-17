@@ -22,7 +22,7 @@ theorem general_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMe
     ∃ (paid : Nat) (answer : BitVec 64) (target : PanSemStateFiniteExact 64 Guest.HostMemory),
       paid ≤ generalProbePrice kind * length ∧ answer.toNat ≤ p.capacity.toNat ∧
       evaluateHOLFiniteState source afterIndex = (some (.returned (.val (.word answer))), target) ∧
-      emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
+      emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} ∧ Selection snapshot p answer := by
   induction chain generalizing source with
   | empty index inside loaded =>
     have actual : usedByte source p index = some 0 := by
@@ -33,7 +33,7 @@ theorem general_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMe
     have returned : evaluateHOLFiniteState source (.return (localVar "cap")) =
         (some (.returned (.val (.word p.capacity))), emptyLocalsHOLFinite source) := by
       simp [evaluateHOLFiniteState_return, localVar, evalHOLExact, toExact, locals.cap, shapeOfHOLExact]
-    refine ⟨0, p.capacity, emptyLocalsHOLFinite source, by simp, Nat.le_refl _, ?_, by simp only [Nat.sub_zero, emptyLocalsHOLFinite]⟩
+    refine ⟨0, p.capacity, emptyLocalsHOLFinite source, by simp, Nat.le_refl _, ?_, by simp only [Nat.sub_zero, emptyLocalsHOLFinite], Or.inl rfl⟩
     rw [afterIndex, loop, MemeqByteRuntime.loop_stop source condition loopBody (.return (localVar "cap")) test]
     exact returned
   | occupied index byte length inside nonzero loaded fits mapped tail ih =>
@@ -76,14 +76,14 @@ theorem general_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMe
          (bind_lookup_other _ "i" "used" _ (by decide)).trans locals.used,
          (bind_lookup_other _ "i" "key" _ (by decide)).trans locals.key,
          bind_lookup_same _ _ _⟩
-      obtain ⟨paid, answer, target, paidBound, answerBound, tailRun, frame⟩ := ih nextState nextLocals memory domain endian queryMapped code
+      obtain ⟨paid, answer, target, paidBound, answerBound, tailRun, frame, selected⟩ := ih nextState nextLocals memory domain endian queryMapped code
         (by change (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * length ≤ source.clock - 1 - stepPaid; omega)
       change paid ≤ (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * length at paidBound
       have step := MemeqByteRuntime.loop_continue source nextState condition loopBody (.return (localVar "cap")) test positive stepRun
         (by change source.clock - 1 - stepPaid ≤ source.clock - 1; omega)
       change evaluateHOLFiniteState source afterIndex = evaluateHOLFiniteState nextState afterIndex at step
       rw [tailRun] at step
-      refine ⟨paid + stepPaid + 1, answer, target, ?_, answerBound, step, ?_⟩
+      refine ⟨paid + stepPaid + 1, answer, target, ?_, answerBound, step, ?_, selected⟩
       · change paid + stepPaid + 1 ≤ (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * (length + 1)
         rw [Nat.mul_add, Nat.mul_one]
         omega
@@ -94,7 +94,7 @@ theorem general_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMe
     · rw [if_neg zero] at stepRun
       have step := MemeqByteRuntime.loop_return source post condition loopBody (.return (localVar "cap")) index test positive stepRun
         (by omega)
-      refine ⟨stepPaid + 1, index, post, ?_, by omega, step, ?_⟩
+      refine ⟨stepPaid + 1, index, post, ?_, by omega, step, ?_, Or.inr ⟨inside, byte, nonzero, loaded⟩⟩
       · change stepPaid + 1 ≤ (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * (length + 1)
         rw [Nat.mul_add, Nat.mul_one]
         omega

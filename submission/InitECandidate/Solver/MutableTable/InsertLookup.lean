@@ -21,7 +21,7 @@ theorem GeneralData.find_call (source : PanSemStateFiniteExact 64 Guest.HostMemo
     ∃ paid index, paid ≤ findPrice kind items.length ∧ index.toNat ≤ p.capacity.toNat ∧
       evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "htab_find_slot") arguments continuation) =
         (let output := evaluateHOLFiniteState (WitnessRadix.QueryBranch.bind {source with clock := source.clock - paid} name index) continuation
-         (output.1, restore source name output.2)) := by
+         (output.1, restore source name output.2)) ∧ Find.Selection source p index := by
   have capNumber : p.capacity.toNat = 2 ^ bits := by
     rw [data.capacity, BitVec.toNat_ofNat, Nat.mod_eq_of_lt (Nat.pow_lt_pow_right (by decide) data.small)]
   have inside (i : Nat) (bounded : i < 2 ^ bits) : (BitVec.ofNat 64 i).toNat < p.capacity.toNat := by

@@ -29,7 +29,7 @@ theorem general_find (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tabl
     (enough : generalProbePrice kind * order.length + (KeyHash.hashPrice kind) ≤ source.clock) :
     ∃ paid value, paid ≤ generalProbePrice kind * order.length + (KeyHash.hashPrice kind) ∧ value.toNat ≤ p.capacity.toNat ∧
       (evaluateHOLFiniteState source body).1 = some (.returned (.val (.word value))) ∧
-      emptyLocalsHOLFinite (evaluateHOLFiniteState source body).2 = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
+      emptyLocalsHOLFinite (evaluateHOLFiniteState source body).2 = emptyLocalsHOLFinite {source with clock := source.clock - paid} ∧ Selection source p value := by
   classical
   let headers := headerState source p
   have distinct : ([ofString "used", ofString "keys", ofString "stride", ofString "klen", ofString "cap", ofString "key"] : List MlS).Nodup := by decide
@@ -54,7 +54,7 @@ theorem general_find (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tabl
     rw [← indexEq]
     have previous := prepared_locals source p hash index cells.keyLocal
     exact ⟨previous.cap, previous.klen, previous.stride, previous.keys, previous.used, previous.key, previous.index⟩
-  obtain ⟨paid, value, post, bound, valueBound, tailRun, frame⟩ := general_scan_count_bound entered p kind bits start small startInside
+  obtain ⟨paid, value, post, bound, valueBound, tailRun, frame, selected⟩ := general_scan_count_bound entered p kind bits start small startInside
     capacity order room locals keyLength binary covered fits mapped queryFits queryMapped memeqCode little
     (by change generalProbePrice kind * order.length ≤ source.clock - (KeyHash.hashPrice kind); omega)
   have iRun : evaluateHOLFiniteState hashEntered afterHash =
@@ -69,7 +69,7 @@ theorem general_find (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tabl
   have whole : evaluateHOLFiniteState source body = (some (.returned (.val (.word value))),
       restoreStack (restore headers "h" (restore hashEntered "i" post))) := by
     rw [header_shape, prefixRun, hashRun]
-  refine ⟨paid + (KeyHash.hashPrice kind), value, by omega, valueBound, ?_, ?_⟩
+  refine ⟨paid + (KeyHash.hashPrice kind), value, by omega, valueBound, ?_, ?_, Selection.of_fields entered source p value rfl rfl rfl selected⟩
   · rw [whole]
   · rw [whole, WitnessRadix.ProgramPrefix.restoration_frame setup]
     change emptyLocalsHOLFinite post = emptyLocalsHOLFinite {source with clock := source.clock - (paid + (KeyHash.hashPrice kind))}

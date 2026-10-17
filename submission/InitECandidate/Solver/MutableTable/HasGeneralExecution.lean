@@ -30,7 +30,7 @@ theorem general_has (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table
   have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address))
       [localVar "t", localVar "key"] = some [.val (.word table), .val (.word p.key)] := by
     simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, toExact, localVar, cells.tableLocal, cells.keyLocal]
-  obtain ⟨paid, index, bound, indexBound, callRun⟩ := Find.general_call source table p kind
+  obtain ⟨paid, index, bound, indexBound, callRun, selected⟩ := Find.general_call source table p kind
     ⟨cells.mapped, cells.capacity, cells.keyLength, cells.stride, cells.keys, cells.used⟩ keyLength bits small capacity order room
     binary covered fits mapped queryFits queryMapped hashCode memeqCode findCode "i" [localVar "t", localVar "key"] afterIndex args little enough
   let entered := bind {source with clock := source.clock - paid} "i" index

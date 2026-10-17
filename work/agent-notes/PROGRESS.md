@@ -2107,3 +2107,37 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - OpenGraphSafety also checks that filling the first hole preserves safety
   of all remaining frontier writes, from explicit fresh-child/pending-read
   conditions and distinct frontier slots (frontier-safety-v1, 611 targets).
+
+### 2026-10-17 — derive task ownership from the common backing layout
+
+- BackingLayout gives actual six-pool addresses/extents, aligned/no-wrap bounds
+  and pool separation. ImmutableRecords derives the exact original leaf slice
+  cells and key views for each valid ordinal, with a protected-word frame.
+- LayoutSeparation/Cells/WriteCells classify immutable reads and mutable zones,
+  derive their disjointness and prove seven virtual allocation cells distinct.
+  LayoutOwnership derives real scatter Ready from pools, immutable keys, valid
+  ordinals and active rows. LayoutContext maps virtual allocation cells to the
+  actual seven stores and derives all actual distinct/writable destinations.
+- LayoutSplitMemory derives every store mapping and preserves all immutable
+  key/record data through a complete split. LayoutDataPrefix protects the active
+  primary prefix from allocation stores. LayoutLeftContext updates addresses,
+  depth, destination, interval and ordinal validity; LayoutSplitInputs derives
+  the actual split's parent premises. LayoutChildOwnership supplies the next
+  left child's Ready using the actual updated rows and preserved immutable data.
+- Successful layout-child-v1 closure (674 targets), only permitted axioms.
+  LayoutLocated additionally classifies every concrete partial-graph read into
+  immutable data or the installed header/branch arena (layout-located-v1, 667).
+  Allocator/constructor entry, whole physical agenda/graph invariant and all
+  original-map/whole-guest/compiled-target/global K obligations remain open.
+- LayoutProtected/GraphFrame derive every installed-graph frame from geometry,
+  protected reads and the active slot's frontier safety. LayoutGraphFill proves
+  the complete actual split body installs its branch with the expected tree
+  unchanged; no independent per-store/per-read premises remain in that result.
+  LayoutLocationStep/FrontierSlots/BranchSafety/BranchFrontier preserve concrete
+  graph locations, safe future frontier writes and distinct frontier addresses.
+  Successful layout-checkpoint-v1 closure (690 targets), only permitted axioms.
+  Continuing physical pending-read geometry, task interval preservation and
+  full agenda induction; no finite certificate or target refinement yet.
+- LayoutPendingReads classifies the real suffix/parent read addresses into
+  lower pending-stack cells and installed parent-bit words, using the actual
+  encoded depth predecessor (layout-pending-reads-v1, 673 targets).

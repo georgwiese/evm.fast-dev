@@ -129,8 +129,9 @@
   "checked_local_evidence": {
     "block_guard_log": "input-block-guard-v3.log",
     "gas_refund_refill_log": "gas-refund-calls-v1.log",
+    "gas_state_charge_log": "gas-state-charge-call-v1.log",
     "regular_budget": "gas_left + regular_gas_used + outstanding_state_spill",
-    "gas_local_premises": "Actual mapped/stored frame and message cells, code, clock affordability, gas_left+spill<2^64; reservoir cell separation for refill.",
+    "gas_local_premises": "Actual mapped/stored frame and message cells, code, clock affordability, gas_left+spill<2^64; state_left+gas_left<2^64 for charge; reservoir cell separation for refill.",
     "global_initialization": false,
     "whole_gas_conservation": false,
     "target_steps": false

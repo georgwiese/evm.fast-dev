@@ -2530,3 +2530,38 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   payload len>=540 then places gas read474 safely inside copied input.
 - All source-map/compiler/ROM/global budget/query/finite certificate obligations
   remain. No production pnk change, so no repeated native/EEST run was needed.
+
+2026-10-17: complete actual decoder entry and first-container normal-return inversion
+
+- EntryProgram extracts exact first five header commands. Schema proves both
+  actual byte loads/comparisons/OR. Guards include real SszFail call/exception.
+  Entry handles every initial short/schema/container-length rejection at one
+  call clock and exposes shifted afterHeader on passing checks. EntryNormal
+  inverts an actual normal decode return into encodedlen>=18 and schema21,1.
+- Ready derives actual guard ABI/mapped cells; AfterNormal rules out actual
+  range/order/final-equality exceptions before continuation. FirstContainer
+  composes whole fixed decoder normal return into schema, first offset16,
+  16<=witness offset<=encodedlen-2, exact next continuation and preserved input
+  bytes. No valid schema or fixed first offset is assumed.
+- Preconditions still initial HeapInput/argument locals/code/exception shape,
+  natural aligned allocated ssz_offs before input, heap extent and clock>=4.
+  Schema and first two container offset values now derive from execution.
+- Successful input-first-container-v1.log,1128 targets, allowed axioms only.
+  Indexed4219 modules/6718 facts, not percentages; infinity/no full verification.
+- NEXT: Header.continuation is actual dec o_npr/load ssz_offs, dec o_wit/load+8,
+  decCall si=alloc96, store si+88 LD_LE64(p+8), dec np=p+o_npr, dec nlen=o_wit-
+  o_npr, nlen<44 fail81, then second request declarations/stores/count3 guard.
+  FirstContainer gives o_npr16 and witness range; derive np=blob+18, natural
+  nlen=wit-16. Passing nlen>=44 implies encodedlen>=62. StoreScalar64 can reuse
+  flat64/heap_le64 for real chain-id read at input10..17; heap allocation and
+  separate destination preserve HeapInput. No request-prefix module exists yet.
+- Bool.not_eq_true is the propositional-negation form; Bool.not_eq_true' is
+  required for (!b)=true. Explicit ne_eq exposes byte-word equality iff under
+  Ne, and rfl finishes OfNat versus # literal forms after simp only. Preserve
+  scalar read facts with explicit change before default simp rewrites byte
+  ofNat/toNat into setWidth.
+- Entry shift_execute also exposes both actual individual assignments for
+  nested continuation composition; no sequence-associativity assumption.
+- Production remains unchanged; global/original-map/compiler/ROM/target/K
+  obligations remain. All work local/offline; account status is monitored
+  separately in temporary files, not in committed proof artifacts.

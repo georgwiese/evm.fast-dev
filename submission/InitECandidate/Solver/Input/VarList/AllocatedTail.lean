@@ -23,7 +23,7 @@ theorem allocated_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one) (enough : plan.count+1≤source.clock) :
     ∃ result target paid,
       evaluateHOLFiniteState source allocatedTail=(result,target) ∧ paid≤plan.count+1 ∧ target.clock=source.clock-paid ∧
-      WitnessRadix.BackingLayout.control target=WitnessRadix.BackingLayout.control source ∧ Blob.HeapInput target input plan.inputPointer ∧
+      WitnessRadix.BackingLayout.control target=WitnessRadix.BackingLayout.control source ∧ Blob.HeapInput target input plan.inputPointer ∧ ArrayFrame source target input plan ∧
       ((result=some (.returned (pairValue plan.array plan.count)) ∧ paid=plan.count ∧ Complete target input plan total ∧
           ∀ position,position<plan.count→Offsets.ValidAt first total (currentWord input plan.start) position) ∨
         result=some (.exception (ofString "SszErr") (.val (.word 23#64)))) := by
@@ -48,7 +48,7 @@ theorem allocated_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     (bind_lookup_other (bind source "i" 0#64) "prev" "count" first (by decide)).trans ((bind_lookup_other source "i" "count" 0#64 (by decide)).trans c)
   have ei : entered.locals.lookup (ofString "i")=some (.val (.word 0#64)) :=
     (bind_lookup_other (bind source "i" 0#64) "prev" "i" first (by decide)).trans (bind_lookup_same _ _ _)
-  obtain ⟨result,target,paid,run,bound,clock,control,heapAfter,outcome⟩:=loop_return entered input plan first total enteredHeap domain ea ei ep (bind_lookup_same _ _ _) ef en ec failCode exceptionShape enough
+  obtain ⟨result,target,paid,run,bound,clock,control,heapAfter,arrayFrame,outcome⟩:=loop_return entered input plan first total enteredHeap domain ea ei ep (bind_lookup_same _ _ _) ef en ec failCode exceptionShape enough
   have declared:=WitnessRadix.ProgramPrefix.execute setup (.seq loop afterLoop)
   rw [run] at declared
   let final:=restoreInitial source target
@@ -56,7 +56,10 @@ theorem allocated_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     Blob.HeapInput.restore source _ input plan.inputPointer "i" (Blob.HeapInput.restore (bind source "i" 0#64) target input plan.inputPointer "prev" heapAfter)
   have finalControl : WitnessRadix.BackingLayout.control final=WitnessRadix.BackingLayout.control source := by
     exact control
-  refine ⟨result,final,paid,?_,bound,clock,finalControl,finalHeap,?_⟩
+  have finalFrame : ArrayFrame source final input plan := by
+    intro query outside
+    exact arrayFrame query outside
+  refine ⟨result,final,paid,?_,bound,clock,finalControl,finalHeap,finalFrame,?_⟩
   · rw [allocated_tail_shape]
     exact declared
   · rcases outcome with normal|fault

@@ -2885,3 +2885,35 @@ Outer actual gas-store/caller checkpoint (2026-10-17):
   Complete/validAt discardedafterBodyNormal). Needed decode_bytes_list actual
   maxb70guardreadonlyloop andconstructorrecords/lengthcaps1024nodes65536code.
   Keepactualemptycase inallinterfaces. No finiteK/fullverifier. Usage21%,0credits.
+
+Empty constructor and whole bytes-list caller checkpoint (2026-10-17):
+- ConstructorEmpty.execute_empty: anyactualslice_arrvalue permittedincluding0;
+  n0 forcescap4; actualallocation/clearing/prefix, loopskip, actualhelper/return,
+  allscopes. Logicalrecords=table usedonlyaszero-extent layout, neverread. No
+  hashEnvironment/recordmapped/scratch premises. Actualheap table+304, <=43body
+  sourceclocks (conservativecap<=30); require47entryclock.
+- ConstructorEmptyCall actualdecCall arbitraryrecordsNat includes0, tupleABI,
+  scalarreturnedtable binding, emptyrepresentedtree, heapadvance, callerrestore,
+  <=44sourceclocks; require48. Successfulconstructor-empty-call-v1.log1275targets.
+- VarList.Records normalwholebody givesPlan/Complete/validAt oractualemptycase.
+  CallerNormal strengthenedtoexposethat concretearrayandcheckeddecodedcount<=lim.
+  RecordCells decodedCount empty0/decodedArray empty0, actualmappedlencells and
+  recordLength adjacentwordoffsetdifferences, count<=slicelen/4 and<2^31.
+  CountLimit retainsrealcountguard22result (neededheaderlimit256).
+- BytesList Program/Reads/Step actualrfield/panop16/load/maxbguard70/iupdate;
+  WhileActive genericallbodyoutcomes realwhileclockclamp; Loop actualread-only
+  check finishes<=N+1clocks alloutcomes, normalN+alllimits, oractualSszErr70.
+  Tail reali0scope+wholeloop+pairreturn/scoperestoreincludingarray0count0.
+  BodyNormal actualVarListcallee+alltail, Records/copy/oldwords/countlimit/
+  itemlengthlimits andnormalcost<=2floor(len/4)+2; enough2floor+4.
+  Environment real4argABI; CallerNormal actualbyte-listcaller/resumption with
+  allfacts and<=2floor(len/4)+3 callclocks; enough2floor+5.
+- Successfuljoint input-bytes-list-caller-v1.log1431targets onlyallowedaxioms.
+  Wholepayloadcaller/gasfromHeader recheckedafterVarListinterfacestrengthened.
+- NEXT actualwitnesscontainerloop count3 rawoffsetreads/sszvalidation andthree
+  byte-listcalls(st0:lim2^63-1,max1024;cd:max65536;hd:lim256,max1024), thenrootSI
+  recordfields/constructoractualentry incldecodedbytes/heap/scratchroom. Need
+  requestsdecoder(count5offsetloop+alloc80+fivefixedcounts) toreachwitnessfrom
+  rootnormalrun. RevisitcredibleglobalQ/mutablecache/gas/heapcostfeasibilitybefore
+  scalingfurther; actualtargetK/source-map equivalence stillunproved.
+  Claiminfinity, nofullverifier. Account21%,0resetcredits watcheractive.

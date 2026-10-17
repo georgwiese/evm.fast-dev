@@ -63,7 +63,7 @@ theorem transactions_normal (source post : PanSemStateFiniteExact 64 Guest.HostM
   have tailRun : evaluateHOLFiniteState stored transactionCall=(some (.returned value),post):=prefixRun.symm.trans run
   have args:=transaction_arguments stored input pointer p t w ordered contained
   rw [transactions_shape.2.1] at tailRun
-  obtain ⟨next,innerPost,returned,valueEq,localsEq,clockEq,controlEq,nextHeap,oldMemory,clockLower,clockUpper,nextRun,postEq⟩:=
+  obtain ⟨next,innerPost,returned,valueEq,localsEq,clockEq,controlEq,nextHeap,oldMemory,clockLower,clockUpper,nextRun,postEq,records,countLimit⟩:=
     VarList.caller_normal stored post input pointer array 9223372036854775807#64
       (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)
       prefixHeap args.2 domain pointerLower pointerAligned arrayAligned arrayAfter room heapGlobal allocCode failCode exceptionShape

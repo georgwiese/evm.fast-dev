@@ -13618,12 +13618,20 @@
       "sha256": "b1409922b329e25cfb634493e6d98396830ea240c9042fdbd7ee088299cc3e29"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CopyGeneralRegionAgreement.lean",
+      "sha256": "71768697015246d5d5d41fec661ae627012896f5b66f5262fbc95eaa7687c35d"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyGeneralState.lean",
       "sha256": "dc2f4178b60f395476701aad1e144172f55cac92fad9aa3d30f75af36234cc14"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyIntervals.lean",
       "sha256": "15fc449e14babf2d549bded0555739d878f113ae3cbaa051a4cbe89017c109c8"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CopyRegionAgreement.lean",
+      "sha256": "512bc8b77a83f7847c061874627566c7dba7c62d6386b1cb7370dabebe5e5fd9"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyWordBlock.lean",
@@ -13758,8 +13766,16 @@
       "sha256": "b317a9de06a7c7c2af00935e47d2428e9ef12e4d257d9465d0ae5189459a634a"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256BufferAgreement.lean",
+      "sha256": "0a4a7eca87ec63f61bfb0880d99e8653924ac95d877b092f2284dc32b6141ce5"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256Call.lean",
       "sha256": "f2ee0a8cabfffa9ce0bbd24c67d385386bc93da8385100251cfeabef3bf82cc4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256Composition.lean",
+      "sha256": "4af751a27ef77b95c66a78ee8c5799e8735eb872aacf34477824d7ee1c6646e6"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256Context.lean",
@@ -13790,6 +13806,10 @@
       "sha256": "8460a5302659a532030110093e11d2f236d676ced1f03d635a2a001100476452"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256OutputAgreement.lean",
+      "sha256": "f31ec31a698977daa4d089479a966ab6a980fabd0892fd4c99712e3581798e34"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256PadStores.lean",
       "sha256": "3df676db667b0c20eaa625bcf2b7f272068da985cf1c9843f0d754c81083e30c"
     },
@@ -13798,16 +13818,36 @@
       "sha256": "2f6deb9dd64c98c04760e35bee6940330b6d33d7b82c0de3f4f65f3dd0170710"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256PaddingAgreement.lean",
+      "sha256": "6f0f8c3357390bf9a411881d9036985ec0f201bc92529b3049b60fc4d3fa744e"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256PaddingPrefix.lean",
       "sha256": "4398fc0c150092c786104909312892a65d266d98e3bb8bc9e9ecf2d5f1188cf7"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256PairedAfter.lean",
+      "sha256": "3877c285ddee03b0ecebfd6363ca896c1df14846fe185bef38212d2175648b9b"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256PairedBlock.lean",
       "sha256": "0ebba9798dece5774d0156418b9260fa9369e397fbb2552a05cddd2392a095f4"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256PairedCall.lean",
+      "sha256": "bbc0421861f3156b2df8c8d41c4c591e38aff9f89349ef3320cae8dca0a91ae3"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256PairedExecution.lean",
+      "sha256": "7788e697416fd0ebd99ce269a6e6517334aac40b8df75bc2ada991404c5941fd"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256PairedLoop.lean",
       "sha256": "868aaa740eceee9691a6b47c15de6b71dd03f4590fc9ab0993bb2415bfd9ce80"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256PairedPadding.lean",
+      "sha256": "fbf0d86ed87f093899e614aad53fb6be34525e82e5ca0daa5413b2acb849e1ea"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Keccak256Program.lean",
@@ -14088,6 +14128,10 @@
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/MemoryBytes.lean",
       "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/MemoryRegionAgreement.lean",
+      "sha256": "c477641463ce23b6451aaf62b1b94afd9a7d949d22693e342c7ac221c0d7f4e3"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Model.lean",
@@ -14552,6 +14596,10 @@
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/ZeroProgram.lean",
       "sha256": "c255348ec3f2e9470e837e390bc254975e8a8fa0b6b64a8766d8c0bef1e355a5"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ZeroRegionAgreement.lean",
+      "sha256": "b048020cb7b38f527795b1f612daea59b08e68d7ece2188142530ccbc649806a"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/ZeroSmall.lean",
@@ -65884,7 +65932,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.queryVisits_buildIndex",
@@ -65892,7 +65940,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_lookup",
@@ -65900,7 +65948,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_query_visits",
@@ -65908,7 +65956,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lookup_build",
@@ -65916,7 +65964,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.height_build",
@@ -65924,7 +65972,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.leaves_build",
@@ -65932,7 +65980,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.buildVisits_bound",
@@ -65940,7 +65988,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.branches_buildIndex",
@@ -65948,7 +65996,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.buildIndex_key_pool_fits",
@@ -65956,7 +66004,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.partition_buffers_fit",
@@ -65964,7 +66012,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -65972,7 +66020,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.prefix_pending_separate",
@@ -65980,7 +66028,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_branch_separate",
@@ -65988,7 +66036,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.branch_cells_injective",
@@ -65996,7 +66044,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Program.nonFunctions_preserved",
@@ -66024,17 +66072,17 @@
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_solver_radix_index",
       "axioms": [],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_build",
       "axioms": [],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_lookup",
       "axioms": [],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.writeBlock_get",
@@ -66103,7 +66151,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryEmpty.empty_table",
@@ -66112,7 +66160,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -66120,7 +66168,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -66128,7 +66176,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.lookup",
@@ -66137,7 +66185,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.query_visits",
@@ -66146,7 +66194,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Graph.lookup_represents",
@@ -66173,7 +66221,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_nonzero",
@@ -66181,7 +66229,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_odd",
@@ -66190,7 +66238,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_decode",
@@ -66198,7 +66246,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.expand_decreases",
@@ -66311,7 +66359,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -66320,7 +66368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -66329,7 +66377,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -66338,7 +66386,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -66347,7 +66395,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -66356,7 +66404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -66365,7 +66413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -66374,7 +66422,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -66383,7 +66431,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -66392,7 +66440,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -66401,7 +66449,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.loop_shape",
@@ -66410,7 +66458,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.eval_digit",
@@ -66419,7 +66467,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.assign_child",
@@ -66428,7 +66476,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branch_code",
@@ -66437,7 +66485,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branchPost_eq",
@@ -66446,7 +66494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branch_iteration",
@@ -66455,7 +66503,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -66463,7 +66511,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -66471,7 +66519,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -66480,7 +66528,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -66489,7 +66537,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -66498,7 +66546,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -66506,7 +66554,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -66515,7 +66563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -66542,7 +66590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -66551,7 +66599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -66560,7 +66608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -66569,7 +66617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -66578,7 +66626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -66587,7 +66635,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -66596,7 +66644,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -66605,7 +66653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.memory_execute",
@@ -66631,7 +66679,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -66639,7 +66687,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -66648,7 +66696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -66657,7 +66705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -66666,7 +66714,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -66693,7 +66741,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryExecution.loop_execute",
@@ -66846,7 +66894,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -66855,7 +66903,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.body_execute",
@@ -66908,7 +66956,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildProgram.copy_loop_shape",
@@ -66917,7 +66965,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.rows_store_away",
@@ -67023,7 +67071,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -67032,7 +67080,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordScatter.scatter_eq_blocks",
@@ -67166,7 +67214,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEquations.treeAt_empty_iff",
@@ -67199,7 +67247,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.body_shape",
@@ -67208,7 +67256,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.core_shape",
@@ -67217,7 +67265,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.declarations_execute",
@@ -67226,7 +67274,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEquations.step",
@@ -67262,7 +67310,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.entered_frame",
@@ -67271,7 +67319,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.initialize_entry",
@@ -67280,7 +67328,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.prefix_execute",
@@ -67289,7 +67337,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PopProgram.pop_execute",
@@ -67334,7 +67382,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TerminalProgram.terminal_finish",
@@ -67636,7 +67684,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_unique",
@@ -67644,7 +67692,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
@@ -67653,7 +67701,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_of_cells",
@@ -67662,7 +67710,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SplitCount.execute",
@@ -68973,7 +69021,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.block_execute",
@@ -68982,7 +69030,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.call_execute",
@@ -68991,7 +69039,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.environment",
@@ -69000,7 +69048,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.execute",
@@ -69009,7 +69057,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop_execute",
@@ -69018,7 +69066,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.remaining_loops",
@@ -69027,7 +69075,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.word_view",
@@ -69035,7 +69083,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.byte_view",
@@ -69044,7 +69092,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop32_shape",
@@ -69053,7 +69101,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.body_shape",
@@ -69062,7 +69110,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.condition_read",
@@ -69071,7 +69119,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.alignment_read",
@@ -69080,7 +69128,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CodeEnvironment.finite_lookup",
@@ -69088,7 +69136,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Constructor.suffix_fixed_data",
@@ -69393,7 +69441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.blockWord_execute",
@@ -69402,7 +69450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_execute",
@@ -69411,7 +69459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.condition_read",
@@ -69420,7 +69468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.alignment_read",
@@ -69429,7 +69477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.environment",
@@ -69438,7 +69486,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_aligned",
@@ -69447,7 +69495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_execute",
@@ -69456,7 +69504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_execute",
@@ -69465,7 +69513,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_frame",
@@ -69474,7 +69522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_memory_away",
@@ -69482,7 +69530,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_shape",
@@ -69491,7 +69539,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_shape",
@@ -69500,7 +69548,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.body_shape",
@@ -69509,7 +69557,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_frame",
@@ -69518,7 +69566,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_other",
@@ -69527,7 +69575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_index",
@@ -69536,7 +69584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_frame",
@@ -69545,7 +69593,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_other",
@@ -69554,7 +69602,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_index",
@@ -69563,7 +69611,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.remaining_loops",
@@ -69572,7 +69620,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_expected",
@@ -69653,7 +69701,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_body_execute",
@@ -69662,7 +69710,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_condition",
@@ -69671,7 +69719,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopTail_execute",
@@ -69680,7 +69728,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_small",
@@ -70107,7 +70155,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.aligned_cell",
@@ -70115,7 +70163,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_exists",
@@ -70124,7 +70172,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read200",
@@ -70133,7 +70181,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.mapped_region",
@@ -70142,7 +70190,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.of_cells",
@@ -70151,7 +70199,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.load_expression",
@@ -70160,7 +70208,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute",
@@ -70169,21 +70217,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.stores_execute",
@@ -70192,7 +70240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.block_execute",
@@ -70201,7 +70249,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_shapes",
@@ -70210,7 +70258,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.address_read",
@@ -70219,7 +70267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.store_execute",
@@ -70228,7 +70276,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.environment",
@@ -70237,7 +70285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_execute",
@@ -70246,7 +70294,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_ffi",
@@ -70255,7 +70303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.ext_execute",
@@ -70264,7 +70312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_execute",
@@ -70273,7 +70321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_mapped",
@@ -70282,7 +70330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_memory_away",
@@ -70291,7 +70339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.answer_length",
@@ -70299,7 +70347,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.oracle",
@@ -70308,21 +70356,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_frame",
@@ -70331,7 +70379,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_index",
@@ -70340,7 +70388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_other",
@@ -70349,7 +70397,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.test_read",
@@ -70358,7 +70406,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_execute",
@@ -70367,7 +70415,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_frame",
@@ -70376,7 +70424,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_other",
@@ -70385,7 +70433,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_index",
@@ -70394,7 +70442,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryWalk_away",
@@ -70402,7 +70450,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_execute",
@@ -70411,7 +70459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_clock",
@@ -70420,7 +70468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Mapped.of_domain",
@@ -70428,7 +70476,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.byte_walk",
@@ -70437,7 +70485,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.word_walk",
@@ -70446,7 +70494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_domain",
@@ -70455,7 +70503,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_domain",
@@ -70464,7 +70512,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_clock",
@@ -70473,7 +70521,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_clock",
@@ -70482,7 +70530,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.cost_le",
@@ -70491,7 +70539,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_clock",
@@ -70500,7 +70548,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_control",
@@ -70509,7 +70557,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.alignment_false",
@@ -70518,7 +70566,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_execute",
@@ -70527,7 +70575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.execute",
@@ -70536,7 +70584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_execute",
@@ -70545,7 +70593,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_memory_away",
@@ -70554,7 +70602,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_control",
@@ -70562,7 +70610,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.environment",
@@ -70571,7 +70619,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_memory",
@@ -70580,7 +70628,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_memory",
@@ -70589,7 +70637,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_memory_away",
@@ -70598,7 +70646,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_memory_away",
@@ -70607,7 +70655,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory_away",
@@ -70616,7 +70664,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.byte_walk_be",
@@ -70625,7 +70673,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.word_walk_be",
@@ -70634,7 +70682,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory",
@@ -70643,7 +70691,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_away",
@@ -70652,21 +70700,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.control_of_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.frame_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_control",
@@ -70675,7 +70723,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_control",
@@ -70684,7 +70732,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_args",
@@ -70693,7 +70741,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_domain",
@@ -70702,7 +70750,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_control",
@@ -70711,7 +70759,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_control",
@@ -70720,7 +70768,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_cost_le",
@@ -70728,14 +70776,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.stores_execute",
@@ -70744,7 +70792,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.block_execute",
@@ -70753,21 +70801,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_frame",
@@ -70776,7 +70824,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_index",
@@ -70785,7 +70833,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_other",
@@ -70794,7 +70842,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_execute",
@@ -70803,7 +70851,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_bounds",
@@ -70812,7 +70860,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_execute",
@@ -70821,7 +70869,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_clock",
@@ -70830,7 +70878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_index",
@@ -70839,7 +70887,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_shapes",
@@ -70848,7 +70896,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.store_execute",
@@ -70857,7 +70905,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_frame",
@@ -70866,7 +70914,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_other",
@@ -70875,7 +70923,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_index",
@@ -70884,7 +70932,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryWalk_away",
@@ -70892,7 +70940,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.call_execute",
@@ -70901,7 +70949,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.environment",
@@ -70910,7 +70958,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.alignment_read",
@@ -70919,7 +70967,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.execute",
@@ -70928,7 +70976,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_value_read",
@@ -70937,7 +70985,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_execute",
@@ -70946,7 +70994,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_memory_away",
@@ -70955,7 +71003,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_other",
@@ -70964,7 +71012,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.condition_read",
@@ -70973,7 +71021,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.loop_execute",
@@ -70982,7 +71030,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.body_shape",
@@ -70991,7 +71039,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_read",
@@ -71000,7 +71048,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_clock",
@@ -71009,7 +71057,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_control",
@@ -71018,7 +71066,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_other",
@@ -71027,7 +71075,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_domain",
@@ -71036,7 +71084,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_memory_away",
@@ -71045,14 +71093,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.permutation_control",
@@ -71061,21 +71109,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_clock",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_empty",
       "axioms": [
         "propext"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_restore",
@@ -71084,7 +71132,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_clock",
@@ -71093,7 +71141,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_control",
@@ -71102,7 +71150,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_memory_away",
@@ -71111,7 +71159,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute_word",
@@ -71120,7 +71168,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_blocks_execute",
@@ -71129,7 +71177,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.afterBlocks_shape",
@@ -71138,7 +71186,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.block_execute",
@@ -71147,7 +71195,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.call_execute",
@@ -71164,7 +71212,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Code.of_control",
@@ -71173,7 +71221,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.mapped_of_control",
@@ -71181,7 +71229,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Args.of_index",
@@ -71190,7 +71238,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.condition_read",
@@ -71199,7 +71247,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.EntryData.of_control",
@@ -71208,7 +71256,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Protected.tail",
@@ -71216,7 +71264,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.environment",
@@ -71225,7 +71273,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.execute",
@@ -71234,7 +71282,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.loop_execute",
@@ -71243,7 +71291,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_address_read",
@@ -71252,7 +71300,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_store_execute",
@@ -71261,7 +71309,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_stores_execute",
@@ -71270,7 +71318,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_words_execute",
@@ -71279,14 +71327,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_memory_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_alignment_read",
@@ -71295,7 +71343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_execute",
@@ -71304,7 +71352,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_first_execute",
@@ -71313,7 +71361,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_last_execute",
@@ -71322,7 +71370,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.padding_execute",
@@ -71331,7 +71379,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_locals",
@@ -71339,7 +71387,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_control",
@@ -71347,7 +71395,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_clock",
@@ -71355,7 +71403,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_execute",
@@ -71364,7 +71412,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_memory_away",
@@ -71373,7 +71421,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.body_shape",
@@ -71382,7 +71430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailLocals.of_locals",
@@ -71391,7 +71439,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.OutMapped.of_domain",
@@ -71399,7 +71447,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailData.of_control",
@@ -71408,7 +71456,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-empty-call-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.away_above",
@@ -79370,7 +79418,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_word8_of_cell",
@@ -79379,7 +79427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_of_cells",
@@ -79388,7 +79436,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.write_agrees",
@@ -79397,7 +79445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.write_of_cells",
@@ -79406,7 +79454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_eval_agrees",
@@ -79415,7 +79463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_value_agrees",
@@ -79424,7 +79472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_memory_agrees",
@@ -79433,7 +79481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_memory_agrees",
@@ -79442,7 +79490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.prepared_memory_agrees",
@@ -79451,7 +79499,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.prepared_domain",
@@ -79460,7 +79508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.prepared_endian",
@@ -79469,7 +79517,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.prepared_ffi",
@@ -79478,7 +79526,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.paired_execute",
@@ -79487,7 +79535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.paired_call",
@@ -79496,7 +79544,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.execute_with_read",
@@ -79505,7 +79553,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_with_read",
@@ -79514,7 +79562,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_memory_agrees",
@@ -79523,7 +79571,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_ffi_agrees",
@@ -79532,7 +79580,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.paired_call",
@@ -79541,7 +79589,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paired_block_execute",
@@ -79550,7 +79598,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paired_loop_execute",
@@ -79559,7 +79607,318 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "keccak256-paired-loop-v1.log"
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.prefixMemory_agrees",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.suffixMemory_agrees",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_agrees",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryMany_agrees",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryWalk_agrees",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryMany_agrees",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryWalk_agrees",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.block_reads_of_buffers",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.tail_reads_of_buffers",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.digest_words_agree",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paired_calls_from_buffers",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.hashingEntry_other",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.hashingEntry_args",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.body_from_blocks",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.outMemoryMany_agrees",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.outputState_locals",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.outputState_ffi",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.outputState_control",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.outputState_clock",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.outputState_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.outputState_memory_agrees",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.outputState_memory_away",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.firstPad_memory_agrees",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.lastPad_memory_agrees",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_memory_agrees",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_ffi",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_blocks_from_padding",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_entry_locals",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paired_after_blocks_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paired_call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paired_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paired_padding_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.MemoryRegion.word_put",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.MemoryRegion.byte_put",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.MemoryRegion.word_writes",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Zero.memory32_agrees",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Zero.memoryWord_agrees",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Zero.finalMemory_agrees",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "keccak256-buffer-agreement-v2.log"
     }
   ]
 }

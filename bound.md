@@ -12,6 +12,23 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked actual paired original/radix constructor ABI, including ignored
+  results and scoped assigned returns around arbitrary continuations. A common
+  finite callee environment is derived from real code metadata. Added separate
+  actual zero-record bodies and paired callers accepting any record pointer,
+  including the empty decoder's null pointer, without record/hash assumptions.
+  These preserve selected earlier memory, globals and FFI. Decoded item geometry
+  now proves non-wrapping input subranges, actual pointer cells, aligned array
+  geometry and per-item hash arenas; prefix-region raw/aligned hash accesses
+  also check. Successful mutable-radix-call-v1.log1410,
+  radix-empty-public-v2.log923, mutable-empty-v1.log1359,
+  mutable-empty-radix-call-v2.log1376, input-record-geometry-v1.log1302 and
+  decoded-constructor-data-v1.log1326targets, permitted axioms. Whole decoder/
+  two-map initialization and runtime context replacement remain open; fixed
+  buffer startup/layout, global gas/state/Q/heap/compiler/target and finite K
+  still open. Claim infinity; no full verification. The conversational 40%
+  estimate is uncertain and does not imply a proportion of certificate work.
+
 - [x] Checked full paired original/radix nodedb_build bodies: both actual
   cap declarations/doubling loops choose the same capacity and pay the same
   prefix clocks; allocation/clearing, every record/hash/set/copy, radix helper,
@@ -20,7 +37,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
   public words. Original Built/History/Records/KeysMatch and candidate actual
   QueryMemory tree representation refer to the same observed dictionary.
   Explicit decoded-record, code/arena/BufferRegion/nonalias/caller-state and
-  clock premises remain; real call ABI, whole-guest reachability/context and
+  clock premises remain; call ABI checked below, whole-guest reachability/context and
   global/compiler/target resource proofs still open. Successful
   mutable-radix-execution-v2.log1407targets, allowed axioms; index4606/7543,
   latest prior policy61470entries/2253400378bytes. Infinity; no finite K/full

@@ -12,6 +12,27 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked concrete lookup read support from completed construction graph
+  through terminal completion, full loop, helper/core/scopes, helper ABI/final
+  return, paired population/allocation/full body and actual constructor caller.
+  Every radix lookup read belongs to allocated protected cells. Those cells
+  lie from records through the actual final heap cursor; earlier fixed hash
+  buffers and later allocation prove the new constructor's safe-word premises.
+  New checked preservation bridges retain an earlier radix root/representation/
+  read support, original full physical Built invariant and original record cells
+  through the later constructor's actual own-memory frame. No equality of
+  original/radix private contents is assumed. Logs radix-allocated-read-bounds-v2,
+  radix-completed-support-v1,radix-terminal-supported-v1,
+  radix-loop-supported-result-v1,radix-loop-supported-v1,
+  radix-helper-nonempty-supported-v1,radix-helper-built-supported-v1,
+  radix-helper-call-supported-v3,radix-constructor-finish-supported-v1,
+  mutable-populate-supported-v1,mutable-table-supported-v1,
+  mutable-execution-supported-v1,mutable-call-supported-v2.log1423targets;
+  permitted axioms. Actual two-map initialization composition, decoded input/
+  headers/startup reachability and entire runtime replacement still open.
+  Global gas/state/Q/heap/compiler/target finite bound still open. Infinity;
+  no full verification, finite K or final acceptance.
+
 - [x] Checked decoder-to-constructor adapter: actual nonempty decoded pointer/
   length cells, ordinary record layout, each input hash arena and raw/aligned
   public buffer ownership. Earlier decoded arrays survive later allocations

@@ -389,6 +389,58 @@
     "submission/InitECandidate/Solver/WitnessRadix/UnaryProgram.lean": {
       "bytes": 2216,
       "sha256": "7d3cb64ee31ea8cc87dfaa07fcd69efcbea4a7dab3f79b0c5e1423bae5bfddfd"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationBody.lean": {
+      "bytes": 5069,
+      "sha256": "8354d8bd73fde578773480d7b4fc104b035e1c56e13271d01debf3c0615ff71d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationCode.lean": {
+      "bytes": 5308,
+      "sha256": "abcb3be7bcb49ad20115857673491fd595b9373cc3a5715020260a2c2af7c12d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationMemory.lean": {
+      "bytes": 2367,
+      "sha256": "8f81db9ea21828a98d011b3859928dc7696f1fe1b797da6cf3a757ffd3048b87"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationPost.lean": {
+      "bytes": 3038,
+      "sha256": "f2b79786dfb3a55f764e5ffe927498dc106f3e5045f7b36493f32b32b56fb7fd"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CopyIntervals.lean": {
+      "bytes": 3476,
+      "sha256": "15fc449e14babf2d549bded0555739d878f113ae3cbaa051a4cbe89017c109c8"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PartitionRows.lean": {
+      "bytes": 4014,
+      "sha256": "28f807c5d734a8214506eb7b90ac6ac791baa05bca11cdc3212a73e83e4e5a08"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SortCopy.lean": {
+      "bytes": 4899,
+      "sha256": "b50ff51565468750dd7712206db68262b69e063cf3318d8c51aaf677f2ed3cad"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SortExecution.lean": {
+      "bytes": 2560,
+      "sha256": "bb4984dab17d0a9a2515925bc276176802e3de9982c1ae75e8afbaa8869f801e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SortProgram.lean": {
+      "bytes": 3430,
+      "sha256": "70346c185ae0c59d4d0df6ec6ecda7616c557a7124347c6e563dd6693f939c37"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SortProperties.lean": {
+      "bytes": 4665,
+      "sha256": "108fc331f60346c1941c78fda833dbf6fdf50d944dfb6e5df38e7a5d147ce8be"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SortScatter.lean": {
+      "bytes": 5004,
+      "sha256": "73f4351450622fd44a57519143551cf48b8245f5f6d0611ebc474662184ed3ee"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitProgram.lean": {
+      "bytes": 3522,
+      "sha256": "fb104dfb348cf837b1a8a5ca9e543dfbb939acf1bf0bf7ec815b845285169e23"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/WordWrites.lean": {
+      "bytes": 3512,
+      "sha256": "ad93b859ea4ff36f33ef1e17afb91976d4a5a58818be76b60a7451b19df94c65"
     }
   },
   "development_artifacts": {
@@ -418,11 +470,10 @@
     "witness-radix-query-empty-v5.log",
     "witness-radix-graph-v3.log",
     "witness-radix-query-function-v3.log",
-    "witness-radix-count-copy-v1.log",
-    "witness-radix-scatter-partition-v1.log",
     "witness-radix-build-cases-v2.log",
     "witness-radix-terminal-loop-finish-v2.log",
-    "witness-radix-outer-transitions-v1.log"
+    "witness-radix-outer-transitions-v1.log",
+    "witness-radix-sort-allocation-checkpoint-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -574,6 +625,8 @@
     "pop": "complete actual pending-task pop from suffix cells and parent bit; updates depth/start/count/bit/dest, returns continue, no memory or clock change",
     "model_cases": "empty/singleton/terminal/unary/split equations for the existing compressed build model",
     "terminal_continue": "complete literal leaf store plus protected suffix reads/pop, scoped restoration and actual outer-while resumption, one outer clock",
-    "unary": "complete literal count scope and outer-while resumption, exact unchanged memory/restored temporary counters, input.length + 1 source clocks"
+    "unary": "complete literal count scope and outer-while resumption, exact unchanged memory/restored temporary counters, input.length + 1 source clocks",
+    "allocation": "literal captured-node scope, seven concrete mapped stores, five persistent local updates, exact full poststate and outside-write frame; no source clocks",
+    "sort_prefix": "both actual index resets + stable scatter + copy before arbitrary continuation; exact sorted primary/backup memories, final index and other-local frame, 2*input.length source clocks"
   }
 }

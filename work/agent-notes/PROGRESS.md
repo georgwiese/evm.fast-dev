@@ -2043,3 +2043,23 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   permitted axioms. Evidence index: 3,925 source hashes / 6,082 printed facts.
   Continuing split/push execution and the partial-graph/agenda invariant; no
   finite claim, target-clock or whole-guest refinement has been established.
+
+### 2026-10-17 — branch allocation/push and complete sorting prefix
+
+- SplitProgram extracts the literal split/reset/scatter/copy/allocation scopes.
+  AllocationBody/Code prove the seven actual word stores, five persistent local
+  updates and captured-node restoration, at every source clock. AllocationPost
+  gives local/nonlocal frames; WordWrites/AllocationMemory identify all stored
+  words under explicit distinct destinations and preserve every outside word.
+- CopyIntervals/PartitionRows connect contiguous filtered blocks to the actual
+  readable backup interval, using mapped rows, no-wrap bounds and separation.
+  SortProgram/Scatter/Copy/Properties/Execution prove both actual index resets
+  plus full stable scatter/copy before arbitrary continuation. The exact post
+  memory writes backup and primary intervals; source-clock payment is twice
+  input.length; final i and all other non-cursor locals are accounted for.
+- Successful closure witness-radix-sort-allocation-checkpoint-v1.log (645
+  targets), main axioms only permitted. Evidence index 3,937 source hashes /
+  6,103 printed facts. No finite K or compiled/whole-guest refinement yet.
+- Continuing surrounding cursor/count scope composition and the full split
+  outer iteration, then agenda/partial-graph completion. Existing whole-guest
+  original-map, input/gas and compiler/target obligations remain open.

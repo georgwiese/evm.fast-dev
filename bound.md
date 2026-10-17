@@ -12,6 +12,16 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked actual RLP encoding writers: put_be loop/body/caller with one
+  source clock per byte and real store frames; whole scalar and header writers
+  return1..9 bytes in<=18 body clocks. Their real callers retain written memory.
+  Whole byte-string encoder includes both special-case reads/stores and actual
+  arbitrary-alignment/overlap memcpy, returns<=n+9, and costs<=n+20 body clocks.
+  Concrete mapped-access/code premises remain; whole encode_header and block
+  prefix/guard are still open. Successful joint closure:
+  `input-rlp-byte-write-built-v1.log`1139targets, permitted axioms only;
+  index4388modules/7038facts. This is source execution evidence, not finite K.
+
 - [x] Checked the full actual block tail from the transaction-loop test through
   its return. Actual decoded records supply every pointer/length/conditional
   byte read, and their raw lengths telescope to the slice length. The real

@@ -3014,3 +3014,30 @@ Actual transaction RLP phase checkpoint (2026-10-17):
   thosepremisesareclosed. Globalgas/refunds/mutablemapmultiplicity/heapQ,
   originalimmutablemaprefinement/targetcertificate remainopen. Account24%,0
   resetcredits; claimedKstillinfinity, nofullverification.
+
+Actual encoding writer checkpoint (2026-10-17):
+- RlpWrite.PutBeProgram/Loop/Built/Call realreversei--, st8(dst+i,v),v>>8,
+  whileunsignedpositive andreturn0. ExactNbody/N+1callsourceclocks; actualmemory
+  writesretained, outsidealignedstorewordsframe, real3argABI/ignoredcaller.
+- LengthTail/Forms realtagstore+put_becall+return andrealbe_lenprefix/scope;
+  shortformstore/return andlongform<=18bodyclocks/<=9bytes. HeaderWrite and
+  WordWrite completeactualfunctionsforall64-bitvalues; sizein[1,9], memory
+  frameoutside9bytes. RealHeaderWriteCall declaration/tailcalls andWordWriteCall
+  declaration/existinglocalassignment includeactualmetadata/shapechecks and
+  callerstatewithwrittenmemory. MemoryReturn genericactualresumption/frame.
+- BytesWriteGeneral actualheadercall+fullCopyGeneral.memcpy+return/scopes,
+  n+1<=encoded<=n+9,<=n+20sourceclocks. BytesWriteProgram specialn1srcbyte-read,
+  b<128directstore/return, elsebscoperestoredunchanged. BytesWriteBuilt whole
+  fixedencoderforalln<=134217712, retainsactualmemory/frame,no-wrapsizeword.
+  Access/mapping/runtimepremisesexplicit; memcpyallowsarbitraryalignment/overlap.
+- Successfuljoint input-rlp-byte-write-built-v1.log1139targets,index4388modules
+  7038facts,allowedaxioms. FailedlogsnormalizationofwordaddressAC,typedstate
+  aliases,let-RHSparenthesesandUInt8.sizeclosedbound; noneusedasevidence.
+- NEXT bytewriteractualcallerthenrealheadersequence: u256_byte_length/limb/min
+  writers, encode_headerbuffer1024andallfields/pincrements, actualblockprefix
+  callerand8MiBguard. The resultingNwdcapstillconditionaluntiltheseclose.
+- Useraskedoverallestimate: about35%with25-45%lowconfidencerange, wholebranch
+  effortjudgment, notfilecount/proofpercentage. Majorremainingglobalgas/heap/
+  workpotential, mutablemapmultiplicity/queryQ, originalmaprefinementandcompiled
+  targetcertificatepreventcallingtheprojectmorethanhalfcomplete. Claimstill
+  infinity; nofullverifier. Account24%,0earnedresetcredits,watcheractive.

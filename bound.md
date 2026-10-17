@@ -12,6 +12,16 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked conditional actual-calculator decay algebra: the access/value
+  fee premises imply child<=capNat(parent-100); shifted contraction is
+  64*(child+6237)<=63*(parent+6237). A chain with root<=30M and those premises
+  at every edge has depth<=538. Success `gas-nested-decay-v1.log`1172targets,
+  permitted axioms; index4460/7228. Actual trace/root premises remain open.
+  `nested-resource-pilot.json` compares exact single-wave and greedy repeated
+  waves. Repeated waves can exceed the single-wave maximum by about8x in the
+  relaxed model; neither is an arbitrary-forest or runtime upper bound.
+  No global go, target pricing, finite K or full verification follows.
+
 - [x] Checked both actual saturating-add branches and its unconditional lower
   bound on the first argument. Actual up-front value-fee computation/charge
   establishes used-counter credit>=11300 even for saturated memory costs;

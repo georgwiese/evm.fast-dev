@@ -3363,3 +3363,28 @@ Actual up-front value-fee funding checkpoint (2026-10-17):
   complete parent/child/initialization trace, signed state-debt/refund ledger
   and block counters (ordinary refund is not deducted from BO_GAS_USED), joint
   table/heap-Q work, root decoded entry, original-map/target/certificate.
+
+Conditional nested decay and scenario checkpoint (2026-10-17):
+- NestedDecay checks exact cap monotonicity, stipend compensation, uniform
+  child<=capNat(parent-100) from explicit access/value/available premises and
+  actual calculator values; 64*(child+6237)<=63*(parent+6237), geometric chain
+  inequality and root<=30M depth<=538. Literal power comparison uses ordinary
+  kernel decide. Actual fee/root/frame premises on every runtime edge open.
+- Success gas-nested-decay-v1.log1172targets,4.58s,max child RSS1914976KiB,
+  permitted axioms. Index4460modules/7228facts; incremental policy succeeds,
+  61324entries/2252679867bytes, infinity, not a full verification.
+- Reproducible nested-resource-pilot.py/json exact arithmetic explicitly
+  reports whole_bound/certificate/runtime_work_bound=false. Single-wave and
+  earlier-key scenarios give131414464 units for16M root,420268032 for30M.
+  Greedy repeated waves returning unused gas and retaining earlier keys at
+  every ancestor freely reach919662004 units (depth214,92waves) and3321693864
+  (depth236,137waves). These are relaxed scenarios, not reachable attacks or
+  arbitrary-schedule/forest maxima. They prevent using the single-wave bound
+  as an aggregate. Extra setup/CREATE costs, actual key events, hash probes,
+  rehashes/copies and prices remain unproved.
+- Overall progress estimate to user about35%, rough25-45%, by remaining proof
+  obligations, not file counts. Claim still infinity; global bound and final
+  certificate open. Account30%, no reset credits; host/disk within limits.
+- Continue successful-child spill repayment and protected gas cells through
+  logs/table merges, whole trace/initialization and signed state/block ledger;
+  numerical pilot has not earned a whole-program feasibility go.

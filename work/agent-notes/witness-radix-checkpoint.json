@@ -103,8 +103,8 @@
       "sha256": "c6fdc8a09e4996d2da0b16a6a0440a2fd69ee375557bb530b76a1f8448514a52"
     },
     "submission/InitECandidate/Solver/WitnessRadix/Memeq32Memory.lean": {
-      "bytes": 6154,
-      "sha256": "ba964684ba7fef4a67eef9b3a3e46b42ff77ab007a4c921a496ad06939a678e4"
+      "bytes": 7020,
+      "sha256": "afd581628da544649c453743c68b58e6b4ca94482d391efb1ffb14781ce68394"
     },
     "submission/InitECandidate/Solver/WitnessRadix/QueryBranch.lean": {
       "bytes": 6670,
@@ -117,6 +117,50 @@
     "submission/InitECandidate/Solver/WitnessRadix/WordKeys.lean": {
       "bytes": 1931,
       "sha256": "18293761d3208f32f393fd4b61cdd264e8a2c459a854ba9ab19a7805a5fe68ff"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteKeys.lean": {
+      "bytes": 2384,
+      "sha256": "2fff59466ce3299a8761387286fc7c63f313eee4a1255155cce0053d4ed1776a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteLoop.lean": {
+      "bytes": 7607,
+      "sha256": "ec1bf723f03a1ac0bfe94da02c09ce084671bd3fdccd0ada35781ed1e1d902e0"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteMemory.lean": {
+      "bytes": 5732,
+      "sha256": "337921d6eb9c24f9a371dcf2c24ef582abb43be852fea5364724751b75d1428e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteReads.lean": {
+      "bytes": 2998,
+      "sha256": "2941b3ac83ce909b1a8068ce503772b29ea52a43f11c608f4f0a7abe48b4744b"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteTail.lean": {
+      "bytes": 5846,
+      "sha256": "6ab96ace982f411c854278c50e9b95392fef23147aced50f944fc2eb92a55d11"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqBytes.lean": {
+      "bytes": 4226,
+      "sha256": "e43d813f36d73b97ba1da6d69ba3606285c1de8ee703a7a3b6d49c8f1b04f06a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqCall.lean": {
+      "bytes": 3137,
+      "sha256": "41aecdd7c2dd26491b3357ab8060cd86c81873fc6ffdcba13fa6c6f4af9b6f77"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqEnvironment.lean": {
+      "bytes": 3274,
+      "sha256": "977dbc844f0a4d0ed1c3f305aa6084944d8a68c6140e2b4d74bce15975283694"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqMemory.lean": {
+      "bytes": 3068,
+      "sha256": "492233b54a369942693d79a76c4223b20908e20dd412012c5d301231a0650f60"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqUnaligned.lean": {
+      "bytes": 3208,
+      "sha256": "25b336339efbdf1ad9257bd95807df257d2853e769598a0d9069fb76495950df"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/MemoryBytes.lean": {
+      "bytes": 7120,
+      "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763"
     }
   },
   "development_artifacts": {
@@ -145,8 +189,7 @@
     "witness-radix-program-v3.log",
     "witness-radix-query-empty-v5.log",
     "witness-radix-graph-v3.log",
-    "witness-radix-memeq32-memory-v4.log",
-    "witness-radix-compare-prefix-v1.log"
+    "witness-radix-memeq-environment-v4.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -267,10 +310,18 @@
   },
   "remaining": [
     "iterative build/graph/memory refinement",
-    "unaligned fixed memeq path, byte/word memory view, leaf call/return and full lookup HOL execution",
+    "actual lookup leaf return and full lookup HOL execution",
     "original map and whole-guest private-memory invariant",
     "startup-header relation and new compiler/bootstrap/install facts",
     "input/gas/Q/global work bound",
     "finite certificate and authorized final verification"
-  ]
+  ],
+  "compiler_static_depth": {
+    "log": "witness-radix-static-depth-v1.log",
+    "code_bytes": 905572,
+    "bitmap_words": 4615,
+    "stack_words": 538,
+    "elapsed_seconds": 27.91,
+    "formal_verification": false
+  }
 }

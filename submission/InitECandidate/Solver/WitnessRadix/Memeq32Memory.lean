@@ -30,6 +30,19 @@ theorem alignment_eval {F : Type} (state : PanSemStateFiniteExact 64 F) (left ri
     Flapjack.Compiler.Encoders.Asm.wordCmpHOL, aligned, beq_self_eq_true]
   rfl
 
+theorem alignment_eval_not {F : Type} (state : PanSemStateFiniteExact 64 F) (left right : BitVec 64)
+    (a : state.locals.lookup (ofString "a") = some (.val (.word left)))
+    (b : state.locals.lookup (ofString "b") = some (.val (.word right)))
+    (unaligned : (left ||| right) &&& 7#64 ≠ 0#64) :
+    eval state alignmentTest = some (.val (.word 0#64)) := by
+  classical
+  have mask : ((left ||| right) &&& 7#64 == 0#64) = false := beq_eq_false_iff_ne.mpr unaligned
+  simp only [eval, alignmentTest, localVar, evalHOLExact, evalListHOLExact, toExact,
+    a, b, valueIsWord, valueWord, List.all_cons, List.all_nil, Bool.and_self,
+    List.map_cons, List.map_nil, opOr, opAnd, Option.map_some, ↓reduceIte,
+    Flapjack.Compiler.Encoders.Asm.wordCmpHOL, mask, Bool.false_eq_true]
+  rfl
+
 theorem ready_of_words {F : Type} (state : PanSemStateFiniteExact 64 F)
     (a b : BitVec 64) (left right : Fin 4 → BitVec 64)
     (argA : state.locals.lookup (ofString "a") = some (.val (.word a)))
@@ -113,6 +126,7 @@ theorem aligned_memory {F : Type} (state : PanSemStateFiniteExact 64 F)
 end InitECandidate.Solver.WitnessRadix.Memeq32
 
 #print axioms InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval
+#print axioms InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not
 #print axioms InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words
 #print axioms InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys
 #print axioms InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory

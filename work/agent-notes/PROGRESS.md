@@ -1919,3 +1919,25 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   depth-tool build remains live; it is building missing pinned Flapjack proof
   dependencies, not the Solution or baseline proof library. Used RAM around
   3 GiB, disk 57%. No additional EEST rerun is justified or scheduled.
+
+### 2026-10-17 — complete fixed comparison and actual caller connection
+
+- Checked the actual unaligned memeq byte loop, all early returns, exact byte
+  equality and complete 32-byte entry execution. MemoryBytes connects the actual
+  byte helper to little-endian word views and transfers views across unchanged
+  memory/domain/endian fields. MemeqMemory covers both alignment cases.
+- MemeqCall proves the actual DecCall, including caller locals, continuation and
+  clock restoration; MemeqEnvironment derives its callee ABI from the real code
+  entry. Cost is at most four source clocks plus one call clock. These are source
+  semantics results, not compiled target transition bounds.
+- Successful closure witness-radix-memeq-environment-v4.log, 596 targets; main
+  axiom prints use only propext/Classical.choice/Quot.sound. Evidence index now
+  3,868 modules / 5,995 printed facts. Failed elaborations are not indexed.
+- The previously running targeted compiler tool build and static-depth run both
+  completed successfully. Candidate output: 905,572 code bytes, 4,615 bitmap
+  words, static stack bound 538 words; 27.91 seconds for the targeted run.
+  Baseline startup/install facts still need new candidate-specific premises.
+- Continuing actual radix leaf/whole-loop execution, iterative builder memory
+  refinement, original-map relation and global input/gas/compiler composition.
+  Claim remains infinity, Solution unchanged, no finite certificate or isolated
+  verification. No full Solution/baseline audit/verifier or external submission.

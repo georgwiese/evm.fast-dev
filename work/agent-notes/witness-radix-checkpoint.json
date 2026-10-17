@@ -477,6 +477,78 @@
     "submission/InitECandidate/Solver/WitnessRadix/MemoryAgreement.lean": {
       "bytes": 1806,
       "sha256": "47ff6bc51d5aa02570361dbd474a8dfc1b87f1a00e43c7d01b3d61834cb9a6e5"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AgendaCost.lean": {
+      "bytes": 4062,
+      "sha256": "abd31f53909484add6f71d888dd790a8c06a951a5ab7b390af6f1dd60cd7a03d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BranchAddress.lean": {
+      "bytes": 3024,
+      "sha256": "cbbf8c851a379bacbd428d677c9dcb4a23ad159363f4222243c6d76651d71420"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/FrontierBudget.lean": {
+      "bytes": 3935,
+      "sha256": "43789de73b5371706fd538567bb38ab424f6805356eb80d7cf6d1eb7c6b27a55"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LeafGraph.lean": {
+      "bytes": 3762,
+      "sha256": "4c8575bb9184fef2f85dbb0c9367365786abefa4ffedcb8c89e4883abd48cbc2"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/OpenGraph.lean": {
+      "bytes": 5717,
+      "sha256": "8b8b8007b9e701bfa295b371959c5d56bc194221d164326fb57a5efd4d410710"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/OpenGraphFrontier.lean": {
+      "bytes": 2482,
+      "sha256": "9cea07b31059633cf56468ff8e414552347e11f85e8502539e31307b9c718076"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/OpenGraphReplace.lean": {
+      "bytes": 4104,
+      "sha256": "47bb7c4cd6b87ea34377f56519ba33b11507b9d6168b5c3fee2a043e20127e25"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/OrdinalTree.lean": {
+      "bytes": 5348,
+      "sha256": "b5bde1962682b842cc9828aee161ca2cd134b9f0e2142b605989d1422f36197e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PendingPush.lean": {
+      "bytes": 5325,
+      "sha256": "38c9e6daadf534aa0a7f720cd37bb42f3a5847c31507f49c2942a20561df0bee"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PendingStack.lean": {
+      "bytes": 4016,
+      "sha256": "07a8173f9cc212c64e570d45fca2018aff4f78c6f07d18c84e37dfcb75cb4f6f"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ReadFootprintStable.lean": {
+      "bytes": 2900,
+      "sha256": "5e6337e1fb06442fa0b3f04ff4a5210b8b886cbd26b46e3936205418845ea161"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/RowsFrame.lean": {
+      "bytes": 2533,
+      "sha256": "9752af56c16d8e6e9eb24a0ed3c69b99ebdc0077809c74dddb7dfafc463fd238"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/RowsLast.lean": {
+      "bytes": 3356,
+      "sha256": "eae83264b83e4e095c57a3383a0056bf8bbf625d91b65f1e712e085a51dd514a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitGraph.lean": {
+      "bytes": 4294,
+      "sha256": "9348d90788d49b677f59f1d3b97c3172c983ae1e0dacb5cc0f6341a5ba893386"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitGraphFill.lean": {
+      "bytes": 2523,
+      "sha256": "68c3dcaa979351e1334d408ebd3c58486dc00efcb7b9edff039e3ad89f3ad326"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitLocals.lean": {
+      "bytes": 2407,
+      "sha256": "bd680e87d7330065afcc15338770cf5dd4d2fd693f5af162542505959418bba6"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/SplitRows.lean": {
+      "bytes": 5219,
+      "sha256": "beec9cf08dfbc4cc489a0ae65a9a30cc5993acf105fe9dbb3bf6e916a3d68bd9"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/OpenGraphSafety.lean": {
+      "bytes": 3287,
+      "sha256": "8bd0708b2322f2da7df6f6b9dc5466057fc2bc7079289183d6bae05abfe8b145"
     }
   },
   "development_artifacts": {
@@ -512,7 +584,10 @@
     "witness-radix-sort-allocation-checkpoint-v1.log",
     "witness-radix-count-copy-v1.log",
     "witness-radix-split-loop-memory-v1.log",
-    "witness-radix-query-footprint-v1.log"
+    "witness-radix-query-footprint-v1.log",
+    "witness-radix-construction-graph-checkpoint-v1.log",
+    "witness-radix-address-read-stable-v1.log",
+    "witness-radix-frontier-safety-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -668,6 +743,11 @@
     "allocation": "literal captured-node scope, seven concrete mapped stores, five persistent local updates, exact full poststate and outside-write frame; no source clocks",
     "sort_prefix": "both actual index resets + stable scatter + copy before arbitrary continuation; exact sorted primary/backup memories, final index and other-local frame, 2*input.length source clocks",
     "split": "complete actual count/cursor scopes, non-unary test, scatter/copy/allocation and outer-while resumption; exact memory and five persistent locals; 3*input.length + 1 source clocks; parent ownership/no-wrap/mapped premises explicit",
-    "subtree_frame": "actual lookup memory representation preserved by agreement on its concrete recursive read footprint, including aligned key-byte words"
+    "subtree_frame": "actual lookup memory representation preserved by agreement on its concrete recursive read footprint, including aligned key-byte words",
+    "open_graph": "partial concrete memory graph with expected trees at mapped holes; any selected hole replacement preserves ancestors/siblings under exact read agreement; no-frontier implies the actual lookup representation; first-hole fill preserves pending order",
+    "split_graph": "actual count/sort/allocation scope fills a branch hole, preserves expected tree, selects left-task locals, leaves both child intervals readable and prepends physical right-task suffix cells under explicit mapped/nonaliasing/no-wrap parent premises",
+    "leaf_graph": "terminal tag store installs the actual ordinal key/slice at a frontier hole and preserves ancestors/siblings under concrete separation; ordinal load derived from readable interval/getLast",
+    "agenda_cost": "logical agenda cost <= 1028*N with case prices matching the actual outer case summaries; physical agenda refinement still open",
+    "allocation_budget": "partial full-tree cumulative leaf/frontier mass proves branches < N through terminal, unary and split transitions; concrete branch addresses are nonzero/even/fresh under original allocation bounds"
   }
 }

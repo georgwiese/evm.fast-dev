@@ -2080,3 +2080,30 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful closures split-loop-memory-v1 (656 targets) and query-footprint-v1
   (606 targets), only permitted axioms. No finite score, target-step theorem or
   whole-guest refinement is claimed. Continuing agenda/partial-graph completion.
+
+### 2026-10-17 — partial graph, physical push and child ownership
+
+- OpenGraph/Replace/Frontier model mapped holes and installed subtrees in actual
+  HOL memory. Checked replacement preserves expected trees and represented
+  ancestors/siblings; filling the first hole preserves pending order; an empty
+  frontier supplies exactly the representation used by lookup.
+- SplitGraph/Fill connects the actual split execution to a branch-hole fill
+  and its outside-memory frame. LeafGraph installs the real ordinal key/slice
+  at a leaf. OrdinalTree proves terminal/unary/split equations for the actual
+  ordinal subsequences and their fixed key/slice functions.
+- PendingStack/Push checks all three physical suffix arrays and saved parent
+  bit cells; actual seven stores prepend the right task. SplitLocals selects
+  the left child. RowsFrame/SplitRows preserve both exact child intervals;
+  RowsLast derives the terminal ordinal load from interval contents/getLast.
+- AgendaCost proves a logical price <= 1028*N matching all actual outer-case
+  prices. FrontierBudget tracks cumulative completed leaves and active record
+  mass, proving branches < N; BranchAddress supplies concrete nonzero/even/
+  freshness facts under original allocation bounds. ReadFootprintStable proves
+  that protected word agreement preserves the recursive read sets themselves.
+- Successful closures construction-graph-checkpoint-v1 (679 targets) and
+  address-read-stable-v1 (612), only permitted axioms. The physical invariant
+  deriving parent separation, mapped cells, bounds and agenda/graph alignment
+  remains open. Claim infinity; whole-guest/refinement/target/global K incomplete.
+- OpenGraphSafety also checks that filling the first hole preserves safety
+  of all remaining frontier writes, from explicit fresh-child/pending-read
+  conditions and distinct frontier slots (frontier-safety-v1, 611 targets).

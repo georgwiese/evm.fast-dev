@@ -9,10 +9,10 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 4489,
+  "solver_modules": 4504,
   "missing_solver_imports": [],
   "module_families": {
-    "Arenas": 5,
+    "Arenas": 9,
     "BinopImmediateCost": 1,
     "BinopRegisterCost": 1,
     "BootstrapChecks": 1,
@@ -35,7 +35,7 @@
     "EncoderClock": 1,
     "FlattenBound": 19,
     "FlattenWeighted": 30,
-    "GasBudget": 57,
+    "GasBudget": 58,
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Input": 299,
@@ -58,6 +58,8 @@
     "PanState": 1,
     "PanTraversal": 1,
     "RiscVEvaluatorCosts": 1,
+    "ScratchList": 2,
+    "ScratchTable": 8,
     "ShiftLslImmediateCost": 1,
     "SkipCost": 1,
     "StackAllocBound": 10,
@@ -164,7 +166,22 @@
       },
       {
         "module": "JumpDest.Call",
-        "solver_dependency_count": 151,
+        "solver_dependency_count": 152,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "ScratchList.Call",
+        "solver_dependency_count": 143,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "ScratchTable.Call",
+        "solver_dependency_count": 155,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "GasBudget.TableCount",
+        "solver_dependency_count": 136,
         "imports_replacement_ast": false
       }
     ],

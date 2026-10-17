@@ -129,8 +129,21 @@ theorem step_away (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   · exact marked_memory_away source.memory bitmap index query old length.toNat inside below
   · rfl
 
+theorem step_outside (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (bitmap opcode index length next old query : BitVec 64)
+    (inside : index.toNat < length.toNat) (outside : Outside bitmap (bitmapBytes length.toNat) query) :
+    (stepState source bitmap opcode index length next old).memory query = source.memory query := by
+  unfold stepState
+  change stepMemory source.memory bitmap opcode index old query = _
+  unfold stepMemory
+  split
+  · exact if_neg (outside.selected bitmap query index length.toNat inside)
+  · rfl
+
 end InitECandidate.Solver.JumpDest
 
 #print axioms InitECandidate.Solver.JumpDest.step_execute
 #print axioms InitECandidate.Solver.JumpDest.step_fields
 #print axioms InitECandidate.Solver.JumpDest.step_away
+
+#print axioms InitECandidate.Solver.JumpDest.step_outside

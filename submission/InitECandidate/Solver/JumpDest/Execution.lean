@@ -1,4 +1,5 @@
 import InitECandidate.Solver.JumpDest.Loop
+import InitECandidate.Solver.Arenas.Region
 
 namespace InitECandidate.Solver.JumpDest
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -17,7 +18,7 @@ noncomputable def scanning (source : PanSemStateFiniteExact 64 Guest.HostMemory)
 /-- Full unchanged compute_jumpdests body: actual scratch allocation, actual
 bitmap clear, complete content-independent scan, return and both scopes.
 Its exact body clocks are bitmap-clear price + 2 + scan iterations, with scan
-iterations at most code length. All words at/above the incoming scratch cursor
+iterations at most code length. All words outside the live allocation arena
 are preserved. This is a source execution contract, not a target work price. -/
 theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch memory code length : BitVec 64)
     (scratchCode : source.code.lookup (ofString "scratch_alloc") = some (Arenas.formals, Arenas.body .down, .one))
@@ -41,7 +42,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch m
         {Arenas.post source .down scratch (bytesWord length) with
           memory := target.memory
           clock := source.clock - (WitnessRadix.Zero.price (bitmapBytes length.toNat) + 2 + spent)} ∧
-      ∀ query : BitVec 64, scratch.toNat ≤ query.toNat → target.memory query = source.memory query := by
+      ∀ query : BitVec 64, Arenas.Outside memory scratch query → target.memory query = source.memory query := by
   classical
   let bitmap := Arenas.rounded .down scratch (bytesWord length)
   let bytes := bitmapBytes length.toNat
@@ -93,7 +94,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch m
   have nS : (scanning source scratch length).locals.lookup (ofString "n") = some (.val (.word length)) :=
     (bind_lookup_other _ "pc" "n" _ (by decide)).trans nA
   obtain ⟨finalMemory, finish, spent, loopRun, stopped, spentBound, protectedWords⟩ :=
-    loop_execute (scanning source scratch length) bitmap code 0#64 length bmS codeS (bind_lookup_same _ _ _) nS
+    loop_execute_outside (scanning source scratch length) bitmap code 0#64 length bmS codeS (bind_lookup_same _ _ _) nS
       (by omega) codeMapped bitmapMapped
       (by change length.toNat - 0 ≤ source.clock - 1 - (WitnessRadix.Zero.price bytes + 1); omega)
   let finished := loopState (scanning source scratch length) finalMemory spent finish
@@ -121,16 +122,17 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (scratch m
         source.clock - (WitnessRadix.Zero.price bytes + 2 + spent) := by omega
     exact congrArg (fun clock => emptyLocalsHOLFinite
       {Arenas.post source .down scratch (bytesWord length) with memory := finalMemory, clock := clock}) clocks
-  · intro query high
+  · intro query outsideArena
     have bitmapEnd : bitmap.toNat + bytes ≤ scratch.toNat := by simpa only [number] using geometry.2.2.2.1
-    have clearedAway : WitnessRadix.Zero.finalMemory source.memory bitmap bytes query = source.memory query := by
-      apply WitnessRadix.Zero.final_memory_away
-      intro offset inside equal
-      have small : bitmap.toNat + offset < 2 ^ 64 := by have bound := scratch.isLt; omega
-      have address := WitnessRadix.byteAddress_toNat bitmap offset small
-      have same := congrArg BitVec.toNat equal
-      omega
-    exact (protectedWords query (by omega)).trans clearedAway
+    have bitmapLow : memory.toNat ≤ bitmap.toNat := geometry.2.2.1
+    have away : Outside bitmap bytes query := by
+      rcases outsideArena with below | above
+      · apply outside_below bitmap query bytes (by omega)
+        have bound := scratch.isLt
+        omega
+      · exact outside_above bitmap query bytes (by omega)
+    have clearedAway := WitnessRadix.Zero.final_memory_away source.memory bitmap query bytes away
+    exact (protectedWords query away).trans clearedAway
 
 end InitECandidate.Solver.JumpDest
 

@@ -13,7 +13,7 @@ content premise. Strict actual PC progress bounds the number of iterations
 by the remaining byte length. The result is a full state description, with
 all earlier words above the bitmap preserved and exact used source clocks.
 Mapped regions, typed entry locals and enough clocks are explicit. -/
-theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem loop_execute_outside (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (bitmap code index length : BitVec 64)
     (bmLocal : source.locals.lookup (ofString "bm") = some (.val (.word bitmap)))
     (codeLocal : source.locals.lookup (ofString "code") = some (.val (.word code)))
@@ -28,7 +28,7 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     ∃ (memory : WitnessRadix.WordWrites.Memory) (finish : BitVec 64) (spent : Nat),
       evaluateHOLFiniteState source loop = (none, loopState source memory spent finish) ∧
       length.toNat ≤ finish.toNat ∧ spent ≤ length.toNat - index.toNat ∧
-      ∀ query : BitVec 64, bitmap.toNat + bitmapBytes length.toNat ≤ query.toNat → memory query = source.memory query := by
+      ∀ query : BitVec 64, Outside bitmap (bitmapBytes length.toNat) query → memory query = source.memory query := by
   classical
   generalize rankEq : length.toNat - index.toNat = rank
   induction rank using Nat.strong_induction_on generalizing source index with
@@ -84,7 +84,7 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       · omega
       · intro query below
         have preserved := protectedWords query below
-        have oneStep := step_away entry bitmap opcode index length nextByte old query inside below
+        have oneStep := step_outside entry bitmap opcode index length nextByte old query inside below
         exact preserved.trans oneStep
     · refine ⟨source.memory, index, 0, ?_, ?_, by omega, ?_⟩
       · have same : loopState source source.memory 0 index = source := by
@@ -98,6 +98,30 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       · intro query below
         rfl
 
+/-- Upper-region specialization retained for earlier callers. -/
+theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (bitmap code index length : BitVec 64)
+    (bmLocal : source.locals.lookup (ofString "bm") = some (.val (.word bitmap)))
+    (codeLocal : source.locals.lookup (ofString "code") = some (.val (.word code)))
+    (pcLocal : source.locals.lookup (ofString "pc") = some (.val (.word index)))
+    (nLocal : source.locals.lookup (ofString "n") = some (.val (.word length)))
+    (fits : length.toNat + 32 < 2 ^ 64)
+    (codeMapped : ∀ offset < length.toNat,
+      source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress code offset)))
+    (bitmapMapped : ∀ offset, offset + 8 ≤ bitmapBytes length.toNat → offset % 8 = 0 →
+      source.memaddrs (WitnessRadix.byteAddress bitmap offset))
+    (enough : length.toNat - index.toNat ≤ source.clock) :
+    ∃ (memory : WitnessRadix.WordWrites.Memory) (finish : BitVec 64) (spent : Nat),
+      evaluateHOLFiniteState source loop = (none, loopState source memory spent finish) ∧
+      length.toNat ≤ finish.toNat ∧ spent ≤ length.toNat - index.toNat ∧
+      ∀ query : BitVec 64, bitmap.toNat + bitmapBytes length.toNat ≤ query.toNat → memory query = source.memory query := by
+  obtain ⟨memory, finish, spent, run, stopped, bound, protectedWords⟩ :=
+    loop_execute_outside source bitmap code index length bmLocal codeLocal pcLocal nLocal fits codeMapped bitmapMapped enough
+  exact ⟨memory, finish, spent, run, stopped, bound,
+    fun query above => protectedWords query (outside_above bitmap query _ above)⟩
+
 end InitECandidate.Solver.JumpDest
 
 #print axioms InitECandidate.Solver.JumpDest.loop_execute
+
+#print axioms InitECandidate.Solver.JumpDest.loop_execute_outside

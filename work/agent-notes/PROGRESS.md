@@ -4801,3 +4801,26 @@ Whole paired witness constructor checkpoint (2026-10-17):
   lst_new_scratch/htab_new_scratch helpers and final stores/count reads. Then
   caller MSG construction, successful child merges/rollback/signed block gas,
   global work aggregation and unchanged target transport. Account49%, no resets.
+
+
+### 2026-10-17 — unchanged scratch helpers and two-sided memory frames
+
+- Actual lst_new_scratch: header/buffer allocations, three stores, return/scopes;
+  body2/caller3 source clocks. Actual htab_new_scratch(20,4): six allocations,
+  all nine header stores, short used-byte clear, return/scopes; body11/caller12.
+  Aligned natural room derives guards; exact final scratch cursor and memory.
+- Both preserve memory below frame_mem_ptr and at/above incoming scratch_ptr.
+  JumpDest Mark/Step/Loop/Execution/Call now exports the same two-sided frame,
+  retaining its upper-only loop wrapper for existing consumers.
+- Arenas Prefix/PrefixFields/DownPlan support actual allocation/store segments;
+  no replacement program. PanFieldStores now supports actual global reads.
+  GasBudget.TableCount proves actual declaration and assignment calls,1clock.
+- Successful combined scratch-helpers-count-v1.log1110jobs, explicit time exit0,
+  allowed printed axioms. Earlier scratch-two-sided-v1.log1099jobs succeeded.
+  All current helper sources indexed,4492modules7371facts; counts not progress.
+- Inventory includes both constructors/count getter; unchanged pinned source,
+  semantics, ROM, fixed proofs, Solution and claim. Incremental policy refreshed;
+  no full verification, no finite whole runtime bound. Claim remains infinity.
+- Continue actual frame_new suffix/return and initialized ledger preservation,
+  then actual root message construction/global accounting and unchanged target
+  transport. Account1%,0manual reset credits; no numerical ceiling.

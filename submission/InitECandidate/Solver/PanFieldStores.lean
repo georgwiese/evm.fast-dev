@@ -10,19 +10,22 @@ proof data; local/copy expressions use the actual runtime bindings and memory. -
 inductive Value where
   | literal (word : BitVec 64)
   | saved (name : String) (word : BitVec 64)
+  | globalSaved (name : String) (word : BitVec 64)
   | copied (offset : Nat) (word : BitVec 64)
 
 def Value.word : Value → BitVec 64
-  | .literal word | .saved _ word | .copied _ word => word
+  | .literal word | .saved _ word | .globalSaved _ word | .copied _ word => word
 
 def Value.expression (messageName : String) : Value → ExpHOL 64
   | .literal word => .const word
   | .saved name _ => localVar name
+  | .globalSaved name _ => .var .global (ofString name)
   | .copied offset _ => .load .one (addConst (localVar messageName) (BitVec.ofNat 64 offset))
 
 def Value.Ready {F : Type} (source : PanSemStateFiniteExact 64 F) (messageName : String) (message : BitVec 64) : Value → Prop
   | .literal _ => True
   | .saved name word => source.locals.lookup (ofString name) = some (.val (.word word))
+  | .globalSaved name word => source.globals.lookup (ofString name) = some (.val (.word word))
   | .copied offset word =>
       source.locals.lookup (ofString messageName) = some (.val (.word message)) ∧
       source.memaddrs (message + BitVec.ofNat 64 offset) ∧
@@ -51,6 +54,7 @@ theorem Value.read {F : Type} (source : PanSemStateFiniteExact 64 F) (messageNam
   cases value with
   | literal word => rfl
   | saved name word => simpa [Value.Ready, eval, Value.expression, Value.word, localVar, evalHOLExact, toExact] using ready
+  | globalSaved name word => simpa [Value.Ready, eval, Value.expression, Value.word, evalHOLExact, toExact] using ready
   | copied offset word =>
     obtain ⟨stored, mapped, cell⟩ := ready
     simp [eval, Value.expression, Value.word, addConst, localVar, evalHOLExact, evalListHOLExact,
@@ -64,6 +68,7 @@ theorem Value.ready_store {F : Type} (source : PanSemStateFiniteExact 64 F) (mes
   cases value with
   | literal value => trivial
   | saved name value => exact ready
+  | globalSaved name value => exact ready
   | copied offset value =>
     exact ⟨ready.1, ready.2.1, by simpa only [WitnessRadix.StoreWord.put, if_neg away] using ready.2.2⟩
 

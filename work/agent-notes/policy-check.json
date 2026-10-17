@@ -2436,6 +2436,9 @@
     "submission/InitECandidate/Solver/MutableTable/InsertCount.lean",
     "submission/InitECandidate/Solver/MutableTable/InsertCountScan.lean",
     "submission/InitECandidate/Solver/MutableTable/InsertFrame32.lean",
+    "submission/InitECandidate/Solver/MutableTable/InsertGeneralCall.lean",
+    "submission/InitECandidate/Solver/MutableTable/InsertGeneralEntry.lean",
+    "submission/InitECandidate/Solver/MutableTable/InsertGeneralExecution.lean",
     "submission/InitECandidate/Solver/MutableTable/InsertGeneralTail.lean",
     "submission/InitECandidate/Solver/MutableTable/InsertHeader.lean",
     "submission/InitECandidate/Solver/MutableTable/InsertKeyModel32.lean",
@@ -2448,6 +2451,7 @@
     "submission/InitECandidate/Solver/MutableTable/InsertStores.lean",
     "submission/InitECandidate/Solver/MutableTable/InsertTail32.lean",
     "submission/InitECandidate/Solver/MutableTable/InsertValueModel32.lean",
+    "submission/InitECandidate/Solver/MutableTable/KeyHash.lean",
     "submission/InitECandidate/Solver/MutableTable/Layout32.lean",
     "submission/InitECandidate/Solver/MutableTable/LayoutAddress32.lean",
     "submission/InitECandidate/Solver/MutableTable/LayoutData32.lean",
@@ -4591,8 +4595,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61454,
-  "package_bytes": 2253431710,
+  "package_entries": 61458,
+  "package_bytes": 2253456266,
   "claim": {
     "K": "infinity"
   },

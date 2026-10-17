@@ -2862,3 +2862,26 @@ Whole actual payload normal body checkpoint (2026-10-17):
   field88 bound200M fromwholeHeader.body normalrun. Then payloadcaller exact
   resumption/rootSI/witnessdecodedrecords and global Q/heap/gas/target refinement.
   No finiteK/fullverifier. Account20%,0resetcredits read-onlywatchactive.
+
+Outer actual gas-store/caller checkpoint (2026-10-17):
+- RequestStoredGasFromHeader complete Header.body normalrun =>actual allocated
+  payload afterGuard return, realgasfield88<=200M, copiedinputpreserve. Derives
+  actualpayloadcursor rounded(oldcursor96),room232+4encodedExtent, enoughouter
+  extent/4+87. Keepsactualentry andpayloadPostrun. Success1341targets.
+- EvaluationFields imports existing HOL-tagged PanProps.evaluate_invariants,
+  exact codec transport =>everyevaloutcome preservesdomain/endian/code/shapes.
+  PayloadCallerNormal actualfullbodycalleecall/resumption, returnswordcursor,
+  tuple/ABIshapechecks,savedcallerlocals/gasfield/HeapInput, <=extent/4+76 clocks.
+  Success1351targets. Indexed4322modules6930facts, allowedaxioms only.
+- IMPORTANT constructor0 audit confirmed ConstructorExecution.execute unconditionally
+  requiresrecordsLower>=2701131776 and scratchBefore records. Actualemptyvarlist
+  returns recordsbase0/count0. Need separate count0 actualconstructor path; no
+  count0 records access/hash necessary. Plan use capacity_entry count0, forcecap4
+  (2<=cap<=4 andshape), fake logical records=table for layoutReady, prepare_execute
+  doesn'trequireactualslice_arrbinding; skiprealrecordloop directlyi0/n0, finish
+  withvacuousFixedData/prefix0. No hashEnvironment/scratch/recordpointer premises
+  ontheemptycase. Entiretableallocation/helper/return/scopes retained.
+- Next then VarList record-array info exposedfromnormalSummary/caller (currently
+  Complete/validAt discardedafterBodyNormal). Needed decode_bytes_list actual
+  maxb70guardreadonlyloop andconstructorrecords/lengthcaps1024nodes65536code.
+  Keepactualemptycase inallinterfaces. No finiteK/fullverifier. Usage21%,0credits.

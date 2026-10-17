@@ -2635,3 +2635,30 @@ Request guard and payload-callee entry continuation (2026-10-17):
 
 - Indexed4242 modules/6763 printed facts (not percentages); incremental policy
   passed61098 package entries. No full verifier.
+
+
+Payload allocated prefix checkpoint (2026-10-17):
+- HeaderStores, OffsetDeclarations, PrefixSetup: actual alloc136, pointer/length
+  header writes, four actual reads input498/566/570/590, scopes and HeapInput.
+- OffsetsProgram/Stores/Normal: four actual ssz_offs writes and all actual count4
+  validator normal/fault paths, normal raw498=540 +range/order, <=6 call clocks.
+- PrefixGuard/ExtraGuard/PrefixExtra: actual normal afterGuard execution entails
+  all prefix facts, raw566-540<=32 and actual afterExtra continuation. At most7
+  source clocks including allocation. PrefixExtra clock assumption>=8 covers
+  actual SszErr51 rejection. Still requires alloc136 room/current natural cursor,
+  runtime code/domain/copied HeapInput, initialpl arguments and extent>=602.
+- Successful joint input-payload-prefix-extra-v3.log,1163 targets, only allowed
+  axioms. No production byte changes, finite K or full verifier. Account17%,
+  zero reset credits; read-only watcher active.
+- NEXT actual afterExtra begins storepl16=p+o_extra, storepl24=o_txs-o_extra,
+  scoped ssz_split_var_list(np+o_txs,o_wd-o_txs,2^63-1), two result-field stores,
+  scoped ssz_fixed_list_count(o_bal-o_wd,44,2^63-1), then gas-field header stores.
+  Need whole nested callees/read-only input frames, their natural heap room and
+  record/length bounds before reaching gasstore. Split_var_list actual body at
+  Guest/Ast.lean5696; fixed_list_count5745; udivmod691 (64-iteration long division).
+  No existing Solver udivmod summaries found. Var-list uses shift2, not udivmod.
+- FUPDATE key comparison is updated-key==query, opposite of intuitive queryfirst.
+  simp-only does not reduce false=true conditional unless explicit reduction.
+  `change` expected prepared/declaredState alias before rewriting scalar equality
+  avoids a simp implicit-transparency mismatch; field projections after rw can
+  require explicit rfl. Bind_lookup_other takes MlS binder!=query, not Stringne.

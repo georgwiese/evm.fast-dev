@@ -12,6 +12,17 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked entire actual original nodedb_build: retained power-of-two
+  capacity selection, actual table allocation/clearing, every hash/set record
+  iteration, table return and all scopes. Final Built/History/Records provides
+  last-record-wins dictionary representation for exactly N observed digest/
+  record pairs. Heap cursor/control result matches the real allocations.
+  Conditional original source-clock allowance is quadratic in N and is not
+  a target bound. Decoded records, arena/code/globals/heap premises still
+  need whole-guest reachability, and original/radix actual digest/event/context
+  refinement remains open. `mutable-witness-execution-v2.log`1360targets,
+  permitted axioms; index4555/7440. Infinity; no finite K/full verification/go.
+
 - [x] Checked complete actual original witness-record while loop, including
   hash-control/context transport, actual new/duplicate map updates and input
   ordinal advancement. Final Built/History covers exactly N observed digest/

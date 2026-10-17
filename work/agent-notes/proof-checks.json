@@ -9338,8 +9338,16 @@
       "sha256": "13fb37aab0191fd6e46ace594efbe93920ecac12a84fe6dbd3cdc2916761265e"
     },
     {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildCapacity.lean",
+      "sha256": "715ea69dd27a8f67f3ca71b865bd81dcdeb25a20834b31d693baf80aca0e0b5d"
+    },
+    {
       "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildContext.lean",
       "sha256": "e8d934e4c6bf95ea5a3444b28a185d739eef307f016bba17cd13274b0f0c09e8"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildExecution.lean",
+      "sha256": "af8a807d40b18149b0074772368f1fc8d50e8e9858ed21d42dbb01afc5276ce5"
     },
     {
       "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildHistory.lean",
@@ -9348,6 +9356,14 @@
     {
       "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildLoop.lean",
       "sha256": "c53db28f02fa6761e7b53b4caf01a917b6cc3aea6566268e4f02fbfbd23849aa"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildPopulate.lean",
+      "sha256": "0191a1460b5887f30818bf09c189698aaf5c97f52015fca5b96ebd37792035cd"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildPrepare.lean",
+      "sha256": "c254c7895a465f84a699759e6c272efe0e678b73fd45e7c5ebae4e3ae5b0bd76"
     },
     {
       "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildProgram.lean",
@@ -77713,7 +77729,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.condition_read",
@@ -77722,7 +77738,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.next_read",
@@ -77731,7 +77747,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.after_equal",
@@ -77740,7 +77756,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.comparison_arguments",
@@ -77749,7 +77765,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.step32",
@@ -77758,7 +77774,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.power_mask",
@@ -77767,7 +77783,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.increment",
@@ -77776,7 +77792,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.slot_injective",
@@ -77784,7 +77800,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.visited_distinct",
@@ -77793,7 +77809,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.occupied_prefix_bound",
@@ -77802,7 +77818,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.empty_within_count",
@@ -77811,7 +77827,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.usedByte_of_fields",
@@ -77820,7 +77836,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_execute",
@@ -77829,7 +77845,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_prefix",
@@ -77838,7 +77854,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.first_empty",
@@ -77847,7 +77863,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.tail32_execute",
@@ -77856,7 +77872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_number",
@@ -77865,7 +77881,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_advance",
@@ -77874,7 +77890,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_order",
@@ -77883,7 +77899,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.scan32_count_bound",
@@ -77892,7 +77908,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.aligned32_find",
@@ -77910,7 +77926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.table_read",
@@ -77919,7 +77935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.header_executes",
@@ -77928,7 +77944,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.prepared_locals",
@@ -77937,7 +77953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.initial_index_read",
@@ -77946,7 +77962,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.masked_start",
@@ -77955,7 +77971,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_core",
@@ -77964,7 +77980,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_execute",
@@ -77973,7 +77989,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.environment",
@@ -77982,7 +77998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_call",
@@ -77991,7 +78007,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_core",
@@ -78000,7 +78016,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.environment",
@@ -78009,7 +78025,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.memory32_call",
@@ -78018,7 +78034,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.memory32_find",
@@ -78027,7 +78043,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.packed_roundtrip",
@@ -78035,7 +78051,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_execute",
@@ -78044,7 +78060,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_execute",
@@ -78053,7 +78069,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_call",
@@ -78062,7 +78078,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.rebuild_word",
@@ -78070,7 +78086,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_answer_model",
@@ -78079,7 +78095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_absent_iff",
@@ -78088,7 +78104,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.distance_bound",
@@ -78096,7 +78112,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.slot_distance",
@@ -78104,21 +78120,21 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_sound",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_index_bound",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_exists_before",
@@ -78127,7 +78143,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_dictionary",
@@ -78136,7 +78152,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.build_invariants",
@@ -78144,14 +78160,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.build_cover",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.build_lookup",
@@ -78160,7 +78176,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.build_radix_agreement",
@@ -78169,40 +78185,40 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.put_preserves_occupied",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.put_no_gaps",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.put_represents",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.put_unique",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.empty_invariants",
       "axioms": [],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.overwrite_lastValue",
@@ -78210,7 +78226,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.model_chain",
@@ -78219,7 +78235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.dictionary32_find",
@@ -78228,7 +78244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.dictionary32_call",
@@ -78237,7 +78253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.lift_tail32",
@@ -78246,7 +78262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_slot_spec",
@@ -78255,7 +78271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Get.environment",
@@ -78291,7 +78307,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Get.tail32_execute",
@@ -78300,7 +78316,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.HeaderData.with_locals",
@@ -78309,7 +78325,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.pure_value_call",
@@ -78318,7 +78334,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NodeDb.dictionary32_lookup",
@@ -78354,7 +78370,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.projection",
@@ -78363,7 +78379,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.read_write",
@@ -78372,7 +78388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.execute",
@@ -78381,7 +78397,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.after_count",
@@ -78390,7 +78406,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.after_used",
@@ -78399,7 +78415,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.body_shape",
@@ -78408,7 +78424,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.scan_prefix",
@@ -78417,7 +78433,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.scan_model",
@@ -78426,7 +78442,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.value_store",
@@ -78435,7 +78451,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.used_store",
@@ -78444,7 +78460,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.after_copy",
@@ -78453,7 +78469,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Set.body_shape",
@@ -78462,7 +78478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Set.no_growth",
@@ -78471,7 +78487,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Set.update_execute",
@@ -78480,7 +78496,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.TableEmpty.result_byte",
@@ -78489,7 +78505,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.TableEmpty.result_load",
@@ -78498,7 +78514,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.TableEmpty.entered_model",
@@ -78507,7 +78523,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.TableEmpty.entered_header",
@@ -78516,7 +78532,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.TableEmpty.entered_count",
@@ -78525,7 +78541,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.value_store_model",
@@ -78533,7 +78549,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.value_store_keys",
@@ -78542,7 +78558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ZeroBytes.memoryByte_cell",
@@ -78551,7 +78567,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ZeroBytes.final_byte",
@@ -78559,14 +78575,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ZeroWords.writes_member",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ZeroWords.memory32_cell",
@@ -78574,7 +78590,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ZeroWords.memoryWord_cell",
@@ -78582,7 +78598,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ZeroWords.final_cell",
@@ -78590,7 +78606,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.copy_call32",
@@ -78599,7 +78615,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.lift_copy32",
@@ -78608,7 +78624,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.result_away",
@@ -78616,7 +78632,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.result_header",
@@ -78624,7 +78640,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.header_executes",
@@ -78633,7 +78649,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.prepared_locals",
@@ -78642,7 +78658,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.copied_key_views",
@@ -78651,7 +78667,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.activate_slot",
@@ -78660,7 +78676,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.initial_index_read",
@@ -78669,7 +78685,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.lift_tail32",
@@ -78678,7 +78694,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.result_keys",
@@ -78687,7 +78703,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.tail32_execute",
@@ -78696,14 +78712,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.result_count",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.result_values",
@@ -78711,7 +78727,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.separate",
@@ -78720,7 +78736,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.cell_injective",
@@ -78729,7 +78745,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.byte_cell",
@@ -78738,7 +78754,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.key_byte_cell",
@@ -78747,7 +78763,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.used_byte_cell",
@@ -78756,7 +78772,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.key_words_separate",
@@ -78765,7 +78781,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.word_mapped",
@@ -78774,7 +78790,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.key_fits",
@@ -78783,7 +78799,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.key_mapped",
@@ -78792,7 +78808,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.used_mapped",
@@ -78801,7 +78817,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.result_values",
@@ -78810,7 +78826,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.result_keys",
@@ -78819,7 +78835,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.copy_away",
@@ -78828,7 +78844,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.old_keys_copy_away",
@@ -78837,7 +78853,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.metadata_away",
@@ -78846,7 +78862,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryFrame.byte_writes_away",
@@ -78855,7 +78871,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryFrame.byteView_byte_away",
@@ -78864,7 +78880,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryFrame.keys_writes_away",
@@ -78873,7 +78889,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.insert_build",
@@ -78882,7 +78898,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.initial_built",
@@ -78891,7 +78907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.insert_build_call",
@@ -78900,7 +78916,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.prepared_data",
@@ -78909,7 +78925,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.result_earlier",
@@ -78918,7 +78934,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.update_earlier",
@@ -78927,7 +78943,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.initial_header",
@@ -78936,7 +78952,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.result_header_cell",
@@ -78945,7 +78961,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.result_header",
@@ -78954,7 +78970,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.insert_execute",
@@ -78963,7 +78979,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.set_build",
@@ -78972,7 +78988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.absent_set",
@@ -78981,7 +78997,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.set_build_call",
@@ -78990,7 +79006,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.source_copy_separate",
@@ -78999,7 +79015,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.tail_execute",
@@ -79008,7 +79024,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.update_header",
@@ -79017,7 +79033,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.update_build",
@@ -79026,7 +79042,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.memory_value_call",
@@ -79035,7 +79051,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ignored_memory_call",
@@ -79044,7 +79060,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.key_model_fields",
@@ -79053,21 +79069,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.value_model_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.header_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.TableCall.environment",
@@ -79076,7 +79092,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.built_high_frame",
@@ -79085,7 +79101,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.built_after_hash",
@@ -79094,7 +79110,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.body_shape",
@@ -79103,7 +79119,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.set_arguments",
@@ -79112,7 +79128,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.record_step",
@@ -79121,7 +79137,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.record_earlier",
@@ -79129,7 +79145,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.Records.after_hash",
@@ -79137,7 +79153,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.hash_arguments",
@@ -79146,7 +79162,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.after_hash_step",
@@ -79155,7 +79171,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.Context.of_control",
@@ -79164,7 +79180,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.recordPrice_mono",
@@ -79172,7 +79188,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.History.length_bound",
@@ -79180,14 +79196,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.History.value_record",
       "axioms": [
         "propext"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.record_loop",
@@ -79196,7 +79212,61 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-witness-loop-v2.log"
+      "successful_log": "mutable-witness-execution-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.capacity_entry",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-witness-execution-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-witness-execution-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.table_populate",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-witness-execution-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.prepare_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-witness-execution-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.prepare_data",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-witness-execution-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.prepared_context",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-witness-execution-v2.log"
     }
   ]
 }

@@ -2537,6 +2537,12 @@
     "submission/InitECandidate/Solver/MutableTable/SetEffect.lean",
     "submission/InitECandidate/Solver/MutableTable/SetGrowGuard.lean",
     "submission/InitECandidate/Solver/MutableTable/SetGrowTail.lean",
+    "submission/InitECandidate/Solver/MutableTable/SetModelBudget.lean",
+    "submission/InitECandidate/Solver/MutableTable/SetModelCall.lean",
+    "submission/InitECandidate/Solver/MutableTable/SetModelExecution.lean",
+    "submission/InitECandidate/Solver/MutableTable/SetModelHeap.lean",
+    "submission/InitECandidate/Solver/MutableTable/SetModelPost.lean",
+    "submission/InitECandidate/Solver/MutableTable/SetModelTail.lean",
     "submission/InitECandidate/Solver/MutableTable/SetNoGrowthBudget.lean",
     "submission/InitECandidate/Solver/MutableTable/SetNoGrowthCall.lean",
     "submission/InitECandidate/Solver/MutableTable/SetNoGrowthExecution.lean",
@@ -4657,8 +4663,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61522,
-  "package_bytes": 2253703767,
+  "package_entries": 61528,
+  "package_bytes": 2253733671,
   "claim": {
     "K": "infinity"
   },

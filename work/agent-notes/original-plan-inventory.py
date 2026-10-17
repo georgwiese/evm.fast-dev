@@ -27,7 +27,7 @@ roots = {
     'baseline_bootstrap': ['BootstrapStartup'],
     'original_witness_constructor': ['MutableTable.WitnessBuildExecution', 'MutableTable.WitnessBuildEmpty'],
     'original_witness_lookup': ['MutableTable.WitnessDictionaryLookup', 'MutableTable.NodeDbDictionary32'],
-    'original_mutable_key_operations': ['MutableTable.GetGeneralCall', 'MutableTable.HasGeneralCall', 'MutableTable.InsertGeneralCall', 'MutableTable.SetNoGrowthBudget', 'MutableTable.MemoryModelEntry', 'MutableTable.MemoryModelInsertCall', 'MutableTable.MemoryModelSetCall', 'MutableTable.GrowRuntime.CallerBudget', 'MutableTable.SetGrowTail', 'MutableTable.TableRuntime.Budget'],
+    'original_mutable_key_operations': ['MutableTable.GetGeneralCall', 'MutableTable.HasGeneralCall', 'MutableTable.InsertGeneralCall', 'MutableTable.SetNoGrowthBudget', 'MutableTable.MemoryModelEntry', 'MutableTable.MemoryModelInsertCall', 'MutableTable.MemoryModelSetCall', 'MutableTable.GrowRuntime.CallerBudget', 'MutableTable.SetModelHeap', 'MutableTable.TableRuntime.Budget'],
     'input_reachability': ['Input.Witness.BodyNormal', 'Input.Witness.PrefixNormal', 'Input.RequestStoredGasFromHeader', 'Input.RlpLength.BlockGuard'],
     'local_gas_accounting': ['GasBudget.StateChargeBudget', 'GasBudget.ForwardSites', 'GasBudget.ChildError', 'GasBudget.ChildSuccess'],
     'original_root_initialization': ['GasBudget.RootMsgNormal', 'GasBudget.FrameOpenCall', 'Input.FreshRecordCall'],

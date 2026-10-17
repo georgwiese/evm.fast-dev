@@ -2919,6 +2919,7 @@
     "submission/InitECandidate/Solver/WitnessRadix/Addressing.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AgendaBudget.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AgendaCost.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/AgendaWeightSteps.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AllocationBody.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AllocationCode.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AllocationMemory.lean",
@@ -2991,6 +2992,9 @@
     "submission/InitECandidate/Solver/WitnessRadix/LayoutTerminalFinish.lean",
     "submission/InitECandidate/Solver/WitnessRadix/LayoutWriteCells.lean",
     "submission/InitECandidate/Solver/WitnessRadix/LeafGraph.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/LoopCompose.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/LoopResult.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/LoopTermination.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Memeq32.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Memeq32Entry.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Memeq32Memory.lean",
@@ -4018,8 +4022,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 60865,
-  "package_bytes": 2250822909,
+  "package_entries": 60869,
+  "package_bytes": 2250842135,
   "claim": {
     "K": "infinity"
   },

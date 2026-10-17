@@ -729,6 +729,22 @@
     "submission/InitECandidate/Solver/WitnessRadix/InvariantUnary.lean": {
       "bytes": 5152,
       "sha256": "66beef303396c3af9f2641bcd8ee3dd643943aaf1938f827a146f864ed0cd277"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AgendaWeightSteps.lean": {
+      "bytes": 4570,
+      "sha256": "b328c86ee8c77e294d792bbbb707b0f1f095399cccf2e5ed4a5d0c24a7ee9eb9"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LoopCompose.lean": {
+      "bytes": 3087,
+      "sha256": "026ee0a55ccefa308f95a59164f9bce1fd2a216a8fee835cc4147808810e78aa"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LoopResult.lean": {
+      "bytes": 2192,
+      "sha256": "cbb600354e0577f97b3e96905cc86d1c781855915a09f44102c58c9e83fed9c4"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LoopTermination.lean": {
+      "bytes": 9377,
+      "sha256": "e09649d25277291c0fe047f5b4490ef4025ce0c1cb90bf35d91350c125c11d14"
     }
   },
   "development_artifacts": {
@@ -774,7 +790,8 @@
     "witness-radix-layout-pending-reads-v1.log",
     "witness-radix-invariant-split-checkpoint-v1.log",
     "witness-radix-invariant-root-checkpoint-v1.log",
-    "witness-radix-invariant-finish-v1.log"
+    "witness-radix-invariant-finish-v1.log",
+    "witness-radix-loop-termination-v2.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -940,6 +957,7 @@
     "located_graph": "shared allocation/located/frontier-safety invariants derive protection of all established reads through actual split body; new partial graph represents the same expected tree and retains location, safe remaining stores and distinct frontier slots; full physical pending/task invariant still under development",
     "split_full_invariant": "the complete actual main-body split re-establishes the full construction invariant from itself and case/clock premises: graph representation/location/safe/distinct/aligned frontier, real pending stack, child/current/pending readable intervals, immutable data, valid saved task metadata, exact locals and cumulative allocation budget",
     "terminal_shared_invariant": "real terminal bodies (continue or finish) derive every ordinal/pop read, destination mapping and store-safety premise from shared layout/stack/rows/ABI facts; leaf update preserves immutable data, graph/frontier invariants and pending rows; complete terminal invariant assembly remains open",
-    "all_invariant_cases": "split, unary and terminal continuation each execute the actual body and re-establish the complete invariant; terminal finish returns and establishes the complete actual lookup representation at the original table root slot, from the invariant; whole-loop induction and constructor initialization remain open"
+    "all_invariant_cases": "split, unary and terminal continuation each execute the actual body and re-establish the complete invariant; terminal finish returns and establishes the complete actual lookup representation at the original table root slot, from the invariant; whole-loop induction and constructor initialization remain open",
+    "whole_loop": "actual main while terminates from full invariant and 4*agendaWeight clock affordability, returns 0, establishes expected actual lookup representation at original table root, preserves all control fields except locals/memory/clock, and spends at most 4*agendaWeight source clocks; initial invariant/whole helper and constructor remain to be established"
   }
 }

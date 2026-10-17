@@ -3198,3 +3198,36 @@ Whole actual header/block length and payload guard checkpoint (2026-10-17):
   all work above main, remains a judgment rather than file-count progress.
 - Continue joint gas/refunds/mutable-table/heap-Q spending gate and root decoder
   entry connections; no whole-program go or finite K has been earned.
+
+Actual state-gas refund/refill conservation checkpoint (2026-10-17):
+- GasBudget.Frame real ev-global address/load helpers, literal offset separation
+  and regularBudget=gas_left64+regular_used184+outstanding_spill192.
+- Refill executes actual message load and three stores: liquid+=spill,
+  state-left=message reservoir, spill=0, return/scopes. Caller costs1source
+  clock, body0. Reservoir read cell must differ from first liquid write.
+- Minimum executes actual unsigned two-argument min, proves its natural minimum,
+  real ABI and scoped caller, no body clocks/one call clock.
+- Refund executes actual spill load/min call and all three stores: liquid gets
+  min(amount,spill), spill loses it, state-left gets the remainder. One body
+  source clock. Both actual ignored callers check, retaining changed memory and
+  unchanged control/globals, and preserving regularBudget if liquid+spill<2^64.
+  Actual amount/cell/runtime/clock premises explicit. No whole-run gas bound.
+- Successful joint closure gas-refund-calls-v1.log1102targets, allowed axioms,
+  7.73s wall, maximum child RSS1908472KiB; disk58%, host~1.3GiB afterward.
+  Failed draft fixes: exact BitVec.add_right_inj lemma, typed mapped-cell alias,
+  opaque wordOp simplification, normalized record-memory projections and min's
+  empty-locals clock clamp. Failed logs are not evidence.
+- Index4434modules/7155facts; incremental policy61298entries/2252545515bytes,
+  passes with infinity claim. All changed sources indexed. Account27%, no
+  reset credits. No full verifier or baseline audit run.
+- Gas audit: CALL/CALLCODE charge11300 nonzero-value overhead and subtract
+  forwarded gas including2300 stipend from regular-used; raw cumulative
+  charge_gas amounts therefore are not net regular consumption. Actual
+  calculate_intrinsic_cost returns regular,0,floor; process_transaction regular
+  block accounting is before ordinary refunds. Need actual state-charge,
+  child transfers, stipend-payment/no-wrap and signed state/block conservation.
+- Refreshed global-resource-pilot source hashes include evm_calls and tx;
+  2160small optimizer self-checks pass, whole_bound/certificate remainfalse.
+  Whole header/block guard result is recorded with root entry premises open.
+- Continue charge_state_gas and child-call transfers, then aggregate joint
+  gas/table/heap accounting and root entry refinement; finiteK still open.

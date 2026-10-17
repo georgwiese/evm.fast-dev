@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 4476,
+  "solver_modules": 4489,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 5,
@@ -40,6 +40,7 @@
     "HashEnvironmentFrame": 1,
     "Input": 299,
     "JumpCmpNearCost": 1,
+    "JumpDest": 13,
     "JumpNearCost": 1,
     "LabBound": 899,
     "LabBoundTight": 10,
@@ -159,6 +160,11 @@
       {
         "module": "GasBudget.FrameNewFresh",
         "solver_dependency_count": 148,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "JumpDest.Call",
+        "solver_dependency_count": 151,
         "imports_replacement_ast": false
       }
     ],

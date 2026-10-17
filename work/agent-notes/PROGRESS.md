@@ -4768,3 +4768,36 @@ Whole paired witness constructor checkpoint (2026-10-17):
   to preserve initialized gas through frame_new return; actual caller MSG gas
   construction and successful child merges/rollback/block signed accounting.
   Account last48%, no reset credits. No numerical ceiling applies.
+
+
+### 2026-10-17 — complete unchanged jump-destination helper checked
+
+- JumpDest.Program is kernel-checked against the complete original body.
+  Arithmetic/Reads/Continuation/Advance/Mark/Branch/Step derive every actual
+  opcode branch, conditional lookahead, bitmap update and positive1..33 advance.
+  StepMapped derives byte and bitmap reads from mapped regions; no opcode oracle,
+  content restriction, cryptographic premise or frozen code-byte assumption.
+- Loop proves the entire actual scan, with at most n-index iterations/source
+  clocks and a complete final-state formula. All earlier words above the bitmap
+  survive every iteration; source scope/counter restoration is included.
+- Execution/Environment/Call compose actual scratch allocation, memzero, scan,
+  return, code lookup and scoped caller ABI. Incoming-cursor upper memory is
+  preserved, scratch cursor updated exactly, FFI/other canonical fields retained.
+- Caller source-clock allowance n+memzero_price(bitmap_bytes(n))+3; conditional
+  literals131588 for n<=131072 and65796 for n<=65536. Code/domain/cursor/alignment/
+  room/clock premises remain; actual length and ownership reachability, weighted
+  straight-line/target work and whole runtime are not claimed.
+- Removed unused preliminary abstract opcode advance model after the actual
+  word selector was connected to execution. Removed its two stale printed-fact
+  index entries. Retained rebuild jumpdest-retained-v1.log1120jobs succeeds and
+  includes RootCallerNormal/FrameNewFresh. Permitted axioms only. All development
+  failed logs remain unindexed; final retained source hashes indexed.
+- Evidence4478modules/7330printed facts;4489Solver modules. Inventory includes
+  JumpDest.Call under actual root initialization. No missing imports/replacement
+  dependencies; pinned source/semantics/ROM/fixed proofs unchanged. Incremental
+  policy passes61352entries/2252867078bytes (before the small arithmetic cleanup),
+  not full verification. Claim infinity; no whole-program finite K yet.
+- Continue applying the memory frame to frame_new and proving the actual
+  lst_new_scratch/htab_new_scratch helpers and final stores/count reads. Then
+  caller MSG construction, successful child merges/rollback/signed block gas,
+  global work aggregation and unchanged target transport. Account49%, no resets.

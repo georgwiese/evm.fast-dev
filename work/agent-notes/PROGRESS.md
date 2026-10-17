@@ -2141,3 +2141,40 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - LayoutPendingReads classifies the real suffix/parent read addresses into
   lower pending-stack cells and installed parent-bit words, using the actual
   encoded depth predecessor (layout-pending-reads-v1, 673 targets).
+
+### 2026-10-17 — actual split preserves the full construction invariant
+
+- LayoutStackOffsets/Frame/Push derive all old physical stack-read separation
+  from depth/parent geometry and prove the real right-task push preserves the
+  suffix representation. PendingIntervals/Validity track increasing disjoint
+  intervals, valid ordinals, nonempty saved tasks and legal saved bit positions.
+- LayoutOtherInterval/PendingRows preserve all old sibling primary intervals
+  and add the exact new right interval. LayoutLeafMemory/Graph/Frontier/Rows
+  preserve immutable records, graph representation/location/safe/distinct
+  frontier and all pending rows through the actual terminal tag store.
+- LayoutTerminalCells/Body/Finish derive ordinal loads, all four pop reads,
+  mapped destination and store separation for both actual terminal bodies.
+  ResumeContext recovers exact saved-task addresses and all twelve live locals.
+- FrontierAlignment connects current/pending ordinal tasks to concrete graph
+  holes. OpenGraphSelect constructs the first-hole replacement from a nonempty
+  frontier. AgendaBudget proves the three cases' cumulative allocation updates.
+- ConstructionInvariant assembles graph, physical stack, intervals, immutable
+  data, task metadata, locals and allocation budget. InvariantClock preserves
+  it at any source clock. InvariantSplit proves a complete actual split body
+  reaches a state satisfying the full invariant, with no assumed next-state
+  invariant or independent per-store/read premises.
+- Successful invariant-split-checkpoint-v1 closure (734 targets), only permitted
+  axioms. Continuing unary/terminal full-invariant cases and whole-loop induction.
+  Constructor initialization, original-map/whole-guest relation, target-clock
+  composition and finite certificate remain open; claim stays infinity.
+- Strengthened ConstructionInvariant with the original root-slot identity.
+  InvariantUnary now proves the full invariant through the actual unary body.
+  InvariantTerminal proves the actual leaf/pop continuation re-establishes every
+  invariant component at the saved task, including exact resumed locals/metadata.
+  InvariantFinish proves the actual final body returns and establishes the whole
+  actual lookup representation at the original table root header cell.
+- Successful invariant-root-checkpoint-v1 (735 targets) and invariant-finish-v1
+  (727), only permitted axioms. All nonfinal body cases now preserve the full
+  invariant, and the final case yields the intended represented tree. Continuing
+  agenda-weight clock induction and constructor initialization; whole-guest,
+  target transition bound and finite certificate remain open.

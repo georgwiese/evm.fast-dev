@@ -2662,3 +2662,32 @@ Payload allocated prefix checkpoint (2026-10-17):
   `change` expected prepared/declaredState alias before rewriting scalar equality
   avoids a simp implicit-transparency mismatch; field projections after rw can
   require explicit rfl. Bind_lookup_other takes MlS binder!=query, not Stringne.
+
+
+Variable-list entry checkpoint (2026-10-17):
+- RawScalar: raw byte/uint32/uint64 bounds and ofNat-toNat at every input index;
+  no host-window/size premise. Use these instead of HostGas.le32_eq for dynamic
+  starts. VarList.Program extracts all actual entry/first/count/allocation/loop/
+  finalstore/return AST shapes (Pan ExpHOL uses .rstruct/.panop; ValueHOL.rStruct).
+- Entry: real empty pair return0 clocks, short SszErr20 costs1, passing real
+  copied uint32 first declaration with exact local scope. Slice containment only.
+- FirstChecks: actual first zero/alignment/range composite predicate, shift2
+  count, nonempty positive count with4*count=first<=length. CountChecks actual
+  limit condition andpanop count*16. FirstGuards all real SszErr21/22 branches
+  and exact allocator continuation, lexical count restoration; no alloc yet.
+- NormalEntry: actual whole-function normal return yields empty pair or length
+  >=4, positivecount=rawfirst/4,4count=rawfirst<=length,count<=limit, actual
+  allocation-call normal continuation. No normal-offset validity assumed.
+- Successful input-varlist-normal-entry-v1.log1160 targets; allowed axioms only.
+  Next whole alloc16count and record loop/finalstore/return, copied input frame,
+  ABI/caller; nonempty/allfault branches. Then actual fixed_list_count/udivmod
+  and payload gasstore. Nothing finite/global/target verified.
+- Dynamic loop LD_LE32 addresses use flattened add[p,panop(i*4),byte], so static
+  flat32(base,[constants]) does not match. Next useful helper: generic add-args
+  flattened uint32 congruence or direct actual dynamic byte-address evaluation.
+  Reuse Scalar.op_congr/byte_congr/shift_congr and HeapFlatScalar/HeapScalar;
+  keep actual AST rather than replacing dynamic subexpressions syntactically.
+- AND fold starts allones. A local universally quantified foldedAnd lemma
+  avoids simp key mismatch AndOp.and vs notation and survives first=0 rewrite.
+  badFirst is Prop: define its Decidable instance explicitly for theorem ifs.
+  Prefer plain simp with split conditions over simp_all to avoid recursive simp.

@@ -1983,3 +1983,23 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   index: 3,892 source hashes / 6,034 printed facts. Counts are not progress
   percentages. No finite claim, compiled-clock/whole-guest refinement or final
   verification; Solution/claim/fixed source/dependencies remain unchanged.
+
+### 2026-10-17 — complete actual stable-scatter loop
+
+- ScatterBucket/Body/Step prove the literal bucket store, cursor increment,
+  bit selection and scoped-variable restoration from actual ordinal/key reads.
+  ScatterPost/Ready transfer readable arrays/key bytes through every write,
+  using explicit destination separation and mapped-cell premises.
+- ScatterLoop proves complete actual execution. ScatterResult/Cursors identify
+  exact word-memory scatter, one source clock per ordinal, final index/cursors
+  and preservation of every other local/nonlocal field. ScatterPartition joins
+  this to two exact ordered filtered block writes and the actual copy-memory
+  representation. The theorem does not assume a successful execution.
+- Successful closure witness-radix-scatter-partition-v1.log (625 targets), only
+  permitted axioms. Evidence index: 3,901 source hashes / 6,047 printed facts.
+  The three inner construction passes now have actual HOL execution summaries.
+  Parent allocation/no-wrap/ownership premises, outer agenda, graph completion,
+  original-map relation and whole-guest/compiler/global bound remain open.
+- Continuing immediately with outer construction and its graph invariant.
+  Claim remains infinity; Solution/fixed source/ROM/dependencies unchanged. No
+  final verifier or external submission has run.

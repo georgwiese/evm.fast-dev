@@ -1344,5 +1344,10 @@
     "successful_log": "witness-radix-constructor-populate-v3.log",
     "targets": 874,
     "result": "Natural arena/alignment bounds derive all full-hash mapping premises and outside-buffer frames. Actual constructor record arguments derive from decoded record cells. Complete real hash/copy/store/increment iteration preserves earlier keys and records; entire actual record loop initializes all arrays with the observed actual digests. Loop+radix helper+table return establishes expected actual lookup representation at root. Source cost<=1374*N+1 for max1024 and <=10854*N+1 for max65536. Only allowed axioms. Actual htab_new/capacity entry and globally reachable allocated/decoded premises remain to compose; original-map/whole-guest/target/global finite certificate remains open."
+  },
+  "whole_constructor_checkpoint": {
+    "successful_log": "witness-radix-constructor-call-v1.log",
+    "targets": 915,
+    "result": "Complete literal candidate nodedb_build and actual caller/callee/code environment, including cap4 declaration and doubling loop, htab_new allocations/clearing/header writes/array entry, entire actual hash/copy/store record loop, whole radix helper, scope restoration and table return. Expected actual lookup representation at stored root; exact heap-global advance; other nonlocal fields preserve except events/memory/clock. Body<=1378*N+47 source clocks for max1024, <=10858*N+47 for max65536; call adds one. Explicit decoded record words, ordinary-domain globals/code, allocated hash buffers before records and conservative heap-room premises remain for the whole-guest proof. Original fixed map/source refinement and target/global finite certificate remain open."
   }
 }

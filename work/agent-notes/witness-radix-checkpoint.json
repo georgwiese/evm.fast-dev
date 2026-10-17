@@ -549,6 +549,90 @@
     "submission/InitECandidate/Solver/WitnessRadix/OpenGraphSafety.lean": {
       "bytes": 3287,
       "sha256": "8bd0708b2322f2da7df6f6b9dc5466057fc2bc7079289183d6bae05abfe8b145"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BackingLayout.lean": {
+      "bytes": 5086,
+      "sha256": "1a389c6b64737d95cb4837840a8b5ec616d90352bcb53fca1e72e21371f65c3d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ImmutableRecords.lean": {
+      "bytes": 5346,
+      "sha256": "3189dc458a58eadda00ffa729782e9014f988e5554f189213c966b64e6fb97d9"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutCells.lean": {
+      "bytes": 3749,
+      "sha256": "14f121716ee3376ca35cb12b0b15eaf5287adc7d4a061fa98b9ddb8b6a9849ef"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutChildOwnership.lean": {
+      "bytes": 3819,
+      "sha256": "1a782b26ab4e33d2c118f9cbf6a85d21098678892a76c91b4d6b054449a60583"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutContext.lean": {
+      "bytes": 4780,
+      "sha256": "c4e1f67055a2ea84a6740036f12423132db519efc30f5a7c8086ec4227c7c567"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutDataPrefix.lean": {
+      "bytes": 2120,
+      "sha256": "face385221c485604b7b72c0964e0b5d6f3339b083c2aedf5356e61d73fdcaa3"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutLeftContext.lean": {
+      "bytes": 1685,
+      "sha256": "39d1648495bb66be657220b3d96529cb5efe8c0a38a499204afd9b4ef81e1c20"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutOwnership.lean": {
+      "bytes": 3375,
+      "sha256": "9df60f0fcc434d8400451b035549151d69af9cc633d37320cba5b24099ca4411"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutSeparation.lean": {
+      "bytes": 5118,
+      "sha256": "32a9e4aa9a753d89d3feac696c6bdcbf1d971710a4a9f3eafc9c03fdae2b1ba2"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutSplitInputs.lean": {
+      "bytes": 1943,
+      "sha256": "a58d8547c54c0892476846f9e6437284a813fb467bf7e864fee9704c4f2b1b6d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutSplitMemory.lean": {
+      "bytes": 3895,
+      "sha256": "05b0e7fb5ef94aa50843c836b2ede17e71416a91ee3eee477b01a4a7cc323da6"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutWriteCells.lean": {
+      "bytes": 2150,
+      "sha256": "85c9bf866bd4b66b7b00a200a0af0f67848c23249d0e6cf580ff735b54a73acb"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutBranchFrontier.lean": {
+      "bytes": 3334,
+      "sha256": "57c289ffde03b50b7aadf96183686dba710e317fa2f1b3311bfc736210c4e606"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutBranchSafety.lean": {
+      "bytes": 5941,
+      "sha256": "c460a2dc8970991568fcafdc7067f98d018b25416f334ae905dfe66d39892510"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutFrontierSlots.lean": {
+      "bytes": 2817,
+      "sha256": "4006ec27ee69e78da7a1d8f493f1d427694081be0e53ff567b555c78528d6f2a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutGraphFill.lean": {
+      "bytes": 3698,
+      "sha256": "c353a77d8d23a1db99b0df6372dfe9248dfb55df946c125db82873d0a087202d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutGraphFrame.lean": {
+      "bytes": 4813,
+      "sha256": "18a84f9ef751622c7e28b4a19823a39440ff98f715bf9ca14ced14a60e6dae4c"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutLocated.lean": {
+      "bytes": 5199,
+      "sha256": "1bf7a9308062ee3820e445653b5dda1b4192718c16b085fe45731a71ff1737a2"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutLocationStep.lean": {
+      "bytes": 3782,
+      "sha256": "8273d0b3c85b3868e9dc2adcdfaac70e17d619d69d591667dfd2f2b15d4438c2"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutProtected.lean": {
+      "bytes": 3512,
+      "sha256": "11e4a69985cc48ed3dca7b313752bb9326ee33d943542078a87d3bab0f74b4df"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutPendingReads.lean": {
+      "bytes": 3117,
+      "sha256": "d8212ee7151695c14a081e3d8f95f0f48fed3440114d4fdb2c19c170b0e0de39"
     }
   },
   "development_artifacts": {
@@ -587,7 +671,11 @@
     "witness-radix-query-footprint-v1.log",
     "witness-radix-construction-graph-checkpoint-v1.log",
     "witness-radix-address-read-stable-v1.log",
-    "witness-radix-frontier-safety-v1.log"
+    "witness-radix-frontier-safety-v1.log",
+    "witness-radix-layout-child-v1.log",
+    "witness-radix-layout-located-v1.log",
+    "witness-radix-layout-checkpoint-v1.log",
+    "witness-radix-layout-pending-reads-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -748,6 +836,8 @@
     "split_graph": "actual count/sort/allocation scope fills a branch hole, preserves expected tree, selects left-task locals, leaves both child intervals readable and prepends physical right-task suffix cells under explicit mapped/nonaliasing/no-wrap parent premises",
     "leaf_graph": "terminal tag store installs the actual ordinal key/slice at a frontier hole and preserves ancestors/siblings under concrete separation; ordinal load derived from readable interval/getLast",
     "agenda_cost": "logical agenda cost <= 1028*N with case prices matching the actual outer case summaries; physical agenda refinement still open",
-    "allocation_budget": "partial full-tree cumulative leaf/frontier mass proves branches < N through terminal, unary and split transitions; concrete branch addresses are nonzero/even/fresh under original allocation bounds"
+    "allocation_budget": "partial full-tree cumulative leaf/frontier mass proves branches < N through terminal, unary and split transitions; concrete branch addresses are nonzero/even/fresh under original allocation bounds",
+    "backing_layout": "six actual header/key/value/ordinal/record pool extents, no-wrap, alignment and disjointness imply scatter ownership, seven distinct mapped store destinations, immutable record/key preservation, child interval ownership and updated left context; allocator entry and full physical agenda must establish/preserve the shared invariant",
+    "located_graph": "shared allocation/located/frontier-safety invariants derive protection of all established reads through actual split body; new partial graph represents the same expected tree and retains location, safe remaining stores and distinct frontier slots; full physical pending/task invariant still under development"
   }
 }

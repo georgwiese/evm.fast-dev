@@ -69,6 +69,8 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 **Complete generic copy:** the entire actual fixed memcpy now checks for arbitrary alignment, overlap and mapped ranges: all four loops, branch selection, scopes/return, real code/argument/callee environment and caller restoration. Exact memory and source-clock cost are exposed; body cost ≤ length and call cost ≤ length+1. Cells outside the destination byte/word footprint are preserved (`witness-radix-copy-general-call-v1.log`, 640 targets, permitted axioms only). This closes the final-block copy execution gap, but full Keccak absorption/padding and constructor composition remain open.
 
+**Complete block absorption:** the whole fixed keccak_absorb_block now checks for aligned and expanded unaligned loads, all 17 actual XOR/store iterations, real permutation call, scopes/return and real caller/callee/code environment. Exact cost is 18 body / 19 call source clocks; caller locals restore, globals/code/oracle/host preserve, and memory outside the state footprint preserves (`witness-radix-keccak-absorb-call-v1.log`, 678 targets, permitted axioms only). Full keccak256 block iteration, padding and output remain to compose.
+
 **Next action:** establish the complete helper’s mapped/hashed-array premises from the actual nodedb_build/htab_new constructor, prove its relation to the fixed guest’s last-wins maps, and connect the resulting whole-guest costs through actual target execution. **Current principal risk:** the map representation/refinement and whole-guest input/gas/query/composition proofs remain open. Read the top checklist after every meaningful update. Historical stop instructions below are superseded by the current authorization above.
 
 ---

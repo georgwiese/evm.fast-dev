@@ -12,6 +12,19 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked complete original32-byte htab_find_slot/get and nodedb_lookup
+  against a represented dictionary, at every query alignment. Actual hash,
+  comparator, value-cell load, tuple ABI/return, record pointer/length loads
+  and lexical frames compose. Find/get/lookup bodies cost at most
+  6*order.length+1/+2/+3 Pan clocks. Physical headers, binary used/key/value
+  representation, no-gap placement, dictionary relation, covering list/room,
+  pointer ranges, record cells, code and clocks remain explicit premises.
+  Actual construction/stores maintaining those premises, whole original/radix
+  refinement and target pricing remain open. Successful logs
+  mutable-get-call32-v1.log and mutable-nodedb-dictionary32-v1.log1132targets;
+  permitted axioms, index4501/7337, incremental policy61366entries/
+  2252890183bytes. Claim infinity; no finite K/full verification/global go.
+
 - [x] Checked linear-table placement/dictionary model: cyclic distance, sound
   and complete lookup under occupied paths; safe updates/insertions preserve
   placement, uniqueness and dictionary overwrite. Fixed-capacity construction

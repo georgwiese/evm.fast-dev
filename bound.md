@@ -12,6 +12,17 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked linear-table placement/dictionary model: cyclic distance, sound
+  and complete lookup under occupied paths; safe updates/insertions preserve
+  placement, uniqueness and dictionary overwrite. Fixed-capacity construction
+  gives last-record-wins, an input-length covering list and abstract agreement
+  with the radix model for every key. Actual byte-chain decisions now equal
+  model search under physical key/used-byte representation; absence matches
+  the dictionary under placement. Source mutating stores/count/ownership and
+  whole map refinement are still open. Logs `mutable-placement-build-v1.log`
+  and `mutable-find-model32-v1.log`; permitted axioms, index4490/7322,
+  policy61355entries/2252845514bytes, infinity. No finite K/full verification.
+
 - [x] Checked complete original htab_find_slot body/caller for32-byte keys at
   every alignment. Both real hash paths return the same byte-level keyHash;
   all32 unaligned loads and aligned-word reconstruction check. Real header

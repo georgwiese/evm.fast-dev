@@ -3522,3 +3522,33 @@ Complete original32-byte find/hash/caller checkpoint (2026-10-17):
   physical table/ownership invariant, then20/52/60-byte helpers, protected gas
   cells and storage/state-debt coupling. Continue original/radix refinement,
   joint table/Q/heap budget and whole source/compiler/target certificate.
+
+Linear-table dictionary/placement checkpoint (2026-10-17):
+- Placement cyclic distance and first-match probe search; no-gap placement
+  invariant says all earlier slots from a stored key's home are occupied.
+  Under placement and bidirectional dictionary representation, lookup equals
+  the dictionary for every query. Hash is arbitrary; no distribution premise.
+- PlacementUpdate safe slot overwrite preserves occupancy/no gaps, key
+  uniqueness and functional dictionary update under explicit chosen-slot,
+  old-key exclusion and occupied-path premises. Empty invariants and overwrite
+  =lastValue append checked. PlacementBuild fixed-capacity insertion trace
+  yields last-record-wins lookup and abstract agreement with radix build;
+  construction history covers all occupied slots with at most input.length
+  indices, even with duplicates, without assuming actual HT_ORDER contents.
+- FindModel32 physical used-byte/stored-key views identify the actual comparator
+  chain's answer with model probe search. Under placement/dictionary relation,
+  actual chain absence iff dictionary query absent. It does not yet include
+  value-cell loads, full find/get semantic lifting or mutator representation.
+- Successful mutable-placement-build-v1.log488targets,3.04s,max child
+  RSS1190876KiB; mutable-find-model32-v1.log1120targets,4.52s,max RSS1900524KiB.
+  Printed main facts use only permitted axioms. Failed drafts fixed reserved
+  `at` identifier, if-True normalization and occurrence-directed unfolding of
+  lastValue on both sides. Failed logs not evidence.
+- Index4490/7322; policy61355entries/2252845514bytes, infinity. Account32%,
+  no reset credits. No finite K/full verifier/overall go.
+- Next lift chain presence/dictionary values through complete original find/
+  get; actual no-growth32-byte set/raw insertion and initial empty-table model.
+  nodedb_build preallocates cap>=2*N+2, so original immutable-map refinement can
+  use a fixed-capacity trace and avoid growth/deletion there. Mutable runtime
+  maps, their growth/deletion/rollback/ownership, global gas/state/table/Q/heap,
+  and compiler/target certificate remain separate open work.

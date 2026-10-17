@@ -3064,3 +3064,35 @@ Byte writer callers and U256 length checkpoint (2026-10-17):
   loop<=32iterations(2clocks/iter), realrlp_put_u256alloc32/heaprestore/copy;
   thenwholeencode_headerandblockprefix/guard. No newfullK/globalgoearned.
   Account25%,0resetcredits. Claim infinity,no fullverification.
+
+Actual minimal U256 writer and heap-scope checkpoint (2026-10-17):
+- U256Limb completeactualconditionalreturnscan andtuple+scalarABI/scopedcaller,
+ 0body/1callclock, purestateframe. Returnedwordexistenceissufficientforwriter
+  execution; exactmathematicalselectedlimbvalueisnotanassumedpremise.
+- U256MinProgram realposition=len-1-i no-wrap, realmaskedshiftamount<64 using
+  WordBits.mask7, actualbyteexpressionread. Step actualposdeclaration/limbcall/
+  byte-store/increment andbothrestoredscopes, exact1callclock. Loop actual
+  unsignedtest/whiletick, <=32rounds, exact2*roundsclocks, onlyilocalchanges,
+  memoryframeoutside32destinationbytes. Built wholeactualbyte_lengthcall,
+  loop/return/scopes: size<=32, <=67body/68callclocks, actualwrittenmemory.
+- HeapScope actualheap_markzeroargcallee/caller, releaseglobalheap_ptrassignment
+  andignoredcallerwitholdsavedcallerlocals. Eachcall1clock; releaseexplicitly
+  updatesonlyheapglobal, markpure. Neitherassumesheapallocation/lifetimefacts.
+- RlpWrite.Access bytes_read_exists foractualmappedwordandbytes_access deriving
+  everybyteencoderpremisefromordinarydomainandtwoAllocatedBytes.Arenaextents,
+  includesempty/singleitemsandarbitraryalignment/overlapcopy. Sourcecontents
+  arbitrary, noassumedbytevalueorcopyoracle.
+- Success input-rlp-write-access-v2.log1154targets, onlypermittedaxioms. Failed
+  minreadsnormalizedshiftguardandAndOpinstance neededstagedeval/rfl; allfixed.
+- NEXT actualrlp_put_u256 heap_mark+alloc32+u256min+byteencoder+heap_release+
+  return/scopes; expected<=124body/125callsourceclocks,size<=41. Thenreal
+  encode_headersequenceandbuffergeometry. Cheap arithmetic PLAN (notyetproof):
+  optionalcurrentheadermax14bytestringfields(rawtotal636)+7scalarfields+2U256;
+  byteboundsn+9,word9,U25641 implypayload907, list<=916bytes; buffer1024fits.
+  Bytecallsraw636+14*21=930,scalar7*19=133,U2562*125=250,listlength11,
+  alloc1,listwrite20 =>plannedwholeheaderbody<=1345/call1346sourceclocks.
+  Needderiveallrealfieldloads/copyextents, sequence/restoration, extra<=32,
+  bufferincrementation/no-wrap andtemporary32bytesreusedbyheap_release. These
+  areplannednumbers, notclaimedwholeheadercosttheorems/globalK.
+- Rootblock8MiBguard/phaseentry, gas/refunds/mutabletables/heapQ andoriginalmap/
+  targetcertificate remainopen. Account25%,0resetcredits, claim infinity.

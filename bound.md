@@ -578,6 +578,56 @@ Continue on these concrete obligations:
   trie/journal/cleanup bounds. Compose a literal total below the score cap,
   then the real certificate and permitted final verification.
 
+### R7. Global resource pilot after decoded-record/gas connections (2026-10-17)
+
+Decision: **inconclusive; no whole-program go or finite K**. Keep resolving the
+resource premises. Local input/caller proofs above remain useful evidence, but
+are not a substitute for this gate.
+
+Offline `work/agent-notes/global-resource-pilot.py --self-test` records exact
+source hashes and checks its integer quadratic optimizer against2160 exhaustive
+small scenarios (`global-resource-pilot.json`). This is arithmetic bookkeeping,
+not a runtime bound or a constructed attack. It jointly constrains first-touch
+count D and subsequent warm-query count W by `cold*D+100*W<=G`, then maximizes a
+stated triangular-construction plus `D*W` probe relaxation. The actual cold
+account constant is3000; cold storage is2100. A380M gas scenario (200M user plus
+six30M system allowances) is **not a proved executed-gas total**, due to refunds,
+state reservoirs and forwarding/rollback. For a single storage-map dimension
+model it gives176,097,514,634 occupied visits at D=92,683,W=1,853,657. Map
+multiplicities, rehash/delete/copy work and phase sharing remain unproved. Do not
+sum full-G scenarios as if they were one established global budget.
+
+Useful source observations, still requiring actual-execution proofs:
+
+- `block_rlp_length` is checked against8,388,608 before content tries and before
+  `process_withdrawals`. `withdrawal_rlp_len` has a fixed21-byte address term,
+  three positive integer lengths and a positive list header, hence a paper
+  minimum25 and withdrawal count<=335,544, **after proving actual division and
+  no-wrap length accumulation**. Earlier SSZ hashing still permits the larger
+  copied-input extent. These are different phases.
+- Mutable `htab_del` uses one backward-shift scan; it does not call raw insertion
+  once per shifted entry. Collision accounting must include its copies/hashes,
+  but a quadratic reinsertion cost per deletion would misread the code.
+- Later warm lookups may hit a deep preexisting withdrawal-grown account map.
+  A single-map120M post-withdrawal scenario with335,544 free preexisting keys
+  gives402,652,800,000 occupied visits, before operation multiplicities. This is
+  not charged to cold gas already spent in that later window.
+- The persistent arena has31,092,374,808 bytes. Pairing a nonterminal immutable-db
+  query with32 persistent allocated bytes would permit971,636,712 such queries,
+  plus separately bounded root/last-failure queries. This pairing is **not yet
+  a theorem**. `_decode_step` allocates RLP slice arrays and rejects empty
+  extension paths; `_decode_witness_node` restores scratch rather than heap.
+  `ws_storage_trie` decodes before its caller's temporary key-hash heap scope.
+  Do not assume cryptographic acyclicity or that physical scratch bounds
+  cumulative work. Scoped indexed-trie builders need their own aggregate bound.
+
+Next quantitative pilot: prove actual nonzero small-divisor arithmetic/count
+bounds (the completed `udivmod` execution theorem currently proves only work
+and return shape), then the withdrawal length/cap and joint gas/table resource
+invariants. The complete mutable operation multiplicities and final weighted
+compiler/target pricing remain major open obligations. No new algorithmic
+impossibility or reachable runtime counterexample was established by this audit.
+
 ### Review protocol for subsequent sessions
 
 Recommended initial spending limit: one focused review session, roughly 60–90 minutes, plus at most three small targeted builds if needed. This is a planning limit, not permission to run expensive jobs. If the review remains inconclusive, record exactly why; do not turn it silently into another multi-hour proof campaign.

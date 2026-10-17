@@ -45,6 +45,7 @@ structure ConstructorPairResult (source right leftTarget rightTarget : PanSemSta
   memory : MemoryRegion.Agree region leftTarget.memory rightTarget.memory
   leftFrame : ∀ query,safe query → leftTarget.memory query=source.memory query
   rightFrame : ∀ query,safe query → rightTarget.memory query=right.memory query
+  capacityBound : 2^observation.bits≤4*count+4
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

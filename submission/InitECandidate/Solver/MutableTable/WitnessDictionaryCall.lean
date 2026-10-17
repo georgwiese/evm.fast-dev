@@ -47,7 +47,7 @@ theorem paired_dictionary_call (source right : PanSemStateFiniteExact 64 Guest.H
   obtain ⟨bits,finalCount,input,logical,keyFor,leftTarget,rightTarget,root,bitsLow,bitsTop,ready,
     leftCall,rightCall,leftLocals,rightLocals,_,leftScoped,rightScoped,nextBuilt,nextHistory,nextMatching,nextLength,nextRecords,
     rootMapped,rootWord,represented,leftControl,rightControl,leftUpper,leftLower,rightUpper,rightLower,
-    finalGlobals,finalFfi,finalMemory,leftFrame,rightFrame,support⟩:=
+    finalGlobals,finalFfi,finalMemory,leftFrame,rightFrame,support,capacityBound⟩:=
     paired_call_execute_supported source right leftArguments rightArguments records table count maximum
       leftArgs rightArgs leftCode rightCode recordsLower recordsBefore recordsAligned tableAligned room heap
       leftTableCode rightTableCode leftAllocCode rightAllocCode sliceFor stp pad scratch pointers lengths context
@@ -57,7 +57,7 @@ theorem paired_dictionary_call (source right : PanSemStateFiniteExact 64 Guest.H
   exact ⟨observation,leftTarget,rightTarget,
     ⟨⟨leftCall,leftLocals,leftScoped⟩,⟨rightCall,rightLocals,rightScoped⟩,
       ⟨bitsLow,bitsTop,ready,nextBuilt,nextHistory,nextMatching,nextLength,nextRecords,rootMapped,rootWord,represented,support⟩,
-      leftControl,rightControl,leftUpper,leftLower,rightUpper,rightLower,finalGlobals,finalFfi,finalMemory,leftFrame,rightFrame⟩⟩
+      leftControl,rightControl,leftUpper,leftLower,rightUpper,rightLower,finalGlobals,finalFfi,finalMemory,leftFrame,rightFrame,capacityBound⟩⟩
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

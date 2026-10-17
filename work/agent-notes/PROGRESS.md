@@ -4322,3 +4322,72 @@ Whole paired witness constructor checkpoint (2026-10-17):
   decoder/header/startup reachability and whole runtime contextual refinement
   remain open. Global gas/state/Q/heap/compiler/target budget and finite K open.
   Claim infinity, no full verification. Account41%,0resetcredits. Continue.
+
+
+### 2026-10-17 — uniform empty/nonempty decoded caller and actual capacity/cursor bounds
+
+- WitnessBuildEmptyControl and WitnessRadix.ConstructorEmptyControl add exact
+  hashControl to real zero-record bodies: initial source with heap_ptr T+304.
+  WitnessBuildEmptyRadixCallControl also exports both individual earlier-memory
+  frames plus real ignored/scoped calls, globals/FFI/public equality and models.
+  WitnessEmptyDictionaryCall packages this into ConstructorPairResult with
+  logical record arena at table,count0, arbitrary actual array argument. Empty
+  tree support is false and actual original empty Records vacuous. No hash or
+  record access introduced. Arbitrary supplied sliceFor ignored for empty tree.
+- WitnessAnyDictionaryCall handles all counts: positive count keeps actual raw
+  record address, zero uses ghost table base. Positive-only record lower/before/
+  aligned/context premises; unconditional fixed environment/domain/little and
+  table/code facts support empty. Initial allowance wholePrice+2 covers empty
+  caller conservative 48-clock premise while returned packet retains +1 lower
+  clock bounds (actual empty cost<=43/44). Input raw null0 is preserved in ABI.
+- WitnessEntryEnvironment separates fixed code/global metadata from decoded
+  records/arenas/size geometry. WitnessDecodedDictionaryCall derives ALL real
+  constructor memory/context premises from actual VarList.Records, fixed hash
+  arenas/order, array end<=public boundary<=table and per-item size bounds.
+  Source/candidate selected low-prefix memory agrees; old private maps excluded.
+  Both empty and nonempty branches covered. Actual argument eval, initial fixed
+  metadata/arenas, caller relation/clock/heap and decoded reachability remain
+  explicit. Neither raw record reads nor hash input arenas are assumed.
+- WitnessNextEnvironment carries fixed metadata through first cursor update
+  and hashControl, including empty. Input.VarList.RecordsSafeFrame.of_safe_frame
+  preserves second actual decoded record array through first actual constructor
+  safe frame; no positive-array premise for empty. v1 arrayEq rewrote number
+  hypotheses but not final goals; v2 aligns aliases before rw. Failed log not
+  indexed.
+- Found missing exported bound needed for second allocation: selected capBound
+  was internal to paired_execute_supported. Retained 2^bits<=4*N+4 through that
+  theorem, paired_call_execute_supported and ConstructorPairResult.capacityBound.
+  Updated DictionaryCall packing and empty packet cap4 proof. Complete dependent
+  API/initialization/decoded callers rebuilt successfully. Earlier successful
+  logs for unchanged names superseded by new source-hashed evidence.
+- WitnessAllocationBounds .heap_bounds/.heap_words prove exact actual heap_ptr,
+  lower/alignment/arena upper and chosen cursor<=T+72+57*(4*N+4)+7. two_map_room
+  proves both witness allocations fit arena from B<=134217712, N1+N2<=B/4 and
+  T<=2701131776+128*B+1048576. Last two count/cursor premises are not execution
+  reachability results; do not promote to unconditional heap/global claim.
+- Successful witness-empty-controls-v1.log1370 (two modules),
+  witness-empty-caller-control-v1.log1376,witness-empty-dictionary-call-v1.log1441,
+  witness-any-dictionary-call-v1.log1443,witness-entry-environment-v1.log1324,
+  witness-decoded-dictionary-call-v1.log1542,witness-next-entry-fields-v2.log1426,
+  witness-cap-export-body-v1.log1418,witness-cap-export-caller-v1.log1421,
+  witness-cap-export-packet-v1.log1437,witness-cap-export-api-v1.log1443,
+  witness-cap-export-closures-v1.log1505,witness-cap-export-decoded-v1.log1542.
+  All printed axioms permitted. New actual bounds module also in API success.
+- NEXT derive both actual decoded constructor invocations at initialization,
+  rather than assume two ConstructorPairResults. First call uses decoded
+  contract. Carry second VarList.Records via of_safe_frame, EntryEnvironment via
+  after_constructor, right Keccak env via prepared_environment/of_control;
+  code/domain/endian from firstCall.leftCall/rightCall.fields, actual next heap
+  words/alignment/room from new heap_bounds/words. Preserve input structure si56/
+  64 via first own safe frame (fixed buffers before si, si+96<=public boundary),
+  then paired_input_arguments supplies second actual loads. Initial sum of
+  both caller allowances supplies second clocks via first packet lower bound.
+  Full two-map room premise or two_map_room can supply initial/second room.
+  Ghost logical-record metadata from any/decoded API must give fixed buffers
+  before node logical records for prior dictionary preservation: count0 ->T,
+  count>0 -> actual array. Existing conditional paired_initialization then
+  yields both dictionary pairs at real runtime entry.
+- Whole frontend decoded/header/startup reachability, complete runtime context
+  replacement, gas/state/Q/heap potential/compiler/target resource bound and
+  finite K still open. Claim infinity; no full verifier. Account41%,0resetcredits.
+  Continue autonomously, no checkpoint stop.

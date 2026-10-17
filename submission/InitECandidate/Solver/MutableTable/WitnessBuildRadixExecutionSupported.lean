@@ -72,7 +72,7 @@ theorem paired_execute_supported (source right : PanSemStateFiniteExact 64 Guest
       (∀ query,safe query → rightTarget.memory query=right.memory query) ∧
       (∀ query,QueryMemory.reads rightTarget (AllocatedLayout.layout plan).table (AllocatedLayout.layout plan).keys
         (AllocatedLayout.layout plan).vals root (BackingLayout.initialTree keyFor sliceFor (BackingLayout.ordinals count)) query →
-        BackingLayout.Protected (AllocatedLayout.layout plan) count query) := by
+        BackingLayout.Protected (AllocatedLayout.layout plan) count query) ∧ 2^bits≤4*count+4 := by
   classical
   have small := Capacity.count_small_of_records records table count recordsLower recordsBefore (by omega)
   obtain ⟨leftCap, rightCap, paid, bits, leftPrefix, rightPrefix, paidBound, bitsLow, bitsTop, sufficient, capBound,
@@ -167,7 +167,7 @@ theorem paired_execute_supported (source right : PanSemStateFiniteExact 64 Guest
   refine ⟨bits, finalCount, input, logical, keyFor, leftTarget, rightTarget, root, bitsLow, bitsTop, ready,
     ?_, ?_, finalBuilt, filledHistory, filledMatching, filledLength, finalRecords, rootMapped, rootWord,
     QueryMemory.represents_of_fields rightFilled rightTarget rfl rfl rfl _ _ _ _ _ represented,
-    leftControl.trans leftInitial, rightControl.trans rightInitial, ?_, ?_, ?_, ?_, filledGlobals, filledFfi, filledMemory,?_,?_,?support⟩
+    leftControl.trans leftInitial, rightControl.trans rightInitial, ?_, ?_, ?_, ?_, filledGlobals, filledFfi, filledMemory,?_,?_,?support,capBound⟩
   · rw [leftPrefixRun, leftTableRun]
   · rw [rightPrefixRun, rightTableRun]
   · change leftFilled.clock ≤ source.clock

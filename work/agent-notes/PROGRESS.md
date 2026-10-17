@@ -2602,3 +2602,36 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   before constructing the ProgramPrefix Executes proof.
 - Production pnk unchanged; no repeated native/EEST tests. All global original-
   map/compiler/ROM/target/query/potential/K obligations remain open.
+
+
+Request guard and payload-callee entry continuation (2026-10-17):
+- All three actual request scalar declarations/stores check, with exact array
+  words, lexical scopes and preserved copied HeapInput. Count3/fixed44 validator
+  covers normal and SszErr paths; normal whole request return derives raw44,
+  range/order and actual payload pointer blob+62, contained payload slice.
+- Real payload >=540 guard, SszErr50 caller propagation, ABI and normal-callee
+  inversion check. Full normal fixed decoder composition derives extent>=602,
+  raw first offsets16/44 and actual callee entry with HeapInput/code/domain/
+  globals heap_ptr=rounded(cursor,96), clock >=original-11. Original clock>=12.
+- RequestGasFromHeader derives actual gas expression <=200M there; it does not
+  yet prove the later payload-field store. Initial runtime facts, copied memory,
+  natural ssz_offs64 and alloc96 geometry remain explicit.
+- Successful joint input-payload-flat-prefix-v1.log,1153 targets, permitted
+  axioms only; prefixProgram extracts actual alloc136/header stores/four scalar
+  declarations. HeapFlatScalar supplies reusable flattened copied-field reads.
+- NEXT: actual payload allocation136, two header stores and four declarations
+  from this callee entry. Raw offsets498/566/570/590 fit proven extent602. Execute
+  four stores/count4 fixed540 guard, extra-data length<=32 guard; whole real
+  ssz_split_var_list and ssz_fixed_list_count calls/input frame before gas store.
+  Then reach gas store and preserve the <=200M payload-field invariant. Actual
+  request/witness records and startup/global reachability remain afterwards.
+- Opacity matters: helpers over abstract states for command_single/prepend and
+  state_from_frame avoid eager evaluator reduction when applying constructors
+  to deeply updated states. HeapInput transport should project memory/domain/
+  endian from nonlocal frame instead of unifying it against record-update eta.
+- Account read-only watcher still active;17% and zero reset credits. Original
+  earned reset used successfully earlier; no additional reset can be requested.
+- No finite claim/full verifier, production artifact unchanged.
+
+- Indexed4242 modules/6763 printed facts (not percentages); incremental policy
+  passed61098 package entries. No full verifier.

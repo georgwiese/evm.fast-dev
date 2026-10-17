@@ -3579,3 +3579,45 @@ Original dictionary find/get/witness lookup checkpoint (2026-10-17):
   and compiler/target links remain. Continue actual immutable no-growth table
   construction and mutators preserving the lookup premises; then whole
   original/radix refinement and resource/certificate integration.
+
+Actual original initialization/insertion-components checkpoint (2026-10-17):
+- ByteStore proves exact little-endian byte-write projection for the written
+  byte and all other residues of the same word, including mapped load result;
+  ByteStoreExec proves the actual storeByte state change.
+- ZeroWords proves actual memzero word readback through 32-byte and 8-byte
+  passes. ZeroBytes proves readback for both repeated byte stores and aligned
+  word clears. TableEmpty proves final constructor header writes preserve all
+  zero used bytes, actual mapped zero loads, and empty physical KeyModel32.
+  TableEmptyHeader supplies actual find/get header and zero count from the
+  complete original constructor. Ready/layout/domain/little-endian/capacity
+  shape premises are explicit; earlier actual constructor execution is reused.
+- InsertProgram/SetProgram identify complete fixed ASTs. InsertScan executes
+  raw scan with exact one clock per occupied slot and all-other-local/nonlocal
+  frames. InsertScanBound derives empty slot and occupied placement path from
+  physical key/used representation and count-bounded covering history. No
+  successful scan is a premise. Setter no_growth checks the literal unsigned
+  guard from count<=N,cap>=2*N+2,cap<2^64.
+- InsertCount/Stores check exact post-memcpy value, used-byte, order,
+  order-position and count stores, count declaration/return/scoping, and full
+  memory formula under mapped-cell/header-separation premises. SetUpdate
+  checks existing-key setter branch's single store and early return. ValueModel32
+  checks actual value-word overwrite updates values and preserves keys/used
+  under explicit physical ownership/separation, with no-wrap address separation.
+- Final closure mutable-empty-insert-closure-v1.log1162targets, printed facts
+  only permitted axioms. Index4515modules/7365facts. Incremental policy61380
+  entries/2252944184bytes. Claim infinity; no full verifier/global go/finite K.
+  Host1.4GiB used/29available,disk58%/124GiB free,account33%,reset credits0.
+- Failed drafts fixed explicit UInt8 read projection after branch reduction,
+  mod-residue bounds before generalize, explicit ih memory arguments, ofNat0
+  simp name, missing FindHeader import/Option.map_none AST normalization,
+  actual >+ comparison is reversed .lower, word-zero literal vs OfNat mismatch
+  in while guard, qualified QueryBranch.bind, arbitrary MlString BEq lookup,
+  Nat multiplication before BitVec cast unfolding, explicit probe slot indices
+  in rewriting, and final memory record definitional reduction. Failed logs
+  are not evidence; committed final sources have no proof holes.
+- Next compose complete actual raw insertion header/hash/scan/copy/suffix and
+  prove its final memory preserves table representation and count<=processed.
+  Then complete no-growth setter/build trace, last-record-wins original/radix
+  agreement and real immutable-map caller refinement. Runtime other key sizes,
+  growth/deletion/rollback/ownership, full gas/state/Q/heap and compiler/target
+  certificate are still open. Continue autonomously after this checkpoint.

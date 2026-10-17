@@ -12,6 +12,18 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked original table initialization and real insertion components:
+  both actual used-array clearing paths establish all-zero flags; final
+  constructor header/count and empty KeyModel follow. Raw scan derives an
+  empty slot and occupied insertion path from represented bytes/covering
+  history, paying one Pan clock per occupied slot. Exact value/used/order/
+  position/count suffix stores, existing-key setter return and false growth
+  guard under count<=N,cap>=2*N+2 check. Value-cell writes preserve represented
+  values/keys under explicit physical separation. Complete insert body/copy/
+  header/hash composition and physical representation preservation remain
+  open. Success mutable-empty-insert-closure-v1.log1162targets, permitted
+  axioms; index4515/7365. Claim infinity; no finite K/full verification/go.
+
 - [x] Checked complete original32-byte htab_find_slot/get and nodedb_lookup
   against a represented dictionary, at every query alignment. Actual hash,
   comparator, value-cell load, tuple ABI/return, record pointer/length loads

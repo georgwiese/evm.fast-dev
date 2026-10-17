@@ -12,6 +12,18 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked complete original immutable-table raw insertion and setter,
+  including actual header/hash/find/raw-call/copy/store/scoping and duplicate
+  updates. Built invariant ties physical header/key/used/value/count to a
+  logical insertion history. Actual constructor initializes it; raw insertion
+  and both setter branches extend it with last-record-wins semantics. Real
+  setter caller restores locals and pays<=7*processed+7 Pan clocks; no growth
+  from Ready capacity/count bounds. All stores preserve earlier memory below
+  the private table. Actual witness record loop/keccak/input-layout connection,
+  whole original/radix caller refinement and target/global bounds remain open.
+  Successful mutable-original-set-closure-v1.log1192targets, permitted axioms;
+  index4543/7420; claim infinity, no finite K/full verification/global go.
+
 - [x] Checked real32-byte insertion copy/post-copy tail, all seven header
   declarations and hash/index/scoping lift. Full insertion memory formula
   preserves header/other words and represents the updated keys, binary used

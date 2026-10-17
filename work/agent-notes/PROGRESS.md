@@ -3664,3 +3664,50 @@ Original insertion copy/representation/layout checkpoint (2026-10-17):
   invariant, then original nodedb_build trace and original/radix caller relation.
   Mutable other keys/growth/delete/rollback, protected gas/state ledger, Q/heap,
   whole compiler/target finite certificate all remain open. Continue work.
+
+Complete original immutable-table insertion/setter checkpoint (2026-10-17):
+- LayoutHeader32 initializes and preserves all eight fixed header fields and
+  the natural count. LayoutTail32 discharges every mapping/separation/copy-mask
+  premise of complete real insertion tail from Ready/domain and a separate
+  aligned digest buffer before the table. ModelFrame32 transports physical
+  table/header/value/word views through memory/control-preserving stages.
+- InsertPreparedData checks preserved t/value and actual order/position locals.
+  LayoutInsert32 composes complete original htab_insert_raw header/hash/index,
+  actual derived first-empty scan, copy/stores/return/scopes. Pays<=covering
+  history.length+3 clocks and supplies actual empty slot and occupied path.
+- BuildInvariant32 ties actual header, key/used/value arrays and count bound to
+  Placement.Builds history. Actual constructor initializes it. Complete actual
+  raw insert extends it on absent keys, with count+1<=processed+1. No assumed
+  mutator execution or physical array-separation premise remains at this layer;
+  Ready/domain/aligned digest bytes/words/before-table/code/clocks explicit.
+- MemoryValueCall and TableCallEnvironment check real memory-changing ignored/
+  declared calls and three-word mutator ABI. InsertBuildCall32 complete real
+  raw-insert caller restores locals and extends invariant with <=processed+4
+  clocks. LayoutUpdate32 real duplicate-value update preserves keys/used/header/
+  count and extends overwrite history. LayoutSetAbsent32 actual unsigned growth
+  guard false, actual raw call and return extend invariant for a new key.
+- LayoutSet32 actual original find/call and both setter branches, full scopes,
+  count stays or increments, final memory exact update or raw-insert formula.
+  Body<=7*processed+6, LayoutSetCall32 actual ignored-result caller+1, restores
+  caller locals and extends build history for duplicates/new keys. These are
+  Pan/source clocks, not a target price. LayoutEarlier32 proves both complete
+  insertion and value update leave every earlier word below the table intact.
+- Final mutable-original-set-closure-v1.log1192targets successful, only allowed
+  printed axioms. Index4543/7420. Policy61408entries/2253072285bytes, infinity.
+  Host1.4GiB used/29available,disk58%/124GiB free,account35%,reset credits0.
+  No finite K/full verifier/overall go; overall rough progress estimate stays35%.
+- Failed drafts fixed header base opacity via header_cell, memory/shape caller
+  argument order, source-clock nonzero proof, missing PanLang namespace, line
+  indentation inside record-field applications, beta reduction before lastValue
+  rewrite, explicit p.key numeric pointer range, opaque Set.insertCall before
+  sequencing, and let/projection record reflexivity after composition. An
+  initial_built theorem was added while a local build of that same module was
+  finishing; its final current contents were rebuilt in successful v3 and final
+  closure before indexing. Failed logs are not evidence.
+- Next actual original nodedb_build record loop, keccak calls and earlier-memory
+  record/payload frames, capacity/table call initialization, then original/
+  radix whole function/caller refinement. Reuse checked candidate capacity
+  loop, TableNew call, constructor hash arguments/digest/call libraries where
+  literal subtrees agree. Actual branch/store/growth/delete/runtime other keys,
+  global gas/state/Q/heap and compiler/target finite certificate remain open.
+  Continue original task, no checkpoint stop.

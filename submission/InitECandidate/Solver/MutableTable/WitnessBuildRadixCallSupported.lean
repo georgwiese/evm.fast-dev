@@ -80,7 +80,7 @@ theorem paired_call_execute_supported (source right : PanSemStateFiniteExact 64 
       (∀ query,safe query → rightTarget.memory query=right.memory query) ∧
       (∀ query,QueryMemory.reads rightTarget (AllocatedLayout.layout plan).table (AllocatedLayout.layout plan).keys
         (AllocatedLayout.layout plan).vals root (BackingLayout.initialTree keyFor sliceFor (BackingLayout.ordinals count)) query →
-        BackingLayout.Protected (AllocatedLayout.layout plan) count query) := by
+        BackingLayout.Protected (AllocatedLayout.layout plan) count query) ∧ 2^bits≤4*count+4 := by
   classical
   obtain ⟨callee,leftLookup,rightLookup,recordsLocal,countLocal⟩ := paired_environments source right records count leftCode rightCode
   let leftEntry := callEntryStateHOLFinite source callee
@@ -92,7 +92,7 @@ theorem paired_call_execute_supported (source right : PanSemStateFiniteExact 64 
   have rightEntryEnvironment := Keccak256.Environment.of_control right rightEntry stp pad rfl rightEnvironment
   obtain ⟨bits,finalCount,input,logical,keyFor,leftFinished,rightFinished,root,bitsLow,bitsTop,ready,
     leftBody,rightBody,nextBuilt,nextHistory,nextMatching,nextLength,nextRecords,rootMapped,rootWord,represented,
-    leftControl,rightControl,leftUpper,leftLower,rightUpper,rightLower,finalGlobals,finalFfi,finalMemory,leftSaved,rightSaved,bodySupport⟩ :=
+    leftControl,rightControl,leftUpper,leftLower,rightUpper,rightLower,finalGlobals,finalFfi,finalMemory,leftSaved,rightSaved,bodySupport,capBound⟩ :=
     paired_execute_supported leftEntry rightEntry records table count maximum recordsLower recordsBefore recordsAligned tableAligned room
       recordsLocal countLocal heap leftTableCode rightTableCode leftAllocCode rightAllocCode sliceFor stp pad scratch pointers lengths
       leftContext rightEntryEnvironment rightHashCode helperCode rfl globals endian ffi region same before recordPublic buffers safe safeBefore safeProtected
@@ -120,7 +120,7 @@ theorem paired_call_execute_supported (source right : PanSemStateFiniteExact 64 
   refine ⟨bits,finalCount,input,logical,keyFor,leftTarget,rightTarget,root,bitsLow,bitsTop,ready,leftCall,rightCall,
     rfl,rfl,locals,?_,?_,finalBuilt,nextHistory,nextMatching,nextLength,finalRecords,rootMapped,rootWord,
     QueryMemory.represents_of_fields rightFinished rightTarget rfl rfl rfl _ _ _ _ _ represented,
-    leftControl,rightControl,?_,?_,?_,?_,finalGlobals,finalFfi,finalMemory,leftSaved,rightSaved,?support⟩
+    leftControl,rightControl,?_,?_,?_,?_,finalGlobals,finalFfi,finalMemory,leftSaved,rightSaved,?support,capBound⟩
   · intro name continuation
     exact leftScoped name continuation
   · intro name continuation

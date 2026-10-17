@@ -12,6 +12,25 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked uniform actual dictionary caller for zero/positive counts, then
+  entire decoder-backed caller: actual VarList.Records supplies raw pointer/
+  length reads, array arena/alignment, per-item hash arenas, raw/aligned public
+  buffer ownership and max-item sizes. Null actual array pointer0 is accepted
+  only on count0, using an unused logical record base at the table. Full control/
+  heap update and each own earlier-memory frame survive empty bodies/callers.
+  EntryEnvironment and Records.of_safe_frame carry the second map's code/hash
+  metadata and actual decoded array through the first call. Exported the actual
+  selected capacity <=4*N+4 through supported bodies, callers and packaged
+  result. Exact heap words, alignment/range and capacity-based upper cursor
+  bounds check. Conditional two-map arena arithmetic checks at max encoded
+  input size assuming frontend cursor<=arenaLower+128*encodedBytes+1MiB and
+  combined decoded count<=encodedBytes/4; these premises still need execution
+  reachability. Latest closures witness-cap-export-closures-v1.log1505 and
+  witness-cap-export-decoded-v1.log1542targets, allowed axioms; earlier logs in
+  PROGRESS. Concrete full two decoded-call entry derivation, frontend/header
+  cursor reachability and whole runtime/global/compiler/target proof remain
+  open. Infinity; no finite K/full verification/final acceptance.
+
 - [x] Checked conditional composition of the actual two nested run_attempt
   constructor calls into its actual runtime suffix. DictionaryPair packages
   common observations, both physical models and read support; own frames and

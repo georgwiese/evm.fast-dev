@@ -23,6 +23,7 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name
       regularBudget finalMemory (framePointer scratch) = words.gas.toNat ∧
       (∀ cell ∈ suffixCells message ⟨words.code, words.length, addresses, keys, addressCount, keyCount⟩,
         finalMemory cell.1 = source.memory cell.1) ∧
+      (∀ query, Arenas.Outside lower scratch query → finalMemory query = source.memory query) ∧
       evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "frame_new") arguments continuation) =
         (let output := evaluateHOLFiniteState (WitnessRadix.QueryBranch.bind {source with
           globals := (source.globals.update (ofString "frame_mem_ptr", .val (.word (memoryPointer lower)))).update
@@ -36,7 +37,7 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name
   let calleeSource := callEntryStateHOLFinite source callee
   have calleeEntry : Entry calleeSource scratch lower message empty words addresses keys addressCount keyCount :=
     entry.relocals_clock callee (source.clock - 1)
-  obtain ⟨target, spent, spentBound, bodyRun, frame, budget, preserved⟩ := execute calleeSource scratch lower message empty words
+  obtain ⟨target, spent, spentBound, bodyRun, frame, budget, preserved, outsideFrame⟩ := execute calleeSource scratch lower message empty words
     addresses keys addressCount keyCount calleeEntry.code calleeEntry.memoryCode calleeEntry.jumpCode calleeEntry.logCode
     calleeEntry.tableCode calleeEntry.countCode calleeEntry.scratchGlobal calleeEntry.lowerGlobal messageLocal calleeEntry.emptyGlobal
     calleeEntry.scratchAligned calleeEntry.lowerAligned calleeEntry.lengthFits calleeEntry.room calleeEntry.arena
@@ -59,7 +60,7 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name
     setVarHOLFinite (ofString name) (.val (.word (framePointer scratch))) state) restored
   change Input.CallNormal.continuationEntry source target name (.val (.word (framePointer scratch))) = _ at nextEq
   rw [nextEq] at actual
-  exact ⟨target.memory, spent, spentBound, budget, preserved, actual⟩
+  exact ⟨target.memory, spent, spentBound, budget, preserved, outsideFrame, actual⟩
 
 theorem caller_budget_131072 (length : Nat) (bounded : length ≤ 131072) :
     length + WitnessRadix.Zero.price (JumpDest.bitmapBytes length) + 38 ≤ 131623 := by

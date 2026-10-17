@@ -4882,3 +4882,27 @@ Whole paired witness constructor checkpoint (2026-10-17):
   merges/rollback/block signed accounting, then phase/unchanged target bounds.
   Pinned program unchanged; infinity, no whole finite K or full verification.
   Account last2%,0manual reset credits; no numerical ceiling.
+
+
+### 2026-10-17 — active frame_open initialization and caller checked
+
+- FrameOpenProgram checks exact original AST; continuation MSG is offset40,
+  not24. Stores executes four real field writes and both typed global assigns.
+- Record derives104-byte allocator guards, exact clear/stores/activation,
+  return/scope,6source clocks; child regular ledger and all memory outside the
+  live allocation preserved. Geometry proves post-frame_new cursor number,
+  alignment, extra104-byte room, totalbitmapBytes(n)+2760 reservation.
+- Execution joins parent declaration, whole frame_new and continuation record;
+  Call derives actual two-argument callee environment and real scoped caller.
+  Active child's regular ledger=MSG_GAS, canonical globals/FFI/domain retained
+  except four intended pointer updates, outside incoming live arena unchanged.
+  Caller source allowanceprice+n+45; not target K or caller reachability.
+- Successful frame-open-call-v1.log1168jobs includes RootMsgNormal and all new
+  frame closures; explicit exit0, allowed axioms. Development failures stores
+  v1/v2, recordv1/v2/v3, geometry-depth and executionv1 were corrected AST-offset,
+  continuation-expression, arithmetic normalization or recursion-depth issues.
+  Failed logs not indexed. Final current source closure indexed.
+- Continue actual message/map preprocessing ownership and global ledgers,
+  successful-child suffix merges/rollback, signed block accounting and source
+  work aggregation/unchanged target transport. Claim infinity; no whole finite
+  bound/full verification. Account last2%,0manual reset credits.

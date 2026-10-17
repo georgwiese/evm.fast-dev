@@ -3131,6 +3131,17 @@
     "submission/InitECandidate/Solver/WitnessRadix/WordScatter.lean",
     "submission/InitECandidate/Solver/WitnessRadix/WordWrites.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Worklist.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroBlock.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroCall.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroConditions.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroEnvironment.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroExecution.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroLoop32.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroLoopWord.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroMemory.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroProgram.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroState.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroTail.lean",
     "submission/InitECandidate/Solver/WordStatic/Chunk0.lean",
     "submission/InitECandidate/Solver/WordStatic/Chunk1.lean",
     "submission/InitECandidate/Solver/WordStatic/Chunk10.lean",
@@ -4059,8 +4070,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 60906,
-  "package_bytes": 2250959116,
+  "package_entries": 60917,
+  "package_bytes": 2250997816,
   "claim": {
     "K": "infinity"
   },

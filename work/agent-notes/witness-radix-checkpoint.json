@@ -893,6 +893,50 @@
     "submission/InitECandidate/Solver/WitnessRadix/AllocatedLayout.lean": {
       "bytes": 4946,
       "sha256": "c50251c0b64596d5604234e3b3b24ab9bfc20606a22188fd55f064a20e793ab4"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroMemory.lean": {
+      "bytes": 4075,
+      "sha256": "b1f7cb89f3d01228047e6baa46b176e9393d93a84c49eb9cb3b735b689fb13ae"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroCall.lean": {
+      "bytes": 2325,
+      "sha256": "721337394d090de3d780b1957e99dd11ccebea10b4d253d03b3c8f472ef6bd1f"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroProgram.lean": {
+      "bytes": 2786,
+      "sha256": "c255348ec3f2e9470e837e390bc254975e8a8fa0b6b64a8766d8c0bef1e355a5"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroExecution.lean": {
+      "bytes": 5788,
+      "sha256": "1e55180ab27fbf14eb339192ca78e4974440fd85c2aca1739d53e0f5207c098f"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroState.lean": {
+      "bytes": 5445,
+      "sha256": "0ea789f749d3c6a40789d71aead10eef5a11b478f4f0f2615f7dae3cd1019ffd"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroBlock.lean": {
+      "bytes": 3247,
+      "sha256": "733106c9b8bbc99ede453052fe54fb84dfff7b672fbf3eb496f2a0690b286d8e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroTail.lean": {
+      "bytes": 2245,
+      "sha256": "6dcd860ec00a1846c4d3bc788eacc1df453c100a7a77012faa4bad754b7af44e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroLoop32.lean": {
+      "bytes": 4047,
+      "sha256": "5702251447817d53b5f46531dcc0c042b5f4d1bbb1ce1725bf94d5bee6aac1de"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroConditions.lean": {
+      "bytes": 2882,
+      "sha256": "e24e77f84db7341fc326c851ad3cd01e54972f09455b3ea9bac2f7bd97ac0899"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroLoopWord.lean": {
+      "bytes": 3759,
+      "sha256": "58fc406782a1ac8ef245301cbf7ab995059281eb301ce663bc09d39430e1a2a5"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroEnvironment.lean": {
+      "bytes": 2101,
+      "sha256": "e48bacfc3d83728a5cd6010efcb5c4c5c34faef26f21456ccaaafff2588419d8"
     }
   },
   "development_artifacts": {
@@ -1124,5 +1168,10 @@
     "successful_log": "witness-radix-allocated-layout-v1.log",
     "targets": 669,
     "result": "Complete successful fixed persistent alloc and actual lexical call, natural heap guard/alignment/monotonicity facts, real ordinary-domain mapping, exact table allocation offsets including used-array padding imply full radix layout Valid/Mapped. htab_new call/memzero/store composition and reachable natural heap-room facts remain open."
+  },
+  "aligned_memzero_checkpoint": {
+    "successful_log": "witness-radix-zero-call-v1.log",
+    "targets": 624,
+    "result": "Entire actual aligned memzero for word-multiple lengths, both exact word loops, skipped byte loops, lexical scopes/return, real ABI/code call and caller restoration; exact memory and floor(n/32)+floor((n%32)/8)+1 call clocks. Complete frame outside allocated range. Four-byte initial table case and htab_new composition remain open."
   }
 }

@@ -55,6 +55,8 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 **Allocation connection:** the complete successful fixed persistent allocator and actual lexical call now check, including heap global update, returned pointer, natural guard/alignment/monotonicity and exact one call-clock cost. Concrete aligned arena addresses imply mapping in the challenge ordinary domain. Exact htab_new allocation offsets, including padding after the used-byte array, imply the full layout Valid/Mapped properties (`witness-radix-allocated-layout-v1.log`, 669 targets, permitted axioms only). Actual htab_new allocation/memzero/store composition and reachable heap-room facts remain open.
 
+**Aligned clearing connection:** the complete fixed memzero on aligned word-multiple ranges now checks, with both real word loops, skipped byte loops, lexical restoration/return and actual ABI/code call. Exact call cost is floor(n/32)+floor((n%32)/8)+1 source clocks; exact final memory and a complete frame outside the range also check (`witness-radix-zero-call-v1.log`, 624 targets, permitted axioms only). The initial four-byte table case and actual htab_new composition remain open.
+
 **Next action:** establish the complete helper’s mapped/hashed-array premises from the actual nodedb_build/htab_new constructor, prove its relation to the fixed guest’s last-wins maps, and connect the resulting whole-guest costs through actual target execution. **Current principal risk:** the map representation/refinement and whole-guest input/gas/query/composition proofs remain open. Read the top checklist after every meaningful update. Historical stop instructions below are superseded by the current authorization above.
 
 ---

@@ -3231,3 +3231,29 @@ Actual state-gas refund/refill conservation checkpoint (2026-10-17):
   Whole header/block guard result is recorded with root entry premises open.
 - Continue charge_state_gas and child-call transfers, then aggregate joint
   gas/table/heap accounting and root entry refinement; finiteK still open.
+
+Actual state-gas charge success/failure checkpoint (2026-10-17):
+- AddExact actual add_sat on the no-overflow branch, exact sum, pure frame and
+  real two-argument caller. Fits premise state_left+gas_left<2^64 is explicit.
+- StateChargeProgram exact fixed AST, all tests/branches, real pool loads and
+  stores; Pools contains actual ev, mapped gas/state/spill words and values.
+- StateChargeSpill actual deficit declaration, state zeroing, regular debit,
+  spill addition, return and local restoration. StateCharge composes both
+  actual affordable paths, real add_sat call and outer declarations. Body
+  consumes0 or1 source clocks; exact memory is the branch's actual store list.
+- StateChargeBudget proves natural gas_left+regular_used+spill conservation
+  under affordable and gas_left+spill<2^64. Actual original regular counter is
+  untouched. StateChargeFailure executes real unaffordable add_sat/test/raise,
+  no memory writes, exact one body call clock. Call summaries cover successful
+  ignored caller<=2clocks and failed caller exact2, actual EvmErr4 propagation.
+- Success gas-state-charge-call-v1.log1109targets, all permitted axioms,
+  4.57s wall, max child RSS1884856KiB. Fixed draft signed/unsigned notLower test
+  simplification and list-membership normalization; failed logs not indexed.
+- Index4441modules/7167facts. Policy passes61305entries/2252579761bytes;
+  infinity claim, no full verification. Host1.8GiB during last build, disk58%.
+  Account28%, reset credits0. Reproducible pilot metadata refreshed with actual
+  charge log and no-wrap premises;2160optimizer checks pass, global flagsfalse.
+- NEXT child regular-gas transfers, stipend payment and frame halt, then signed
+  state/block conservation, joint mutable-table/heap-query bounds, root input
+  entry, original-map/compiler/target/fixed-certificate connections. These local
+  conservation summaries do not yet prove380M aggregate gas or finite K.

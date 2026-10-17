@@ -12,6 +12,16 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked both affordable paths and the actual out-of-gas path of
+  charge_state_gas, plus real ignored callers. The reservoir branch returns
+  directly; spill branch executes add_sat, actual debits/spill stores and
+  scopes; unaffordable branch raises EvmErr4 before any pool store. Successful
+  calls preserve the natural regular budget and cost<=2 source clocks; failed
+  calls cost2 and preserve memory/control. Explicit premises include
+  state_left+gas_left<2^64, gas_left+spill<2^64, actual frame cells/code and
+  clocks. Successful `gas-state-charge-call-v1.log`1109targets, permitted axioms;
+  index4441modules/7167facts. Global initialization/call-tree conservation open.
+
 - [x] Checked actual state-gas refund and rollback-refill bodies/callers.
   Their real stores preserve gas_left+regular_gas_used+outstanding_spill when
   gas_left+spill<2^64; mapped/stored frame cells, runtime code and refill
@@ -120,7 +130,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [ ] Complete the capacity-growth path and any other local summaries **actually required by the chosen global proof**; prove their entry premises at every use.
 - [ ] Connect bounded execution through the actual compiler artifacts, bootstrap, oracle/FFI, and matching-result relation.
 - [ ] Prove a literal finite K below the score cap; make `submission.K`, `claimedScore`, and `claim.json` agree; prove admission and the fixed certificate with only permitted axioms.
-- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,298 full-package entries; 2,252,545,515 bytes); this is not isolated verification or a final overlay check.
+- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,305 full-package entries; 2,252,579,761 bytes); this is not isolated verification or a final overlay check.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 
 **Latest checked connection:** `QueryExecution.lookup_built` proves the complete actual candidate lookup from concrete HOL memory/header/ABI/code premises: exact last-record-wins result, at most **262 source clocks**, and preserved nonlocal state. Successful closure: `witness-radix-query-function-v3.log`; only permitted axioms. Construction must still establish the represented-memory premise, and source clocks are not target transitions. The actual fixed `memeq` 32-byte aligned and unaligned paths, actual caller restoration, and real code-entry argument environment now check with only permitted axioms (`witness-radix-memeq-environment-v4.log`). The comparison consumes at most four source clocks plus one call clock. The candidate compiler reports 905,572 code bytes, 4,615 bitmap words and a static stack bound of 538 words (`witness-radix-static-depth-v1.log`); these are development compiler results, not a target certificate.
@@ -717,7 +727,13 @@ restorations as fresh regular budget. It does not cover the whole call tree or
 prove a380M total. CALL/CALLCODE subtract forwarded gas including the2300
 stipend from regular-used; nonzero-value overhead11300 must pay for that credit.
 Current intrinsic cost returns `<regular,0,floor>` and the block regular counter
-is computed before ordinary transaction refund subtraction. Signed state-use
+is computed before ordinary transaction refund subtraction. The actual
+charge_state_gas affordable reservoir/spill paths and unaffordable exception
+now check, including add_sat exact branch, all stores/scopes and real ignored
+callers (`gas-state-charge-call-v1.log`). Under state_left+gas_left<2^64 and
+regular liquid+spill<2^64, successful calls preserve the same natural regular
+budget; failures raise before any pool write. Body costs<=1, callers<=2 source
+clocks. These no-wrap/entry facts remain global invariant obligations. Signed state-use
 and pre/post child transfers still need actual no-wrap and conservation proofs.
 `global-resource-pilot.py` now hashes evm_calls/tx too and records these checked
 local results while leaving all whole-run/target flags false.

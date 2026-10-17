@@ -106,9 +106,9 @@ def main():
             hypothetical_one_query_per32_allocated_bytes=heap_bytes//32),
         arithmetic_status='The integers are exact. Their full-run premises below are unproved.',
         self_test_cases=checks, cases=cases,
-        checked_local_evidence=dict(block_guard_log='input-block-guard-v3.log',gas_refund_refill_log='gas-refund-calls-v1.log',
+        checked_local_evidence=dict(block_guard_log='input-block-guard-v3.log',gas_refund_refill_log='gas-refund-calls-v1.log',gas_state_charge_log='gas-state-charge-call-v1.log',
             regular_budget='gas_left + regular_gas_used + outstanding_state_spill',
-            gas_local_premises='Actual mapped/stored frame and message cells, code, clock affordability, gas_left+spill<2^64; reservoir cell separation for refill.',
+            gas_local_premises='Actual mapped/stored frame and message cells, code, clock affordability, gas_left+spill<2^64; state_left+gas_left<2^64 for charge; reservoir cell separation for refill.',
             global_initialization=False,whole_gas_conservation=False,target_steps=False),
         source_observations=[
             'The actual cold account constant is3000, not2600; warm100 and cold storage2100.',

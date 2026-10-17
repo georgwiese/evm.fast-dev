@@ -4037,3 +4037,83 @@ Actual joint record loops and lookup agreement checkpoint (2026-10-17):
   ownership and whole-context refinement, runtime mutable maps20/52/60 bytes,
   global gas/state/Q/heap potential, source/compiler/startup/target finite K.
   Do not stop after this checkpoint; continue original task autonomously.
+
+Whole paired witness constructor checkpoint (2026-10-17):
+- HelperPublicFootprint PublicWord excludes precisely WriteOffset cells, so
+  immutable input-record/key words can remain public. Exact leaf/resume/unary/
+  split transforms preserve it; split uses existing post_away, row_cell,
+  ContextAt, allocation_writable, invariant branch/stack room. New parallel
+  HelperLoopPublicFrame strong agenda induction proves actual mainLoop's
+  evaluated target memory frame, without changing existing fixed proofs.
+- HelperCorePublic/NonemptyPublic/EmptyPublic/BuiltPublic lift the frame through
+  zero tests, prefix declarations/restores and both sizes. HelperCallPublic
+  actual ABI, ConstructorFinishPublic actual helper+table-return retain frame.
+- MutableTable.WitnessBuildRadixFinish pairs original return with full radix
+  finish; original Built survives emptyLocals, actual final QueryMemory tree,
+  public memory and FFI agreement. AllocatedPublicFrame derives PublicWord and
+  constructor suffix write separation uniformly from q.toNat<table for actual
+  allocationPlan, excluding records from mutable cells.
+- WitnessBuildPreparedAgreement actual allocation initialization state memory
+  preserves selected public region and FFI; common globals/heap updated equally.
+  Earlier private tables may differ outside region. Both prepared clocks exact.
+- WitnessBuildRadixPopulate full paired record loops, radix helper, both returns
+  from actual entered invariants; final common History/KeysMatch and actual
+  original/radix representations, FFI/public memory and own source allowances.
+- WitnessBuildRadixTable both actual htab_new allocation/zeroing callers, array
+  setup, whole paired population and every scope. Raw source records plus
+  public record-cell equality derive real candidate decoded record facts.
+  Preserves global equality, FFI/public memory, own source clock bounds.
+- CapacityExact retains finalExp=initialExp+paid and strict upper cap<4*N+4 or
+  no growth from initial exponent. CapacityExactEntry generic cap declaration
+  around arbitrary continuation. CapacityPairedEntry proves unique sufficient
+  exponent from strict bound (initial4 exception), hence same paid and common
+  resulting locals, plus each actual prefix/continuation run and full frame.
+- WitnessBuildRadixExecution.paired_execute entire actual original and candidate
+  nodedb_build. Shared actual cap determines allocationPlan ready; both bodies
+  allocate/populate/return same table address. Actual final Built/History/
+  Records/KeysMatch and radix QueryMemory initialTree refer to same real keys/
+  slices; equal globals/heap cursor, complete FFI histories/public region.
+  Own exact hashControl to initial source with actual heap update; own source
+  wholePrice bounds retained (original quadratic,candidate linear), not target K.
+- Context premise is forall capacity:Context source(allocationPlan R T N C)...
+  because Context depends only on R/N and source helper/global facts, not C
+  or private table state. It does NOT assume ready for all C; only selected
+  C=2^bits gets actual allocation_ready. Can later wrap with explicit entry
+  code/env/buffer facts like original execute. Input ownership: arbitrary
+  selected public region agrees, contains all raw/aligned hash buffers and
+  decoded record cells, and lies below current table. Old private tables can
+  be excluded, fixing the too-strong all-q<T relation for sequential maps.
+- Success radix-helper-public-footprint-v2.log742,radix-helper-loop-public-v1.log
+  743,radix-helper-core-public-v2.log746,radix-helper-nonempty-public-v1.log749,
+  radix-helper-empty-public-v1.log750,radix-helper-built-public-v1.log751,
+  radix-helper-call-public-v1.log779,radix-constructor-finish-public-v1.log780,
+  mutable-radix-finish-v1.log1377,mutable-radix-prepared-public-v1.log1342,
+  mutable-radix-populate-v2.log1381,mutable-radix-table-v2.log1395,
+  radix-capacity-exact-v1.log584,radix-capacity-entry-exact-v2.log587,
+  radix-capacity-paired-v2.log589,mutable-radix-execution-v2.log1407.
+  Index4606/7543; all printed axioms permitted. Prior incremental policy
+  61470entries/2253400378bytes before newest Execution source, latest policy
+  run recorded separately. Claim infinity; no full verifier or finite K.
+  Account39%,0reset credits; host1.5GiBused/29available,disk58%/123GiBfree.
+- Failed drafts fixed row-cell base aliases by explicit change before rw,
+  capacity-vs-count bounds via ready.room, local let rewrite with change (rw
+  on value is invalid), explicit plan-count/source-price types before omega,
+  finite-map ext_lookup requires Flapjack.FiniteMap.MapKeys import, no bare
+  lt_trichotomy in lean imports (use by_cases), and avoid subst choosing an
+  unintended finalExp=2+paid equality; rewrite selected equalities explicitly.
+- NEXT actual constructor ABI. ConstructorEnvironment.environment is fixed to
+  candidate body and hides raw locals equality. Generalize locally over body,
+  retaining callee.lookup=Constructor.rawLocals, then use ext_lookup to choose
+  common callee for source original body and right candidate body. Paired full
+  body theorem applies to callEntryState with common locals, memory/globals/
+  FFI equal fields and source clocks minus1. Ignored caller can use standard
+  evaluateHOLFiniteState_call_return_caller_locals; assigned/scoped caller must
+  use Input.CallNormal.return_execute in Input/CallResume.lean (globals/events
+  change; memory-only caller lemma is unsuitable).
+- After caller contract, establish actual two witness-map initialization call
+  premises from decoder/heap reachability and record/input buffer ownership;
+  preserve old private maps across second allocation and runtime queries.
+  Existing paired_dictionary_lookup handles represented common key history.
+- Entire goal STILL incomplete: no whole-context replacement or global gas/
+  state/Q/heap/resource/compiler/startup/target bound, runtime mutable maps
+ 20/52/60bytes unresolved, claim infinity. Continue autonomously; no stop point.

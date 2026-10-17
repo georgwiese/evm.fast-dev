@@ -12,6 +12,20 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked full paired original/radix nodedb_build bodies: both actual
+  cap declarations/doubling loops choose the same capacity and pay the same
+  prefix clocks; allocation/clearing, every record/hash/set/copy, radix helper,
+  returns and outer scopes compose. Both return the same table pointer and
+  preserve common globals/heap cursor, complete FFI histories and selected
+  public words. Original Built/History/Records/KeysMatch and candidate actual
+  QueryMemory tree representation refer to the same observed dictionary.
+  Explicit decoded-record, code/arena/BufferRegion/nonalias/caller-state and
+  clock premises remain; real call ABI, whole-guest reachability/context and
+  global/compiler/target resource proofs still open. Successful
+  mutable-radix-execution-v2.log1407targets, allowed axioms; index4606/7543,
+  latest prior policy61470entries/2253400378bytes. Infinity; no finite K/full
+  verification. This is a conditional source refinement, not final acceptance.
+
 - [x] Checked actual paired original/radix witness-record iteration and
   entire record loops. Both observe identical keys and FFI histories; original
   insertion history equals radix key-prefix entries in ordinal order, including

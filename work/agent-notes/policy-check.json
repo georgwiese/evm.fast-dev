@@ -1170,6 +1170,8 @@
     "submission/InitECandidate/Solver/Input/FlatAddress.lean",
     "submission/InitECandidate/Solver/Input/FlatScalar.lean",
     "submission/InitECandidate/Solver/Input/Framing.lean",
+    "submission/InitECandidate/Solver/Input/FreshRecord.lean",
+    "submission/InitECandidate/Solver/Input/FreshRecordCall.lean",
     "submission/InitECandidate/Solver/Input/GuardNormal.lean",
     "submission/InitECandidate/Solver/Input/HeaderAfterNormal.lean",
     "submission/InitECandidate/Solver/Input/HeaderEncoding/Call.lean",
@@ -4536,8 +4538,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61397,
-  "package_bytes": 2253116670,
+  "package_entries": 61399,
+  "package_bytes": 2253129715,
   "claim": {
     "K": "infinity"
   },

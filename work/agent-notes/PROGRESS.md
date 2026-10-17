@@ -4906,3 +4906,22 @@ Whole paired witness constructor checkpoint (2026-10-17):
   successful-child suffix merges/rollback, signed block accounting and source
   work aggregation/unchanged target transport. Claim infinity; no whole finite
   bound/full verification. Account last2%,0manual reset credits.
+
+
+### 2026-10-17 — persistent TE/message allocation contracts
+
+- Input.FreshRecord checks both original te_new200byte and msg_new176byte
+  bodies via their exact actual allocator/clear/return scopes. Allocator guards
+  derive from natural heap room; full zero memory and9body clocks.
+- FreshRecordCall checks zero-argument caller environment/ABI,10caller clocks,
+  exact heap extent without alignment padding, and both-sided outside-memory
+  preservation. Generic foreign state: no additional host assumption is needed.
+- Successful fresh-record-call-v1.log1065jobs, explicit exit0, allowed axioms.
+  Initial fresh-record-v1 failed only for missing specialized host-type import;
+  removed that unnecessary specialization and checked the generic proof.
+- Original entry code/heap/domain/alignment/room/clock remain explicit. Warm
+  map construction/queries/growth/deletion and caller ownership remain open;
+  no finite whole runtime bound/target K or full verification. Account3%,0credits.
+- Next: general original mutable-table runtime/ownership contracts for20/52/60
+  byte keys, then connect root message to active-frame and global gas ledgers;
+  preserve pinned program and no numerical ceiling.

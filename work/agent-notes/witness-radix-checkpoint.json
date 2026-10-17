@@ -633,6 +633,102 @@
     "submission/InitECandidate/Solver/WitnessRadix/LayoutPendingReads.lean": {
       "bytes": 3117,
       "sha256": "d8212ee7151695c14a081e3d8f95f0f48fed3440114d4fdb2c19c170b0e0de39"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AgendaBudget.lean": {
+      "bytes": 2795,
+      "sha256": "b5167bad0d190e990d9ae213a92844835ffbd154828528c29d40869a9cfcf86b"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructionInvariant.lean": {
+      "bytes": 4020,
+      "sha256": "99ecdced279f754987d84b45a9649138b44ef185e39e573bc882c3ae43aeca23"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/FrontierAlignment.lean": {
+      "bytes": 3654,
+      "sha256": "30cc8d4d90c8013d14cfda41821e0d96aace8556b9b1c3ef8ed928923fb60e77"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/InvariantClock.lean": {
+      "bytes": 1935,
+      "sha256": "7445f9d773d7fa7d73e21e48920610a3d3352e54e597588e2d9baccc581f17b5"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/InvariantSplit.lean": {
+      "bytes": 6639,
+      "sha256": "596bccfc3a66e5ca1af77ce39e64d52e3e0ab0bfd106068391fb228184798110"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutLeafFrontier.lean": {
+      "bytes": 3433,
+      "sha256": "176f4e42ec98a65927d59f5c9eccf94a92d225ee3385a13624ede4babf600abf"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutLeafGraph.lean": {
+      "bytes": 3508,
+      "sha256": "2c2dc381a5c20159e6cfb76c7a176901c56981a2c3c705d01bbdfaa72b4a504e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutLeafMemory.lean": {
+      "bytes": 5285,
+      "sha256": "ab9098237be76d10c1593e44d399ad2033266f9bdf6f98b3d7383f7c5cf3d7c7"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutLeafRows.lean": {
+      "bytes": 2862,
+      "sha256": "2c6a0ee30ec540f47673eec80b3badbc09eaad98472b7a5c802a97eb7899b9d0"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutOtherInterval.lean": {
+      "bytes": 4038,
+      "sha256": "3adb1ce73417d7116e4bf2d7d463910313304b9943af34ee60c6962b7d8dc5b7"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutPendingRows.lean": {
+      "bytes": 2489,
+      "sha256": "76186945cdd2d167682c3b154bb8ea69cdbb538e8f1273635f600312c9452257"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutStackFrame.lean": {
+      "bytes": 3773,
+      "sha256": "a03bf22e5f65f18138490c8d9d3ea3f4b6b7593e82a0451e9dde5bfcc3cd3222"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutStackOffsets.lean": {
+      "bytes": 4747,
+      "sha256": "b5c262f93a5ae1d9061782843705df3f4f7c7f4158ffcd8ca190838e65ba91c3"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutStackPush.lean": {
+      "bytes": 2868,
+      "sha256": "18fbd64f6d0d1872bc300ee6e8840083718402aa1803eb91752ad6b4899a8f7c"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutTerminalBody.lean": {
+      "bytes": 4348,
+      "sha256": "bcfdbf3379300a83dbfbc0bc83a9073efaa9a1bbd247c119076fa642a5dd352b"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutTerminalCells.lean": {
+      "bytes": 3395,
+      "sha256": "a2bb227372c64f79c9b67558ce63c5789985041a4ac577097b71dae93a383885"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/LayoutTerminalFinish.lean": {
+      "bytes": 2108,
+      "sha256": "dab6513bce1d592bf6d373f7d39bd58d7b49dc7477af8ae9c4823a188797389d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/OpenGraphSelect.lean": {
+      "bytes": 1949,
+      "sha256": "98fccf7bbc168a5efd0e85646dd70da9d4b68b5d05e74ab26298fdb667d757ec"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PendingIntervals.lean": {
+      "bytes": 2066,
+      "sha256": "6791db238e95b7d7e61c8853d220a51234cf8a56dc3c8d29bc5f9e03ae8a5a8b"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PendingValidity.lean": {
+      "bytes": 2146,
+      "sha256": "35ba2a4478948d9c508101b41efb3a4ff3d999411802a68abc22eb3e5a597b62"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ResumeContext.lean": {
+      "bytes": 2882,
+      "sha256": "5fc7e95ab3c61661db407314debbb70adad5cddc679a7bfab663ce8869098c01"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/InvariantFinish.lean": {
+      "bytes": 4292,
+      "sha256": "814fa45b8fa5d50d9cb0e51efdd6ff20eea6b89fbb2c2d87bf5c49a931711a15"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/InvariantTerminal.lean": {
+      "bytes": 6990,
+      "sha256": "6dbdd7943a5e5f23815035d7a1ce592d3151a1e45c745c12ceb1ecacba58ce02"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/InvariantUnary.lean": {
+      "bytes": 5152,
+      "sha256": "66beef303396c3af9f2641bcd8ee3dd643943aaf1938f827a146f864ed0cd277"
     }
   },
   "development_artifacts": {
@@ -675,7 +771,10 @@
     "witness-radix-layout-child-v1.log",
     "witness-radix-layout-located-v1.log",
     "witness-radix-layout-checkpoint-v1.log",
-    "witness-radix-layout-pending-reads-v1.log"
+    "witness-radix-layout-pending-reads-v1.log",
+    "witness-radix-invariant-split-checkpoint-v1.log",
+    "witness-radix-invariant-root-checkpoint-v1.log",
+    "witness-radix-invariant-finish-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -838,6 +937,9 @@
     "agenda_cost": "logical agenda cost <= 1028*N with case prices matching the actual outer case summaries; physical agenda refinement still open",
     "allocation_budget": "partial full-tree cumulative leaf/frontier mass proves branches < N through terminal, unary and split transitions; concrete branch addresses are nonzero/even/fresh under original allocation bounds",
     "backing_layout": "six actual header/key/value/ordinal/record pool extents, no-wrap, alignment and disjointness imply scatter ownership, seven distinct mapped store destinations, immutable record/key preservation, child interval ownership and updated left context; allocator entry and full physical agenda must establish/preserve the shared invariant",
-    "located_graph": "shared allocation/located/frontier-safety invariants derive protection of all established reads through actual split body; new partial graph represents the same expected tree and retains location, safe remaining stores and distinct frontier slots; full physical pending/task invariant still under development"
+    "located_graph": "shared allocation/located/frontier-safety invariants derive protection of all established reads through actual split body; new partial graph represents the same expected tree and retains location, safe remaining stores and distinct frontier slots; full physical pending/task invariant still under development",
+    "split_full_invariant": "the complete actual main-body split re-establishes the full construction invariant from itself and case/clock premises: graph representation/location/safe/distinct/aligned frontier, real pending stack, child/current/pending readable intervals, immutable data, valid saved task metadata, exact locals and cumulative allocation budget",
+    "terminal_shared_invariant": "real terminal bodies (continue or finish) derive every ordinal/pop read, destination mapping and store-safety premise from shared layout/stack/rows/ABI facts; leaf update preserves immutable data, graph/frontier invariants and pending rows; complete terminal invariant assembly remains open",
+    "all_invariant_cases": "split, unary and terminal continuation each execute the actual body and re-establish the complete invariant; terminal finish returns and establishes the complete actual lookup representation at the original table root slot, from the invariant; whole-loop induction and constructor initialization remain open"
   }
 }

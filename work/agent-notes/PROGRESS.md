@@ -2805,3 +2805,31 @@ Variable-list whole normal caller checkpoint (2026-10-17):
   breakingtheoldreadytype. InsteadtranslookupSame withcongrArg(some.val.word)
   count_encode tochangeonlytheRHS. Genericcallee_return generalize rewritesits
   fixed-calleegoal too; returnedbranchusesrfl, notoldoutputEq.
+
+Payload transaction/withdrawal checkpoint (2026-10-17):
+- PayloadTransactionsProgram/WordStore/ExtraStores/TransactionsNormal derive real
+  tx slice containment from4offset validator, executepl16/24 extra stores, then
+  actual VarList caller and normal continuation; empty tx list included.
+- UDivMod Program/Step/Frame/Loop/Setup/Built/Call actual zero-divisor guard skip
+  for nonzero divisor, early return or64 rounds including dynamic shifts, signed
+  loop tests, assignments/conditional subtraction/q updates, lexical restoration,
+  tuple ABI. Body0or64, call<=65 sourceclocks; full memory/control frame. Does not
+  prove quotient/remainder arithmetic correctness; no such hypothesis assumed.
+- GuardNormal generic real ssz_fail nonresumption. FixedList Program/Tail/Normal/
+  Environment/CallerNormal actual division call, error30 remainder guard/error31
+  limit guard/word return/ABI/resumption, body<=65,call<=66; normal count<=limit.
+- PayloadTransactionStores/WithdrawalsNormal actualpl32/40 tuple stores and nwd
+  call44 divisor, copied bytes preserve, localsrestore/clock/control frame,
+  afterWithdrawals actual normal continuation. Joint successful
+  input-payload-withdrawals-normal-v1.log1329 targets, all permitted axioms.
+- State-control simplification may allocate>11GiB. Replaced whole-state
+  simplification with abstract field_control/allocated_field_control equalities;
+  runtime unchanged. Qualified QueryBranch.bind avoids Bind.bind simp ambiguity.
+- evalHOLFinite DecidablePred instances can differ computationally from explicit
+  classical QueryBranch.eval; UDivMod.finite_eval proves equality via Subsingleton
+  rather than assuming definitional equality. General fmap update uses BEq in
+  fixednormal lookup; explicitly prove literal BEq=false and simplify Bool.
+- NEXT afterWithdrawals11stores+return, actualgasstorepl88 raw474<=200M, preserve
+  laterfields. Need fullallocated payload caller/scopes; then fullSSZ/witness/root
+  global entry, constructor emptyrecord case, global Q/budget/source-map/target K.
+  Claim infinity. No fullverifier. Account20%,0resetcredits watcheractive.

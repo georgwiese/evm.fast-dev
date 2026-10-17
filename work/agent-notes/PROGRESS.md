@@ -3418,3 +3418,36 @@ Successful-child gas prefix and conditional forest checkpoint (2026-10-17):
   (16bytes/slot, branch16of17 or extension1of2), rather than assuming every
   query immediately allocates32bytes. Root/code queries need separate budgets;
   heap lifetimes/release and event coupling remain open, not a proven count.
+
+Storage debt guards and block accounting checkpoint (2026-10-17):
+- U256Eq actual four-limb xor/or equality body, tuple ABI/environment/caller
+  and equality equivalence checked. StorageDebt value transition exactly
+  balances state charge/refund against debt when original zero/current nonzero.
+  Conditional ledger telescopes; zero-start refunds<=charges. Dropping debt
+  without refund is permitted; rollback/committed-trace projection is unproved.
+- StorageTests literal state-gas/refund prefix selected from fixed op_sstore;
+  exact three-condition Boolean evaluation checked for arbitrary actual0/1
+  locals. StorageClassify links actual equality/zero outputs to those guards
+  and the97920 per-slot debt equation. It does not execute every SSTORE helper
+  or establish backend honesty, state journal, created-address original values
+  or gas reservoir correspondence. Destroy/rollback/creation need separate
+  consistent-value/ghost ownership invariants.
+- gas-storage-classify-v3.log1164targets,4.44s,max child RSS1904088KiB,
+  permitted axioms. Failed drafts fixed classical decision instances in
+  theorem statements, closed OR zero normalization and Bool.decide_and name.
+- BlockAccounting conditional natural pool equation yields BO regular charge
+  max(intrinsic+used,floor), with explicit nonnegative state accounting. Passed
+  reservation bounds completed counter and unfinished final transaction work;
+  aggregate uses charged work, not sum of initial root gas. Source TX_BASE is
+ 12000 (self-transfer recipient cost may be0), giving conditional completed
+  count16666 at200M. Actual intrinsic no-wrap/floor lower bound remains open.
+  Actual BO_GAS_USED store selected from fixed process_transaction and real
+  store execution/no-wrap addition checked under explicit local/cell/bound
+  premises; full process/check_transaction/pool/state linkage remains open.
+- Success gas-block-accounting-v1.log1165targets,5.84s,max child RSS1967500KiB,
+  permitted axioms. Index4469/7263; policy61333entries/2252730199bytes, infinity.
+  No full verifier, global finite K or overall feasibility go earned.
+- Next actual mutable table lookup/ownership invariant and protected gas frame,
+  plus root init and backend/state-ledger coupling; continue joint table/heapQ
+  costs and original/radix/target composition. Local algebra cannot substitute
+  for the full reachable-state invariant.

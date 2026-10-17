@@ -3793,3 +3793,35 @@ Complete original witness-record loop checkpoint (2026-10-17):
   determinism across private-table memory relation (actual fixed oracle is
   deterministic and checked). All global gas/state/Q/heap/compiler/target work
   remains. Continue autonomously after this checkpoint.
+
+Entire actual original witness constructor checkpoint (2026-10-17):
+- WitnessBuildPrepare real htab_new caller/zero-i declaration, both exact
+  lexical restoration scopes, initialized Built/Locals/Records and source
+  clock. Nonlocal fields equal already-checked candidate prepared state;
+  reuse its heap-cursor-only global and hash-environment preservation.
+- WitnessBuildPopulate complete allocation/clearing, original record while,
+  actual table return and scopes, final Built/History of lengthN and Records.
+- WitnessBuildCapacity original cap4 declaration/doubling loop retains final
+  exponent bits in[2,32], sufficient cap>=2N+2,cap<=4N+4, real continuation,
+  cap local and<=30 clocks. Uses actual checked Capacity.iterate; no capacity
+  execution supplied as a premise.
+- WitnessBuildExecution entire fixed original nodedb_build AST, capacity,
+  allocation plan and actual loop/return/scopes. Final table represents all
+  observed actual digest/record pairs with last-record-wins semantics. Exact
+  heap cursor/hashControl update to table+72+57*cap+padding. Explicit decoded
+  records, source ABI/code/globals, arena/buffer ownership and clock premises.
+  Original source allowance (Keccak256.price(max)+7*N+9)*N+4*N+46 is quadratic
+  and only demonstrates a conditional source execution; it is not target K.
+- Success mutable-witness-execution-v2.log1360targets, only allowed axioms.
+  Index4555/7440; policy61420entries/2253133058bytes, claim infinity. Account36%,
+  reset credits0, host1.4GiB used/29available,disk58%/124GiB free. No full verifier.
+- Failed drafts fixed unnecessary rfl after closed rewriting, reserved scoped
+  name, explicit initial-clock projection before omega, and hashControl applied
+  to emptyLocals/clock frame using checked hashControl_empty/hashControl_clock.
+- Next connect Built+History+Records to complete original NodeDb lookup for
+  every query pointer; source constructor caller/environment then original/
+  radix actual hash digest/event noninterference and whole context refinement.
+  The constructor's observed digest sequence has not yet been identified with
+  the candidate sequence under different private table memory contents.
+  Global gas/state/Q/heap, startup/ROM/compiler/target and finite certificate
+  remain open. Do not stop after this checkpoint; continue original task.

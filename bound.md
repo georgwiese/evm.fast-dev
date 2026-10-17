@@ -12,6 +12,22 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Derived both actual decoded constructor invocations and both dictionary
+  pairs at the actual runtime entry, without assuming constructor results or
+  the second entry heap. Input field geometry and actual own-memory frames
+  preserve si56/64; decoded cells, fixed metadata/code, exact selected cursor,
+  and remaining clocks supply the second call. Covers empty/nonempty arrays
+  and preserves the earlier original/radix dictionaries across the second call.
+  Successful witness-next-arguments-v1.log1501,
+  witness-paired-environment-v1.log1440,witness-next-decoded-call-v1.log1556,
+  witness-decoded-initialization-v2.log1557targets; permitted axioms. Initial
+  decoded records, startup/hash/input structure layout/code, public agreement,
+  combined arena room and clock allowances remain explicit. Frontend/header
+  reachability, whole runtime and global/compiler/target finite bound remain
+  open. Index4660/7614, incremental policy61525entries/2253768653bytes.
+  Infinity; no full verification, finite K or final acceptance. Whole-task
+  conversational estimate45%, rough35-55%; not a certificate completion metric.
+
 - [x] Checked uniform actual dictionary caller for zero/positive counts, then
   entire decoder-backed caller: actual VarList.Records supplies raw pointer/
   length reads, array arena/alignment, per-item hash arenas, raw/aligned public

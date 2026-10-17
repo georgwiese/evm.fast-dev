@@ -4562,6 +4562,14 @@
       "sha256": "83aba7146272588f0261f083af7287bdb42955e1250d60c668f89e12a0bcf969"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/PureAssignReturn.lean",
+      "sha256": "62f4e4e062bb5940f97b1c99a60331fbd88877f7404bdad6aa38e78cb42e9a53"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/PureReturn.lean",
+      "sha256": "4194608c1dd835fb1b1b30b2555e1b7b6412fc22c9b400cab4b19d400179dcda"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/RawScalar.lean",
       "sha256": "b2cfeb81c7ed00a8cd576c8ee715c2f783ce8cdeb00d21b6149a3030606fddfd"
     },
@@ -4636,6 +4644,82 @@
     {
       "path": "submission/InitECandidate/Solver/Input/RequestStoredGasFromHeader.lean",
       "sha256": "4b5c7f65d8f9141ff7cf255073dafb3f7cbd3d4144e979596d0f390e5f015800"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BeBuilt.lean",
+      "sha256": "76857c6b80d9df645bea7a8fb6ffd6f4da98a2972efcc9ce19b0ced6cecf3fbd"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BeCall.lean",
+      "sha256": "8817c782ea1b9089305857ec2605f7b885da5e806e8ab13b18b4457b9b91ace0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BeLoop.lean",
+      "sha256": "bea7358ff77e89ee983f23ff268ac5584efd9fed3f06dbfd344f72d474281eae"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BeProgram.lean",
+      "sha256": "52bb9b704232fdec922ef1f4123c476105cddd60ac501f27a557d1f2a9b0d2e1"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BeStep.lean",
+      "sha256": "2a3c13f949e4c9c46bcdec64c2ec98642c814df722d748c8792fa9742f732cb8"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BlockLoop.lean",
+      "sha256": "a06b5f86e9bbbcb8e94ae6bcf4b99be9806fb377bd5faa93bb651d9355f0dee6"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BlockProgram.lean",
+      "sha256": "51efe082d3876b3d8f766ce237e8504f940cb48b78aa7bd6391063d749e62f2c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BlockReads.lean",
+      "sha256": "ba35a58e2b56124c5f3426644a75f4cb3d84cef0d0479a5ba00a09a8ff487f35"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BlockStep.lean",
+      "sha256": "00d20b1ba528723b79ec4b0f3b7f5e8c18f07b103f153494a5f4f7f9ee4da50f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BlockSuffix.lean",
+      "sha256": "98fd068fa2606fffccb1fe5f9d0b6f809f15a6f7ac83d8edb6e1a3ea5eb2d85b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BlockSuffixProgram.lean",
+      "sha256": "e70058cbc6b19daf60f792452c51e32365761ff403c9fd7152f870a73e5f7279"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BlockWithdrawalPhase.lean",
+      "sha256": "9f76aa156700aebc965e350888111a2d830eea2e4aaf8e29b19646f3e9ac9b50"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/ListHeader.lean",
+      "sha256": "22526f4f644c9366594081f4c0b0e783cee73a377361ad5eeada68b9dce04f68"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/ListHeaderAssign.lean",
+      "sha256": "658465e4b9e0b6b5c9859c0b04f46283ef675df170b93b3fba41cd94710ee0dc"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/ScalarSizes.lean",
+      "sha256": "f6eb2d6cd3d9b41f89d0399ff352cf696225003a4e8bd597227c91d146c2b478"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/ShortOrBe.lean",
+      "sha256": "3b0ccab7faa20e8342a17ac7108ba6fd54ea473f777e7c0711ab302ac5e34a64"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/WithdrawalBuilt.lean",
+      "sha256": "24f4082fbfbb0112b6316171267624d581a2588e275dad6833cd2cb45332c21c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/WithdrawalCall.lean",
+      "sha256": "d8121172fff5a8918b9578fce6408775c1ad80c79bac0653c07cf457c067510b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/WithdrawalProgram.lean",
+      "sha256": "5a4905763bd3249d9487bb23f5058fa0cbc6d702353311916fc35f1691b8447f"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/Scalar64.lean",
@@ -65334,7 +65418,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -65342,19 +65426,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -65363,7 +65447,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -65372,7 +65456,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -65381,7 +65465,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -65390,7 +65474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -70876,7 +70960,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -70885,7 +70969,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.framed_byte",
@@ -70893,7 +70977,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -70902,7 +70986,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -70911,7 +70995,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -70920,21 +71004,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -70943,7 +71027,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -70952,7 +71036,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -70961,7 +71045,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -70969,7 +71053,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -70978,7 +71062,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -70987,7 +71071,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -70996,7 +71080,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -71004,14 +71088,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -71020,7 +71104,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -71029,7 +71113,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -71038,7 +71122,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -71046,7 +71130,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -71054,7 +71138,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -71062,7 +71146,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -71070,7 +71154,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -71078,7 +71162,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -71086,7 +71170,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -71095,7 +71179,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -71103,7 +71187,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -71112,7 +71196,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -71120,7 +71204,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -71129,7 +71213,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -71138,7 +71222,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -71147,7 +71231,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -71156,7 +71240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -71165,7 +71249,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -71174,7 +71258,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -71183,7 +71267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -71192,7 +71276,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -71201,7 +71285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -71210,7 +71294,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -71219,7 +71303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -71228,7 +71312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -71237,7 +71321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -71246,7 +71330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -71255,7 +71339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -71264,7 +71348,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -71273,7 +71357,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -71282,7 +71366,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -71291,7 +71375,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -71300,7 +71384,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -71309,14 +71393,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -71325,7 +71409,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -71334,7 +71418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -71343,7 +71427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -71352,7 +71436,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -71360,7 +71444,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -71368,7 +71452,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -71376,7 +71460,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -71385,14 +71469,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.sum_words",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_read",
@@ -71401,7 +71485,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_append",
@@ -71410,7 +71494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat32_equiv",
@@ -71419,7 +71503,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat64_equiv",
@@ -71428,14 +71512,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.convert_nat",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le32",
@@ -71444,7 +71528,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le64",
@@ -71453,7 +71537,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_read",
@@ -71462,7 +71546,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_store_shape",
@@ -71498,7 +71582,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -71507,7 +71591,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.op_congr",
@@ -71516,7 +71600,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_congr",
@@ -71525,7 +71609,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_congr",
@@ -71534,7 +71618,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_congr",
@@ -71543,7 +71627,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_congr",
@@ -71552,7 +71636,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_read",
@@ -71561,7 +71645,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -71570,7 +71654,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -71579,7 +71663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -71588,7 +71672,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -71596,7 +71680,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -71829,7 +71913,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -71838,7 +71922,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -71847,7 +71931,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -72224,7 +72308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_heap_le64",
@@ -72233,7 +72317,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.reject_call",
@@ -72853,7 +72937,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -72862,7 +72946,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -72871,7 +72955,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -72880,7 +72964,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.record_test_read",
@@ -73345,7 +73429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -73354,7 +73438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -74075,7 +74159,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.UDivMod.shifted_number",
@@ -74159,6 +74243,293 @@
         "Quot.sound"
       ],
       "successful_log": "input-payload-count-field-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CallNormal.pure_assign_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CallNormal.pure_return_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CallNormal.unary_environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Be.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Be.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Be.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Be.loop_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Be.step_fields",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.loop_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.loop_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.test_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.arguments_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.body_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.step_other",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.suffix_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.suffix_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.withdrawal_phase_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Block.withdrawal_count_of_length",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.assign_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Header.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Header.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.short_or_be",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.scalar_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-rlp-withdrawal-phase-v2.log"
     }
   ]
 }

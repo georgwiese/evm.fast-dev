@@ -3711,3 +3711,39 @@ Complete original immutable-table insertion/setter checkpoint (2026-10-17):
   literal subtrees agree. Actual branch/store/growth/delete/runtime other keys,
   global gas/state/Q/heap and compiler/target finite certificate remain open.
   Continue original task, no checkpoint stop.
+
+Actual original witness-builder iteration checkpoint (2026-10-17):
+- BuildHashFrame32 transports the full physical/logical Built invariant across
+  arbitrary changes below the private table. Actual Keccak protected-memory
+  theorem supplies that frame from buffer ranges preceding the table, while
+  preserving domain/endianness through hashControl.
+- WitnessBuildProgram identifies exact fixed original nodedb_build AST, sharing
+  checked candidate capacity/hash-argument fragments where literal ASTs agree.
+  Original record body is real keccak call then htab_set then ordinal increment.
+  Real setter arguments read t, mpt_hash_scratch and actual arr+i*16 record.
+- WitnessBuildSetStep invokes complete checked original setter caller, extends
+  logical history, increments ordinal, preserves records/input below table and
+  every other local/nonlocal control/FFI field; <=7*i+7 clocks after hash.
+- WitnessBuildRecords concrete record addresses, ordinary-domain mapping and
+  pointer/length load arguments; source record cells remain intact under actual
+  hash buffers before records and setter stores above records.
+- WitnessBuildRecordStep complete real Keccak caller/body and both setter
+  branches. Observes actual four output words/32 bytes, inserts exactly that
+  observed key/record pointer, preserves table/records, advances actual ordinal.
+  Clock allowance Keccak256.price(length)+7*i+8; hashControl preserved while
+  actual Keccak event append remains. No successful hash/set execution premise.
+  Ready, actual record words, buffer arenas/before-records, code/domain and
+  sufficient clocks remain explicit. Digest is from actual execution; no
+  cryptographic injectivity/distribution assumption. Equality of digest/event
+  observations between original and radix whole executions remains unproved.
+- Success mutable-witness-record-step-v1.log1322targets, only allowed axioms.
+  Index4548/7429; policy61413entries/2253099215bytes, infinity. Account35%, no
+  reset credits; host/disk remain well within limits. No finite K/full verifier.
+- Failed draft normalized length-load associativity in hypotheses before eval
+  simplification. Final current sources passed before evidence indexing.
+- Next context/code transport through hashControl, history/record references
+  and complete original while-loop induction, then capacity/table-call setup
+  and whole nodedb_build/caller relation. Existing candidate HashContext and
+  record_loop are useful templates; original Locals has t/slice_arr/n/i only.
+  Payload/digest noninterference across original/radix private-table memories,
+  whole global gas/state/Q/heap and compiler/target certificate remain open.

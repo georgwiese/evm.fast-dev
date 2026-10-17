@@ -2265,6 +2265,7 @@
     "submission/InitECandidate/Solver/LabCostTight.lean",
     "submission/InitECandidate/Solver/LocCost.lean",
     "submission/InitECandidate/Solver/MemoryCost.lean",
+    "submission/InitECandidate/Solver/MutableTable/BuildHashFrame32.lean",
     "submission/InitECandidate/Solver/MutableTable/BuildInvariant32.lean",
     "submission/InitECandidate/Solver/MutableTable/ByteStore.lean",
     "submission/InitECandidate/Solver/MutableTable/ByteStoreExec.lean",
@@ -2337,6 +2338,10 @@
     "submission/InitECandidate/Solver/MutableTable/TableEmpty.lean",
     "submission/InitECandidate/Solver/MutableTable/TableEmptyHeader.lean",
     "submission/InitECandidate/Solver/MutableTable/ValueModel32.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessBuildProgram.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessBuildRecordStep.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessBuildRecords.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessBuildSetStep.lean",
     "submission/InitECandidate/Solver/MutableTable/ZeroBytes.lean",
     "submission/InitECandidate/Solver/MutableTable/ZeroWords.lean",
     "submission/InitECandidate/Solver/NopBound.lean",
@@ -4552,8 +4557,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61408,
-  "package_bytes": 2253072285,
+  "package_entries": 61413,
+  "package_bytes": 2253099215,
   "claim": {
     "K": "infinity"
   },

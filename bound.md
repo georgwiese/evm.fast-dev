@@ -12,6 +12,17 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked one complete original witness-builder record iteration:
+  actual pointer/length loads, full real Keccak call, observed digest word/
+  byte view, complete new/duplicate setter call and ordinal increment. Table
+  invariant survives hash writes before its private allocation; record words
+  survive hash and setter stores. Exact fixed original builder AST agrees
+  with reused capacity/hash fragments. `mutable-witness-record-step-v1.log`
+  1322targets, permitted axioms; index4548/7429. Ready, actual record words,
+  buffer arenas/separation, code/domain/clock premises explicit. Whole record
+  loop, constructor/caller connection and original/radix digest/context
+  noninterference still open. Claim infinity; no finite K/full verification.
+
 - [x] Checked complete original immutable-table raw insertion and setter,
   including actual header/hash/find/raw-call/copy/store/scoping and duplicate
   updates. Built invariant ties physical header/key/used/value/count to a

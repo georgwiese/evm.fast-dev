@@ -4054,6 +4054,10 @@
       "sha256": "ddfa22e8a2f25dfa9220cd863b89ffda27edf0c8cdf22f8a0bc85540b2bc553e"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/SaturatingAdd.lean",
+      "sha256": "647765319e45588e72e3a195aa7961f7cdd9309a361e870349f8543705c33335"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GasBudget/StateCharge.lean",
       "sha256": "57cb81f306c78223e554500a786f89cc7bab7560c112938e56687f0961cd52f5"
     },
@@ -4080,6 +4084,14 @@
     {
       "path": "submission/InitECandidate/Solver/GasBudget/U256Zero.lean",
       "sha256": "f66f4c4917146db9605a31b43bc87fb2755424126a61cf26fd78b4cc9eeaac95"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/ValueFee.lean",
+      "sha256": "fc2a03a9b467479832352048a09182822022e43e4eab5569a8a2446d081352e6"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/ValueFeeSites.lean",
+      "sha256": "9e2aff40c7bdb65fc53e2a4c8f6c7c4119445d317092f87ea2201bfa30654340"
     },
     {
       "path": "submission/InitECandidate/Solver/GuestWork/ChargeGasBounded.lean",
@@ -76259,7 +76271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refund_call",
@@ -76268,7 +76280,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refill_call",
@@ -76277,7 +76289,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.address_read",
@@ -76286,7 +76298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.frame_read",
@@ -76295,14 +76307,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
       "axioms": [
         "propext"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
@@ -76311,7 +76323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.selected_number",
@@ -76319,7 +76331,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.environment",
@@ -76328,7 +76340,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.call_execute",
@@ -76337,7 +76349,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.body_shape",
@@ -76346,7 +76358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.execute",
@@ -76355,7 +76367,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.preserves_regular_budget",
@@ -76363,7 +76375,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.body_shape",
@@ -76372,7 +76384,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.execute",
@@ -76381,7 +76393,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.preserves_regular_budget",
@@ -76389,7 +76401,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.body_shape",
@@ -76398,7 +76410,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.execute",
@@ -76407,7 +76419,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.environment",
@@ -76416,7 +76428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.call_execute",
@@ -76425,7 +76437,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.first_execute",
@@ -76434,7 +76446,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.execute",
@@ -76443,7 +76455,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.preserves_regular_budget",
@@ -76452,7 +76464,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.call_execute",
@@ -76461,7 +76473,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed_call",
@@ -76470,7 +76482,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed",
@@ -76479,7 +76491,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.body_shape",
@@ -76488,7 +76500,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.spill_execute",
@@ -76497,7 +76509,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.execute",
@@ -76506,7 +76518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.budget_transfer",
@@ -76515,7 +76527,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.call_execute",
@@ -76524,7 +76536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.returned_budget_bound",
@@ -76533,7 +76545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.body_shape",
@@ -76542,7 +76554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.child_read",
@@ -76551,7 +76563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.sum_execute",
@@ -76560,14 +76572,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.stored_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.body_shape",
@@ -76576,7 +76588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.execute",
@@ -76585,7 +76597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.preserves_regular_budget",
@@ -76593,7 +76605,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.call_execute",
@@ -76602,7 +76614,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.body_shape",
@@ -76611,7 +76623,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.execute",
@@ -76620,7 +76632,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.failed",
@@ -76629,7 +76641,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.quantitative",
@@ -76637,7 +76649,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.call_execute",
@@ -76646,7 +76658,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.failed_call",
@@ -76655,7 +76667,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.stipend_update_execute",
@@ -76664,7 +76676,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.after_zero_execute",
@@ -76673,7 +76685,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.execute",
@@ -76682,7 +76694,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.forwarded_number",
@@ -76690,7 +76702,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.environment",
@@ -76699,7 +76711,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.call_execute",
@@ -76708,7 +76720,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.cap_execute",
@@ -76717,7 +76729,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.temporary_away",
@@ -76726,7 +76738,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.Inputs.of_locals",
@@ -76735,7 +76747,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.Inputs.bind",
@@ -76744,7 +76756,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.after_need_execute",
@@ -76753,7 +76765,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.after_stipend_execute",
@@ -76762,7 +76774,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.body_shape",
@@ -76771,7 +76783,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.cap_number",
@@ -76779,7 +76791,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.capped_number",
@@ -76787,7 +76799,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.stipend_bound",
@@ -76795,7 +76807,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.forward_counter_number",
@@ -76804,7 +76816,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.used_debit_budget",
@@ -76812,7 +76824,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.stipend_funded_by_value_fee",
@@ -76820,7 +76832,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ForwardPrefix.execute",
@@ -76829,7 +76841,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ForwardPrefix.opcode_sites",
@@ -76838,7 +76850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ForwardPrefix.opcode_zero_costs",
@@ -76847,7 +76859,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.U256Zero.mixed_zero",
@@ -76855,7 +76867,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.U256Zero.execute",
@@ -76864,7 +76876,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.U256Zero.call_execute",
@@ -76873,7 +76885,94 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-forward-sites-v6.log"
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.ge_left",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.value_fee_lower",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ValueFee.arguments_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ValueFee.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ValueFee.failed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ValueFee.opcode_fee_sites",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ValueFee.opcode_zero_values",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ValueFee.zero_stipend",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-value-fee-sites-v1.log"
     }
   ]
 }

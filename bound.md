@@ -12,6 +12,14 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked actual state-gas refund and rollback-refill bodies/callers.
+  Their real stores preserve gas_left+regular_gas_used+outstanding_spill when
+  gas_left+spill<2^64; mapped/stored frame cells, runtime code and refill
+  reservoir-cell separation remain explicit. min returns the actual unsigned
+  minimum; ignored refund/refill callers cost2/1 source clocks. Successful
+  `gas-refund-calls-v1.log`1102targets, permitted axioms; index4434/7155.
+  This is local conservation, not global gas coverage or target pricing.
+
 - [x] Checked the complete actual encode_header body/caller and the complete
   block_rlp_length body/caller, followed by the exact payload_header 8MiB guard.
   Header size<=916, body/caller clocks<=1345/1346; block body/caller clocks
@@ -112,7 +120,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [ ] Complete the capacity-growth path and any other local summaries **actually required by the chosen global proof**; prove their entry premises at every use.
 - [ ] Connect bounded execution through the actual compiler artifacts, bootstrap, oracle/FFI, and matching-result relation.
 - [ ] Prove a literal finite K below the score cap; make `submission.K`, `claimedScore`, and `claim.json` agree; prove admission and the fixed certificate with only permitted axioms.
-- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,292 full-package entries; 2,252,515,261 bytes); this is not isolated verification or a final overlay check.
+- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,298 full-package entries; 2,252,545,515 bytes); this is not isolated verification or a final overlay check.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 
 **Latest checked connection:** `QueryExecution.lookup_built` proves the complete actual candidate lookup from concrete HOL memory/header/ABI/code premises: exact last-record-wins result, at most **262 source clocks**, and preserved nonlocal state. Successful closure: `witness-radix-query-function-v3.log`; only permitted axioms. Construction must still establish the represented-memory premise, and source clocks are not target transitions. The actual fixed `memeq` 32-byte aligned and unaligned paths, actual caller restoration, and real code-entry argument environment now check with only permitted axioms (`witness-radix-memeq-environment-v4.log`). The comparison consumes at most four source clocks plus one call clock. The candidate compiler reports 905,572 code bytes, 4,615 bitmap words and a static stack bound of 538 words (`witness-radix-static-depth-v1.log`); these are development compiler results, not a target certificate.
@@ -697,6 +705,22 @@ Useful source observations, still requiring actual-execution proofs:
   `ws_storage_trie` decodes before its caller's temporary key-hash heap scope.
   Do not assume cryptographic acyclicity or that physical scratch bounds
   cumulative work. Scoped indexed-trie builders need their own aggregate bound.
+
+Actual gas-local checkpoint: `GasBudget.Refill` and `Refund` execute the fixed
+routines and all scopes, retaining exact memory/clock/control frames. Their
+real ignored callers also check. Under readable frame/message cells, runtime
+code, clock affordability and `gas_left+spill<2^64`, the natural sum
+`gas_left+regular_gas_used+outstanding_spill` is preserved. The spill cell is
+frame offset192, regular-used184, liquid64 and state-left72. Refill reservoir
+read separation is explicit. This rules out treating these local reservoir
+restorations as fresh regular budget. It does not cover the whole call tree or
+prove a380M total. CALL/CALLCODE subtract forwarded gas including the2300
+stipend from regular-used; nonzero-value overhead11300 must pay for that credit.
+Current intrinsic cost returns `<regular,0,floor>` and the block regular counter
+is computed before ordinary transaction refund subtraction. Signed state-use
+and pre/post child transfers still need actual no-wrap and conservation proofs.
+`global-resource-pilot.py` now hashes evm_calls/tx too and records these checked
+local results while leaving all whole-run/target flags false.
 
 Next quantitative pilot: close the joint gas/table resource invariants and
 persistent-query allocation pairing. Actual small-divisor arithmetic/count

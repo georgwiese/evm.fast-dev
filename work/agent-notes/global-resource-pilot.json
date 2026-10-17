@@ -3,6 +3,8 @@
   "certificate": false,
   "sources": {
     "guest/src/evm.pnk": "ae92f8427624c87f83f8514234e166e9d602f85cf3c92805989c0f0472c90ce7",
+    "guest/src/evm_calls.pnk": "c0f015aa9eee5d6d8cc971b9fc6fe5adba4b1d4a95ed3f3c712dd6363ec26398",
+    "guest/src/tx.pnk": "dc80be749f03f2f9d8756b88443c8314b1cdd4b45b335e1d8a2a2ca418b04fd8",
     "guest/src/fork.pnk": "eb6ee62f0a8b0d9d16d545771791adeb40dcd7190f17fa0091c0c24da5a2e274",
     "guest/src/block.pnk": "4f1fca2679187b73519cd1139a20cabb65e7c1dfceedc1498edab9dce6aaf0c2",
     "guest/src/state.pnk": "3040be5fd32c2cf8bed0c402d8e0dcc59998a5114b1aeea2a1852de91bbc4bb7",
@@ -124,8 +126,20 @@
       "note": "Dimension relaxation only; runtime multiplicities and global gas conservation are unproved."
     }
   },
+  "checked_local_evidence": {
+    "block_guard_log": "input-block-guard-v3.log",
+    "gas_refund_refill_log": "gas-refund-calls-v1.log",
+    "regular_budget": "gas_left + regular_gas_used + outstanding_state_spill",
+    "gas_local_premises": "Actual mapped/stored frame and message cells, code, clock affordability, gas_left+spill<2^64; reservoir cell separation for refill.",
+    "global_initialization": false,
+    "whole_gas_conservation": false,
+    "target_steps": false
+  },
   "source_observations": [
     "The actual cold account constant is3000, not2600; warm100 and cold storage2100.",
+    "EV_STATE_GAS_SPILLED is offset192; actual refund and rollback refill preserve regular gas_left+used+spill under checked local premises.",
+    "CALL/CALLCODE subtract forwarded gas including a2300 stipend from EV_REGULAR_GAS_USED; nonzero-value overhead is11300, so raw cumulative charge_gas amounts are not net regular consumption.",
+    "calculate_intrinsic_cost currently returns regular,0,floor; process_transaction block regular accounting occurs before its ordinary refund subtraction.",
     "htab_del uses backward shifts, not repeated full reinsertions.",
     "block_rlp_length precedes block-content trie construction and process_withdrawals; cap8MiB.",
     "withdrawal_rlp_len contains fixed address cost21, three positive scalar lengths and positive list header.",
@@ -133,8 +147,8 @@
     "ws_storage_trie decodes before the temporary key-hash heap_mark/heap_release scope."
   ],
   "required_unproved_premises": [
-    "Exact actual division/count and RLP-length no-wrap proofs before deriving withdrawal_count<=335544.",
-    "Conservation of executed regular/state gas over user refunds, six system calls, nesting and rollback.",
+    "Root decoder/builder entry, byte-pointer arenas, fresh-buffer placement, runtime code and clock premises of the checked whole block-call/withdrawal-guard theorem.",
+    "Whole-run conservation of executed regular/state gas over six system calls, child transfers/stipends, signed state use and block counters; actual refund/refill local conservation now checks.",
     "Joint cold/warm resources for every map, including access-list warming and free withdrawals.",
     "All table probe/rehash/backward-delete/copy multiplicities and inter-phase cache sizes.",
     "Persistent allocation accounting excludes only scoped temporary arenas with separate cumulative bounds.",

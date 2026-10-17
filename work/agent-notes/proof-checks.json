@@ -3974,6 +3974,26 @@
       "sha256": "e678658817c8ecceea02029e54da0102bdac31e4ddd984783229b5df8d9bb405"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/Calls.lean",
+      "sha256": "ba16809a66cc3382bf35ae413a1944f289926a5ed5cc21d077c65582f8fb127b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/Frame.lean",
+      "sha256": "d4cd267043fdf3093f23facaa4e63c734c0f807c59f1cc837aac02876d8fcf5e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/Minimum.lean",
+      "sha256": "27983dde72a54681f74482969f39c0c5845bce0e6aaa6968dc9623b817978a87"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/Refill.lean",
+      "sha256": "15e5e4f8ac270ecfab56814606a14034464fd92643c53d6ef020fb5381f40cd4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/Refund.lean",
+      "sha256": "9302dd416a82aff345f4a8f251abaf24f4c19afd1ce3f5f3a1f9e7d13a1b141b"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GuestWork/ChargeGasBounded.lean",
       "sha256": "06645e5c9da0d9c4e22f8d23562c980616a88879f5d903a2f9d3867504242700"
     },
@@ -76143,6 +76163,145 @@
         "Quot.sound"
       ],
       "successful_log": "input-block-guard-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ignored_return",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.refund_call",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.refill_call",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.address_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.frame_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Minimum.selected_number",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Minimum.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Minimum.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Refill.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Refill.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Refill.preserves_regular_budget",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Refund.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Refund.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Refund.preserves_regular_budget",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-refund-calls-v1.log"
     }
   ]
 }

@@ -78,7 +78,7 @@ def main():
     parser.add_argument('--self-test', action='store_true')
     args = parser.parse_args()
     checks = self_test() if args.self_test else None
-    sources = ['guest/src/evm.pnk','guest/src/fork.pnk','guest/src/block.pnk',
+    sources = ['guest/src/evm.pnk','guest/src/evm_calls.pnk','guest/src/tx.pnk','guest/src/fork.pnk','guest/src/block.pnk',
                'guest/src/state.pnk','guest/src/mpt.pnk','guest/src/lib/htab.pnk',
                'guest/src/lib/rlp.pnk','guest/src/config.h','guest/src/types.h']
     block_size = 8388608
@@ -106,8 +106,15 @@ def main():
             hypothetical_one_query_per32_allocated_bytes=heap_bytes//32),
         arithmetic_status='The integers are exact. Their full-run premises below are unproved.',
         self_test_cases=checks, cases=cases,
+        checked_local_evidence=dict(block_guard_log='input-block-guard-v3.log',gas_refund_refill_log='gas-refund-calls-v1.log',
+            regular_budget='gas_left + regular_gas_used + outstanding_state_spill',
+            gas_local_premises='Actual mapped/stored frame and message cells, code, clock affordability, gas_left+spill<2^64; reservoir cell separation for refill.',
+            global_initialization=False,whole_gas_conservation=False,target_steps=False),
         source_observations=[
             'The actual cold account constant is3000, not2600; warm100 and cold storage2100.',
+            'EV_STATE_GAS_SPILLED is offset192; actual refund and rollback refill preserve regular gas_left+used+spill under checked local premises.',
+            'CALL/CALLCODE subtract forwarded gas including a2300 stipend from EV_REGULAR_GAS_USED; nonzero-value overhead is11300, so raw cumulative charge_gas amounts are not net regular consumption.',
+            'calculate_intrinsic_cost currently returns regular,0,floor; process_transaction block regular accounting occurs before its ordinary refund subtraction.',
             'htab_del uses backward shifts, not repeated full reinsertions.',
             'block_rlp_length precedes block-content trie construction and process_withdrawals; cap8MiB.',
             'withdrawal_rlp_len contains fixed address cost21, three positive scalar lengths and positive list header.',
@@ -115,8 +122,8 @@ def main():
             'ws_storage_trie decodes before the temporary key-hash heap_mark/heap_release scope.',
         ],
         required_unproved_premises=[
-            'Exact actual division/count and RLP-length no-wrap proofs before deriving withdrawal_count<=335544.',
-            'Conservation of executed regular/state gas over user refunds, six system calls, nesting and rollback.',
+            'Root decoder/builder entry, byte-pointer arenas, fresh-buffer placement, runtime code and clock premises of the checked whole block-call/withdrawal-guard theorem.',
+            'Whole-run conservation of executed regular/state gas over six system calls, child transfers/stipends, signed state use and block counters; actual refund/refill local conservation now checks.',
             'Joint cold/warm resources for every map, including access-list warming and free withdrawals.',
             'All table probe/rehash/backward-delete/copy multiplicities and inter-phase cache sizes.',
             'Persistent allocation accounting excludes only scoped temporary arenas with separate cumulative bounds.',

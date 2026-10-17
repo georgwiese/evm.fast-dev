@@ -28,11 +28,11 @@ theorem general_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tabl
         (none, {source with
           memory := (generalResultMemory source.memory source.be (KeyHash.keySize kind) p table vals order position index count value)
           clock := source.clock - paid}) ∧
-      generalResultMemory source.memory source.be (KeyHash.keySize kind) p table vals order position index count value (table + 24#64) = .word (count + 1#64) := by
+      generalResultMemory source.memory source.be (KeyHash.keySize kind) p table vals order position index count value (table + 24#64) = .word (count + 1#64) ∧ Find.usedByte source p index = some 0 := by
   obtain ⟨callee, called, tLocal, keyLocal, valueLocal⟩ := TableCall.environment source.code.lookup (ofString "htab_insert_raw") body table p.key value insertCode
   let entry := callEntryStateHOLFinite source callee
   have entryData := GeneralData.of_fields source entry table p kind vals order position count bits items data rfl rfl rfl rfl
-  obtain ⟨paid, index, target, bound, inside, run, frame⟩ := general_execute entry table p kind vals order position count value bits items
+  obtain ⟨paid, index, target, bound, inside, run, frame, empty⟩ := general_execute entry table p kind vals order position count value bits items
     entryData tLocal keyLocal valueLocal (by change items.length + KeyHash.hashPrice kind + MemeqByteRuntime.price (KeyHash.keySize kind) + 1 ≤ source.clock - 1; omega)
   let memory := generalResultMemory source.memory source.be (KeyHash.keySize kind) p table vals order position index count value
   have callerFrame : emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with memory := memory, clock := source.clock - 1 - paid} := frame
@@ -40,7 +40,7 @@ theorem general_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (tabl
     (.val (.word 0#64)) paid memory args called (by omega) run (by simp [shapeEqHOL, shapeOfHOLExact]) callerFrame
   have subtract : source.clock - 1 - paid = source.clock - (paid + 1) := by omega
   exact ⟨paid + 1, index, by omega, inside, by simpa only [subtract] using actual,
-    general_result_count source.memory source.be (KeyHash.keySize kind) p table vals order position index count value⟩
+    general_result_count source.memory source.be (KeyHash.keySize kind) p table vals order position index count value, empty⟩
 
 end InitECandidate.Solver.MutableTable.Insert
 

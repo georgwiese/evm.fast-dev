@@ -21,7 +21,7 @@ theorem general_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (t
       emptyLocalsHOLFinite target = emptyLocalsHOLFinite
         {source with
           memory := (generalResultMemory source.memory source.be (KeyHash.keySize kind) p table vals order position index count value)
-          clock := source.clock - paid} := by
+          clock := source.clock - paid} ∧ Find.usedByte source p index = some 0 := by
   classical
   have cells := Find.HeaderData.with_locals source source table p data.header rfl rfl tLocal keyLocal
   let headers := headerState source p order position
@@ -51,6 +51,7 @@ theorem general_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (t
   obtain ⟨stop, scanned, stopBound, scanRun, scanFrame, scanLocals, empty, otherLocals⟩ := scan_count_bound entered p bits start data.small startInside
     data.capacity items data.room data.binary data.covered locals (by change items.length ≤ source.clock - KeyHash.hashPrice kind; omega)
   let slot := Find.pathIndex bits start stop
+  have emptySource : Find.usedByte source p slot = some 0 := empty
   have capNumber : p.capacity.toNat = 2 ^ bits := by
     rw [data.capacity, BitVec.toNat_ofNat, Nat.mod_eq_of_lt (Nat.pow_lt_pow_right (by decide) data.small)]
   have slotInside : slot.toNat < p.capacity.toNat := by
@@ -109,7 +110,7 @@ theorem general_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (t
     rw [tailFrame, copyMemory, finalClock]
     exact congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => {state with memory := finalMemory, clock := source.clock - paid}) scanFrame
   let target := restoreStack (restore headers "h" (restore hashEntered "i" post))
-  refine ⟨paid, slot, target, by dsimp only [paid]; omega, slotInside, ?_, ?_⟩
+  refine ⟨paid, slot, target, by dsimp only [paid]; omega, slotInside, ?_, ?_, emptySource⟩
   · rw [body_shape, prefixRun, hashRun]
   · rw [show emptyLocalsHOLFinite target = emptyLocalsHOLFinite (restore headers "h" (restore hashEntered "i" post)) from ProgramPrefix.restoration_frame setup _]
     exact postFrame

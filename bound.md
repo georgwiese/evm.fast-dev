@@ -12,6 +12,14 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked real byte-encoder declaration/assignment callers retaining written
+  memory; actual six-stage bit_length64 returns<=64; actual u256_bit_length
+  chooses a limb and returns<=256; actual u256_byte_length returns<=32 with
+  no-wrap rounding arithmetic. Body/call costs are0/1,1/2,2/3 source clocks
+  respectively. These prepare the U256 header writers; whole header/block
+  prefix and global certificate remain open. Successful closure:
+  `input-u256-byte-length-v2.log`1146targets, permitted axioms only.
+
 - [x] Checked actual RLP encoding writers: put_be loop/body/caller with one
   source clock per byte and real store frames; whole scalar and header writers
   return1..9 bytes in<=18 body clocks. Their real callers retain written memory.

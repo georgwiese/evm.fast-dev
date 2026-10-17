@@ -1197,7 +1197,10 @@
     "submission/InitECandidate/Solver/Input/RlpLength/WithdrawalBuilt.lean",
     "submission/InitECandidate/Solver/Input/RlpLength/WithdrawalCall.lean",
     "submission/InitECandidate/Solver/Input/RlpLength/WithdrawalProgram.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/BitLengthBuilt.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/BitLengthProgram.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/BytesWriteBuilt.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/BytesWriteCall.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/BytesWriteGeneral.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/BytesWriteProgram.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/Forms.lean",
@@ -1208,6 +1211,10 @@
     "submission/InitECandidate/Solver/Input/RlpWrite/PutBeCall.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/PutBeLoop.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/PutBeProgram.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256Bits.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256BitsSegment.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256ByteLength.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256Value.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/WordWrite.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/WordWriteCall.lean",
     "submission/InitECandidate/Solver/Input/Scalar64.lean",
@@ -4397,8 +4404,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61250,
-  "package_bytes": 2252296980,
+  "package_entries": 61257,
+  "package_bytes": 2252333100,
   "claim": {
     "K": "infinity"
   },

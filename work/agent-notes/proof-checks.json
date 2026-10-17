@@ -4774,8 +4774,20 @@
       "sha256": "5a4905763bd3249d9487bb23f5058fa0cbc6d702353311916fc35f1691b8447f"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/BitLengthBuilt.lean",
+      "sha256": "212e7380ca288cbd60d154fc175bb227749962586bf2fe8e27ae56f6ce1dfb46"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/BitLengthProgram.lean",
+      "sha256": "e8ca26f742f9e46d6210de8905db2fba3e8f8c2d4f8898f3d160682370cfb7bd"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/RlpWrite/BytesWriteBuilt.lean",
       "sha256": "908613c8a82d8caa25d514585d10143d4c09350fe5204ee2a0d2bf8f7876e3b0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/BytesWriteCall.lean",
+      "sha256": "ec8f6e316b8ae427078eb02fdf4eca8dd76afc422868dea07c6a7974916cdea7"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/RlpWrite/BytesWriteGeneral.lean",
@@ -4816,6 +4828,22 @@
     {
       "path": "submission/InitECandidate/Solver/Input/RlpWrite/PutBeProgram.lean",
       "sha256": "d480fb2000e521c06fbc92befe0561715f4cc309c20f1fd33793663e4da6f30b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/U256Bits.lean",
+      "sha256": "d55ddaea2c458e24cde1e5c7113763174969d296c4f329d9a4041a7b3c91050f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/U256BitsSegment.lean",
+      "sha256": "cde01fa9a80150ff4e8a6d712aac5dacb219bea9c07375ed6647defe348a6b1a"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/U256ByteLength.lean",
+      "sha256": "715f04ae2db1c04bf56e3c25ffc652c3d2d6cd4779e78c1fbcbf19d38c2e0052"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/U256Value.lean",
+      "sha256": "d4e4b16cf34453ba99a9a7cc397ac2bd04c791ec561064361decc7ebd93dce8c"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/RlpWrite/WordWrite.lean",
@@ -65530,7 +65558,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -65538,19 +65566,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -65559,7 +65587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -65568,7 +65596,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -65577,7 +65605,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -65586,7 +65614,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -71072,7 +71100,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -71081,7 +71109,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.framed_byte",
@@ -71089,7 +71117,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -71098,7 +71126,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -71107,7 +71135,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -71116,21 +71144,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -71139,7 +71167,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -71148,7 +71176,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -71157,7 +71185,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -71165,7 +71193,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -71174,7 +71202,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -71183,7 +71211,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -71192,7 +71220,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -71200,14 +71228,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -71216,7 +71244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -71225,7 +71253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -71234,7 +71262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -71242,7 +71270,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -71250,7 +71278,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -71258,7 +71286,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -71266,7 +71294,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -71274,7 +71302,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -71282,7 +71310,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -71291,7 +71319,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -71299,7 +71327,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -71308,7 +71336,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -71316,7 +71344,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -71325,7 +71353,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -71334,7 +71362,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -71343,7 +71371,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -71352,7 +71380,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -71361,7 +71389,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -71370,7 +71398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -71379,7 +71407,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -71388,7 +71416,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -71397,7 +71425,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -71406,7 +71434,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -71415,7 +71443,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -71424,7 +71452,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -71433,7 +71461,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -71442,7 +71470,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -71451,7 +71479,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -71460,7 +71488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -71469,7 +71497,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -71478,7 +71506,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -71487,7 +71515,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -71496,7 +71524,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -71505,14 +71533,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -71521,7 +71549,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -71530,7 +71558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -71539,7 +71567,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -71548,7 +71576,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -71556,7 +71584,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -71564,7 +71592,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -71572,7 +71600,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -71581,14 +71609,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.sum_words",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_read",
@@ -71597,7 +71625,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_append",
@@ -71606,7 +71634,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat32_equiv",
@@ -71615,7 +71643,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat64_equiv",
@@ -71624,14 +71652,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.convert_nat",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le32",
@@ -71640,7 +71668,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le64",
@@ -71649,7 +71677,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_read",
@@ -71658,7 +71686,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_store_shape",
@@ -71694,7 +71722,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -71703,7 +71731,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.op_congr",
@@ -71712,7 +71740,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_congr",
@@ -71721,7 +71749,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_congr",
@@ -71730,7 +71758,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_congr",
@@ -71739,7 +71767,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_congr",
@@ -71748,7 +71776,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_read",
@@ -71757,7 +71785,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -71766,7 +71794,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -71775,7 +71803,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -71784,7 +71812,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -71792,7 +71820,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -72025,7 +72053,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -72034,7 +72062,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -72043,7 +72071,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -72420,7 +72448,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_heap_le64",
@@ -72429,7 +72457,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.reject_call",
@@ -73049,7 +73077,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -73058,7 +73086,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -73067,7 +73095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -73076,7 +73104,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.record_test_read",
@@ -73541,7 +73569,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -73550,7 +73578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -74271,7 +74299,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.UDivMod.shifted_number",
@@ -74363,7 +74391,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.pure_return_execute",
@@ -74372,7 +74400,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_environment",
@@ -74381,7 +74409,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.execute",
@@ -74390,7 +74418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.environment",
@@ -74399,7 +74427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.call_execute",
@@ -74408,7 +74436,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.loop_execute",
@@ -74417,7 +74445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_shape",
@@ -74426,7 +74454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_execute",
@@ -74435,7 +74463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.step_fields",
@@ -74444,7 +74472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.loop_execute",
@@ -74462,7 +74490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.test_read",
@@ -74542,7 +74570,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.call_execute",
@@ -74551,7 +74579,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.assign_execute",
@@ -74569,7 +74597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Header.call_execute",
@@ -74578,7 +74606,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.execute",
@@ -74587,7 +74615,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.call_execute",
@@ -74596,7 +74624,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.short_or_be",
@@ -74605,7 +74633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.execute",
@@ -74614,7 +74642,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.call_execute",
@@ -74623,7 +74651,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.body_shape",
@@ -74632,7 +74660,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.scalar_read",
@@ -74641,7 +74669,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.after_transactions_execute",
@@ -74668,7 +74696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.assign_execute",
@@ -74677,7 +74705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.body_shape",
@@ -74686,7 +74714,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.condition_read",
@@ -74695,7 +74723,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.environment",
@@ -74704,7 +74732,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_after_first_execute",
@@ -74713,7 +74741,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_decoded_loop",
@@ -74776,7 +74804,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.wrap_read",
@@ -74785,7 +74813,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_length_read",
@@ -74863,7 +74891,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.long_form_execute",
@@ -74872,7 +74900,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.body_shape",
@@ -74881,7 +74909,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.execute",
@@ -74890,7 +74918,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.length_tail_execute",
@@ -74899,7 +74927,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.execute",
@@ -74908,7 +74936,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.environment",
@@ -74917,7 +74945,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.call_execute",
@@ -74926,7 +74954,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.loop_execute",
@@ -74935,7 +74963,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.step_other",
@@ -74944,7 +74972,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.body_shape",
@@ -74953,7 +74981,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.step_execute",
@@ -74962,7 +74990,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.body_shape",
@@ -74971,7 +74999,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.execute",
@@ -74980,7 +75008,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.memory_return_execute",
@@ -74989,7 +75017,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.memory_assign_execute",
@@ -74998,7 +75026,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.execute",
@@ -75007,7 +75035,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.general_execute",
@@ -75016,7 +75044,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.body_shape",
@@ -75025,7 +75053,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.first_guard_one",
@@ -75034,7 +75062,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.environment",
@@ -75043,7 +75071,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.call_execute",
@@ -75052,7 +75080,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.tail_call_execute",
@@ -75061,7 +75089,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.environment",
@@ -75070,7 +75098,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.call_execute",
@@ -75079,7 +75107,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.assign_execute",
@@ -75088,7 +75116,159 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-rlp-byte-write-built-v1.log"
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.stage_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.assign_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.scan_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.segment_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.tail_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256ByteLength.rounded_word",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256ByteLength.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256ByteLength.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Value.limb_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Value.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-u256-byte-length-v2.log"
     }
   ]
 }

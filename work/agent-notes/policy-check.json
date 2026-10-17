@@ -2479,9 +2479,15 @@
     "submission/InitECandidate/Solver/MutableTable/MemeqSizedProgram.lean",
     "submission/InitECandidate/Solver/MutableTable/MemeqSizedReads.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryFrame.lean",
+    "submission/InitECandidate/Solver/MutableTable/MemoryModel.lean",
+    "submission/InitECandidate/Solver/MutableTable/MemoryModelEntry.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryValueCall.lean",
     "submission/InitECandidate/Solver/MutableTable/ModelFrame32.lean",
     "submission/InitECandidate/Solver/MutableTable/NaturalLayout.lean",
+    "submission/InitECandidate/Solver/MutableTable/NaturalLayoutFresh.lean",
+    "submission/InitECandidate/Solver/MutableTable/NaturalLayoutOwnership.lean",
+    "submission/InitECandidate/Solver/MutableTable/NaturalLayoutRelocated.lean",
+    "submission/InitECandidate/Solver/MutableTable/NaturalLayoutSlots.lean",
     "submission/InitECandidate/Solver/MutableTable/NodeDbDictionary32.lean",
     "submission/InitECandidate/Solver/MutableTable/NodeDbTail32.lean",
     "submission/InitECandidate/Solver/MutableTable/OriginalWitnessEntry.lean",
@@ -4593,8 +4599,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61456,
-  "package_bytes": 2253435547,
+  "package_entries": 61462,
+  "package_bytes": 2253456217,
   "claim": {
     "K": "infinity"
   },

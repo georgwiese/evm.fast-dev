@@ -4391,3 +4391,46 @@ Whole paired witness constructor checkpoint (2026-10-17):
   replacement, gas/state/Q/heap potential/compiler/target resource bound and
   finite K still open. Claim infinity; no full verifier. Account41%,0resetcredits.
   Continue autonomously, no checkpoint stop.
+
+
+### 2026-10-17 — derive both actual decoded initialization calls
+
+- WitnessInputArgumentsAfterCall.input_field_geometry proves actual si word
+  addresses are public and protected from fixed hash arenas below si.
+  arguments_after_constructor retains si56/64 via the first actual own frame,
+  binds nodedb, derives mapped loads and agrees both real second-call args.
+- WitnessPairedEnvironment packages fixed metadata for original/replacement
+  constructor code, alloc/table helpers and Keccak environments. after_constructor
+  derives all next metadata from actual caller control and invariant fields.
+- WitnessNextDecodedCall derives the second actual decoded call from the first
+  actual result: actual decoded-array cells survive own-safe writes, input
+  structure loads survive, hash metadata/code survive, actual heapEnd supplies
+  the next heap word/alignment/range, combined room supplies next arena bound,
+  and initial sum clocks plus first lower-clock frame supplies next allowance.
+  No independent second ConstructorPairResult or second heap premise.
+- WitnessDecodedInitialization.paired_decoded_initialization derives BOTH
+  actual calls from initial decoded Records and fixed entry metadata, actual
+  si40/48 and si56/64 cells, common caller relation/public memory and explicit
+  room/clocks. Empty uses a ghost logical record base only for count0; physical
+  null actual argument remains unchanged. Initial logical-record ordering
+  derived in both branches. Existing paired_initialization yields both actual
+  runtime-entry DictionaryPairs, locals/globals/FFI/public agreement and exact
+  real initialization evaluation into runtime with nested lexical restores.
+- Successful witness-next-arguments-v1.log1501,
+  witness-paired-environment-v1.log1440,witness-next-decoded-call-v1.log1556,
+  witness-decoded-initialization-v2.log1557targets, permitted axioms only.
+  Failed initialization-v1 simplified count0 negation to True->False; replacing
+  the incorrect rfl argument with simp contradiction fixed it. Never indexed
+  failed log. Index4660modules/7614facts, incremental policy61525entries/
+  2253768653bytes, memory1.5GiBused/29available,disk58%/123GiBfree.
+- NEXT frontend/header reachability: actual decode_stateless_input allocation,
+  output field stores and input Records/HeapInput/initial cursor propagation;
+  header validation/parent and blockhash globals then preserve these contracts
+  to run_attempt initialization. Need actual combined decoded count<=B/4 and
+  frontend cursor<=arenaLower+128*B+1MiB, not arbitrary input.length bounds.
+  Runtime contextual replacement and global gas/state/Q/heap potential plus
+  quantitative compiler/candidate startup/target certificate remain open.
+- User asked whole-task progress again: estimated45%, rough35-55% uncertainty,
+  entire branch over main and task obligations, not file count or currentsubtask.
+  Claim infinity, no finite bound/full verification. Latest account42%, no reset
+  credits; account reset already used. Continue, no checkpoint stop.

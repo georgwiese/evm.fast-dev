@@ -31,11 +31,12 @@ theorem prefix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (restoreStack : PanSemStateFiniteExact 64 Guest.HostMemory→PanSemStateFiniteExact 64 Guest.HostMemory)
     (setup : Executes source prefixActions (prepared source input pointer cursor length) restoreStack)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source afterGuard=(some (.returned value),post)) :
-    ∃ innerPost,evaluateHOLFiniteState (prepared source input pointer cursor length) offsetBody=(some (.returned value),innerPost) := by
+    ∃ innerPost,evaluateHOLFiniteState (prepared source input pointer cursor length) offsetBody=(some (.returned value),innerPost) ∧ post=restoreStack innerPost := by
   have actual:=WitnessRadix.ProgramPrefix.execute setup offsetBody
   rw [←prefix_shape] at actual
   have result:=congrArg Prod.fst (actual.symm.trans run)
-  exact ⟨(evaluateHOLFiniteState (prepared source input pointer cursor length) offsetBody).2,Prod.ext result rfl⟩
+  exact ⟨(evaluateHOLFiniteState (prepared source input pointer cursor length) offsetBody).2,Prod.ext result rfl,
+    (congrArg Prod.snd (actual.symm.trans run)).symm⟩
 
 end InitECandidate.Solver.Input.Payload
 

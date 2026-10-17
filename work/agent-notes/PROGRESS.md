@@ -2833,3 +2833,32 @@ Payload transaction/withdrawal checkpoint (2026-10-17):
   laterfields. Need fullallocated payload caller/scopes; then fullSSZ/witness/root
   global entry, constructor emptyrecord case, global Q/budget/source-map/target K.
   Claim infinity. No fullverifier. Account20%,0resetcredits watcheractive.
+
+Whole actual payload normal body checkpoint (2026-10-17):
+- PayloadFields generic real field-store sequence/finalreturn, copiedinput/clock
+  frame and actual cellValue reading. Memory-only fieldMemory accumulator avoids
+  nested whole-state update duplication (prior assembly200kheartbeat timeout).
+- RemainingProgram exact eleven actual stores after withdrawalcounter, includes
+  flat64 offsets404,412,420,428,512,520,532; finalgasfield88 exactrawinput474.
+  RemainingReads ties allseven to copiedinput; RemainingExecute wholeactualsuffix
+ 0clocks, realreturnpl,HeapInput and finalgasfield. StoredGas bound from fixed16/44
+  toactualdeclaredGasLimit<=200M.
+- TailNormal afteractual txscall continuation allstores+withdrawalcounter+suffix;
+  AfterExtraNormal composes realVarList, includesemptyrecords/pointer0, intoalltail.
+  AllocationControl extracts domain/code/shapes without expanding conditional
+  whole-state record; avoids>8GiB simp allocation.
+- Strengthened PayloadPrefixNormal/Guard/Extra exact post=restoreStack/Prefix
+  equality retained. PreparedFacts reallivep/pl/len/heapglobals and actual136
+  roundedcursor geometry. AllocatedNormal completeactualafterGuard, BodyNormal
+  includesminimum540error50guard, derivesextent602 fromcontainedslice.
+- BodyNormal prems: heap_ptrcursor,ordinarydomain,inputalignment/lower,
+  cursorAfterinput, cursorNat+136+4encodedExtent<=heapend, staticssz_offsbefore
+  input, runtimealloc/offsets/fail/udivmod/varlist/fixedlist, clock>=extent/4+76.
+  Onactualnormalreturn value=wordcursor, memorycursor88=rawword474, HeapInput,
+  postclock in[sourceclock-(extent/4+75),sourceclock]. No listvalidity premise.
+- Successful input-payload-body-normal-v1.log1340targets, allowedaxioms only.
+  NEXT RequestStoredGasFromHeader derive realpayloadcursor from SI96alloc,
+  roomstrongcursor+232+4extent, enoughouterclockextent/4+87; actualpayloadpost
+  field88 bound200M fromwholeHeader.body normalrun. Then payloadcaller exact
+  resumption/rootSI/witnessdecodedrecords and global Q/heap/gas/target refinement.
+  No finiteK/fullverifier. Account20%,0resetcredits read-onlywatchactive.

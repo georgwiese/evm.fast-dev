@@ -29,10 +29,10 @@ theorem prefix_to_guard (source post : PanSemStateFiniteExact 64 Guest.HostMemor
       ∃ next bodyPost paid,paid≤6 ∧
         next={offsetsStored (prepared source input pointer cursor length) input array with clock:=source.clock-1-paid} ∧
         Blob.HeapInput next input pointer ∧ source.clock-7≤next.clock ∧
-        evaluateHOLFiniteState next offsetContinuation=(some (.returned value),bodyPost) := by
+        evaluateHOLFiniteState next offsetContinuation=(some (.returned value),bodyPost) ∧ post=restorePrefix source input pointer cursor length bodyPost := by
   classical
   obtain ⟨setup,readyHeap⟩:=prefix_setup source input pointer cursor length heap inside p n domain pointerAligned cursorAligned pointerLower cursorAfter cursorRoom heapGlobal allocCode (by omega)
-  obtain ⟨innerPost,readyRun⟩:=prefix_normal source post input pointer cursor length (restorePrefix source input pointer cursor length) setup value run
+  obtain ⟨innerPost,readyRun,postEq⟩:=prefix_normal source post input pointer cursor length (restorePrefix source input pointer cursor length) setup value run
   let ready:=prepared source input pointer cursor length
   have readyGlobals : ready.globals=source.globals.update (ofString "heap_ptr",.val (.word (WitnessRadix.PersistentAlloc.rounded cursor 136#64))) := rfl
   have readyArray : ready.globals.lookup (ofString "ssz_offs")=some (.val (.word array)) := by
@@ -52,7 +52,7 @@ theorem prefix_to_guard (source post : PanSemStateFiniteExact 64 Guest.HostMemor
   have nextClock:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.clock) nextEq
   change next.clock=ready.clock-paid at nextClock
   rw [readyClock] at nextClock nextEq
-  refine ⟨raw,valid,next,innerPost,paid,bound,nextEq,nextHeap,?_,nextRun⟩
+  refine ⟨raw,valid,next,innerPost,paid,bound,nextEq,nextHeap,?_,nextRun,postEq⟩
   rw [nextClock]
   omega
 

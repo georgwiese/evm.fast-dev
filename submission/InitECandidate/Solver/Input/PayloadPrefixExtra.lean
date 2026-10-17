@@ -29,8 +29,8 @@ theorem prefix_through_extra (source post : PanSemStateFiniteExact 64 Guest.Host
       ∃ next bodyPost paid,paid≤6 ∧
         next={offsetsStored (prepared source input pointer cursor length) input array with clock:=source.clock-1-paid} ∧
         Blob.HeapInput next input pointer ∧ source.clock-7≤next.clock ∧
-        evaluateHOLFiniteState next afterExtra=(some (.returned value),bodyPost) := by
-  obtain ⟨raw,valid,next,bodyPost,paid,bound,nextEq,nextHeap,nextClock,nextRun⟩:=prefix_to_guard source post input pointer cursor length heap inside p n domain pointerAligned cursorAligned
+        evaluateHOLFiniteState next afterExtra=(some (.returned value),bodyPost) ∧ post=restorePrefix source input pointer cursor length bodyPost := by
+  obtain ⟨raw,valid,next,bodyPost,paid,bound,nextEq,nextHeap,nextClock,nextRun,postEq⟩:=prefix_to_guard source post input pointer cursor length heap inside p n domain pointerAligned cursorAligned
     pointerLower cursorAfter cursorRoom heapGlobal allocCode array arrayGlobal arrayAligned arrayLower arrayBefore code failCode exceptionShape (by omega) value run
   have extraFirst : offsetWords input 0=540#64 := by simp [offsetWords,raw]
   have localsEq : next.locals=(prepared source input pointer cursor length).locals := by rw [nextEq]; rfl
@@ -49,7 +49,7 @@ theorem prefix_through_extra (source post : PanSemStateFiniteExact 64 Guest.Host
     (by rw [nextCode]; exact failCode) (by rw [nextShapes]; exact exceptionShape) (by omega) value nextRun
   change (BitVec.ofNat 64 (Guest.GasLimit.le32 input 566)).toNat-540≤32 at short
   rw [Request.le32_number input 566 (by decide)] at short
-  exact ⟨raw,short,valid,next,bodyPost,paid,bound,nextEq,nextHeap,nextClock,tailRun⟩
+  exact ⟨raw,short,valid,next,bodyPost,paid,bound,nextEq,nextHeap,nextClock,tailRun,postEq⟩
 
 end InitECandidate.Solver.Input.Payload
 

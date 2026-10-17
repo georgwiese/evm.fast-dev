@@ -1324,5 +1324,10 @@
     "successful_log": "witness-radix-copy-byte-v3.log",
     "targets": 652,
     "result": "Actual fixed Keccak-f oracle response has 200 bytes; real external call/function/caller preserve exact memory/FFI event update and spend one call clock. Reads follow from 25 aligned mapped words; byte-write frame outside state region. Generic actual byte copy stores and eight-byte/tail block AST shapes check with only permitted axioms. Whole keccak256 absorption/padding, constructor hash loop and global certificate remain open."
+  },
+  "whole_memcpy_checkpoint": {
+    "successful_log": "witness-radix-copy-general-call-v1.log",
+    "targets": 640,
+    "result": "Complete actual fixed memcpy for arbitrary aligned/unaligned mapped source/destination ranges, including overlap, all four loops, branch selection, lexical return, actual callee/code/argument environment and ignored-result caller restoration. Exact memory function and clock cost, body<=length, call<=length+1; complete frame outside destination byte/word cells. Only permitted axioms. Required for Keccak final-block padding; full hash/constructor/global certificate remain open."
   }
 }

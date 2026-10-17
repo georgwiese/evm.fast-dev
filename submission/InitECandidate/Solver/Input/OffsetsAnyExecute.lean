@@ -19,7 +19,8 @@ theorem any_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer f
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one) (enough : count+1≤source.clock) :
     ∃ result target paid,evaluateHOLFiniteState source body=(result,target) ∧ paid≤count+1 ∧
       emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-paid} ∧
-      ((result=some (.returned (.val (.word 0#64))) ∧ values 0=fixed) ∨
+      ((result=some (.returned (.val (.word 0#64))) ∧ values 0=fixed ∧
+        ∀ position<count,ValidAt fixed total values position) ∨
         ∃ code : BitVec 64,(code=10#64 ∨ code=11#64 ∨ code=12#64) ∧
           result=some (.exception (ofString "SszErr") (.val (.word code)))) := by
   classical
@@ -57,7 +58,7 @@ theorem any_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer f
   obtain ⟨result,target,loopRun,outcome⟩:=any_loop entered pointer fixed total values 0 count count small (by omega)
     p (bind_lookup_same _ _ _) n f l mapped cells lookup exceptionShape enough
   rcases outcome with normal|fault
-  · rcases normal with ⟨rfl,rfl⟩
+  · rcases normal with ⟨rfl,rfl,valid⟩
     let finished:=walk entered 0 count
     have frame:=walk_frame entered 0 count
     have pAfter : finished.locals.lookup (ofString "offs")=some (.val (.word pointer)) := by
@@ -80,7 +81,7 @@ theorem any_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer f
     by_cases same : values 0=fixed
     · simp only [if_pos same] at core
       obtain ⟨final,run,finalFrame⟩:=wrap _ (emptyLocalsHOLFinite finished) count core frame
-      exact ⟨_,final,count,run,by omega,finalFrame,Or.inl ⟨rfl,same⟩⟩
+      exact ⟨_,final,count,run,by omega,finalFrame,Or.inl ⟨rfl,same,by intro position high; exact valid position (Nat.zero_le _) high⟩⟩
     · simp only [if_neg same] at core
       have finalFrame : emptyLocalsHOLFinite (emptyLocalsHOLFinite {finished with clock:=finished.clock-1})=
           emptyLocalsHOLFinite {source with clock:=source.clock-(count+1)} := by

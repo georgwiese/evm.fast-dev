@@ -2501,3 +2501,32 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   reduces the left record; rewrite caller locals afterward.
 - Fixed certificate/global/gas/query/target/ROM/map relation still open; claim
   infinity and no full verification. RAM1.3GiB/disk58% at this checkpoint.
+
+2026-10-17: first actual decoder offset stores/guard, retained range facts
+
+- Strengthened AnyLoop/AnyExecute/Normal/Call/CallNormal to retain every offset's
+  lower/upper/nondecreasing facts on normal completion, not just first=fixed.
+  These facts are required to justify the real subsequent slice extents.
+- StoreScalar proves actual flattened uint32 read+word store and HeapInput
+  preservation using natural separation. HeaderProgram extracts the exact fixed
+  decode_stateless_input tail after the first five header commands. HeaderPair
+  executes both literal stores, proves exact words and unchanged copied bytes;
+  actual mapping follows from aligned allocated ssz_offs before the input.
+- HeaderGuard.guard_normal inverts the actual two-store/count2/fixed16 prefix:
+  le32(input,2)=16 and16<=le32(input,6)<=total. Post is exact pairState except
+  <=4 source clocks; HeapInput survives. No successful scalar/guard is assumed.
+  It does explicitly assume actual normal prefix execution, shifted p=blob+2,
+  >=10 encoded bytes, globals/code/exception shape and natural allocation room.
+- Successful input-header-ranges-v2.log,1120 targets, allowed axioms only.
+  Indexed4211 modules/6705 facts, claim infinity; no full verification.
+- NEXT concrete choices: source entry is len<2 fail1, schema-byte mismatch fail2,
+  p+=2,len-=2,len<16 fail80, then Header.afterHeader. On passing entry derive
+  encodedlen>=18 and exact shifted locals; all three rejection paths need real
+  SszFail exception/cost. Then first guard normal + its upper/order facts imply
+  np=blob+18 and safe nlen=wit-16. nlen>=44 gives encodedlen>=62. The second
+  prefix has three real o_pl/o_vh/o_rq declarations from offsets18/22/58,
+  three writes to ssz_offs[0/8/16], count3/fixed44 call and scoped continuation.
+  Its normal return must yield le32(input,18)=44, so payload ptr=blob+62;
+  payload len>=540 then places gas read474 safely inside copied input.
+- All source-map/compiler/ROM/global budget/query/finite certificate obligations
+  remain. No production pnk change, so no repeated native/EEST run was needed.

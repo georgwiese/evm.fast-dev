@@ -4,6 +4,10 @@ namespace InitECandidate.Solver.Input.Offsets
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
+def ValidAt (fixed total : BitVec 64) (values : Nat→BitVec 64) (position : Nat) : Prop :=
+  fixed.toNat≤(values position).toNat ∧ (values position).toNat≤total.toNat ∧
+    (0<position→(values (position-1)).toNat≤(values position).toNat)
+
 /-- The real validator loop on arbitrary mapped offset words. It either
 finishes with the exact ordinary walk or raises SszErr10/11 within rounds+1
 clocks. No range, ordering or schema validity is assumed. -/
@@ -19,7 +23,8 @@ theorem any_loop {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer fixe
     (lookup : source.code.lookup (ofString "ssz_fail")=some (SszFail.formals,SszFail.body,.one))
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one) (enough : rounds+1≤source.clock) :
     ∃ result target,evaluateHOLFiniteState source loop=(result,target) ∧
-      ((result=none ∧ target=walk source index rounds) ∨
+      ((result=none ∧ target=walk source index rounds ∧
+        ∀ position,index≤position→position<count→ValidAt fixed total values position) ∨
         ∃ code : BitVec 64,∃ paid : Nat,(code=10#64 ∨ code=11#64) ∧
           result=some (.exception (ofString "SszErr") (.val (.word code))) ∧ paid≤rounds+1 ∧
           emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-paid}) := by
@@ -29,7 +34,7 @@ theorem any_loop {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer fixe
     have test:=condition_read source index count (by omega) small indexLocal countLocal
     have inactive : ¬index<count := by omega
     simp only [if_neg inactive] at test
-    refine ⟨none,source,?_,Or.inl ⟨rfl,rfl⟩⟩
+    refine ⟨none,source,?_,Or.inl ⟨rfl,rfl,by intro position low high; omega⟩⟩
     rw [loop_shape,evaluateHOLFiniteState_while_total,test]
     simp
   | succ rounds ih=>
@@ -77,7 +82,12 @@ theorem any_loop {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer fixe
       rw [tailRun] at run
       refine ⟨result,target,run,?_⟩
       rcases outcome with normal|fault
-      · exact Or.inl ⟨normal.1,normal.2⟩
+      · refine Or.inl ⟨normal.1,normal.2.1,?_⟩
+        intro position low high
+        by_cases current : position=index
+        · subst position
+          exact ⟨lower,upper,ordered⟩
+        · exact normal.2.2 position (by omega) high
       · obtain ⟨code,paid,allowed,exception,bound,frame⟩:=fault
         refine Or.inr ⟨code,paid+1,allowed,exception,by omega,?_⟩
         rw [frame]

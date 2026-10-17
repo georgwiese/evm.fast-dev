@@ -4218,6 +4218,18 @@
       "sha256": "1f2b4c5427395d99b6d6652abbf7742f43f389309b8198f7c8b5db45fc256714"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/HeaderGuard.lean",
+      "sha256": "6a0eaa9ce47ee30f9dbe1325307f2804779d467a3a21ad7ead559560aafa7dc0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/HeaderPair.lean",
+      "sha256": "cfac7cf5e5f78da4864af392dbe9454715dd1e4aee68daf2d50c9a0f97c6d870"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/HeaderProgram.lean",
+      "sha256": "6b9d4108b9266bebb9c58095229e12df2417b3ffd83293a7dc6348af5a15fc97"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/HeapFrame.lean",
       "sha256": "cd37737f6257ac0274447675804419bc6a1b394113c9e7e9a4e5db8c67e6063d"
     },
@@ -4247,19 +4259,19 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsAnyExecute.lean",
-      "sha256": "d2622ad659bf13a301f70edfa553fd29e065df685d21005679de3268a5826ee4"
+      "sha256": "b18fd785440619c54eff390b05aa5481c5038974862941b5b997191b45b7baeb"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsAnyLoop.lean",
-      "sha256": "ad5c774a4062fb0ef6af92f3450d71e18f6f338fc0688537e2e6df4b6156c310"
+      "sha256": "8a3e8b3b9de284e59d244957e6f9d2c72cc88c6afaa0f12c028630eefa365799"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsCall.lean",
-      "sha256": "181782088bd57b2ce18b0fe7ddc073b24fa102265dacf96658cad47740e73249"
+      "sha256": "1b67483d9eb36b012027427bf285a04b39829ec69747422e58195d582908dd67"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsCallNormal.lean",
-      "sha256": "831cc11063545301312fa259f750da67a9e49d6043cf0ea9078bdc04f11b8a37"
+      "sha256": "783e3e0f0672b96959d0e4dc0e2ec38c1f460e169eaec853e3d4ed26bf2751f8"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsChecks.lean",
@@ -4279,7 +4291,7 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsNormal.lean",
-      "sha256": "12bd80d2e2942e9a169efa937eb75415714f60dac8e52babc34fcbf0830c018d"
+      "sha256": "514e869ebbb874eae6f8fb47aafc9efc6ef8d5310f5e1a08b94ec3fcf10a4263"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsProgram.lean",
@@ -4336,6 +4348,10 @@
     {
       "path": "submission/InitECandidate/Solver/Input/SszFail.lean",
       "sha256": "466e6697076b70e00ae648c89742f609adaf2ccce21053b87319444bd5855135"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/StoreScalar.lean",
+      "sha256": "e6f6281f99361059eff99963f367eefc2507086aef54fb6b05c0d3845a1c678a"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/WordAssemble.lean",
@@ -64806,7 +64822,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -64814,19 +64830,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -64835,7 +64851,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -64844,7 +64860,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -64853,7 +64869,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -64862,7 +64878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -70348,7 +70364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -70357,7 +70373,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.framed_byte",
@@ -70365,7 +70381,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -70374,7 +70390,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -70383,7 +70399,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -70392,21 +70408,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -70415,7 +70431,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -70424,7 +70440,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -70433,7 +70449,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -70441,7 +70457,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -70450,7 +70466,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -70459,7 +70475,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -70468,7 +70484,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -70476,14 +70492,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -70492,7 +70508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -70501,7 +70517,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -70510,7 +70526,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -70518,7 +70534,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -70526,7 +70542,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -70534,7 +70550,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -70542,7 +70558,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -70550,7 +70566,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -70558,7 +70574,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -70567,7 +70583,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -70575,7 +70591,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -70584,7 +70600,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -70592,7 +70608,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -70601,7 +70617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -70610,7 +70626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -70619,7 +70635,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -70628,7 +70644,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -70637,7 +70653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -70646,7 +70662,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -70655,7 +70671,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -70664,7 +70680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -70673,7 +70689,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -70682,7 +70698,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -70691,7 +70707,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -70700,7 +70716,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -70709,7 +70725,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -70718,7 +70734,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -70727,7 +70743,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -70736,7 +70752,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -70745,7 +70761,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -70754,7 +70770,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -70763,7 +70779,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -70772,7 +70788,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -70781,14 +70797,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -70797,7 +70813,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -70806,7 +70822,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -70815,7 +70831,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -70824,7 +70840,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -70832,7 +70848,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -70840,7 +70856,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -70848,7 +70864,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -70857,14 +70873,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.sum_words",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_read",
@@ -70873,7 +70889,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_append",
@@ -70882,7 +70898,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat32_equiv",
@@ -70891,7 +70907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat64_equiv",
@@ -70900,14 +70916,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.convert_nat",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le32",
@@ -70916,7 +70932,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le64",
@@ -70925,7 +70941,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_read",
@@ -70934,7 +70950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_store_shape",
@@ -70943,7 +70959,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_expression_shape",
@@ -70952,7 +70968,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.payload_gas_read",
@@ -70961,7 +70977,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le64_read",
@@ -70970,7 +70986,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -70979,7 +70995,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.op_congr",
@@ -70988,7 +71004,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_congr",
@@ -70997,7 +71013,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_congr",
@@ -71006,7 +71022,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_congr",
@@ -71015,7 +71031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_congr",
@@ -71024,7 +71040,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_read",
@@ -71033,7 +71049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -71042,7 +71058,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -71051,7 +71067,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -71060,7 +71076,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -71068,7 +71084,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -71077,7 +71093,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.execute",
@@ -71086,7 +71102,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.environment",
@@ -71095,7 +71111,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.call_execute",
@@ -71104,7 +71120,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.body_shape",
@@ -71113,7 +71129,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.last_test_read",
@@ -71122,7 +71138,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.tail_execute",
@@ -71131,7 +71147,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.loop_shape",
@@ -71140,7 +71156,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.loop_body_shape",
@@ -71149,7 +71165,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.cell_address_read",
@@ -71158,7 +71174,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.condition_read",
@@ -71167,7 +71183,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.range_read",
@@ -71176,7 +71192,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.has_previous_read",
@@ -71185,7 +71201,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.previous_read",
@@ -71194,7 +71210,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.order_read",
@@ -71203,7 +71219,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.fault_checks",
@@ -71212,7 +71228,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.fault_step",
@@ -71221,7 +71237,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_execute",
@@ -71238,7 +71254,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_loop",
@@ -71247,7 +71263,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_checks",
@@ -71256,7 +71272,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_step",
@@ -71265,7 +71281,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.walk_frame",
@@ -71274,7 +71290,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.walk_clock",
@@ -71283,7 +71299,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.walk_other",
@@ -71292,7 +71308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.of_fields",
@@ -71301,7 +71317,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -71310,7 +71326,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -71319,7 +71335,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -71328,7 +71344,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_loop",
@@ -71337,7 +71353,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.call_execute",
@@ -71346,7 +71362,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.call_normal_first",
@@ -71355,7 +71371,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.environment",
@@ -71364,7 +71380,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.normal_first",
@@ -71373,7 +71389,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.active_unroll",
@@ -71382,7 +71398,43 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-heap-frame-v1.log"
+      "successful_log": "input-header-ranges-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Header.guard_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-header-ranges-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Header.pair_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-header-ranges-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Header.after_header_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-header-ranges-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Scalar.store_le32",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-header-ranges-v2.log"
     }
   ]
 }

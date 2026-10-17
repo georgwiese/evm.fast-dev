@@ -20,7 +20,8 @@ theorem call_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (expressi
     ∃ result target paid,
       evaluateHOLFiniteState source (.call (some (none,none)) (ofString "ssz_check_offsets") expressions)=(result,target) ∧
       paid≤count+2 ∧ emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-paid} ∧
-      ((result=none ∧ offsets 0=fixed ∧ target.locals=source.locals) ∨
+      ((result=none ∧ offsets 0=fixed ∧ target.locals=source.locals ∧
+        ∀ position<count,ValidAt fixed total offsets position) ∨
         ∃ error : BitVec 64,(error=10#64 ∨ error=11#64 ∨ error=12#64) ∧
           result=some (.exception (ofString "SszErr") (.val (.word error)))) := by
   classical
@@ -34,10 +35,10 @@ theorem call_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (expressi
     have clock : source.clock-1-paid=source.clock-(paid+1) := by omega
     rw [clock]
   rcases outcome with normal|fault
-  · obtain ⟨rfl,first⟩:=normal
+  · obtain ⟨rfl,first,valid⟩:=normal
     have calledRun:=evaluateHOLFiniteState_call_return_caller_locals source none (ofString "ssz_check_offsets") expressions
       (arguments pointer fixed total count) body callee .one (.val (.word 0#64)) post args called (by omega) run (by simp [shapeEqHOL,shapeOfHOLExact])
-    exact ⟨none,{post with locals:=source.locals},paid+1,calledRun,by omega,frameAfter,Or.inl ⟨rfl,first,rfl⟩⟩
+    exact ⟨none,{post with locals:=source.locals},paid+1,calledRun,by omega,frameAfter,Or.inl ⟨rfl,first,rfl,valid⟩⟩
   · obtain ⟨error,allowed,rfl⟩:=fault
     have calledRun:=evaluateHOLFiniteState_call_exception_no_handler source none (ofString "ssz_check_offsets") expressions
       (arguments pointer fixed total count) body callee .one (ofString "SszErr") (.val (.word error)) post args called (by omega) run

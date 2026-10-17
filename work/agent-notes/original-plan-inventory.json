@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 4618,
+  "solver_modules": 4629,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 9,
@@ -48,7 +48,7 @@
     "LabCostTight": 1,
     "LocCost": 1,
     "MemoryCost": 1,
-    "MutableTable": 189,
+    "MutableTable": 200,
     "NopBound": 1,
     "NopCost": 1,
     "NopCostTight": 1,
@@ -127,7 +127,7 @@
       },
       {
         "module": "MutableTable.SetNoGrowthBudget",
-        "solver_dependency_count": 230,
+        "solver_dependency_count": 232,
         "imports_replacement_ast": false
       },
       {
@@ -136,8 +136,13 @@
         "imports_replacement_ast": false
       },
       {
-        "module": "MutableTable.MemoryModelInsertHeader",
-        "solver_dependency_count": 224,
+        "module": "MutableTable.MemoryModelInsertCall",
+        "solver_dependency_count": 233,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "MutableTable.MemoryModelSetCall",
+        "solver_dependency_count": 250,
         "imports_replacement_ast": false
       },
       {

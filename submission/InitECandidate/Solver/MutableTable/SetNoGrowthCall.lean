@@ -21,17 +21,17 @@ theorem no_growth_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ta
     ∃ paid memory, paid ≤ noGrowthPrice kind items.length + 1 ∧
       evaluateHOLFiniteState source (.call (some (none, none)) (ofString "htab_set") arguments) =
         (none, {source with memory := memory, clock := source.clock - paid}) ∧
-      (memory (table + 24#64) = .word count ∨ memory (table + 24#64) = .word (count + 1#64)) := by
+      (memory (table + 24#64) = .word count ∨ memory (table + 24#64) = .word (count + 1#64)) ∧ Effect source kind p table vals order position count value memory := by
   obtain ⟨callee, called, tLocal, keyLocal, valueLocal⟩ := TableCall.environment source.code.lookup (ofString "htab_set") body table p.key value setCode
   let entry := callEntryStateHOLFinite source callee
   have entryData := Insert.GeneralData.of_fields source entry table p kind vals order position count bits items data rfl rfl rfl rfl
-  obtain ⟨paid, memory, target, bound, run, frame, counter⟩ := no_growth_execute entry table p kind vals order position count value bits items
+  obtain ⟨paid, memory, target, bound, run, frame, counter, effect⟩ := no_growth_execute entry table p kind vals order position count value bits items
     entryData tLocal keyLocal valueLocal countBound room memeqCode findCode insertCode (by change noGrowthPrice kind items.length ≤ source.clock - 1; omega)
   have callerFrame : emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with memory := memory, clock := source.clock - 1 - paid} := frame
   have actual := ignored_memory_call source target (ofString "htab_set") .one arguments (TableCall.values table p.key value) body callee
     (.val (.word 0#64)) paid memory args called (by omega) run (by simp [shapeEqHOL, shapeOfHOLExact]) callerFrame
   have subtract : source.clock - 1 - paid = source.clock - (paid + 1) := by omega
-  exact ⟨paid + 1, memory, by omega, by simpa only [subtract] using actual, counter⟩
+  exact ⟨paid + 1, memory, by omega, by simpa only [subtract] using actual, counter, Effect.of_fields entry source kind p table vals order position count value memory rfl rfl rfl effect⟩
 
 end InitECandidate.Solver.MutableTable.Set
 

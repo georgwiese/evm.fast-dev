@@ -74,12 +74,12 @@ theorem general_scan_count_bound (source : PanSemStateFiniteExact 64 Guest.HostM
     ∃ (paid : Nat) (answer : BitVec 64) (target : PanSemStateFiniteExact 64 Guest.HostMemory),
       paid ≤ generalProbePrice kind * order.length ∧ answer.toNat ≤ p.capacity.toNat ∧
       evaluateHOLFiniteState source afterIndex = (some (.returned (.val (.word answer))), target) ∧
-      emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
+      emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} ∧ Selection source p answer := by
   obtain ⟨length, bounded, chain⟩ := general_chain_of_order source p kind bits start small startInside capacity order room binary covered fits mapped
   have chainCost := Nat.mul_le_mul_left (generalProbePrice kind) bounded
-  obtain ⟨paid, answer, target, paidBound, answerBound, run, frame⟩ := general_chain_execute source p kind _ length chain keyLength queryFits little
+  obtain ⟨paid, answer, target, paidBound, answerBound, run, frame, selected⟩ := general_chain_execute source p kind _ length chain keyLength queryFits little
     source locals rfl rfl rfl queryMapped code (Nat.le_trans chainCost enough)
-  exact ⟨paid, answer, target, Nat.le_trans paidBound chainCost, answerBound, run, frame⟩
+  exact ⟨paid, answer, target, Nat.le_trans paidBound chainCost, answerBound, run, frame, selected⟩
 
 end InitECandidate.Solver.MutableTable.Find
 

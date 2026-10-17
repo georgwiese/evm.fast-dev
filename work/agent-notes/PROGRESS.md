@@ -1941,3 +1941,23 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   refinement, original-map relation and global input/gas/compiler composition.
   Claim remains infinity, Solution unchanged, no finite certificate or isolated
   verification. No full Solution/baseline audit/verifier or external submission.
+
+### 2026-10-17 — complete actual lookup from represented memory
+
+- QueryLeaf/Reads/Call/Step/Iteration connect the actual candidate leaf AST to
+  concrete header, key and record reads and the fixed memeq implementation.
+  Both hit and miss paths return exactly, including early return behavior.
+- QueryMemory states the immutable representation directly in HOL memory and
+  proves preservation when memory/domain/endian fields are unchanged. QueryLoop
+  includes the evaluator's actual decrement/fix-clock behavior. QueryExecution
+  proves the recursive whole-loop execution, preserving all nonlocal fields.
+- QueryFunction.lookup_built proves the complete literal candidate lookup body
+  returns the last matching input slice or absence within 262 source clocks.
+  Premises include represented memory, real headers/ABI/memeq code, byte reads,
+  query range and little endian. Construction must establish those premises;
+  target clock conversion and whole-guest refinement are still open.
+- Successful closure witness-radix-query-function-v3.log, 606 targets, permitted
+  axioms only. Evidence index 3,877 modules / 6,011 printed facts. No finite K,
+  full verifier, external submission or change to fixed files/Solution/claim.
+- Continuing with iterative construction's actual memory/agenda invariant and
+  its relationship to the original witness maps, then global composition.

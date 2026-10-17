@@ -161,6 +161,42 @@
     "submission/InitECandidate/Solver/WitnessRadix/MemoryBytes.lean": {
       "bytes": 7120,
       "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryExecution.lean": {
+      "bytes": 8537,
+      "sha256": "bf7ed6b64e140aa7d04ef6d84ef5d729417d843529c485f1e1817c1da9d36c9c"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryFunction.lean": {
+      "bytes": 7554,
+      "sha256": "b3a2e125fa6d9bb9e72abdf95794e09e5089277eb191420d010b848f92fba964"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryLeaf.lean": {
+      "bytes": 5431,
+      "sha256": "a43a370e8d8685ba290036e98eb3b774a5986fb9f1f90ab00f07b771bdb5a71f"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryLeafCall.lean": {
+      "bytes": 4948,
+      "sha256": "c046c97c659f1774a9776eec1b22bbfa7fd321967c10ca875bd6bd60198e2914"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryLeafIteration.lean": {
+      "bytes": 3467,
+      "sha256": "887b130c82c769fa07a25a3f59c45eedefba6db6dde2fb0c8b3686695da075ba"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryLeafReads.lean": {
+      "bytes": 3206,
+      "sha256": "f4e551ad955963fb06d530cc3523044ab794911e8ba1863a2319a809868fab30"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryLeafStep.lean": {
+      "bytes": 6640,
+      "sha256": "11d26cf82f4e3956dab005fe516058e57f79860471085f832d37dc3cb50e9b55"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryLoop.lean": {
+      "bytes": 4033,
+      "sha256": "70f59b6e27b6f5586985a46fadf0662eae5f323fbba30bc6ce0a758580cedf53"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryMemory.lean": {
+      "bytes": 5128,
+      "sha256": "9e81fb2b22582db92aa72a738c07ab1db079de689e937252cd55d2cee9de61ee"
     }
   },
   "development_artifacts": {
@@ -189,7 +225,7 @@
     "witness-radix-program-v3.log",
     "witness-radix-query-empty-v5.log",
     "witness-radix-graph-v3.log",
-    "witness-radix-memeq-environment-v4.log"
+    "witness-radix-query-function-v3.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -310,7 +346,6 @@
   },
   "remaining": [
     "iterative build/graph/memory refinement",
-    "actual lookup leaf return and full lookup HOL execution",
     "original map and whole-guest private-memory invariant",
     "startup-header relation and new compiler/bootstrap/install facts",
     "input/gas/Q/global work bound",
@@ -323,5 +358,11 @@
     "stack_words": 538,
     "elapsed_seconds": 27.91,
     "formal_verification": false
+  },
+  "actual_lookup": {
+    "theorem": "InitECandidate.Solver.WitnessRadix.QueryExecution.lookup_built",
+    "source_clock_bound": 262,
+    "premises": "actual HOL tree-memory representation, header/ABI/memeq code entry, byte view, no-wrap query range, little endian, sufficient source clock",
+    "target_refinement": false
   }
 }

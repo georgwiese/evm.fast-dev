@@ -2946,6 +2946,10 @@
     "submission/InitECandidate/Solver/WitnessRadix/BuildProgram.lean",
     "submission/InitECandidate/Solver/WitnessRadix/BuildRows.lean",
     "submission/InitECandidate/Solver/WitnessRadix/ByteKeys.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/CapacityBound.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/CapacityEntry.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/CapacityLoop.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/CapacityProgram.lean",
     "submission/InitECandidate/Solver/WitnessRadix/CodeEnvironment.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Compact.lean",
     "submission/InitECandidate/Solver/WitnessRadix/CompareChain.lean",
@@ -4097,8 +4101,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 60944,
-  "package_bytes": 2251104620,
+  "package_entries": 60948,
+  "package_bytes": 2251118707,
   "claim": {
     "K": "infinity"
   },

@@ -1045,6 +1045,22 @@
     "submission/InitECandidate/Solver/WitnessRadix/ConstructorPrepare.lean": {
       "bytes": 6295,
       "sha256": "58c8646281310d59ede4b949676b8bc674003cc9ac68aea449dc1f6c94f1fb66"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CapacityLoop.lean": {
+      "bytes": 5635,
+      "sha256": "4c1f20da958d2d6f99f81ec6f2f9c36e0e86214829cfb3dafece19b0d6d050e6"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CapacityProgram.lean": {
+      "bytes": 2885,
+      "sha256": "3e867b5122d8fe5295b5e6b122ebfbef9af08a0650b10490de3cd6fb64d84bcd"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CapacityBound.lean": {
+      "bytes": 2447,
+      "sha256": "3349fd4f178fdb117afb1a660bfe387390dafe96fc9aee59274dba6ff8dd30b3"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CapacityEntry.lean": {
+      "bytes": 3120,
+      "sha256": "55e6768de186bcea4880bdc4341c1adda0afb408f224bc173301a7063fb8a9ef"
     }
   },
   "development_artifacts": {
@@ -1298,5 +1314,10 @@
     "successful_log": "witness-radix-constructor-prepare-v2.log",
     "targets": 718,
     "result": "Derived four actual helper header pointer fields and complete record-memory frame from real htab_new memory. Actual htab_new ABI/code lexical call and restoration checked. ConstructorPrepare connects that actual call and three pointer-load/ordinal declarations to remaining real record loop, with mapped arrays, fixed header/records, empty initialized prefix, exact live locals and source-clock payment. Still assumes natural layout/cap/heap room and decoded record premises; capacity loop/hash calls/global derivation remain open."
+  },
+  "actual_capacity_loop_checkpoint": {
+    "successful_log": "witness-radix-capacity-entry-v1.log",
+    "targets": 586,
+    "result": "Whole actual cap=4 declaration/doubling loop, at most30 source clocks for count<2^31, sufficient power-of-two cap in [2N+2,4N+4] and <=2^32, cap=4 or cap%8=0, all nonlocals/other locals preserved; exposes actual table-call continuation. Count<2^31 follows from a natural allocated record-array/heap-room bound, whose reachability is not yet proved."
   }
 }

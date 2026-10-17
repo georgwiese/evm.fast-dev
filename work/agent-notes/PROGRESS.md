@@ -2311,3 +2311,17 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful constructor-prepare-v2 closure (718 targets), permitted axioms.
   Layout/cap/heap-room and decoded-record premises remain to derive globally;
   capacity loop/hash calls, original map and whole guest/target/K remain open.
+
+### 2026-10-17 — actual capacity declaration and whole doubling loop
+
+- CapacityProgram proves literal guard/step and exact natural comparisons.
+  CapacityLoop proves actual loop termination and state/clock/local frame.
+  CapacityBound instantiates cap=4 with at most30 source clocks for N<2^31,
+  sufficient cap in [2N+2,4N+4], cap<=2^32 and cap=4 or divisible by eight.
+- CapacityEntry includes the actual initial scoped declaration and exposes
+  the real htab_new caller continuation, retaining exact final cap/local frame.
+  The count bound follows arithmetically from natural allocated record-array
+  and heap-room facts; global reachability of those facts remains open.
+- Successful capacity-entry-v1 closure (586 targets), permitted axioms only.
+  Continuing fixed hashing/copy routines and constructor hash-loop assembly;
+  original map, whole-guest/target/global K and finite certificate remain open.

@@ -9466,6 +9466,10 @@
       "sha256": "0f161c4fabc334dc484dad39fb31c9c8596722e13822441c0fd0062c28f96ed7"
     },
     {
+      "path": "submission/InitECandidate/Solver/MutableTable/CopyMapped.lean",
+      "sha256": "200a4ceaa50239e1608c3ed4c8516902e3cd5a8e779e94bc1c2a7a8f2b457089"
+    },
+    {
       "path": "submission/InitECandidate/Solver/MutableTable/DictionaryData.lean",
       "sha256": "ccf63a010e714b768811ca8bf137f805cf7f6f21afd143b97e12e963695c7a94"
     },
@@ -9702,8 +9706,28 @@
       "sha256": "ca5aa9716e0545f17fe8f3e37e26fc75e55566a3bb5fcaa57d044d2c4bfb6c35"
     },
     {
+      "path": "submission/InitECandidate/Solver/MutableTable/InsertCountScan.lean",
+      "sha256": "b9e7c054da71b68766c53a2d48d759c4efebbddc44ea5cf68f2313b826ec3002"
+    },
+    {
       "path": "submission/InitECandidate/Solver/MutableTable/InsertFrame32.lean",
       "sha256": "901d0e7c6f56edccf99a7f95eedf82cde2aee77d472639ae9ae22e82104249e1"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/InsertGeneralCall.lean",
+      "sha256": "73de6b6df01969fbf18db78f4ea159b052444d20b281947cb9fb58b0a292ad8e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/InsertGeneralEntry.lean",
+      "sha256": "29dc4ca32ea78da16108e8e8cc15f9356103970e0baaebaba6422e9813465d4d"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/InsertGeneralExecution.lean",
+      "sha256": "4c0c0115a4b488ebc185c88e1bc3dc0c811ef8a597d232feaacb0a1a5ab23a95"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/InsertGeneralTail.lean",
+      "sha256": "71251ff39b1f2b87ac3f403ee327106a7d3032fbeefa7fd992f0463f01464eff"
     },
     {
       "path": "submission/InitECandidate/Solver/MutableTable/InsertHeader.lean",
@@ -9748,6 +9772,10 @@
     {
       "path": "submission/InitECandidate/Solver/MutableTable/InsertValueModel32.lean",
       "sha256": "41c55ba0b25cab2c37503ae68a33985fd0f695c6e4fd2397cb97cfa6f4927639"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/KeyHash.lean",
+      "sha256": "1e8e3be07619b793cfd95b169ac2e4ee4deaff6802c0e8ca3ea7228ec5a95c98"
     },
     {
       "path": "submission/InitECandidate/Solver/MutableTable/Layout32.lean",
@@ -65900,7 +65928,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -65908,19 +65936,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -65929,7 +65957,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -65938,7 +65966,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -65947,7 +65975,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -65956,7 +65984,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -65965,7 +65993,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -65974,7 +66002,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -65983,7 +66011,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -65992,7 +66020,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -66001,7 +66029,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -66010,7 +66038,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -66019,7 +66047,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -66028,7 +66056,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -66037,7 +66065,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -66046,7 +66074,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -66055,7 +66083,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -66063,7 +66091,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -66071,7 +66099,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -66080,7 +66108,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -66089,7 +66117,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -66098,7 +66126,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -66106,7 +66134,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -66115,7 +66143,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -66124,7 +66152,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_ready_of_memory",
@@ -66133,7 +66161,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_byteAt",
@@ -66142,7 +66170,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -66151,7 +66179,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -66160,7 +66188,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -66169,7 +66197,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -66178,7 +66206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -66187,7 +66215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -66196,7 +66224,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -66205,7 +66233,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_memory",
@@ -66214,7 +66242,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.aligned_offset",
@@ -66222,7 +66250,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -66230,7 +66258,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -66239,7 +66267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -66248,7 +66276,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -66257,7 +66285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -66266,7 +66294,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.environment",
@@ -66275,7 +66303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_of_fields",
@@ -66284,7 +66312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.execute",
@@ -66293,7 +66321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -66302,7 +66330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.bind_lookup_other",
@@ -66311,7 +66339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StateSteps.assign_execute",
@@ -66320,14 +66348,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_unique",
@@ -66335,7 +66363,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
@@ -66370,7 +66398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.block_execute",
@@ -66379,7 +66407,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.call_execute",
@@ -66388,7 +66416,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.environment",
@@ -66397,7 +66425,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop_execute",
@@ -66406,7 +66434,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.remaining_loops",
@@ -66415,7 +66443,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.word_view",
@@ -66423,7 +66451,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.byte_view",
@@ -66432,7 +66460,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop32_shape",
@@ -66441,7 +66469,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.body_shape",
@@ -66450,7 +66478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.condition_read",
@@ -66459,7 +66487,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.alignment_read",
@@ -66468,7 +66496,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CodeEnvironment.finite_lookup",
@@ -66476,7 +66504,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.valid",
@@ -66503,7 +66531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guards",
@@ -66512,7 +66540,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_execute",
@@ -66521,7 +66549,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.environment",
@@ -66530,7 +66558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.block32_execute",
@@ -66539,7 +66567,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.blockWord_execute",
@@ -66548,7 +66576,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_execute",
@@ -66557,7 +66585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.condition_read",
@@ -66566,7 +66594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.alignment_read",
@@ -66575,7 +66603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.environment",
@@ -66584,7 +66612,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_execute",
@@ -66593,7 +66621,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_execute",
@@ -66602,7 +66630,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_frame",
@@ -66611,7 +66639,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_memory_away",
@@ -66619,7 +66647,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_shape",
@@ -66628,7 +66656,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_shape",
@@ -66637,7 +66665,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.body_shape",
@@ -66646,7 +66674,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_frame",
@@ -66655,7 +66683,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_other",
@@ -66664,7 +66692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_index",
@@ -66673,7 +66701,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_frame",
@@ -66682,7 +66710,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_other",
@@ -66691,7 +66719,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_index",
@@ -66700,7 +66728,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.remaining_loops",
@@ -66709,7 +66737,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_expected",
@@ -66736,7 +66764,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ProgramPrefix.restoration_frame",
@@ -66745,7 +66773,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.body_shape",
@@ -66790,7 +66818,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_body_execute",
@@ -66799,7 +66827,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_condition",
@@ -66808,7 +66836,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopTail_execute",
@@ -66817,7 +66845,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_small",
@@ -67119,7 +67147,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.aligned_cell",
@@ -67127,7 +67155,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_exists",
@@ -67136,7 +67164,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read200",
@@ -67145,7 +67173,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.mapped_region",
@@ -67154,7 +67182,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.of_cells",
@@ -67163,7 +67191,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.load_expression",
@@ -67172,7 +67200,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute",
@@ -67181,21 +67209,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.stores_execute",
@@ -67204,7 +67232,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.block_execute",
@@ -67213,7 +67241,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_shapes",
@@ -67222,7 +67250,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.address_read",
@@ -67231,7 +67259,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.store_execute",
@@ -67240,7 +67268,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.environment",
@@ -67249,7 +67277,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_execute",
@@ -67258,7 +67286,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_mapped",
@@ -67267,7 +67295,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_memory_away",
@@ -67276,7 +67304,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.answer_length",
@@ -67284,7 +67312,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.oracle",
@@ -67293,21 +67321,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_frame",
@@ -67316,7 +67344,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_index",
@@ -67325,7 +67353,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_other",
@@ -67334,7 +67362,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.test_read",
@@ -67343,7 +67371,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_execute",
@@ -67352,7 +67380,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_frame",
@@ -67361,7 +67389,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_other",
@@ -67370,7 +67398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_index",
@@ -67379,7 +67407,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryWalk_away",
@@ -67387,7 +67415,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Mapped.of_domain",
@@ -67395,7 +67423,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.byte_walk",
@@ -67404,7 +67432,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.word_walk",
@@ -67413,7 +67441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_domain",
@@ -67422,7 +67450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_domain",
@@ -67431,7 +67459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_clock",
@@ -67440,7 +67468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_clock",
@@ -67449,7 +67477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.cost_le",
@@ -67458,7 +67486,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_clock",
@@ -67467,7 +67495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_control",
@@ -67476,7 +67504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.alignment_false",
@@ -67485,7 +67513,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_execute",
@@ -67494,7 +67522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.execute",
@@ -67503,7 +67531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_execute",
@@ -67512,7 +67540,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_memory_away",
@@ -67521,7 +67549,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_control",
@@ -67529,7 +67557,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.environment",
@@ -67538,7 +67566,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_memory",
@@ -67547,7 +67575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_memory",
@@ -67556,7 +67584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_memory_away",
@@ -67565,7 +67593,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_memory_away",
@@ -67574,7 +67602,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory_away",
@@ -67583,7 +67611,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.byte_walk_be",
@@ -67592,7 +67620,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.word_walk_be",
@@ -67601,7 +67629,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory",
@@ -67610,7 +67638,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_away",
@@ -67619,21 +67647,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.control_of_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.frame_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_control",
@@ -67642,7 +67670,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_control",
@@ -67651,7 +67679,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_args",
@@ -67660,7 +67688,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_domain",
@@ -67669,7 +67697,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_control",
@@ -67678,7 +67706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_control",
@@ -67687,7 +67715,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_cost_le",
@@ -67695,14 +67723,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.stores_execute",
@@ -67711,7 +67739,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.block_execute",
@@ -67720,21 +67748,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_frame",
@@ -67743,7 +67771,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_index",
@@ -67752,7 +67780,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_other",
@@ -67761,7 +67789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_execute",
@@ -67770,7 +67798,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_bounds",
@@ -67779,7 +67807,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_execute",
@@ -67788,7 +67816,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_clock",
@@ -67797,7 +67825,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_index",
@@ -67806,7 +67834,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_shapes",
@@ -67815,7 +67843,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.store_execute",
@@ -67824,7 +67852,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_frame",
@@ -67833,7 +67861,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_other",
@@ -67842,7 +67870,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_index",
@@ -67851,7 +67879,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryWalk_away",
@@ -67859,7 +67887,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.call_execute",
@@ -67868,7 +67896,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.environment",
@@ -67877,7 +67905,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.alignment_read",
@@ -67886,7 +67914,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.execute",
@@ -67895,7 +67923,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_value_read",
@@ -67904,7 +67932,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_execute",
@@ -67913,7 +67941,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_memory_away",
@@ -67922,7 +67950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_other",
@@ -67931,7 +67959,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.condition_read",
@@ -67940,7 +67968,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.loop_execute",
@@ -67949,7 +67977,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.body_shape",
@@ -67958,7 +67986,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_read",
@@ -67967,7 +67995,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_clock",
@@ -67976,7 +68004,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_control",
@@ -67985,7 +68013,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_other",
@@ -67994,7 +68022,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_domain",
@@ -68003,7 +68031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_memory_away",
@@ -68012,14 +68040,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.permutation_control",
@@ -68028,21 +68056,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_clock",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_empty",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_restore",
@@ -68051,7 +68079,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_clock",
@@ -68060,7 +68088,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_control",
@@ -68069,7 +68097,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_memory_away",
@@ -68078,7 +68106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute_word",
@@ -68087,7 +68115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_blocks_execute",
@@ -68096,7 +68124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.afterBlocks_shape",
@@ -68105,7 +68133,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.block_execute",
@@ -68114,7 +68142,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.call_execute",
@@ -68123,7 +68151,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.Mapped.of_domain",
@@ -68131,7 +68159,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Code.of_control",
@@ -68140,7 +68168,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.mapped_of_control",
@@ -68148,7 +68176,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Args.of_index",
@@ -68157,7 +68185,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.condition_read",
@@ -68166,7 +68194,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.EntryData.of_control",
@@ -68175,7 +68203,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Protected.tail",
@@ -68183,7 +68211,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.environment",
@@ -68192,7 +68220,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.execute",
@@ -68201,7 +68229,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.loop_execute",
@@ -68210,7 +68238,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_address_read",
@@ -68219,7 +68247,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_store_execute",
@@ -68228,7 +68256,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_stores_execute",
@@ -68237,7 +68265,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_words_execute",
@@ -68246,14 +68274,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_memory_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_alignment_read",
@@ -68262,7 +68290,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_execute",
@@ -68271,7 +68299,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_first_execute",
@@ -68280,7 +68308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_last_execute",
@@ -68289,7 +68317,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.padding_execute",
@@ -68298,7 +68326,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_locals",
@@ -68306,7 +68334,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_control",
@@ -68314,7 +68342,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_clock",
@@ -68322,7 +68350,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_execute",
@@ -68331,7 +68359,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_memory_away",
@@ -68340,7 +68368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.body_shape",
@@ -68349,7 +68377,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailLocals.of_locals",
@@ -68358,7 +68386,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.OutMapped.of_domain",
@@ -68366,7 +68394,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailData.of_control",
@@ -68375,7 +68403,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.away_above",
@@ -68399,7 +68427,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.ordinary_byte_mapped",
@@ -68407,7 +68435,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.weaken",
@@ -68415,7 +68443,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.subrange",
@@ -68423,7 +68451,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.byte_mapped",
@@ -68431,7 +68459,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.word_mapped",
@@ -68439,7 +68467,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.mask_aligned",
@@ -68448,7 +68476,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.copy_mapped",
@@ -68457,7 +68485,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.absorb_mapped",
@@ -68501,7 +68529,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -68510,7 +68538,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -68519,7 +68547,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -68528,21 +68556,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -68551,7 +68579,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -68560,7 +68588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -68569,7 +68597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -68577,7 +68605,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -68586,7 +68614,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -68595,7 +68623,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -68604,7 +68632,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -68612,14 +68640,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -68628,7 +68656,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -68637,7 +68665,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -68646,7 +68674,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -68654,7 +68682,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -68662,7 +68690,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -68670,7 +68698,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -68678,7 +68706,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -68686,7 +68714,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -68694,7 +68722,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -68703,7 +68731,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -68711,7 +68739,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -68720,7 +68748,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -68728,7 +68756,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -68737,7 +68765,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -68746,7 +68774,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -68755,7 +68783,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -68764,7 +68792,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -68773,7 +68801,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -68782,7 +68810,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -68791,7 +68819,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -68800,7 +68828,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -68809,7 +68837,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -68818,7 +68846,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -68827,7 +68855,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -68836,7 +68864,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -68845,7 +68873,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -68854,7 +68882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -68863,7 +68891,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -68872,7 +68900,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -68881,7 +68909,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -68890,7 +68918,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -68899,7 +68927,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -68908,7 +68936,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -68917,14 +68945,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -68933,7 +68961,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -68942,7 +68970,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -68951,7 +68979,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -68960,7 +68988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -68968,7 +68996,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -68976,7 +69004,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -68984,7 +69012,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -69106,7 +69134,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -69169,7 +69197,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -69178,7 +69206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -69187,7 +69215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -69196,7 +69224,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -69204,7 +69232,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -69437,7 +69465,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -69446,7 +69474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -69455,7 +69483,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -70461,7 +70489,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -70470,7 +70498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -70479,7 +70507,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -70881,7 +70909,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -70890,7 +70918,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -71694,7 +71722,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_environment",
@@ -71703,7 +71731,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.execute",
@@ -73336,7 +73364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.frame_read",
@@ -73345,14 +73373,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
@@ -74383,7 +74411,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.condition_read",
@@ -74392,7 +74420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.next_read",
@@ -74401,7 +74429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.after_equal",
@@ -74410,7 +74438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.comparison_arguments",
@@ -74419,7 +74447,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.step32",
@@ -74428,7 +74456,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.power_mask",
@@ -74437,7 +74465,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.increment",
@@ -74446,7 +74474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.slot_injective",
@@ -74454,7 +74482,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.visited_distinct",
@@ -74463,7 +74491,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.occupied_prefix_bound",
@@ -74472,7 +74500,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.empty_within_count",
@@ -74481,7 +74509,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.usedByte_of_fields",
@@ -74490,7 +74518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_execute",
@@ -74499,7 +74527,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_prefix",
@@ -74508,7 +74536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.first_empty",
@@ -74517,7 +74545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.tail32_execute",
@@ -74526,7 +74554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_number",
@@ -74535,7 +74563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_advance",
@@ -74544,7 +74572,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_order",
@@ -74553,7 +74581,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.scan32_count_bound",
@@ -74562,7 +74590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.aligned32_find",
@@ -74580,7 +74608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.table_read",
@@ -74589,7 +74617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.header_executes",
@@ -74598,7 +74626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.prepared_locals",
@@ -74607,7 +74635,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.initial_index_read",
@@ -74616,7 +74644,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.masked_start",
@@ -74625,7 +74653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_core",
@@ -74634,7 +74662,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_execute",
@@ -74643,7 +74671,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.environment",
@@ -74652,7 +74680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_call",
@@ -74661,7 +74689,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_core",
@@ -74670,7 +74698,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.environment",
@@ -74679,7 +74707,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.memory32_call",
@@ -74688,7 +74716,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.memory32_find",
@@ -74697,7 +74725,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.packed_roundtrip",
@@ -74705,7 +74733,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_execute",
@@ -74714,7 +74742,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_execute",
@@ -74723,7 +74751,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_call",
@@ -74732,7 +74760,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.rebuild_word",
@@ -74740,7 +74768,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_answer_model",
@@ -74749,7 +74777,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_absent_iff",
@@ -74758,7 +74786,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.distance_bound",
@@ -74766,7 +74794,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.slot_distance",
@@ -74774,21 +74802,21 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_sound",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_index_bound",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_exists_before",
@@ -74797,7 +74825,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_dictionary",
@@ -74806,7 +74834,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.build_invariants",
@@ -74880,7 +74908,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.dictionary32_find",
@@ -74889,7 +74917,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.dictionary32_call",
@@ -74898,7 +74926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.lift_tail32",
@@ -74907,7 +74935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_slot_spec",
@@ -74916,7 +74944,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Get.environment",
@@ -74970,7 +74998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.pure_value_call",
@@ -74979,7 +75007,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NodeDb.dictionary32_lookup",
@@ -75015,7 +75043,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.projection",
@@ -75024,7 +75052,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.read_write",
@@ -75033,7 +75061,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.execute",
@@ -75042,7 +75070,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.after_count",
@@ -75051,7 +75079,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.after_used",
@@ -75060,7 +75088,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.body_shape",
@@ -75069,7 +75097,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.scan_prefix",
@@ -75078,7 +75106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.scan_model",
@@ -75096,7 +75124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.used_store",
@@ -75105,7 +75133,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.after_copy",
@@ -75114,7 +75142,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Set.body_shape",
@@ -75260,7 +75288,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.lift_copy32",
@@ -75269,7 +75297,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.result_away",
@@ -75294,7 +75322,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.prepared_locals",
@@ -75303,7 +75331,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.copied_key_views",
@@ -75330,7 +75358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.lift_tail32",
@@ -75339,7 +75367,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.result_keys",
@@ -75570,7 +75598,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.result_earlier",
@@ -75696,7 +75724,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ignored_memory_call",
@@ -75705,7 +75733,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.key_model_fields",
@@ -75737,7 +75765,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.record_step",
@@ -76811,7 +76839,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.initialization_frame",
@@ -76820,7 +76848,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.restoration_frame",
@@ -76829,7 +76857,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.zero_return",
@@ -76838,7 +76866,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -76846,7 +76874,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_ne",
@@ -76854,7 +76882,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_aligned",
@@ -76862,7 +76890,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.ordinary_mapped",
@@ -76870,7 +76898,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.mapped_of_allocated",
@@ -76878,7 +76906,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.count_small",
@@ -76886,7 +76914,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.hash_byte_cell",
@@ -76894,7 +76922,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bind_other",
@@ -76903,7 +76931,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -76912,7 +76940,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -76920,7 +76948,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -76928,7 +76956,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.execute",
@@ -76937,7 +76965,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_execute",
@@ -76946,7 +76974,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_clock",
@@ -76955,7 +76983,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_ffi",
@@ -76964,7 +76992,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.ext_execute",
@@ -76973,7 +77001,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_execute",
@@ -76982,7 +77010,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lastValue_filter",
@@ -76990,7 +77018,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.execute",
@@ -76999,7 +77027,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_aligned",
@@ -77008,7 +77036,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.body_shape",
@@ -77017,7 +77045,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -77026,7 +77054,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_clock",
@@ -77272,7 +77300,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.result_header",
@@ -77316,14 +77344,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.shift3",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Records.byte_budget",
@@ -79398,7 +79426,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.unaligned_core",
@@ -79407,7 +79435,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.initialized_other",
@@ -79416,7 +79444,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.initialized_h",
@@ -79425,7 +79453,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.initialized_w",
@@ -79434,7 +79462,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.close_core",
@@ -79443,7 +79471,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.canonical",
@@ -79452,7 +79480,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.aligned_execute",
@@ -79461,7 +79489,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.unaligned_execute",
@@ -79470,7 +79498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.environment",
@@ -79479,7 +79507,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.aligned_call",
@@ -79488,7 +79516,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.unaligned_call",
@@ -79497,7 +79525,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.environment",
@@ -79506,7 +79534,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.aligned_call",
@@ -79515,7 +79543,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.body_shape",
@@ -79524,7 +79552,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.aligned_execute",
@@ -79533,7 +79561,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.other_shape",
@@ -79542,7 +79570,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.branch_shape",
@@ -79551,7 +79579,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.branch_execute",
@@ -79560,7 +79588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.byte_read",
@@ -79569,7 +79597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.checks_ready",
@@ -79578,7 +79606,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.alignment_read",
@@ -79587,7 +79615,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.aligned_of_data",
@@ -79596,7 +79624,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.call_of_mapped",
@@ -79605,7 +79633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.price_step",
@@ -79613,7 +79641,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.price_small",
@@ -79621,7 +79649,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.blocks_execute",
@@ -79630,7 +79658,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.block_ready",
@@ -79639,7 +79667,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.block_execute",
@@ -79648,7 +79676,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.byte_execute",
@@ -79657,7 +79685,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.environment",
@@ -79666,7 +79694,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.unaligned_call",
@@ -79675,22 +79703,22 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.caller_price20",
       "axioms": [],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.caller_price52",
       "axioms": [],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.caller_price60",
       "axioms": [],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.loop_continue",
@@ -79699,7 +79727,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.loop_return",
@@ -79708,7 +79736,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.loop_stop",
@@ -79717,7 +79745,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.actual_tail",
@@ -79726,7 +79754,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.unaligned_execute",
@@ -79735,7 +79763,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.observed_read",
@@ -79744,7 +79772,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.inputs_of_mapped",
@@ -79753,7 +79781,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.byte_body_shape",
@@ -79762,7 +79790,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.Inputs.indexed",
@@ -79771,7 +79799,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.condition8_read",
@@ -79780,7 +79808,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.condition1_read",
@@ -79789,7 +79817,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.tail_execute",
@@ -79798,7 +79826,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.word_inside",
@@ -79806,7 +79834,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.tail_inside",
@@ -79814,7 +79842,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.data_of_mapped",
@@ -79823,7 +79851,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.call_of_mapped",
@@ -79832,7 +79860,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.sized_chain_of_prefix",
@@ -79995,7 +80023,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.Inputs.byte_next",
@@ -80004,7 +80032,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.block_execute",
@@ -80013,7 +80041,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.byte_execute",
@@ -80022,7 +80050,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.finish_execute",
@@ -80031,7 +80059,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.environment",
@@ -80040,7 +80068,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.call_of_mapped",
@@ -80049,7 +80077,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.skip_front",
@@ -80058,7 +80086,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.execute",
@@ -80067,7 +80095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.tail_execute",
@@ -80076,7 +80104,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.blocks_execute",
@@ -80085,7 +80113,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.after_locals_shape",
@@ -80094,7 +80122,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.program_shape",
@@ -80103,7 +80131,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.tail_shape",
@@ -80112,7 +80140,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.condition8_read",
@@ -80121,7 +80149,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.condition1_read",
@@ -80130,7 +80158,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.price_step32",
@@ -80138,7 +80166,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned32_blocks_execute",
@@ -80147,7 +80175,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_body32_shape",
@@ -80156,7 +80184,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.condition32_read",
@@ -80165,7 +80193,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_word_ready",
@@ -80174,7 +80202,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_block32_execute",
@@ -80183,7 +80211,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_blocks_execute",
@@ -80192,7 +80220,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_body_shape",
@@ -80201,7 +80229,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_loops_shape",
@@ -80210,7 +80238,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.WordInputs.indexed",
@@ -80219,7 +80247,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_block_execute",
@@ -80228,7 +80256,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.skip_size_continuation",
@@ -80237,7 +80265,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_other_execute",
@@ -80246,14 +80274,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.observed_word",
       "axioms": [
         "propext"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.word_mapped",
@@ -80262,7 +80290,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.word_inputs_of_mapped",
@@ -80271,7 +80299,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.other_call_of_mapped",
@@ -80280,7 +80308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "indexed-query-call-v2.log"
+      "successful_log": "insert-general-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.other_chain_of_prefix",
@@ -80399,6 +80427,115 @@
         "Quot.sound"
       ],
       "successful_log": "indexed-query-call-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.CopyMapped.word_mapped",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.CopyMapped.of_regions",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.CopyMapped.cost_le_price",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Insert.scan_count_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Insert.general_result_count",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Insert.general_call",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Insert.GeneralData.of_fields",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Insert.general_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Insert.general_tail_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.KeyHash.observed_view",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.KeyHash.key_size_small",
+      "axioms": [],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.KeyHash.hash_price_positive",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "insert-general-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.KeyHash.call_of_mapped",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "insert-general-call-v1.log"
     }
   ]
 }

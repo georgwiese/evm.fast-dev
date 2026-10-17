@@ -85,6 +85,38 @@
     "work/agent-notes/witness-radix.pnk": {
       "bytes": 4172,
       "sha256": "c21fa1449df9511da94b617b5a6318489adbb46ba577651632daafb3b15ad7bc"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CompareChain.lean": {
+      "bytes": 3215,
+      "sha256": "75f278599962cd7df49e782dd7ebb80832d13487fb093579e069bc01683e60a5"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ComparePrefix.lean": {
+      "bytes": 2552,
+      "sha256": "5f4f94c543c77f028eccb5e14d46cb47a84e9495bf8a4208605eb2db6c2e6b1d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Memeq32.lean": {
+      "bytes": 4192,
+      "sha256": "86325f987317b60690c54626796df69cf82448b77517191ae71376356dc54f5b"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Memeq32Entry.lean": {
+      "bytes": 4916,
+      "sha256": "c6fdc8a09e4996d2da0b16a6a0440a2fd69ee375557bb530b76a1f8448514a52"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Memeq32Memory.lean": {
+      "bytes": 6154,
+      "sha256": "ba964684ba7fef4a67eef9b3a3e46b42ff77ab007a4c921a496ad06939a678e4"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryBranch.lean": {
+      "bytes": 6670,
+      "sha256": "9f2f829c61f5dd7f8c7b6d8b39a2cd890e389922702323da48a9773bab58ae14"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryBranchStep.lean": {
+      "bytes": 9242,
+      "sha256": "45c0b5d1ed67e9c973764b1bbac0382bc4012978765d9ae82b671539c8bb5f69"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/WordKeys.lean": {
+      "bytes": 1931,
+      "sha256": "18293761d3208f32f393fd4b61cdd264e8a2c459a854ba9ab19a7805a5fe68ff"
     }
   },
   "development_artifacts": {
@@ -112,7 +144,9 @@
     "witness-radix-addressing-v1.log",
     "witness-radix-program-v3.log",
     "witness-radix-query-empty-v5.log",
-    "witness-radix-graph-v3.log"
+    "witness-radix-graph-v3.log",
+    "witness-radix-memeq32-memory-v4.log",
+    "witness-radix-compare-prefix-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -233,7 +267,7 @@
   },
   "remaining": [
     "iterative build/graph/memory refinement",
-    "nonempty actual lookup HOL paths",
+    "unaligned fixed memeq path, byte/word memory view, leaf call/return and full lookup HOL execution",
     "original map and whole-guest private-memory invariant",
     "startup-header relation and new compiler/bootstrap/install facts",
     "input/gas/Q/global work bound",

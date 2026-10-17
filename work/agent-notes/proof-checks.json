@@ -4335,11 +4335,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/BytesList/BodyNormal.lean",
-      "sha256": "264b3ed946760ab27cc2a9bbcdc75dafd087e2ffe8c70cc076df50818e0b3b7d"
+      "sha256": "e9a29e4a49496258bb72a115ad6d08eb97660c1022a0b30b5e2a729fe38870dc"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/BytesList/CallerNormal.lean",
-      "sha256": "ec06361a1b2bde63f2f53587cd0e036fdc8c80a0b50e494bdb5e858e60cd7080"
+      "sha256": "4819545ab152d2ee5c03ccf2bac1cb63eed3bdd7d7159afc0c0f52d905dac675"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/BytesList/Environment.lean",
@@ -5270,6 +5270,10 @@
       "sha256": "df8995b8791db86f1fb367150e803f25c84f1ee382c4f680bb0a9e8224e300d9"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/VarList/Cursor.lean",
+      "sha256": "c5d82d77cc04b996eb978b25699b2ea36dcafcbb739af19b6c570867b972c94f"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/VarList/EncodedCount.lean",
       "sha256": "98e26fecc0e5cee6d62481c64dfdf2e3e84edf2711b2a3befd13f42b0bf58372"
     },
@@ -5354,6 +5358,10 @@
       "sha256": "b559d9f7ab6c393e110704375223b09228509338f0c4177304362540e441c564"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/VarList/RecordsIntervalFrame.lean",
+      "sha256": "9a3ffe1c931b197cce158196a2b10135d6be199ef1f78ed112760713a06de4e5"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/VarList/RecordsSafeFrame.lean",
       "sha256": "431d574e2790e1576d66919fe68e284c3bd7cf895201fc97ae646d16ffe744af"
     },
@@ -5392,6 +5400,30 @@
     {
       "path": "submission/InitECandidate/Solver/Input/WhileActive.lean",
       "sha256": "0ace6869e16e12fd1f18e7f869cadeb6515bce8776955eebc2b58aad3bd0f4af"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/Witness/ArraysNormal.lean",
+      "sha256": "945f866fa14af857d6ab5cdb5d5c03521aaa5d05ccdcc65ae6fb6e9125ae8c42"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/Witness/Environment.lean",
+      "sha256": "1b7d476089b876ed005d201b0c465e00308966681f5677b6cd4c0694c28233cf"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/Witness/Fields.lean",
+      "sha256": "5d69a790a3b64db9cc3db3a749adf17ffa1081a7a9d3276c74248737ecebca1d"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/Witness/HeadersNormal.lean",
+      "sha256": "04f72021df16c898106bbaea9bf726ed1f1707c663c1dd619cfaa564888b49d3"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/Witness/Program.lean",
+      "sha256": "93dfa3a92c4a51513cc98cfc2dd3e908e8a78357d0ecaea78b0e6f498637ea7b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/Witness/StoredListNormal.lean",
+      "sha256": "8d3534b680479ea731a7a4da0f8596242fc5013fa82b9c48d152d461ca72f8e7"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/WordAssemble.lean",
@@ -66618,7 +66650,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -66626,19 +66658,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -66647,7 +66679,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -66656,7 +66688,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -66665,7 +66697,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -66674,7 +66706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -72160,7 +72192,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -72169,7 +72201,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.framed_byte",
@@ -72177,7 +72209,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -72186,7 +72218,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -72195,7 +72227,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -72204,21 +72236,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -72227,7 +72259,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -72236,7 +72268,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -72245,7 +72277,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -72253,7 +72285,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -72262,7 +72294,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -72271,7 +72303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -72280,7 +72312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -72288,14 +72320,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -72304,7 +72336,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -72313,7 +72345,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -72322,7 +72354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -72330,7 +72362,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -72338,7 +72370,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -72346,7 +72378,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -72354,7 +72386,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -72362,7 +72394,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -72370,7 +72402,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -72379,7 +72411,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -72387,7 +72419,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -72396,7 +72428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -72404,7 +72436,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -72413,7 +72445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -72422,7 +72454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -72431,7 +72463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -72440,7 +72472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -72449,7 +72481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -72458,7 +72490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -72467,7 +72499,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -72476,7 +72508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -72485,7 +72517,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -72494,7 +72526,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -72503,7 +72535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -72512,7 +72544,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -72521,7 +72553,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -72530,7 +72562,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -72539,7 +72571,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -72548,7 +72580,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -72557,7 +72589,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -72566,7 +72598,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -72575,7 +72607,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -72584,7 +72616,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -72593,14 +72625,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -72609,7 +72641,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -72618,7 +72650,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -72627,7 +72659,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -72636,7 +72668,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -72644,7 +72676,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -72652,7 +72684,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -72660,7 +72692,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -72669,14 +72701,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.sum_words",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_read",
@@ -72685,7 +72717,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_append",
@@ -72694,7 +72726,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat32_equiv",
@@ -72703,7 +72735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat64_equiv",
@@ -72712,14 +72744,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.convert_nat",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le32",
@@ -72728,7 +72760,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le64",
@@ -72737,7 +72769,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_read",
@@ -72746,7 +72778,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_store_shape",
@@ -72755,7 +72787,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_expression_shape",
@@ -72764,7 +72796,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.payload_gas_read",
@@ -72773,7 +72805,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le64_read",
@@ -72782,7 +72814,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -72791,7 +72823,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.op_congr",
@@ -72800,7 +72832,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_congr",
@@ -72809,7 +72841,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_congr",
@@ -72818,7 +72850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_congr",
@@ -72827,7 +72859,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_congr",
@@ -72836,7 +72868,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_read",
@@ -72845,7 +72877,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -72854,7 +72886,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -72863,7 +72895,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -72872,7 +72904,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -72880,7 +72912,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -72889,7 +72921,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.execute",
@@ -72898,7 +72930,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.environment",
@@ -72907,7 +72939,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.call_execute",
@@ -72916,7 +72948,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.body_shape",
@@ -72925,7 +72957,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.last_test_read",
@@ -72934,7 +72966,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.tail_execute",
@@ -72943,7 +72975,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.loop_shape",
@@ -72952,7 +72984,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.loop_body_shape",
@@ -72961,7 +72993,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.cell_address_read",
@@ -72970,7 +73002,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.condition_read",
@@ -72979,7 +73011,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.range_read",
@@ -72988,7 +73020,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.has_previous_read",
@@ -72997,7 +73029,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.previous_read",
@@ -73006,7 +73038,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.order_read",
@@ -73015,7 +73047,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.fault_checks",
@@ -73024,7 +73056,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.fault_step",
@@ -73033,7 +73065,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_execute",
@@ -73050,7 +73082,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_loop",
@@ -73059,7 +73091,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_checks",
@@ -73068,7 +73100,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_step",
@@ -73077,7 +73109,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.walk_frame",
@@ -73086,7 +73118,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.walk_clock",
@@ -73095,7 +73127,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.walk_other",
@@ -73104,7 +73136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.of_fields",
@@ -73113,7 +73145,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -73122,7 +73154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -73131,7 +73163,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -73140,7 +73172,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_loop",
@@ -73149,7 +73181,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.call_execute",
@@ -73158,7 +73190,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.call_normal_first",
@@ -73167,7 +73199,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.environment",
@@ -73176,7 +73208,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.normal_first",
@@ -73185,7 +73217,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.active_unroll",
@@ -73194,7 +73226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.guard_normal",
@@ -73203,7 +73235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.pair_execute",
@@ -73212,7 +73244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.after_header_shape",
@@ -73221,7 +73253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.store_le32",
@@ -73230,7 +73262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.after_normal",
@@ -73239,7 +73271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.entry_execute",
@@ -73248,7 +73280,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.normal_entry",
@@ -73257,7 +73289,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.entry_shape",
@@ -73266,7 +73298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.length_read",
@@ -73275,7 +73307,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.shift_execute",
@@ -73284,7 +73316,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.first_container",
@@ -73293,7 +73325,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.test_guard_execute",
@@ -73302,7 +73334,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.length_guard_execute",
@@ -73311,7 +73343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.schema_guard_execute",
@@ -73320,7 +73352,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.guard_ready",
@@ -73329,7 +73361,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.byte_word_equal",
@@ -73337,7 +73369,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.schema_read",
@@ -73346,7 +73378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.chain_execute",
@@ -73355,7 +73387,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.from_header",
@@ -73364,7 +73396,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.first_read",
@@ -73373,7 +73405,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.second_read",
@@ -73382,7 +73414,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.loaded_locals",
@@ -73391,7 +73423,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.word_read",
@@ -73400,7 +73432,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.chained_locals",
@@ -73409,7 +73441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.pointer_read",
@@ -73418,7 +73450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.length_read",
@@ -73427,7 +73459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.length_test_read",
@@ -73436,7 +73468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.prefix_execute",
@@ -73445,7 +73477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.normal_prefix",
@@ -73454,7 +73486,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.actions_shape",
@@ -73463,7 +73495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.prefix_shape",
@@ -73472,7 +73504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.request_shape",
@@ -73481,7 +73513,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.setup",
@@ -73490,7 +73522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.store_le64",
@@ -73499,7 +73531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_heap_le32",
@@ -73508,7 +73540,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_heap_le64",
@@ -73517,7 +73549,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.reject_call",
@@ -73526,7 +73558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.normal_length",
@@ -73535,7 +73567,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.callee_normal",
@@ -73544,7 +73576,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.prefix_shape",
@@ -73553,7 +73585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.body_shape",
@@ -73562,7 +73594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.length_test_read",
@@ -73571,7 +73603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.entry_execute",
@@ -73580,7 +73612,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.environment",
@@ -73589,7 +73621,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.gas_from_header",
@@ -73598,7 +73630,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.le32_number",
@@ -73607,7 +73639,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.request_values",
@@ -73616,7 +73648,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.payload_call_shape",
@@ -73625,7 +73657,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.payload_arguments",
@@ -73634,7 +73666,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.offsets_normal",
@@ -73643,7 +73675,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.guard_arguments_read",
@@ -73652,14 +73684,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.state_from_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.offset_actions_shape",
@@ -73668,7 +73700,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.request_read",
@@ -73677,7 +73709,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.offsets_setup",
@@ -73686,7 +73718,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.command_single",
@@ -73695,7 +73727,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.command_prepend",
@@ -73704,7 +73736,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.offsets_stores",
@@ -73713,7 +73745,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.local_word",
@@ -73722,7 +73754,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.offsets_global",
@@ -73731,7 +73763,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.payload_reachable",
@@ -73740,7 +73772,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.payload_from_header",
@@ -73749,7 +73781,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.extra_shape",
@@ -73758,7 +73790,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.extra_test_read",
@@ -73767,7 +73799,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.extra_normal",
@@ -73776,7 +73808,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.header_stores",
@@ -73785,7 +73817,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.payload_offset_read",
@@ -73794,7 +73826,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.offset_declarations",
@@ -73803,7 +73835,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.guard_arguments_read",
@@ -73812,7 +73844,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.offsets_normal",
@@ -73821,7 +73853,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.offset_body_shape",
@@ -73830,7 +73862,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.offsets_stores",
@@ -73839,7 +73871,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.prefix_through_extra",
@@ -73857,7 +73889,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.declared_offsets",
@@ -73866,7 +73898,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.declared_other",
@@ -73875,7 +73907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.prefix_normal",
@@ -73884,7 +73916,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.prefix_setup",
@@ -73893,14 +73925,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RawScalar.byte_lt",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RawScalar.le32_lt",
@@ -73908,7 +73940,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RawScalar.le64_lt",
@@ -73916,7 +73948,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RawScalar.le32_number",
@@ -73924,7 +73956,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RawScalar.le64_number",
@@ -73932,7 +73964,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.count_test_read",
@@ -73941,7 +73973,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_read",
@@ -73950,7 +73982,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.empty_test_read",
@@ -73959,7 +73991,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.empty_execute",
@@ -73968,7 +74000,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.entry_execute",
@@ -73977,7 +74009,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.mask_number",
@@ -73986,7 +74018,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.first_test_read",
@@ -73995,7 +74027,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.count_read",
@@ -74004,14 +74036,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.count_number",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.first_valid",
@@ -74020,7 +74052,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.first_guards",
@@ -74029,7 +74061,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.first_normal",
@@ -74038,7 +74070,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.normal_entry",
@@ -74047,7 +74079,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.entry_shape",
@@ -74056,7 +74088,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.first_tail_shape",
@@ -74065,7 +74097,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocated_tail_shape",
@@ -74074,7 +74106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.loop_shape",
@@ -74083,7 +74115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.after_loop_shape",
@@ -74092,7 +74124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.paired_read",
@@ -74101,7 +74133,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.paired_append",
@@ -74110,7 +74142,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.paired32_equiv",
@@ -74119,7 +74151,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.paired_heap_le32",
@@ -74128,7 +74160,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.declare_execute",
@@ -74137,7 +74169,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -74146,7 +74178,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -74155,7 +74187,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -74164,7 +74196,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.record_test_read",
@@ -74173,7 +74205,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.has_previous_read",
@@ -74182,7 +74214,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.loop_test_read",
@@ -74191,7 +74223,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.record_guard",
@@ -74200,7 +74232,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.fault_body",
@@ -74209,7 +74241,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.count_small",
@@ -74217,7 +74249,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.input_fits",
@@ -74225,7 +74257,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.offset_inside",
@@ -74233,7 +74265,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.row_nat",
@@ -74241,7 +74273,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.length_nat",
@@ -74249,7 +74281,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.row_mapped",
@@ -74257,7 +74289,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.length_mapped",
@@ -74265,7 +74297,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.row_store_input",
@@ -74274,7 +74306,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.length_store_input",
@@ -74283,7 +74315,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.stride_read",
@@ -74292,7 +74324,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.offset_read",
@@ -74301,7 +74333,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.row_address_read",
@@ -74310,7 +74342,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.prior_address_read",
@@ -74319,7 +74351,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.pointer_read",
@@ -74328,7 +74360,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.length_read",
@@ -74337,7 +74369,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.loop_body_shape",
@@ -74346,7 +74378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.final_store_shape",
@@ -74355,7 +74387,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.prior_store",
@@ -74364,7 +74396,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.pointer_store",
@@ -74373,7 +74405,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.step_updates",
@@ -74382,7 +74414,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.active_unroll",
@@ -74391,7 +74423,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.valid_body",
@@ -74400,7 +74432,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.valid_step",
@@ -74409,7 +74441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_clock",
@@ -74418,7 +74450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_control",
@@ -74427,7 +74459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_index",
@@ -74436,7 +74468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_previous",
@@ -74445,7 +74477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_other",
@@ -74454,7 +74486,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.walk_clock",
@@ -74463,7 +74495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.walk_control",
@@ -74472,7 +74504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.walk_other",
@@ -74481,7 +74513,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocated_execute",
@@ -74490,7 +74522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.any_loop",
@@ -74499,7 +74531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.row_eq_iff",
@@ -74507,7 +74539,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.length_eq_iff",
@@ -74515,7 +74547,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.row_ne_length",
@@ -74523,7 +74555,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.complete_finished",
@@ -74531,7 +74563,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.filled_zero",
@@ -74539,7 +74571,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.filled_iteration",
@@ -74548,7 +74580,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.walk_filled",
@@ -74557,7 +74589,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_pointer_cell",
@@ -74566,7 +74598,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_length_cell",
@@ -74575,7 +74607,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.loop_return",
@@ -74584,7 +74616,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.final_address_read",
@@ -74593,7 +74625,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.final_value_read",
@@ -74602,7 +74634,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.return_execute",
@@ -74611,7 +74643,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.walk_previous",
@@ -74620,7 +74652,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.callee_return",
@@ -74629,7 +74661,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -74638,7 +74670,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -74647,7 +74679,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.nonempty_normal",
@@ -74656,7 +74688,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.caller_normal",
@@ -74665,7 +74697,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.count_encode",
@@ -74673,7 +74705,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.count_size",
@@ -74681,7 +74713,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.environment",
@@ -74690,28 +74722,28 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.ArrayFrame.refl",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.ArrayFrame.trans",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.ArrayFrame.of_memory",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.ArrayFrame.restore",
@@ -74720,7 +74752,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.row_inside",
@@ -74729,7 +74761,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Plan.length_inside",
@@ -74738,7 +74770,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.outside_ne_inside",
@@ -74746,7 +74778,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.store_frame",
@@ -74754,7 +74786,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_frame",
@@ -74763,7 +74795,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.failed_iteration_frame",
@@ -74772,7 +74804,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.walk_frame",
@@ -74781,7 +74813,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.normal_summary",
@@ -74790,7 +74822,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.FixedList.body_shape",
@@ -74843,7 +74875,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.transaction_arguments",
@@ -74852,7 +74884,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.field_store",
@@ -74861,14 +74893,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.field_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.allocated_field_control",
@@ -74877,7 +74909,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.UDivMod.body_execute_nonzero",
@@ -75048,7 +75080,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.after_extra_normal",
@@ -75208,7 +75240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.caller_normal",
@@ -75244,7 +75276,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.BytesList.caller_normal",
@@ -75253,7 +75285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.BytesList.environment",
@@ -75262,7 +75294,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.BytesList.loop_execute",
@@ -75271,7 +75303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.BytesList.body_shape",
@@ -75280,7 +75312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.BytesList.loop_test",
@@ -75289,7 +75321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.BytesList.length_test",
@@ -75298,7 +75330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.BytesList.body_execute",
@@ -75307,7 +75339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.BytesList.tail_execute",
@@ -75316,7 +75348,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-division-arithmetic-joint-v1.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.normal_count_limit",
@@ -75325,7 +75357,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-payload-count-field-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Records.cells",
@@ -75334,14 +75366,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Records.of_memory",
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.normal_records",
@@ -75350,7 +75382,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.while_active",
@@ -75359,7 +75391,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-block-guard-v3.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.UDivMod.shifted_number",
@@ -80685,7 +80717,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Records.of_before",
@@ -80693,7 +80725,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-next-entry-fields-v2.log"
+      "successful_log": "witness-arrays-normal-v3.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessRunAttempt.initialization_shape",
@@ -81192,6 +81224,137 @@
         "Quot.sound"
       ],
       "successful_log": "witness-decoded-initialization-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.VarList.nextCursor_geometry",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.VarList.cursor_of_control",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.VarList.Records.of_interval",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.VarList.witness_count_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.Environment.after_list",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.local_after_tuple",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.records_through_list",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.field_through_list",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.pair_stores",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.records_after_pair_stores",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.headers_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.arrays_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.list_arguments",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.stored_list_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Witness.arrays_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-arrays-normal-v3.log"
     }
   ]
 }

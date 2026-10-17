@@ -31,14 +31,17 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       source.clock-(2*(length/4)+3)≤next.clock ∧ next.clock≤source.clock ∧
       (∀ query : BitVec 64,query.toNat<array.toNat→next.memory query=source.memory query) ∧
       next.code=source.code ∧ next.memaddrs=source.memaddrs ∧ next.eshapes=source.eshapes ∧
-      evaluateHOLFiniteState next continuation=(some (.returned value),innerPost) ∧ post=restore source name innerPost := by
+      evaluateHOLFiniteState next continuation=(some (.returned value),innerPost) ∧ post=restore source name innerPost ∧
+      WitnessRadix.BackingLayout.control next=WitnessRadix.BackingLayout.control
+        (if length=0 then source else WitnessRadix.PersistentAlloc.post source array
+          (BitVec.ofNat 64 (16*(Guest.GasLimit.le32 input start/4)))) := by
   classical
   obtain ⟨callee,called,p,n,l,m⟩:=environment source.code.lookup (pointer+BitVec.ofNat 64 start) (BitVec.ofNat 64 length) limit maximum code
   obtain ⟨bodyPost,returned,bodyRun⟩:=CallNormal.callee_return source post (ofString name) VarList.returnShape (ofString "decode_bytes_list") expressions
     (values (pointer+BitVec.ofNat 64 start) (BitVec.ofNat 64 length) limit maximum) body continuation callee VarList.returnShape args called (by omega) value run
   let entry:=callEntryStateHOLFinite source callee
   have entryHeap : Blob.HeapInput entry input pointer:=Blob.HeapInput.of_fields source entry input pointer rfl rfl rfl heap
-  obtain ⟨valueEq,records,countLimit,bodyHeap,lengthBound,bodyLower,bodyUpper,oldMemory⟩:=body_normal entry bodyPost input pointer array limit maximum start length
+  obtain ⟨valueEq,records,countLimit,bodyHeap,lengthBound,bodyLower,bodyUpper,oldMemory,bodyControl⟩:=body_normal entry bodyPost input pointer array limit maximum start length
     entryHeap inside p n l domain lower aligned arrayAligned arrayAfter room heapGlobal allocCode failCode exceptionShape varCode m
     (by change 2*(length/4)+4≤source.clock-1; omega) returned bodyRun
   have shapePass : (shapeEqHOL (shapeOfHOLExact returned) VarList.returnShape && shapeEqHOL (shapeOfHOLExact returned) VarList.returnShape)=true := by
@@ -51,9 +54,17 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have result : (evaluateHOLFiniteState next continuation).1=some (.returned value):=congrArg Prod.fst normal
   have postEq : post=restore source name (evaluateHOLFiniteState next continuation).2:=(congrArg Prod.snd normal).symm
   have fields:=evaluation_fields entry bodyPost body (some (.returned returned)) bodyRun
+  have nextControl : WitnessRadix.BackingLayout.control next=WitnessRadix.BackingLayout.control
+      (if length=0 then source else WitnessRadix.PersistentAlloc.post source array
+        (BitVec.ofNat 64 (16*(Guest.GasLimit.le32 input start/4)))) := by
+    by_cases empty : length=0
+    · simp only [if_pos empty] at bodyControl ⊢
+      exact bodyControl
+    · simp only [if_neg empty] at bodyControl ⊢
+      exact bodyControl
   refine ⟨next,(evaluateHOLFiniteState next continuation).2,?_,VarList.Records.of_memory bodyPost next input pointer array start length rfl records,
     countLimit,Blob.HeapInput.of_fields bodyPost next input pointer rfl rfl rfl bodyHeap,lengthBound,?_,?_,oldMemory,
-    fields.2.2.2,fields.1,fields.2.2.1,Prod.ext result rfl,postEq⟩
+    fields.2.2.2,fields.1,fields.2.2.1,Prod.ext result rfl,postEq,nextControl⟩
   · change source.locals.update (ofString name,returned)=_
     rw [valueEq]
   · change source.clock-(2*(length/4)+3)≤bodyPost.clock

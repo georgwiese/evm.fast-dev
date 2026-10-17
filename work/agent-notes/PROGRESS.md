@@ -3906,3 +3906,63 @@ Keccak public-buffer/event agreement checkpoint (2026-10-17):
   complete paired keccak256 body/caller so original/radix observed digests and
   events can be identified. Full map/context/compiler/target/global resource
   bounds and finite certificate remain open. Continue; do not stop here.
+
+Complete paired Keccak256 checkpoint (2026-10-17):
+- MemoryRegionAgreement arbitrary-region equality preserved by identical
+  ordinary word/byte stores and store lists. CopyRegionAgreement exact byte/
+  word memoryMany and memoryWalk preserve equality on regions containing read
+  cells, including overlapping sequential copies. CopyGeneralRegionAgreement
+  composes both aligned word prefix and byte suffix into exact resultMemory.
+- ZeroRegionAgreement exact memory32/memoryWord/finalMemory preserves region
+  equality. Keccak256PaddingAgreement combines actual zeroPadState, actual
+  memcpy callState, first marker byte and read/OR/store final bit. Exact
+  paddingPrefixState memory/FFI agreement; no assumed copy/hash oracle.
+- Keccak256OutputAgreement canonical outputState with actual execution of both
+  output paths, source-clock/locals/hashControl/FFI/outside-output frames and
+  region memory agreement. PairedPadding composes entire final-block actual
+  zero/copy/stores/absorb/output/return, preserving public memory/events, own
+  source clock bounds and outside buffers. PairedAfter adds rem scope.
+- Keccak256Composition actual clearing and stp/i declarations/scopes compose
+  supplied actual block/tail executions. PairedExecution entire fixed body,
+  own price202+20*(length/136), event/public memory agreement, outside-buffers
+  frames. PairedCall real ABI restores each caller's locals, price+1.
+- Keccak256BufferAgreement BufferRegion contains raw/aligned cells in state200,
+  inputlength,pad136,output32 buffers; all actual block/tail read-region facts
+  derived by address algebra, no full-code or full-memory equality. Actual
+  paired calls return identical MemoryBytes.wordsOf output and complete FFI
+  state/event history, plus restored locals and region agreement.
+- Latest successful keccak256-buffer-agreement-v2.log723targets includes all
+  twelve new modules and their closures; only permitted axioms. Underlying
+  successes memory-region-agreement-v1.log619,copy-region-agreement-v1.log639,
+  copy-general-region-agreement-v1.log640,zero-region-agreement-v1.log625,
+  keccak256-padding-agreement-v1.log701,keccak256-output-agreement-v2.log697,
+  keccak256-paired-padding-v1.log712,keccak256-paired-after-v1.log714,
+  keccak256-composition-v3.log701,keccak256-paired-execution-v2.log720,
+  keccak256-paired-call-v1.log722. Index4579/7506,policy61444/2253269038bytes.
+  Account37%,0credits; claim infinity; no full verifier or finite K.
+- Failed drafts fixed truth-word0 instance reduction with full simp on output
+  alignment, multiline let application parentheses and final explicit rfl for
+  opaque hashingExit, explicit loop-clock projections before omega and digest
+  memory-address aliases with congrArg. Failed logs never indexed.
+- NEXT: joint original/radix constructor record and loop relation using paired
+  hash actual runs and equal digests. EntryData comes from allocated_entry,
+  both Keccak.Environment values and common Buffers; ordinary domains agree,
+  both little-endian, helper code same, globals heap_ptr may differ.
+- Existing record_step proofs hide hashed states and observed keys. Extract
+  local strengthened record/after-hash lemmas accepting actual paired hash
+  runs. MutableTable.WitnessBuild.after_hash_step target is bind(post memory,
+  clock-paid)i(index+1); its proof has exact pure-memory updates, but theorem
+  only states hashControl (erases events). Need strengthen separate new lemma
+  to retain actual FFI equality or CopyContext.control and earlier-memory
+  frame. Candidate Constructor.after_hash_step already states control=control
+  source (retains FFI), but hides equality target=suffixState; strengthen new
+  lemma with canonical target/frame for arbitrary public region below pools.
+- Region for joint loop should include decoded input and hash buffers while
+  excluding both current private tables. q<min(tableStarts) alone fails when
+  old private tables lie below later allocations unless relation excludes old
+  private tables too. Use explicit BufferRegion/read-only input ownership;
+  existing Context.before only places state/pad/output before records, NOT
+  every slice input. Real decoder input slice bounds/nonalias reachability
+  still need proof. No whole-map/context equivalence established yet.
+- All global gas/state/Q/heap/compiler/target/finite certificate work remains;
+  continue autonomously after checkpoint, not a stop point.

@@ -12,6 +12,17 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked complete paired keccak256 body and real caller: actual zeroing,
+  all full blocks, remainder declaration, final padding/absorption, both
+  digest-output paths and all scopes. Equal selected buffer memory gives
+  identical digest words and complete FFI event histories despite unrelated
+  code/private memory differences. Allocated EntryData/code/domain/endian,
+  input/output buffer agreement and clock premises remain explicit; they still
+  need map-layout/decoded-input reachability and joint constructor transport.
+  Source allowance202+20*floor(length/136),caller+1 is not target K. Successful
+  keccak256-buffer-agreement-v2.log723targets, allowed axioms; index4579/7506,
+  policy61444entries/2253269038bytes. Infinity; no finite K/full verification.
+
 - [x] Checked public-memory/event agreement for actual Keccak permutation
   calls, all17 aligned/unaligned XOR lanes, complete block absorber/caller,
   and arbitrary full-block loops. Required helper code entries may agree

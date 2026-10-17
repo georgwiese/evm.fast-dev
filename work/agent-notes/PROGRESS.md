@@ -3125,3 +3125,34 @@ Actual complete rlp_put_u256 checkpoint (2026-10-17):
 - Currentglobalfeasibility/source-map/targetcertificateopen; nofiniteK. Account
  26%,0resetcredits. Useroverallestimate35%(25-45%lowconfidence)stilljudgment,
   notchangedbycountinghelpermodules. Continuedaftercheckpoint, nostoppoint.
+
+Actual header field sequence checkpoint (2026-10-17):
+- HeaderEncoding.Program exactliteralencode_headerAST decomposition, actual
+ 21base+2optionaldescriptors, rightnestedcall/incsequence, firstwdeclaration,
+  optionalterminatingincrementandsuffixtuple. Kernelcheckedliteralfieldbudgets
+  base857/1241(size/callclocks), optional50/72; fullheadernotyetassembled.
+- Context Geometry header248bytesbeforefreshbuffer, alignedbufferand1056room;
+  ordinarydomain, preservedmemorybelowbuffer, actualhlocal/heapbuf+1024.
+  Metadatawordcellsderiveactualmappedloadvalues; before_away provesoldcells
+  cannotmatchactualbyte/wordwriteraddresses, includingalignedstorefootprints.
+- Reads realonewordandquadcomb4 loadsfromoriginalmetadata, arbitrarybitvalues.
+  FieldPost realwriter+w/padvanceandrightnestedresumption; exactp/wlocals,
+  otherlocals/frameandContextreestablishment.
+- FieldBounds/FieldRun byte/scalar/wide/extraactualcalls deriveallargumentsfrom
+  metadata, extentsfrombuffergeometry, sourcebyteaccessfromArenas; U256temp32
+  heaproomandmetadataframeexplicit. Eachfieldpaidsourceclocks/maxbytes isits
+  owndescriptorallowance. Fields actualfulllistcomposition preservesContext,
+  returnsnatpositionbetweenstartandstart+sizes, paid<=costs, canonicalframe
+  andscalarlastw, otherlocals, arbitrarycontinuationresumption.
+- RlpWrite.ListWrite actualtailcallrlp_write_header(...,192,...), wholebody<=19,
+  realignoredcaller<=20sourceclocks, actualmemoryandoutside9byteframe.
+- Successful input-rlp-list-write-v1.log1167targets, onlypermittedaxioms.
+  ContextcellwordAtunfold, scalaraddresshypnormalization, Fin3.valrfl and
+  advancewrapperforrw fixedinfailedlogs, notusedasevidence.
+- NEXT HeaderEncoding.Optional twoactualoptionalfields+currentwordconditional;
+  suffixpayload/startnativearithmetic,listlen/listwriter+tuple/scopes; initial
+  alloc1024/p9/firstbyteswdecl andwholeheaderfunction/caller<=planned1345/1346,
+  thenactualblockprefix/8MiBguard. HeaderFacts requirebytepointerArenas and
+  extra<=32 fromrealbuilder; rootreachabilitystillopen. Sourcestepsarenottarget
+  steps; globalgas/heap/potential/maprefinement/targetK remainunproved.
+- Account26%,0resetcredits; claim infinity. No fullverification, workcontinues.

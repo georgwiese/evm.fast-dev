@@ -1077,6 +1077,13 @@
     "submission/InitECandidate/Solver/Input/Framing.lean",
     "submission/InitECandidate/Solver/Input/GuardNormal.lean",
     "submission/InitECandidate/Solver/Input/HeaderAfterNormal.lean",
+    "submission/InitECandidate/Solver/Input/HeaderEncoding/Context.lean",
+    "submission/InitECandidate/Solver/Input/HeaderEncoding/FieldBounds.lean",
+    "submission/InitECandidate/Solver/Input/HeaderEncoding/FieldPost.lean",
+    "submission/InitECandidate/Solver/Input/HeaderEncoding/FieldRun.lean",
+    "submission/InitECandidate/Solver/Input/HeaderEncoding/Fields.lean",
+    "submission/InitECandidate/Solver/Input/HeaderEncoding/Program.lean",
+    "submission/InitECandidate/Solver/Input/HeaderEncoding/Reads.lean",
     "submission/InitECandidate/Solver/Input/HeaderEntry.lean",
     "submission/InitECandidate/Solver/Input/HeaderEntryNormal.lean",
     "submission/InitECandidate/Solver/Input/HeaderEntryProgram.lean",
@@ -1209,6 +1216,7 @@
     "submission/InitECandidate/Solver/Input/RlpWrite/HeaderWrite.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/HeaderWriteCall.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/LengthTail.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/ListWrite.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/PutBeBuilt.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/PutBeCall.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/PutBeLoop.lean",
@@ -4417,8 +4425,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61270,
-  "package_bytes": 2252398181,
+  "package_entries": 61279,
+  "package_bytes": 2252439273,
   "claim": {
     "K": "infinity"
   },

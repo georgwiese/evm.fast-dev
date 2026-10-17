@@ -937,6 +937,82 @@
     "submission/InitECandidate/Solver/WitnessRadix/ZeroEnvironment.lean": {
       "bytes": 2101,
       "sha256": "e48bacfc3d83728a5cd6010efcb5c4c5c34faef26f21456ccaaafff2588419d8"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroByteStore.lean": {
+      "bytes": 3310,
+      "sha256": "5cfdec2ac6df241c2efedcf2ee4cb8abf81bdba371ee11c74723f88ca878816b"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroLoopTail.lean": {
+      "bytes": 4484,
+      "sha256": "ed75627b8cf895b6cd5cee9eaf393508abf3eb5cac71e8c7a6c9b5b9a01ad5d9"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroByteState.lean": {
+      "bytes": 2854,
+      "sha256": "9fe24c0b8e81e4f8ed94414314069509b52c19396e91fa12328e832063af6302"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroSmall.lean": {
+      "bytes": 5445,
+      "sha256": "4923e8645d97032c0b0cca507c50ade7b272f181bb079f44b2391957d14c8ea8"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ZeroSmallCall.lean": {
+      "bytes": 3569,
+      "sha256": "162527e245ca99d9413ad88a86d41a321987f23a74a94284e738c300e14a973d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ProgramPrefix.lean": {
+      "bytes": 5092,
+      "sha256": "5b3530565b494910919888e36b770ac339874c280017be2a9c398f6fbe9f5311"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableNewProgram.lean": {
+      "bytes": 2007,
+      "sha256": "d826959953ae468d4f40d0e2db417791dba574d1e82a5ff2aca4b559acd9e72a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationExpected.lean": {
+      "bytes": 3126,
+      "sha256": "2680620f21355b4afd00724e741bc6be63f3e38b411d2dc346fb4d5bdfb4ca29"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableState.lean": {
+      "bytes": 3497,
+      "sha256": "50062ff717d4d04e13142ad33e656b757d0a50cb2f7c1cce70f0854db6ca8e3d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableInitial.lean": {
+      "bytes": 4267,
+      "sha256": "c2ce3f41e56d9231a2e537d88ec35a304efb6e6b31cbe19dba75a4680b38c2ff"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableHeader.lean": {
+      "bytes": 3809,
+      "sha256": "e6e6e012b460568d2e13adc06a642b61df30af7d8e191bdcf6fb2893f8f2c82a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableLocals.lean": {
+      "bytes": 3257,
+      "sha256": "c81f4e21bd83c757d4b8fd3afd704876316e3343f034bdb6574368993c56ea2a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableContexts.lean": {
+      "bytes": 3398,
+      "sha256": "44323460d02f19fa39c906eb3362e493f050c0112ab2b618a0435f8e3d065b3d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableExecution.lean": {
+      "bytes": 6013,
+      "sha256": "f8e2042373728d7d3ca2a53a479aebd48888588b59a9ac11c75a5f7bc14dbe56"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ProgramPrefixAppend.lean": {
+      "bytes": 1469,
+      "sha256": "cb564738ddce24d1e130d393dffc2522d910d56187e805a3c133e946e21e9347"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableClear.lean": {
+      "bytes": 4325,
+      "sha256": "518cf1bea78af76d773865b9c78eb53c7f96abce5ae28b4bd0e550a5af0fd697"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableFinish.lean": {
+      "bytes": 7595,
+      "sha256": "d9c8af015aca7c82847155752a1bf7c10a4cf765303b4b4dfbae0c191165ddbf"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TablePreClear.lean": {
+      "bytes": 6496,
+      "sha256": "e9d2002b4342c68d29bcb631aa36318dd1cc64168d57483172ef5053133ef88e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableClearFrame.lean": {
+      "bytes": 1639,
+      "sha256": "3f81db13713e7be7e33bed8abef2bfe4c38c7523efff1cc149587ae20c7d2122"
     }
   },
   "development_artifacts": {
@@ -1173,5 +1249,17 @@
     "successful_log": "witness-radix-zero-call-v1.log",
     "targets": 624,
     "result": "Entire actual aligned memzero for word-multiple lengths, both exact word loops, skipped byte loops, lexical scopes/return, real ABI/code call and caller restoration; exact memory and floor(n/32)+floor((n%32)/8)+1 call clocks. Complete frame outside allocated range. Four-byte initial table case and htab_new composition remain open."
+  },
+  "small_memzero_table_program_checkpoint": {
+    "successful_log": "witness-radix-allocation-expected-v1.log",
+    "targets": 636,
+    "result": "Actual byte stores, arbitrary tail loop and complete short aligned fixed memzero, real call and exact one-word frame; cap=4 call costs five clocks. ProgramPrefix composes actual declarations/allocator calls/commands including lexical restores. Literal full htab_new shape checks. Expected natural cursor allocator-prefix facts check. Concrete entire htab_new prefix evidence still to construct."
+  },
+  "whole_htab_new_checkpoint": {
+    "successful_log": "witness-radix-table-state-v2.log",
+    "targets": 699,
+    "result": "Complete literal fixed htab_new for key length32, from actual ABI/domain/code/heap cursor and natural layout room/cap-shape facts: all six real allocation calls, all nine header stores, both actual clearing cases, lexical restores/table return. Exact nonlocal state and heap global/memory/call-clock result. Cost clearCost(cap)+6. Header contents/record frames, actual caller setup and reachable heap-room premises remain to connect.",
+    "frame_log": "witness-radix-table-frame-v1.log",
+    "frame_result": "Complete actual used-clearing frame outside its natural byte interval, including cap=4."
   }
 }

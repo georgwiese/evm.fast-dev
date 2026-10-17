@@ -811,8 +811,8 @@
       "sha256": "be37cf170b6e9a242bd3dd80eec72b548717c29974fb6072f6aa620120278d0a"
     },
     "submission/InitECandidate/Solver/WitnessRadix/ConstructorProgram.lean": {
-      "bytes": 1978,
-      "sha256": "bcdd7516255109e9b42f89ce200dd63979c339690eddd9b0e469d726990ac210"
+      "bytes": 3182,
+      "sha256": "4e1a0a52d628653260bab09282823b6df48e24ee8cd638f75169831af25f9103"
     },
     "submission/InitECandidate/Solver/WitnessRadix/ConstructorStores.lean": {
       "bytes": 2675,
@@ -821,6 +821,54 @@
     "submission/InitECandidate/Solver/WitnessRadix/ConstructorCopy.lean": {
       "bytes": 3732,
       "sha256": "c23e5d368c828e3ddff11fa756a9aaa0567ceef7246b749a6ccb4037c46a07b6"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorStep.lean": {
+      "bytes": 5620,
+      "sha256": "7ea599b8efb0dd765bff3aca744cee9130924d90bfe68fff6d42a061e488355d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/HelperEnvironment.lean": {
+      "bytes": 2123,
+      "sha256": "3616c51ed10d32d6ba906581a5dfd254690e42312fadb3445aa4246fc68f7c73"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorPrefix.lean": {
+      "bytes": 4086,
+      "sha256": "91dfb70c6283d1a8b42fae9e3cab1d400e5e67184cb86f97eb70d851d4b8dd1e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorRows.lean": {
+      "bytes": 3070,
+      "sha256": "482127dd7c388d9f493ab9fb28f8cd49e577c9aeb2ceaaaa10b851652905fe3c"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorData.lean": {
+      "bytes": 3814,
+      "sha256": "a6d5734633746b5a66564c0738a35923570b1bbe6a93e4b69514b07720586cdf"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorTransport.lean": {
+      "bytes": 1604,
+      "sha256": "354adf99ffef2f92a8d374934a7322ce9d9330a9309bf3cf4c6961008ea78945"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorFrame.lean": {
+      "bytes": 3295,
+      "sha256": "c2f9c2d5fd92ea373aff6f26a2607f28597465e47af7a34d0c936169a30eb3b0"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorLayout.lean": {
+      "bytes": 4274,
+      "sha256": "45d86cbf78657746c35caec80c16e29d84dd723959bf97a3ef8b0269e1b6b4ff"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorMemory.lean": {
+      "bytes": 4453,
+      "sha256": "823575b57fe6abd2f3e21bf252e8d7f1143f9530db9a7cf0aee62bbf4bee66c0"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorFinish.lean": {
+      "bytes": 2715,
+      "sha256": "f8d36788779fb1423d8f26bfdca5f23cf05f1ff6302c18a166659b64722b996e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/HelperCall.lean": {
+      "bytes": 4171,
+      "sha256": "e8f1f93beb5b808077d3f44be9f776fdb8d4218151bc054ec1cd2ef1304a71bd"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CodeEnvironment.lean": {
+      "bytes": 1548,
+      "sha256": "31f3bcaee0716558d56ecd6da9ba139f1fb25a654b60c700eb88bb21d2501e87"
     }
   },
   "development_artifacts": {
@@ -1042,5 +1090,10 @@
     "successful_log": "witness-radix-constructor-copy-v2.log",
     "targets": 615,
     "result": "Actual fixed aligned separated 32-byte memcpy including ABI/code lookup/call, exact two source clocks and actual constructor copy/record/index-store suffix; permitted axioms only. Actual hashing/allocation and whole constructor initialization remain open."
+  },
+  "constructor_prefix_checkpoint": {
+    "successful_log": "witness-radix-constructor-step-v3.log",
+    "targets": 774,
+    "result": "Actual after-hash iteration derives mapped/separate copy/store premises from shared layout and earlier scratch region, establishes next initialized prefix and fixed records/header, advances actual locals, preserves other fields and costs two source clocks. Completed prefix supplies all helper inputs; actual helper call and table-return tail checked at 1028*N+1. Actual hash calls and htab_new/allocation initialization remain open."
   }
 }

@@ -51,6 +51,8 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 **Constructor suffix:** the entire fixed aligned/separated 32-byte memcpy, real ABI/code lookup and ignored-result call now check: exact four-word copying, preserved caller locals/nonlocal fields and two source clocks. The literal nodedb_build after-hash suffix composes that call, record-pointer/ordinal stores and increment (`witness-radix-constructor-copy-v2.log`, 615 targets, permitted axioms only). Actual hashing, allocation, prefix preservation and whole constructor initialization remain open.
 
+**Constructor invariant connection:** the actual after-hash iteration now derives all six mapped/distinct store cells and scratch/key separation from shared layout geometry, preserves earlier hash bytes and fixed header/records, and establishes the next initialized prefix with exact locals/clock. On completion that prefix supplies all immutable/ordinal-row helper premises. The real helper call and constructor table-return tail now check within 1028*N+1 source clocks (`witness-radix-constructor-step-v3.log`, 774 targets, permitted axioms only). Hash calls and htab_new/allocation initialization remain open.
+
 **Next action:** establish the complete helper’s mapped/hashed-array premises from the actual nodedb_build/htab_new constructor, prove its relation to the fixed guest’s last-wins maps, and connect the resulting whole-guest costs through actual target execution. **Current principal risk:** the map representation/refinement and whole-guest input/gas/query/composition proofs remain open. Read the top checklist after every meaningful update. Historical stop instructions below are superseded by the current authorization above.
 
 ---

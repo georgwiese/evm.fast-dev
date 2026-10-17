@@ -2223,3 +2223,19 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful constructor-copy-v2 closure (615 targets), only permitted axioms.
   Actual Keccak behavior/frames, allocations and accumulated array invariant
   remain open; source clocks are not target transitions or a finite certificate.
+
+### 2026-10-17 — constructor prefixes and actual final helper call/return
+
+- ConstructorLayout/Memory/Frame classify the six actual suffix stores in
+  separated pools, prove their exact values and preserve fixed header/records
+  and earlier initialized hash/value/ordinal cells. Prefix/Data/Rows derive all
+  helper immutable and exact ordinal-row premises at loop completion.
+- ConstructorStep executes the real after-hash suffix from shared allocation
+  layout and an earlier aligned scratch region, preserves fixed data/mappings,
+  advances the full prefix and concrete locals, and pays exactly two clocks.
+- CodeEnvironment/HelperEnvironment/HelperCall/ConstructorFinish prove actual
+  argument/code lookup, helper callee setup, caller restoration and table return
+  within 1028*N+1 source clocks, with the represented expected last-wins root.
+- Successful constructor-step-v3 closure (774 targets), permitted axioms only.
+  Actual hash calls, constructor loop assembly, htab_new/allocation setup,
+  original-map/whole-guest relation, target/global K and certificate remain open.

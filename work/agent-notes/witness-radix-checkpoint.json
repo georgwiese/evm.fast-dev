@@ -773,6 +773,54 @@
     "submission/InitECandidate/Solver/WitnessRadix/OrdinalArray.lean": {
       "bytes": 1231,
       "sha256": "eaf80071557b32cb5b8b3530f251bddd3f9e9daf9c23527577f6b35c1980fa7c"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Copy32Block.lean": {
+      "bytes": 3119,
+      "sha256": "da45009935dfa9cbab0514a1517be821503768a952cb1377b5eb02b6cca7c229"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Copy32Tests.lean": {
+      "bytes": 3055,
+      "sha256": "d545a090ea4e2b1cfbbd0114b60eb7c16fa341294a118c6f7186bd5f9feb378e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Copy32Program.lean": {
+      "bytes": 2797,
+      "sha256": "75640c2dd8f712731287991779cf1038da680168996697db16d12c9481b8093f"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Copy32Call.lean": {
+      "bytes": 2803,
+      "sha256": "7e6a3a0a18e079fbdaf302eb726e96997a66c8618d00bdefd26805ef663b504c"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Copy32Execution.lean": {
+      "bytes": 4355,
+      "sha256": "22b71ab7b2fa34a5765175ccd6f39ca671b49e1a028a2f368d8db7afe1c6eca1"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Copy32Loop.lean": {
+      "bytes": 4077,
+      "sha256": "20faa123672a458c7b2275fc4263ee1834eea1d7ea21946e1a030b0fffab0cbe"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Copy32Alignment.lean": {
+      "bytes": 773,
+      "sha256": "a0de5ea30c7795fb5332b93cacd4dd90d63e15da12c167a40d23f356ba067a9a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Copy32Environment.lean": {
+      "bytes": 3358,
+      "sha256": "a8b0233748e0f03e90e628b79d3215046558dc40d2e9f89691cca80f462e4427"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Copy32Memory.lean": {
+      "bytes": 3456,
+      "sha256": "be37cf170b6e9a242bd3dd80eec72b548717c29974fb6072f6aa620120278d0a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorProgram.lean": {
+      "bytes": 1978,
+      "sha256": "bcdd7516255109e9b42f89ce200dd63979c339690eddd9b0e469d726990ac210"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorStores.lean": {
+      "bytes": 2675,
+      "sha256": "397dc0c17861bc8df923685ae316d0ab53a84fe6722174464da4d870ec816ccf"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorCopy.lean": {
+      "bytes": 3732,
+      "sha256": "c23e5d368c828e3ddff11fa756a9aaa0567ceef7246b749a6ccb4037c46a07b6"
     }
   },
   "development_artifacts": {
@@ -989,5 +1037,10 @@
     "all_invariant_cases": "split, unary and terminal continuation each execute the actual body and re-establish the complete invariant; terminal finish returns and establishes the complete actual lookup representation at the original table root slot, from the invariant; whole-loop induction and constructor initialization remain open",
     "whole_loop": "actual main while terminates from full invariant and 4*agendaWeight clock affordability, returns 0, establishes expected actual lookup representation at original table root, preserves all control fields except locals/memory/clock, and spends at most 4*agendaWeight source clocks; initial invariant/whole helper and constructor remain to be established",
     "whole_helper": "entire literal helper on empty/nonempty initialized arrays from actual ABI/header/readable rows/mapped separated layout/immutable data, including all prefix tests/loads/scopes and complete loop; expected lookup representation at original table root, preserved control fields, source-clock cost <=1028*N; caller must establish allocated/hashed arrays"
+  },
+  "constructor_copy_checkpoint": {
+    "successful_log": "witness-radix-constructor-copy-v2.log",
+    "targets": 615,
+    "result": "Actual fixed aligned separated 32-byte memcpy including ABI/code lookup/call, exact two source clocks and actual constructor copy/record/index-store suffix; permitted axioms only. Actual hashing/allocation and whole constructor initialization remain open."
   }
 }

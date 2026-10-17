@@ -2211,3 +2211,15 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   Caller must still establish actual allocations and hashed array/record facts;
   original-map and whole-guest relation, compiled target/global bound and finite
   certificate remain open. Continuing constructor and fixed memcpy path.
+
+### 2026-10-17 — fixed memcpy and actual constructor copy/store suffix
+
+- Copy32 modules prove the entire fixed aligned, separated 32-byte memcpy,
+  exact four word/32 byte values, actual ABI environment and ignored-result
+  call restoring caller locals, at exactly two source clocks.
+- ConstructorProgram/Stores/Copy extract the literal record loop and prove its
+  entire after-hash suffix: actual copy call, record pointer and ordinal stores,
+  index increment and exact final state. No successful copy oracle is assumed.
+- Successful constructor-copy-v2 closure (615 targets), only permitted axioms.
+  Actual Keccak behavior/frames, allocations and accumulated array invariant
+  remain open; source clocks are not target transitions or a finite certificate.

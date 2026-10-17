@@ -3279,3 +3279,20 @@ Actual halt and child-error gas return checkpoint (2026-10-17):
 - NEXT successful child repayment prefix and forward/stipend debits, actual
   regular-charge source bridge and global signed state/block accounting; joint
   table/heap-query work and original-map/target certificate remain open.
+
+Actual Pan regular-gas charging checkpoint (2026-10-17):
+- RegularCharge exact fixed source AST, actual liquid load, affordable guard,
+  liquid debit and used-counter increment, return and gl scope. Out-of-gas
+  branch raises EvmErr4 before any pool write. No body calls/loops.
+- Quantitative real written memory preserves regularBudget; liquid native debit
+  and used native credit equal amount exactly under affordable and
+  liquid+used<2^64. Actual successful ignored caller costs1Pan source clock;
+  failed caller exact1 with unchanged memory/control and exception propagation.
+- This supplements the existing compiled Stack charge summary. Their clocks
+  belong to different semantics; no whole-run compiler/target connection or
+  positive-charge coverage is inferred from these local summaries.
+- Successful gas-regular-charge-call-v1.log1115targets, permitted axioms,
+  4.66s wall, max child RSS1888656KiB. No failed draft builds in this pair.
+  Index4447/7185; policy61311entries/2252614026bytes, infinity; no full verifier.
+- Continue successful-child repayment and forward/stipend contracts, global
+  signed state/block accounting and joint gas/table/heap query budget.

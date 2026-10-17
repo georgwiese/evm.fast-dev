@@ -2565,3 +2565,40 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Production remains unchanged; global/original-map/compiler/ROM/target/K
   obligations remain. All work local/offline; account status is monitored
   separately in temporary files, not in committed proof artifacts.
+
+2026-10-17: complete actual request prefix from full decoder normal return
+
+- StoreScalar64 proves actual flattened uint64/store/input frame. RequestProgram
+  extracts both real prefix and three-declaration/three-store/count3/fixed44
+  request tail. PrefixProgram uses actual ProgramPrefix actions and all five
+  lexical restorations; Load checks real o_npr/o_wit reads. Chain checks actual
+  allocated SI+88 chain-id store from blob10..17, with natural mapping/frame.
+- Positions proves real np=blob+18, nlen=witness-16. Setup composes both loads,
+  actual alloc96, chain store and declarations as Executes evidence. PrefixEntry
+  includes real SszErr81 length rejection; passing prefix costs one allocation
+  clock, rejecting length adds one. PrefixNormal derives encodedlen>=62 and
+  safe request length>=44 and<=encodedlen-18 from actual normal prefix return.
+- FromHeader composes Header.first_container and all prefix evidence from a
+  genuine normal fixed-decoder return, exposing actual requestBody/inner post
+  and copied HeapInput. ReadyFrame retains code, exceptions, structs, domains,
+  endian, full FFI, globals updated only heap_ptr=rounded(cursor,96), and clock
+  >=source.clock-5. Initial source clock>=6; use>=10 when next guard needs5.
+- Entry still requires runtime code/shape/domain, original HeapInput/arguments,
+  aligned natural ssz_offs64 before input, cursor after copied extent, alloc96
+  room and aligned cursor. No schema/first fixed offset/request length assumed.
+  Source-normal allocation-room inversion and reachable startup facts remain.
+- Joint successful input-request-from-header-v2.log,1140 targets, allowed axioms.
+  Indexed4229 modules/6735 facts (not percentages), infinity/no full verifier.
+- NEXT: requestBody is exact dec o_pl=flat32(np,[]), dec o_vh=flat32(np,[4]),
+  dec o_rq=flat32(np,[40]), three stores of locals to ssz_offs0/8/16, actual
+  count3/fixed44 call, then Request.continuation (decode_payload etc). Raw scalar
+  offsets18/22/58 lie in proven encoded extent62. Need all declarations/scopes,
+  exact three stored words/input frame and normal guard inversion to raw first
+  offset44, monotone remaining offsets and request bounds; then payload ptr62.
+- Generic word_read at an opaque state fixed an implicit-transparency failure:
+  unfolding bound-state records inside simp left a mismatched DecidablePred
+  argument. Prove read for abstract state first, then apply to the bound state.
+  Explicit restorePrefix avoids an unsynthesized existential function witness
+  before constructing the ProgramPrefix Executes proof.
+- Production pnk unchanged; no repeated native/EEST tests. All global original-
+  map/compiler/ROM/target/query/potential/K obligations remain open.

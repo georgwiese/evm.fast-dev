@@ -29,6 +29,7 @@ roots = {
     'original_witness_lookup': ['MutableTable.WitnessDictionaryLookup', 'MutableTable.NodeDbDictionary32'],
     'input_reachability': ['Input.Witness.BodyNormal', 'Input.Witness.PrefixNormal', 'Input.RequestStoredGasFromHeader', 'Input.RlpLength.BlockGuard'],
     'local_gas_accounting': ['GasBudget.StateChargeBudget', 'GasBudget.ForwardSites', 'GasBudget.ChildError', 'GasBudget.ChildSuccess'],
+    'original_root_initialization': ['GasBudget.RootCallerNormal', 'GasBudget.FrameNewFresh'],
     'abstract_global_accounting': ['GasBudget.BlockAccounting', 'GasBudget.MergeBudget', 'GasBudget.NestedDecay', 'GasBudget.StorageDebt'],
     'compiled_local_work': ['GuestWork.GasAccounting', 'GuestWork.ExtendMemoryAllocTransfer', 'GuestWork.FrameAllocBounded'],
 }

@@ -4737,3 +4737,34 @@ Whole paired witness constructor checkpoint (2026-10-17):
 - Continue message gas-to-frame cells and helper memory frames, successful child
   merging/rollback and actual signed block gas, then aggregate source work and
   unchanged compiler/target transport. No numerical ceiling applies.
+
+
+### 2026-10-17 — physical frame initialization through jump-destination entry
+
+- PanFieldStores proves real scalar initialization sequences with exact memory
+  writes and protected source reads. Expected words are specification data;
+  the original runtime local/copy expressions are retained.
+- FrameNewFields checks all seven actual stores preceding compute_jumpdests;
+  used/spill stay zero and the actual regular ledger equals MSG_GAS.
+- FrameNewAllocation checks both real scratch/frame-memory allocations and
+  three stack stores, deriving guards/results/frames from natural room and
+  code/cursor/clock premises. These operations preserve all regular cells.
+- FrameNewInitialization composes that actual suffix. FrameNewFresh joins it
+  to the earlier actual allocation/clear, deriving both zero counters and all
+  intermediate local values, preserving incoming message words, and exposing
+  the real continuation at compute_jumpdests. Exact prefix cost17source clocks.
+- Explicit remaining entry premises: correct fixed code, global cursors, arena
+  room/alignment, mapped frame/message words, physical separation and enough
+  clocks. This is an actual source prefix theorem, not a whole frame return,
+  pricing of straight-line work, whole-program gas ledger or target K.
+- Successful frame-new-fresh-v2.log1107jobs includes RootCallerNormal and all
+  new dependencies. Development failures field-stores-v1, frame-new-allocation-v1,
+  frame-new-fresh-v1 were notation/normalization issues; no failed log is indexed.
+- Evidence4465modules/7297printed facts;4476Solver modules. Inventory now includes
+  actual root initialization roots. No missing imports/replacement dependencies;
+  pinned Guest/InitE/ROM/fixed proofs/claim unchanged. Incremental policy passes
+  (not full verification). Claim infinity; no whole finite runtime bound yet.
+- Next: original compute_jumpdests/lst_new_scratch/htab_new_scratch memory frames
+  to preserve initialized gas through frame_new return; actual caller MSG gas
+  construction and successful child merges/rollback/block signed accounting.
+  Account last48%, no reset credits. No numerical ceiling applies.

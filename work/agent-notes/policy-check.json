@@ -1021,6 +1021,10 @@
     "submission/InitECandidate/Solver/GasBudget/ForwardPrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/ForwardSites.lean",
     "submission/InitECandidate/Solver/GasBudget/Frame.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameNewAllocation.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameNewFields.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameNewFresh.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameNewInitialization.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewZero.lean",
     "submission/InitECandidate/Solver/GasBudget/Halt.lean",
@@ -2427,6 +2431,7 @@
     "submission/InitECandidate/Solver/NopCostTight.lean",
     "submission/InitECandidate/Solver/PanControl.lean",
     "submission/InitECandidate/Solver/PanDeclarations.lean",
+    "submission/InitECandidate/Solver/PanFieldStores.lean",
     "submission/InitECandidate/Solver/PanState.lean",
     "submission/InitECandidate/Solver/PanTraversal.lean",
     "submission/InitECandidate/Solver/RiscVEvaluatorCosts.lean",
@@ -4475,8 +4480,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61333,
-  "package_bytes": 2252758363,
+  "package_entries": 61338,
+  "package_bytes": 2252800093,
   "claim": {
     "K": "infinity"
   },

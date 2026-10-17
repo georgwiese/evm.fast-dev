@@ -2195,3 +2195,19 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   facts are not target-transition bounds. Continuing initialization from real
   helper/header/array state and constructor hashes/allocations; whole-guest,
   compiler/target/global K and finite certificate remain open.
+
+### 2026-10-17 — entire actual radix helper from initialized arrays
+
+- InitialContext/InvariantInitial derive all real entered task locals and the
+  whole loop invariant from mapped separated pools, immutable record/key data
+  and a readable valid ordinal array of length N. HelperCore handles the actual
+  nonempty test/return continuation. HelperExecution/Built compose all thirteen
+  real prefix loads/declarations, whole loop and lexical restoration, including
+  the empty case. The complete literal helper produces the expected root
+  representation, preserves control fields and uses at most 1028*N source clocks.
+- HelperEmpty separately needs only the actual empty ABI/header/root mapping.
+  OrdinalArray proves the actual 0..N-1 array bounds, length and entry ordering.
+- Successful ordinal-array-v1 closure (748 targets), only permitted axioms.
+  Caller must still establish actual allocations and hashed array/record facts;
+  original-map and whole-guest relation, compiled target/global bound and finite
+  certificate remain open. Continuing constructor and fixed memcpy path.

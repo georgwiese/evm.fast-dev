@@ -745,6 +745,34 @@
     "submission/InitECandidate/Solver/WitnessRadix/LoopTermination.lean": {
       "bytes": 9377,
       "sha256": "e09649d25277291c0fe047f5b4490ef4025ce0c1cb90bf35d91350c125c11d14"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/HelperBuilt.lean": {
+      "bytes": 2690,
+      "sha256": "7af29954ee80a8c1fd5460c26666835990f0c461f9372f195b00c580e0eefd63"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/HelperCore.lean": {
+      "bytes": 1941,
+      "sha256": "f4c4be2fcddff8a776fd3ce49199397183ac0d3fffd82a6b77edcb3e7b6fc1c7"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/HelperEmpty.lean": {
+      "bytes": 2108,
+      "sha256": "3c6f3fac9c94bce52e4ca1dc1e3eff94cf06adb3c8a459df2d3ca60898ff1e9a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/HelperExecution.lean": {
+      "bytes": 5000,
+      "sha256": "2488da4716d505715d49d9a050d96a9a1afb6e1d2356320761d4a4225e0604a1"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/InitialContext.lean": {
+      "bytes": 2289,
+      "sha256": "32e2462b08379995463a14dfc715cab721d6c8c2d561f8d29b2520604074d4cb"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/InvariantInitial.lean": {
+      "bytes": 2835,
+      "sha256": "a174a6f58d1d3212769055329c2c01429b1232672aefd1409adbb02b0a144908"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/OrdinalArray.lean": {
+      "bytes": 1231,
+      "sha256": "eaf80071557b32cb5b8b3530f251bddd3f9e9daf9c23527577f6b35c1980fa7c"
     }
   },
   "development_artifacts": {
@@ -791,7 +819,8 @@
     "witness-radix-invariant-split-checkpoint-v1.log",
     "witness-radix-invariant-root-checkpoint-v1.log",
     "witness-radix-invariant-finish-v1.log",
-    "witness-radix-loop-termination-v2.log"
+    "witness-radix-loop-termination-v2.log",
+    "witness-radix-ordinal-array-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -958,6 +987,7 @@
     "split_full_invariant": "the complete actual main-body split re-establishes the full construction invariant from itself and case/clock premises: graph representation/location/safe/distinct/aligned frontier, real pending stack, child/current/pending readable intervals, immutable data, valid saved task metadata, exact locals and cumulative allocation budget",
     "terminal_shared_invariant": "real terminal bodies (continue or finish) derive every ordinal/pop read, destination mapping and store-safety premise from shared layout/stack/rows/ABI facts; leaf update preserves immutable data, graph/frontier invariants and pending rows; complete terminal invariant assembly remains open",
     "all_invariant_cases": "split, unary and terminal continuation each execute the actual body and re-establish the complete invariant; terminal finish returns and establishes the complete actual lookup representation at the original table root slot, from the invariant; whole-loop induction and constructor initialization remain open",
-    "whole_loop": "actual main while terminates from full invariant and 4*agendaWeight clock affordability, returns 0, establishes expected actual lookup representation at original table root, preserves all control fields except locals/memory/clock, and spends at most 4*agendaWeight source clocks; initial invariant/whole helper and constructor remain to be established"
+    "whole_loop": "actual main while terminates from full invariant and 4*agendaWeight clock affordability, returns 0, establishes expected actual lookup representation at original table root, preserves all control fields except locals/memory/clock, and spends at most 4*agendaWeight source clocks; initial invariant/whole helper and constructor remain to be established",
+    "whole_helper": "entire literal helper on empty/nonempty initialized arrays from actual ABI/header/readable rows/mapped separated layout/immutable data, including all prefix tests/loads/scopes and complete loop; expected lookup representation at original table root, preserved control fields, source-clock cost <=1028*N; caller must establish allocated/hashed arrays"
   }
 }

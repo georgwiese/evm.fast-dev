@@ -6,27 +6,9 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 set_option maxRecDepth 10000
 set_option maxHeartbeats 800000
 
-/-- The actual three-list decoder suffix establishes all witness records,
-size/count checks, six SI fields and a shared linear allocation budget.
-Validated witness offsets and the entry layout remain explicit premises. -/
-theorem arrays_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
-    (pointer array si : BitVec 64) (start first middle last total : Nat)
-    (environment : Environment source) (heap : Blob.HeapInput source input pointer)
-    (ordered : first≤middle ∧ middle≤last ∧ last≤total) (inside : start+total≤input.length%2^64)
-    (lower : 2701131776≤pointer.toNat) (aligned : pointer.toNat%8=0) (arrayAligned : array.toNat%8=0)
-    (arrayAfter : pointer.toNat+input.length%2^64+8≤array.toNat)
-    (room : array.toNat+4*total≤33806089496)
-    (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word array)))
-    (wp : source.locals.lookup (ofString "wp")=some (.val (.word (pointer+BitVec.ofNat 64 start))))
-    (firstLocal : source.locals.lookup (ofString "w0")=some (.val (.word (BitVec.ofNat 64 first))))
-    (middleLocal : source.locals.lookup (ofString "w1")=some (.val (.word (BitVec.ofNat 64 middle))))
-    (lastLocal : source.locals.lookup (ofString "w2")=some (.val (.word (BitVec.ofNat 64 last))))
-    (totalLocal : source.locals.lookup (ofString "wlen")=some (.val (.word (BitVec.ofNat 64 total))))
-    (siLocal : source.locals.lookup (ofString "si")=some (.val (.word si)))
-    (siArena : Arena si 96) (siAligned : si.toNat%8=0) (siAfter : pointer.toNat+input.length%2^64+8≤si.toNat)
-    (siBefore : si.toNat+96≤array.toNat)
-    (enough : 6*(input.length%2^64)+20≤source.clock) (value : ValueHOL 64)
-    (run : evaluateHOLFiniteState source nodeCall=(some (.returned value),post)) :
+/-- Concrete normal result of the three actual witness-list calls. -/
+def ArraysResult (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer array si : BitVec 64) (start first middle last total : Nat) (value : ValueHOL 64) : Prop :=
     ∃ codeArray headerArray finalCursor : BitVec 64,
       value=.val (.word si) ∧
       VarList.Records post input pointer array (start+first) (middle-first) ∧
@@ -50,7 +32,31 @@ theorem arrays_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       finalCursor.toNat=array.toNat+16*(VarList.decodedCount input (start+first) (middle-first)+
         VarList.decodedCount input (start+middle) (last-middle)+VarList.decodedCount input (start+last) (total-last)) ∧
       finalCursor.toNat≤array.toNat+4*total ∧ finalCursor.toNat%8=0 ∧
-      source.clock-(6*(input.length%2^64)+9)≤post.clock ∧ post.clock≤source.clock := by
+      source.clock-(6*(input.length%2^64)+9)≤post.clock ∧ post.clock≤source.clock
+
+/-- The actual three-list decoder suffix establishes all witness records,
+size/count checks, six SI fields and a shared linear allocation budget.
+Validated witness offsets and the entry layout remain explicit premises. -/
+theorem arrays_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer array si : BitVec 64) (start first middle last total : Nat)
+    (environment : Environment source) (heap : Blob.HeapInput source input pointer)
+    (ordered : first≤middle ∧ middle≤last ∧ last≤total) (inside : start+total≤input.length%2^64)
+    (lower : 2701131776≤pointer.toNat) (aligned : pointer.toNat%8=0) (arrayAligned : array.toNat%8=0)
+    (arrayAfter : pointer.toNat+input.length%2^64+8≤array.toNat)
+    (room : array.toNat+4*total≤33806089496)
+    (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word array)))
+    (wp : source.locals.lookup (ofString "wp")=some (.val (.word (pointer+BitVec.ofNat 64 start))))
+    (firstLocal : source.locals.lookup (ofString "w0")=some (.val (.word (BitVec.ofNat 64 first))))
+    (middleLocal : source.locals.lookup (ofString "w1")=some (.val (.word (BitVec.ofNat 64 middle))))
+    (lastLocal : source.locals.lookup (ofString "w2")=some (.val (.word (BitVec.ofNat 64 last))))
+    (totalLocal : source.locals.lookup (ofString "wlen")=some (.val (.word (BitVec.ofNat 64 total))))
+    (siLocal : source.locals.lookup (ofString "si")=some (.val (.word si)))
+    (siArena : Arena si 96) (siAligned : si.toNat%8=0) (siAfter : pointer.toNat+input.length%2^64+8≤si.toNat)
+    (siBefore : si.toNat+96≤array.toNat)
+    (enough : 6*(input.length%2^64)+20≤source.clock) (value : ValueHOL 64)
+    (run : evaluateHOLFiniteState source nodeCall=(some (.returned value),post)) :
+    ArraysResult source post input pointer array si start first middle last total value := by
+  unfold ArraysResult
   classical
   have bytesSmall : input.length%2^64<2^64:=Nat.mod_lt _ (by decide)
   have firstArgs:=list_arguments source pointer start first middle 9223372036854775807 1024 "w0" "w1"

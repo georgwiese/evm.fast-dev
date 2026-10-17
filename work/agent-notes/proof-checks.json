@@ -9594,6 +9594,26 @@
       "sha256": "8f87c4f86b3d93399db1a668b8111977a2ff873dee80d9c50216d1429d8c2118"
     },
     {
+      "path": "submission/InitECandidate/Solver/MutableTable/HashByteRuntime/Bodies.lean",
+      "sha256": "01ffa86e2b66afaff430a2cef348c49d682c4bb6ff58dfeeab67021c503515ba"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/HashByteRuntime/Call.lean",
+      "sha256": "92b1c12b74b73971b70d2d5f7ee86ead1e6d943cfc3804a016842dc2faea881f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/HashByteRuntime/Execution.lean",
+      "sha256": "f3302b0439ffba99efed67bbf78ba53f8629a59d2efac0d8f753268e827f0cdb"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/HashByteRuntime/Loops.lean",
+      "sha256": "1dba5b5bd56ff7da476697773c7ed2a096b3eeb387556b01ea66f66b2b0b0b04"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/HashByteRuntime/Program.lean",
+      "sha256": "a4827976fefafb9d8f12e275d992cb2c90d8f555e225778424b5c306f67c30e6"
+    },
+    {
       "path": "submission/InitECandidate/Solver/MutableTable/HashCall32.lean",
       "sha256": "430cec4bf4224eb6e2251719b4265131125a5b9a3901036d47f1648e6372b567"
     },
@@ -9744,6 +9764,30 @@
     {
       "path": "submission/InitECandidate/Solver/MutableTable/MaskedPath.lean",
       "sha256": "f08e11f35eca6e1cdfe90026366962d59602b10683dc1667a1bbef7c0b5e24b7"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/MemeqByteRuntime/Aligned32Blocks.lean",
+      "sha256": "3217ff5d1f20676c9c80365fdf855fbbe7db3a85dbe9c8e1fee536600c4f7772"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/MemeqByteRuntime/Aligned32Bodies.lean",
+      "sha256": "dbb6b3a10b6157d689653cbb9f92969c3ad07e04c0e2dbd041f828825d921bab"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/MemeqByteRuntime/AlignedBlocks.lean",
+      "sha256": "5d0e456729106dbfc52a70712a4d83903396db5d1f42aa9b2ba0494a9cb12d2f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/MemeqByteRuntime/AlignedBodies.lean",
+      "sha256": "925aba7222f35bda8cc3a1479c947f9bf8f2f9156d6e4bbea2f9f994d7e91fdc"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/MemeqByteRuntime/AlignedExecution.lean",
+      "sha256": "90a7f13dc00ffe8d919db5055b8ec1276acc57c4310736a2c297c672914731c1"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/MemeqByteRuntime/AlignedMapped.lean",
+      "sha256": "d54e37f0d769fb46859fbc11aee1a6c846a71cbeefe8943a71e6d71c3a62c9ae"
     },
     {
       "path": "submission/InitECandidate/Solver/MutableTable/MemeqByteRuntime/Blocks.lean",
@@ -65816,7 +65860,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -65824,19 +65868,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -65845,7 +65889,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -65854,7 +65898,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -65863,7 +65907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -65872,7 +65916,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -65881,7 +65925,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -65890,7 +65934,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -65899,7 +65943,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -65908,7 +65952,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -65917,7 +65961,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -65926,7 +65970,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -65935,7 +65979,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -65944,7 +65988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -65953,7 +65997,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -65962,7 +66006,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -65971,7 +66015,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -65979,7 +66023,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -65987,7 +66031,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -65996,7 +66040,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -66005,7 +66049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -66014,7 +66058,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -66022,7 +66066,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -66031,7 +66075,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -66040,7 +66084,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_ready_of_memory",
@@ -66049,7 +66093,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_byteAt",
@@ -66058,7 +66102,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -66067,7 +66111,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -66076,7 +66120,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -66085,7 +66129,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -66094,7 +66138,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -66103,7 +66147,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -66112,7 +66156,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -66121,7 +66165,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_memory",
@@ -66130,7 +66174,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.aligned_offset",
@@ -66138,7 +66182,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -66146,7 +66190,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -66155,7 +66199,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -66164,7 +66208,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -66173,7 +66217,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -66182,7 +66226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.environment",
@@ -66191,7 +66235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_of_fields",
@@ -66200,7 +66244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.execute",
@@ -66209,7 +66253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -66218,7 +66262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.bind_lookup_other",
@@ -66227,7 +66271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StateSteps.assign_execute",
@@ -66236,14 +66280,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_unique",
@@ -66251,7 +66295,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
@@ -66286,7 +66330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.block_execute",
@@ -66295,7 +66339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.call_execute",
@@ -66304,7 +66348,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.environment",
@@ -66313,7 +66357,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop_execute",
@@ -66322,7 +66366,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.remaining_loops",
@@ -66331,7 +66375,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.word_view",
@@ -66339,7 +66383,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.byte_view",
@@ -66348,7 +66392,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop32_shape",
@@ -66357,7 +66401,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.body_shape",
@@ -66366,7 +66410,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.condition_read",
@@ -66375,7 +66419,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.alignment_read",
@@ -66384,7 +66428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CodeEnvironment.finite_lookup",
@@ -66392,7 +66436,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.valid",
@@ -66419,7 +66463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guards",
@@ -66428,7 +66472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_execute",
@@ -66437,7 +66481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.environment",
@@ -66446,7 +66490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.block32_execute",
@@ -66455,7 +66499,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.blockWord_execute",
@@ -66464,7 +66508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_execute",
@@ -66473,7 +66517,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.condition_read",
@@ -66482,7 +66526,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.alignment_read",
@@ -66491,7 +66535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.environment",
@@ -66500,7 +66544,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_execute",
@@ -66509,7 +66553,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_execute",
@@ -66518,7 +66562,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_frame",
@@ -66527,7 +66571,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_memory_away",
@@ -66535,7 +66579,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_shape",
@@ -66544,7 +66588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_shape",
@@ -66553,7 +66597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.body_shape",
@@ -66562,7 +66606,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_frame",
@@ -66571,7 +66615,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_other",
@@ -66580,7 +66624,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_index",
@@ -66589,7 +66633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_frame",
@@ -66598,7 +66642,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_other",
@@ -66607,7 +66651,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_index",
@@ -66616,7 +66660,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.remaining_loops",
@@ -66625,7 +66669,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_expected",
@@ -66652,7 +66696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ProgramPrefix.restoration_frame",
@@ -66661,7 +66705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.body_shape",
@@ -66706,7 +66750,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_body_execute",
@@ -66715,7 +66759,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_condition",
@@ -66724,7 +66768,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopTail_execute",
@@ -66733,7 +66777,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_small",
@@ -67035,7 +67079,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.aligned_cell",
@@ -67043,7 +67087,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_exists",
@@ -67052,7 +67096,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read200",
@@ -67061,7 +67105,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.mapped_region",
@@ -67070,7 +67114,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.of_cells",
@@ -67079,7 +67123,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.load_expression",
@@ -67088,7 +67132,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute",
@@ -67097,21 +67141,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.stores_execute",
@@ -67120,7 +67164,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.block_execute",
@@ -67129,7 +67173,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_shapes",
@@ -67138,7 +67182,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.address_read",
@@ -67147,7 +67191,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.store_execute",
@@ -67156,7 +67200,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.environment",
@@ -67165,7 +67209,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_execute",
@@ -67174,7 +67218,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_mapped",
@@ -67183,7 +67227,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_memory_away",
@@ -67192,7 +67236,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.answer_length",
@@ -67200,7 +67244,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.oracle",
@@ -67209,21 +67253,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_frame",
@@ -67232,7 +67276,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_index",
@@ -67241,7 +67285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_other",
@@ -67250,7 +67294,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.test_read",
@@ -67259,7 +67303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_execute",
@@ -67268,7 +67312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_frame",
@@ -67277,7 +67321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_other",
@@ -67286,7 +67330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_index",
@@ -67295,7 +67339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryWalk_away",
@@ -67303,7 +67347,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Mapped.of_domain",
@@ -67311,7 +67355,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.byte_walk",
@@ -67320,7 +67364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.word_walk",
@@ -67329,7 +67373,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_domain",
@@ -67338,7 +67382,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_domain",
@@ -67347,7 +67391,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_clock",
@@ -67356,7 +67400,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_clock",
@@ -67365,7 +67409,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.cost_le",
@@ -67374,7 +67418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_clock",
@@ -67383,7 +67427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_control",
@@ -67392,7 +67436,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.alignment_false",
@@ -67401,7 +67445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_execute",
@@ -67410,7 +67454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.execute",
@@ -67419,7 +67463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_execute",
@@ -67428,7 +67472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_memory_away",
@@ -67437,7 +67481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_control",
@@ -67445,7 +67489,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.environment",
@@ -67454,7 +67498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_memory",
@@ -67463,7 +67507,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_memory",
@@ -67472,7 +67516,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_memory_away",
@@ -67481,7 +67525,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_memory_away",
@@ -67490,7 +67534,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory_away",
@@ -67499,7 +67543,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.byte_walk_be",
@@ -67508,7 +67552,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.word_walk_be",
@@ -67517,7 +67561,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory",
@@ -67526,7 +67570,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_away",
@@ -67535,21 +67579,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.control_of_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.frame_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_control",
@@ -67558,7 +67602,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_control",
@@ -67567,7 +67611,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_args",
@@ -67576,7 +67620,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_domain",
@@ -67585,7 +67629,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_control",
@@ -67594,7 +67638,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_control",
@@ -67603,7 +67647,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_cost_le",
@@ -67611,14 +67655,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.stores_execute",
@@ -67627,7 +67671,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.block_execute",
@@ -67636,21 +67680,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_frame",
@@ -67659,7 +67703,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_index",
@@ -67668,7 +67712,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_other",
@@ -67677,7 +67721,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_execute",
@@ -67686,7 +67730,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_bounds",
@@ -67695,7 +67739,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_execute",
@@ -67704,7 +67748,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_clock",
@@ -67713,7 +67757,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_index",
@@ -67722,7 +67766,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_shapes",
@@ -67731,7 +67775,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.store_execute",
@@ -67740,7 +67784,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_frame",
@@ -67749,7 +67793,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_other",
@@ -67758,7 +67802,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_index",
@@ -67767,7 +67811,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryWalk_away",
@@ -67775,7 +67819,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.call_execute",
@@ -67784,7 +67828,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.environment",
@@ -67793,7 +67837,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.alignment_read",
@@ -67802,7 +67846,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.execute",
@@ -67811,7 +67855,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_value_read",
@@ -67820,7 +67864,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_execute",
@@ -67829,7 +67873,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_memory_away",
@@ -67838,7 +67882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_other",
@@ -67847,7 +67891,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.condition_read",
@@ -67856,7 +67900,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.loop_execute",
@@ -67865,7 +67909,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.body_shape",
@@ -67874,7 +67918,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_read",
@@ -67883,7 +67927,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_clock",
@@ -67892,7 +67936,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_control",
@@ -67901,7 +67945,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_other",
@@ -67910,7 +67954,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_domain",
@@ -67919,7 +67963,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_memory_away",
@@ -67928,14 +67972,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.permutation_control",
@@ -67944,21 +67988,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_clock",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_empty",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_restore",
@@ -67967,7 +68011,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_clock",
@@ -67976,7 +68020,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_control",
@@ -67985,7 +68029,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_memory_away",
@@ -67994,7 +68038,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute_word",
@@ -68003,7 +68047,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_blocks_execute",
@@ -68012,7 +68056,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.afterBlocks_shape",
@@ -68021,7 +68065,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.block_execute",
@@ -68030,7 +68074,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.call_execute",
@@ -68039,7 +68083,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.Mapped.of_domain",
@@ -68047,7 +68091,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Code.of_control",
@@ -68056,7 +68100,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.mapped_of_control",
@@ -68064,7 +68108,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Args.of_index",
@@ -68073,7 +68117,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.condition_read",
@@ -68082,7 +68126,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.EntryData.of_control",
@@ -68091,7 +68135,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Protected.tail",
@@ -68099,7 +68143,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.environment",
@@ -68108,7 +68152,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.execute",
@@ -68117,7 +68161,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.loop_execute",
@@ -68126,7 +68170,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_address_read",
@@ -68135,7 +68179,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_store_execute",
@@ -68144,7 +68188,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_stores_execute",
@@ -68153,7 +68197,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_words_execute",
@@ -68162,14 +68206,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_memory_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_alignment_read",
@@ -68178,7 +68222,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_execute",
@@ -68187,7 +68231,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_first_execute",
@@ -68196,7 +68240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_last_execute",
@@ -68205,7 +68249,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.padding_execute",
@@ -68214,7 +68258,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_locals",
@@ -68222,7 +68266,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_control",
@@ -68230,7 +68274,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_clock",
@@ -68238,7 +68282,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_execute",
@@ -68247,7 +68291,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_memory_away",
@@ -68256,7 +68300,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.body_shape",
@@ -68265,7 +68309,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailLocals.of_locals",
@@ -68274,7 +68318,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.OutMapped.of_domain",
@@ -68282,7 +68326,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailData.of_control",
@@ -68291,7 +68335,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.away_above",
@@ -68315,7 +68359,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.ordinary_byte_mapped",
@@ -68323,7 +68367,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.weaken",
@@ -68331,7 +68375,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.subrange",
@@ -68339,7 +68383,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.byte_mapped",
@@ -68347,7 +68391,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.word_mapped",
@@ -68355,7 +68399,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.mask_aligned",
@@ -68364,7 +68408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.copy_mapped",
@@ -68373,7 +68417,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.absorb_mapped",
@@ -68417,7 +68461,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -68426,7 +68470,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -68435,7 +68479,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -68444,21 +68488,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -68467,7 +68511,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -68476,7 +68520,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -68485,7 +68529,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -68493,7 +68537,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -68502,7 +68546,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -68511,7 +68555,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -68520,7 +68564,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -68528,14 +68572,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -68544,7 +68588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -68553,7 +68597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -68562,7 +68606,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -68570,7 +68614,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -68578,7 +68622,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -68586,7 +68630,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -68594,7 +68638,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -68602,7 +68646,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -68610,7 +68654,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -68619,7 +68663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -68627,7 +68671,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -68636,7 +68680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -68644,7 +68688,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -68653,7 +68697,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -68662,7 +68706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -68671,7 +68715,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -68680,7 +68724,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -68689,7 +68733,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -68698,7 +68742,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -68707,7 +68751,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -68716,7 +68760,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -68725,7 +68769,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -68734,7 +68778,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -68743,7 +68787,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -68752,7 +68796,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -68761,7 +68805,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -68770,7 +68814,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -68779,7 +68823,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -68788,7 +68832,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -68797,7 +68841,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -68806,7 +68850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -68815,7 +68859,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -68824,7 +68868,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -68833,14 +68877,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -68849,7 +68893,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -68858,7 +68902,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -68867,7 +68911,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -68876,7 +68920,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -68884,7 +68928,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -68892,7 +68936,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -68900,7 +68944,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -69022,7 +69066,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -69085,7 +69129,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -69094,7 +69138,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -69103,7 +69147,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -69112,7 +69156,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -69120,7 +69164,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -69353,7 +69397,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -69362,7 +69406,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -69371,7 +69415,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -70377,7 +70421,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -70386,7 +70430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -70395,7 +70439,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -70797,7 +70841,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -70806,7 +70850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -71610,7 +71654,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_environment",
@@ -71619,7 +71663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.execute",
@@ -73252,7 +73296,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.frame_read",
@@ -73261,14 +73305,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
@@ -74299,7 +74343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.condition_read",
@@ -74308,7 +74352,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.next_read",
@@ -74317,7 +74361,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.after_equal",
@@ -74326,7 +74370,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.comparison_arguments",
@@ -74335,7 +74379,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.step32",
@@ -74344,7 +74388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.power_mask",
@@ -74353,7 +74397,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.increment",
@@ -74362,7 +74406,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.slot_injective",
@@ -74370,7 +74414,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.visited_distinct",
@@ -74379,7 +74423,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.occupied_prefix_bound",
@@ -74388,7 +74432,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.empty_within_count",
@@ -74397,7 +74441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.usedByte_of_fields",
@@ -74406,7 +74450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_execute",
@@ -74415,7 +74459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_prefix",
@@ -74424,7 +74468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.first_empty",
@@ -74433,7 +74477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.tail32_execute",
@@ -74442,7 +74486,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_number",
@@ -74451,7 +74495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_advance",
@@ -74460,7 +74504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_order",
@@ -74469,7 +74513,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.scan32_count_bound",
@@ -74478,7 +74522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.aligned32_find",
@@ -74496,7 +74540,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.table_read",
@@ -74505,7 +74549,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.header_executes",
@@ -74514,7 +74558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.prepared_locals",
@@ -74523,7 +74567,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.initial_index_read",
@@ -74532,7 +74576,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.masked_start",
@@ -74541,7 +74585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_core",
@@ -74550,7 +74594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_execute",
@@ -74559,7 +74603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.environment",
@@ -74568,7 +74612,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_call",
@@ -74577,7 +74621,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_core",
@@ -74586,7 +74630,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.environment",
@@ -74613,7 +74657,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.packed_roundtrip",
@@ -74621,7 +74665,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_execute",
@@ -74630,7 +74674,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_execute",
@@ -74639,7 +74683,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_call",
@@ -74648,7 +74692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.rebuild_word",
@@ -74656,7 +74700,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_answer_model",
@@ -74665,7 +74709,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_absent_iff",
@@ -74674,7 +74718,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.distance_bound",
@@ -74682,7 +74726,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.slot_distance",
@@ -74690,21 +74734,21 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_sound",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_index_bound",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_exists_before",
@@ -74713,7 +74757,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_dictionary",
@@ -74722,7 +74766,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.build_invariants",
@@ -74931,7 +74975,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.projection",
@@ -74940,7 +74984,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.read_write",
@@ -74949,7 +74993,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.execute",
@@ -76727,7 +76771,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.initialization_frame",
@@ -76736,7 +76780,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.restoration_frame",
@@ -76745,7 +76789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.zero_return",
@@ -76754,7 +76798,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -76762,7 +76806,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_ne",
@@ -76770,7 +76814,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_aligned",
@@ -76778,7 +76822,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.ordinary_mapped",
@@ -76786,7 +76830,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.mapped_of_allocated",
@@ -76794,7 +76838,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.count_small",
@@ -76802,7 +76846,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.hash_byte_cell",
@@ -76810,7 +76854,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bind_other",
@@ -76819,7 +76863,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -76828,7 +76872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -76836,7 +76880,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -76844,7 +76888,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.execute",
@@ -76853,7 +76897,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_execute",
@@ -76862,7 +76906,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_clock",
@@ -76871,7 +76915,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_ffi",
@@ -76880,7 +76924,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.ext_execute",
@@ -76889,7 +76933,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_execute",
@@ -76898,7 +76942,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lastValue_filter",
@@ -76906,7 +76950,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.execute",
@@ -76915,7 +76959,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_aligned",
@@ -76924,7 +76968,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.body_shape",
@@ -76933,7 +76977,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -76942,7 +76986,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_clock",
@@ -77188,7 +77232,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.result_header",
@@ -77232,14 +77276,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.shift3",
       "axioms": [
         "propext"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Records.byte_budget",
@@ -79314,7 +79358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.unaligned_core",
@@ -79323,7 +79367,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.initialized_other",
@@ -79332,7 +79376,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.initialized_h",
@@ -79341,7 +79385,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.initialized_w",
@@ -79350,7 +79394,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.close_core",
@@ -79359,7 +79403,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.canonical",
@@ -79368,7 +79412,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.aligned_execute",
@@ -79377,7 +79421,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.unaligned_execute",
@@ -79386,7 +79430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.environment",
@@ -79422,7 +79466,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.aligned_call",
@@ -79431,7 +79475,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.body_shape",
@@ -79440,7 +79484,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.aligned_execute",
@@ -79449,7 +79493,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.other_shape",
@@ -79458,7 +79502,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.branch_shape",
@@ -79467,7 +79511,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.branch_execute",
@@ -79476,7 +79520,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.byte_read",
@@ -79485,7 +79529,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.checks_ready",
@@ -79494,7 +79538,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.alignment_read",
@@ -79503,7 +79547,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.aligned_of_data",
@@ -79512,7 +79556,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.call_of_mapped",
@@ -79529,7 +79573,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.price_small",
@@ -79537,7 +79581,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.blocks_execute",
@@ -79546,7 +79590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.block_ready",
@@ -79555,7 +79599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.block_execute",
@@ -79564,7 +79608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.byte_execute",
@@ -79573,7 +79617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.environment",
@@ -79582,7 +79626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.unaligned_call",
@@ -79591,22 +79635,22 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.caller_price20",
       "axioms": [],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.caller_price52",
       "axioms": [],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.caller_price60",
       "axioms": [],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.loop_continue",
@@ -79615,7 +79659,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.loop_return",
@@ -79624,7 +79668,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.loop_stop",
@@ -79633,7 +79677,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.actual_tail",
@@ -79642,7 +79686,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.unaligned_execute",
@@ -79651,7 +79695,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.observed_read",
@@ -79660,7 +79704,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.inputs_of_mapped",
@@ -79669,7 +79713,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.byte_body_shape",
@@ -79678,7 +79722,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.Inputs.indexed",
@@ -79687,7 +79731,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.condition8_read",
@@ -79696,7 +79740,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.condition1_read",
@@ -79705,7 +79749,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.tail_execute",
@@ -79714,7 +79758,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.word_inside",
@@ -79722,7 +79766,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.tail_inside",
@@ -79730,7 +79774,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.data_of_mapped",
@@ -79739,7 +79783,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.call_of_mapped",
@@ -79748,7 +79792,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "has-sized-call-v1.log"
+      "successful_log": "memeq-other-mapped-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.sized_chain_of_prefix",
@@ -79903,6 +79947,300 @@
         "Quot.sound"
       ],
       "successful_log": "has-sized-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.Inputs.block_next",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.Inputs.byte_next",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.block_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.byte_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.finish_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.call_of_mapped",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.skip_front",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.tail_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.blocks_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.after_locals_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.program_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.tail_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.condition8_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.condition1_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.price_step32",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned32_blocks_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_body32_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.condition32_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_word_ready",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_block32_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_blocks_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_loops_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.WordInputs.indexed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_block_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.skip_size_continuation",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_other_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.observed_word",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.word_mapped",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.word_inputs_of_mapped",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.other_call_of_mapped",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "memeq-other-mapped-v1.log"
     }
   ]
 }

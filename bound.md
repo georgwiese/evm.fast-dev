@@ -12,6 +12,13 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked complete actual rlp_put_u256 and its real declaration/assignment
+  callers: heap mark, alloc32, minimal writer, byte encoder, heap release,
+  return and all scopes. The heap global is restored exactly; encoded size is
+ 1..41, body/caller costs<=124/125 source clocks, and memory outside output/
+  temporary ranges is preserved. Domain, heap-room and buffer extents remain
+  explicit. Closure `input-u256-put-call-v1.log`1159targets, permitted axioms.
+
 - [x] Checked complete actual u256_to_be_min: <=32 bytes, <=67 body/68 caller
   source clocks, real limb calls/masked shifts/stores, temporary scope cleanup,
   and outside-buffer memory frame. Actual heap_mark/heap_release callers also

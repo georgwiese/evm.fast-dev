@@ -1,0 +1,48 @@
+import InitECandidate.Solver.MutableTable.FindOtherExecution
+import InitECandidate.Solver.MutableTable.FindCall32
+import InitECandidate.Solver.MutableTable.HeaderData
+
+namespace InitECandidate.Solver.MutableTable.Find
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- Real scoped caller of the unchanged generic-width lookup, from physical
+header and mapped byte regions, including adversarial probe collisions. -/
+theorem other_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table : BitVec 64) (p : Parameters)
+    (width : Nat) (smallWidth : width ≤ 64) (not20 : width ≠ 20) (not32 : width ≠ 32) (not52 : width ≠ 52) (cells : HeaderData source table p)
+    (keyLength : p.keyLength = BitVec.ofNat 64 (width))
+    (bits : Nat) (small : bits < 64) (capacity : p.capacity = BitVec.ofNat 64 (2 ^ bits))
+    (order : List Nat) (room : order.length < 2 ^ bits)
+    (binary : ∀ i<2^bits,usedByte source p (BitVec.ofNat 64 i)=some 0 ∨ usedByte source p (BitVec.ofNat 64 i)=some 1)
+    (covered : ∀ i<2^bits,usedByte source p (BitVec.ofNat 64 i)=some 1→i∈order)
+    (fits : ∀ i < 2 ^ bits, (p.keys + BitVec.ofNat 64 i * p.stride).toNat + width < 2 ^ 64)
+    (mapped : ∀ i < 2 ^ bits, ∀ offset < width, source.memaddrs (panByteAlignHOL (width := 64)
+      (WitnessRadix.byteAddress (p.keys + BitVec.ofNat 64 i * p.stride) offset)))
+    (queryFits : p.key.toNat + width < 2 ^ 64)
+    (queryMapped : ∀ offset < width, source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress p.key offset)))
+    (hashCode : source.code.lookup (ofString "htab_hash") = some (Hash.formals, Hash.body, .one))
+    (memeqCode : source.code.lookup (ofString "memeq") = some (WitnessRadix.Memeq32.formals, WitnessRadix.Memeq32.body, .one))
+    (findCode : source.code.lookup (ofString "htab_find_slot") = some (formals, body, .one))
+    (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) expressions = some [.val (.word table), .val (.word p.key)])
+    (enough : otherProbePrice width * order.length + (MemeqByteRuntime.price width + 2) ≤ source.clock) :
+    ∃ paid value, paid ≤ otherProbePrice width * order.length + (MemeqByteRuntime.price width + 2) ∧ value.toNat ≤ p.capacity.toNat ∧
+      evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "htab_find_slot") expressions continuation) =
+        (let output := evaluateHOLFiniteState (bind {source with clock := source.clock - paid} name value) continuation
+         (output.1, restore source name output.2)) := by
+  obtain ⟨callee, called, tLocal, keyLocal⟩ := environment source.code.lookup table p.key findCode
+  let entry := callEntryStateHOLFinite source callee
+  have entryCells := HeaderData.with_locals source entry table p cells rfl rfl tLocal keyLocal
+  obtain ⟨paid, value, bound, valueBound, result, frame⟩ := other_find entry table p width smallWidth not20 not32 not52 entryCells keyLength bits small capacity order room
+    binary covered fits mapped queryFits queryMapped hashCode memeqCode
+    (by change otherProbePrice width * order.length + (MemeqByteRuntime.price width + 1) ≤ source.clock - 1; omega)
+  let post := (evaluateHOLFiniteState entry body).2
+  have run : evaluateHOLFiniteState entry body = (some (.returned (.val (.word value))), post) := Prod.ext result rfl
+  have callerFrame : emptyLocalsHOLFinite post = emptyLocalsHOLFinite {source with clock := source.clock - 1 - paid} := frame
+  have actual := Input.CallNormal.pure_return_execute source post name (ofString "htab_find_slot") expressions _ body continuation callee value paid args called (by omega) run callerFrame
+  have subtract : source.clock - 1 - paid = source.clock - (paid + 1) := by omega
+  exact ⟨paid + 1, value, by omega, valueBound, by simpa only [subtract] using actual⟩
+
+end InitECandidate.Solver.MutableTable.Find
+
+#print axioms InitECandidate.Solver.MutableTable.Find.other_call

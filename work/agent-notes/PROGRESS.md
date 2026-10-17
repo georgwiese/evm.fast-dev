@@ -2384,3 +2384,17 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   Existing byte-frame lemmas were reused; an uncommitted duplicate module was
   removed. Allocator/capacity entry and global reachable premises, map/source
   refinement, compiler target bound and finite certificate remain open.
+
+2026-10-17: entire literal candidate constructor and actual caller
+
+- Capacity selection, actual htab_new and array preparation, complete real
+  record hashing/copy/stores, whole radix helper, all scopes/table return and
+  real caller/callee/code setup now compose to actual lookup representation.
+- Exact heap-global update and caller locals restore; body bounds1378*N+47
+  nodes(max1024),10858*N+47 code(max65536), call adds one source clock.
+- Entry facts remain decoded records, actual code/globals/domain, ordinary
+  allocated buffers before records and conservative heap-room inequality.
+  Need reachable decoding/allocation proofs, original fixed-source map relation,
+  whole-guest/gas/query/compiler/target bound and finite fixed certificate.
+- Successful closure witness-radix-constructor-call-v1.log,915 targets, allowed
+  axioms only. Incremental policy passes; claim infinity; no full verification.

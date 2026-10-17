@@ -12,6 +12,17 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked public-memory/event agreement for actual Keccak permutation
+  calls, all17 aligned/unaligned XOR lanes, complete block absorber/caller,
+  and arbitrary full-block loops. Required helper code entries may agree
+  while unrelated code/private table words differ. Exact array reads and
+  tail-first byte-array writes, including failed stores, are related.
+  Paired full-block loops preserve selected public words and identical FFI
+  events with exactly20 source clocks/block in each run. Padding/output/full
+  hash and whole original/radix map-context refinement remain open. Successful
+  keccak256-paired-loop-v1.log699targets, permitted axioms; index4567/7468,
+  policy61432entries/2253201027bytes. Infinity, no finite K/full verification.
+
 - [x] Checked original full witness lookup directly from final Built/History/
   Records, deriving all mapped record-cell premises from actual record values.
   It returns exactly the last matching slice in the radix API's tuple format,

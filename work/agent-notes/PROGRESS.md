@@ -3866,3 +3866,43 @@ Original constructor-history-to-lookup checkpoint (2026-10-17):
   apply. Candidate Constructor.call_execute is an ignored-result template.
 - Remaining global input/gas/state/Q/heap and compiler/target finite certificate
   work remains; claim stays infinity. Continue original task autonomously.
+
+Keccak public-buffer/event agreement checkpoint (2026-10-17):
+- ByteArrayAgreement: exact byte-array read congruence on requested bytes,
+  word8 byte-read congruence on aligned cells, and arbitrary-region agreement
+  preserved by identical tail-first byte-array writes, including failed-store
+  fallback. No full-memory/code/global/local/clock equality required.
+- KeccakAgreement retains the actual readArray through real permutation ABI,
+  pairs two actual calls from state-buffer cell agreement, and proves exact
+  post-memory region/FFI agreement using fixed sourceOracle. Unrelated code
+  and private memory may differ.
+- KeccakAbsorbAgreement/LanesAgreement: actual aligned load and eight expanded
+  LE byte loads agree from their real read cells. XOR lane writes and all17
+  real stateLanes preserve arbitrary-region agreement containing those reads.
+  Includes arbitrary alignments, no cryptographic uniqueness assumption.
+- KeccakAbsorbRead strengthens complete body execution with explicit actual
+  prepared-state input bytes. KeccakAbsorbPaired/PairedCall combine common
+  actual input bytes with real permutation, scope/return and caller ABI.
+  Public memory and observable FFI events agree. Caller locals restored;
+  each actual block call costs exactly19 source clocks.
+- Keccak256PairedBlock/PairedLoop: actual full-block body/index increment and
+  arbitrary full-block while preserve chosen public memory and FFI agreement.
+  Per-run own hashControl/clock/locals/outside-state frames;20clocks/block.
+  Required helper code entries explicit; full source.code equality NOT assumed.
+- Successful logs bytearray-agreement-v3.log594targets,keccak-agreement-v3.log
+  679,keccak-absorb-read-v2.log678,keccak-absorb-paired-v4.log682,
+  keccak-absorb-paired-call-v2.log685,keccak256-paired-block-v1.log697,
+  keccak256-paired-loop-v1.log699. All final transitive axioms allowed.
+  Index4567modules/7468printed facts. Policy61432entries/2253201027bytes,
+  infinity; no isolated full verification or finite K. Account37%,0credits.
+- Failed draft logs are NOT evidence: fixed numeral1 versus1#64 instances
+  in raw recursive array definitions, dependent decidable-domain rewrites by
+  pointwise byte-reader equality, beta/association normalization of read facts,
+  and excessive defeq unfolding of target memory. Explicit projection theorem
+  with simp-only scopes and local maxHeartbeats1M makes two-target ABI proof
+  check. A mixed failed log was rejected by index script before writes;
+  only successful logs above were subsequently indexed.
+- Next: deterministic memcpy/memzero/padding/output memory congruence, then
+  complete paired keccak256 body/caller so original/radix observed digests and
+  events can be identified. Full map/context/compiler/target/global resource
+  bounds and finite certificate remain open. Continue; do not stop here.

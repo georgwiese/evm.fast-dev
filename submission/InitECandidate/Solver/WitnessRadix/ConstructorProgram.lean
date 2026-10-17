@@ -21,6 +21,23 @@ def stores : ProgHOL 64 :=
 def afterHash : ProgHOL 64 := .seq (.call (some (none, none)) (ofString "memcpy") copyArguments) stores
 def recordBody : ProgHOL 64 := .seq (.call (some (none, none)) (ofString "keccak256") hashArguments) afterHash
 def condition : ExpHOL 64 := .cmp .lower (localVar "i") (localVar "n")
+def capacityLoop : ProgHOL 64 := (BuildProgram.loops body)[0]?.getD .skip
+def afterRecords : ProgHOL 64 :=
+  .seq (.call (some (none, none)) (ofString "solver_radix_index") [localVar "t", localVar "n"])
+    (.return (localVar "t"))
+def tableTail : ProgHOL 64 :=
+  .dec (ofString "keys") .one (.load .one (addConst (localVar "t") 32#64))
+    (.dec (ofString "vals") .one (.load .one (addConst (localVar "t") 40#64))
+      (.dec (ofString "order") .one (.load .one (addConst (localVar "t") 56#64))
+        (.dec (ofString "i") .one (.const 0#64) (.seq recordLoop afterRecords))))
+
+theorem body_shape : body = .dec (ofString "cap") .one (.const 4#64)
+    (.seq capacityLoop (.decCall (ofString "t") .one (ofString "htab_new")
+      [.const 32#64, localVar "cap"] tableTail)) := by
+  simp only [body, capacityLoop, recordLoop, tableTail, afterRecords, BuildProgram.loops,
+    RawProgram.guestFn_nodedb_build, progToHOL, expToHOL, shapeToHOL, List.map_cons,
+    List.map_nil, List.nil_append, List.cons_append, List.append_nil, List.getElem?_cons_zero,
+    List.getElem?_cons_succ, Option.getD_some, Option.map_none, localVar, addConst]
 
 theorem loop_shape : recordLoop = .while condition recordBody := by
   simp only [recordLoop, body, BuildProgram.loops, RawProgram.guestFn_nodedb_build,
@@ -32,3 +49,4 @@ theorem loop_shape : recordLoop = .while condition recordBody := by
 end InitECandidate.Solver.WitnessRadix.Constructor
 
 #print axioms InitECandidate.Solver.WitnessRadix.Constructor.loop_shape
+#print axioms InitECandidate.Solver.WitnessRadix.Constructor.body_shape

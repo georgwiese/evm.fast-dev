@@ -9046,6 +9046,34 @@
       "sha256": "8432933b0d1c9678af8b2bc8ee7ebcdd30706bc226b5ce36a74f1dac1bad44f2"
     },
     {
+      "path": "submission/InitECandidate/Solver/MutableTable/FindChain32.lean",
+      "sha256": "c939265e3d3878fc0474f033a408ef66e0c464c6443bebce2b61498e04feba8b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/FindChainBuild.lean",
+      "sha256": "acadda97f33b4caf83346d1819e56d0789a49ac6c3e533e59a803a3910d51a17"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/FindProgram.lean",
+      "sha256": "e9bfcea907c02eb581f2c2417cc56c58b8fbad409c355451c643fe009340265f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/FindStep32.lean",
+      "sha256": "cf15033e4562f9231148b10dde62c1ba68688313bed4feb8e8842dac93fc1112"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/FindTail32.lean",
+      "sha256": "26815f089aad937efa63d912208e3bcedfcc5916d9f7a56e4cfaaff0d6675d70"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/MaskedPath.lean",
+      "sha256": "f08e11f35eca6e1cdfe90026366962d59602b10683dc1667a1bbef7c0b5e24b7"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/Probe.lean",
+      "sha256": "4b74defcc9062373e55407037adf188640e3b5140bc9fd76980079f1f4a2d802"
+    },
+    {
       "path": "submission/InitECandidate/Solver/NopBound.lean",
       "sha256": "d37525b350f44a182760638aff49a6cdcc54507c1fcf7804757eb5f7ac4baee2"
     },
@@ -77377,6 +77405,194 @@
         "Quot.sound"
       ],
       "successful_log": "gas-block-accounting-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.condition_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.next_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.after_equal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.comparison_arguments",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.step32",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Probe.power_mask",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Probe.increment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Probe.slot_injective",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Probe.visited_distinct",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Probe.occupied_prefix_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Probe.empty_within_count",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.usedByte_of_fields",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_prefix",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.first_empty",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.tail32_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.path_number",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.path_advance",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_order",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.scan32_count_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-masked-path-v2.log"
     }
   ]
 }

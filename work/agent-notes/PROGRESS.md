@@ -1961,3 +1961,25 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   full verifier, external submission or change to fixed files/Solution/claim.
 - Continuing with iterative construction's actual memory/agenda invariant and
   its relationship to the original witness maps, then global composition.
+
+### 2026-10-17 — actual construction copy/count and word-memory scatter
+
+- BuildProgram extracts the literal helper copy loop; BuildCopy/Rows/Loop/Post
+  prove its actual execution, one source clock per ordinal, exact memory
+  poststate, copied rows, outside-memory frame, final index and preserved other
+  locals. Hypotheses include mapped arrays, separated source/destination words,
+  no-wrap counter/row ranges and enough source clock, not assumed execution.
+- CountProgram/Digit/Body/Step/Post/Loop prove the actual count pass from ordinal
+  array/key-byte reads. It counts precisely the zero-bit subsequence, pays one
+  source clock per ordinal, preserves every other local, and preserves every
+  nonlocal field except clock. Bindings supplies reusable local restoration.
+- ScatterProgram extracts the literal scatter loop and its bucket-store bodies.
+  WordScatter proves exact stable partition in actual HOL word memory: the
+  output memory is the two ordered filtered block writes, with a complete
+  frame, under cross-bucket address separation. Whole actual scatter-loop
+  execution, outer iterative agenda and constructed graph relation remain open.
+- Successful closures count-copy-v1 (616 targets), scatter-program-v1 (580),
+  word-scatter-v1 (593). Only permitted axioms in main theorem prints. Evidence
+  index: 3,892 source hashes / 6,034 printed facts. Counts are not progress
+  percentages. No finite claim, compiled-clock/whole-guest refinement or final
+  verification; Solution/claim/fixed source/dependencies remain unchanged.

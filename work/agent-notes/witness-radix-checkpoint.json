@@ -197,6 +197,66 @@
     "submission/InitECandidate/Solver/WitnessRadix/QueryMemory.lean": {
       "bytes": 5128,
       "sha256": "9e81fb2b22582db92aa72a738c07ab1db079de689e937252cd55d2cee9de61ee"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Bindings.lean": {
+      "bytes": 2092,
+      "sha256": "138afbe45d183bb6026e6dfb230c87015997de7d7f72bb99b0667f9bdc1c23d8"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildCopy.lean": {
+      "bytes": 4297,
+      "sha256": "ea3b733e5ed95002c342d9c0e850151bab087de47216408b1c2c8d979c6d3974"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildCopyLoop.lean": {
+      "bytes": 7015,
+      "sha256": "a01a719d99e2879778ab87a21f987e04c90272a95e90d7f8b4e73ed724fda0d8"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildCopyPost.lean": {
+      "bytes": 5104,
+      "sha256": "2b2579fb9899edcf5271b119a9145cd100f339e13e84a158be90088ba7b94c37"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildProgram.lean": {
+      "bytes": 2168,
+      "sha256": "210bfa4cdf67cce7db8c4823270dec344620a84aef9ebd54fb540d1e55a6a4ba"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildRows.lean": {
+      "bytes": 2657,
+      "sha256": "4ba47cab038da8124b845144844ce914d8337fb2519f1907ae75d8fb113e813d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CountBody.lean": {
+      "bytes": 6554,
+      "sha256": "4687343a8cd3b3d6da04c17878f83bc76eb963229e7afa5bd938c6e628c85e2f"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CountDigit.lean": {
+      "bytes": 2806,
+      "sha256": "58e86bca1bed999ac4d6a2059be1b35a0359ca74d047dce7efbf3a640901ac95"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CountLoop.lean": {
+      "bytes": 8591,
+      "sha256": "fbc6534ea81b48f7b065ba802901885529c53bfd40d42b21770270e003104a8d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CountPost.lean": {
+      "bytes": 2449,
+      "sha256": "ffc5046eaf036608be7206ee77b383638dd93951d1da0268d48ab73fe7f0a97e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CountProgram.lean": {
+      "bytes": 2197,
+      "sha256": "94e65b7042d2f75028f21ab37f91ee5cefc38b938baefdf39fa9c903f01ff2a4"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/CountStep.lean": {
+      "bytes": 4251,
+      "sha256": "cc8c3220cc5343faed0a34c5c73ffb97e5089d11ee6a8b6227ca42d2d67fbcfd"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterProgram.lean": {
+      "bytes": 2161,
+      "sha256": "66ff6c29fa3d50da3accc2bcff164cad8eafffbac70bfa3fbe3a0157018bde18"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/StoreWord.lean": {
+      "bytes": 2299,
+      "sha256": "751b89698479201e036a489982de317a96f8cc9901949acc630acdac40624387"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/WordScatter.lean": {
+      "bytes": 4239,
+      "sha256": "23a4633325a29a471f4a5f171130b8ce4104d3e07ae1f10171418c5aef018314"
     }
   },
   "development_artifacts": {
@@ -225,7 +285,10 @@
     "witness-radix-program-v3.log",
     "witness-radix-query-empty-v5.log",
     "witness-radix-graph-v3.log",
-    "witness-radix-query-function-v3.log"
+    "witness-radix-query-function-v3.log",
+    "witness-radix-count-copy-v1.log",
+    "witness-radix-scatter-program-v1.log",
+    "witness-radix-word-scatter-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -364,5 +427,10 @@
     "source_clock_bound": 262,
     "premises": "actual HOL tree-memory representation, header/ABI/memeq code entry, byte view, no-wrap query range, little endian, sufficient source clock",
     "target_refinement": false
+  },
+  "actual_construction_passes": {
+    "copy": "literal loop, exact memory/counters/clock poststate, copied rows and outside-memory frame",
+    "count": "literal loop, exact zero-bit count, one source clock per ordinal, all other locals and nonlocal fields preserved",
+    "scatter": "literal AST extracted; actual word-memory stable scatter equals two block writes; whole literal loop pending"
   }
 }

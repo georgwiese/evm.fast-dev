@@ -4585,3 +4585,17 @@ Whole paired witness constructor checkpoint (2026-10-17):
 - No full-program finite bound/certificate/full verification has been achieved.
   Prior conversational45% concerned the wrong plan and is withdrawn as an
   estimate for the corrected objective. Account last43%, no reset credits.
+
+
+### 2026-10-17 — cleanup added to corrected plan
+
+- User explicitly requested a cleanup item to remove unneeded code, including
+  the replacement Pancake implementation, and delegated its timing.
+- Added mandatory cleanup after the original-program dependency inventory,
+  with a final sweep before final validation. Remove branch-added replacement
+  code, replacement-only equivalence proofs and associated generators/test
+  harnesses/candidate artifacts. Preserve/extract shared helpers needed by the
+  unchanged program's proofs; do not delete whole folders based on their names.
+- Update imports/build metadata/evidence indexes, check retained dependencies,
+  and confirm baseline program/artifacts unchanged. This supersedes earlier
+  preserve-all guidance; history remains available in Git. No deletion yet.

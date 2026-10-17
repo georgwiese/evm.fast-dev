@@ -17,19 +17,19 @@ theorem call_normal_first {F : Type} (source post : PanSemStateFiniteExact 64 F)
     (cells : ∀ position<count,source.memory (pointer+BitVec.ofNat 64 (8*position))=.word (offsets position))
     (enough : count+2≤source.clock)
     (run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "ssz_check_offsets") expressions)=(none,post)) :
-    offsets 0=fixed ∧ ∃ paid,paid≤count+2 ∧ post={source with clock:=source.clock-paid} := by
+    offsets 0=fixed ∧ (∀ position<count,ValidAt fixed total offsets position) ∧ ∃ paid,paid≤count+2 ∧ post={source with clock:=source.clock-paid} := by
   obtain ⟨result,target,paid,execution,bound,frame,outcome⟩:=call_execute source expressions pointer fixed total offsets count positive small
     args code failCode exceptionShape mapped cells enough
   have equal:=run.symm.trans execution
   have resultEqual : none=result:=congrArg Prod.fst equal
   have postEqual : post=target:=congrArg Prod.snd equal
   rcases outcome with normal|fault
-  · refine ⟨normal.2.1,paid,bound,?_⟩
+  · refine ⟨normal.2.1,normal.2.2.2,paid,bound,?_⟩
     rw [postEqual]
     have full:=congrArg (fun state : PanSemStateFiniteExact 64 F=>{state with locals:=target.locals}) frame
     have targetEq : target={{source with clock:=source.clock-paid} with locals:=target.locals} := by
       simpa only [emptyLocalsHOLFinite] using full
-    rw [normal.2.2] at targetEq
+    rw [normal.2.2.1] at targetEq
     exact targetEq
   · obtain ⟨error,allowed,exception⟩:=fault
     rw [exception] at resultEqual

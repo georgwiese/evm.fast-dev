@@ -17,7 +17,7 @@ theorem normal_first {F : Type} (source post : PanSemStateFiniteExact 64 F) (poi
     (lookup : source.code.lookup (ofString "ssz_fail")=some (SszFail.formals,SszFail.body,.one))
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one) (enough : count+1≤source.clock)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ values 0=fixed := by
+    value=.val (.word 0#64) ∧ values 0=fixed ∧ ∀ position<count,ValidAt fixed total values position := by
   obtain ⟨result,target,paid,execution,bound,frame,outcome⟩:=any_execute source pointer fixed total values count positive small
     pointerLocal countLocal fixedLocal totalLocal mapped cells lookup exceptionShape enough
   have equal:=run.symm.trans execution
@@ -25,7 +25,7 @@ theorem normal_first {F : Type} (source post : PanSemStateFiniteExact 64 F) (poi
   rcases outcome with normal|fault
   · have valueEqual:=resultEqual.trans normal.1
     cases valueEqual
-    exact ⟨rfl,normal.2⟩
+    exact ⟨rfl,normal.2.1,normal.2.2⟩
   · obtain ⟨code,allowed,exception⟩:=fault
     rw [exception] at resultEqual
     cases resultEqual

@@ -12,6 +12,16 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked both actual saturating-add branches and its unconditional lower
+  bound on the first argument. Actual up-front value-fee computation/charge
+  establishes used-counter credit>=11300 even for saturated memory costs;
+  unaffordable fees raise before continuation. Prefixes are literal subtrees
+  of CALL/CALLCODE; DELEGATECALL/STATICCALL literally supply a zero value and
+  have zero stipend. Success `gas-value-fee-sites-v1.log`1171targets, permitted
+  axioms; index4459/7220. Access<=3000, actual input/cell/code/clock and natural
+  counter no-wrap premises remain explicit. Still connect every intervening
+  helper and successful child return to the full frame/block invariant.
+
 - [x] Checked complete actual call-gas calculator in the zero memory/extra-cost
   mode and its real five-argument/two-word caller. The requested gas is any
   64-bit word; actual 63/64 cap/clamp bounds the debit, stipend is0or2300.
@@ -161,7 +171,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [ ] Complete the capacity-growth path and any other local summaries **actually required by the chosen global proof**; prove their entry premises at every use.
 - [ ] Connect bounded execution through the actual compiler artifacts, bootstrap, oracle/FFI, and matching-result relation.
 - [ ] Prove a literal finite K below the score cap; make `submission.K`, `claimedScore`, and `claim.json` agree; prove admission and the fixed certificate with only permitted axioms.
-- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,320 full-package entries; 2,252,659,478 bytes); this is not isolated verification or a final overlay check.
+- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,323 full-package entries; 2,252,675,043 bytes); this is not isolated verification or a final overlay check.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 
 **Latest checked connection:** `QueryExecution.lookup_built` proves the complete actual candidate lookup from concrete HOL memory/header/ABI/code premises: exact last-record-wins result, at most **262 source clocks**, and preserved nonlocal state. Successful closure: `witness-radix-query-function-v3.log`; only permitted axioms. Construction must still establish the represented-memory premise, and source clocks are not target transitions. The actual fixed `memeq` 32-byte aligned and unaligned paths, actual caller restoration, and real code-entry argument environment now check with only permitted axioms (`witness-radix-memeq-environment-v4.log`). The comparison consumes at most four source clocks plus one call clock. The candidate compiler reports 905,572 code bytes, 4,615 bitmap words and a static stack bound of 538 words (`witness-radix-static-depth-v1.log`); these are development compiler results, not a target certificate.

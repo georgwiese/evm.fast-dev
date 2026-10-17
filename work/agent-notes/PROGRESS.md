@@ -3330,3 +3330,36 @@ Actual call-gas calculator and forward-prefix checkpoint (2026-10-17):
   successful-child spill repayment prefix and protected gas cells through its
   log/delete-set merge. Then full call-tree/signed-state/block conservation and
   joint table/heap-Q work; root initialization/map/compiler/target still open.
+
+Actual up-front value-fee funding checkpoint (2026-10-17):
+- SaturatingAdd complete actual add_sat, both overflow/exact branches and real
+  caller. Result>=first argument unconditionally, so access+11300 with
+  access<=3000 gives actual fee>=11300 even if memory cost saturates.
+- ValueFee exact two-input add_sat arguments and actual lexical need/charge
+  prefix. Successful real charge retains canonical caller memory/clock and
+  credits used>=11300, hence funds2300. Actual unaffordable fee raises EvmErr4
+  before continuation with unchanged memory/control. Both calls included,
+  exactly2Pan clocks. Source local/pool/code and natural no-wrap premises
+  explicit; arbitrary following continuation and saved need restoration checked.
+- ValueFeeSites exact prefixes in CALL/CALLCODE and actual zero value supplied
+  by DELEGATECALL/STATICCALL, with zero-stipend equation. This addresses the
+  source of the funded-stipend premise, though full intervening-helper/global
+  frame and successful-child invariants still need assembly.
+- Success gas-value-fee-sites-v1.log1171targets, only permitted axioms,
+ 7.39s wall, max child RSS2133244KiB. Fixed expected-type recursion on unsigned
+  lower-bound coercion and literal charge/entered wrappers for rewriting;
+  failed logs not evidence. Index4459/7220; policy61323/2252675043bytes,
+  infinity claim, no full verifier. Account29%, credits0; resources safe.
+- New conditional spending observation: nested map merges must respect each
+  root's regular cap and actual63/64 forwarding, rather than multiplying all
+  global gas by depth1024. For recurrence g'=(g-100)-(g-100)//64 and hypothetical
+ 5000gas per produced delete key, a single chain max L*floor(g_L/5000)^2 is
+ 420268032 at L32,3624keys for30M root, and131349632 at L32,2026keys for
+ 16777216 root. This is exact exploratory arithmetic, not a runtime/forest/
+  table-work bound. Actual fee/child/frame/source-root premises remain open.
+  Next prove the uniform decay algebra, then a small reproducible conditional
+  nested-resource pilot before scaling remaining global/map proof work.
+- Main open: successful child spill repayment and log/delete merge frames,
+  complete parent/child/initialization trace, signed state-debt/refund ledger
+  and block counters (ordinary refund is not deducted from BO_GAS_USED), joint
+  table/heap-Q work, root decoded entry, original-map/target/certificate.

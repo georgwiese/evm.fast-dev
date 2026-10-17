@@ -15,19 +15,20 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b 
     ∃ next q r paid,paid≤64 ∧
       next.locals=source.locals.update (ofString name,pairValue q r) ∧
       next.clock=source.clock-1-paid ∧ frozen next=frozen source ∧
+      (b.toNat≤2^63→q.toNat=a.toNat/b.toNat ∧ r.toNat=a.toNat%b.toNat) ∧
       evaluateHOLFiniteState source (.decCall (ofString name) returnShape (ofString "udivmod") expressions continuation)=
         let output:=evaluateHOLFiniteState next continuation
         (output.1,restore source name output.2) := by
   classical
   obtain ⟨callee,called,aLocal,bLocal⟩:=environment source.code.lookup a b code
   let entry:=callEntryStateHOLFinite source callee
-  obtain ⟨target,q,r,paid,bound,bodyRun,clock,frame⟩:=body_execute_nonzero entry a b aLocal bLocal nonzero (by change 64≤source.clock-1; omega)
+  obtain ⟨target,q,r,paid,bound,bodyRun,clock,frame,arithmetic⟩:=body_execute_nonzero entry a b aLocal bLocal nonzero (by change 64≤source.clock-1; omega)
   have shapePass : (shapeEqHOL (shapeOfHOLExact (pairValue q r)) returnShape && shapeEqHOL (shapeOfHOLExact (pairValue q r)) returnShape)=true := by
     simp [pairValue,returnShape,shapeOfHOLExact,shapeEqHOL_eq_true]
   have actual:=CallNormal.return_execute source target name returnShape (ofString "udivmod") expressions (values a b) body continuation callee returnShape
     (pairValue q r) args called (by omega) bodyRun shapePass
   let next:=CallNormal.continuationEntry source target name (pairValue q r)
-  refine ⟨next,q,r,paid,bound,rfl,clock,?_,actual⟩
+  refine ⟨next,q,r,paid,bound,rfl,clock,?_,arithmetic,actual⟩
   change frozen target=frozen source
   exact frame
 

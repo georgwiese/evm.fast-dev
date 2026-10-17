@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.UDivMod.Frame
+import InitECandidate.Solver.Input.UDivMod.ArithmeticInvariant
 
 namespace InitECandidate.Solver.Input.UDivMod
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -24,14 +25,15 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b 
       target.locals.lookup (ofString "i")=some (.val (.word 0#64)) ∧
       target.locals.lookup (ofString "q")=some (.val (.word finalQ)) ∧
       target.locals.lookup (ofString "r")=some (.val (.word finalR)) ∧
-      (∀ name : MlS,name≠ofString "i"→name≠ofString "q"→name≠ofString "r"→target.locals.lookup name=source.locals.lookup name) := by
+      (∀ name : MlS,name≠ofString "i"→name≠ofString "q"→name≠ofString "r"→target.locals.lookup name=source.locals.lookup name) ∧
+      (∀ bSmall : b.toNat≤2^63,Arithmetic a b q r index→Arithmetic a b finalQ finalR 0) := by
   classical
   induction index generalizing source q r with
   | zero=>
     have test : evalHOLFinite source loopTest=some (.val (.word 0#64)) := by
       rw [finite_eval]
       simpa only [eval,Nat.lt_irrefl,↓reduceIte] using loop_test source 0 (by decide) iLocal
-    refine ⟨source,q,r,?_,by simp, iLocal,qLocal,rLocal,by intros; rfl⟩
+    refine ⟨source,q,r,?_,by simp, iLocal,qLocal,rLocal,(by intros; rfl),(by intro bSmall invariant; exact invariant)⟩
     rw [loop,evaluateHOLFiniteState_while_total,test]
     simp
   | succ index ih=>
@@ -45,14 +47,14 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b 
       (step_other entry a b q r (index+1) (ofString "a") (by decide) (by decide) (by decide)).trans aLocal
     have nextB : next.locals.lookup (ofString "b")=some (.val (.word b)) :=
       (step_other entry a b q r (index+1) (ofString "b") (by decide) (by decide) (by decide)).trans bLocal
-    obtain ⟨target,finalQ,finalR,tailRun,targetState,finalI,finalQRead,finalRRead,others⟩:=
+    obtain ⟨target,finalQ,finalR,tailRun,targetState,finalI,finalQRead,finalRRead,others,arithmetic⟩:=
       ih next (nextQ a b q r (index+1)) (nextR a b r (index+1)) (by omega) (by omega) nextA nextB fields.2.1 fields.2.2 (by simpa using fields.1)
     have targetClock : target.clock=next.clock-index:=congrArg PanSemStateFiniteExact.clock targetState
     have targetClockBound : target.clock≤source.clock-1 := by omega
     have test : evalHOLFinite source loopTest=some (.val (.word 1#64)) := by
       rw [finite_eval]
       simpa only [eval,show 0<index+1 from by omega,↓reduceIte] using loop_test source (index+1) small iLocal
-    refine ⟨target,finalQ,finalR,?_,?_,finalI,finalQRead,finalRRead,?_⟩
+    refine ⟨target,finalQ,finalR,?_,?_,finalI,finalQRead,finalRRead,?_,?_⟩
     · rw [loop,evaluateHOLFiniteState_while_total,test]
       simp only []
       simp only [if_neg (show source.clock≠0 by omega)]
@@ -68,6 +70,8 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b 
       simpa only [subtract] using targetState
     · intro name notI notQ notR
       exact (others name notI notQ notR).trans (step_other entry a b q r (index+1) name notI notQ notR)
+    · intro bSmall invariant
+      exact arithmetic bSmall (arithmetic_step a b q r index (by omega) bSmall invariant)
 
 end InitECandidate.Solver.Input.UDivMod
 

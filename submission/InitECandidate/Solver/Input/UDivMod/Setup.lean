@@ -11,7 +11,8 @@ theorem setup_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b
     (aLocal : source.locals.lookup (ofString "a")=some (.val (.word a)))
     (bLocal : source.locals.lookup (ofString "b")=some (.val (.word b))) (enough : 64≤source.clock) :
     ∃ target q r,evaluateHOLFiniteState source setupProgram=(some (.returned (pairValue q r)),target) ∧
-      target.clock=source.clock-64 ∧ frozen target=frozen source := by
+      target.clock=source.clock-64 ∧ frozen target=frozen source ∧
+      (∀ bSmall : b.toNat≤2^63,0<b.toNat→q.toNat=a.toNat/b.toNat ∧ r.toNat=a.toNat%b.toNat) := by
   classical
   let q0:=bind source "q" 0#64
   let r0:=bind q0 "r" 0#64
@@ -27,7 +28,7 @@ theorem setup_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b
   have rEntry : entry.locals.lookup (ofString "r")=some (.val (.word 0#64)) :=
     (bind_lookup_other r0 "i" "r" _ (by decide)).trans (bind_lookup_same q0 "r" _)
   have iEntry : entry.locals.lookup (ofString "i")=some (.val (.word 64#64)) := bind_lookup_same r0 "i" _
-  obtain ⟨loopPost,q,r,loopRun,loopEq,finalI,finalQ,finalR,others⟩:=loop_execute entry a b 0#64 0#64 64 (by decide) enough aEntry bEntry qEntry rEntry iEntry
+  obtain ⟨loopPost,q,r,loopRun,loopEq,finalI,finalQ,finalR,others,arithmetic⟩:=loop_execute entry a b 0#64 0#64 64 (by decide) enough aEntry bEntry qEntry rEntry iEntry
   have loopClock : loopPost.clock=source.clock-64:=congrArg PanSemStateFiniteExact.clock loopEq
   have returnRun : evaluateHOLFiniteState loopPost returnPair=(some (.returned (pairValue q r)),emptyLocalsHOLFinite loopPost) := by
     simp [returnPair,pairValue,evaluateHOLFiniteState_return,evalHOLExact,evalListHOLExact,toExact,localVar,finalQ,finalR,
@@ -42,10 +43,12 @@ theorem setup_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b
   have qRun:=ScalarScope.declare_execute source (restore q0 "r" (restore r0 "i" (emptyLocalsHOLFinite loopPost))) "q" (.const 0#64) 0#64
     (.dec (ofString "r") .one (.const 0#64) (.dec (ofString "i") .one (.const 64#64) initializedBody))
     (some (.returned (pairValue q r))) rfl rRun
-  refine ⟨_,q,r,qRun,loopClock,?_⟩
-  change frozen loopPost=frozen source
-  rw [loopEq]
-  rfl
+  refine ⟨_,q,r,qRun,loopClock,?_,?_⟩
+  · change frozen loopPost=frozen source
+    rw [loopEq]
+    rfl
+  · intro bSmall positive
+    exact arithmetic_finish a b q r (arithmetic bSmall (arithmetic_initial a b positive))
 
 end InitECandidate.Solver.Input.UDivMod
 

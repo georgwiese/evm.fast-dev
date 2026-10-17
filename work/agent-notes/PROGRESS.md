@@ -2937,3 +2937,23 @@ Global resource spending-gate revisit (2026-10-17):
   fromrealUDivMod64-loop (neededactualcounts notjustshape/cost), withdrawalRLP
   length/cap thenjointgas/mapmultiplicity/heap Q. RootwitnessSSZ connectionstill
   open,butavoidblindlyscalinglocallemmaswhileglobalauditremainsincomplete.
+
+Actual division math/withdrawal count field checkpoint (2026-10-17):
+- UDivMod.ArithmeticBits exactinputbit,toNatshifted=2r+bit (r<2^63), quotient
+  bitOR=naturaladditionfromalignment, low-input-remainder split. ArithmeticInvariant
+  r<b,q%2^i=0,b*q+r*2^i+a%2^i=a, initiali64, actualnextQ/nextR preservation for
+  b<=2^63 andfinalquot/remnaturaldivision. Ring/nlinarithusepermittedaxioms.
+- StrengthenedactualLoop,Setup,Built,Call threadingconditionalarithmeticproof;
+  bnonzero bodyreturnsrealq/r; forsmallb equalitytoa/b,a%b. No semanticchange.
+  FixedList.Normal/Caller nowconditionalcount=length/size andlength%size=0 on
+  normalreturn. AllactualSSZsizes32,44,68,76,116,184,192 satisfybound.
+- PayloadWithdrawalNumbers actualvalidatedoffset2<=3, nowordsubwrap, count raw
+  (le32input590-le32input570)/44 <=encodedExtent/44, its64bitwordexact.
+  WithdrawalNormal retainsrealquot/mod44 facts. RemainingProgram/Execute actual
+  finalcountcell56; TailNormal andAfterExtra/Allocated/Body/Caller carryexact
+  countfieldrawquotient, whilekeepingrealgasfield88/copiedbytes/clockframes.
+- Successfuljoint input-payload-count-field-v2.log1386targets allowedaxioms.
+  NEXT actualRLP_be_len<=8 rounds purestateframe, actualword_encoded_len and
+  header_len in[1,9], actualwithdrawal_rlp_len in[25,49]; thenactualblock_rlp_length
+  min25perwithdrawal/no-wrap and8MiBguard=>Nwd<=335544. Globaljointgas/map/heap Q
+  andcompiledtargetbound/source-mapstillmajoropen. Claim infinity,no fullverifier.

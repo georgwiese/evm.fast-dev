@@ -11,8 +11,13 @@ theorem body_execute_nonzero (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (bLocal : source.locals.lookup (ofString "b")=some (.val (.word b)))
     (nonzero : b≠0#64) (enough : 64≤source.clock) :
     ∃ target q r paid,paid≤64 ∧ evaluateHOLFiniteState source body=(some (.returned (pairValue q r)),target) ∧
-      target.clock=source.clock-paid ∧ frozen target=frozen source := by
+      target.clock=source.clock-paid ∧ frozen target=frozen source ∧
+      (b.toNat≤2^63→q.toNat=a.toNat/b.toNat ∧ r.toNat=a.toNat%b.toNat) := by
   classical
+  have positive : 0<b.toNat := by
+    by_contra notPositive
+    have zero : b.toNat=0 := by omega
+    exact nonzero (BitVec.eq_of_toNat_eq zero)
   have zeroRead : eval source zeroTest=some (.val (.word 0#64)) := by
     simp [eval,zeroTest,localVar,evalHOLExact,toExact,bLocal,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,nonzero]
   have zeroRun : evaluateHOLFiniteState source zeroGuard=(none,source) := by
@@ -27,15 +32,17 @@ theorem body_execute_nonzero (source : PanSemStateFiniteExact 64 Guest.HostMemor
       rw [smallGuard,evaluateHOLFiniteState_ite,smallRead]
       simp only [if_pos small]
       simp [pairValue,evaluateHOLFiniteState_return,evalHOLExact,evalListHOLExact,toExact,localVar,aLocal,shapeOfHOLExact,sizeOfShapeWithContextHOL]
-    refine ⟨emptyLocalsHOLFinite source,0#64,a,0,by decide,?_,by simp [emptyLocalsHOLFinite],by rfl⟩
-    rw [body_shape,WitnessRadix.StateSteps.next_sequence source source _ _ zeroRun (Nat.le_refl _)]
-    exact WitnessRadix.StateSteps.stopped_sequence source _ smallGuard setupProgram (.returned (pairValue 0#64 a)) smallRun (Nat.le_refl _)
+    refine ⟨emptyLocalsHOLFinite source,0#64,a,0,by decide,?_,by simp [emptyLocalsHOLFinite],by rfl,?_⟩
+    · rw [body_shape,WitnessRadix.StateSteps.next_sequence source source _ _ zeroRun (Nat.le_refl _)]
+      exact WitnessRadix.StateSteps.stopped_sequence source _ smallGuard setupProgram (.returned (pairValue 0#64 a)) smallRun (Nat.le_refl _)
+    · intro bSmall
+      exact ⟨(Nat.div_eq_of_lt small).symm,(Nat.mod_eq_of_lt small).symm⟩
   · have smallRun : evaluateHOLFiniteState source smallGuard=(none,source) := by
       rw [smallGuard,evaluateHOLFiniteState_ite,smallRead]
       simp only [if_neg small]
       simp
-    obtain ⟨target,q,r,setupRun,clock,frame⟩:=setup_execute source a b aLocal bLocal enough
-    refine ⟨target,q,r,64,by decide,?_,clock,frame⟩
+    obtain ⟨target,q,r,setupRun,clock,frame,arithmetic⟩:=setup_execute source a b aLocal bLocal enough
+    refine ⟨target,q,r,64,by decide,?_,clock,frame,(fun bSmall=>arithmetic bSmall positive)⟩
     rw [body_shape,WitnessRadix.StateSteps.next_sequence source source _ _ zeroRun (Nat.le_refl _),
       WitnessRadix.StateSteps.next_sequence source source _ _ smallRun (Nat.le_refl _)]
     exact setupRun

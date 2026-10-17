@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.PayloadTailNormal
 import InitECandidate.Solver.Input.PayloadTransactionsNormal
 import InitECandidate.Solver.Input.AllocationControl
+import InitECandidate.Solver.Input.PayloadWithdrawalNumbers
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -37,7 +38,7 @@ theorem after_extra_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source afterExtra=(some (.returned value),post)) :
     value=.val (.word cursor) ∧ post.memory (cursor+88#64)=.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
       Blob.HeapInput post input pointer ∧
-      source.clock-((Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)/4+68)≤post.clock ∧ post.clock≤source.clock := by
+      source.clock-((Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)/4+68)≤post.clock ∧ post.clock≤source.clock ∧ post.memory (cursor+56#64)=.word (BitVec.ofNat 64 (withdrawalCount input)) := by
   classical
   obtain ⟨next,innerPost,returned,valueEq,localsEq,nextHeap,oldMemory,clockLower,clockUpper,controlEq,nextRun,postEq⟩:=
     transactions_normal source post input pointer cursor array length heap p pl e t w valid inside domain pointerAligned cursorAligned arrayAligned
@@ -59,19 +60,22 @@ theorem after_extra_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     simp [HolFiniteMapExact.lookup_update,FUPDATE,different]
   obtain ⟨domainEq,codeEq,shapeEq⟩:=allocation_control_fields source next array
     (BitVec.ofNat 64 (16*(Guest.GasLimit.le32 input (62+Guest.GasLimit.le32 input 566)/4))) empty controlEq
-  obtain ⟨finalValue,gasCell,finalHeap,finalLower,finalUpper⟩:=after_transactions_normal next innerPost input pointer cursor length records count
+  obtain ⟨finalValue,gasCell,finalHeap,finalLower,finalUpper,countCell⟩:=after_transactions_normal next innerPost input pointer cursor length records count
     (offsetWords input 2) (offsetWords input 3) nextHeap extent ((localOther "p" (by decide)).trans p) ((localOther "pl" (by decide)).trans pl)
     ((localOther "len" (by decide)).trans n) txs ((localOther "o_wd" (by decide)).trans w) ((localOther "o_bal" (by decide)).trans b)
     (domainEq.trans domain) pointerAligned cursorAligned pointerLower cursorAfter cursorRoom
     (by rw [codeEq]; exact divisionCode) (by rw [codeEq]; exact failCode) (by rw [shapeEq]; exact exceptionShape)
     (by rw [codeEq]; exact fixedCode) (by omega) value nextRun
-  refine ⟨finalValue,?_,?_,?_,?_⟩
+  refine ⟨finalValue,?_,?_,?_,?_,?_⟩
   · rw [postEq]; exact gasCell
   · rw [postEq]; exact Blob.HeapInput.restore source innerPost input pointer "txs" finalHeap
   · have postClock : post.clock=innerPost.clock := by rw [postEq]; rfl
     omega
   · have postClock : post.clock=innerPost.clock := by rw [postEq]; rfl
     omega
+  · rw [postEq]
+    rw [(withdrawal_difference input length valid).2.1] at countCell
+    exact countCell
 
 end InitECandidate.Solver.Input.Payload
 

@@ -17,13 +17,13 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     ∃ next innerPost count paid,paid≤66 ∧
       next.locals=source.locals.update (ofString name,.val (.word count)) ∧ count.toNat≤limit.toNat ∧
       next.clock=source.clock-paid ∧ UDivMod.frozen next=UDivMod.frozen source ∧
-      evaluateHOLFiniteState next continuation=(some (.returned value),innerPost) ∧ post=restore source name innerPost := by
+      evaluateHOLFiniteState next continuation=(some (.returned value),innerPost) ∧ post=restore source name innerPost ∧ (size.toNat≤2^63→count.toNat=length.toNat/size.toNat ∧ length.toNat%size.toNat=0) := by
   classical
   obtain ⟨callee,called,n,s,l⟩:=environment source.code.lookup length size limit code
   obtain ⟨bodyPost,returned,bodyRun⟩:=CallNormal.callee_return source post (ofString name) .one (ofString "ssz_fixed_list_count") expressions
     (values length size limit) body continuation callee .one args called (by omega) value run
   let entry:=callEntryStateHOLFinite source callee
-  obtain ⟨count,paid,bound,valueEq,countBound,clock,frame⟩:=normal_summary entry bodyPost length size limit n s l nonzero
+  obtain ⟨count,paid,bound,valueEq,countBound,clock,frame,arithmetic⟩:=normal_summary entry bodyPost length size limit n s l nonzero
     divisionCode failCode exceptionShape (by change 66≤source.clock-1; omega) returned bodyRun
   have shapePass : (shapeEqHOL (shapeOfHOLExact returned) .one && shapeEqHOL (shapeOfHOLExact returned) .one)=true := by
     rw [valueEq]
@@ -34,7 +34,7 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   let next:=CallNormal.continuationEntry source bodyPost name returned
   have result : (evaluateHOLFiniteState next continuation).1=some (.returned value):=congrArg Prod.fst normal
   have postEq : post=restore source name (evaluateHOLFiniteState next continuation).2:=(congrArg Prod.snd normal).symm
-  refine ⟨next,(evaluateHOLFiniteState next continuation).2,count,paid+1,by omega,?_,countBound,?_,?_,Prod.ext result rfl,postEq⟩
+  refine ⟨next,(evaluateHOLFiniteState next continuation).2,count,paid+1,by omega,?_,countBound,?_,?_,Prod.ext result rfl,postEq,arithmetic⟩
   · change source.locals.update (ofString name,returned)=source.locals.update (ofString name,.val (.word count))
     rw [valueEq]
   · change bodyPost.clock=source.clock-(paid+1)

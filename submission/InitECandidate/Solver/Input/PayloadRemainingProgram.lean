@@ -38,8 +38,16 @@ theorem remaining_gas_cell (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (fun field mem=>(remaining_valid input pointer length withdrawals balances count field mem).1) 88 (by decide)
   simpa [cellValue,remainingFields] using actual
 
+theorem remaining_count_cell (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer cursor length withdrawals balances count : BitVec 64) (room : cursor.toNat+136≤33806089496) :
+    (applyFields source cursor (remainingFields input pointer length withdrawals balances count)).memory (cursor+56#64)=.word count := by
+  have actual:=applyFields_cell source cursor room (remainingFields input pointer length withdrawals balances count)
+    (fun field mem=>(remaining_valid input pointer length withdrawals balances count field mem).1) 56 (by decide)
+  simpa [cellValue,remainingFields] using actual
+
 end InitECandidate.Solver.Input.Payload
 
 #print axioms InitECandidate.Solver.Input.Payload.remaining_shape
 #print axioms InitECandidate.Solver.Input.Payload.remaining_valid
 #print axioms InitECandidate.Solver.Input.Payload.remaining_gas_cell
+#print axioms InitECandidate.Solver.Input.Payload.remaining_count_cell

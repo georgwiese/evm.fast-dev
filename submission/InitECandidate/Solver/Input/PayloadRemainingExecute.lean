@@ -26,7 +26,7 @@ theorem remaining_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     let target:=emptyLocalsHOLFinite (applyFields source cursor (remainingFields input pointer length withdrawals balances count))
     evaluateHOLFiniteState source afterWithdrawals=(some (.returned (.val (.word cursor))),target) ∧
       Blob.HeapInput target input pointer ∧ target.clock=source.clock ∧
-      target.memory (cursor+88#64)=.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) := by
+      target.memory (cursor+88#64)=.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧ target.memory (cursor+56#64)=.word count := by
   have valid:=remaining_valid input pointer length withdrawals balances count
   have reads : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.locals=source.locals→Blob.HeapInput current input pointer→
       ∀ field∈remainingFields input pointer length withdrawals balances count,eval current field.2.1=some (.val (.word field.2.2)) := by
@@ -39,7 +39,7 @@ theorem remaining_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     · rw [localsEq]; exact c
   obtain ⟨run,finalHeap⟩:=fields_execute source input pointer cursor heap pl domain pointerAligned cursorAligned pointerLower cursorAfter cursorRoom
     (remainingFields input pointer length withdrawals balances count) valid reads
-  refine ⟨?_,?_,applyFields_clock source cursor (remainingFields input pointer length withdrawals balances count),remaining_gas_cell source input pointer cursor length withdrawals balances count cursorRoom⟩
+  refine ⟨?_,?_,applyFields_clock source cursor (remainingFields input pointer length withdrawals balances count),remaining_gas_cell source input pointer cursor length withdrawals balances count cursorRoom,remaining_count_cell source input pointer cursor length withdrawals balances count cursorRoom⟩
   · rw [remaining_shape input pointer length withdrawals balances count]
     exact run
   · exact Blob.HeapInput.of_fields (applyFields source cursor (remainingFields input pointer length withdrawals balances count))

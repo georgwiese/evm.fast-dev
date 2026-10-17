@@ -28,9 +28,10 @@ theorem after_transactions_normal (source post : PanSemStateFiniteExact 64 Guest
     (enough : 67≤source.clock) (value : ValueHOL 64)
     (run : evaluateHOLFiniteState source afterTransactions=(some (.returned value),post)) :
     value=.val (.word cursor) ∧ post.memory (cursor+88#64)=.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
-      Blob.HeapInput post input pointer ∧ source.clock-66≤post.clock ∧ post.clock≤source.clock := by
+      Blob.HeapInput post input pointer ∧ source.clock-66≤post.clock ∧ post.clock≤source.clock ∧
+      post.memory (cursor+56#64)=.word (BitVec.ofNat 64 ((balances-withdrawals).toNat/44)) := by
   classical
-  obtain ⟨next,innerPost,count,paid,bound,localsEq,countBound,clock,frame,nextHeap,nextRun,postEq⟩:=withdrawals_normal source post input
+  obtain ⟨next,innerPost,count,paid,bound,localsEq,countBound,clock,frame,nextHeap,nextRun,postEq,arithmetic⟩:=withdrawals_normal source post input
     pointer cursor records transactionCount withdrawals balances heap pl txs w b domain pointerAligned cursorAligned pointerLower cursorAfter cursorRoom
     divisionCode failCode exceptionShape code enough value run
   have localOther : ∀ name : String,ofString "nwd"≠ofString name→next.locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
@@ -50,15 +51,20 @@ theorem after_transactions_normal (source post : PanSemStateFiniteExact 64 Guest
   have results:=completed.1.symm.trans nextRun
   have valueEq : value=.val (.word cursor) := by have eq:=congrArg Prod.fst results; cases eq; rfl
   have innerEq : innerPost=target:=(congrArg Prod.snd results).symm
-  refine ⟨valueEq,?_,?_,?_,?_⟩
+  refine ⟨valueEq,?_,?_,?_,?_,?_⟩
   · rw [postEq,innerEq]
-    exact completed.2.2.2
+    exact completed.2.2.2.1
   · rw [postEq,innerEq]
     exact Blob.HeapInput.restore source target input pointer "nwd" completed.2.1
   · have finalClock : post.clock=next.clock := by rw [postEq,innerEq]; exact completed.2.2.1
     omega
   · have finalClock : post.clock=next.clock := by rw [postEq,innerEq]; exact completed.2.2.1
     omega
+  · have countEq : count=BitVec.ofNat 64 ((balances-withdrawals).toNat/44) := by
+      rw [←arithmetic.1]
+      simp
+    rw [postEq,innerEq,←countEq]
+    exact completed.2.2.2.2
 
 end InitECandidate.Solver.Input.Payload
 

@@ -2336,3 +2336,14 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful closure: witness-radix-copy-byte-v3.log, 652 targets, only allowed
   axioms. Whole keccak256/constructor hash loop and global certificate remain
   open. Claim remains infinity; no full verification.
+
+2026-10-17: complete generic fixed memcpy
+
+- Actual aligned four-word/one-word and arbitrary byte-block/tail loops now
+  execute from mapped reads/stores, with exact memory and source-clock cost.
+- Whole function includes alignment selection, scopes/return and actual code,
+  arguments, callee and caller restoration. Body cost <= length; call cost
+  <= length+1. Complete frame outside destination byte/word footprint.
+- Successful closure witness-radix-copy-general-call-v1.log, 640 targets,
+  only permitted axioms. Used to close Keccak padding-copy execution gap;
+  actual full hash, constructor loop and finite global certificate remain open.

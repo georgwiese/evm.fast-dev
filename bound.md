@@ -12,6 +12,18 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked real32-byte insertion copy/post-copy tail, all seven header
+  declarations and hash/index/scoping lift. Full insertion memory formula
+  preserves header/other words and represents the updated keys, binary used
+  bytes, values and incremented count. Concrete six-pool constructor layout
+  discharges key/used/value copy/store/metadata separation and mapping/range
+  premises, including cap4 padding. Source aligned hash bytes/words and
+  Ready/domain/count/index bounds remain explicit. Whole body scan/tail
+  composition, header preservation specialized to layout, no-growth setter
+  and actual build trace remain open. Successful
+  mutable-layout-representation-v1.log1171targets, permitted axioms;
+  index4529/7397, claim infinity; no finite K/full verification/global go.
+
 - [x] Checked original table initialization and real insertion components:
   both actual used-array clearing paths establish all-zero flags; final
   constructor header/count and empty KeyModel follow. Raw scan derives an

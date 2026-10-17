@@ -3621,3 +3621,46 @@ Actual original initialization/insertion-components checkpoint (2026-10-17):
   agreement and real immutable-map caller refinement. Runtime other key sizes,
   growth/deletion/rollback/ownership, full gas/state/Q/heap and compiler/target
   certificate are still open. Continue autonomously after this checkpoint.
+
+Original insertion copy/representation/layout checkpoint (2026-10-17):
+- InsertCopy32 actual aligned32-byte memcpy ABI/body/call (two clocks) and
+  post-copy suffix composition. InsertTail32 executes complete real copy,
+  value/used/order/position/count stores and return with exact final memory.
+- InsertHeader proves generic prefix append, seven actual raw-insert header
+  reads/scopes and prepared locals. InsertLift32 actual byte-hash body/caller,
+  index declaration and all scopes lift a checked afterIndex suffix to full
+  original insertion. The scan and actual tail are separately checked; their
+  full body composition still needs explicit physical premises transported.
+- MemoryFrame real word/byte writes preserve unrelated mapped byte loads,
+  key views, KeyModel and ValueModel. InsertKeyModel32 actual copy installs
+  the selected key; actual used-byte store activates only its slot even when
+  flags share a word. InsertRepresentation32/ValueModel32 prove full final
+  memory represents logical slot overwrite for keys/used/values. Incremented
+  count readback unconditional as final store. InsertFrame32 complete outside
+  memory frame and physical find/get header preservation under cell separation.
+- Layout32 explicitly models all six original allocations, including used,
+  with concrete Plan base/size, no-wrap numbers, disjointness, word alignment
+  and exact byte-aligned cells. LayoutAddress32 exact scaled Pan addresses and
+  distinct key-slot word regions. LayoutWrites32 derives copy/metadata address
+  lists and separation. LayoutData32 supplies ordinary-domain mapping/ranges,
+  including cap4 used word. LayoutRepresentation32 discharges every copy,
+  value, used-byte and metadata separation premise for complete key/used and
+  value representation from actual Ready layout/domain and index/count<cap.
+  Aligned source hash bytes/words/little-endian remain explicit, supplied by
+  checked digest helpers when actual build loop is connected.
+- Success mutable-layout-representation-v1.log1171targets; only permitted
+  printed axioms. Index4529/7397. Incremental policy61394entries/2253003195bytes,
+  infinity. Account34%, no reset credits, host1.4GiB used/29available,disk58%.
+  No finite K, full verifier or global spending go. No global estimate bump.
+- Failed drafts fixed comparison_arguments's required keyLength argument,
+  match-result normalization by cases/simp (identically printed matches may
+  not be definitionally equal), qualified usedByte before rewriting raw load,
+  append_executes IH needs back proof, nested address rewrite before inner
+  normalization, and reducing Plan-dependent header size before decide. One
+  dependent build was launched after discovering its prerequisite failed;
+  it failed harmlessly and final closure rebuilt checked final sources.
+- Next specialize insertion header preservation and real tail to Ready layout;
+  compose actual full raw body/scan/tail, no-growth setter and processed-count
+  invariant, then original nodedb_build trace and original/radix caller relation.
+  Mutable other keys/growth/delete/rollback, protected gas/state ledger, Q/heap,
+  whole compiler/target finite certificate all remain open. Continue work.

@@ -12,6 +12,14 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked complete actual u256_to_be_min: <=32 bytes, <=67 body/68 caller
+  source clocks, real limb calls/masked shifts/stores, temporary scope cleanup,
+  and outside-buffer memory frame. Actual heap_mark/heap_release callers also
+  check. Byte-encoder access premises now follow from natural ordinary-memory
+  source/destination extents. Successful closure:
+  `input-rlp-write-access-v2.log`1154targets, permitted axioms only. Next is the
+  temporary allocation/release in rlp_put_u256, then whole header/block prefix.
+
 - [x] Checked real byte-encoder declaration/assignment callers retaining written
   memory; actual six-stage bit_length64 returns<=64; actual u256_bit_length
   chooses a limb and returns<=256; actual u256_byte_length returns<=32 with

@@ -2178,3 +2178,20 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   invariant, and the final case yields the intended represented tree. Continuing
   agenda-weight clock induction and constructor initialization; whole-guest,
   target transition bound and finite certificate remain open.
+
+### 2026-10-17 — complete actual radix loop termination and clock bound
+
+- AgendaWeightSteps proves exact record/bit-weight decreases and covers the
+  actual terminal, unary and split prices. LoopCompose accounts for the actual
+  surrounding while/fix_clock step and preserves all non-memory/non-clock/
+  non-local control fields. LoopResult composes executions and clock bounds.
+- LoopTermination proves the full actual main while loop terminates from the
+  complete invariant, given 4*agendaWeight source clocks. It returns zero,
+  establishes the exact expected actual lookup representation at the original
+  table root, preserves control fields and consumes at most 4*agendaWeight.
+  No successful whole-loop execution or next invariant is assumed.
+- Successful loop-termination-v2 closure (741 targets), only permitted axioms.
+  Initial 256-bit weight yields 1028*N after entry initialization. Source-clock
+  facts are not target-transition bounds. Continuing initialization from real
+  helper/header/array state and constructor hashes/allocations; whole-guest,
+  compiler/target/global K and finite certificate remain open.

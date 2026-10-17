@@ -2026,3 +2026,20 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   the full agenda/partial-graph memory invariant. Global original-map, input/gas,
   compiler/target composition and finite certificate are still open. Claim is
   infinity; no fixed files/Solution/claim changes, full verifier or submission.
+
+### 2026-10-17 — complete terminal continuation and unary outer iteration
+
+- PopStoreFrame/TerminalContinue protect the suffix/parent reads through the
+  terminal leaf store using four explicit word-separation facts. The complete
+  terminal code stores the tag, pops the next task and restores ordinal/parent
+  scopes. TerminalLoopContinue proves exact actual outer-while resumption after
+  its one clock payment, including fix_clock behavior.
+- ScopedFrame proves exact two-temporary restoration from preserved remaining
+  bindings and nonlocal fields. UnaryProgram/Body/Count/Loop use the real count
+  pass and actual AST to prove a full unary outer iteration: memory unchanged,
+  only bit and clock change, both temporary counters restored, exact source
+  payment input.length + 1, then actual while resumption.
+- Successful closure witness-radix-outer-transitions-v1.log (636 targets), only
+  permitted axioms. Evidence index: 3,925 source hashes / 6,082 printed facts.
+  Continuing split/push execution and the partial-graph/agenda invariant; no
+  finite claim, target-clock or whole-guest refinement has been established.

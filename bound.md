@@ -28,6 +28,8 @@
 
 **New checked original-program bounds:** the entire original constructor body has a summed source-clock budget. For N decoded records inside B encoded bytes, its arithmetic allowance is at most `215*N + 7*triangle(N) + 20*((B-4*N)/136) + 46`, with `2*triangle(N)=N*(N-1)`. Entry/code/arena/clock premises remain explicit. The actual decoder Records prove payload-byte sum + 4*N <= B. Actual original dictionary lookup costs at most `6*D+3` source clocks for D distinct observed keys, including arbitrary duplicates and query alignments. These are intermediate source-clock facts, NOT a target runtime K or a whole-program theorem. Empty constructor callers still use their separate actual zero-record contract.
 
+**New checked root facts:** actual normal `validate_transaction` execution and its real caller derive a three-word intrinsic result with regular and floor components at most 16,777,216. The unchanged four-declaration execution-gas split then initializes liquid/reservoir words with `liquid + intrinsicRegular <= 16,777,216`. Helper successes, reads and value shapes are derived from normal execution. These are source-state postconditions; no validation preprocessing runtime, intervening caller transport, TE/MSG/frame initialization or whole-program gas ledger is claimed. Successful closure: original-root-entry-v2.log, 1087 jobs, permitted axioms.
+
 **Immediate next work:** connect actual user/system root initialization to the global regular-gas ledger, then successful-child memory frames/merges, rollback and block reservation/counter facts. Preserve the original program and account for parser/failure paths, mutable maps and trie/query progress. Transport the resulting phase counts to the unchanged baseline target; no numerical ceiling applies.
 
 

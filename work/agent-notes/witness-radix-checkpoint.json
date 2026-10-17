@@ -293,6 +293,70 @@
     "submission/InitECandidate/Solver/WitnessRadix/ScatterStep.lean": {
       "bytes": 4575,
       "sha256": "c8a35ce7d22798944fe9fbe675c84235918dc4e7d9f88a4cbfa262edcfaef8e8"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BindingLookup.lean": {
+      "bytes": 964,
+      "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildCases.lean": {
+      "bytes": 3901,
+      "sha256": "058d8b10e0065c46e61fb8693ca9f53426dcedf836910433c432c9761c649eaa"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildEmpty.lean": {
+      "bytes": 4107,
+      "sha256": "2180ab8650d8a35191643ab11f95ad2d59a8a6e874ddd0ce9ac82a393dbe5bf6"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildEntry.lean": {
+      "bytes": 5414,
+      "sha256": "e300e5dccd4d5d4aa576e338ab5463c687b5762e817117c49202c20203600589"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildEquations.lean": {
+      "bytes": 5446,
+      "sha256": "fa466b2876f885983ed88e6aab90fe3025f1811a73499a6ff2d820a5b4766125"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildInitialState.lean": {
+      "bytes": 2039,
+      "sha256": "dc1b8063fee1e985afbcf337b1d9c696af4b272e800bafc631d618305ff7abb3"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/BuildInitialize.lean": {
+      "bytes": 4014,
+      "sha256": "e7c2616b3b0ea54a58ef102616fddd3cc7d9489cee60160ac5edf416873943ee"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PopBody.lean": {
+      "bytes": 6345,
+      "sha256": "13215c03d01bc51f3f98d876d72ca60c341a7f44b0ea2ccb03a0a30137156703"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PopParent.lean": {
+      "bytes": 4597,
+      "sha256": "8237ee46babfa7adfa628a04824a65d7252289a2f2d9918a2edb25beb4faf680"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PopProgram.lean": {
+      "bytes": 1998,
+      "sha256": "4da95eda1d87fbfb445b864bf2d34fd976cbb4f75fa851c7ddc34123559d996d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PopReads.lean": {
+      "bytes": 2479,
+      "sha256": "1d3247eb5fcdc89f4de4be426d64284c5522d20e6be70c703ffce8164f2d4bc9"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/StateSteps.lean": {
+      "bytes": 2309,
+      "sha256": "7f511ad3b04e0308f174400fd8f566bcdc213b1bf31e8fdb1e93fb759d9d906b"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TerminalFinish.lean": {
+      "bytes": 4528,
+      "sha256": "b6377b76c2df9a89d69aaf1c713edae35dbaead1ec6e94f01b01b8d96ece7f83"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TerminalLoopFinish.lean": {
+      "bytes": 3457,
+      "sha256": "dea702343a24a66c8e610189f8aa4bf87616d0f5e12f20942057817ed9a7f685"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TerminalProgram.lean": {
+      "bytes": 3269,
+      "sha256": "4e59ceac805f94f7013499511589f07f228dfef2ba516e36f508904a51c51a71"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TerminalReads.lean": {
+      "bytes": 1998,
+      "sha256": "c0c93d15ab83c135156e39e81972c510c4a904e1091f5dfcf6b359e7f9065826"
     }
   },
   "development_artifacts": {
@@ -323,7 +387,10 @@
     "witness-radix-graph-v3.log",
     "witness-radix-query-function-v3.log",
     "witness-radix-count-copy-v1.log",
-    "witness-radix-scatter-partition-v1.log"
+    "witness-radix-scatter-partition-v1.log",
+    "witness-radix-build-cases-v2.log",
+    "witness-radix-terminal-loop-finish-v2.log",
+    "witness-radix-pop-body-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -467,5 +534,12 @@
     "copy": "literal loop, exact memory/counters/clock poststate, copied rows and outside-memory frame",
     "count": "literal loop, exact zero-bit count, one source clock per ordinal, all other locals and nonlocal fields preserved",
     "scatter": "literal full loop, exact stable filtered block writes, cursor/index results, one source clock per ordinal, preserved other locals/nonlocal fields; mapped/separated arrays and readable keys remain parent premises"
+  },
+  "actual_construction_transitions": {
+    "entry": "all thirteen literal declarations from actual ABI and four header cells; exact entered bindings and local-only restoration",
+    "empty": "complete actual helper, only root zero store, no source clock",
+    "finish": "actual terminal ordinal read/tag store and final outer iteration; exactly one source clock",
+    "pop": "complete actual pending-task pop from suffix cells and parent bit; updates depth/start/count/bit/dest, returns continue, no memory or clock change",
+    "model_cases": "empty/singleton/terminal/unary/split equations for the existing compressed build model"
   }
 }

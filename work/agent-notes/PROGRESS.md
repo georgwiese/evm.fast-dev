@@ -2003,3 +2003,26 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Continuing immediately with outer construction and its graph invariant.
   Claim remains infinity; Solution/fixed source/ROM/dependencies unchanged. No
   final verifier or external submission has run.
+
+### 2026-10-17 — actual builder entry, empty/final transition and pending pop
+
+- BuildEquations/Cases connect the existing compressed model to terminal,
+  singleton, unary and nonempty-split cases, including last-record selection.
+- BuildEntry/Initialize/InitialState prove the actual thirteen declarations
+  from ABI and four header cells, exact local values and local-only restoration.
+  BuildEmpty proves the complete actual empty helper: only the root-zero store,
+  no source-clock consumption, with every nonlocal state field accounted for.
+- TerminalProgram/Reads/Finish/LoopFinish prove the actual terminal tag store
+  and final return from depth zero, including final outer-loop payment of one
+  source clock. StateSteps provides actual assignment/sequence clock equations.
+- PopProgram/Reads/Parent/Body prove the complete actual pending-task pop from
+  three suffix cells and the saved parent's bit word. It updates only depth,
+  start, count, bit and dest, restores scoped parent and returns continue with
+  no memory/clock change. BindingLookup supplies exact local-update facts.
+- Successful closures build-cases-v2 (481), terminal-loop-finish-v2 (602),
+  pop-body-v1 (586 targets). Main axiom prints contain only permitted axioms.
+  Evidence index: 3,917 source hashes / 6,073 printed facts.
+- Continuing with leaf-store/pop composition, unary/split/push execution and
+  the full agenda/partial-graph memory invariant. Global original-map, input/gas,
+  compiler/target composition and finite certificate are still open. Claim is
+  infinity; no fixed files/Solution/claim changes, full verifier or submission.

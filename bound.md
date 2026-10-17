@@ -12,14 +12,26 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked the complete actual encode_header body/caller and the complete
+  block_rlp_length body/caller, followed by the exact payload_header 8MiB guard.
+  Header size<=916, body/caller clocks<=1345/1346; block body/caller clocks
+  <=12*Ntx+43*Nwd+1381/1382. The real block result is >=25*Nwd without wrap;
+  successful continuation past the actual guard therefore gives Nwd<=335544.
+  Actual heap release restores globals; writes preserve old header/input/record
+  cells. Decoded data, field-byte Arenas, extra<=32, fresh-buffer geometry,
+  code/domain and clock affordability remain explicit entry premises. This
+  discharges the former assumed preceding-header-size bound, not global entry
+  reachability or target steps. Successful `input-block-guard-v3.log`1393targets,
+  only permitted axioms; index4429modules/7139facts. Claim remains infinity.
+
 - [x] Checked the actual header field sequence and all four field kinds:
   pointer/scalar/quad reads from preserved old header memory; writer calls,
   real p/w updates and right-nested continuation; natural aggregate pointer/
   clock bounds and re-established memory/domain/heap context. Literal AST
   decomposition proves21 base+2 optional descriptors. The actual list-header
-  writer/caller also checks. Whole header prefix/optional/suffix composition
-  remains open. Closure `input-rlp-list-write-v1.log`1167targets, permitted
-  axioms; index4416modules/7111facts. No full header/finite certificate claim.
+  writer/caller also checks. Whole header composition is now checked above;
+  builder entry premises remain open. Earlier closure `input-rlp-list-write-v1.log`1167targets, permitted
+  axioms; index4416modules/7111facts at that earlier checkpoint. No finite certificate.
 
 - [x] Checked complete actual rlp_put_u256 and its real declaration/assignment
   callers: heap mark, alloc32, minimal writer, byte encoder, heap release,
@@ -100,7 +112,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [ ] Complete the capacity-growth path and any other local summaries **actually required by the chosen global proof**; prove their entry premises at every use.
 - [ ] Connect bounded execution through the actual compiler artifacts, bootstrap, oracle/FFI, and matching-result relation.
 - [ ] Prove a literal finite K below the score cap; make `submission.K`, `claimedScore`, and `claim.json` agree; prove admission and the fixed certificate with only permitted axioms.
-- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (60,712 full-package entries; 2,250,199,617 bytes); this is not isolated verification or a final overlay check.
+- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,292 full-package entries; 2,252,515,261 bytes); this is not isolated verification or a final overlay check.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 
 **Latest checked connection:** `QueryExecution.lookup_built` proves the complete actual candidate lookup from concrete HOL memory/header/ABI/code premises: exact last-record-wins result, at most **262 source clocks**, and preserved nonlocal state. Successful closure: `witness-radix-query-function-v3.log`; only permitted axioms. Construction must still establish the represented-memory premise, and source clocks are not target transitions. The actual fixed `memeq` 32-byte aligned and unaligned paths, actual caller restoration, and real code-entry argument environment now check with only permitted axioms (`witness-radix-memeq-environment-v4.log`). The comparison consumes at most four source clocks plus one call clock. The candidate compiler reports 905,572 code bytes, 4,615 bitmap words and a static stack bound of 538 words (`witness-radix-static-depth-v1.log`); these are development compiler results, not a target certificate.
@@ -663,10 +675,13 @@ Useful source observations, still requiring actual-execution proofs:
 
 - `block_rlp_length` is checked against8,388,608 before content tries and before
   `process_withdrawals`. `withdrawal_rlp_len` has a fixed21-byte address term,
-  three positive integer lengths and a positive list header, hence a paper
-  minimum25 and withdrawal count<=335,544, **after proving actual division and
-  no-wrap length accumulation**. Earlier SSZ hashing still permits the larger
-  copied-input extent. These are different phases.
+  three positive integer lengths and a positive list header. Actual small-
+  divisor arithmetic, no-wrap length accumulation, whole header/block callers
+  and the literal guard now check: under their decoded-data/layout/code/clock
+  entry premises, successful continuation implies withdrawal count<=335,544
+  (`input-block-guard-v3.log`). Deriving those premises from the complete root
+  builder remains open. Earlier SSZ hashing still permits the larger copied-
+  input extent. These are different phases.
 - Mutable `htab_del` uses one backward-shift scan; it does not call raw insertion
   once per shifted entry. Collision accounting must include its copies/hashes,
   but a quadratic reinsertion cost per deletion would misread the code.
@@ -683,10 +698,10 @@ Useful source observations, still requiring actual-execution proofs:
   Do not assume cryptographic acyclicity or that physical scratch bounds
   cumulative work. Scoped indexed-trie builders need their own aggregate bound.
 
-Next quantitative pilot: prove actual nonzero small-divisor arithmetic/count
-bounds (the completed `udivmod` execution theorem currently proves only work
-and return shape), then the withdrawal length/cap and joint gas/table resource
-invariants. The complete mutable operation multiplicities and final weighted
+Next quantitative pilot: close the joint gas/table resource invariants and
+persistent-query allocation pairing. Actual small-divisor arithmetic/count
+bounds and the whole block-call/withdrawal-guard connection are now checked,
+with root entry/clock/layout obligations still explicit. The complete mutable operation multiplicities and final weighted
 compiler/target pricing remain major open obligations. No new algorithmic
 impossibility or reachable runtime counterexample was established by this audit.
 

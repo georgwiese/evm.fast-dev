@@ -3156,3 +3156,45 @@ Actual header field sequence checkpoint (2026-10-17):
   extra<=32 fromrealbuilder; rootreachabilitystillopen. Sourcestepsarenottarget
   steps; globalgas/heap/potential/maprefinement/targetK remainunproved.
 - Account26%,0resetcredits; claim infinity. No fullverification, workcontinues.
+
+Whole actual header/block length and payload guard checkpoint (2026-10-17):
+- HeaderEncoding Optional proves both real optional writers, literal terminal
+  increment, current-flag memory read and skipped branch. SuffixArithmetic
+  proves natural pointer subtractions; Suffix runs payload subtraction, actual
+  list-size/list-writer calls, tuple return and all scopes. Actual memory is
+  preserved below the fresh aligned buffer, including aligned word footprints.
+- Rest composes all remaining base fields, optionals and suffix. First handles
+  the distinct first w declaration, its actual byte arguments/write, p update
+  and remaining continuation. Whole executes alloc1024/p9/first/rest/all
+  scopes; encoded size1..916, <=1345 body clocks, actual heap advance1024.
+  Call checks the actual unary-argument/two-word-return ABI, <=1346 clocks and
+  canonical memory/globals/caller-local effects. Frames derives copied-input
+  and actual decoded-record preservation from old memory and natural placement;
+  empty slices have no positive allocation or record-read requirement.
+- RlpLength EntryProgram is the exact fixed block AST with bundled real code
+  lookups. EntryDeclarations derives actual header tuple field, transaction
+  pointer/count reads and zero loop counters; Data.of_old_memory transfers the
+  concrete decoded input and payload cells. WholeBlock executes actual mark,
+  encode_header, release and both loops. It restores original globals exactly,
+  returns >=25*Nwd without wrap, upper436208508+57*Nwd, and consumes at most
+ 12*Ntx+43*Nwd+1381 body clocks. BlockCall adds the real ABI/call clock.
+- BlockGuard identifies the literal payload_header 8MiB guard as its actual
+  subtree. It checks pass/raise branches and proves the complete actual block
+  call followed by successful guarded continuation implies Nwd<=335544.
+  This no longer assumes the preceding encoded-header-size bound.
+- Entry premises remain: actual decoded Records/HeapInput/payload cells,
+  byte-pointer Arenas and extra<=32, header before fresh buffer and1056room,
+  ordinary domain, code and clock affordability. Establishing these at root,
+  whole gas/heap/query potential, original-map refinement and target K remain
+  open. Source call/loop clocks are not target machine transitions.
+- Successful closure input-block-guard-v3.log1393targets, only allowed axioms,
+  6.06s wall, maximum child RSS2025680KiB; resource sample host use~1.9GiB,
+  disk58%. Earlier targeted failures fixed source-clock alias normalization,
+  multiline record syntax, pair caller clock subtraction, explicit local-key
+  inequalities and AST guard reduction; failed logs are not proof evidence.
+- Indexed4429modules/7139printed facts. Incremental policy passes61292entries,
+ 2252515261bytes; not isolated verification. claim infinity. Account27%, no
+  reset credits. User overall estimate35%(25-45%, low confidence), including
+  all work above main, remains a judgment rather than file-count progress.
+- Continue joint gas/refunds/mutable-table/heap-Q spending gate and root decoder
+  entry connections; no whole-program go or finite K has been earned.

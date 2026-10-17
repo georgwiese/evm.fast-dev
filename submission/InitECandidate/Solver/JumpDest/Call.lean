@@ -28,7 +28,7 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (enough : length.toNat + WitnessRadix.Zero.price (bitmapBytes length.toNat) + 3 ≤ source.clock) :
     ∃ (finalMemory : WitnessRadix.WordWrites.Memory) (spent : Nat),
       spent ≤ length.toNat ∧
-      (∀ query : BitVec 64, scratch.toNat ≤ query.toNat → finalMemory query = source.memory query) ∧
+      (∀ query : BitVec 64, Arenas.Outside memory scratch query → finalMemory query = source.memory query) ∧
       evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "compute_jumpdests") arguments continuation) =
         (let output := evaluateHOLFiniteState
           (WitnessRadix.QueryBranch.bind

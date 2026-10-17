@@ -10,12 +10,24 @@
       "sha256": "b1d73f74477c783ad80459d1ab044899935e33d6b31c18029ce589d0fb5f71f7"
     },
     {
+      "path": "submission/InitECandidate/Solver/Arenas/DownPlan.lean",
+      "sha256": "9e1fceef5d07e29d0497dc23a821e551da90bc10fdd7d986880e7cb6f7380be6"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Arenas/Execution.lean",
       "sha256": "b0b0c26022b80b687da37e78d5eb65319f0a4fb57d772fe4b59c2ddca06cc9d5"
     },
     {
       "path": "submission/InitECandidate/Solver/Arenas/Marks.lean",
       "sha256": "f5f67c89c1746931094049709b6fde4a89251c03f4faa1d52cb700b5424477e2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Arenas/Prefix.lean",
+      "sha256": "8fe3e56b22c085e476ebd35de9a03e9977c0c54c9115aa7aa336483a825b2f46"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Arenas/PrefixFields.lean",
+      "sha256": "c0095fbe4a8eb5886c2732d26a365168d9a7d845c31b2447c408391f66a4bb98"
     },
     {
       "path": "submission/InitECandidate/Solver/Arenas/Program.lean",
@@ -4206,6 +4218,10 @@
       "sha256": "2d0680a41465084ad257488fc2292e3d1d4a64648d4a32a85a3598fbb0f97fa7"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/TableCount.lean",
+      "sha256": "ccfc8605a357473fe8570fb0b9e2b5fd534a9d4d72e897242ee47134daff234a"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GasBudget/U256Eq.lean",
       "sha256": "e0e10c52b4f2b7e6f799f0649f98e2044c8d1f088ae6ba4308c9776c93d966ad"
     },
@@ -5619,7 +5635,7 @@
     },
     {
       "path": "submission/InitECandidate/Solver/JumpDest/Call.lean",
-      "sha256": "65275260b6b8fd416874c80efd33cfe761809cfaf0aab88885db43a255b8e3a7"
+      "sha256": "9e9bebeacd1e6447856fb0f7c1412363893174b7b1591993edb752d53a4c2b06"
     },
     {
       "path": "submission/InitECandidate/Solver/JumpDest/Continuation.lean",
@@ -5631,15 +5647,15 @@
     },
     {
       "path": "submission/InitECandidate/Solver/JumpDest/Execution.lean",
-      "sha256": "54a7568557bb9919a1329df8c9fc8716644f1884fbf676f914fe718411cf7798"
+      "sha256": "a45633e4d3582340c57d821020827b4f812db11d5705369a849b2b02c306743c"
     },
     {
       "path": "submission/InitECandidate/Solver/JumpDest/Loop.lean",
-      "sha256": "49fd36fe9cb880e9d9a190771badc9eb2b3ec1ccf2641cc5c0de529391fcd99d"
+      "sha256": "b7e6d681ecb6deabc6e77e5d5c831ea14513be636ba18cbd2b592d257dbe6689"
     },
     {
       "path": "submission/InitECandidate/Solver/JumpDest/Mark.lean",
-      "sha256": "d0c503f1989c42644fa09347f74bb50274e089b957fd5de46c6b6f1645f72b30"
+      "sha256": "2dbcd6904b0a2ced8dfc623c2d3d0326f6e79d7c7c6deddb2eb734a4dc9ff31b"
     },
     {
       "path": "submission/InitECandidate/Solver/JumpDest/Program.lean",
@@ -5651,7 +5667,7 @@
     },
     {
       "path": "submission/InitECandidate/Solver/JumpDest/Step.lean",
-      "sha256": "730ea9c314121120253015d19eb5a9c288fb5cfc60025398ce84b9903522053b"
+      "sha256": "efdb27017bc5f9c2766ebc5e5e251eecde21458321357e3aceb3c6884b0088e5"
     },
     {
       "path": "submission/InitECandidate/Solver/JumpDest/StepMapped.lean",
@@ -9755,11 +9771,51 @@
     },
     {
       "path": "submission/InitECandidate/Solver/PanFieldStores.lean",
-      "sha256": "a7fcd9c3161d556371dea21d52ff73db162050e66966b24d063ae7cf7d252f00"
+      "sha256": "659dc53d04918219fe90ddf0fb8a29500848970ce3bf8d3e68bcf968d7bffa15"
     },
     {
       "path": "submission/InitECandidate/Solver/RiscVEvaluatorCosts.lean",
       "sha256": "d3da3827d2fedafb5bece45f9145e976f45f922919dabd0e1f8339d4fe10cff4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchList/Call.lean",
+      "sha256": "ccd18cb3585a262b86d1e89260bb4902811e4f40cba71fbba558c1215a4375ef"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchList/Execution.lean",
+      "sha256": "d9b1a410b69fde39230b075c922d2861ccf5d172b9c8ab1a0de039d151029004"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchTable/Call.lean",
+      "sha256": "fb7d95a2359f05692b18760f7e1bd5bbb9f1b080f6b2154129728f3db83be9ff"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchTable/Execution.lean",
+      "sha256": "00f61661f55acf291f728df0c1c41ebcf8a1e228d9a773f7b05d271b7e59d463"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchTable/Finish.lean",
+      "sha256": "fe580fa965cd6546d71f904cc1e682f16c68daa092453330f69886317bad6e89"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchTable/Frames.lean",
+      "sha256": "72d3a3aca3405df50e01f1270cde075dad3e5aea9532e623f9b13946c78d39ed"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchTable/Initial.lean",
+      "sha256": "d3c36f1e3174c734fc3817b0444d33929f45eef7c7c9c76547048eb24342caa4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchTable/Locals.lean",
+      "sha256": "1f47955b7f17f3b9deb6ab67efba47818bb2132a6b7e773d7bd46766131627c2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchTable/Middle.lean",
+      "sha256": "8188794e2312e5c35aa32784282263b813bd201fb93c917261fbbcb3aa84f183"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/ScratchTable/Program.lean",
+      "sha256": "2cb0ea62cf46625b4c4080a43b7e484e5b2b699c158cc3061aa5dac7c2cb5dc5"
     },
     {
       "path": "submission/InitECandidate/Solver/ShiftLslImmediateCost.lean",
@@ -65528,7 +65584,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -65536,19 +65592,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -65557,7 +65613,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -65566,7 +65622,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -65575,7 +65631,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -65584,7 +65640,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -65593,7 +65649,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -65602,7 +65658,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -65611,7 +65667,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -65620,7 +65676,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -65629,7 +65685,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -65638,7 +65694,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -65647,7 +65703,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -65656,7 +65712,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -65665,7 +65721,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -65674,7 +65730,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -65683,7 +65739,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -65691,7 +65747,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -65699,7 +65755,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -65708,7 +65764,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -65717,7 +65773,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -65726,7 +65782,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -65734,7 +65790,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -65743,7 +65799,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -65770,7 +65826,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -65779,7 +65835,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -65788,7 +65844,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -65797,7 +65853,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -65806,7 +65862,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -65815,7 +65871,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -65824,7 +65880,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -65833,7 +65889,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_memory",
@@ -65850,7 +65906,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -65858,7 +65914,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -65867,7 +65923,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -65876,7 +65932,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -65885,7 +65941,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -65912,7 +65968,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.execute",
@@ -65921,7 +65977,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -65930,7 +65986,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.bind_lookup_other",
@@ -65939,7 +65995,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StateSteps.assign_execute",
@@ -65948,14 +66004,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_unique",
@@ -65963,7 +66019,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
@@ -65998,7 +66054,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.block_execute",
@@ -66007,7 +66063,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.call_execute",
@@ -66016,7 +66072,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.environment",
@@ -66025,7 +66081,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop_execute",
@@ -66034,7 +66090,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.remaining_loops",
@@ -66043,7 +66099,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.word_view",
@@ -66051,7 +66107,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.byte_view",
@@ -66060,7 +66116,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop32_shape",
@@ -66069,7 +66125,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.body_shape",
@@ -66078,7 +66134,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.condition_read",
@@ -66087,7 +66143,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.alignment_read",
@@ -66096,7 +66152,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CodeEnvironment.finite_lookup",
@@ -66104,7 +66160,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.valid",
@@ -66131,7 +66187,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guards",
@@ -66140,7 +66196,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_execute",
@@ -66149,7 +66205,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.environment",
@@ -66158,7 +66214,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.block32_execute",
@@ -66167,7 +66223,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.blockWord_execute",
@@ -66176,7 +66232,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_execute",
@@ -66185,7 +66241,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.condition_read",
@@ -66194,7 +66250,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.alignment_read",
@@ -66203,7 +66259,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.environment",
@@ -66212,7 +66268,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_execute",
@@ -66221,7 +66277,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_execute",
@@ -66230,7 +66286,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_frame",
@@ -66239,7 +66295,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_memory_away",
@@ -66247,7 +66303,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_shape",
@@ -66256,7 +66312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_shape",
@@ -66265,7 +66321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.body_shape",
@@ -66274,7 +66330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_frame",
@@ -66283,7 +66339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_other",
@@ -66292,7 +66348,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_index",
@@ -66301,7 +66357,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_frame",
@@ -66310,7 +66366,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_other",
@@ -66319,7 +66375,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_index",
@@ -66328,7 +66384,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.remaining_loops",
@@ -66337,7 +66393,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_expected",
@@ -66364,7 +66420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ProgramPrefix.restoration_frame",
@@ -66373,7 +66429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.body_shape",
@@ -66382,7 +66438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateByte_frame",
@@ -66391,7 +66447,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateByte_other",
@@ -66400,7 +66456,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateByte_index",
@@ -66409,7 +66465,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.zero_byte_execute",
@@ -66418,7 +66474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_body_execute",
@@ -66427,7 +66483,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_condition",
@@ -66436,7 +66492,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopTail_execute",
@@ -66445,7 +66501,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_small",
@@ -66454,7 +66510,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.small_final_frame",
@@ -66463,7 +66519,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.small_memory_away",
@@ -66471,7 +66527,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_small",
@@ -66480,7 +66536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ProgramPrefix.program_append",
@@ -66747,7 +66803,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.aligned_cell",
@@ -66755,7 +66811,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_exists",
@@ -66764,7 +66820,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read200",
@@ -66773,7 +66829,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.mapped_region",
@@ -66782,7 +66838,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.of_cells",
@@ -66791,7 +66847,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.load_expression",
@@ -66800,7 +66856,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute",
@@ -66809,21 +66865,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.stores_execute",
@@ -66832,7 +66888,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.block_execute",
@@ -66841,7 +66897,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_shapes",
@@ -66850,7 +66906,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.address_read",
@@ -66859,7 +66915,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.store_execute",
@@ -66868,7 +66924,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.environment",
@@ -66877,7 +66933,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_execute",
@@ -66886,7 +66942,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_mapped",
@@ -66895,7 +66951,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_memory_away",
@@ -66904,7 +66960,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.answer_length",
@@ -66912,7 +66968,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.oracle",
@@ -66921,21 +66977,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_frame",
@@ -66944,7 +67000,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_index",
@@ -66953,7 +67009,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_other",
@@ -66962,7 +67018,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.test_read",
@@ -66971,7 +67027,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_execute",
@@ -66980,7 +67036,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_frame",
@@ -66989,7 +67045,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_other",
@@ -66998,7 +67054,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_index",
@@ -67007,7 +67063,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryWalk_away",
@@ -67015,7 +67071,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Mapped.of_domain",
@@ -67023,7 +67079,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.byte_walk",
@@ -67032,7 +67088,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.word_walk",
@@ -67041,7 +67097,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_domain",
@@ -67050,7 +67106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_domain",
@@ -67059,7 +67115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_clock",
@@ -67068,7 +67124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_clock",
@@ -67077,7 +67133,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.cost_le",
@@ -67086,7 +67142,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_clock",
@@ -67095,7 +67151,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_control",
@@ -67104,7 +67160,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.alignment_false",
@@ -67113,7 +67169,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_execute",
@@ -67122,7 +67178,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.execute",
@@ -67131,7 +67187,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_execute",
@@ -67140,7 +67196,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_memory_away",
@@ -67149,7 +67205,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_control",
@@ -67157,7 +67213,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.environment",
@@ -67166,7 +67222,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_memory",
@@ -67175,7 +67231,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_memory",
@@ -67184,7 +67240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_memory_away",
@@ -67193,7 +67249,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_memory_away",
@@ -67202,7 +67258,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory_away",
@@ -67211,7 +67267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.byte_walk_be",
@@ -67220,7 +67276,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.word_walk_be",
@@ -67229,7 +67285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory",
@@ -67238,7 +67294,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_away",
@@ -67247,21 +67303,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.control_of_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.frame_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_control",
@@ -67270,7 +67326,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_control",
@@ -67279,7 +67335,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_args",
@@ -67288,7 +67344,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_domain",
@@ -67297,7 +67353,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_control",
@@ -67306,7 +67362,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_control",
@@ -67315,7 +67371,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_cost_le",
@@ -67323,14 +67379,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.stores_execute",
@@ -67339,7 +67395,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.block_execute",
@@ -67348,21 +67404,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_frame",
@@ -67371,7 +67427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_index",
@@ -67380,7 +67436,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_other",
@@ -67389,7 +67445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_execute",
@@ -67398,7 +67454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_bounds",
@@ -67407,7 +67463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_execute",
@@ -67416,7 +67472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_clock",
@@ -67425,7 +67481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_index",
@@ -67434,7 +67490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_shapes",
@@ -67443,7 +67499,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.store_execute",
@@ -67452,7 +67508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_frame",
@@ -67461,7 +67517,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_other",
@@ -67470,7 +67526,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_index",
@@ -67479,7 +67535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryWalk_away",
@@ -67487,7 +67543,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.call_execute",
@@ -67496,7 +67552,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.environment",
@@ -67505,7 +67561,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.alignment_read",
@@ -67514,7 +67570,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.execute",
@@ -67523,7 +67579,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_value_read",
@@ -67532,7 +67588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_execute",
@@ -67541,7 +67597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_memory_away",
@@ -67550,7 +67606,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_other",
@@ -67559,7 +67615,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.condition_read",
@@ -67568,7 +67624,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.loop_execute",
@@ -67577,7 +67633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.body_shape",
@@ -67586,7 +67642,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_read",
@@ -67595,7 +67651,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_clock",
@@ -67604,7 +67660,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_control",
@@ -67613,7 +67669,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_other",
@@ -67622,7 +67678,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_domain",
@@ -67631,7 +67687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_memory_away",
@@ -67640,14 +67696,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.permutation_control",
@@ -67656,21 +67712,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_clock",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_empty",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_restore",
@@ -67679,7 +67735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_clock",
@@ -67688,7 +67744,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_control",
@@ -67697,7 +67753,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_memory_away",
@@ -67706,7 +67762,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute_word",
@@ -67715,7 +67771,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_blocks_execute",
@@ -67724,7 +67780,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.afterBlocks_shape",
@@ -67733,7 +67789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.block_execute",
@@ -67742,7 +67798,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.call_execute",
@@ -67751,7 +67807,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.Mapped.of_domain",
@@ -67759,7 +67815,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Code.of_control",
@@ -67768,7 +67824,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.mapped_of_control",
@@ -67776,7 +67832,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Args.of_index",
@@ -67785,7 +67841,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.condition_read",
@@ -67794,7 +67850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.EntryData.of_control",
@@ -67803,7 +67859,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Protected.tail",
@@ -67811,7 +67867,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.environment",
@@ -67820,7 +67876,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.execute",
@@ -67829,7 +67885,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.loop_execute",
@@ -67838,7 +67894,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_address_read",
@@ -67847,7 +67903,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_store_execute",
@@ -67856,7 +67912,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_stores_execute",
@@ -67865,7 +67921,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_words_execute",
@@ -67874,14 +67930,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_memory_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_alignment_read",
@@ -67890,7 +67946,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_execute",
@@ -67899,7 +67955,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_first_execute",
@@ -67908,7 +67964,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_last_execute",
@@ -67917,7 +67973,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.padding_execute",
@@ -67926,7 +67982,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_locals",
@@ -67934,7 +67990,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_control",
@@ -67942,7 +67998,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_clock",
@@ -67950,7 +68006,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_execute",
@@ -67959,7 +68015,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_memory_away",
@@ -67968,7 +68024,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.body_shape",
@@ -67977,7 +68033,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailLocals.of_locals",
@@ -67986,7 +68042,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.OutMapped.of_domain",
@@ -67994,7 +68050,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailData.of_control",
@@ -68003,7 +68059,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.away_above",
@@ -68027,7 +68083,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.ordinary_byte_mapped",
@@ -68035,7 +68091,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.weaken",
@@ -68043,7 +68099,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.subrange",
@@ -68051,7 +68107,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.byte_mapped",
@@ -68059,7 +68115,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.word_mapped",
@@ -68067,7 +68123,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.mask_aligned",
@@ -68076,7 +68132,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.copy_mapped",
@@ -68085,7 +68141,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.absorb_mapped",
@@ -68129,7 +68185,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -68138,7 +68194,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -68147,7 +68203,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -68156,21 +68212,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -68179,7 +68235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -68188,7 +68244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -68197,7 +68253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -68205,7 +68261,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -68214,7 +68270,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -68223,7 +68279,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -68232,7 +68288,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -68240,14 +68296,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -68256,7 +68312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -68265,7 +68321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -68274,7 +68330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -68282,7 +68338,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -68290,7 +68346,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -68298,7 +68354,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -68306,7 +68362,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -68314,7 +68370,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -68322,7 +68378,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -68331,7 +68387,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -68339,7 +68395,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -68348,7 +68404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -68356,7 +68412,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -68365,7 +68421,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -68374,7 +68430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -68383,7 +68439,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -68392,7 +68448,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -68401,7 +68457,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -68410,7 +68466,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -68419,7 +68475,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -68428,7 +68484,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -68437,7 +68493,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -68446,7 +68502,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -68455,7 +68511,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -68464,7 +68520,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -68473,7 +68529,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -68482,7 +68538,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -68491,7 +68547,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -68500,7 +68556,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -68509,7 +68565,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -68518,7 +68574,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -68527,7 +68583,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -68536,7 +68592,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -68545,14 +68601,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -68561,7 +68617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -68570,7 +68626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -68579,7 +68635,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -68588,7 +68644,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -69065,7 +69121,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -69074,7 +69130,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -69083,7 +69139,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -70089,7 +70145,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -70098,7 +70154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -70107,7 +70163,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -70509,7 +70565,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -70518,7 +70574,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -71313,7 +71369,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.pure_return_execute",
@@ -71322,7 +71378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_environment",
@@ -71331,7 +71387,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.execute",
@@ -72964,7 +73020,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.frame_read",
@@ -72973,14 +73029,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
@@ -74855,7 +74911,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ZeroWords.memory32_cell",
@@ -74863,7 +74919,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ZeroWords.memoryWord_cell",
@@ -74871,7 +74927,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ZeroWords.final_cell",
@@ -74879,7 +74935,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.copy_call32",
@@ -76439,7 +76495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.initialization_frame",
@@ -76448,7 +76504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.restoration_frame",
@@ -76457,7 +76513,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.zero_return",
@@ -76466,7 +76522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -76474,7 +76530,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_ne",
@@ -76482,7 +76538,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_aligned",
@@ -76490,7 +76546,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.ordinary_mapped",
@@ -76498,7 +76554,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.mapped_of_allocated",
@@ -76506,7 +76562,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.count_small",
@@ -76514,7 +76570,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.hash_byte_cell",
@@ -76522,7 +76578,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bind_other",
@@ -76531,7 +76587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -76540,7 +76596,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -76548,7 +76604,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -76556,7 +76612,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.execute",
@@ -76565,7 +76621,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_execute",
@@ -76574,7 +76630,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_clock",
@@ -76583,7 +76639,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_ffi",
@@ -76592,7 +76648,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.ext_execute",
@@ -76601,7 +76657,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_execute",
@@ -76610,7 +76666,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lastValue_filter",
@@ -76618,7 +76674,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.execute",
@@ -76627,7 +76683,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_aligned",
@@ -76636,7 +76692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.body_shape",
@@ -76645,7 +76701,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -76654,7 +76710,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_clock",
@@ -77469,7 +77525,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.rounded_down_nat",
@@ -77478,7 +77534,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.downward_guards",
@@ -77487,7 +77543,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.upward_guards",
@@ -77496,7 +77552,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.execute",
@@ -77505,7 +77561,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.room_guards",
@@ -77514,7 +77570,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.call_execute",
@@ -77523,7 +77579,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.mark_body",
@@ -77532,7 +77588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.mark_execute",
@@ -77541,7 +77597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.mark_call",
@@ -77550,7 +77606,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.actual_prefix",
@@ -77559,7 +77615,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.execute_zero",
@@ -77568,7 +77624,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.zeroed_cell",
@@ -77577,7 +77633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.zeroed_fields",
@@ -77586,7 +77642,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.zeroed_away",
@@ -77595,7 +77651,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.FieldStores.Value.read",
@@ -77604,7 +77660,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.FieldStores.Value.ready_store",
@@ -77613,7 +77669,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.FieldStores.execute",
@@ -77622,7 +77678,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.actual_gas_stores",
@@ -77631,7 +77687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.gas_stores_execute",
@@ -77640,7 +77696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.initialized_budget",
@@ -77648,7 +77704,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.actual_allocations",
@@ -77657,7 +77713,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.allocate_execute",
@@ -77666,7 +77722,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.allocation_other",
@@ -77675,7 +77731,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.allocation_memory_away",
@@ -77684,7 +77740,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.allocation_budget",
@@ -77693,7 +77749,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.allocation_fields",
@@ -77702,7 +77758,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.actual_initialization",
@@ -77711,7 +77767,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.initialize_execute",
@@ -77720,7 +77776,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.initialized_clock",
@@ -77729,7 +77785,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.initialized_regular",
@@ -77738,7 +77794,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.actual_fresh_prefix",
@@ -77747,7 +77803,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.fresh_execute",
@@ -77756,7 +77812,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameNew.fresh_budget",
@@ -77765,7 +77821,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.body_shape",
@@ -77774,7 +77830,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bytes_number",
@@ -77782,7 +77838,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bytes_read",
@@ -77791,7 +77847,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bytes_geometry",
@@ -77800,7 +77856,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.selected_word",
@@ -77808,7 +77864,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.range_read",
@@ -77817,7 +77873,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.wide_read",
@@ -77826,7 +77882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.next_test_read",
@@ -77835,7 +77891,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.word_offset_number",
@@ -77843,7 +77899,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bitmap_address_read",
@@ -77852,7 +77908,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bind_overwrite",
@@ -77861,7 +77917,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.next_bind",
@@ -77870,7 +77926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.continuation_execute",
@@ -77879,7 +77935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bind_existing",
@@ -77888,7 +77944,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.push_execute",
@@ -77897,7 +77953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.pushed_number",
@@ -77905,7 +77961,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.selected_bounds",
@@ -77914,7 +77970,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.selected_progress",
@@ -77923,7 +77979,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bit_shift_small",
@@ -77931,7 +77987,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.mark_execute",
@@ -77940,7 +77996,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.word_below",
@@ -77948,7 +78004,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.marked_memory_away",
@@ -77956,7 +78012,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.branch_execute",
@@ -77965,7 +78021,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.step_execute",
@@ -77974,7 +78030,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.step_fields",
@@ -77983,7 +78039,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.step_away",
@@ -77992,7 +78048,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.step_of_mapped",
@@ -78001,7 +78057,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.loop_execute",
@@ -78010,7 +78066,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.environment",
@@ -78019,7 +78075,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.execute",
@@ -78028,7 +78084,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.call_execute",
@@ -78037,7 +78093,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.caller_budget_131072",
@@ -78045,7 +78101,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.caller_budget_65536",
@@ -78053,7 +78109,371 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "jumpdest-retained-v1.log"
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.Prefix.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.Prefix.restoration_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchList.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchList.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.rounded_down_padded",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.cursor_number",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.rounded_decrement",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.Prefix.allocate_expected",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchList.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchList.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.Prefix.Executes.append",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.Prefix.commands_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.Prefix.field_program",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.Prefix.field_stores",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.finish_executes",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.initial_executes",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.initial_locals",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.Locals.allocated",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.keys_amount",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.words_amount",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.pointer_executes",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.middle_executes",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.preclear_locals",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.final_locals",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.final_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.pointer_memory_away",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.final_memory_away",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.JumpDest.loop_execute_outside",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.JumpDest.outside_above",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.JumpDest.outside_below",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.JumpDest.Outside.selected",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.JumpDest.step_outside",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.ScratchTable.final_memory_outside",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.TableCount.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.TableCount.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.TableCount.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.TableCount.call_assign",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "scratch-helpers-count-v1.log"
     }
   ]
 }

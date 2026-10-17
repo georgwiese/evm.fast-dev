@@ -54,6 +54,32 @@ theorem marked_memory_away (memory : WitnessRadix.WordWrites.Memory) (bitmap ind
     WitnessRadix.StoreWord.put memory (bitmap + wordOffset index) (setBit old index) query = memory query :=
   if_neg (Ne.symm (word_below bitmap index query length inside below))
 
+/-- Excludes every byte address in one concrete reserved bitmap range. -/
+def Outside (bitmap : BitVec 64) (bytes : Nat) (query : BitVec 64) : Prop :=
+  ∀ offset < bytes, query ≠ WitnessRadix.byteAddress bitmap offset
+
+theorem outside_above (bitmap query : BitVec 64) (bytes : Nat)
+    (above : bitmap.toNat + bytes ≤ query.toNat) : Outside bitmap bytes query := by
+  intro offset inside equal
+  have number := WitnessRadix.byteAddress_toNat bitmap offset (by have bound := query.isLt; omega)
+  have same := congrArg BitVec.toNat equal
+  omega
+
+theorem outside_below (bitmap query : BitVec 64) (bytes : Nat)
+    (below : query.toNat < bitmap.toNat) (fits : bitmap.toNat + bytes < 2 ^ 64) : Outside bitmap bytes query := by
+  intro offset inside equal
+  have number := WitnessRadix.byteAddress_toNat bitmap offset (by omega)
+  have same := congrArg BitVec.toNat equal
+  omega
+
+theorem Outside.selected (bitmap query index : BitVec 64) (length : Nat)
+    (outside : Outside bitmap (bitmapBytes length) query) (inside : index.toNat < length) :
+    query ≠ bitmap + wordOffset index := by
+  have selected := selected_word length index.toNat inside
+  have offset := word_offset_number index
+  have away := outside (wordOffset index).toNat (by omega)
+  simpa [WitnessRadix.byteAddress, BitVec.ofNat_toNat] using away
+
 end InitECandidate.Solver.JumpDest
 
 #print axioms InitECandidate.Solver.JumpDest.bit_shift_small
@@ -61,3 +87,7 @@ end InitECandidate.Solver.JumpDest
 #print axioms InitECandidate.Solver.JumpDest.word_below
 
 #print axioms InitECandidate.Solver.JumpDest.marked_memory_away
+
+#print axioms InitECandidate.Solver.JumpDest.outside_above
+#print axioms InitECandidate.Solver.JumpDest.outside_below
+#print axioms InitECandidate.Solver.JumpDest.Outside.selected

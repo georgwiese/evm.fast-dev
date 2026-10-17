@@ -2469,3 +2469,35 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   Ite reads evalHOLExact while while reads evalHOLFinite; preserve the wrapper
   expected by the outer evaluator. BitVec.add_sub_cancel is the actual name.
   Unannotated congrArg intermediate avoids expected-state equality forcing.
+
+2026-10-17: unrestricted whole SSZ offset validator and actual caller
+
+- OffsetsUnroll retains the real while clock clamp and every abnormal result.
+  AnyLoop covers arbitrary mapped words, normal completion or actual SszErr10/11
+  within rounds+1 clocks. AnyExecute adds final equality guard/all scopes;
+  nonempty count<=8 costs<=count+1. Normal proves first=fixed without assuming
+  ranges/order/first equality. No schema-validity premise is introduced.
+- Environment supplies all four actual argument bindings. Call includes actual
+  lookup/callee/body/return/exception behavior and restores caller locals.
+  CallNormal proves any genuine normal ignored-result call yields first=fixed
+  and post={source with clock:=source.clock-paid}, paid<=count+2.
+- HeapFrame transports copied-input bytes across matching fields and real word
+  stores outside the natural copied extent; mapping is independent of contents.
+- Successful joint input-heap-frame-v1.log,1116 targets, only permitted axioms.
+  Indexed4207 modules/6701 facts (not percentages). Caller proofs still require
+  actual four evaluated argument values, code/exception-shape and mapped words.
+- NEXT: fixed decode_stateless_input copies LD_LE32(p) and LD_LE32(p+4) to
+  ssz_offs after p+=2,len-=2. Normal count2/fixed16 call must yield le32(input,2)
+  =16. Then np=p+o_npr=blob+18; nlen>=44 guard and three stores precede normal
+  count3/fixed44 call, yielding le32(input,18)=44. np+o_pl=blob+62, then
+  decode_payload length>=540 ensures gas byte474 is within copied extent.
+  Connect actual stores/guards/allocations and their byte frames, not only the
+  high-level InputDecode mirror. Generic HeapInput and scalar/frame results
+  are ready; no decoder-prefix composition module is written yet.
+- For failed AnyExecute frame attempts, updating both sides of the full frame
+  with one uniform clock normalized an alias too early. Rewrite the existing
+  emptyLocals finished frame first, then finished.clock and Nat.sub_sub. For
+  CallNormal, keep target.locals in the reconstructed full equality until eta
+  reduces the left record; rewrite caller locals afterward.
+- Fixed certificate/global/gas/query/target/ROM/map relation still open; claim
+  infinity and no full verification. RAM1.3GiB/disk58% at this checkpoint.

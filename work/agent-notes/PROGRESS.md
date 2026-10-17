@@ -2370,3 +2370,17 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful closure witness-radix-keccak256-call-v1.log, 702 targets, allowed
   axioms only. Constructor hash loop, map refinement and global fixed certificate
   remain open. No finite claim or full verification.
+
+2026-10-17: complete actual constructor array population and radix return
+
+- AllocatedBytes/Keccak256Allocated derive all byte/word hash mapping from
+  natural ordinary-arena extents/alignment. AllocatedAway and PoolFrame derive
+  protection of every existing key/header/record/ordinal cell through hashes.
+- Actual record arguments derive from decoded cells; real hash/copy/stores and
+  increment establish next prefix. Whole actual record loop and radix helper
+  return actual represented tree using observed hash digests. Bounds1374*N+1
+  for max1024 nodes,10854*N+1 for max65536 code, in source clocks only.
+- Closure witness-radix-constructor-populate-v3.log,874 targets, allowed axioms.
+  Existing byte-frame lemmas were reused; an uncommitted duplicate module was
+  removed. Allocator/capacity entry and global reachable premises, map/source
+  refinement, compiler target bound and finite certificate remain open.

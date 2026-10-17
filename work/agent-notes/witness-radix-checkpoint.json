@@ -1339,5 +1339,10 @@
     "successful_log": "witness-radix-keccak256-call-v1.log",
     "targets": 702,
     "result": "Complete actual fixed keccak256 function and caller/callee/code/argument environment: initial200-byte clear, arbitrary full-block loop, remainder declaration, actual136-byte padding clear and copy, both padding byte stores including rem135, final absorption, aligned four-word or unaligned memcpy output, lexical returns and caller restoration. Body<=202+20*floor(length/136), call<=203+20*floor(length/136) source clocks; globals/code/oracle/host and outside-three-buffer cells preserve. Only allowed axioms. Mapped-buffer/actual-global entry facts are explicit premises, still to derive from allocated input/buffers and constructor record loop. Original-map/whole-guest/target/global finite certificate remains open."
+  },
+  "constructor_population_checkpoint": {
+    "successful_log": "witness-radix-constructor-populate-v3.log",
+    "targets": 874,
+    "result": "Natural arena/alignment bounds derive all full-hash mapping premises and outside-buffer frames. Actual constructor record arguments derive from decoded record cells. Complete real hash/copy/store/increment iteration preserves earlier keys and records; entire actual record loop initializes all arrays with the observed actual digests. Loop+radix helper+table return establishes expected actual lookup representation at root. Source cost<=1374*N+1 for max1024 and <=10854*N+1 for max65536. Only allowed axioms. Actual htab_new/capacity entry and globally reachable allocated/decoded premises remain to compose; original-map/whole-guest/target/global finite certificate remains open."
   }
 }

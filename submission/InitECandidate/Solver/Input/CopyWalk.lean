@@ -45,6 +45,12 @@ theorem walk_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointe
   | zero => exact ⟨rfl,rfl,rfl,rfl,rfl,rfl⟩
   | succ rounds ih => exact ih _ _
 
+theorem walk_endian (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (index rounds : Nat) :
+    (walk source pointer index rounds).be=source.be := by
+  induction rounds generalizing source index with
+  | zero => rfl
+  | succ rounds ih => exact ih _ _
+
 def copyRounds (length : Nat) : Nat := (length+7)/8
 
 theorem copyRounds_bounds (length : Nat) :
@@ -66,3 +72,5 @@ end InitECandidate.Solver.Input.Blob
 #print axioms InitECandidate.Solver.Input.Blob.walk_frame
 #print axioms InitECandidate.Solver.Input.Blob.copyRounds_bounds
 #print axioms InitECandidate.Solver.Input.Blob.copyRounds_fit
+
+#print axioms InitECandidate.Solver.Input.Blob.walk_endian

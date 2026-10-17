@@ -2419,3 +2419,24 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   Incremental policy passes61033 entries/2251449143 bytes, claim infinity.
   Copied heap bytes/SSZ/gas correspondence, failure paths, global potential,
   original-map refinement and target/finite certificate remain open.
+
+2026-10-17: actual copied input bytes and scalar codec arithmetic
+
+- CopyMemory proves every actual repeated store's exact copied word plus a
+  complete untouched-cell frame. ByteDecode proves packed-word byte selection;
+  CopyBytes supplies actual little-endian heap byte reads from the copied words.
+- BlobExecute now exposes exact resulting memory, ordinary domain and endian.
+  BlobBytes.execute_bytes composes whole actual input_blob with exact HeapInput
+  over the encoded extent and <=16,777,215 source clocks. No mathematical
+  input-list length bound. Successful input-blob-bytes-v1.log,1024 targets,
+  only permitted axioms; includes all changed dependency checks.
+- For lists of length >=2^64, bytes after the encoded length may still be
+  nonzero original input bytes. HeapInput intentionally claims only the encoded
+  extent; no false zero-tail or full decoder-mirror equivalence is assumed.
+  Fresh unfilled heap cells need a reachable zero-memory invariant.
+- WordAssemble proves actual 4/8-byte bitwise assembly equals natural LE sums
+  (input-word-assemble-v4.log,606 targets). Explicit multiplication proofs avoid
+  omega recursion-depth blowup from accumulated redundant inequalities.
+- Index4182 modules/6641 facts; incremental policy passes61038 entries and
+  2251465241 bytes, infinity. Work continues on actual SSZ scalar reads/guards,
+  source-map refinement and global/compiler/target finite certificate.

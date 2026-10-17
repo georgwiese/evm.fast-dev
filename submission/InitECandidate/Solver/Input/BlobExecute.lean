@@ -6,6 +6,12 @@ namespace InitECandidate.Solver.Input.Blob
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
+def prepared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (pointer : BitVec 64) :
+    PanSemStateFiniteExact 64 Guest.HostMemory :=
+  let loaded:=lengthPost (WitnessRadix.QueryBranch.bind source "len" 0#64) input
+  WitnessRadix.QueryBranch.bind (WitnessRadix.PersistentAlloc.post {loaded with clock:=loaded.clock-1}
+    pointer (BitVec.ofNat 64 (input.length%2^64+8))) "p" pointer
+
 /-- Complete literal input_blob on the passing size/allocation path. The input
 list is arbitrary: only its encoded length is checked, exactly as in the guest.
 All host reads and heap stores follow from the challenge's real domains. -/
@@ -22,7 +28,9 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : G
       evaluateHOLFiniteState source body=(some (.returned (pair pointer (input.length%2^64))),target) ∧
       target.clock=source.clock-(copyRounds (input.length%2^64)+1) ∧
       target.globals=(WitnessRadix.PersistentAlloc.post source pointer (BitVec.ofNat 64 (input.length%2^64+8))).globals ∧
-      target.ffi.ffiState=source.ffi.ffiState ∧ target.ffi.oracle=source.ffi.oracle := by
+      target.ffi.ffiState=source.ffi.ffiState ∧ target.ffi.oracle=source.ffi.oracle ∧
+      target.memory=(walk (copyEntry (prepared source input pointer)) pointer 0 (copyRounds (input.length%2^64))).memory ∧
+      target.memaddrs=source.memaddrs ∧ target.be=source.be := by
   classical
   let length:=input.length%2^64
   have lengthBound : length≤134217712 := bounded
@@ -61,7 +69,10 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : G
   have targetHost:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.ffi.ffiState) frame
   have targetOracle:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.ffi.oracle) frame
   have fields:=walk_frame (copyEntry entered) pointer 0 (copyRounds length)
-  refine ⟨result,entry,?_,?_,?_,?_⟩
+  have targetMemory:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.memory) frame
+  have targetDomain:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.memaddrs) frame
+  have targetEndian:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.be) frame
+  refine ⟨result,entry,?_,?_,?_,?_,?_,?_,?_⟩
   · change target.clock=source.clock-(copyRounds length+1)
     change target.clock=(walk (copyEntry entered) pointer 0 (copyRounds length)).clock at targetClock
     rw [targetClock,walk_clock]
@@ -78,6 +89,16 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : G
   · change target.ffi.oracle=source.ffi.oracle
     change target.ffi.oracle=(walk (copyEntry entered) pointer 0 (copyRounds length)).ffi.oracle at targetOracle
     rw [targetOracle,fields.2.2.2.2.2]
+    rfl
+
+  · exact targetMemory
+  · change target.memaddrs=source.memaddrs
+    change target.memaddrs=(walk (copyEntry entered) pointer 0 (copyRounds length)).memaddrs at targetDomain
+    rw [targetDomain,fields.2.2.1]
+    rfl
+  · change target.be=source.be
+    change target.be=(walk (copyEntry entered) pointer 0 (copyRounds length)).be at targetEndian
+    rw [targetEndian,walk_endian]
     rfl
 
 end InitECandidate.Solver.Input.Blob

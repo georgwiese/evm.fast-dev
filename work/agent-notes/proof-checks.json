@@ -4154,12 +4154,24 @@
       "sha256": "fe4ad5173eb78a09440b3253e5aea119c13736a5ebe7f6597e5d3c0501d5f4b6"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/BlobBytes.lean",
+      "sha256": "223e4ca5507337c11c6720aa17419b7b0f160c1e30a8bba01e655cc678c1df98"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/BlobExecute.lean",
-      "sha256": "9814d0a8df2ed1655742b5a13095a34e7dcca823f91ae05ff5015a429b47250f"
+      "sha256": "4ce9dc36432dee70b85ec12c5638929ca2c8e8219aaa463dc0dc6cd5dbf679cb"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/BlobProgram.lean",
       "sha256": "202f3bc83fa681cddf87f55d5ed09425f6c002255a36a63c001b8351e23479dd"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/ByteDecode.lean",
+      "sha256": "2bebbf2efd37a76852c39ccd3d8dec8cee9fc858135bd09ddca614e5360f46a4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CopyBytes.lean",
+      "sha256": "d160d7f9c6e40585a2af14e4507ea2df71db926279c40dd8f7765fdc77d5014c"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CopyDomain.lean",
@@ -4168,6 +4180,10 @@
     {
       "path": "submission/InitECandidate/Solver/Input/CopyLoop.lean",
       "sha256": "d9dbaecda7f15628d1589938955022ef30400d5b238684e4fbcbed4842ec6b06"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CopyMemory.lean",
+      "sha256": "12f021f8448062cf21569ee7f7b8b32f247ef0e965f9ddcf8fb36b3f00efaca7"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CopyReturn.lean",
@@ -4187,7 +4203,7 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CopyWalk.lean",
-      "sha256": "92322f865e4ac66aaf9452abd103e101c1db3faea094e72ab850816ec797c62c"
+      "sha256": "224aec65dfb1e874d4f8fc0c8628e03f1465ef4cfa33bab987055b3fbafb87db"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/Framing.lean",
@@ -4220,6 +4236,10 @@
     {
       "path": "submission/InitECandidate/Solver/Input/SharedReadExecution.lean",
       "sha256": "cfd80807b28ecc59246aa9939b56f5b96ace0dce33c98ca85a4b76a18c980c5d"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/WordAssemble.lean",
+      "sha256": "633d733f7bad0e1724aafae8b60d6cda037625e18257f1d983bae37436d86eed"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/WordCodec.lean",
@@ -64686,7 +64706,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -64694,19 +64714,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -64715,7 +64735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -64724,7 +64744,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -64733,7 +64753,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -64742,7 +64762,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -70228,7 +70248,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -70237,7 +70257,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.framed_byte",
@@ -70245,7 +70265,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -70254,7 +70274,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -70263,7 +70283,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -70272,21 +70292,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -70295,7 +70315,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -70304,7 +70324,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -70313,7 +70333,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -70321,7 +70341,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -70330,7 +70350,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -70339,7 +70359,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -70348,7 +70368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -70356,14 +70376,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -70372,7 +70392,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -70381,7 +70401,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -70390,7 +70410,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -70398,7 +70418,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -70406,7 +70426,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -70414,7 +70434,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -70422,7 +70442,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -70430,7 +70450,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -70438,7 +70458,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-word-assemble-v4.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -70447,7 +70467,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -70455,7 +70475,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -70464,7 +70484,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -70472,7 +70492,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -70481,7 +70501,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -70490,7 +70510,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -70499,7 +70519,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -70508,7 +70528,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -70517,7 +70537,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -70526,7 +70546,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -70535,7 +70555,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -70544,7 +70564,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -70553,7 +70573,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -70562,7 +70582,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -70571,7 +70591,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -70580,7 +70600,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -70589,7 +70609,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -70598,7 +70618,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -70607,7 +70627,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -70616,7 +70636,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -70625,7 +70645,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -70634,7 +70654,101 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-blob-execute-v3.log"
+      "successful_log": "input-blob-bytes-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-blob-bytes-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-blob-bytes-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-blob-bytes-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "input-blob-bytes-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-blob-bytes-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-blob-bytes-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-blob-bytes-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-blob-bytes-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "input-word-assemble-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "input-word-assemble-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "input-word-assemble-v4.log"
     }
   ]
 }

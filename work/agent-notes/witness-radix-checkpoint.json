@@ -1013,6 +1013,38 @@
     "submission/InitECandidate/Solver/WitnessRadix/TableClearFrame.lean": {
       "bytes": 1639,
       "sha256": "3f81db13713e7be7e33bed8abef2bfe4c38c7523efff1cc149587ae20c7d2122"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableCells.lean": {
+      "bytes": 3557,
+      "sha256": "571657fb5dd7ac2acf490928d4601bb3f0547c1055e2110dd56dec5ee33eaed9"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableMemory.lean": {
+      "bytes": 4242,
+      "sha256": "1205bfc07c506bca287fdd6c1b9aa0b72b699f1ceddef0621189723c0c7612d8"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableRecords.lean": {
+      "bytes": 4558,
+      "sha256": "6ac49985a130c0b3e8578a64722e5ff9020ac1349bb07e173a6d7e871a501670"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableEnvironment.lean": {
+      "bytes": 2034,
+      "sha256": "b37e89fbbf842bfc6d41db252d024a4eab8d83587e922c9deb443e8415bd27d5"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableCall.lean": {
+      "bytes": 3927,
+      "sha256": "4443742c022224b9f4e540a0b462f65793345dfe0205dad4711379e3d12fc204"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TableCallData.lean": {
+      "bytes": 1321,
+      "sha256": "547b59b92f3fd53264edc2084b3504c30679ce8f5e966d12af5fba4878058cb0"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorArrayEntry.lean": {
+      "bytes": 5218,
+      "sha256": "bd534f3f7e04a648d476e88c3db88b2c2727067afe9a57574c92241d65d4e716"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ConstructorPrepare.lean": {
+      "bytes": 6295,
+      "sha256": "58c8646281310d59ede4b949676b8bc674003cc9ac68aea449dc1f6c94f1fb66"
     }
   },
   "development_artifacts": {
@@ -1261,5 +1293,10 @@
     "result": "Complete literal fixed htab_new for key length32, from actual ABI/domain/code/heap cursor and natural layout room/cap-shape facts: all six real allocation calls, all nine header stores, both actual clearing cases, lexical restores/table return. Exact nonlocal state and heap global/memory/call-clock result. Cost clearCost(cap)+6. Header contents/record frames, actual caller setup and reachable heap-room premises remain to connect.",
     "frame_log": "witness-radix-table-frame-v1.log",
     "frame_result": "Complete actual used-clearing frame outside its natural byte interval, including cap=4."
+  },
+  "actual_constructor_preparation_checkpoint": {
+    "successful_log": "witness-radix-constructor-prepare-v2.log",
+    "targets": 718,
+    "result": "Derived four actual helper header pointer fields and complete record-memory frame from real htab_new memory. Actual htab_new ABI/code lexical call and restoration checked. ConstructorPrepare connects that actual call and three pointer-load/ordinal declarations to remaining real record loop, with mapped arrays, fixed header/records, empty initialized prefix, exact live locals and source-clock payment. Still assumes natural layout/cap/heap room and decoded record premises; capacity loop/hash calls/global derivation remain open."
   }
 }

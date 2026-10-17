@@ -2295,3 +2295,19 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   Header/record postconditions, caller setup and reachable heap-room facts still
   need connection; hashing/original-map/guest/target/global finite certificate
   remain open. Continuing concrete table postconditions and constructor setup.
+
+### 2026-10-17 — actual table caller and constructor record-loop preparation
+
+- TableCells/Memory prove distinct header stores and all four real helper
+  pointer fields. TableRecords proves all earlier decoded record words survive
+  every constructor write/clear and supplies Constructor.FixedData.
+- TableEnvironment/Call prove actual htab_new argument/code/callee setup,
+  complete lexical call, concrete memory/heap/clock result, binding/restoration.
+  CallData transports concrete fixed header/record facts to that caller state.
+- ConstructorArrayEntry/Prepare execute the real table call plus three actual
+  pointer loads and zero ordinal declaration, exposing the remaining real
+  record loop. Prepared data includes mapped arrays, fixed header/records,
+  empty initialized prefix, all live locals and exact source-clock payment.
+- Successful constructor-prepare-v2 closure (718 targets), permitted axioms.
+  Layout/cap/heap-room and decoded-record premises remain to derive globally;
+  capacity loop/hash calls, original map and whole guest/target/K remain open.

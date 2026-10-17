@@ -3481,3 +3481,44 @@ Original mutable32-byte table scan checkpoint (2026-10-17):
   semantics; original/radix dictionary refinement; protected gas frames and
   full global gas/state/source/target/certificate. Pan clocks are not target
   prices; this result neither establishes a finite K nor a global go.
+
+Complete original32-byte find/hash/caller checkpoint (2026-10-17):
+- HashAligned32 exact fixed aligned fast path from four mapped/stored words,
+  including every xor,shift,multiply and return. HashCall32 actual outer h/w
+  declarations/scopes and two-argument ABI/caller; body0/caller1 clocks.
+- HashUnaligned32 actual32 byte reads and expanded LE macros, same full hash
+  arithmetic and pure0-clock core. HashWordBytes reconstructs each actual word
+  from eight byte extractions. HashMemory32 proves packed word/byte roundtrip,
+  uniform actual byte-key hash at all alignments, whole body and real caller.
+  Result depends only on the key's bytes; no distribution assumption.
+- FindHeader all five real header reads/declarations and full lexical restore
+  stack. FindPrepared actual post-hash/index locals, mask/start numeric bridge.
+  FindAligned32 whole aligned original htab_find_slot, then FindMemory32 whole
+  original body at every alignment. FindCall32 real two-argument environment/
+  caller and canonical continuation. Body<=6*order.length+1,caller+2 source
+  clocks. Actual physical header/used/key/query byte views, covering order list,
+  room, power-of-two capacity, code and clock premises are explicit. No hash
+  or comparator execution is a premise.
+- Important boundary: order.length is the length of the supplied covering
+  order list. Source HT_COUNT/order-array correspondence and maintenance by
+  constructors/insertion/growth/deletion/rollback are not proved. Do not label
+  the bound an unconditional HT_COUNT bound. Dictionary/last-wins refinement
+  and general20/52/60-byte keys remain open; Pan clocks are not target pricing.
+- Successful closure mutable-find-call32-v1.log1119targets,4.64s,max child
+  RSS1904120KiB, permitted axioms. Whole general-body success
+  mutable-find-memory32-v1.log1118targets,9.50s,max RSS1906852KiB. Aligned whole
+  body mutable-find-aligned32-v2.log1112targets,6.96s,max RSS1907544KiB.
+  Unaligned final mutable-hash-unaligned32-v4.log1113targets,6.85s,max
+  RSS1930300KiB. Earlier unaligned draft ran7m12.19s then failed on a missing
+  normalized pointer+0 read; fixed to a direct pointer read. Other failed
+  drafts fixed declaration recursion wrappers by separating actual core and
+  scopes, HOr/OR normalization, explicit setWidth numeric equality, declaration
+  doc placement, finite literal-name distinctness and canonical frame aliases.
+  Failed logs not evidence; final committed sources have no proof holes.
+- Index4486/7304; policy61351entries/2252820057bytes, infinity. Solver21MiB,
+  host1.4GiB used/29available,disk58%/124GiB free. Account32%, no reset credits.
+  No full verifier, finite K, global gas allowance or overall go earned.
+- Next dictionary placement/lookup correctness and mutations preserving the
+  physical table/ownership invariant, then20/52/60-byte helpers, protected gas
+  cells and storage/state-debt coupling. Continue original/radix refinement,
+  joint table/Q/heap budget and whole source/compiler/target certificate.

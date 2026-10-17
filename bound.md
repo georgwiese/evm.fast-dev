@@ -12,6 +12,18 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked complete original htab_find_slot body/caller for32-byte keys at
+  every alignment. Both real hash paths return the same byte-level keyHash;
+  all32 unaligned loads and aligned-word reconstruction check. Real header
+  declarations, hash ABI/call, masked index, memeq scan, returns and scoped
+  caller compose. Body/caller <=6*order.length+1/+2 Pan clocks, preserving
+  memory/control. Physical header/used/order/key views, room, power-of-two
+  capacity, code/domain and clock premises remain explicit. Relating the
+  covering order list to HT_COUNT, preserving it under mutations,20/52/60-byte
+  keys, dictionary refinement, target pricing and global K remain open.
+  `mutable-find-call32-v1.log`1119targets, permitted axioms; index4486/7304.
+  Policy61351entries/2252820057bytes, infinity, no full verification.
+
 - [x] Checked actual original32-byte table find scan and absent-cap return,
   including real memeq ABI/body/call at all key alignments, early equality,
   masked increment and lexical restoration. From explicit physical table

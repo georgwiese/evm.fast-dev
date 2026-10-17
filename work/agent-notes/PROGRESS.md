@@ -3552,3 +3552,30 @@ Linear-table dictionary/placement checkpoint (2026-10-17):
   use a fixed-capacity trace and avoid growth/deletion there. Mutable runtime
   maps, their growth/deletion/rollback/ownership, global gas/state/table/Q/heap,
   and compiler/target certificate remain separate open work.
+
+Original dictionary find/get/witness lookup checkpoint (2026-10-17):
+- FindSlotSpec32 combines physical comparator-chain answers with placement and
+  dictionary semantics. FindLift32 composes actual header/hash/index setup.
+  FindDictionary32/Call32 give the complete fixed original find body and real
+  caller with exact absent sentinel or matching slot and dictionary value.
+- HeaderData separates physical header contents from caller local names.
+  PureValueCall extends actual pure-call composition to tuple returns.
+  GetTail32 executes the real sentinel/value-cell branch. GetDictionary32 and
+  GetCall32 compose original find and exact two-word get, at every alignment.
+- NodeDbTail32 executes actual missing/present branches and two record loads.
+  NodeDbDictionary32 composes real get with original witness lookup, returning
+  dictionary record's represented pointer/length or three zero words. Body
+  bound<=6*order.length+3 Pan clocks, pure memory/control. All physical header,
+  used/key/value/record cells, placement, representation, covering-list/room,
+  pointer ranges, actual code and clock premises remain explicit. No hash,
+  comparator or inner get execution is supplied as a premise.
+- Success mutable-get-call32-v1.log then mutable-nodedb-dictionary32-v1.log
+  1132targets; main facts only permitted axioms. Index4501modules/7337facts;
+  incremental policy61366entries/2252890183bytes. Claim infinity. Host1.5GiB
+  used/29available, disk58%/124GiBfree; account33%, reset credits0.
+- Overall progress estimate given to user: roughly35%, range25-45%, based on
+  remaining obligations rather than file counts. No whole-program acceptance,
+  finite certificate or full verification. Difficult global gas/state/heap/Q
+  and compiler/target links remain. Continue actual immutable no-growth table
+  construction and mutators preserving the lookup premises; then whole
+  original/radix refinement and resource/certificate integration.

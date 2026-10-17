@@ -44,7 +44,7 @@ theorem no_growth_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (ta
     have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address))
         [localVar "t", localVar "key", localVar "value"] = some (TableCall.values table p.key value) := by
       simp [TableCall.values, evalListHOLFinite, evalListHOLExact, evalHOLExact, toExact, localVar, tLocal, keyLocal, valueLocal]
-    obtain ⟨paid, slot, paidBound, inside, inserted, counter⟩ := Insert.general_call source table p kind vals order position count value bits items data
+    obtain ⟨paid, slot, paidBound, inside, inserted, counter, empty⟩ := Insert.general_call source table p kind vals order position count value bits items data
       insertCode [localVar "t", localVar "key", localVar "value"] args enough
     let memory := Insert.generalResultMemory source.memory source.be (KeyHash.keySize kind) p table vals order position slot count value
     let post := {source with memory := memory, clock := source.clock - paid}

@@ -2325,3 +2325,14 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful capacity-entry-v1 closure (586 targets), permitted axioms only.
   Continuing fixed hashing/copy routines and constructor hash-loop assembly;
   original map, whole-guest/target/global K and finite certificate remain open.
+
+2026-10-17: fixed Keccak permutation and byte-copy block checkpoint
+
+- KeccakOracle/Ffi/Mapped/Call now prove the actual source-oracle reply,
+  200-byte read from mapped state words, literal external/function execution,
+  caller restoration, exact memory/FFI event update and one call clock.
+- ByteArrayReads/Frame and ByteRegion prove mapped byte reads and writer/read
+  transport frames; CopyByteProgram/Block execute actual generic byte copies.
+- Successful closure: witness-radix-copy-byte-v3.log, 652 targets, only allowed
+  axioms. Whole keccak256/constructor hash loop and global certificate remain
+  open. Claim remains infinity; no full verification.

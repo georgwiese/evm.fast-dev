@@ -4680,3 +4680,28 @@ Whole paired witness constructor checkpoint (2026-10-17):
   across successful-child log/delete merges, rollback and block counters.
   Whole runtime, global invariants and quantitative baseline target transport
   remain open. Account last45%, no reset credits.
+
+
+### 2026-10-17 — actual validator and root split checked
+
+- RootValidationProgram identifies the complete unchanged validate_transaction
+  body. NormalCallEntry/Data, NormalDeclarationEntry and PureGuard invert real
+  normal runs without assuming successful reads, helper results or clocks.
+- RootValidationNormal/ValidatedResult derive the actual returned three-word
+  intrinsic value, with regular and floor components <=16777216. RootValidationCall
+  connects that postcondition to the real scoped call in process_transaction.
+- RootProgram/Execution/Entry check the actual min split, lexical scopes, liquid
+  and reservoir words, the one source clock consumed and the liquid+regular cap.
+  This is not the whole caller/frame proof, nor a runtime bound for preprocessing.
+- Successful original-root-entry-v2.log covers the new closure (1087 jobs).
+  Earlier numbered attempts failed during proof development and are not evidence.
+  Index4446 modules/7251 printed facts;4457 Solver modules, no missing imports or
+  replacement dependencies, fixed program/artifacts unchanged. Incremental policy
+  passes61318entries/2252698656bytes, not full verification. Claim remains infinity.
+- Inspected actual op_sstore: state refunds restore a slot with zero original
+  value to zero. Existing StorageDebt captures the balance, but the real backend,
+  child/rollback and global signed accounting connection is still open. Do not
+  assert the earlier conditional380M gas allowance as an established global fact.
+- Continuing actual caller-local transport and TE/MSG/frame initialization, then
+  global ledgers and quantitative unchanged-target transport. Account47%, no
+  reset credits. No whole finite bound yet.

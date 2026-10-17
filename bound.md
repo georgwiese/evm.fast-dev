@@ -12,6 +12,15 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked the actual header field sequence and all four field kinds:
+  pointer/scalar/quad reads from preserved old header memory; writer calls,
+  real p/w updates and right-nested continuation; natural aggregate pointer/
+  clock bounds and re-established memory/domain/heap context. Literal AST
+  decomposition proves21 base+2 optional descriptors. The actual list-header
+  writer/caller also checks. Whole header prefix/optional/suffix composition
+  remains open. Closure `input-rlp-list-write-v1.log`1167targets, permitted
+  axioms; index4416modules/7111facts. No full header/finite certificate claim.
+
 - [x] Checked complete actual rlp_put_u256 and its real declaration/assignment
   callers: heap mark, alloc32, minimal writer, byte encoder, heap release,
   return and all scopes. The heap global is restored exactly; encoded size is

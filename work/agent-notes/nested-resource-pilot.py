@@ -101,7 +101,15 @@ def main():
     depth = literal(evm, 'STACK_DEPTH_LIMIT')
     sources = [fork, evm, 'guest/src/evm_calls.pnk','guest/src/state.pnk',
                'guest/src/lib/htab.pnk',
-               'submission/InitECandidate/Solver/GasBudget/NestedDecay.lean']
+               'submission/InitECandidate/Solver/GasBudget/NestedDecay.lean',
+               'submission/InitECandidate/Solver/GasBudget/MergeBudget.lean']
+    forest_cases = {}
+    for assumed_gas in (380000000,500000000):
+        for assumed_depth in (538,depth):
+            units = (system//production+1)*assumed_depth*(assumed_gas//production)
+            forest_cases[f'gas{assumed_gas}-depth{assumed_depth}'] = dict(
+                units=units,
+                hypothetical_price_sensitivity={str(p):units*p for p in (512,1000,3552)})
     result = dict(whole_bound=False, certificate=False, runtime_work_bound=False,
         model='Single-wave and greedy repeated-wave chain scenarios; exact integer arithmetic, no arbitrary-schedule optimum.',
         parameters=dict(user_regular_cap_literal=user, system_regular_literal=system,
@@ -115,6 +123,18 @@ def main():
             status='Conditional Lean facts; actual edge/root budget invariants remain open.'),
         cases=dict(user=scenarios(user,access,production,depth),
                    system=scenarios(system,access,production,depth)),
+        conditional_forest_envelopes=dict(
+            formula='(per_root_maximum_keys+1)*maximum_depth*total_production_events',
+            proof_log='gas-merge-budget-v1.log',
+            cases=forest_cases,
+            premises=[
+                'Every merge insertion is traced to a production event inside that child subtree.',
+                'Each production event is propagated at most once along each enclosing call edge.',
+                'Actual occupancy<=30M/5000 for each frame, from per-root paid production accounting.',
+                'Aggregate production*5000<=the assumed gas allowance; no sum of declared root gas is assumed.',
+                'Actual call depth bound and positive-charge/event coupling.',
+                'Rehash/raw insertion, deletion and copy work are additional; no target price is verified.'
+            ], runtime_coupling_proved=False),
         remaining_premises=[
             'Actual parent regular budget bounded by its root seed through all success/failure paths.',
             'Every nested call/create pays the required fee; stipends are funded by its value fee.',

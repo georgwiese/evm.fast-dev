@@ -12,6 +12,20 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked actual successful-child counter/spill repayment prefix. The
+  literal child-error caller, spill addition, mutable minimum and three real
+  repayment stores produce parent regularBudget=old parent+old child, under
+  actual frame separation/code/clock and combined budget<2^64. The arbitrary
+  continuation retains rep's lexical scope. The real log/table suffix's memory
+  frame is still open. `gas-child-success-v4.log`1116targets, permitted axioms.
+- [x] Checked conditional arbitrary-forest counting: each production contributes
+  once per enclosing edge, so propagation<=depth*productions; uniform occupancy
+  then bounds weighted propagation using aggregate paid production, without
+  summing declared root gas. Scenario30M/5000 keys, depth538, aggregate380M gives
+  245368888000 units. `gas-merge-budget-v1.log`1173targets; index4464/7236.
+  Runtime event/merge/occupancy/depth/gas coupling and actual prices remain
+  open. Incremental policy61328entries/2252704190bytes; claim infinity.
+
 - [x] Checked conditional actual-calculator decay algebra: the access/value
   fee premises imply child<=capNat(parent-100); shifted contraction is
   64*(child+6237)<=63*(parent+6237). A chain with root<=30M and those premises

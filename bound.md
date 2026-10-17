@@ -44,6 +44,8 @@
 
 **New checked active-frame initialization:** the unchanged frame_open body and actual scoped caller compose frame_new with the real104-byte continuation allocation/clear, all four record stores (including MSG at offset40), global activation and return. Both child ledger and every word outside the incoming live arena are preserved as required; the activated child's regular ledger equals MSG_GAS. Exact reserved room is bitmap_bytes(n)+2760; caller allowance is n+memzero_price(bitmap_bytes(n))+45 source clocks. Original entry/code/ownership/clock premises remain explicit; this does not connect through all message preprocessing or establish global gas/runtime. Successful combined closure: frame-open-call-v1.log1168jobs, exit0, permitted axioms.
 
+**New checked persistent records:** both original te_new (200bytes) and msg_new (176bytes) bodies/callers derive real alloc and clear executions, initialize every word to zero, reserve exactly their sizes for aligned incoming heap cursors and preserve every outside word. Each actual caller consumes10source clocks. Entry code/heap/room/domain/clock premises remain explicit. Successful fresh-record-call-v1.log1065jobs, exit0, permitted axioms. Actual warm-map preprocessing and cross-callee message ownership remain open.
+
 **Immediate next work:** prove later message/map preprocessing memory frames and connect the capped root MSG word to the actual active frame/global regular-gas ledger, then successful-child memory frames/merges, rollback and block reservation/counter facts. Preserve the original program and account for parser/failure paths, mutable maps and trie/query progress. Transport the resulting phase counts to the unchanged baseline target; no numerical ceiling applies.
 
 

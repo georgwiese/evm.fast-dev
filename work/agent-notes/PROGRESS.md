@@ -3257,3 +3257,25 @@ Actual state-gas charge success/failure checkpoint (2026-10-17):
   state/block conservation, joint mutable-table/heap-query bounds, root input
   entry, original-map/compiler/target/fixed-certificate connections. These local
   conservation summaries do not yet prove380M aggregate gas or finite K.
+
+Actual halt and child-error gas return checkpoint (2026-10-17):
+- Halt exact fixed three-store AST/body/caller, regular-used+=liquid,
+  liquid=0, EV_ERROR160=err. Source body0/caller1 clocks. Natural regular
+  budget preserved if liquid+used<2^64; source cells/code explicit.
+- ChildErrorProgram actual fixed incorporate_child_on_error body, frame amount
+  views and shared Ready (actual globals/local, mapped parent/child words,
+  values, cross-frame separation). Actual summed-field store/read helpers.
+- ChildError executes all parent liquid/state/regular-used additions, preserving
+  later parent and child reads through real stores. Its natural budget equation
+  says resulting parent budget + old child outstanding spill = old parent +
+  old child budgets. Thus parent result cannot exceed their sum; after refill
+  the omitted child spill is zero. No-wrap liquid/used sums are explicit.
+- Actual unary ignored caller executes in1source clock, retaining exact memory
+  and control frames and the same budget equation. No whole call-tree claim.
+- Successful gas-child-error-call-v1.log1113targets, only permitted axioms,
+  4.24s wall, max child RSS1875564KiB. Halt draft fixed missing shapeToHOL
+  reduction; failed log not evidence. Index4445/7179. Policy renewed; infinity
+  claim, no full verifier. Account28%, credits0, host/disk within limits.
+- NEXT successful child repayment prefix and forward/stipend debits, actual
+  regular-charge source bridge and global signed state/block accounting; joint
+  table/heap-query work and original-map/target certificate remain open.

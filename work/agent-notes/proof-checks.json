@@ -3982,8 +3982,24 @@
       "sha256": "ba16809a66cc3382bf35ae413a1944f289926a5ed5cc21d077c65582f8fb127b"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/ChildError.lean",
+      "sha256": "2990877b0df1b0cfb811bf2f49bf09c4a1f535e965cdbf4b1d8d2b3419e9ccee"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/ChildErrorCall.lean",
+      "sha256": "1a92720898b9f9b6ef80838e588fa8e6a6e7c2a65fa880bdf0859e2064c8e422"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/ChildErrorProgram.lean",
+      "sha256": "f69bfa560b2b45d55de25e0aaa0afade2b43d966574004daba4f60b776435c04"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GasBudget/Frame.lean",
       "sha256": "d4cd267043fdf3093f23facaa4e63c734c0f807c59f1cc837aac02876d8fcf5e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/Halt.lean",
+      "sha256": "00969e96b5a6b0184d1e7d654b5870cc8128ac5d9b45eff34d3d75cad5384792"
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/Minimum.lean",
@@ -76199,7 +76215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refund_call",
@@ -76208,7 +76224,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refill_call",
@@ -76217,7 +76233,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.address_read",
@@ -76226,7 +76242,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.frame_read",
@@ -76235,14 +76251,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
       "axioms": [
         "propext"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
@@ -76251,7 +76267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.selected_number",
@@ -76259,7 +76275,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.environment",
@@ -76268,7 +76284,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.call_execute",
@@ -76277,7 +76293,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.body_shape",
@@ -76286,7 +76302,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.execute",
@@ -76295,7 +76311,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.preserves_regular_budget",
@@ -76303,7 +76319,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.body_shape",
@@ -76312,7 +76328,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.execute",
@@ -76321,7 +76337,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.preserves_regular_budget",
@@ -76329,7 +76345,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.body_shape",
@@ -76338,7 +76354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.execute",
@@ -76347,7 +76363,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.environment",
@@ -76356,7 +76372,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.call_execute",
@@ -76365,7 +76381,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.first_execute",
@@ -76374,7 +76390,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.execute",
@@ -76383,7 +76399,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.preserves_regular_budget",
@@ -76392,7 +76408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.call_execute",
@@ -76401,7 +76417,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed_call",
@@ -76410,7 +76426,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed",
@@ -76419,7 +76435,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.body_shape",
@@ -76428,7 +76444,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.spill_execute",
@@ -76437,7 +76453,112 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "gas-state-charge-call-v1.log"
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.budget_transfer",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.returned_budget_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.child_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.sum_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.stored_away",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Halt.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Halt.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Halt.preserves_regular_budget",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Halt.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "gas-child-error-call-v1.log"
     }
   ]
 }

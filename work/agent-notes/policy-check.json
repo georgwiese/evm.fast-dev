@@ -999,7 +999,11 @@
     "submission/InitECandidate/Solver/FlattenWeighted/Work.lean",
     "submission/InitECandidate/Solver/GasBudget/AddExact.lean",
     "submission/InitECandidate/Solver/GasBudget/Calls.lean",
+    "submission/InitECandidate/Solver/GasBudget/ChildError.lean",
+    "submission/InitECandidate/Solver/GasBudget/ChildErrorCall.lean",
+    "submission/InitECandidate/Solver/GasBudget/ChildErrorProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/Frame.lean",
+    "submission/InitECandidate/Solver/GasBudget/Halt.lean",
     "submission/InitECandidate/Solver/GasBudget/Minimum.lean",
     "submission/InitECandidate/Solver/GasBudget/Refill.lean",
     "submission/InitECandidate/Solver/GasBudget/Refund.lean",
@@ -4450,8 +4454,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61305,
-  "package_bytes": 2252579761,
+  "package_entries": 61309,
+  "package_bytes": 2252600369,
   "claim": {
     "K": "infinity"
   },

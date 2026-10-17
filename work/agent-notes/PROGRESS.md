@@ -2731,3 +2731,36 @@ Variable-list actual record-body checkpoint (2026-10-17):
 - Unroll loop_test_read returnsQueryBranch.eval whilewhile_total uses evalHOLFinite:
   add typed finiteTest:=test before rw. Faultbody useguarded.trans(if_posbad) to
   produce typed rejection; simp noProgress can occur at a folded local alias.
+
+
+Whole variable-list loop/tail checkpoint (2026-10-17):
+- AnyLoop actual arbitrary offsets: none with exactwalk +allOffsets.ValidAt and
+  paid=count, oractualSszErr23; <=count+1,exactclock/control/HeapInput. Lastloop
+  proofneeds previousIndex:positiveindex=>prev=currentWord(index-1). Baseindex0
+  vacuous; nextprev=curindex. IHfirst/total arefixedcontext, notexplicitargs.
+- Cells row/length injectivity/separation; IterationMemory exact two memory
+  effects. Filled prefix and walk induction initialize pointers/all butlastlen.
+  WalkPrevious gets lastprev; Return realfinalstore/actualrStructreturn with
+  noextra clocks; Complete allpointer/lencells. LoopReturn coversall actual
+  loop+finalstore/return outcomes andcomplete validrecords. AllocatedTail wraps
+  real i=0/prev=first scopes andretains restoration; noallocator call yet.
+- Successful joint input-varlist-allocated-tail-v1.log1292targets allowedaxioms;
+  claiminfinity, nofullverifier. Account19%,0resetcredits, watcheractive.
+- NEXT strengthen all-outcome memoryframe outside fresharray extent, in addition
+  toHeapInput. Current summaries preserveinput/control/complete records but do
+  notyet expose general oldheap preservation, needed for earlierpayloadheaders.
+  Add ArrayFrame overqueryNat<arrayNat orarrayNat+16count<=queryNat. Prove each
+  modeliteration/walk/failure/finalstore frame via naturalcelladdresses. Extend
+  AnyLoop/Return/LoopReturn/AllocatedTail outputs before composingactualalloc.
+- Allocator composition next: actualcount*16 expression/read +args, real
+  PersistentAlloc.call_execute, sourceheap_ptr=plan.array, Plan.arrayRoom. Entry
+  =bind(post{sourceclock-1}array(ofNat16count))arrarray. Get allocated_execute
+  there, return heapglobal rounded(array,16count), exactcallerarrscope; normal
+  costs count+1, fault<=count+2 bodyclocks. Preserveinput +outsidearrayheapframe.
+  Then FirstGuards/Entry/allrealssz_split_var_list ABI/caller. OOM/trap path and
+  globallyreachable allocationroom stillopen. Afterwards fixed_list_count/
+  udivmod and actualpayloadgasstore/global/target finitecertificate.
+- simp only can leaveifTrue/ifFalse after rewriting a premise (seeIterationMemory
+  andComplete); include explicit ↓reduceIte. RecordmemoryFrame usecontrol strips
+  locals/memory/clock; failedloop mayretain earlierarraywrites. Complete has
+  wordlengthdifferences; allValidAt will justify natural-length interpretation.

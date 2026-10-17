@@ -2440,3 +2440,32 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Index4182 modules/6641 facts; incremental policy passes61038 entries and
   2251465241 bytes, infinity. Work continues on actual SSZ scalar reads/guards,
   source-map refinement and global/compiler/target finite certificate.
+
+2026-10-17: fixed payload gas expression and real SSZ offset-validator paths
+
+- ScalarProgram/Scalar64 check exact expanded 4/8-byte reads, shifts and ORs.
+  HeapScalar connects copied heap bytes to the challenge's minimal gas reader.
+  FlatAddress/ScalarCongr/FlatScalar check flattened additions rather than
+  assuming syntactic equality of the generated and nested address expressions.
+- PayloadGas extracts exact gas store15 from fixed decode_payload, proves its
+  literal shape and actual expression bound200M from explicit copied extent,
+  payload position and container offset facts. Those reachability premises
+  remain unproved. Closure input-payload-gas-v3.log,1032 targets, allowed axioms.
+- SszFail proves whole real raise/body/callee/call with actual SszErr shape and
+  one call clock. OffsetsProgram checks whole-body shape and final equality
+  guard's exact success/mismatch executions. StepProgram/Checks check actual
+  current/prior reads, range/order/signed-index expressions. ValidStep/Loop/
+  Walk/ValidExecute compose complete actual nonempty valid validator, cost=count
+  source clocks and exact frame. Fixed count<=8 includes all five real callers.
+- FaultChecks/FaultStep prove both actual range/order rejection paths, real
+  SszErr10/11, no resumed increment and exact one call clock/lexical restoration.
+  Unrestricted loop, whole normal-return inversion and actual decoder container
+  positions/offset stores still remain. No whole decoder or global claim.
+- Joint successful input-offsets-fault-step-v2.log,1042 targets, allowed axioms.
+  Indexed4199 modules/6691 facts, not percentages. Claim infinity, no verifier.
+- Proof traps: raw BitVec.or produced by unfolding OrOp.or does not match the
+  notation-keyed or_zero/or_assoc simp rules; explicit raw-key wrappers fixed
+  misleading whnf timeouts. Fin numeral projections needed local rfl facts.
+  Ite reads evalHOLExact while while reads evalHOLFinite; preserve the wrapper
+  expected by the outer evaluator. BitVec.add_sub_cancel is the actual name.
+  Unannotated congrArg intermediate avoids expected-state equality forcing.

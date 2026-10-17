@@ -2271,6 +2271,7 @@
     "submission/InitECandidate/Solver/MutableTable/FindChainBuild.lean",
     "submission/InitECandidate/Solver/MutableTable/FindHeader.lean",
     "submission/InitECandidate/Solver/MutableTable/FindMemory32.lean",
+    "submission/InitECandidate/Solver/MutableTable/FindModel32.lean",
     "submission/InitECandidate/Solver/MutableTable/FindPrepared.lean",
     "submission/InitECandidate/Solver/MutableTable/FindProgram.lean",
     "submission/InitECandidate/Solver/MutableTable/FindStep32.lean",
@@ -2281,6 +2282,9 @@
     "submission/InitECandidate/Solver/MutableTable/HashUnaligned32.lean",
     "submission/InitECandidate/Solver/MutableTable/HashWordBytes.lean",
     "submission/InitECandidate/Solver/MutableTable/MaskedPath.lean",
+    "submission/InitECandidate/Solver/MutableTable/Placement.lean",
+    "submission/InitECandidate/Solver/MutableTable/PlacementBuild.lean",
+    "submission/InitECandidate/Solver/MutableTable/PlacementUpdate.lean",
     "submission/InitECandidate/Solver/MutableTable/Probe.lean",
     "submission/InitECandidate/Solver/NopBound.lean",
     "submission/InitECandidate/Solver/NopCost.lean",
@@ -4495,8 +4499,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61351,
-  "package_bytes": 2252820057,
+  "package_entries": 61355,
+  "package_bytes": 2252845514,
   "claim": {
     "K": "infinity"
   },

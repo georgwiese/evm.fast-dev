@@ -9070,6 +9070,10 @@
       "sha256": "624d4d32af2847af3c68436e391f2d4f4fd96838235f3da6aab23ee1b6f4b6d9"
     },
     {
+      "path": "submission/InitECandidate/Solver/MutableTable/FindModel32.lean",
+      "sha256": "3ed51a6c9808b0aee5ff4b40ac95f6d9e4e4e436bd43f5d612f79dcc0db08986"
+    },
+    {
       "path": "submission/InitECandidate/Solver/MutableTable/FindPrepared.lean",
       "sha256": "961fa4adf25951746a1437e2821e4c578feb3b44e0d403c17e6cfd88bcf070f2"
     },
@@ -9108,6 +9112,18 @@
     {
       "path": "submission/InitECandidate/Solver/MutableTable/MaskedPath.lean",
       "sha256": "f08e11f35eca6e1cdfe90026366962d59602b10683dc1667a1bbef7c0b5e24b7"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/Placement.lean",
+      "sha256": "78a63c42603b28bbdaa3eb6005d9bdf4c789da5bdb330ff4653d556a21a67abf"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/PlacementBuild.lean",
+      "sha256": "c53d66620b331b358fd203c525c6cae0dbb0d0b57182b2ca6fbc21969dc920a1"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/PlacementUpdate.lean",
+      "sha256": "230219a9cacf9746701a286b20e5dd3e3552fe7d150cb4fb39d080487713220a"
     },
     {
       "path": "submission/InitECandidate/Solver/MutableTable/Probe.lean",
@@ -77453,7 +77469,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.condition_read",
@@ -77462,7 +77478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.next_read",
@@ -77471,7 +77487,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.after_equal",
@@ -77480,7 +77496,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.comparison_arguments",
@@ -77489,7 +77505,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.step32",
@@ -77498,7 +77514,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.power_mask",
@@ -77507,7 +77523,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.increment",
@@ -77516,7 +77532,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.slot_injective",
@@ -77524,7 +77540,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.visited_distinct",
@@ -77533,7 +77549,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.occupied_prefix_bound",
@@ -77542,7 +77558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.empty_within_count",
@@ -77551,7 +77567,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.usedByte_of_fields",
@@ -77560,7 +77576,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_execute",
@@ -77569,7 +77585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_prefix",
@@ -77578,7 +77594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.first_empty",
@@ -77587,7 +77603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.tail32_execute",
@@ -77596,7 +77612,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_number",
@@ -77605,7 +77621,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_advance",
@@ -77614,7 +77630,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_order",
@@ -77623,7 +77639,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.scan32_count_bound",
@@ -77632,7 +77648,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.aligned32_find",
@@ -77650,7 +77666,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.table_read",
@@ -77659,7 +77675,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.header_executes",
@@ -77668,7 +77684,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.prepared_locals",
@@ -77677,7 +77693,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.initial_index_read",
@@ -77686,7 +77702,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.masked_start",
@@ -77695,7 +77711,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_core",
@@ -77704,7 +77720,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_execute",
@@ -77713,7 +77729,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.environment",
@@ -77722,7 +77738,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_call",
@@ -77731,7 +77747,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_core",
@@ -77740,7 +77756,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.environment",
@@ -77767,7 +77783,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.packed_roundtrip",
@@ -77775,7 +77791,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_execute",
@@ -77784,7 +77800,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_execute",
@@ -77793,7 +77809,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_call",
@@ -77802,7 +77818,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.rebuild_word",
@@ -77810,7 +77826,147 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "mutable-find-call32-v1.log"
+      "successful_log": "mutable-find-model32-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.chain_answer_model",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-find-model32-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Find.chain_absent_iff",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-find-model32-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.distance_bound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-find-model32-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.slot_distance",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-find-model32-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_sound",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "mutable-find-model32-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_index_bound",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "mutable-find-model32-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_exists_before",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-find-model32-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_dictionary",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-find-model32-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.build_invariants",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-placement-build-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.build_cover",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "mutable-placement-build-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.build_lookup",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-placement-build-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.build_radix_agreement",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-placement-build-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.put_preserves_occupied",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "mutable-placement-build-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.put_no_gaps",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "mutable-placement-build-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.put_represents",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "mutable-placement-build-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.put_unique",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "mutable-placement-build-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.empty_invariants",
+      "axioms": [],
+      "successful_log": "mutable-placement-build-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Placement.overwrite_lastValue",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "mutable-placement-build-v1.log"
     }
   ]
 }

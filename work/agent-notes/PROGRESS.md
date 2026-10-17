@@ -2398,3 +2398,24 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   whole-guest/gas/query/compiler/target bound and finite fixed certificate.
 - Successful closure witness-radix-constructor-call-v1.log,915 targets, allowed
   axioms only. Incremental policy passes; claim infinity; no full verification.
+
+2026-10-17: complete actual input_blob passing guard/allocation path
+
+- WordCodec proves actual Guest/Pan little-endian codec bridges. SharedRead
+  proves the real source oracle/call/load, including the actual appended event.
+  HostLength/HostWords prove exact framed length and all eight data bytes,
+  including final partial words and arbitrary mathematical list lengths.
+- BlobProgram/LengthLoad/LengthGuard connect actual declarations/load/size
+  guard. CopyStep/State/Loop/Walk/Domain/Return/Scopes compose every actual
+  load/store/increment, all mappings from fixed domains/natural allocation,
+  clock count, scopes and return. BlobExecute includes actual allocator call.
+- Exact cost ceil(encoded_length/8)+1 <=16,777,215 source clocks. Exact heap
+  update and unchanged host/oracle are checked. Preconditions still require
+  actual code/domain/oracle, heap room and passing encoded-size guard.
+- Successful input-blob-execute-v3.log,695 targets, allowed axioms only.
+  Earlier errors fixed record layout, reserved scoped identifier, literal
+  alignment logarithm, wrapper rewrites and alias arithmetic. No proof holes.
+- Index now4177 modules/6630 printed facts (not progress percentages).
+  Incremental policy passes61033 entries/2251449143 bytes, claim infinity.
+  Copied heap bytes/SSZ/gas correspondence, failure paths, global potential,
+  original-map refinement and target/finite certificate remain open.

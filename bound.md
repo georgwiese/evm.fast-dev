@@ -12,6 +12,15 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked the full actual block tail from the transaction-loop test through
+  its return. Actual decoded records supply every pointer/length/conditional
+  byte read, and their raw lengths telescope to the slice length. The real
+  transaction sum is <=436207564; the composed tail costs at most12*Ntx+43*Nwd+33
+  source clocks and its result is >=25*Nwd without wrap. The preceding encoded
+  header total<=2^31, phase entry and outer size guard remain explicit/open.
+  Evidence: `input-rlp-transaction-phase-v2.log`1337targets, permitted axioms;
+  index4374modules/7012facts. Whole certificate still infinity.
+
 - [x] Checked actual RLP scalar/header helpers, whole withdrawal size function,
   withdrawal accumulation loop and final block-length suffix. From explicit
   copied-record/code/phase-entry premises, including preceding total<=2^32,

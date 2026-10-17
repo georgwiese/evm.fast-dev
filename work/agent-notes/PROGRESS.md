@@ -2984,3 +2984,33 @@ Actual RLP withdrawal phase checkpoint (2026-10-17):
   recordlengths, thenheader/transactionprefixbound andactualblockguard. Global
   jointgas/refunds/mutabletables/heapQ, originalmaprefinement andcompiledtarget
   K remainopen. Claim infinity; no fullverifier. Account23%,0resetcredits.
+
+Actual transaction RLP phase checkpoint (2026-10-17):
+- BytesSizeProgram/BytesSize/BytesSizeCall realrlp_bytes_encoded_len conditional,
+  actualheadercall/pureframe andexistingelassigncaller; n<=128MiB =>natural
+  encodedin[n,n+9] no-wrap, <=10body/11callsourceclocks.
+- VarList.RecordSizes actualdecodedworddifferences telescope, aggregate<=slice
+  length,everyitem<=slice. RecordPointers actualmappedpointercells/values and
+  copiedfirstbytewhenitemnonempty; nofirstbytepremiseforzero-lengthrecords,
+  noarrayreadforzero-countlist. sum_prefix_mono supplieseveryprefixbudget.
+- TransactionProgram realfirstwhileandlogicalwraptest; AfterFirst includesel
+  declaration,actualexistingelcallorlegacyrawbranch,tl/iupdates/scoperestore.
+  Reads/Step includelengthload,conditionalfirstbyteload,fb/nscopes. Loop real
+  signedtest/whiletickandallbodies, <=12*N sourceclocks, sum<=rawprefix+9*N,
+  exact64-bitword/finali/tl andotherlocal/controlframe.
+- TransactionDecoded instantiatesallmemory/bytepremisesfromrealRecords+HeapInput,
+  sums<=slicelen+9*N<=436207564 atactualencodedextent<=134217712, N<=len/4.
+- AfterTransactionsProgram/AfterTransactions literalfirstlistheadercall,
+  total/ommersadds,actualnwdcell56load,wl0scope/i0resetandwithdrawalphase.
+  TransactionPhase provesexactsubtreeoffixedblockbodyandcomposesbothloops
+  throughreturn: <=12*Ntx+43*Nwd+33sourceclocks, encoded>=25*Nwd, exactword.
+  Explicitprecedingheaderlen<=2^31,phaseentry/copy/domain/code/cells remain.
+- Successfuljoint input-rlp-transaction-phase-v2.log1337targets, onlyallowed
+  axioms,index4374modules7012facts. Failedlogsreflectliteralbitwisecompute,
+  bindoverwrite/restorescope,simpaliases,firstbyteaddresssetWidthandscopeof
+  one-linetactic; failurelogsnotindexed. Resourcesremainlow,disk58%/124GiBfree.
+- NEXT actualencode_headerboundedlengthandentryinitialization/wholeblockcaller,
+  thenactual8MiBguardcap. Avoidclaimingunconditionalglobalwithdrawalcapbefore
+  thosepremisesareclosed. Globalgas/refunds/mutablemapmultiplicity/heapQ,
+  originalimmutablemaprefinement/targetcertificate remainopen. Account24%,0
+  resetcredits; claimedKstillinfinity, nofullverification.

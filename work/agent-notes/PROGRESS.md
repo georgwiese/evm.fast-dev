@@ -4209,3 +4209,65 @@ Whole paired witness constructor checkpoint (2026-10-17):
   budget still open. Claim infinity; no final certificate or full verification.
 - Account40%,0resetcredits. Host1.4GiBused/29available,disk58%/123GiBfree.
   Continue autonomously, no checkpoint stop.
+
+
+### 2026-10-17 — completed lookup support and preservation of both earlier dictionaries
+
+- AllocatedReadBounds.cell_bounds/protected_bounds proves all candidate protected
+  read cells between actual record arena and final heap cursor. protected_safe_
+  for_later derives q<newTable and actual Keccak Protected from fixed arena
+  ordering. Success radix-allocated-read-bounds-v2.log777targets. v1 by decide
+  could not reduce type containing free plan; explicit change to numeral bound.
+- OpenGraphCompletedSupport.completed_supported retains concrete QueryMemory
+  reads within closed OpenGraph reads. Closed child slots are real reads.
+  InvariantFinishSupported retains that support through actual terminal fill,
+  located graph preservation, immutable cells and actual return state.
+  LoopSupported/result_next_supported and LoopTerminationSupported propagate
+  support through all four actual transitions and decreasing agenda induction.
+- HelperCoreSupported,HelperNonemptySupported,HelperBuiltSupported,
+  HelperCallSupported,ConstructorFinishSupported retain existing execution,
+  model, public memory and own clock/control frames plus all final QueryMemory
+  reads in BackingLayout.Protected layout layout.count. Empty support vacuous.
+  ReadFootprintStable is needed across changed locals even when memory agrees;
+  QueryMemory.reads is not definitionally insensitive to state locals. Failed
+  helper caller v1/v2 fixed with explicit reads_stable and correct proof-goal
+  metavariable. Failed logs not indexed.
+- MutableTable WitnessBuildRadixPopulateSupported uses actual finish_supported
+  to retain support, identifying both actual target (determinism) and root
+  (same stored root word). TableSupported,ExecutionSupported,CallSupported carry
+  it through all actual allocations, bodies and ignored/scoped call ABI, while
+  retaining each own earlier-memory safe frame. Checked full caller exports
+  physical original Built/History/KeysMatch/Records and concrete radix rep/
+  protected read support, equal globals/FFI/public region, independent prices.
+- WitnessPriorRadixFrame.prior_radix_preserved uses actual later safe frame,
+  allocated bounds and read-support stability to preserve earlier root mapping/
+  word, whole represented dictionary and read support. BuildInvariantFrame32
+  built_of_cells transports the entire original Built invariant from only its
+  allocated cells; used-byte/aligned key views and every header/value handled.
+  built_preserved_by_later discharges those cells from actual safe frame and
+  old allocation geometry. WitnessPriorRecordsFrame.prior_records_preserved
+  preserves actual original record pointer/length cells. This resolves BOTH
+  model-level preservation obligations for sequential witness constructors.
+- Success logs radix-completed-support-v1.log608,
+  radix-terminal-supported-v1.log728,radix-loop-supported-result-v1.log743,
+  radix-loop-supported-v1.log750,radix-helper-nonempty-supported-v1.log753,
+  radix-helper-built-supported-v1.log757,radix-helper-call-supported-v3.log785,
+  radix-constructor-finish-supported-v1.log786,mutable-populate-supported-v1.log
+  1394,mutable-table-supported-v1.log1406,mutable-execution-supported-v1.log1418,
+  mutable-call-supported-v2.log1423targets. Permitted printed axioms only.
+  Failed final batch v1 built_of_cells tried composing header0 equality before
+  simplifying table+0; explicit normalized zeroHeader fixed it. Batch v1 also
+  built caller successfully but was not indexed; v2 complete success indexed.
+- NEXT compose two actual run_attempt constructor decCalls, using complete
+  paired supported caller + earlier Built/Records/Query support preservation.
+  New table equals first final cursor, both allocations same chosen capacity,
+  first private memory differs across programs but has own safe frame. Decode
+  si40/48,56/64 reachability and input-array preservation through header decoder/
+  validation still needed. Current empty caller has physical empty maps but no
+  hashControl/read-support export; empty tree support is trivial and can wrap
+  existing proof. Full nonempty caller signature has ∀capacity Context; entry
+  code/buffer/global obligations can wrap from actual decoded_constructor_data.
+- Remaining entire runtime contextual replacement, gas/state/Q/heap potential,
+  compiler/startup/target allowance and finite K still open. No full verifier.
+  Claim infinity. Account40%,0resetcredits; RAM1.4GiBused/29available,disk58%.
+  Continue autonomously; no final checkpoint stop.

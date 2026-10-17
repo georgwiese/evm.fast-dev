@@ -4949,3 +4949,30 @@ Whole paired witness constructor checkpoint (2026-10-17):
   explicit; helpers do not establish whole runtime or target instruction work.
 - Inventory/policy/evidence refreshed. Infinity, no whole finite K/full verifier.
   Account3%,0manual reset credits. Continue full original runtime plan.
+
+
+### 2026-10-17 — small-key byte fallback and uniform mapped callers
+
+- MemeqByteRuntime Program/Bodies/Control/Tail/Blocks execute the actual8-byte
+  and final-byte loops, including every early mismatch, finite progress and
+  final return. Induction uses remaining byte count; no execution oracle.
+  Price length/8+length%8 in body, pure canonical state. Execution includes
+  skipped aligned branch, actual i declaration and lexical restore.
+- Mapped derives actual byte loads from mapped source memory, with arbitrary
+  contents; Call proves the real ABI, answer0or1 and paid+1caller clocks.
+  Supports all lengths<=64, including20/32/52/60. Literal callers7/5/11/12;
+  no full60-byte aligned comparison/hash contract claimed yet.
+- MemeqSizedMapped derives every fast word/tail-byte read and both alignment
+  branches, using mapped byte regions and no-wrap input footprints. Uniform
+  actual20/52-byte comparison callers bound7/11, preserving memory/FFI/globals.
+  HashSizedMapped derives uniform actual20/52-byte hash input reads/caller,
+  either alignment, exact observed digest, one caller clock, pure frame.
+- Successful key-helpers-mapped-v1.log1216jobs, explicit exit0, permitted axioms;
+  includes RootMsgNormal, FrameOpenCall and FreshRecordCall closures. Earlier
+  byte-runtime-control-v1, memeq-byte-runtime-call-v1 also succeeded. Failed
+  tail/block/entry/mapped development checks were corrected source-clock or
+  opaque-rank normalization/namespace errors; failed logs unindexed.
+- Actual table-probe progress, ownership/order/count invariants, growth,
+  backward-shift deletion/truncation, full gas/phase/target accounting remain.
+  No finite whole runtime bound or full verification; pinned program unchanged.
+  Account last3%,0manual reset credits. Continue with actual generic probes.

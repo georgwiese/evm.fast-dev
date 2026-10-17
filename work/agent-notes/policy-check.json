@@ -2925,6 +2925,17 @@
     "submission/InitECandidate/Solver/WitnessRadix/Memeq32.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Memeq32Entry.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Memeq32Memory.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteKeys.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteLoop.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteMemory.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteReads.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqByteTail.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqBytes.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqCall.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqEnvironment.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqMemory.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemeqUnaligned.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/MemoryBytes.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Model.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Program.lean",
     "submission/InitECandidate/Solver/WitnessRadix/QueryBranch.lean",
@@ -3865,8 +3876,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 60712,
-  "package_bytes": 2250199617,
+  "package_entries": 60723,
+  "package_bytes": 2250249083,
   "claim": {
     "K": "infinity"
   },

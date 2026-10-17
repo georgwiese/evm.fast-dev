@@ -257,6 +257,42 @@
     "submission/InitECandidate/Solver/WitnessRadix/WordScatter.lean": {
       "bytes": 4239,
       "sha256": "23a4633325a29a471f4a5f171130b8ce4104d3e07ae1f10171418c5aef018314"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterBody.lean": {
+      "bytes": 8066,
+      "sha256": "54732b77bc4cafded283e6f1408a032bb294db64a7b394335984253e2e3aad37"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterBucket.lean": {
+      "bytes": 4499,
+      "sha256": "4d8011b8967e0da6d2d9f62b4a948a6fda166bb7fc6d5ee0cbf36a8837a4f9e7"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterCursors.lean": {
+      "bytes": 3704,
+      "sha256": "899437fced2a79795e105c97ad61c5c7349f9072535ea4e79e57f246edb08da2"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterLoop.lean": {
+      "bytes": 9231,
+      "sha256": "89fbb630e4575eedd78f7445668897361806294ca0a294e93ef9df42b94f4bad"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterPartition.lean": {
+      "bytes": 4574,
+      "sha256": "d5cb6120569589603bf2bcde96285f55b5eb5178b0cb402a39ae16b4f831e9c0"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterPost.lean": {
+      "bytes": 5592,
+      "sha256": "300c58dd468d8cbea7f161fd19863f70a8f31aa25b79fc003940355076f3cf1e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterReady.lean": {
+      "bytes": 4400,
+      "sha256": "0ec5dbf758eb18ef716425539a61931c5906cd258359896e067dbb09f4b0b322"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterResult.lean": {
+      "bytes": 4531,
+      "sha256": "ea97705e84909800b807c0ec1dbba87e403051149911b6cd226bda485545a6cf"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterStep.lean": {
+      "bytes": 4575,
+      "sha256": "c8a35ce7d22798944fe9fbe675c84235918dc4e7d9f88a4cbfa262edcfaef8e8"
     }
   },
   "development_artifacts": {
@@ -287,8 +323,7 @@
     "witness-radix-graph-v3.log",
     "witness-radix-query-function-v3.log",
     "witness-radix-count-copy-v1.log",
-    "witness-radix-scatter-program-v1.log",
-    "witness-radix-word-scatter-v1.log"
+    "witness-radix-scatter-partition-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -431,6 +466,6 @@
   "actual_construction_passes": {
     "copy": "literal loop, exact memory/counters/clock poststate, copied rows and outside-memory frame",
     "count": "literal loop, exact zero-bit count, one source clock per ordinal, all other locals and nonlocal fields preserved",
-    "scatter": "literal AST extracted; actual word-memory stable scatter equals two block writes; whole literal loop pending"
+    "scatter": "literal full loop, exact stable filtered block writes, cursor/index results, one source clock per ordinal, preserved other locals/nonlocal fields; mapped/separated arrays and readable keys remain parent premises"
   }
 }

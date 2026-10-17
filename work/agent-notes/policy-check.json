@@ -2964,7 +2964,16 @@
     "submission/InitECandidate/Solver/WitnessRadix/QueryMemory.lean",
     "submission/InitECandidate/Solver/WitnessRadix/RawProgram.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Scatter.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterBody.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterBucket.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterCursors.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterLoop.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterPartition.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterPost.lean",
     "submission/InitECandidate/Solver/WitnessRadix/ScatterProgram.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterReady.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterResult.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/ScatterStep.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Space.lean",
     "submission/InitECandidate/Solver/WitnessRadix/StoreWord.lean",
     "submission/InitECandidate/Solver/WitnessRadix/Visits.lean",
@@ -3900,8 +3909,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 60747,
-  "package_bytes": 2250356907,
+  "package_entries": 60756,
+  "package_bytes": 2250406079,
   "claim": {
     "K": "infinity"
   },

@@ -1,6 +1,6 @@
 # Status — update this section frequently
 
-**Checkpoint: 2026-10-17, branch `agent/baseline-steps`; existing proof checkpoint `04603be4d`, joint review `e5293d88b`, new WitnessRadix proofs under active development.**
+**Checkpoint: 2026-10-17, branch `agent/baseline-steps`; existing proof checkpoint `04603be4d`, joint review `e5293d88b`, radix implementation checkpoint `84f3b10f4`; further HOL proofs under active development.**
 **The goal is NOT complete. `claim.json` still says infinity. No finite K has been proved.**
 **Review decision: REVISE; the joint witness-table gate still fails.** Distinct-preimage byte accounting, duplicate multiplicities and both scans are now included. Even proposed literal-path prices of 89 instructions per search probe and 10 per raw probe give a relaxed construction allowance of **21,004,777,811,675,496**, about **2.33 times the entire score cap**, before later queries or other work. This is a failure of a proposed upper bound, **not a reachable runtime counterexample or proof of impossibility**. See Section 3.R5.
 
@@ -40,7 +40,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [ ] Complete the capacity-growth path and any other local summaries **actually required by the chosen global proof**; prove their entry premises at every use.
 - [ ] Connect bounded execution through the actual compiler artifacts, bootstrap, oracle/FFI, and matching-result relation.
 - [ ] Prove a literal finite K below the score cap; make `submission.K`, `claimedScore`, and `claim.json` agree; prove admission and the fixed certificate with only permitted axioms.
-- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (60,704 full-package entries; 2,250,160,745 bytes); this is not isolated verification or a final overlay check.
+- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (60,712 full-package entries; 2,250,199,617 bytes); this is not isolated verification or a final overlay check.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 
 **Next action:** realize the radix index in the existing witness allocations, prove its relation to the fixed guest's last-wins maps, and connect its costs through actual target execution. **Current principal risk:** the map representation/refinement and whole-guest input/gas/query/composition proofs remain open. Read the top checklist after every meaningful update. Historical stop instructions below are superseded by the current authorization above.
@@ -448,8 +448,23 @@ Checked chain so far:
    the 64-bit gas word under the two fixed-offset checks. Actual decoder
    execution and host-to-guest copying must establish those premises.
 
+10. `QueryBranchStep.branch_iteration` proves a complete branch iteration of
+    the actual candidate lookup HOL AST updates only `node`; bit/digit locals
+    are restored and all other state fields, including memory/FFI/clock,
+    remain identical. Premises identify actual word/byte loads and the selected
+    mapped child. The outer while consumes its separate clock.
+11. `Memeq32Memory.aligned_memory` proves the whole fixed-source `memeq` 32-byte
+    aligned path from actual argument bindings, alignment mask and eight
+    mapped-word loads, including every early mismatch. Its Boolean result is
+    equality of the four words' 32 little-endian bytes. `WordKeys` checks that
+    byte equality iff word equality. Source-to-memory byte correspondence,
+    the unaligned loop path and the lookup call/return composition remain open.
+    `ComparePrefix.execute_prefix` handles arbitrary early-mismatch test
+    sequences and is the next ingredient for that unaligned path.
+
 The successful logs include `witness-radix-space-v1`, `scatter-v2`, `visits-v1`,
-`addressing-v1`, `program-v3`, `query-empty-v5`, and `graph-v3`. The main printed declarations
+`addressing-v1`, `program-v3`, `query-empty-v5`, `graph-v3`,
+`memeq32-memory-v4`, and `compare-prefix-v1`. The main printed declarations
 use only permitted axioms; the proposed literal routines use none. Earlier
 failed attempts are retained and not indexed as proof evidence. In particular,
 do not use failed-log `sorryAx` prints. No explicit proof holes were added.
@@ -826,3 +841,8 @@ Official acceptance requires the unchanged comparator verifier and kernel replay
 - Module hashes and axiom manifests must match current source, not an earlier successful version. A warning is different from a proof error, but inspect both.
 
 The best next result is not necessarily another checked lemma. It is evidence that the full proof can be completed with a bound under the score cap—or early, specific evidence that the route must change.
+
+- With Flapjack imports, a bare `word >>> 3` may infer a word-valued shift
+  amount through `RiscV.bitVecWordShiftRight`. Use `word >>> (3 : Nat)` when
+  matching `wordShiftHOL`'s natural shift count. QueryBranch's failed elaboration
+  exposed this mismatch; its checked source now states the natural count.

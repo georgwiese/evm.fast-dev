@@ -11658,8 +11658,28 @@
       "sha256": "78c2ef5501cabff8d10b1c1e34eaff0747a03d22636a42c434365850c73beefe"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CompareChain.lean",
+      "sha256": "75f278599962cd7df49e782dd7ebb80832d13487fb093579e069bc01683e60a5"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ComparePrefix.lean",
+      "sha256": "5f4f94c543c77f028eccb5e14d46cb47a84e9495bf8a4208605eb2db6c2e6b1d"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Graph.lean",
       "sha256": "b348e35c84b0d8a5beea5137a7084eca910c36020d460e156b3174d1a687a595"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Memeq32.lean",
+      "sha256": "86325f987317b60690c54626796df69cf82448b77517191ae71376356dc54f5b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Memeq32Entry.lean",
+      "sha256": "c6fdc8a09e4996d2da0b16a6a0440a2fd69ee375557bb530b76a1f8448514a52"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Memeq32Memory.lean",
+      "sha256": "ba964684ba7fef4a67eef9b3a3e46b42ff77ab007a4c921a496ad06939a678e4"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Model.lean",
@@ -11668,6 +11688,14 @@
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Program.lean",
       "sha256": "867413ebb2693489a6f42110fcdaafa91e7300ec6166e3953c65db17b0473f03"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryBranch.lean",
+      "sha256": "9f2f829c61f5dd7f8c7b6d8b39a2cd890e389922702323da48a9773bab58ae14"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryBranchStep.lean",
+      "sha256": "45c0b5d1ed67e9c973764b1bbac0382bc4012978765d9ae82b671539c8bb5f69"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/QueryEmpty.lean",
@@ -11692,6 +11720,10 @@
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/WordBits.lean",
       "sha256": "ff5b79d88d36f77ed6a7b0cfec50b634278a77a02548f23b992f77fbcec5a69b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/WordKeys.lean",
+      "sha256": "18293761d3208f32f393fd4b61cdd264e8a2c459a854ba9ab19a7805a5fe68ff"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/Worklist.lean",
@@ -63012,7 +63044,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.queryVisits_buildIndex",
@@ -63020,7 +63052,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_lookup",
@@ -63028,7 +63060,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_query_visits",
@@ -63036,7 +63068,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lookup_build",
@@ -63044,7 +63076,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.height_build",
@@ -63052,7 +63084,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.leaves_build",
@@ -63060,7 +63092,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.buildVisits_bound",
@@ -63068,7 +63100,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.branches_buildIndex",
@@ -63152,17 +63184,17 @@
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_solver_radix_index",
       "axioms": [],
-      "successful_log": "witness-radix-query-empty-v5.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_build",
       "axioms": [],
-      "successful_log": "witness-radix-query-empty-v5.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_lookup",
       "axioms": [],
-      "successful_log": "witness-radix-query-empty-v5.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.writeBlock_get",
@@ -63231,7 +63263,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-query-empty-v5.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryEmpty.empty_table",
@@ -63240,7 +63272,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-query-empty-v5.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -63248,7 +63280,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -63256,7 +63288,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.lookup",
@@ -63265,7 +63297,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.query_visits",
@@ -63274,7 +63306,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Graph.lookup_represents",
@@ -63301,7 +63333,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_nonzero",
@@ -63309,7 +63341,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_odd",
@@ -63318,7 +63350,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_decode",
@@ -63326,7 +63358,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-graph-v3.log"
+      "successful_log": "witness-radix-compare-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.expand_decreases",
@@ -63431,6 +63463,175 @@
         "Quot.sound"
       ],
       "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-compare-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-compare-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.loop_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-compare-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.eval_digit",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-compare-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.assign_child",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-compare-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branch_code",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branchPost_eq",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branch_iteration",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-memeq32-memory-v4.log"
     }
   ]
 }

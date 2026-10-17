@@ -1891,3 +1891,31 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   decoder/query/global gas-work accounting, and the literal finite certificate.
   witness-radix-checkpoint.json records hashes/results without committing raw
   corpora or binaries. No finite K or official verification is claimed.
+
+### 2026-10-17 — actual branch HOL execution and fixed memeq fast path
+
+- Saved radix implementation checkpoint 84f3b10f4 and continued immediately.
+  QueryBranchStep.branch_iteration now proves one complete actual lookup AST
+  branch iteration from concrete local bindings and word/byte loads. It changes
+  only node; temporary bit/digit bindings and every other state field are
+  preserved. The outer while still needs its separate clock accounting.
+- CompareChain/ComparePrefix prove exact early-mismatch execution and fallthrough.
+  Memeq32/Entry/Memory extract the actual fixed guest memeq AST and prove its
+  whole aligned 32-byte path from argument/length/mask/mapped-word premises,
+  including all early mismatches and equality at every initial source clock.
+  WordKeys proves four words are equal iff their 32 little-endian key bytes are
+  equal. No memeq execution is assumed as an input to these theorems.
+- Successful dependency closure: witness-radix-memeq32-memory-v4.log and
+  compare-prefix-v1.log, exit 0. Main axiom prints use only permitted axioms.
+  Failed versions preserve diagnostics and are not proof evidence. Notably,
+  Flapjack's word-valued shift instance requires explicit natural shift amounts
+  when matching wordShiftHOL; the checked QueryBranch source resolves that.
+- Evidence index now 3,857 modules / 5,970 printed facts; incremental policy
+  passes at 60,712 full-package entries and 2,250,199,617 bytes. No finite claim,
+  whole-guest refinement, compiled clock bound or isolated verification yet.
+- Continuing with unaligned memeq's four byte-comparison loop iterations and
+  their byte-memory/lookup-leaf connection, then the iterative builder memory
+  invariant and global/compiler composition. The targeted guarded compiler
+  depth-tool build remains live; it is building missing pinned Flapjack proof
+  dependencies, not the Solution or baseline proof library. Used RAM around
+  3 GiB, disk 57%. No additional EEST rerun is justified or scheduled.

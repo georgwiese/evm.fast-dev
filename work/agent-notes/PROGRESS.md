@@ -3296,3 +3296,37 @@ Actual Pan regular-gas charging checkpoint (2026-10-17):
   Index4447/7185; policy61311entries/2252614026bytes, infinity; no full verifier.
 - Continue successful-child repayment and forward/stipend contracts, global
   signed state/block accounting and joint gas/table/heap query budget.
+
+Actual call-gas calculator and forward-prefix checkpoint (2026-10-17):
+- U256Zero actual four-limb OR/zero predicate, equivalence to all limbs zero,
+  actual tuple ABI/caller, pure/no body clocks. Fixed opaque OrOp.fold bridge.
+- CallGasProgram exact fixed calculator AST; actual cap=left-(left>>>6),
+  natural cap<=left, capped request=min(request,cap), stipend0or2300. Requested
+  gas can be any64-bit word. CallGasCap real mutable clamp/declarations/return.
+- Inputs preserves real five input locals through actual temporary bindings.
+  Actual zero need computation executes add_sat(0,0), skips true shortage test,
+  performs exact available subtraction and cap. CallGas whole body executes
+  u256_is_zero, stipend declaration/assignment, actual add_sat, all scopes and
+  pair return; exactly2Pan call clocks and pure state frame. Actual five-input,
+  pair-return caller executes in3clocks, canonical caller and lexical restore.
+- ForwardBudget no-wrap counter subtraction and stipend-funding arithmetic;
+  real used-counter word subtraction preserves other gas cells. ForwardPrefix
+  executes actual charge_gas debit call plus actual used-counter subtraction,
+  then resumes arbitrary continuation in canonical memory/clock state. Under
+  funded stipend and no-wrap entry, parent new budget+forwarded child seed=
+  parent old budget. Exactly1Pan clock from the charge call.
+- ForwardSites proves literal prefix membership and zero memory/extra-cost
+  calculator arguments in CALL/CALLCODE/DELEGATECALL/STATICCALL. Opaque
+  progToHOL equations require simp, not dsimp/rfl alone. Fixed reserved prefix
+  identifier, doc-comment/set_option placement and full AST conversion in
+  failed drafts; failed logs are not indexed.
+- Success gas-forward-sites-v6.log1168targets, permitted axioms only,
+ 8.58s wall, max child RSS2158612KiB; host~1.4GiB afterward, disk58%.
+  Index4456modules/7210facts; policy61320entries/2252659478bytes, infinity.
+  Account29%, no reset credits. No full verification or external actions.
+- Pilot metadata records forward log/funded/no-wrap premises;2160small arithmetic
+  optimizer checks pass. No380M total, global go, K or target certificate earned.
+- NEXT actual up-front fee funding (general saturating-add lower bound),
+  successful-child spill repayment prefix and protected gas cells through its
+  log/delete-set merge. Then full call-tree/signed-state/block conservation and
+  joint table/heap-Q work; root initialization/map/compiler/target still open.

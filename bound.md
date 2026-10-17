@@ -12,6 +12,18 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked complete actual call-gas calculator in the zero memory/extra-cost
+  mode and its real five-argument/two-word caller. The requested gas is any
+  64-bit word; actual 63/64 cap/clamp bounds the debit, stipend is0or2300.
+  Body/caller cost2/3Pan clocks. All four fixed call opcodes pass the proved
+  zero-cost arguments and contain the actual charge/counter-debit prefix.
+  That prefix checks with its real charge_gas call and subtraction: under
+  actual cell/code/clock, funded stipend and no-wrap premises, resulting parent
+  regular budget + forwarded child seed = previous parent budget. Success
+  `gas-forward-sites-v6.log`1168targets, permitted axioms; index4456/7210.
+  Still need fee-to-prefix entry, child initialization/successful return,
+  signed state/block conservation and global positive-charge/table coverage.
+
 - [x] Checked source-level charge_gas bodies/callers on affordable and actual
   out-of-gas paths. Successful callers debit liquid and credit the used counter
   by the exact natural amount and preserve regular budget; failures raise
@@ -149,7 +161,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [ ] Complete the capacity-growth path and any other local summaries **actually required by the chosen global proof**; prove their entry premises at every use.
 - [ ] Connect bounded execution through the actual compiler artifacts, bootstrap, oracle/FFI, and matching-result relation.
 - [ ] Prove a literal finite K below the score cap; make `submission.K`, `claimedScore`, and `claim.json` agree; prove admission and the fixed certificate with only permitted axioms.
-- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,311 full-package entries; 2,252,614,026 bytes); this is not isolated verification or a final overlay check.
+- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,320 full-package entries; 2,252,659,478 bytes); this is not isolated verification or a final overlay check.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 
 **Latest checked connection:** `QueryExecution.lookup_built` proves the complete actual candidate lookup from concrete HOL memory/header/ABI/code premises: exact last-record-wins result, at most **262 source clocks**, and preserved nonlocal state. Successful closure: `witness-radix-query-function-v3.log`; only permitted axioms. Construction must still establish the represented-memory premise, and source clocks are not target transitions. The actual fixed `memeq` 32-byte aligned and unaligned paths, actual caller restoration, and real code-entry argument environment now check with only permitted axioms (`witness-radix-memeq-environment-v4.log`). The comparison consumes at most four source clocks plus one call clock. The candidate compiler reports 905,572 code bytes, 4,615 bitmap words and a static stack bound of 538 words (`witness-radix-static-depth-v1.log`); these are development compiler results, not a target certificate.
@@ -754,8 +766,16 @@ regular liquid+spill<2^64, successful calls preserve the same natural regular
 budget; failures raise before any pool write. Body costs<=1, callers<=2 source
 clocks. These no-wrap/entry facts remain global invariant obligations. Signed state-use
 and pre/post child transfers still need actual no-wrap and conservation proofs.
-`global-resource-pilot.py` now hashes evm_calls/tx too and records these checked
-local results while leaving all whole-run/target flags false.
+The complete actual calculate_message_call_gas body/caller is checked in its
+zero-memory/extra-cost mode; all four literal opcode call sites supply those
+arguments. The exact charge/used-counter-debit prefix is also checked and
+identified in all four opcode ASTs. Under funded stipend and no-wrap entry
+premises, resulting parent budget + forwarded child seed equals prior parent
+budget (`gas-forward-sites-v6.log`). The natural counter identity accounts for
+stipend credits, so they are not treated as fresh gas. Proving actual up-front
+fee funding, successful child handling and root/block accounting remains open.
+`global-resource-pilot.py` hashes evm_calls/tx too and records checked local
+results while leaving all whole-run/target flags false.
 
 Next quantitative pilot: close the joint gas/table resource invariants and
 persistent-query allocation pairing. Actual small-divisor arithmetic/count

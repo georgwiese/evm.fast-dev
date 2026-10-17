@@ -2063,3 +2063,20 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Continuing surrounding cursor/count scope composition and the full split
   outer iteration, then agenda/partial-graph completion. Existing whole-guest
   original-map, input/gas and compiler/target obligations remain open.
+
+### 2026-10-17 — complete split outer iteration and concrete subtree frames
+
+- SplitScopeInputs/State/Execution compose the actual two cursor declarations,
+  full sorting prefix and allocation continuation, then restore both cursors.
+  SplitCountInputs/Execution derives the non-unary test from strict partition
+  bounds, executes the count pass and restores zeros/i around the whole split.
+  SplitLoop proves actual outer-while resumption and exact 3*input.length + 1
+  source clocks. All ABI, ownership, mapped-address and no-wrap premises remain
+  explicit; constructing their global invariant is the next parent obligation.
+- MemoryAgreement and QueryFootprint prove lookup representation preservation
+  from equality on concrete recursively read words, including aligned key-byte
+  cells, without requiring equality of the whole heap. This supplies the frame
+  needed while construction writes another branch or array interval.
+- Successful closures split-loop-memory-v1 (656 targets) and query-footprint-v1
+  (606 targets), only permitted axioms. No finite score, target-step theorem or
+  whole-guest refinement is claimed. Continuing agenda/partial-graph completion.

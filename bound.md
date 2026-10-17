@@ -1,14 +1,32 @@
 # Status — update this section frequently
 
-**Checkpoint: 2026-10-17, branch `agent/baseline-steps`; existing proof checkpoint `04603be4d`, joint review `e5293d88b`, radix implementation checkpoint `84f3b10f4`; branch/memeq checkpoint `999546e9d`, uniform comparison `ab16c8207`, whole lookup `e06a4e97a`; construction passes/global proofs under active development.**
-**The goal is NOT complete. `claim.json` still says infinity. No finite K has been proved.**
-**Review decision: REVISE; the joint witness-table gate still fails.** Distinct-preimage byte accounting, duplicate multiplicities and both scans are now included. Even proposed literal-path prices of 89 instructions per search probe and 10 per raw probe give a relaxed construction allowance of **21,004,777,811,675,496**, about **2.33 times the entire score cap**, before later queries or other work. This is a failure of a proposed upper bound, **not a reachable runtime counterexample or proof of impossibility**. See Section 3.R5.
+**Objective corrected by the user on 2026-10-17:** obtain a reasonably tight finite runtime bound for the **CURRENT, UNCHANGED Pancake implementation on `main`**. There is **no required numerical ceiling**. In particular, exceeding Yukon's score limit is not a failure and does not authorize replacing an algorithm.
 
-**Current authorization:** the user explicitly superseded the old bounded-session and stop-point instructions: take charge, change the plan when needed, and continue until the whole task is finished. Failed feasibility checks trigger a change of approach, not the end of work. Local/offline, memory/disk, permitted-axiom and full-verifier restrictions still apply.
+**Pinned reference:** local `main` is `7d656e5b6878aa420de793d9d6f689fa26ec0842`. `Guest/Ast.lean`, `Guest/guest.pp.pnk`, `submission/Solution.lean` and `submission/claim.json` currently have no changes relative to `main`. Do not change the program, its data structures, compiled ROM or semantics to improve the bound.
 
-**Active revision:** a compressed radix index for the two immutable witness maps. New checked modules under `Solver/WitnessRadix/` prove last-record-wins lookup, a 257-node query ceiling, a linear abstract construction-visit bound and backing-array size arithmetic. These are algorithm-level results, **not a compiled target refinement or finite certificate**. Keep working through the remaining memory/AST/target/global-budget connections.
+**The goal is NOT complete.** No whole-program finite bound has been proved. The submission still claims infinity. The earlier 45% estimate concerned the previous, misdirected plan and must not be reused as a progress estimate for this corrected task.
 
-Future agent: update this checklist after each meaningful result, failed feasibility test, change of approach, and before ending a work session. Keep it understandable without reading the rest of this file. For each newly completed item, give a short evidence pointer. Keep assumptions and verification limitations visible. Do not estimate progress by counting generated files. The earlier “30%” was a low-confidence conversational estimate, not a project metric.
+**Plan correction:** stop radix replacement, cross-program equivalence and candidate compilation work. Preserve existing work without deleting it. Reuse checked theorems that apply to the unchanged program: input parsing, hashing, allocation, original hash-table construction/lookup, gas accounting and quantitative compiler/boot results. Judge applicability from theorem statements; some original-program helpers live under `WitnessRadix/` and are still useful. Replacement-only results are historical reference, not remaining obligations.
+
+**Original-table budget:** the previously proposed witness-construction allowance of 21,004,777,811,675,496 is a conditional partial upper bound, not a whole-program result or a lower bound. Its exceeding Yukon's score cap is irrelevant to the corrected objective. Resume accounting for the original tables, improving dominant slack where justified and retaining explicit conservative terms where needed.
+
+**Current authorization:** continue autonomously toward the corrected goal. The user's earlier no-stop-point instruction remains in effect. Local/offline, memory/disk, permitted-axiom and full-verifier restrictions remain in force. Do not silently reintroduce a score threshold or an implementation change as a prerequisite.
+
+## Current plan — authoritative
+
+- [x] Correct the objective and pin the unchanged reference above; retire the numerical score gate and replacement route.
+- [ ] Inventory applicable proofs for the original implementation and list the remaining whole-program obligations. Exclude replacement-only work from progress estimates and the critical path.
+- [ ] Bound the original witness construction and later queries, including collision chains, duplicate multiplicities, both insertion scans, growth and actual hashing/copying costs. Retain the original implementation even if the resulting number is large.
+- [ ] Close the original program's global accounting: decoded input and headers, gas/charge/refund and child-call behavior, mutable state/journal/rollback, heap and trie/query progress, output, and covered failure/unwind paths. Derive entry and affordability premises at every use.
+- [ ] Assemble an explicit phase-by-phase bound under the existing documented input/gas/outcome scope. State accounting units precisely; Pancake evaluator clocks alone can omit real work. Where reporting target instructions, use the existing baseline compilation of the unchanged source.
+- [ ] Evaluate the resulting expression exactly and reduce unjustified or dominant slack. No K cutoff applies. Distinguish proved bounds, conditional bounds and measurements.
+- [ ] Complete the applicable quantitative proof/transport for the unchanged baseline and validate with targeted resource-limited checks. Produce the finite bound, its assumptions and evidence. Yukon submission or a score-compatible claim is not a completion requirement; do not alter claim.json merely to fit its numeric format.
+
+**Immediate next work:** reassess the original-table budget and global proof inventory. The latest decoder proofs concern the original source and can be retained, but finishing a decoder subtask must not become a substitute for reviewing the corrected whole-program accounting plan.
+
+## Historical evidence and superseded plans
+
+Everything below is evidence/history unless consistent with the current plan above. Older instructions to obtain a bound below a score cap, pass a numeric feasibility gate, build a radix replacement or complete a replacement certificate are superseded. Preserve these records for reproducibility; do not treat their checklists as active goals.
 
 ## Completed, with limits
 
@@ -487,7 +505,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [x] Checked allocation at every initial clock, the real allocator call, its return continuation, and saved-state transfer. **Caller setup and the global invariants establishing their premises remain open.**
 - [x] Committed all proof work through `04603be4d`. The evidence index contains 3,834 module hashes and 5,898 printed theorem facts; these counts are not percentages. No proof build was left running at that checkpoint.
 
-## Feasibility review completed; next spending gate
+## Historical feasibility review — numerical gate retired
 
 - [x] Rechecked all 3,834 indexed proof-source hashes: no mismatches. Claim remains infinity, worktree was clean at review start, and no proof build was running. This checks checkpoint integrity, not verification.
 - [x] Identified the exact Named Stack initial state and a route through existing compiler proof components. The interfaces in Section 3.R2 are **designs, not newly checked theorems**. Avoid redoing quantitative proofs of the earlier compiler passes.
@@ -495,17 +513,17 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [x] Ran a cheap numerical pilot: the current basic-block accounting assigns 37 Work credits to one raw insertion probe body. At the existing conversion rates, a triangular probe allowance for 3,728,269 records costs **24,686,375,150,371,392**, already about **2.74 times the entire score cap**, before other work. Collision reachability is unproved; this diagnoses an overly loose upper bound. Evidence: [budget script](work/agent-notes/feasibility-budget.py), [results](work/agent-notes/feasibility-budget.json), Section 3.R1.
 - [x] Completed Section 3.R4's first witness-table investigation. Derived `F ≤ D(D−1)/2 + Σ(m_r−1)r`, `R ≤ D(D−1)/2`, hence `F+R ≤ D(N−1)`, and the distinct-preimage length constraint. These are paper arguments under explicit table invariants, **not Lean theorems**. Inspected the fixed Padded79/185/188 paths and checked the relaxation against 186,368 small table executions, 2,050,048 later queries and 1,616 independent optimizer comparisons. Evidence: [script](work/agent-notes/witness-table-budget.py), [results](work/agent-notes/witness-table-budget.json), Section 3.R5.
 - [x] Checked `WitnessRadix/Model.lean`, `Compact.lean` and `Space.lean`: arbitrary-key last-wins construction; actual BitVec256 instantiation with at most 257 query-node inspections, including absent keys; at most N branches; and 32N hash bytes plus 24 bytes per branch fitting in the original `32*cap` allocation when `cap ≥ 2N+2`. Main theorem prints use only permitted axioms. Evidence: successful `logs/witness-radix-space-v1.log`, indexed in `proof-checks.json`. No machine/refinement claim is made.
-- [ ] Resolve the revised blocker: improve the generic probe allowance using facts about the **actual Keccak-derived bucket family**, or justify an implementation/refinement alternative. Instruction pricing alone has not made the generic allowance fit. Later-query count `Q` remains unknown.
-- [ ] If that gate passes, instantiate the thin compiler/entry interfaces and test one complete path. A numerical improvement alone is not a global feasibility result.
-- [ ] Close the remaining coverage/budget unknowns and establish a credible total **K < 9,007,199,254,740,985** before scaling implementation. **No overall go decision has been earned.**
+- [ ] Current-program accounting still needs a justified later-query count Q and useful probe allowances. There is no requirement to fit a numerical cap and no replacement route.
+- [ ] Connect the existing baseline compiler/entry interfaces after deriving the original program's global bounds. No numerical feasibility gate applies.
+- [ ] Close the remaining coverage/budget unknowns and establish a justified finite K for the unchanged implementation, with no numerical ceiling.
 
-## Remaining implementation and acceptance work
+## Original implementation proof obligations (read with current scope above)
 
 - [ ] Prove input/gas-reader correspondence and initialization of the global guest invariant.
 - [ ] Prove a global work/clock potential covering calls, refunds, frame reuse, parsing, witnesses/state, table collisions, output, and covered failure/unwind paths.
 - [ ] Complete the capacity-growth path and any other local summaries **actually required by the chosen global proof**; prove their entry premises at every use.
 - [ ] Connect bounded execution through the actual compiler artifacts, bootstrap, oracle/FFI, and matching-result relation.
-- [ ] Prove a literal finite K below the score cap; make `submission.K`, `claimedScore`, and `claim.json` agree; prove admission and the fixed certificate with only permitted axioms.
+- [ ] Prove and report a literal finite K for the current implementation, with explicit units, assumptions and only permitted axioms. No score cap or Yukon promotion is required.
 - [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (61,323 full-package entries; 2,252,675,043 bytes); this is not isolated verification or a final overlay check.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 

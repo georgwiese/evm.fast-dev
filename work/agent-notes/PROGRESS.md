@@ -3096,3 +3096,32 @@ Actual minimal U256 writer and heap-scope checkpoint (2026-10-17):
   areplannednumbers, notclaimedwholeheadercosttheorems/globalK.
 - Rootblock8MiBguard/phaseentry, gas/refunds/mutabletables/heapQ andoriginalmap/
   targetcertificate remainopen. Account25%,0resetcredits, claim infinity.
+
+Actual complete rlp_put_u256 checkpoint (2026-10-17):
+- U256PutProgram exactfixedfunctionASTandCodes; restore_global provesreal
+  doubleheapmapupdatebacktosavedexistingvalueequalsoriginalmap.
+- Prepare actualheap_mark+alloc32callerclock2, realreturnedtmp/markbindings,
+  heaproundedcursorfield/control. Supportsanyvalidcursor, alignmentnotneeded
+  becauseactualmemcpy/writershandleunalignedaddresses.
+- Suffix realminwriter/byteencoder/heap_release/return/scopes, <=122source
+  clocks, encoded1..41. ActualordinaryArenaextentsderiveeveryaccess. Retains
+  exactmemoryandselectedheapglobalupdate, outsideoutput41/temp32frame.
+- Built entireactualfunction <=124bodyclocks, no-wrapencodedword, **exact
+  originalglobalsrestoration** viarealreleasecall, memory/controlframe. Calls
+  actualscalar+tupleABI, lexicaldeclandexistinglocalassignment, <=125total
+  sourceclocks, actualwrittenmemorykeptinthecanonicalcallerstate.
+- Successful input-u256-put-call-v1.log1159targets, permittedaxioms only.
+  Onefailedprefixrecordnewlineindentationfixed. Fullverificationnotrun.
+- NEXT wholeencode_header. Plannedconservativecurrentfieldboundsconfirmed
+  fromliteralAST: firstbytes8/32; restbytes16/32,24/20,32/32,40/32,48/32,56/256;
+  wide64;words96,104,112,120;extra128/len136<=32;bytes144/32,152/8;wide160;
+  bytes192/32;words200,208;bytes216/32,224/32;optionalbytes232/32+word240.
+ 21base+2optionalfields; headerstruct248bytes. Basepayloadmax857/cost1241,
+  optional50/cost72; totalpayload907/fieldcallcost1313. Finalalloc1,listlen11,
+  listwrite20 giveplannedbody1345, encoded<=916in1024buffer. Stillnotwhole
+  functionproof: needoldheadercellframebelowfreshbuf, everyfieldargumentread,
+  actualrightnestedcall/incsequence, conditionaloptionals, heapbuf+1024stable,
+  temporary32room/no-wrap andfinaltuple/scopes. Thenactualblockprefix/8MiBguard.
+- Currentglobalfeasibility/source-map/targetcertificateopen; nofiniteK. Account
+ 26%,0resetcredits. Useroverallestimate35%(25-45%lowconfidence)stilljudgment,
+  notchangedbycountinghelpermodules. Continuedaftercheckpoint, nostoppoint.

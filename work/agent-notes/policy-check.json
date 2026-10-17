@@ -1222,6 +1222,11 @@
     "submission/InitECandidate/Solver/Input/RlpWrite/U256MinLoop.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/U256MinProgram.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/U256MinStep.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256PutBuilt.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256PutCall.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256PutPrepare.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256PutProgram.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256PutSuffix.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/U256Value.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/WordWrite.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/WordWriteCall.lean",
@@ -4412,8 +4417,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61265,
-  "package_bytes": 2252373230,
+  "package_entries": 61270,
+  "package_bytes": 2252398181,
   "claim": {
     "K": "infinity"
   },

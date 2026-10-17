@@ -2269,6 +2269,7 @@
     "submission/InitECandidate/Solver/MutableTable/BuildInvariant32.lean",
     "submission/InitECandidate/Solver/MutableTable/ByteStore.lean",
     "submission/InitECandidate/Solver/MutableTable/ByteStoreExec.lean",
+    "submission/InitECandidate/Solver/MutableTable/DictionaryData.lean",
     "submission/InitECandidate/Solver/MutableTable/FindAligned32.lean",
     "submission/InitECandidate/Solver/MutableTable/FindCall32.lean",
     "submission/InitECandidate/Solver/MutableTable/FindChain32.lean",
@@ -2349,6 +2350,8 @@
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildRecordStep.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildRecords.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildSetStep.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryLookup.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryRecords.lean",
     "submission/InitECandidate/Solver/MutableTable/ZeroBytes.lean",
     "submission/InitECandidate/Solver/MutableTable/ZeroWords.lean",
     "submission/InitECandidate/Solver/NopBound.lean",
@@ -4564,8 +4567,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61420,
-  "package_bytes": 2253133058,
+  "package_entries": 61423,
+  "package_bytes": 2253142829,
   "claim": {
     "K": "infinity"
   },

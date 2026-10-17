@@ -12,6 +12,16 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked original full witness lookup directly from final Built/History/
+  Records, deriving all mapped record-cell premises from actual record values.
+  It returns exactly the last matching slice in the radix API's tuple format,
+  for every query at every alignment. Dictionary value mapping/membership and
+  record-address inversion check; no unique-hash assumption. Source body
+  <=6*input.length+3 Pan clocks, preserving memory/control. Actual cross-program
+  hash/digest/event/private-memory relation and whole-context refinement still
+  open. `mutable-witness-dictionary-lookup-v2.log`1331targets, permitted axioms;
+  index4558/7446, policy61423entries/2253142829bytes. Infinity; no finite K.
+
 - [x] Checked entire actual original nodedb_build: retained power-of-two
   capacity selection, actual table allocation/clearing, every hash/set record
   iteration, table return and all scopes. Final Built/History/Records provides

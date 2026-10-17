@@ -3825,3 +3825,44 @@ Entire actual original witness constructor checkpoint (2026-10-17):
   the candidate sequence under different private table memory contents.
   Global gas/state/Q/heap, startup/ROM/compiler/target and finite certificate
   remain open. Do not stop after this checkpoint; continue original task.
+
+Original constructor-history-to-lookup checkpoint (2026-10-17):
+- DictionaryData generic lastValue membership and map-values commute proofs.
+- WitnessDictionaryRecords inverts real arr+16*i pointer to slice ordinal;
+  constructor History supplies valid input-record membership for every last
+  dictionary value, actual ordinary-domain mapping and pointer/length words.
+- WitnessDictionaryLookup directly connects Built/History/Records to complete
+  actual original nodedb_lookup for every query pointer/alignment. Rebuilds
+  query-independent physical header/KeyModel with the new query pointer,
+  derives placement/lastValue representation/covering history and real value/
+  record cells. Returns QueryExecution.valueOf(lastValue query(sliceEntries))
+  with <=6*input.length+3 source clocks and pure memory/control. Exact same
+  tuple format as radix API; no cryptographic uniqueness assumption.
+- Success mutable-witness-dictionary-lookup-v2.log1331targets, permitted axioms;
+  index4558/7446, policy61423entries/2253142829bytes, infinity. Account36%, no
+  reset credits. No finite K/full verifier/whole-context correctness.
+- Failed draft explicitly unfolded ValueModel32 when instantiating raw value
+  cell predicate; all current sources passed before indexing.
+- Next highest-value map gap is actual Keccak digest/event congruence across
+  original/radix states with different private table memory/code. Existing
+  hash proofs yield observed digests and frames, not cross-program equality.
+  Required helper code is identical and fixed, but full source.code maps differ
+  at nodedb_build/lookup, so do not assume whole-code equality. Prove a memory
+  relation on public state/input/pad/output buffers and required code entries.
+- Useful inspected APIs: Keccak.post source stp bytes writes answer bytes and
+  nextFfi appends actual keccakf IO event zipped input/output. Keccak.f1600_execute
+  accepts actual readBytearrayWordHOL result. Existing Keccak.call_execute /
+  f1600_mapped hide readArray behind an existential; strengthen locally by using
+  ByteArray.read200 and actual f1600_execute to retain the readArray fact.
+  KeccakAbsorb.prepared=stateLanes(bind source i0) stp(isUnaligned blk)0 17;
+  lanePost uses memory(stp+i) XOR inputValue(source inputWord). inputWord is
+  either aligned load or eight expanded LE byte reads, with blk/i locals.
+  stateLanes memory/FFI normalization can support buffer congruence.
+- Complete original constructor/caller and lookup/caller environments can use
+  CodeEnvironment.finite_lookup. Candidate ConstructorEnvironment has the same
+  two formals slice_arr/n; copy its raw lookup but use actual original body.
+  Declared constructor caller must use Input.CallNormal.return_execute because
+  globals heap_ptr and FFI events change; pure/memory-only call helper does not
+  apply. Candidate Constructor.call_execute is an ignored-result template.
+- Remaining global input/gas/state/Q/heap and compiler/target finite certificate
+  work remains; claim stays infinity. Continue original task autonomously.

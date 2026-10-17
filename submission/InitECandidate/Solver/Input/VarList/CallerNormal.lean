@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.VarList.Environment
 import InitECandidate.Solver.Input.CallResume
+import InitECandidate.Solver.Input.VarList.CountLimit
 
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -33,7 +34,7 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       Blob.HeapInput next input pointer ∧
       (∀ query : BitVec 64,query.toNat<array.toNat→next.memory query=source.memory query) ∧
       source.clock-(length/4+2)≤next.clock ∧ next.clock≤source.clock ∧
-      evaluateHOLFiniteState next continuation=(some (.returned value),innerPost) ∧ post=restore source name innerPost := by
+      evaluateHOLFiniteState next continuation=(some (.returned value),innerPost) ∧ post=restore source name innerPost ∧ Records next input pointer array start length ∧ decodedCount input start length≤limit.toNat := by
   classical
   obtain ⟨callee,called,p,n,l⟩:=environment source.code.lookup (pointer+BitVec.ofNat 64 start) (BitVec.ofNat 64 length) limit code
   obtain ⟨bodyPost,returned,bodyRun⟩:=CallNormal.callee_return source post (ofString name) returnShape (ofString "ssz_split_var_list") expressions
@@ -42,6 +43,9 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have entryHeap : Blob.HeapInput entry input pointer := Blob.HeapInput.of_fields source entry input pointer rfl rfl rfl heap
   obtain ⟨valueEq,bodyClock,bodyControl,bodyHeap,oldMemory,bodyLower,bodyUpper⟩:=normal_summary entry bodyPost input pointer array limit start length
     entryHeap inside p n l domain lower aligned arrayAligned arrayAfter room heapGlobal allocCode failCode exceptionShape (by change length/4+2≤source.clock-1; omega) returned bodyRun
+  have records:=normal_records entry bodyPost input pointer array limit start length entryHeap inside p n l domain lower aligned arrayAligned arrayAfter room
+    heapGlobal allocCode failCode exceptionShape (by change length/4+2≤source.clock-1; omega) returned bodyRun
+  have countLimit:=normal_count_limit entry bodyPost input pointer limit start length entryHeap inside p n l failCode exceptionShape (by change 1≤source.clock-1; omega) returned bodyRun
   have shapePass : (shapeEqHOL (shapeOfHOLExact returned) returnShape && shapeEqHOL (shapeOfHOLExact returned) returnShape)=true := by
     rw [valueEq]
     by_cases empty : length=0
@@ -63,7 +67,7 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       exact bodyControl
     · simp only [if_neg empty] at bodyControl ⊢
       exact bodyControl
-  refine ⟨next,(evaluateHOLFiniteState next continuation).2,returned,valueEq,rfl,bodyClock,nextControl,nextHeap,?_,?_,?_,Prod.ext result rfl,postEq⟩
+  refine ⟨next,(evaluateHOLFiniteState next continuation).2,returned,valueEq,rfl,bodyClock,nextControl,nextHeap,?_,?_,?_,Prod.ext result rfl,postEq,Records.of_memory bodyPost next input pointer array start length rfl records,countLimit⟩
   · intro query before
     exact oldMemory query before
   · change source.clock-(length/4+2)≤bodyPost.clock

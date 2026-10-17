@@ -2252,3 +2252,16 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful allocated-layout-v1 closure (669 targets), permitted axioms only.
   Actual htab_new call/memzero/store composition and reachable heap-room facts
   remain open, as do hashing, original-map/whole-guest/target/global certificate.
+
+### 2026-10-17 — complete aligned word-multiple memzero and real call
+
+- ZeroProgram/Block/Conditions prove literal shapes, actual four-word and
+  one-word blocks and guard/alignment tests. Both full loops execute with
+  exact states and one clock per iteration. State/Tail/Execution compose the
+  complete fixed function for aligned lengths divisible by eight.
+- Memory proves exact nonlocal state/clock and memory outside-range frames.
+  Environment/Call include actual code/argument lookup, callee setup, returned
+  result and restored caller locals. Exact call price is n/32+(n%32)/8+1.
+- Successful zero-call-v1 closure (624 targets), permitted axioms only. Initial
+  table cap=4 byte-tail clearing still needs checking before htab_new can be
+  fully composed; source clocks do not establish target/global certificate.

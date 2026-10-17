@@ -4158,3 +4158,54 @@ Whole paired witness constructor checkpoint (2026-10-17):
   constructor entry; then preserve the first private dictionary while building
   the second and compose both actual run_attempt decCalls. Global/target bound,
   whole-program replacement and finite K remain open. Claim infinity. Continue.
+
+
+### 2026-10-17 — decoded constructor data and own private-memory frames
+
+- MutableTable.WitnessDecodedData.decoded_constructor_data derives natural
+  record-array bounds/alignment, exact word-indexed sliceFor pointer/length
+  reads, ordinary hash Buffers and low-prefix BufferRegion plus record-cell
+  ownership from actual VarList.Records. Fixed hash arenas, their ordering,
+  array end before selected boundary remain explicit reachability premises.
+  Successful mutable-decoded-data-v3.log1439targets. v1/v2 failed on let aliases,
+  BitVec.ofNat_toNat producing setWidth (simplify setWidth_eq), and byteAddress
+  i*16+8 vs nested row+8 (explicit address equality). Failed logs not indexed.
+- Input.VarList.RecordsFrame.of_cells/of_before retains actual decoded record
+  offset validity after later memory changes, using only two cells per item.
+  Successful input-records-frame-v2.log1300; v1 redundant rw on absent plan.count.
+- MutableTable.WitnessRunAttempt.initialization_shape checks actual source AST
+  suffix after header validation: nested nodedb/codedb constructor calls then
+  real runtime. input_arguments/paired_input_arguments derive both actual loads
+  from input structure, valid for zero array/count too. Success
+  mutable-run-attempt-v3.log1466; v1 rfl insufficient for well-founded progToHOL
+  equations and missing valueIsWord/valueWord; v2 hypothesis address aliases
+  needed explicit change before simp. Neither failed log indexed.
+- Existing paired memory agreement alone was insufficient for sequential maps:
+  the first original/radix private dictionaries differ. Added independent own
+  memory frames for a selected safe region to actual paired step, full loops,
+  full population/helper/returns, allocation/setup/scopes, complete bodies and
+  actual ignored/scoped returned callers. Safe requires q<T and disjointness
+  from actual Keccak state/pad/output buffers; no assumed execution frame.
+  Actual per-hash Protected frames + original setter/candidate six-store frames
+  + helper PublicWord + allocation earlier-memory frames compose. Final actual
+  body/caller memory at every safe query equals its own initial memory.
+- Checked new modules WitnessBuildRadixStepFramed,LoopFramed,PopulateFramed,
+  TableFramed,ExecutionFramed,CallFramed. Logs mutable-radix-step-framed-v3.log1350,
+  mutable-radix-loop-framed-v1.log1354,populate-framed-v1.log1383,
+  table-framed-v2.log1397,execution-framed-v1.log1409,call-framed-v1.log1412.
+  Printed axioms permitted. Failed step drafts: Unicode arrow immediately
+  before rightTarget parsed RelHom arrow-r notation (always space arrows);
+  final exact with proof metavariables must be refine. Failed table draft
+  broad textual replacement also changed local finalMemory type; fixed.
+- NEXT instantiate safe region from earlier dictionary/record geometry, then
+  transport original Built and candidate QueryMemory representation/read
+  support through second construction, compose two actual run_attempt calls.
+  Existing QueryMemory.reads/represents_of_agreement and BackingLayout
+  Located/Protected/located_reads provide support machinery. May need retain
+  final completed support from actual helper loop, rather than only the weak
+  QueryMemory.Represents result. Existing constructor proofs supply model but
+  not explicit final read-support bound. Startup allocation, entire decode/
+  headers reachability, whole runtime and global resource/compiler/target
+  budget still open. Claim infinity; no final certificate or full verification.
+- Account40%,0resetcredits. Host1.4GiBused/29available,disk58%/123GiBfree.
+  Continue autonomously, no checkpoint stop.

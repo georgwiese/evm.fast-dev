@@ -12,6 +12,25 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked decoder-to-constructor adapter: actual nonempty decoded pointer/
+  length cells, ordinary record layout, each input hash arena and raw/aligned
+  public buffer ownership. Earlier decoded arrays survive later allocations
+  preserving their cells. Actual run_attempt initialization suffix is the two
+  nested nodedb_build calls, with arguments provably loaded from si40/48 and
+  si56/64. Full paired constructors/callers now additionally preserve each
+  program's own safe words through every record/hash/update, helper, allocation
+  and scope; the earlier private dictionaries may differ between programs.
+  Safe-word premises are concrete protection from hash buffers and new private
+  allocation, not assumed memory preservation. Successful
+  mutable-decoded-data-v3.log1439,input-records-frame-v2.log1300,
+  mutable-run-attempt-v3.log1466,mutable-radix-step-framed-v3.log1350,
+  loop-framed-v1.log1354,populate-framed-v1.log1383,table-framed-v2.log1397,
+  execution-framed-v1.log1409,call-framed-v1.log1412targets; permitted axioms.
+  First-map model/read-footprint preservation through the second map still
+  needs geometry and invariant transport. Whole decoder/header reachability,
+  entire runtime context and global/compiler/target finite bound remain open.
+  Infinity; no full verification or finite K.
+
 - [x] Checked actual paired original/radix constructor ABI, including ignored
   results and scoped assigned returns around arbitrary continuations. A common
   finite callee environment is derived from real code metadata. Added separate

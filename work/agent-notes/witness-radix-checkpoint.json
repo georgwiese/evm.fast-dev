@@ -1,0 +1,242 @@
+{
+  "status": "active development, no finite certificate",
+  "scope": "checked algorithm, space, agenda, byte/word addressing, encoded-query and host input/gas lemmas plus development execution evidence; no whole-guest refinement or isolated verification",
+  "sources": {
+    "Guest/Ast.lean": {
+      "bytes": 2811376,
+      "sha256": "21925d793b4159c30406a4d48a7402d4a2cdc23e0189201342aa89778d4534ed"
+    },
+    "Guest/guest.pp.pnk": {
+      "bytes": 443531,
+      "sha256": "414d70d031f9e367ad9e5c70bc6dbd523238a3c542fba59a09aed866f3e5f860"
+    },
+    "submission/InitECandidate/Solver/Input/Framing.lean": {
+      "bytes": 4506,
+      "sha256": "1f2b4c5427395d99b6d6652abbf7742f43f389309b8198f7c8b5db45fc256714"
+    },
+    "submission/InitECandidate/Solver/Input/HostGas.lean": {
+      "bytes": 3767,
+      "sha256": "0c96fd8fc5e720555fbfffe022d669455340303b2bb6858106ff5ce158bd3ac3"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Addressing.lean": {
+      "bytes": 3699,
+      "sha256": "220c1a21ca260d454811506fc775e3a20fcd9893b1976a302fd8838e39ae7f48"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ByteKeys.lean": {
+      "bytes": 2903,
+      "sha256": "b20cd84cf6d8ea98758f748756ad7ee8b63af6560ace1a24e2e5f9e3a08399f7"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Compact.lean": {
+      "bytes": 8473,
+      "sha256": "78c2ef5501cabff8d10b1c1e34eaff0747a03d22636a42c434365850c73beefe"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Graph.lean": {
+      "bytes": 5494,
+      "sha256": "b348e35c84b0d8a5beea5137a7084eca910c36020d460e156b3174d1a687a595"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Model.lean": {
+      "bytes": 8182,
+      "sha256": "08d5ece8173dc3056bcb3768bde5d6617cdfbe20102b0bf3f898ee8af396b992"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Program.lean": {
+      "bytes": 3058,
+      "sha256": "867413ebb2693489a6f42110fcdaafa91e7300ec6166e3953c65db17b0473f03"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/QueryEmpty.lean": {
+      "bytes": 5652,
+      "sha256": "d1eef1e5d75d63528b79f2845a311d4211f6908ed2934b6c36da6e655fa4670a"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/RawProgram.lean": {
+      "bytes": 23175,
+      "sha256": "1fa9a114fe4d658f2edee2fa3dbdd3670696855aa10269bbe3cbfca05f585b05"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Scatter.lean": {
+      "bytes": 6644,
+      "sha256": "9b532f281839ccae8da35147a9d0db7e09b458f9393f683e51e6a5e9158e408d"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Space.lean": {
+      "bytes": 4448,
+      "sha256": "20ddea3d0b1fab67eb15ba739c562190739319c861b661695dbd4b3b3ea7ea66"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Visits.lean": {
+      "bytes": 3566,
+      "sha256": "dd102670d164d6dbcb2e0df2e3ca0122eaa42cd20c5c6d0341aecb557a323383"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/WordBits.lean": {
+      "bytes": 3313,
+      "sha256": "ff5b79d88d36f77ed6a7b0cfec50b634278a77a02548f23b992f77fbcec5a69b"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/Worklist.lean": {
+      "bytes": 9935,
+      "sha256": "0e585676e61382c9a0493f7cf12e781b21f34e3d9c198006e39b2394b27a2740"
+    },
+    "work/agent-notes/WitnessRadixCheck.lean": {
+      "bytes": 5431,
+      "sha256": "74ffaacaec68fd3c9571565b494cdeb4affc0aca7562bff1a0819c19a4ad680f"
+    },
+    "work/agent-notes/build-witness-radix.py": {
+      "bytes": 6358,
+      "sha256": "a341f9fa7c4e2729cb6d9f7617c2e41817914ad4308a4de635065fff3564f33e"
+    },
+    "work/agent-notes/witness-radix-unit.pnk": {
+      "bytes": 2040,
+      "sha256": "b27764df6c43c03849f140e722aeb54b694ddf6e62727bfeb85b74b2cc17543d"
+    },
+    "work/agent-notes/witness-radix.pnk": {
+      "bytes": 4172,
+      "sha256": "c21fa1449df9511da94b617b5a6318489adbb46ba577651632daafb3b15ad7bc"
+    }
+  },
+  "development_artifacts": {
+    "work/agent-notes/witness-radix-candidate.elf": {
+      "bytes": 999560,
+      "sha256": "c2321a51574d7c8fb97339e595e5854b0066143641d4d811eccf9dbeaf9dd7b5"
+    },
+    "work/agent-notes/witness-radix-candidate.bin": {
+      "bytes": 954448,
+      "sha256": "b803c075e9d73f560f421d7393fe2e2eba32c541bfe8877bd9f9588c8e75a113"
+    },
+    "work/agent-notes/witness-radix-candidate.pp.pnk": {
+      "bytes": 446290,
+      "sha256": "a84b5b0921e7cc53236320c24977a3eefd47d40f4be4fcfee075c33a1d4a1c6f"
+    },
+    "work/agent-notes/witness-radix-unit.elf": {
+      "bytes": 46920,
+      "sha256": "3e602f7761a0b53832b2b98248a2518d8dea3449646fce551afbe40bcc32d5c0"
+    }
+  },
+  "checked_logs": [
+    "witness-radix-space-v1.log",
+    "witness-radix-scatter-v2.log",
+    "witness-radix-visits-v1.log",
+    "witness-radix-addressing-v1.log",
+    "witness-radix-program-v3.log",
+    "witness-radix-query-empty-v5.log",
+    "witness-radix-graph-v3.log"
+  ],
+  "public_output_baseline_spike_comparisons": [
+    {
+      "label": "00000_test_account_write_authority_is_recipient_fork_Amsterdam-blockchain_test_from_state_test-non-zer",
+      "public_bytes": 65536,
+      "sha256": "465390271584e5af111baa6836f027cb87aad2a9a04f1acfa3ef863ceefa29fa"
+    },
+    {
+      "label": "00001_test_account_write_authority_is_recipient_fork_Amsterdam-blockchain_test_from_state_test-zero_va",
+      "public_bytes": 65536,
+      "sha256": "1d5544859418378e5a7bb79704d4e51a03848892111faecfb3f51b15284944ab"
+    },
+    {
+      "label": "00002_test_account_write_authority_is_sender_fork_Amsterdam-blockchain_test_from_state_test__b0",
+      "public_bytes": 65536,
+      "sha256": "f09737501f27ea5e5a2c95990c9d9ba379e09262e257454d6b6e7c295dc6ea3d"
+    },
+    {
+      "label": "00003_test_account_write_first_write_of_authority_fork_Amsterdam-blockchain_test_from_state_test-autho",
+      "public_bytes": 65536,
+      "sha256": "9ea0180c2cfd8c18a12f98f19411c4bfc6ca9d96d529cf5ad2407e7e5e3a4c1c"
+    },
+    {
+      "label": "00004_test_account_write_first_write_of_authority_fork_Amsterdam-blockchain_test_from_state_test-autho",
+      "public_bytes": 65536,
+      "sha256": "bb4e8efa63203cf348fd0e8f6bc9464d6626e395fb63585cd176098f3beebfce"
+    },
+    {
+      "label": "00005_test_auth_base_net_new_only_fork_Amsterdam-blockchain_test_from_state_test-scenario_multiple_set",
+      "public_bytes": 65536,
+      "sha256": "fedfecb848d4699c537e48242b6d8c1a75f099b32b519966b6caa0c45814c21a"
+    },
+    {
+      "label": "00006_test_auth_base_net_new_only_fork_Amsterdam-blockchain_test_from_state_test-scenario_pre_tx_deleg",
+      "public_bytes": 65536,
+      "sha256": "3c331737146fce61b6c0e6ded602bab3cd70dae60527a667675f7e5045202e2d"
+    },
+    {
+      "label": "00007_test_auth_base_net_new_only_fork_Amsterdam-blockchain_test_from_state_test-scenario_pre_tx_deleg",
+      "public_bytes": 65536,
+      "sha256": "9f9ee55e6b3aea18ec167f6720177888967a5e70bc4fb058aab9478eb02dbd65"
+    },
+    {
+      "label": "00008_test_auth_base_net_new_only_fork_Amsterdam-blockchain_test_from_state_test-scenario_set_clear_cy",
+      "public_bytes": 65536,
+      "sha256": "a5b794bc16dfa762cdc44a5f3fb1e4e5c0021e1ae9b447860d1b1e5ec73be6ac"
+    },
+    {
+      "label": "00009_test_multi_authorization_intra_tx_state_fork_Amsterdam-blockchain_test_from_state_test-scenario_",
+      "public_bytes": 65536,
+      "sha256": "83f3bda83a213bf2a33856354f6fa0dcdcf49923ed87a60e5037456147800efe"
+    },
+    {
+      "label": "00010_test_multi_authorization_intra_tx_state_fork_Amsterdam-blockchain_test_from_state_test-scenario_",
+      "public_bytes": 65536,
+      "sha256": "bbccfbff03f1aa8ce64a0221bf91d96cb1e7f28aad18f634bd7f2a115820e43b"
+    },
+    {
+      "label": "00011_test_multi_authorization_intra_tx_state_fork_Amsterdam-blockchain_test_from_state_test-scenario_",
+      "public_bytes": 65536,
+      "sha256": "5538ca6f6e1411414ebbe85c9ca2b18656053f04f764488bf077f5dd1068d615"
+    },
+    {
+      "label": "00012_test_multi_authorization_intra_tx_state_fork_Amsterdam-blockchain_test_from_state_test-scenario_",
+      "public_bytes": 65536,
+      "sha256": "dec619539d8b78d5df48d1ad0d57b49ae52998ca059b5b588a135aec1add5454"
+    },
+    {
+      "label": "00013_test_single_authorization_charges_fork_Amsterdam-blockchain_test_from_state_test-clears_delegati",
+      "public_bytes": 65536,
+      "sha256": "1de7d64d637f67016a958d1f81f3276e46e2bd529456cddbd4db50e0e1505819"
+    },
+    {
+      "label": "00014_test_single_authorization_charges_fork_Amsterdam-blockchain_test_from_state_test-creates_account",
+      "public_bytes": 65536,
+      "sha256": "bb4e8efa63203cf348fd0e8f6bc9464d6626e395fb63585cd176098f3beebfce"
+    },
+    {
+      "label": "00015_test_single_authorization_charges_fork_Amsterdam-blockchain_test_from_state_test-invalid__b0",
+      "public_bytes": 65536,
+      "sha256": "ee4742e253ec82dfc1a5f163198f0173d24506027e7ef3e4916292a0799413a1"
+    }
+  ],
+  "native_unit": {
+    "log": "witness-radix-unit-v1.log",
+    "status_byte": 1,
+    "scope": "actual compiled candidate routines, empty/singleton/duplicate/long-prefix/repeated-key classes"
+  },
+  "full_eest": {
+    "status": "completed, no failures",
+    "log": "witness-radix-eest-full-v1.log",
+    "records": 33614,
+    "classes": {
+      "PASS(full)": 33605,
+      "PASS(malformed)": 9
+    },
+    "json_sha256": "e2e3ffe5647d5af9c245370f651680dcbd4ff73f8989b6420afae969235bb8b8",
+    "spike_step_max": 12284611206,
+    "formal_verification": false
+  },
+  "stepped_regression": {
+    "status": "completed across v3/v4 logs",
+    "logs": [
+      "witness-radix-executable-v3.log",
+      "witness-radix-executable-v4.log"
+    ],
+    "v3": "empty, singleton, last-bit split, all-equal passed; subsequent duplicate case exceeded too-small outer guard",
+    "v4": "remaining duplicate/reversed/long-common-prefix/mixed cases all passed, exit 0",
+    "prior_v2": "terminated without a result; no failure or pass claimed",
+    "formal_verification": false
+  },
+  "new_startup_metadata": {
+    "bitmaps": 2684485656,
+    "bitmapBufferBegin": 2684522576,
+    "bitmapBufferEnd": 2684522576,
+    "codeBufferBegin": 2148393716,
+    "codeBufferEnd": 2148397056
+  },
+  "remaining": [
+    "iterative build/graph/memory refinement",
+    "nonempty actual lookup HOL paths",
+    "original map and whole-guest private-memory invariant",
+    "startup-header relation and new compiler/bootstrap/install facts",
+    "input/gas/Q/global work bound",
+    "finite certificate and authorized final verification"
+  ]
+}

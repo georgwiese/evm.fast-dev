@@ -1838,3 +1838,56 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
   needed, followed by later-query, gas, global invariant and compiler/target
   composition proofs. Read-only nodedb maps provide a possible narrower
   implementation-refinement scope, but that design is not implemented.
+
+### 2026-10-17 — active radix revision; user superseded bounded stop points
+
+- Continuing toward the complete task under the user's explicit instruction to
+  take charge, change the plan and remove stop points. The failing generic hash
+  probe bound triggered an implementation change. Claim remains infinity;
+  Solution, fixed source/library/ROM and pinned dependencies remain unchanged.
+- Implemented candidate-only nodedb_build/nodedb_lookup plus an iterative stable
+  radix builder. The replacement uses the original allocation sizes/order,
+  compresses unary levels and keeps the last duplicate ordinal. It requires no
+  cryptographic distribution assumptions. Source, offline generator, unit and
+  executable checks are in witness-radix*.pnk/build-witness-radix.py and
+  WitnessRadixCheck.lean; RawProgram/Program define the candidate AST in Solver.
+- Checked algorithm dictionary equivalence, 257 query inspections, branch/space
+  bounds, exact stable scatter with a complete frame, 769N record-pass visits,
+  address disjointness, preserved non-function declarations/ABI, and actual
+  empty-root lookup HOL execution. Logs: witness-radix-space-v1, scatter-v2,
+  visits-v1, addressing-v1, program-v3, query-empty-v5. The core model/compact
+  proofs are included in successful dependency replays.
+- Latest successful build witness-radix-graph-v3 also checks byte-array key
+  separation/lookup, exact shift/mask and leaf-tag arithmetic, address-level
+  graph traversal, logical agenda termination/record/slot bounds, and actual
+  host input/gas-reader correspondence. Explicit hypotheses remain: encoded
+  graph representation, real decoder checks, copy/ownership invariants and
+  allocation/no-wrap ranges. These are not whole-guest or compiled-clock proofs.
+  Main axiom prints contain only propext/Classical.choice/Quot.sound. Latest
+  build: exit 0, 3.27s wall; preceding failed elaborations are retained and not
+  indexed. Evidence index: 3,849 modules / 5,951 printed facts (not a percentage).
+- Native candidate compiles/links to a 954,448-byte development ROM. Unit tests
+  of actual compiled routines pass. All 33,614 EEST cases pass: 33,605 normal,
+  9 malformed, zero failures (witness-radix-eest-full-v1.log and JSON), 15:05
+  elapsed, max individual child RSS 136396 KiB. Sixteen accepts separately match
+  every one of 65,536 public output bytes against baseline. Spike counts and
+  optional interpreter checks are regression evidence, not formal clocks.
+- Optional stepped source checks: v3 passed empty/singleton/last-bit/all-equal
+  cases then exhausted a too-small 1,000-iteration guard. V4 guard 10,000 passes
+  remaining duplicate/reversed/long-prefix/mixed cases, exit 0, 13:28 elapsed.
+  The earlier large-guard v2 was terminated without a result. AST regeneration
+  --check-ast also succeeds (witness-radix-repro-v1); no source difference.
+- New compiler startup headers differ. Baseline installation/23,132-step
+  bootstrap premises cannot be silently reused. Bound.md R6 records the exact
+  values and remaining initial reserved-page relation/artifact obligations.
+  A guarded targeted compile-baseline tool build is still running to compute
+  the new static stack bound; inspect it before restarting any build.
+- Refreshed incremental policy: pass, 60,704 full-package entries,
+  2,250,160,745 bytes. This is not an isolated trusted audit or final verifier.
+  No network/PR/push/submission/full build/full verifier was performed. Host
+  used memory remains below 5 GiB, disk 57%; guards retain the 24 GiB ceiling.
+- Continuing with actual nonempty HOL lookup, iterative memory construction,
+  original-map/private-memory refinement, new startup/compiler artifacts,
+  decoder/query/global gas-work accounting, and the literal finite certificate.
+  witness-radix-checkpoint.json records hashes/results without committing raw
+  corpora or binaries. No finite K or official verification is claimed.

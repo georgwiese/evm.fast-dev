@@ -1,10 +1,12 @@
 # Status — update this section frequently
 
-**Checkpoint: 2026-10-17, branch `agent/baseline-steps`, proof commit `04603be4d`; joint witness-table review based on handoff commit `77d0a0133`.**
+**Checkpoint: 2026-10-17, branch `agent/baseline-steps`; existing proof checkpoint `04603be4d`, joint review `e5293d88b`, new WitnessRadix proofs under active development.**
 **The goal is NOT complete. `claim.json` still says infinity. No finite K has been proved.**
 **Review decision: REVISE; the joint witness-table gate still fails.** Distinct-preimage byte accounting, duplicate multiplicities and both scans are now included. Even proposed literal-path prices of 89 instructions per search probe and 10 per raw probe give a relaxed construction allowance of **21,004,777,811,675,496**, about **2.33 times the entire score cap**, before later queries or other work. This is a failure of a proposed upper bound, **not a reachable runtime counterexample or proof of impossibility**. See Section 3.R5.
 
-The user resumed the task on 2026-10-17. The required first gate was investigated with exact arithmetic, fixed-literal inspection and finite-model checks. No Lean build, new Spike benchmark, network operation or full verification was run. Section 3.R4 directs a stop/revision when this gate lacks a credible budget; it has not earned a go decision.
+**Current authorization:** the user explicitly superseded the old bounded-session and stop-point instructions: take charge, change the plan when needed, and continue until the whole task is finished. Failed feasibility checks trigger a change of approach, not the end of work. Local/offline, memory/disk, permitted-axiom and full-verifier restrictions still apply.
+
+**Active revision:** a compressed radix index for the two immutable witness maps. New checked modules under `Solver/WitnessRadix/` prove last-record-wins lookup, a 257-node query ceiling, a linear abstract construction-visit bound and backing-array size arithmetic. These are algorithm-level results, **not a compiled target refinement or finite certificate**. Keep working through the remaining memory/AST/target/global-budget connections.
 
 Future agent: update this checklist after each meaningful result, failed feasibility test, change of approach, and before ending a work session. Keep it understandable without reading the rest of this file. For each newly completed item, give a short evidence pointer. Keep assumptions and verification limitations visible. Do not estimate progress by counting generated files. The earlier “30%” was a low-confidence conversational estimate, not a project metric.
 
@@ -26,6 +28,7 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [x] Audited the major work categories and found six independent system calls, two user gas counters, and unmetered witness-table construction before transaction/header validation. Several global bounds remain unknown; see Section 3.R3.
 - [x] Ran a cheap numerical pilot: the current basic-block accounting assigns 37 Work credits to one raw insertion probe body. At the existing conversion rates, a triangular probe allowance for 3,728,269 records costs **24,686,375,150,371,392**, already about **2.74 times the entire score cap**, before other work. Collision reachability is unproved; this diagnoses an overly loose upper bound. Evidence: [budget script](work/agent-notes/feasibility-budget.py), [results](work/agent-notes/feasibility-budget.json), Section 3.R1.
 - [x] Completed Section 3.R4's first witness-table investigation. Derived `F ≤ D(D−1)/2 + Σ(m_r−1)r`, `R ≤ D(D−1)/2`, hence `F+R ≤ D(N−1)`, and the distinct-preimage length constraint. These are paper arguments under explicit table invariants, **not Lean theorems**. Inspected the fixed Padded79/185/188 paths and checked the relaxation against 186,368 small table executions, 2,050,048 later queries and 1,616 independent optimizer comparisons. Evidence: [script](work/agent-notes/witness-table-budget.py), [results](work/agent-notes/witness-table-budget.json), Section 3.R5.
+- [x] Checked `WitnessRadix/Model.lean`, `Compact.lean` and `Space.lean`: arbitrary-key last-wins construction; actual BitVec256 instantiation with at most 257 query-node inspections, including absent keys; at most N branches; and 32N hash bytes plus 24 bytes per branch fitting in the original `32*cap` allocation when `cap ≥ 2N+2`. Main theorem prints use only permitted axioms. Evidence: successful `logs/witness-radix-space-v1.log`, indexed in `proof-checks.json`. No machine/refinement claim is made.
 - [ ] Resolve the revised blocker: improve the generic probe allowance using facts about the **actual Keccak-derived bucket family**, or justify an implementation/refinement alternative. Instruction pricing alone has not made the generic allowance fit. Later-query count `Q` remains unknown.
 - [ ] If that gate passes, instantiate the thin compiler/entry interfaces and test one complete path. A numerical improvement alone is not a global feasibility result.
 - [ ] Close the remaining coverage/budget unknowns and establish a credible total **K < 9,007,199,254,740,985** before scaling implementation. **No overall go decision has been earned.**
@@ -37,10 +40,10 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 - [ ] Complete the capacity-growth path and any other local summaries **actually required by the chosen global proof**; prove their entry premises at every use.
 - [ ] Connect bounded execution through the actual compiler artifacts, bootstrap, oracle/FFI, and matching-result relation.
 - [ ] Prove a literal finite K below the score cap; make `submission.K`, `claimedScore`, and `claim.json` agree; prove admission and the fixed certificate with only permitted axioms.
-- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (60,687 full-package entries; 2,250,063,930 bytes); this is not isolated verification or a final overlay check.
+- [ ] Refresh policy/transport checks for the final package. The 2026-10-17 incremental policy check passes and includes all current Solver modules (60,704 full-package entries; 2,250,160,745 bytes); this is not isolated verification or a final overlay check.
 - [ ] Obtain final verification on a suitable, authorized host. **The user prohibited the full audit/full verifier on this machine.** No isolated finite-certificate verification has occurred.
 
-**Next action:** resolve the specific collision/query or map-refinement obligations in Section 3.R5 before bulk local proofs. **Current principal risk:** the generic quadratic collision allowance remains too expensive even under much tighter proposed path prices; later queries and the global invariant/composition are still open. Read the top checklist after every meaningful update.
+**Next action:** realize the radix index in the existing witness allocations, prove its relation to the fixed guest's last-wins maps, and connect its costs through actual target execution. **Current principal risk:** the map representation/refinement and whole-guest input/gas/query/composition proofs remain open. Read the top checklist after every meaningful update. Historical stop instructions below are superseded by the current authorization above.
 
 ---
 
@@ -366,6 +369,131 @@ JSONL. No Lean pilot was launched: the arithmetic gate failed, and the selected
 fixed `Named79/185/188/190.olean` dependencies are absent. The incremental policy
 check also passed; it is not a trusted audit or isolated verification. Keep the
 live claim at infinity and retain the unfinished certificate checklist above.
+
+### R6. Active radix implementation and proof chain (2026-10-17)
+
+The user explicitly authorized changing the plan and removed the old stop
+points. The algorithm is now implemented as proposed replacement declarations
+under `Solver/WitnessRadix/RawProgram.lean`, with their insertion into the fixed
+declaration list defined in `Program.lean`. `Guest.guestAst` and the live
+`submission/Solution.lean` remain unchanged. This is active development toward
+the finite certificate, not a completed solution or a new pause/review gate.
+
+The index uses stable partitions over the 256 hash bits, compresses unary
+levels, and selects the final input ordinal when all remaining hashes agree.
+It requires no cryptographic distribution or injectivity assumption. The
+Pancake implementation uses an explicit worklist and has no recursive call.
+All pending tasks describe disjoint remaining index intervals. New hashes,
+branches and tasks stay inside the original `htab_new` allocations:
+
+| Original allocation | Proposed contents |
+|---|---|
+| keys, `32*cap` bytes | N 32-byte hashes followed by 24-byte branch records |
+| vals, `8*cap` bytes | N slice-record pointers, then pending-node pointers |
+| order, `8*cap` bytes | N active ordinals, then pending-right starts |
+| order_pos, `8*cap` bytes | N partition ordinals, then pending-right counts |
+| used, cap bytes | Original zeroed allocation retained |
+
+The header count word becomes the index root. Odd roots encode leaf ordinals,
+even nonzero roots point to aligned branch records, and zero means empty.
+The unchanged opaque interface is `nodedb_build`/`nodedb_lookup`; callers still
+receive original slice pointers/lengths. The constructor hashes in original
+input order through the existing scratch buffer and retains the original
+allocation sequence and capacities. None of these design facts substitutes for
+the remaining memory/refinement proof.
+
+Checked chain so far:
+
+1. `Model.lookup_build` proves generic stable construction equals a last-wins
+   dictionary, including all duplicates and absent queries. `height_build`,
+   `leaves_build`, and `buildVisits_bound` give abstract structural bounds.
+2. `Compact.hash_lookup` proves the final single-record leaves preserve that
+   dictionary for actual `BitVec 256` keys. `hash_query_visits` proves at most
+   257 inspected index nodes for every query.
+3. `Space.branches_buildIndex` proves at most N branches;
+   `buildIndex_key_pool_fits` fits hashes/branches into the original key area
+   when `cap ≥ 2N+2`. `Addressing` proves no-wrap address conversion and
+   non-aliasing of hash/branch words and data/pending array cells, under explicit
+   allocation/range/alignment premises.
+4. `Scatter.scatter_eq_blocks` proves the stable scatter's exact output and
+   complete unchanged-memory footprint. Its premise uses the **actual zero
+   partition length**, allowing adjacent zero/one output intervals as in the
+   implementation. This improves the first version's over-strong N-sized gap.
+5. `Visits.hash_array_passes` accounts for three passes at every level (count,
+   scatter, copy back), conservatively including passes skipped by unary
+   levels. The bound is **769N record-pass visits**, or 25,803,355,132 when
+   `N ≤ 33,554,428`. `hash_query_total` bounds Q queries by 257Q inspected
+   nodes. These units are not target transitions; terminal key comparison,
+   hash/copy/setup work and real instruction pricing remain to be composed.
+6. `Program.nonFunctions_preserved` proves the scalar globals, structs and
+   exception declarations are literally unchanged; the two ABI theorems prove
+   function names, parameter lists and result shapes match the original.
+   `QueryEmpty.empty_table` proves an execution of the **actual new lookup
+   HOL AST** at an empty root for every clock, preserving memory, FFI and clock,
+   from a real local `db` binding, mapped root cell and zero root word.
+
+7. `ByteKeys` instantiates lookup on actual 32-byte arrays. `WordBits` proves
+   the candidate's 64-bit shift/mask expression selects exactly the modeled
+   bit, and proves nonzero/odd/decoding facts for leaf tags without wrapping.
+   `Graph.lookup_represents` follows those tag/child/record addresses and
+   proves the read-only traversal returns the dictionary result within 257
+   inspections, **conditional on an encoded-tree representation**. Constructing
+   that representation and lifting this traversal to actual HOL remain open.
+8. `Worklist` proves logical iterative termination within 257N tasks, record
+   mass never increases, and at most N current/pending task slots. Identifying
+   those tasks with the actual parallel arrays remains open.
+9. `Input.Framing` proves actual initial host-memory bytes and length framing
+   for arbitrary input-list lengths, including 64-bit length reduction.
+   `Input.HostGas` connects the challenge reader to host bytes 474..481 and
+   the 64-bit gas word under the two fixed-offset checks. Actual decoder
+   execution and host-to-guest copying must establish those premises.
+
+The successful logs include `witness-radix-space-v1`, `scatter-v2`, `visits-v1`,
+`addressing-v1`, `program-v3`, `query-empty-v5`, and `graph-v3`. The main printed declarations
+use only permitted axioms; the proposed literal routines use none. Earlier
+failed attempts are retained and not indexed as proof evidence. In particular,
+do not use failed-log `sorryAx` prints. No explicit proof holes were added.
+The broad `rfl` attempt on a well-founded source codec failed; rewriting its
+equations establishes the actual AST shape without whole-term reduction.
+
+Development execution evidence (not formal evaluator verification): the pinned
+compiler produced a linked 954,448-byte ROM image at
+`work/agent-notes/witness-radix-candidate.elf`. Sixteen accepting EEST records
+pass, and every one of their 65,536 public output bytes matches the baseline
+under Spike. A separate compiled unit calls the actual routines on empty,
+singleton, duplicate, long-common-prefix and repeated-key inputs; all passed.
+The full candidate run completed: **33,614 records, 33,605 PASS(full),
+9 PASS(malformed), no failures**, in `logs/witness-radix-eest-full-v1.log`
+and its JSON. The remaining stepped-interpreter regression cases also passed
+with guard 10,000 (`logs/witness-radix-executable-v4.log`, exit 0). Its earlier
+large-guard run was terminated without a result; v3 passed four initial cases
+then exhausted an overly small 1,000-iteration guard on duplicate buckets. The native/stepped models do not certify the HOL
+source/target contract.
+
+The new compilation changes startup metadata: its bitmap buffer endpoint is
+`0xa0029050`, code-buffer begin `0x800de2f4`, and code-buffer end `0x800df000`,
+versus fixed source values `0xa0029048`, `0x800ddd94`, `0x800de000`.
+**Do not reuse baseline installation or the 23,132-step startup theorem as if
+those premises still held.** The source/map refinement must include the initial
+reserved-page relation or establish the required observation-preserving
+independence; new artifact, installation and bootstrap facts must be checked.
+The additional data word suggests five extra copy-loop steps, but no new
+bootstrap-clock theorem is claimed.
+
+Continue on these concrete obligations:
+
+- Connect the actual iterative worklist, stable buffers and encoded branch
+  graph to `buildIndex`, including unary levels and final duplicate selection.
+- Prove all nonempty lookup paths under the encoded-graph/memory invariant,
+  including unaligned query bytes and the original memeq call/return.
+- Prove the fixed guest's original witness construction satisfies the same
+  last-wins map abstraction, and establish private-memory ownership across
+  every caller. Close the startup-header issue above in this relation.
+- Check new compiler/ROM/dispatch/installation artifacts; price actual loop
+  execution through full compiler state/oracle relations.
+- Derive input framing/gas correspondence and whole-guest Q, gas, allocation,
+  trie/journal/cleanup bounds. Compose a literal total below the score cap,
+  then the real certificate and permitted final verification.
 
 ### Review protocol for subsequent sessions
 

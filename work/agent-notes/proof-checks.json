@@ -4154,6 +4154,14 @@
       "sha256": "fe4ad5173eb78a09440b3253e5aea119c13736a5ebe7f6597e5d3c0501d5f4b6"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/Framing.lean",
+      "sha256": "1f2b4c5427395d99b6d6652abbf7742f43f389309b8198f7c8b5db45fc256714"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/HostGas.lean",
+      "sha256": "0c96fd8fc5e720555fbfffe022d669455340303b2bb6858106ff5ce158bd3ac3"
+    },
+    {
       "path": "submission/InitECandidate/Solver/JumpCmpNearCost.lean",
       "sha256": "01745279d1d6213eda3ebd1479952332da085bd54510b3cdf8c5b2be6bf9ea86"
     },
@@ -11636,6 +11644,58 @@
     {
       "path": "submission/InitECandidate/Solver/WeightedTrace.lean",
       "sha256": "24c7b5e77301456902575a3baf8954f35eb648a690a051eba84a2aee3226dcb9"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Addressing.lean",
+      "sha256": "220c1a21ca260d454811506fc775e3a20fcd9893b1976a302fd8838e39ae7f48"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ByteKeys.lean",
+      "sha256": "b20cd84cf6d8ea98758f748756ad7ee8b63af6560ace1a24e2e5f9e3a08399f7"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Compact.lean",
+      "sha256": "78c2ef5501cabff8d10b1c1e34eaff0747a03d22636a42c434365850c73beefe"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Graph.lean",
+      "sha256": "b348e35c84b0d8a5beea5137a7084eca910c36020d460e156b3174d1a687a595"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Model.lean",
+      "sha256": "08d5ece8173dc3056bcb3768bde5d6617cdfbe20102b0bf3f898ee8af396b992"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Program.lean",
+      "sha256": "867413ebb2693489a6f42110fcdaafa91e7300ec6166e3953c65db17b0473f03"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryEmpty.lean",
+      "sha256": "d1eef1e5d75d63528b79f2845a311d4211f6908ed2934b6c36da6e655fa4670a"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/RawProgram.lean",
+      "sha256": "1fa9a114fe4d658f2edee2fa3dbdd3670696855aa10269bbe3cbfca05f585b05"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Scatter.lean",
+      "sha256": "9b532f281839ccae8da35147a9d0db7e09b458f9393f683e51e6a5e9158e408d"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Space.lean",
+      "sha256": "20ddea3d0b1fab67eb15ba739c562190739319c861b661695dbd4b3b3ea7ea66"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Visits.lean",
+      "sha256": "dd102670d164d6dbcb2e0df2e3ca0122eaa42cd20c5c6d0341aecb557a323383"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/WordBits.lean",
+      "sha256": "ff5b79d88d36f77ed6a7b0cfec50b634278a77a02548f23b992f77fbcec5a69b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Worklist.lean",
+      "sha256": "0e585676e61382c9a0493f7cf12e781b21f34e3d9c198006e39b2394b27a2740"
     },
     {
       "path": "submission/InitECandidate/Solver/WordStatic/Chunk0.lean",
@@ -62945,6 +63005,432 @@
         "Quot.sound"
       ],
       "successful_log": "extend-memory-alloc-transfer-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.fastLookup_buildIndex",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.queryVisits_buildIndex",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.hash_lookup",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.hash_query_visits",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.lookup_build",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.height_build",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.leaves_build",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.buildVisits_bound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.branches_buildIndex",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.buildIndex_key_pool_fits",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.partition_buffers_fit",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-addressing-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.prefix_pending_separate",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-addressing-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.hash_branch_separate",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-addressing-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.branch_cells_injective",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-addressing-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Program.nonFunctions_preserved",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-program-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Program.nodedb_build_abi",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "witness-radix-program-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Program.nodedb_lookup_abi",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "witness-radix-program-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_solver_radix_index",
+      "axioms": [],
+      "successful_log": "witness-radix-query-empty-v5.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_build",
+      "axioms": [],
+      "successful_log": "witness-radix-query-empty-v5.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_lookup",
+      "axioms": [],
+      "successful_log": "witness-radix-query-empty-v5.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.writeBlock_get",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-scatter-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.scatter_eq_blocks",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-scatter-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.scatter_zero_at",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-scatter-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.scatter_one_at",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-scatter-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.hash_array_passes",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.hash_query_total",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.hash_array_input_envelope",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryEmpty.empty_root",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-query-empty-v5.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.QueryEmpty.empty_table",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-query-empty-v5.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.lookup",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.query_visits",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Graph.lookup_represents",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.Graph.lookup_built",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.implementation_bit",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_nonzero",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_odd",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_decode",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.expand_decreases",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.agenda_terminates",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.hash_agenda_bound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.next_record_bound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.next_slot_bound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Framing.framed_data",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
+      "axioms": [],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Framing.host_data",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-graph-v3.log"
     }
   ]
 }

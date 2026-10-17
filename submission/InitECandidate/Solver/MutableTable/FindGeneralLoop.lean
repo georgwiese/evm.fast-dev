@@ -1,4 +1,4 @@
-import InitECandidate.Solver.MutableTable.FindOtherChain
+import InitECandidate.Solver.MutableTable.FindGeneralChain
 
 namespace InitECandidate.Solver.MutableTable.Find
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -9,17 +9,18 @@ set_option maxRecDepth 5000 in
 is the real uniform mapped caller. A physical occupied prefix of lengthD
 costs at most(price(width)+2)*D source clocks respectively, without a hash distribution
 or key-equality assumption. Construction/order invariants must supply D. -/
-theorem other_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMemory) (p : Parameters)
-    (width : Nat) (smallWidth : width ≤ 64) (not20 : width ≠ 20) (not32 : width ≠ 32) (not52 : width ≠ 52) (index : BitVec 64) (length : Nat) (chain : OtherChain snapshot p width index length)
-    (keyLength : p.keyLength = BitVec.ofNat 64 (width))
-    (queryFits : p.key.toNat + width < 2 ^ 64)
+theorem general_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMemory) (p : Parameters)
+    (kind : KeyHash.Kind) (index : BitVec 64) (length : Nat) (chain : GeneralChain snapshot p kind index length)
+    (keyLength : p.keyLength = BitVec.ofNat 64 (KeyHash.keySize kind))
+    (queryFits : p.key.toNat + KeyHash.keySize kind < 2 ^ 64)
+    (little : snapshot.be = false)
     (source : PanSemStateFiniteExact 64 Guest.HostMemory) (locals : Locals source p index)
     (memory : snapshot.memory = source.memory) (domain : snapshot.memaddrs = source.memaddrs) (endian : snapshot.be = source.be)
-    (queryMapped : ∀ offset < width, source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress p.key offset)))
+    (queryMapped : ∀ offset < KeyHash.keySize kind, source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress p.key offset)))
     (code : source.code.lookup (ofString "memeq") = some (WitnessRadix.Memeq32.formals, WitnessRadix.Memeq32.body, .one))
-    (enough : otherProbePrice width * length ≤ source.clock) :
+    (enough : generalProbePrice kind * length ≤ source.clock) :
     ∃ (paid : Nat) (answer : BitVec 64) (target : PanSemStateFiniteExact 64 Guest.HostMemory),
-      paid ≤ otherProbePrice width * length ∧ answer.toNat ≤ p.capacity.toNat ∧
+      paid ≤ generalProbePrice kind * length ∧ answer.toNat ≤ p.capacity.toNat ∧
       evaluateHOLFiniteState source afterIndex = (some (.returned (.val (.word answer))), target) ∧
       emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
   induction chain generalizing source with
@@ -36,9 +37,9 @@ theorem other_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMemo
     rw [afterIndex, loop, MemeqByteRuntime.loop_stop source condition loopBody (.return (localVar "cap")) test]
     exact returned
   | occupied index byte length inside nonzero loaded fits mapped tail ih =>
-    have funded : (MemeqByteRuntime.price (width) + 2) * length +
-        (MemeqByteRuntime.price (width) + 2) ≤ source.clock := by
-      change (MemeqByteRuntime.price (width) + 2) * (length + 1) ≤ source.clock at enough
+    have funded : (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * length +
+        (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) ≤ source.clock := by
+      change (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * (length + 1) ≤ source.clock at enough
       simpa only [Nat.mul_add, Nat.mul_one] using enough
     have positive : source.clock ≠ 0 := by omega
     have byteNonzero : byte.toNat ≠ 0 := by
@@ -54,13 +55,13 @@ theorem other_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMemo
     let entry := decClockHOLFinite source
     have entryLocals : Locals entry p index :=
       ⟨locals.cap, locals.klen, locals.stride, locals.keys, locals.used, locals.key, locals.index⟩
-    have mappedSource : ∀ offset < width, source.memaddrs (panByteAlignHOL (width := 64)
+    have mappedSource : ∀ offset < KeyHash.keySize kind, source.memaddrs (panByteAlignHOL (width := 64)
         (WitnessRadix.byteAddress (p.keys + index * p.stride) offset)) := by
       intro offset offsetInside
       rw [← domain]
       exact mapped offset offsetInside
-    obtain ⟨stepPaid, reply, post, stepBound, replyBound, stepRun, stepFrame, advance⟩ := other_step entry p index width smallWidth not20 not32 not52 entryLocals
-      keyLength fits queryFits mappedSource queryMapped code (by change MemeqByteRuntime.price (width) + 1 ≤ source.clock - 1; omega)
+    obtain ⟨stepPaid, reply, post, stepBound, replyBound, stepRun, stepFrame, advance⟩ := general_step entry p index kind entryLocals
+      keyLength fits queryFits mappedSource queryMapped code (endian.symm.trans little) (by change MemeqByteRuntime.price (KeyHash.keySize kind) + 1 ≤ source.clock - 1; omega)
     have stepClock := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.clock) stepFrame
     change post.clock = source.clock - 1 - stepPaid at stepClock
     by_cases zero : reply = 0#64
@@ -76,14 +77,14 @@ theorem other_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMemo
          (bind_lookup_other _ "i" "key" _ (by decide)).trans locals.key,
          bind_lookup_same _ _ _⟩
       obtain ⟨paid, answer, target, paidBound, answerBound, tailRun, frame⟩ := ih nextState nextLocals memory domain endian queryMapped code
-        (by change (MemeqByteRuntime.price (width) + 2) * length ≤ source.clock - 1 - stepPaid; omega)
-      change paid ≤ (MemeqByteRuntime.price (width) + 2) * length at paidBound
+        (by change (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * length ≤ source.clock - 1 - stepPaid; omega)
+      change paid ≤ (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * length at paidBound
       have step := MemeqByteRuntime.loop_continue source nextState condition loopBody (.return (localVar "cap")) test positive stepRun
         (by change source.clock - 1 - stepPaid ≤ source.clock - 1; omega)
       change evaluateHOLFiniteState source afterIndex = evaluateHOLFiniteState nextState afterIndex at step
       rw [tailRun] at step
       refine ⟨paid + stepPaid + 1, answer, target, ?_, answerBound, step, ?_⟩
-      · change paid + stepPaid + 1 ≤ (MemeqByteRuntime.price (width) + 2) * (length + 1)
+      · change paid + stepPaid + 1 ≤ (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * (length + 1)
         rw [Nat.mul_add, Nat.mul_one]
         omega
       · have clocks : source.clock - 1 - stepPaid - paid = source.clock - (paid + stepPaid + 1) := by omega
@@ -94,7 +95,7 @@ theorem other_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMemo
       have step := MemeqByteRuntime.loop_return source post condition loopBody (.return (localVar "cap")) index test positive stepRun
         (by omega)
       refine ⟨stepPaid + 1, index, post, ?_, by omega, step, ?_⟩
-      · change stepPaid + 1 ≤ (MemeqByteRuntime.price (width) + 2) * (length + 1)
+      · change stepPaid + 1 ≤ (MemeqByteRuntime.price (KeyHash.keySize kind) + 2) * (length + 1)
         rw [Nat.mul_add, Nat.mul_one]
         omega
       · have clocks : source.clock - 1 - stepPaid = source.clock - (stepPaid + 1) := by omega
@@ -104,4 +105,4 @@ theorem other_chain_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMemo
 
 end InitECandidate.Solver.MutableTable.Find
 
-#print axioms InitECandidate.Solver.MutableTable.Find.other_chain_execute
+#print axioms InitECandidate.Solver.MutableTable.Find.general_chain_execute

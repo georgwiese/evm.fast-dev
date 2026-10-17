@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 4591,
+  "solver_modules": 4585,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 9,
@@ -48,7 +48,7 @@
     "LabCostTight": 1,
     "LocCost": 1,
     "MemoryCost": 1,
-    "MutableTable": 162,
+    "MutableTable": 156,
     "NopBound": 1,
     "NopCost": 1,
     "NopCostTight": 1,
@@ -111,53 +111,13 @@
     ],
     "original_mutable_key_operations": [
       {
-        "module": "MutableTable.HashSizedMapped",
-        "solver_dependency_count": 179,
+        "module": "MutableTable.GetGeneralCall",
+        "solver_dependency_count": 211,
         "imports_replacement_ast": false
       },
       {
-        "module": "MutableTable.MemeqSizedMapped",
-        "solver_dependency_count": 176,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.MemeqByteRuntime.Call",
-        "solver_dependency_count": 148,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.FindSizedCall",
-        "solver_dependency_count": 191,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.GetSizedCall",
-        "solver_dependency_count": 198,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.HasSizedCall",
-        "solver_dependency_count": 194,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.HashByteRuntime.Call",
-        "solver_dependency_count": 169,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.MemeqByteRuntime.AlignedMapped",
-        "solver_dependency_count": 182,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.GetOtherCall",
-        "solver_dependency_count": 207,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.HasOtherCall",
-        "solver_dependency_count": 213,
+        "module": "MutableTable.HasGeneralCall",
+        "solver_dependency_count": 208,
         "imports_replacement_ast": false
       },
       {

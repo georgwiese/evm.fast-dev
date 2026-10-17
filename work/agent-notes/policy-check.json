@@ -1013,6 +1013,7 @@
     "submission/InitECandidate/Solver/GasBudget/Frame.lean",
     "submission/InitECandidate/Solver/GasBudget/Halt.lean",
     "submission/InitECandidate/Solver/GasBudget/Minimum.lean",
+    "submission/InitECandidate/Solver/GasBudget/NestedDecay.lean",
     "submission/InitECandidate/Solver/GasBudget/Refill.lean",
     "submission/InitECandidate/Solver/GasBudget/Refund.lean",
     "submission/InitECandidate/Solver/GasBudget/RegularCharge.lean",
@@ -4468,8 +4469,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61323,
-  "package_bytes": 2252675043,
+  "package_entries": 61324,
+  "package_bytes": 2252679867,
   "claim": {
     "K": "infinity"
   },

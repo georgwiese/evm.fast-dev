@@ -1,0 +1,111 @@
+{
+  "whole_bound": false,
+  "certificate": false,
+  "runtime_work_bound": false,
+  "model": "Single-wave and greedy repeated-wave chain scenarios; exact integer arithmetic, no arbitrary-schedule optimum.",
+  "parameters": {
+    "user_regular_cap_literal": 16777216,
+    "system_regular_literal": 30000000,
+    "minimum_access_literal": 100,
+    "production_price_literal": 5000,
+    "maximum_depth_literal": 1024
+  },
+  "sources": {
+    "guest/src/fork.pnk": "eb6ee62f0a8b0d9d16d545771791adeb40dcd7190f17fa0091c0c24da5a2e274",
+    "guest/src/evm.pnk": "ae92f8427624c87f83f8514234e166e9d602f85cf3c92805989c0f0472c90ce7",
+    "guest/src/evm_calls.pnk": "c0f015aa9eee5d6d8cc971b9fc6fe5adba4b1d4a95ed3f3c712dd6363ec26398",
+    "guest/src/state.pnk": "3040be5fd32c2cf8bed0c402d8e0dcc59998a5114b1aeea2a1852de91bbc4bb7",
+    "guest/src/lib/htab.pnk": "a1bd4c62aedfe01fd8e8547e60979e39ae5f2dda0688a2d941f625ef66eeece2",
+    "submission/InitECandidate/Solver/GasBudget/NestedDecay.lean": "e179093515ae1ee2c53b7d81d85ccb3b255680dabf6180718d0c063f95f9060b"
+  },
+  "checked_algebra": {
+    "log": "gas-nested-decay-v1.log",
+    "uniform_child": "child <= capNat(parent-100)",
+    "shifted_contraction": "64*(child+6237) <= 63*(parent+6237)",
+    "maximum_depth_from30M": 538,
+    "status": "Conditional Lean facts; actual edge/root budget invariants remain open."
+  },
+  "cases": {
+    "user": {
+      "root_budget": 16777216,
+      "last_affordable_edge": 501,
+      "last_child_budget": 17,
+      "empty_ancestor_single_wave": {
+        "units": 131349632,
+        "depth": 32,
+        "child_distinct": 2026,
+        "child_budget": 10133325
+      },
+      "earlier_keys_available_at_every_ancestor": {
+        "units": 131414464,
+        "depth": 32,
+        "earlier_distinct": 1,
+        "child_distinct": 2026,
+        "child_budget": 10130302,
+        "root_after_earlier_production": 16772216
+      },
+      "largest_greedy_repeated_wave_scenario": {
+        "units": 919662004,
+        "depth": 214,
+        "waves": 92,
+        "produced_keys": 2901,
+        "gas_remaining": 303416
+      },
+      "earlier_key_placement_pairs_examined": 1467784,
+      "depth_times_independent_root_square": 11526169600,
+      "hypothetical_price_sensitivity": {
+        "512": 67284205568,
+        "1000": 131414464000,
+        "3552": 466784176128
+      },
+      "target_prices_verified": false,
+      "runtime_wave_coupling_proved": false
+    },
+    "system": {
+      "root_budget": 30000000,
+      "last_affordable_edge": 538,
+      "last_child_budget": 9,
+      "empty_ancestor_single_wave": {
+        "units": 420268032,
+        "depth": 32,
+        "child_distinct": 3624,
+        "child_budget": 18121751
+      },
+      "earlier_keys_available_at_every_ancestor": {
+        "units": 420268032,
+        "depth": 32,
+        "earlier_distinct": 0,
+        "child_distinct": 3624,
+        "child_budget": 18121751,
+        "root_after_earlier_production": 30000000
+      },
+      "largest_greedy_repeated_wave_scenario": {
+        "units": 3321693864,
+        "depth": 236,
+        "waves": 137,
+        "produced_keys": 5267,
+        "gas_remaining": 431800
+      },
+      "earlier_key_placement_pairs_examined": 2845343,
+      "depth_times_independent_root_square": 36864000000,
+      "hypothetical_price_sensitivity": {
+        "512": 215177232384,
+        "1000": 420268032000,
+        "3552": 1492792049664
+      },
+      "target_prices_verified": false,
+      "runtime_wave_coupling_proved": false
+    }
+  },
+  "remaining_premises": [
+    "Actual parent regular budget bounded by its root seed through all success/failure paths.",
+    "Every nested call/create pays the required fee; stipends are funded by its value fee.",
+    "Root initial regular gas at most the parsed constants on every reachable entry.",
+    "Delete-set key production and propagation are coupled to actual charged events.",
+    "All parent/child/earlier-key configurations and arbitrary forests, not only one wave.",
+    "Hash-table searches, raw insertions, growth, deletion and copy multiplicities.",
+    "Protected gas cells across logs, table merges, memory allocation and rollback.",
+    "Aggregate roots, signed state/refund ledger, block counters and final target prices."
+  ],
+  "decision": "Useful conditional scale check; no global go or finite K."
+}

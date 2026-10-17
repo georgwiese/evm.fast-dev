@@ -4824,3 +4824,33 @@ Whole paired witness constructor checkpoint (2026-10-17):
 - Continue actual frame_new suffix/return and initialized ledger preservation,
   then actual root message construction/global accounting and unchanged target
   transport. Account1%,0manual reset credits; no numerical ceiling.
+
+
+### 2026-10-17 — complete unchanged frame constructor and caller
+
+- FrameNewSuffixProgram checks the exact full afterGas AST. Counts executes both
+  real htab_count calls (the second assigns acc_n), all final stores/global
+  reads and return; regular ledger cells64/184/192 survive.
+- SuffixData tracks exactly six external word reads and new frame slots;
+  natural outside-frame ownership gives store separation and both-sided helper
+  frames. Delete/Logs/Suffix compose every actual helper and scope to return,
+  preserving incoming initialized regular ledger; costprice+n+20source clocks.
+- FreshFields derives prefix e/msg/empty bindings and all external-memory
+  preservation through the actual clear/allocations/stores. Geometry proves
+  exact original reservationbitmapBytes(n)+2656, without alignment slack.
+  Mapped derives bitmap/log/table/used mappings from one live arena interval.
+  FreshCanonical proves exact final global update normalization.
+- Execution joins the17-clock prefix to the complete suffix; all intermediates
+  and helpers derived. FrameNewEntry records only actual entry conditions;
+  Call proves real callee environment, caller ABI and lexical restoration.
+  Returned regular ledger=MSG_GAS. Caller source allowanceprice+n+38; conditional
+  n131072=>131623,n65536=>65831. Not target K or all-caller length reachability.
+- Successful frame-new-call-v1.log1154jobs includes RootCallerNormal and complete
+  retained constructor closure, explicit exit0 and only permitted axioms.
+  Development failures counts-v1/v2, suffix-data-v1, delete-v1/v2/v3,
+  suffix-v1/v2, fresh-fields-v1, execution-v1 were corrected proof normalization,
+  free-metavariable or record-projection issues; never indexed failed logs.
+- Refresh inventory/policy/baseline identity. No whole finite runtime bound,
+  full verification or claim change. Account2%,0manual reset credits. Continue
+  capped root mgas through actual TE/MSG stores and caller initialization,
+  then child merges/rollback/block signed ledger and unchanged target work.

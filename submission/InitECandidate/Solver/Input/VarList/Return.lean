@@ -37,7 +37,8 @@ theorem return_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (in
     evaluateHOLFiniteState source afterLoop=
       (some (.returned (pairValue plan.array plan.count)),emptyLocalsHOLFinite (finished source plan.array plan.count total previous)) ∧
     Blob.HeapInput (emptyLocalsHOLFinite (finished source plan.array plan.count total previous)) input plan.inputPointer ∧
-    WitnessRadix.BackingLayout.control (emptyLocalsHOLFinite (finished source plan.array plan.count total previous))=WitnessRadix.BackingLayout.control source := by
+    WitnessRadix.BackingLayout.control (emptyLocalsHOLFinite (finished source plan.array plan.count total previous))=WitnessRadix.BackingLayout.control source ∧
+    ArrayFrame source (emptyLocalsHOLFinite (finished source plan.array plan.count total previous)) input plan := by
   classical
   have address:=final_address_read source plan.array plan.count plan.positive a c
   have value:=final_value_read source total previous n p
@@ -52,9 +53,11 @@ theorem return_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (in
       shapeOfHOLExact,sizeOfShapeWithContextHOL]
   have targetHeap : Blob.HeapInput target input plan.inputPointer :=
     plan.length_store_input source heap (plan.count-1) (by have h:=plan.positive; omega) (total-previous)
-  refine ⟨?_,Blob.HeapInput.of_fields target (emptyLocalsHOLFinite target) input plan.inputPointer rfl rfl rfl targetHeap,rfl⟩
-  rw [after_loop_shape,WitnessRadix.StateSteps.next_sequence source target finalLengthStore returnArray storeRun (Nat.le_refl _)]
-  exact returned
+  refine ⟨?_,Blob.HeapInput.of_fields target (emptyLocalsHOLFinite target) input plan.inputPointer rfl rfl rfl targetHeap,rfl,?_⟩
+  · rw [after_loop_shape,WitnessRadix.StateSteps.next_sequence source target finalLengthStore returnArray storeRun (Nat.le_refl _)]
+    exact returned
+  · exact store_frame source input plan (lengthCell plan.array (plan.count-1)) (total-previous)
+      (plan.length_inside (plan.count-1) (by have h:=plan.positive; omega))
 
 end InitECandidate.Solver.Input.VarList
 

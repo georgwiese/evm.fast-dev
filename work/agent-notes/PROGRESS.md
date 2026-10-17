@@ -2764,3 +2764,44 @@ Whole variable-list loop/tail checkpoint (2026-10-17):
   andComplete); include explicit ↓reduceIte. RecordmemoryFrame usecontrol strips
   locals/memory/clock; failedloop mayretain earlierarraywrites. Complete has
   wordlengthdifferences; allValidAt will justify natural-length interpretation.
+
+
+Variable-list whole normal caller checkpoint (2026-10-17):
+- MemoryFrame fresharray extentOutside word-frame incl allrealrecordloop outcomes,
+  finalstore/return/scopes; strengthenedAnyLoop/Return/LoopReturn/AllocatedTail.
+- Allocation actualpanopcount*16 +PersistentAlloc.call_execute +arrscope +whole
+  initializedtail. Globalsadvanceexact, input/oldheapoutsidearraypreserve; normal
+  count+1 /fault<=count+2 bodyclocks. Plan freshgeometry/runtime/roomexplicit.
+- NormalEntry nowretains exactfullpost first/count scope-restoration equality.
+  EncodedCount realshift2=rawfirst/4 andcount<2^30. BodyNormal derivespositivePlan
+  fromgenuine nonempty normalwholebodyreturn;completecells/validranges/exactclock/
+  globalupdate/copyandoldheapframes. NormalSummary includesactualemptycase and
+  conservativearrayNat+4*lengthroom, normalbodycost0orrawcount+1<=length/4+1.
+- Environment actual3argABI/returnShapecomb[one,one]. CallNormal.callee_return
+  genericdecCall normalinversion andCallResume.return_execute installarbitrary
+  tuplevalue/restorecallername. CallerNormal genuinevariablelistcall normalreturn
+  exposesactualcontinuation, callerlocals.update(name,tuple), HeapInput/oldwords
+  beforearraybase, control sourceorheapupdate, exactcallerclock1+bodycost, lower
+  sourceclock-(length/4+2). Sourceclock>=length/4+3 neededbycomponentproofs.
+- Successful joint input-varlist-caller-normal-v2.log1301targets, allowedaxioms.
+  Account19%,0resetcredits watcheractive; nofiniteK/fullverifier.
+- NEXT PayloadTransactionsProgram afterExtra exacttwo storespl16=p+o_extra and
+  pl24=o_txs-o_extra; scopedtxs callssz_split_var_list(p+o_txs,o_wd-o_txs,2^63-1).
+  ApplyCallerNormal preservingactualp/pl/len/offsets andcopiedinput, thenreal
+  pl32=rfield0txs,pl40=rfield1txs,scopednwd callssz_fixed_list_count(o_bal-o_wd,
+  44,2^63-1). Need actualudivmod64-loop body+fixed_list_count/caller proof next.
+  Afterward allremainingpayloadstores nofurthercalls: pl48withdrawalptr,56nwd,
+  64balancesptr,72balancebytes,80blocknum(raw404+62),88gas(raw412+62=474),96gasused,
+  104timestamp,112blobgas,120excessblobgas,128slot. Max532+62+8=602 alreadyderived.
+  Proveactualgasstore<=200M andlaterdistinctstores preservefield88 beforeactual
+  return; thenwholepayloadcaller/RootSI/header/witnessdecoder/nodedbglobal entry.
+- Important zero-case: realvarlist emptyreturns(pointer0,count0). Auditconstructor
+  entrypremises forN0: anyunconditionalpositive/mapped recordsbase couldexclude
+  this realcase; relaxunderpositivecount orproveemptyconstructorpathseparately.
+- Parenthesize booleanAND before equality: `(a && b)=true`; bare`a && b=true`
+  elaboratesa&&decide(b=true) coercion. ShapeOf/shapeEq wellfoundeddefs maynotrfl;
+  use shapeEqHOL_eq_true+shapeOfHOLExact equations for actualtupleShapecomb2.
+- Rewriting count_encode atbind_lookup_same changes bothStatebinder andRHSword,
+  breakingtheoldreadytype. InsteadtranslookupSame withcongrArg(some.val.word)
+  count_encode tochangeonlytheRHS. Genericcallee_return generalize rewritesits
+  fixed-calleegoal too; returnedbranchusesrfl, notoldoutputEq.

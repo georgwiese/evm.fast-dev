@@ -12,7 +12,7 @@ theorem first_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one) (enough : 1≤source.clock)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source firstTail=(some (.returned value),post)) :
     ¬badFirst first length ∧ (countWord first).toNat≤limit.toNat ∧
-      ∃ innerPost,evaluateHOLFiniteState (counted source first) allocationCall=(some (.returned value),innerPost) := by
+      ∃ innerPost,evaluateHOLFiniteState (counted source first) allocationCall=(some (.returned value),innerPost) ∧ post=restore source "count" innerPost := by
   rw [first_guards source first length limit f n l failCode exceptionShape enough] at run
   by_cases bad : badFirst first length
   · simp only [if_pos bad] at run
@@ -25,7 +25,7 @@ theorem first_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
       cases impossible
     · simp only [if_neg over] at run
       have result:=congrArg Prod.fst run
-      refine ⟨bad,?_,(evaluateHOLFiniteState (counted source first) allocationCall).2,Prod.ext result rfl⟩
+      refine ⟨bad,?_,(evaluateHOLFiniteState (counted source first) allocationCall).2,Prod.ext result rfl,(congrArg Prod.snd run).symm⟩
       change ¬limit.toNat<(countWord first).toNat at over
       omega
 
@@ -47,7 +47,8 @@ theorem normal_entry (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
         Guest.GasLimit.le32 input start/4≤limit.toNat ∧
         ∃ innerPost,evaluateHOLFiniteState
           (counted (bind source "first" (BitVec.ofNat 64 (Guest.GasLimit.le32 input start))) (BitVec.ofNat 64 (Guest.GasLimit.le32 input start)))
-          allocationCall=(some (.returned value),innerPost)) := by
+          allocationCall=(some (.returned value),innerPost) ∧
+          post=restore source "first" (restore (bind source "first" (BitVec.ofNat 64 (Guest.GasLimit.le32 input start))) "count" innerPost)) := by
   classical
   rw [entry_execute source input pointer start length heap inside p n failCode exceptionShape enough] at run
   by_cases empty : length=0
@@ -70,7 +71,7 @@ theorem normal_entry (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
         (bind_lookup_other source "first" "len" first (by decide)).trans n
       have savedL : entered.locals.lookup (ofString "lim")=some (.val (.word limit)) :=
         (bind_lookup_other source "first" "lim" first (by decide)).trans l
-      obtain ⟨valid,limitBound,innerPost,allocationRun⟩:=first_normal entered _ first (BitVec.ofNat 64 length) limit
+      obtain ⟨valid,limitBound,innerPost,allocationRun,firstPost⟩:=first_normal entered _ first (BitVec.ofNat 64 length) limit
         (bind_lookup_same _ _ _) savedN savedL failCode exceptionShape enough value firstRun
       obtain ⟨positive,aligned,upper⟩:=first_valid first (BitVec.ofNat 64 length) valid
       have firstNat : first.toNat=Guest.GasLimit.le32 input start := RawScalar.le32_number input start
@@ -78,7 +79,10 @@ theorem normal_entry (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
       have lengthNat : (BitVec.ofNat 64 length).toNat=length := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
       rw [count_number,firstNat] at positive aligned limitBound
       rw [firstNat,lengthNat] at upper
-      exact Or.inr ⟨by omega,positive,aligned,upper,limitBound,innerPost,allocationRun⟩
+      have postEq:= (congrArg Prod.snd run).symm
+      change post=restore source "first" (evaluateHOLFiniteState entered firstTail).2 at postEq
+      rw [firstPost] at postEq
+      exact Or.inr ⟨by omega,positive,aligned,upper,limitBound,innerPost,allocationRun,postEq⟩
 
 end InitECandidate.Solver.Input.VarList
 

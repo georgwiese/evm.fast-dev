@@ -12,6 +12,15 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked actual RLP scalar/header helpers, whole withdrawal size function,
+  withdrawal accumulation loop and final block-length suffix. From explicit
+  copied-record/code/phase-entry premises, including preceding total<=2^32,
+  the actual result is at least25*N without64-bit wrap, with at most43*N+22
+  source clocks. Thus passing8MiB implies N<=335544 **at that phase**. Deriving
+  its entry and preceding-total premises from the whole block function remains
+  open. Evidence: `input-rlp-withdrawal-phase-v2.log`1127targets, only permitted
+  axioms; index4360modules/6988facts. No finite certificate or target-step bound.
+
 - [x] Measured all 33,614 EEST records: 33,605 normal passes, 9 expected malformed passes, no failures. These are **Spike instruction counts**, not formal evaluator steps. Evidence: [Phase 1 report](work/agent-notes/PHASE1-REPORT.md).
 - [x] Documented artifact hashes, Spike/formal-clock differences, synthetic inputs, zero-user-gas witness work, and a quadratic hash-table collision example. The numerical envelope remains **unproved**.
 - [x] Checked an exact 23,132-step bootstrap theorem, subject to explicit baseline ROM/configuration premises.

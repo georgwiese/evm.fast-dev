@@ -2957,3 +2957,30 @@ Actual division math/withdrawal count field checkpoint (2026-10-17):
   header_len in[1,9], actualwithdrawal_rlp_len in[25,49]; thenactualblock_rlp_length
   min25perwithdrawal/no-wrap and8MiBguard=>Nwd<=335544. Globaljointgas/map/heap Q
   andcompiledtargetbound/source-mapstillmajoropen. Claim infinity,no fullverifier.
+
+Actual RLP withdrawal phase checkpoint (2026-10-17):
+- PureReturn/PureAssignReturn actual scalar call resumption with pure nonlocal
+  frame, canonical saved caller binding and actual assignment validity checks.
+- RlpLength/BeProgram,Step,Loop,Built,Call: real while(v!=0), shift8/countadd,
+  <=8 rounds, actual function/body/caller, no arithmetic-loop surrogate.
+- ShortOrBe/ScalarSizes real header and word size functions in[1,9], <=9 body
+  clocks. ListHeader real ignored-result tailcall and real caller/assigncaller,
+  <=10 body clocks. All lexical restoration and actual ABI included.
+- WithdrawalProgram/Built/Call actual44-byte record3wordreads,3scalarcalls,
+  payload21address+threepositivewordlengths, listheader+return. Size25..57,
+  <=41body/42callclocks. Conservative57 retained, not advertised as sharp49.
+- BlockProgram/Reads/Step/Loop exact fixed secondwhile: realpl48base/44stride,
+  whileticks/call/wl+iassignments, copiedbytes preserved, <=43*N sourceclocks,
+  natural25*N<=sum<=57*N, exact64-bitword no-wrap, otherlocals/control preserved.
+- BlockSuffixProgram/BlockSuffix realtwo existing-hl assigning listheadercalls,
+  totaladdition/return. BlockWithdrawalPhase composes actualloop+suffix; explicit
+  initiali0/wl0, total<=2^32,count<2^31,copiedrecords+code premises. Encodedresult
+  >=25*N and <=total+57*N+18, exactnativeword, <=43*N+22sourceclocks. Natural8MiB
+  guard impliesN<=335544. Wholeblockprefix/entry andouterguard remainunconnected.
+- Success input-rlp-withdrawal-phase-v2.log1127targets, permittedaxioms only,
+  indexed4360modules6988facts. Failedsuffixv1 Option.map_some, v2sequencewrapper;
+  phasev1 neededrflafterstateframe rewrite. Recoverylogsnotindexed.
+- Next actualtransactionencodedlength<=recordlength+9 andtelescopingdecoded
+  recordlengths, thenheader/transactionprefixbound andactualblockguard. Global
+  jointgas/refunds/mutabletables/heapQ, originalmaprefinement andcompiledtarget
+  K remainopen. Claim infinity; no fullverifier. Account23%,0resetcredits.

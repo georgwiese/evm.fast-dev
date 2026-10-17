@@ -1334,5 +1334,10 @@
     "successful_log": "witness-radix-keccak-absorb-call-v1.log",
     "targets": 678,
     "result": "Complete literal fixed keccak_absorb_block for both aligned and byte-expanded unaligned input, all17 actual XOR/store iterations, actual permutation call, scopes/return and actual caller/callee/code environment. Exact cost18 body/19 call source clocks; caller locals restored, globals/code/oracle/host preserved, outside-state memory frame. Only allowed axioms. Full keccak256 block loop/padding/digest output and constructor/global certificate remain open."
+  },
+  "whole_keccak256_checkpoint": {
+    "successful_log": "witness-radix-keccak256-call-v1.log",
+    "targets": 702,
+    "result": "Complete actual fixed keccak256 function and caller/callee/code/argument environment: initial200-byte clear, arbitrary full-block loop, remainder declaration, actual136-byte padding clear and copy, both padding byte stores including rem135, final absorption, aligned four-word or unaligned memcpy output, lexical returns and caller restoration. Body<=202+20*floor(length/136), call<=203+20*floor(length/136) source clocks; globals/code/oracle/host and outside-three-buffer cells preserve. Only allowed axioms. Mapped-buffer/actual-global entry facts are explicit premises, still to derive from allocated input/buffers and constructor record loop. Original-map/whole-guest/target/global finite certificate remains open."
   }
 }

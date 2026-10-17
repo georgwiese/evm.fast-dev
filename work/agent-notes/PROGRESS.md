@@ -2357,3 +2357,16 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful closure witness-radix-keccak-absorb-call-v1.log, 678 targets,
   only permitted axioms. Full keccak256 block loop, padding/digest output,
   constructor and fixed finite certificate remain open.
+
+2026-10-17: entire fixed keccak256 and actual caller
+
+- All full blocks execute at20 source clocks each. Full padding tail includes
+  clear/copy/both byte stores/final absorb/both output paths and remainder scope
+  within194 source clocks. Complete initial clear, scopes and actual caller
+  produce body<=202+20*floor(n/136), call<=203+20*floor(n/136).
+- Preserves globals/code/oracle/host, caller locals and outside-buffer memory.
+  No successful full hash or per-loop transition is assumed. Actual pointers,
+  code/oracle and mapped-buffer premises still require allocation/input proofs.
+- Successful closure witness-radix-keccak256-call-v1.log, 702 targets, allowed
+  axioms only. Constructor hash loop, map refinement and global fixed certificate
+  remain open. No finite claim or full verification.

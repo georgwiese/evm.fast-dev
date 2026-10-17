@@ -357,6 +357,38 @@
     "submission/InitECandidate/Solver/WitnessRadix/TerminalReads.lean": {
       "bytes": 1998,
       "sha256": "c0c93d15ab83c135156e39e81972c510c4a904e1091f5dfcf6b359e7f9065826"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PopStoreFrame.lean": {
+      "bytes": 4338,
+      "sha256": "ee2c42b1709112161e238e81d926d899be6e4cb57cc367617bbd104366b279a6"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/ScopedFrame.lean": {
+      "bytes": 3201,
+      "sha256": "04a3396a3a8494f1b6ac70f7cc168efac755303af99f9753a77eb003d1aa1b6c"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TerminalContinue.lean": {
+      "bytes": 5068,
+      "sha256": "e77af07216fc48e49aa35f46771d205836051d9502d2f3ab1cd819bf7d26a9e0"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/TerminalLoopContinue.lean": {
+      "bytes": 4219,
+      "sha256": "c0e2add06f67b3d89fa102ae287aa3292ce4657caf99440667a78b5af9f8ef58"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/UnaryBody.lean": {
+      "bytes": 3814,
+      "sha256": "3e408ee0f4bcbdf88f03bbc8cebcd20080dcfcc79b99325e21b21ca7606e128e"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/UnaryCount.lean": {
+      "bytes": 6978,
+      "sha256": "2fa1e5ce56480e110357a3a38e3e7ae0d2d9650ddf997dc0b36776d198613251"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/UnaryLoop.lean": {
+      "bytes": 6181,
+      "sha256": "0bba5811bce8785a121a06b012facd275db54cfd16354e0dfe5dff76998130b2"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/UnaryProgram.lean": {
+      "bytes": 2216,
+      "sha256": "7d3cb64ee31ea8cc87dfaa07fcd69efcbea4a7dab3f79b0c5e1423bae5bfddfd"
     }
   },
   "development_artifacts": {
@@ -390,7 +422,7 @@
     "witness-radix-scatter-partition-v1.log",
     "witness-radix-build-cases-v2.log",
     "witness-radix-terminal-loop-finish-v2.log",
-    "witness-radix-pop-body-v1.log"
+    "witness-radix-outer-transitions-v1.log"
   ],
   "public_output_baseline_spike_comparisons": [
     {
@@ -540,6 +572,8 @@
     "empty": "complete actual helper, only root zero store, no source clock",
     "finish": "actual terminal ordinal read/tag store and final outer iteration; exactly one source clock",
     "pop": "complete actual pending-task pop from suffix cells and parent bit; updates depth/start/count/bit/dest, returns continue, no memory or clock change",
-    "model_cases": "empty/singleton/terminal/unary/split equations for the existing compressed build model"
+    "model_cases": "empty/singleton/terminal/unary/split equations for the existing compressed build model",
+    "terminal_continue": "complete literal leaf store plus protected suffix reads/pop, scoped restoration and actual outer-while resumption, one outer clock",
+    "unary": "complete literal count scope and outer-while resumption, exact unchanged memory/restored temporary counters, input.length + 1 source clocks"
   }
 }

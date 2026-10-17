@@ -2347,3 +2347,13 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful closure witness-radix-copy-general-call-v1.log, 640 targets,
   only permitted axioms. Used to close Keccak padding-copy execution gap;
   actual full hash, constructor loop and finite global certificate remain open.
+
+2026-10-17: complete fixed Keccak block absorber
+
+- Actual aligned and byte-expanded unaligned input expressions, all17 XOR
+  lane stores and loop iterations, permutation call, scopes and return checked.
+- Actual caller/callee environment and restoration check; cost18 body/19call
+  source clocks, outside-state frame and nonlocal preservation except events.
+- Successful closure witness-radix-keccak-absorb-call-v1.log, 678 targets,
+  only permitted axioms. Full keccak256 block loop, padding/digest output,
+  constructor and fixed finite certificate remain open.

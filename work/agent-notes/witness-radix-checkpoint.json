@@ -1329,5 +1329,10 @@
     "successful_log": "witness-radix-copy-general-call-v1.log",
     "targets": 640,
     "result": "Complete actual fixed memcpy for arbitrary aligned/unaligned mapped source/destination ranges, including overlap, all four loops, branch selection, lexical return, actual callee/code/argument environment and ignored-result caller restoration. Exact memory function and clock cost, body<=length, call<=length+1; complete frame outside destination byte/word cells. Only permitted axioms. Required for Keccak final-block padding; full hash/constructor/global certificate remain open."
+  },
+  "whole_keccak_absorb_checkpoint": {
+    "successful_log": "witness-radix-keccak-absorb-call-v1.log",
+    "targets": 678,
+    "result": "Complete literal fixed keccak_absorb_block for both aligned and byte-expanded unaligned input, all17 actual XOR/store iterations, actual permutation call, scopes/return and actual caller/callee/code environment. Exact cost18 body/19 call source clocks; caller locals restored, globals/code/oracle/host preserved, outside-state memory frame. Only allowed axioms. Full keccak256 block loop/padding/digest output and constructor/global certificate remain open."
   }
 }

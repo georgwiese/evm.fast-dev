@@ -12,6 +12,16 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked complete actual original witness-record while loop, including
+  hash-control/context transport, actual new/duplicate map updates and input
+  ordinal advancement. Final Built/History covers exactly N observed digest/
+  record pairs, with preserved slice records and all non-index locals. History
+  values point to real input record addresses. Conditional loop allowance
+  `(Keccak256.price(maximum)+7*N+9)*remaining` is only a source-clock bound.
+  `mutable-witness-loop-v2.log`1325targets, permitted axioms; index4551/7434.
+  Allocation/capacity/caller setup, actual final lookup API and original/radix
+  digest/context relation remain open; infinity, no finite K/full verification.
+
 - [x] Checked one complete original witness-builder record iteration:
   actual pointer/length loads, full real Keccak call, observed digest word/
   byte view, complete new/duplicate setter call and ordinal increment. Table

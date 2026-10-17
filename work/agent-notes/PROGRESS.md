@@ -3747,3 +3747,49 @@ Actual original witness-builder iteration checkpoint (2026-10-17):
   record_loop are useful templates; original Locals has t/slice_arr/n/i only.
   Payload/digest noninterference across original/radix private-table memories,
   whole global gas/state/Q/heap and compiler/target certificate remain open.
+
+Complete original witness-record loop checkpoint (2026-10-17):
+- WitnessBuildContext transports actual code/globals/domain/hash environment
+  through hashControl, while retaining buffer/length bounds. Record source
+  allowance monotone in both byte length and ordinal.
+- WitnessBuildHistory tracks actual observed digest/record pairs in ordinal
+  order. No unique-hash assumption; every history value points to a real input
+  slice record. Length bounded by plan.count.
+- WitnessBuildLoop whole original record while loop from index+remaining=N,
+  Built/input.length=index, real Locals/Records and concrete hash/context facts.
+  Actual per-iteration hash/set/increment theorem supplies execution; induction
+  preserves final Built/History, produces exactly N pairs, preserves record
+  words/all non-i locals, actual hashControl and source-clock upper/lower frame.
+  Allowance (Keccak256.price(maximum)+7*N+9)*remaining; this is an intentionally
+  loose original source termination allowance, not target pricing/global K.
+- Success mutable-witness-loop-v2.log1325targets, allowed axioms. Index4551/7434.
+  Failed first loop draft fixed while truth-word iota normalization followed by
+  explicit typed-zero if rewrite, before actual body run/fixClock composition.
+- Policy61416entries/2253110396bytes, infinity.
+  Account35%, no reset credits. No finite K/full verifier/whole-program go.
+- Next original allocation/capacity/table-call preparation and loop/return
+  scopes, then actual constructor caller. Candidate ConstructorPlan/Prepare/
+  PreparedContext/Execution are templates; original prepared state only binds
+  i after TableNew.callState, whereas candidate also binds keys/vals/order.
+  Their nonlocal fields (memory, globals, domain, codes, endian, clock) coincide.
+  TableEmpty.initial_built can transport from TableNew.enteredState to original
+  prepared state despite the extra call clock. Reuse candidate prepared_environment
+  and prepared_global_other for heap-cursor-only global update.
+- Capacity.bounded loses the explicit power exponent; use Capacity.iterate
+  count 2 30 to retain finalExp in [2,32], sufficient2N+2 and cap<=4N+4, then
+  Capacity.power_shape. Original WitnessBuildProgram.body_shape shares literal
+  Constructor.capacityLoop. Whole original price can be
+  (Keccak256.price(max)+7*N+9)*N+4*N+46 from cap price bound plus30 clocks.
+- Also connect Built+History+Records to actual NodeDb.dictionary32_lookup at
+  every query alignment: reparameterize physical Header/KeyModel query pointer;
+  define recordSlices pointer=slices((pointer.toNat-plan.records)/16), prove
+  record address roundtrip; lastValue some implies input membership, History
+  supplies valid record ordinal and mapped cells. lastValue-map-values lemma
+  identifies last slice. These are needed before original/radix whole-map API.
+- Original/radix real digest and event equality across different private map
+  contents is still open: hashing only reads/writes public buffers/input, but
+  the existing hash theorem chooses observed actual digest, so cannot simply
+  assert the two observed digest sequences equal. Need hash noninterference/
+  determinism across private-table memory relation (actual fixed oracle is
+  deterministic and checked). All global gas/state/Q/heap/compiler/target work
+  remains. Continue autonomously after this checkpoint.

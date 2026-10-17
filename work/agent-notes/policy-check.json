@@ -2338,6 +2338,9 @@
     "submission/InitECandidate/Solver/MutableTable/TableEmpty.lean",
     "submission/InitECandidate/Solver/MutableTable/TableEmptyHeader.lean",
     "submission/InitECandidate/Solver/MutableTable/ValueModel32.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessBuildContext.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessBuildHistory.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessBuildLoop.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildProgram.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildRecordStep.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildRecords.lean",
@@ -4557,8 +4560,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61413,
-  "package_bytes": 2253099215,
+  "package_entries": 61416,
+  "package_bytes": 2253110396,
   "claim": {
     "K": "infinity"
   },

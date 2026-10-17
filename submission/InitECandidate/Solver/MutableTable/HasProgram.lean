@@ -1,4 +1,4 @@
-import InitECandidate.Solver.MutableTable.FindSizedCall
+import InitECandidate.Solver.MutableTable.FindCall32
 
 namespace InitECandidate.Solver.MutableTable.Has
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

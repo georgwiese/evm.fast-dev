@@ -1,4 +1,4 @@
-import InitECandidate.Solver.MutableTable.GetSizedExecution
+import InitECandidate.Solver.MutableTable.GetGeneralExecution
 import InitECandidate.Solver.MutableTable.GetCall32
 
 namespace InitECandidate.Solver.MutableTable.Get
@@ -7,18 +7,18 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- Real original retrieval caller, including the caller clock and pair ABI.
 The query and table need no alignment or favorable-collision assumption. -/
-theorem sized_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table : BitVec 64) (p : Find.Parameters)
-    (kind : HashSized.Kind) (cells : Find.HeaderData source table p)
-    (keyLength : p.keyLength = BitVec.ofNat 64 (HashSized.keySize kind))
+theorem general_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table : BitVec 64) (p : Find.Parameters)
+    (kind : KeyHash.Kind) (cells : Find.HeaderData source table p)
+    (keyLength : p.keyLength = BitVec.ofNat 64 (KeyHash.keySize kind))
     (bits : Nat) (small : bits < 64) (capacity : p.capacity = BitVec.ofNat 64 (2 ^ bits))
     (order : List Nat) (room : order.length < 2 ^ bits)
     (binary : ∀ i<2^bits,Find.usedByte source p (BitVec.ofNat 64 i)=some 0 ∨ Find.usedByte source p (BitVec.ofNat 64 i)=some 1)
     (covered : ∀ i<2^bits,Find.usedByte source p (BitVec.ofNat 64 i)=some 1→i∈order)
-    (fits : ∀ i < 2 ^ bits, (p.keys + BitVec.ofNat 64 i * p.stride).toNat + HashSized.keySize kind < 2 ^ 64)
-    (mapped : ∀ i < 2 ^ bits, ∀ offset < HashSized.keySize kind, source.memaddrs (panByteAlignHOL (width := 64)
+    (fits : ∀ i < 2 ^ bits, (p.keys + BitVec.ofNat 64 i * p.stride).toNat + KeyHash.keySize kind < 2 ^ 64)
+    (mapped : ∀ i < 2 ^ bits, ∀ offset < KeyHash.keySize kind, source.memaddrs (panByteAlignHOL (width := 64)
       (WitnessRadix.byteAddress (p.keys + BitVec.ofNat 64 i * p.stride) offset)))
-    (queryFits : p.key.toNat + HashSized.keySize kind < 2 ^ 64)
-    (queryMapped : ∀ offset < HashSized.keySize kind, source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress p.key offset)))
+    (queryFits : p.key.toNat + KeyHash.keySize kind < 2 ^ 64)
+    (queryMapped : ∀ offset < KeyHash.keySize kind, source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress p.key offset)))
     (hashCode : source.code.lookup (ofString "htab_hash") = some (Hash.formals, Hash.body, .one))
     (memeqCode : source.code.lookup (ofString "memeq") = some (WitnessRadix.Memeq32.formals, WitnessRadix.Memeq32.body, .one))
     (findCode : source.code.lookup (ofString "htab_find_slot") = some (Find.formals, Find.body, .one))
@@ -29,17 +29,18 @@ theorem sized_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table 
     (getCode : source.code.lookup (ofString "htab_get") = some (formals, body, pairShape))
     (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64)
     (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) expressions = some [.val (.word table), .val (.word p.key)])
-    (enough : Find.sizedProbePrice kind * order.length + 3 ≤ source.clock) :
-    ∃ paid flag value, paid ≤ Find.sizedProbePrice kind * order.length + 3 ∧ (flag = 0#64 ∨ flag = 1#64) ∧
+    (little : source.be = false)
+    (enough : Find.generalProbePrice kind * order.length + (KeyHash.hashPrice kind + 2) ≤ source.clock) :
+    ∃ paid flag value, paid ≤ Find.generalProbePrice kind * order.length + (KeyHash.hashPrice kind + 2) ∧ (flag = 0#64 ∨ flag = 1#64) ∧
       evaluateHOLFiniteState source (.decCall (ofString name) pairShape (ofString "htab_get") expressions continuation) =
         (let result := evaluateHOLFiniteState (setVarHOLFinite (ofString name) (pair flag value) {source with clock := source.clock - paid}) continuation
          (result.1, restore source name result.2)) := by
   obtain ⟨callee, called, tLocal, keyLocal⟩ := environment source.code.lookup table p.key getCode
   let entry := callEntryStateHOLFinite source callee
   have entryCells := Find.HeaderData.with_locals source entry table p cells rfl rfl tLocal keyLocal
-  obtain ⟨paid, flag, value, target, bound, binaryFlag, run, frame⟩ := sized_get entry table p kind entryCells keyLength bits small capacity order room
-    binary covered fits mapped queryFits queryMapped hashCode memeqCode findCode vals valsMapped valsCell values
-    (by change Find.sizedProbePrice kind * order.length + 2 ≤ source.clock - 1; omega)
+  obtain ⟨paid, flag, value, target, bound, binaryFlag, run, frame⟩ := general_get entry table p kind entryCells keyLength bits small capacity order room
+    binary covered fits mapped queryFits queryMapped hashCode memeqCode findCode vals valsMapped valsCell values little
+    (by change Find.generalProbePrice kind * order.length + (KeyHash.hashPrice kind + 1) ≤ source.clock - 1; omega)
   have shapePass : (shapeEqHOL (shapeOfHOLExact (pair flag value)) pairShape && shapeEqHOL (shapeOfHOLExact (pair flag value)) pairShape) = true := by
     simp [pair, pairShape, shapeOfHOLExact, shapeEqHOL_eq_true]
   have callerFrame : emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - 1 - paid} := frame
@@ -50,4 +51,4 @@ theorem sized_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table 
 
 end InitECandidate.Solver.MutableTable.Get
 
-#print axioms InitECandidate.Solver.MutableTable.Get.sized_call
+#print axioms InitECandidate.Solver.MutableTable.Get.general_call

@@ -1,4 +1,4 @@
-import InitECandidate.Solver.WitnessRadix.Space
+import InitECandidate.Solver.PanState
 
 namespace InitECandidate.Solver.WitnessRadix
 
@@ -30,53 +30,8 @@ theorem byteAddress_aligned (base : BitVec 64) (offset : Nat)
     (byteAddress base offset).toNat % 8 = 0 := by
   rw [byteAddress_toNat base offset noWrap, Nat.add_mod, baseAligned, offsetAligned]
 
-/-- Pending-task arrays occupy the unused tails of the baseline arrays.
-The prefix holds N data elements and the suffix holds at most N task elements. -/
-theorem pending_cell_fits (records capacity depth : Nat)
-    (room : 2 * records + 2 ≤ capacity) (active : depth < records) :
-    8 * records + 8 * depth + 8 ≤ 8 * capacity := by omega
-
-theorem prefix_pending_separate (base : BitVec 64) (records capacity index depth : Nat)
-    (room : 2 * records + 2 ≤ capacity)
-    (dataIndex : index < records) (taskIndex : depth < records)
-    (allocation : base.toNat + 8 * capacity < 2 ^ 64) :
-    byteAddress base (8 * index) ≠ byteAddress base (8 * records + 8 * depth) := by
-  apply byteAddress_ne
-  · omega
-  · omega
-  · omega
-
-/-- Hash words and branch words share the original key allocation without
-overlap. A branch has three aligned words and is placed after all N hashes. -/
-theorem hash_branch_separate (base : BitVec 64) (records capacity hashRow limb node field : Nat)
-    (room : 2 * records + 2 ≤ capacity)
-    (hashIndex : hashRow < records) (limbIndex : limb < 4)
-    (nodeIndex : node < records) (fieldIndex : field < 3)
-    (allocation : base.toNat + 32 * capacity < 2 ^ 64) :
-    byteAddress base (32 * hashRow + 8 * limb) ≠
-      byteAddress base (32 * records + 24 * node + 8 * field) := by
-  apply byteAddress_ne
-  · omega
-  · omega
-  · omega
-
-/-- Two distinct words of the branch arena cannot alias. -/
-theorem branch_cells_injective (base : BitVec 64) (records capacity nodeA nodeB fieldA fieldB : Nat)
-    (room : 2 * records + 2 ≤ capacity)
-    (a : nodeA < records) (b : nodeB < records)
-    (fa : fieldA < 3) (fb : fieldB < 3)
-    (different : nodeA ≠ nodeB ∨ fieldA ≠ fieldB)
-    (allocation : base.toNat + 32 * capacity < 2 ^ 64) :
-    byteAddress base (32 * records + 24 * nodeA + 8 * fieldA) ≠
-      byteAddress base (32 * records + 24 * nodeB + 8 * fieldB) := by
-  apply byteAddress_ne
-  · omega
-  · omega
-  · omega
-
 end InitECandidate.Solver.WitnessRadix
 
 #print axioms InitECandidate.Solver.WitnessRadix.byteAddress_toNat
-#print axioms InitECandidate.Solver.WitnessRadix.prefix_pending_separate
-#print axioms InitECandidate.Solver.WitnessRadix.hash_branch_separate
-#print axioms InitECandidate.Solver.WitnessRadix.branch_cells_injective
+#print axioms InitECandidate.Solver.WitnessRadix.byteAddress_ne
+#print axioms InitECandidate.Solver.WitnessRadix.byteAddress_aligned

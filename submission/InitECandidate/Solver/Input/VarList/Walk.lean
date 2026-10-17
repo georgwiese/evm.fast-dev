@@ -1,6 +1,6 @@
 import InitECandidate.Solver.Input.VarList.Unroll
 import InitECandidate.Solver.Input.ScopeLookup
-import InitECandidate.Solver.WitnessRadix.LoopCompose
+import InitECandidate.Solver.PanControl
 
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

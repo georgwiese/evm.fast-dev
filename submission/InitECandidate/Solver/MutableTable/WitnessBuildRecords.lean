@@ -1,3 +1,4 @@
+import InitECandidate.Solver.WitnessRadix.Graph
 import InitECandidate.Solver.MutableTable.WitnessBuildSetStep
 
 namespace InitECandidate.Solver.MutableTable.WitnessBuild

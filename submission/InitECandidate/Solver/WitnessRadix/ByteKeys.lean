@@ -1,8 +1,7 @@
-import InitECandidate.Solver.WitnessRadix.Compact
+import InitECandidate.Solver.PanState
+import Mathlib.Data.List.Basic
 
-/-! The implementation branches on a byte load shifted by bit%8. This bridge
-instantiates the index directly on 32-byte arrays, avoiding any cryptographic
-property or assumed agreement between byte order and a packed hash integer. -/
+/-! Byte-array keys and their individual bits, independent of dictionary implementation. -/
 namespace InitECandidate.Solver.WitnessRadix.ByteKeys
 open InitECandidate.Solver.WitnessRadix
 
@@ -43,21 +42,7 @@ theorem bit_at (readByte : BitVec 64 → BitVec 8) (pointer : BitVec 64)
       (readByte (pointer + BitVec.ofNat 64 (position / 8))).getLsbD (position % 8) := by
   simp only [bit, keyAt, byte_index position inside]
 
-/-- Byte-array instantiation of the duplicate-preserving dictionary theorem. -/
-theorem lookup (input : List (Key × Value)) (query : Key) :
-    letI : DecidableEq Key := Classical.decEq Key
-    fastLookup bit query (buildIndex bit 256 input) = lastValue query input := by
-  classical
-  exact fastLookup_buildIndex bit 256 separates input query
-
-theorem query_visits (input : List (Key × Value)) (query : Key) :
-    queryVisits bit query (buildIndex bit 256 input) ≤ 257 := by
-  classical
-  exact queryVisits_buildIndex bit 256 input query
-
 end InitECandidate.Solver.WitnessRadix.ByteKeys
 
 #print axioms InitECandidate.Solver.WitnessRadix.ByteKeys.separates
 #print axioms InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at
-#print axioms InitECandidate.Solver.WitnessRadix.ByteKeys.lookup
-#print axioms InitECandidate.Solver.WitnessRadix.ByteKeys.query_visits

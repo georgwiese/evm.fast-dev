@@ -1,8 +1,8 @@
 {
-  "status": "REVISE; generic collision relaxation still fails; no finite certificate",
+  "status": "Conditional original-table upper bounds; no whole-program finite certificate",
+  "objective": "Unchanged main implementation; no numerical ceiling",
   "scope": "exact arithmetic and fixed-literal path inspection; no kernel checking, no formal evaluator run, and no reachable adversarial input asserted",
   "budget_bytes_pending_decoder_connection": 134217712,
-  "score_max": 9007199254740984,
   "bootstrap_steps": 23132,
   "generic_bounds": {
     "F": "D*(D-1)/2 + (N-D)*D",
@@ -426,8 +426,7 @@
       "find_occupied": 178432040743281,
       "raw_occupied": 178432021852435,
       "empty_tests": 37781692,
-      "combined_occupied": 356864062595716,
-      "whole_cap_minus_occupied_term": 8650335192122136
+      "combined_occupied": 356864062595716
     },
     {
       "namespaces": 1,
@@ -442,8 +441,7 @@
       "find_occupied": 178432040743281,
       "raw_occupied": 178432021852435,
       "empty_tests": 37781692,
-      "combined_occupied": 356864062595716,
-      "whole_cap_minus_occupied_term": -624783342365131268
+      "combined_occupied": 356864062595716
     },
     {
       "namespaces": 1,
@@ -458,8 +456,7 @@
       "find_occupied": 178432040743281,
       "raw_occupied": 178432021852435,
       "empty_tests": 37781692,
-      "combined_occupied": 356864062595716,
-      "whole_cap_minus_occupied_term": -247934912212788548
+      "combined_occupied": 356864062595716
     },
     {
       "namespaces": 1,
@@ -474,8 +471,7 @@
       "find_occupied": 224902444504764,
       "raw_occupied": 98846025075150,
       "empty_tests": 28120602,
-      "combined_occupied": 323748469579914,
-      "whole_cap_minus_occupied_term": -11997578556957644
+      "combined_occupied": 323748469579914
     },
     {
       "namespaces": 2,
@@ -490,8 +486,7 @@
       "find_occupied": 184182371300865,
       "raw_occupied": 184182352108035,
       "empty_tests": 38385660,
-      "combined_occupied": 368364723408900,
-      "whole_cap_minus_occupied_term": 8638834531308952
+      "combined_occupied": 368364723408900
     },
     {
       "namespaces": 2,
@@ -506,8 +501,7 @@
       "find_occupied": 184182371300865,
       "raw_occupied": 184182352108035,
       "empty_tests": 38385660,
-      "combined_occupied": 368364723408900,
-      "whole_cap_minus_occupied_term": -645208515433022468
+      "combined_occupied": 368364723408900
     },
     {
       "namespaces": 2,
@@ -522,8 +516,7 @@
       "find_occupied": 184182371300865,
       "raw_occupied": 184182352108035,
       "empty_tests": 38385660,
-      "combined_occupied": 368364723408900,
-      "whole_cap_minus_occupied_term": -256215387780852548
+      "combined_occupied": 368364723408900
     },
     {
       "namespaces": 2,
@@ -538,14 +531,9 @@
       "find_occupied": 225123751913697,
       "raw_occupied": 98943247827291,
       "empty_tests": 28134428,
-      "combined_occupied": 324066999740988,
-      "whole_cap_minus_occupied_term": -12018247143874091
+      "combined_occupied": 324066999740988
     }
   ],
-  "equal_price_per_occupied_visit_budget_at_single_table_joint_max": {
-    "whole_remaining_cap_floor": 25,
-    "quarter_cap_floor": 6
-  },
   "unpriced_remainders": [
     "effective input/decoder and schema correspondence",
     "SSZ/hash work",
@@ -556,7 +544,7 @@
     "other tables, journals, refunds and cleanup",
     "output, failure/unwind and compiler entry/return/clock composition"
   ],
-  "indexed_proof_hashes_checked": 3834,
+  "indexed_proof_hashes_checked": 4434,
   "indexed_proof_hash_mismatches": [],
   "source_hashes": {
     "guest/src/lib/htab.pnk": "a1bd4c62aedfe01fd8e8547e60979e39ae5f2dda0688a2d941f625ef66eeece2",
@@ -571,7 +559,7 @@
     "submission/InitECandidate/Proofs/BackendStages/Padded185.lean": "49445dcef7cc65d57d19c2e383f1985ef79c2952d28824cccf8029a42f9cde51",
     "submission/InitECandidate/Proofs/BackendStages/Padded188.lean": "b7f6d3f2bdd72ad125a319b997adf38f992dd78dada565434b00000589c91097",
     "submission/InitECandidate/Proofs/BackendStages/Padded190.lean": "019bd3b68f830f183993854c02bf6da0b433d0c43a7098a4c6f33952651654e8",
-    "work/agent-notes/witness-table-budget.py": "882968eb235cadbfc4c9e14e8dd3e5ac5a312b8c0e98ce7d3ab2686432b91de5"
+    "work/agent-notes/witness-table-budget.py": "810d405d015022c669ecb03aa2eddc7f5aa011725251b68e0a857eaac1d54d87"
   },
   "caveats": [
     "A maximum of this relaxation is an upper-bound calculation, not runtime evidence.",
@@ -579,12 +567,6 @@
     "Multiplicity and equality-prefix distributions can correlate with probe lengths.",
     "Two-table aggregate relaxation adds fictitious cross-table probes; it is conservative.",
     "Literal instruction counts need a new quantitative simulation theorem, including clocks.",
-    "No Lean pilot: arithmetic gate failed and selected fixed Named .olean files are absent."
-  ],
-  "self_test": {
-    "table_executions": 186368,
-    "later_queries": 2050048,
-    "brute_force_optimizer_comparisons": 1616,
-    "scope": "finite-model regression checks, not verification of guest semantics"
-  }
+    "Literal target prices remain source inspection; checked original source-clock proofs do not establish those prices or a whole target bound."
+  ]
 }

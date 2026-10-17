@@ -1,5 +1,5 @@
 import InitECandidate.Solver.WitnessRadix.KeccakOracle
-import InitECandidate.Solver.WitnessRadix.BuildEmpty
+import InitECandidate.Solver.PanDeclarations
 import InitECandidate.Solver.WitnessRadix.StateSteps
 
 set_option maxRecDepth 10000

@@ -1,0 +1,213 @@
+{
+  "objective": "Reasonably tight finite bound for the unchanged implementation; no numerical ceiling.",
+  "reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
+  "fixed_files_sha256": {
+    "Guest/Ast.lean": "21925d793b4159c30406a4d48a7402d4a2cdc23e0189201342aa89778d4534ed",
+    "Guest/guest.pp.pnk": "414d70d031f9e367ad9e5c70bc6dbd523238a3c542fba59a09aed866f3e5f860",
+    "submission/Solution.lean": "1905a0c02feb548c03a4df824390d57cf64007d93d52e848202679670101374b",
+    "submission/claim.json": "b980b85c0c6af561b32a24bb55ec46832dccd7ca5ffc5fa3111d6ff5e7015ef0"
+  },
+  "frozen_source_semantics_rom_and_proofs_unchanged": true,
+  "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
+  "solver_modules": 4445,
+  "missing_solver_imports": [],
+  "module_families": {
+    "BinopImmediateCost": 1,
+    "BinopRegisterCost": 1,
+    "BootstrapChecks": 1,
+    "BootstrapCost": 1,
+    "BootstrapEncoding": 1,
+    "BootstrapMachine": 1,
+    "BootstrapRegion": 1,
+    "BootstrapStartup": 1,
+    "BootstrapTailChecks": 1,
+    "BoundedEncoder": 31,
+    "BoundedStep": 1,
+    "BoundedTrace": 1,
+    "ClockBounds": 1,
+    "ConstCost": 1,
+    "ConstructorSyntax": 1,
+    "CrepStatic": 880,
+    "CrepToLoopBound": 19,
+    "DictionaryValues": 1,
+    "EncoderBound": 1,
+    "EncoderClock": 1,
+    "FlattenBound": 19,
+    "FlattenWeighted": 30,
+    "GasBudget": 40,
+    "GuestWork": 45,
+    "HashEnvironmentFrame": 1,
+    "Input": 291,
+    "JumpCmpNearCost": 1,
+    "JumpNearCost": 1,
+    "LabBound": 899,
+    "LabBoundTight": 10,
+    "LabCost": 1,
+    "LabCostTight": 1,
+    "LocCost": 1,
+    "MemoryCost": 1,
+    "MutableTable": 105,
+    "NopBound": 1,
+    "NopCost": 1,
+    "NopCostTight": 1,
+    "PanControl": 1,
+    "PanDeclarations": 1,
+    "PanState": 1,
+    "PanTraversal": 1,
+    "RiscVEvaluatorCosts": 1,
+    "ShiftLslImmediateCost": 1,
+    "SkipCost": 1,
+    "StackAllocBound": 10,
+    "StackRawCallBound": 20,
+    "StackRemoveBound": 34,
+    "StackRemoveDirect": 6,
+    "StackStatic": 878,
+    "SupportedCosts": 1,
+    "TableHeader": 1,
+    "TargetClock": 1,
+    "WeightedTrace": 1,
+    "WitnessAllocationPlan": 1,
+    "WitnessRadix": 162,
+    "WordStatic": 878,
+    "WordToStackBound": 48,
+    "WordToWordBound": 1
+  },
+  "original_roots": {
+    "baseline_bootstrap": [
+      {
+        "module": "BootstrapStartup",
+        "solver_dependency_count": 20,
+        "imports_replacement_ast": false
+      }
+    ],
+    "original_witness_constructor": [
+      {
+        "module": "MutableTable.WitnessBuildExecution",
+        "solver_dependency_count": 259,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "MutableTable.WitnessBuildEmpty",
+        "solver_dependency_count": 258,
+        "imports_replacement_ast": false
+      }
+    ],
+    "original_witness_lookup": [
+      {
+        "module": "MutableTable.WitnessDictionaryLookup",
+        "solver_dependency_count": 253,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "MutableTable.NodeDbDictionary32",
+        "solver_dependency_count": 173,
+        "imports_replacement_ast": false
+      }
+    ],
+    "input_reachability": [
+      {
+        "module": "Input.Witness.BodyNormal",
+        "solver_dependency_count": 272,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "Input.Witness.PrefixNormal",
+        "solver_dependency_count": 265,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "Input.RequestStoredGasFromHeader",
+        "solver_dependency_count": 275,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "Input.RlpLength.BlockGuard",
+        "solver_dependency_count": 322,
+        "imports_replacement_ast": false
+      }
+    ],
+    "local_gas_accounting": [
+      {
+        "module": "GasBudget.StateChargeBudget",
+        "solver_dependency_count": 144,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "GasBudget.ForwardSites",
+        "solver_dependency_count": 205,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "GasBudget.ChildError",
+        "solver_dependency_count": 149,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "GasBudget.ChildSuccess",
+        "solver_dependency_count": 153,
+        "imports_replacement_ast": false
+      }
+    ],
+    "abstract_global_accounting": [
+      {
+        "module": "GasBudget.BlockAccounting",
+        "solver_dependency_count": 202,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "GasBudget.MergeBudget",
+        "solver_dependency_count": 210,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "GasBudget.NestedDecay",
+        "solver_dependency_count": 209,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "GasBudget.StorageDebt",
+        "solver_dependency_count": 199,
+        "imports_replacement_ast": false
+      }
+    ],
+    "compiled_local_work": [
+      {
+        "module": "GuestWork.GasAccounting",
+        "solver_dependency_count": 33,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "GuestWork.ExtendMemoryAllocTransfer",
+        "solver_dependency_count": 45,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "GuestWork.FrameAllocBounded",
+        "solver_dependency_count": 36,
+        "imports_replacement_ast": false
+      }
+    ]
+  },
+  "replacement_ast_reverse_closure_count": 0,
+  "replacement_ast_modules_present": [],
+  "affected_families": {},
+  "cleanup_bridges": [
+    "Separate generic state/local helpers from candidate lookup proofs.",
+    "Separate generic loop traversal from candidate construction AST.",
+    "Separate declaration execution from candidate helper entry.",
+    "Use original constructor syntax/capacity definitions, independent of candidate RawProgram.",
+    "Remove replacement-only result-format imports from original dictionary lookup."
+  ],
+  "open_global_obligations": [
+    "Reachable entry/code/arena/clock facts for original decoder, headers and dictionaries.",
+    "Actual executed regular/state gas conservation across roots, calls, successful merges, rollback and block counters.",
+    "Aggregate original mutable-map probes, growth, deletion, copies and phase sharing.",
+    "Actual persistent allocation or path-progress charging for cumulative trie/witness queries, including scoped lifetimes.",
+    "Whole-entry weighted work, compiler premises and existing baseline evaluator transport."
+  ],
+  "not_completion_metrics": [
+    "Module counts",
+    "Dependency counts",
+    "Previous replacement-plan percentages"
+  ]
+}

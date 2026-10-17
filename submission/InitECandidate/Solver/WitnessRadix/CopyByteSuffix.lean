@@ -1,5 +1,4 @@
 import InitECandidate.Solver.WitnessRadix.CopyContext
-import InitECandidate.Solver.WitnessRadix.BuildEmpty
 
 namespace InitECandidate.Solver.WitnessRadix.CopyBytes
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -55,7 +54,7 @@ theorem suffix_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (src ds
     exact Nat.sub_le _ _
   rw [StateSteps.next_sequence source afterBytes _ _ blockExact (by rw [afterClock]; omega),
     StateSteps.next_sequence afterBytes (suffixState source src dst index length) _ _ tailExact finalClock]
-  exact BuildEntry.zero_return _
+  simp [evaluateHOLFiniteState_return, evalHOLExact, shapeOfHOLExact, sizeOfShapeWithContextHOL]
 
 theorem suffix_clock {F : Type} (source : PanSemStateFiniteExact 64 F) (src dst : BitVec 64) (index length : Nat) :
     (suffixState source src dst index length).clock = source.clock - suffixCost index length := by

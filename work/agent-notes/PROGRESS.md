@@ -1,6 +1,6 @@
 # Baseline step-count progress
 
-> **AUTHORITATIVE SCOPE CORRECTION — 2026-10-17:** The user requires a reasonably tight finite runtime bound for the current, unchanged Pancake implementation on main. There is NO numerical ceiling. Stop replacement/radix refinement/candidate compilation work. The current plan at the top of bound.md supersedes historical below-Yukon-limit objectives and checklists here. Keep reusable original-program proofs; do not delete historical work. The previous 45% estimate does not measure this corrected goal.
+> **AUTHORITATIVE SCOPE CORRECTION — 2026-10-17:** The user requires a reasonably tight finite runtime bound for the current, unchanged Pancake implementation on main. There is NO numerical ceiling. Stop replacement/radix refinement/candidate compilation work. The current plan at the top of bound.md supersedes historical below-Yukon-limit objectives and checklists here. Keep reusable original-program proofs; remove the authorized replacement code after dependency review, retaining history in Git. The previous 45% estimate does not measure this corrected goal.
 
 ## 2026-10-16: setup and source inspection
 
@@ -4599,3 +4599,84 @@ Whole paired witness constructor checkpoint (2026-10-17):
 - Update imports/build metadata/evidence indexes, check retained dependencies,
   and confirm baseline program/artifacts unchanged. This supersedes earlier
   preserve-all guidance; history remains available in Git. No deletion yet.
+
+
+### 2026-10-17 — original dependency inventory and replacement cleanup underway
+
+- Read the corrected plan and continued autonomously. Inventory roots cover
+  original bootstrap, witness construction/lookup, input reachability, local
+  gas, abstract global accounting and compiled work. These are applicability
+  entry points, not a claim of closed global obligations or a progress metric.
+- Extracted generic state/local operations, declarations/restoration, loop
+  traversal, control projection, table header, dictionary result values,
+  original constructor syntax/allocation geometry and hash environment frames.
+  Historical namespaces are retained for compatibility. Original record/table
+  preparation now proves its own environment frame directly.
+- The original roots have zero import dependencies on replacement AST modules.
+  Removed 256 replacement-only/unreferenced Solver modules, the replacement
+  Pancake source, generator, harness and generated candidate/test artifacts.
+  Every removed file was checked absent from main. Compact source hashes and
+  grouped artifact manifests are in original-plan-cleanup.json; Git retains
+  committed history. Removed cached products for deleted Solver modules too.
+- Reduced shared Model/ByteKeys/WordBits/Graph/Addressing modules to dictionary
+  semantics, keys, bit arithmetic, slice types and ordinary address helpers;
+  removed the replacement pure tree implementations. Retained helpers under
+  WitnessRadix are used by unchanged-program proofs, not a replacement guest.
+- Dropped stale/deleted module and theorem evidence entries. Structural import
+  isolation and baseline identity checks pass; retained Lean closures are being
+  rebuilt before committing the cleanup. No full verification or finite bound.
+- Build attempts original-import-cuts-v1/v2 were interrupted after concrete
+  missing-import failures (mask7, generic declarations) and were not indexed.
+  Foundation v1/v2 exposed formerly transitive Mathlib imports (Classical.decEq,
+  by_contra); fixed explicit imports. These failed logs are not proof evidence.
+- Account usage last44%; zero reset credits remain.
+
+
+### 2026-10-17 — replacement cleanup validated; original summed budgets checked
+
+- Removed258 replacement-only/unreferenced Solver modules in total, including
+  the last mixed original/radix preparation-agreement module. Kept the actual
+  original run_attempt call-shape/argument lemmas in OriginalWitnessEntry.
+  Deleted the replacement source, generator, harness, generated candidate and
+  test artifacts. All deletions were absent from main; Git retains history.
+- Original foundations: original-foundations-v3.log701jobs, successful,
+  3:58.77 wall time, 1,711,624KiB maximum RSS. Original entry points:
+  original-retained-closure-v6.log1532jobs, successful, 3:25.54,
+  2,275,728KiB maximum RSS. Both use the24GiB memory guard.
+- Full affected closure:601 Solver modules through22 leaf targets, recorded
+  with source hashes in original-plan-validation-targets.json. Successful
+  original-affected-closure-v3.log1618jobs,4.45s final cached validation,
+  1,867,160KiB maximum RSS, permitted axioms. This checks helper dependencies,
+  not the full verifier/comparator/kernel replay or a finite certificate.
+- New WitnessBuildVariableLoop/Populate/Execution check the entire original
+  constructor body with a sum of actual record lengths/insertion indices.
+  WitnessBuildBudget proves exact source-clock decomposition, the triangular
+  index sum, and aggregate hashing-byte bound. RecordByteBudget proves actual
+  decoded payload sum+4*count<=encoded list length, including empty items/lists.
+  WitnessDecodedBudget derives215*N+7*triangle(N)+20*((B-4*N)/136)+46.
+  Entry/code/arena/sufficient-clock premises remain; this is not target K.
+- PlacementDistinct proves that repeated keys add no occupied slot to a
+  covering list. WitnessDictionaryDistinct applies that result to actual
+  original lookup execution, giving6*D+3 source clocks for D distinct observed
+  keys rather than6*N+3 for N records. Arbitrary duplicates/query alignment
+  are covered; no Keccak randomness, injectivity or collision resistance used.
+- Failed affected-closure v1/v2 logs were not indexed. They exposed one last
+  replacement-only mixed lemma, a copied unfold name, and Nat.zero_add/let
+  normalization in the decoded arithmetic. Corrected them and indexed only
+  successful complete logs. Earlier retained v1-v5 failures were missing
+  explicit generic imports and residual replacement lemmas; no failed log is
+  proof evidence. Final evidence4434 modules/7222 printed facts after pruning
+  stale/deleted source records and removed theorem names.
+- Refreshed offline witness-table-budget utility/report for the corrected
+  objective: removed Kmax comparisons and failure decisions tied to Yukon.
+  Proposed literal target prices remain conditional inspection, not checked
+  execution costs. Optimizer logic/self-tests are unchanged.
+- Inventory confirms zero missing Solver imports, zero replacement-AST
+  dependencies, and unchanged fixed Guest/InitE/ROM/original-proof files.
+  Incremental policy passes61306entries/2252644684bytes. Claim stays infinity.
+- Next global obligation: actual process_transaction regular root budget
+  mgas=min(16777216-intrinsicRegular,executionGas), its validation/caller/TE/MSG
+  initialization, plus the six literal system roots. Carry the checked ledger
+  across successful-child log/delete merges, rollback and block counters.
+  Whole runtime, global invariants and quantitative baseline target transport
+  remain open. Account last45%, no reset credits.

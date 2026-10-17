@@ -14,7 +14,6 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[2]
-KMAX = 9007199254740984
 BOOTSTRAP = 23132
 BMAX = 134217712
 STAGES = ROOT / "submission/InitECandidate/Proofs/BackendStages"
@@ -327,9 +326,7 @@ def report():
         for label, cf, cr in prices:
             result = maximize(BMAX, cf, cr, namespaces)
             cases.append({"namespaces": namespaces, "price_status": label,
-                          "find_price": cf, "raw_price": cr, **result,
-                          "whole_cap_minus_occupied_term": KMAX - BOOTSTRAP - result["priced_occupied_only"]})
-    joint = maximize(BMAX, 1, 1)
+                          "find_price": cf, "raw_price": cr, **result})
     sources = [f"guest/src/{p}" for p in ("lib/htab.pnk", "lib/mem.pnk", "mpt.pnk", "ssz.pnk")]
     sources += [str((STAGES / f"{kind}{i}.lean").relative_to(ROOT))
                 for kind in ("Named", "Padded") for i in (79, 185, 188, 190)]
@@ -338,11 +335,12 @@ def report():
     mismatches = [m["path"] for m in manifest["modules"]
                   if hashlib.sha256((ROOT / m["path"]).read_bytes()).hexdigest() != m["sha256"]]
     assert not mismatches, mismatches
-    return {"status": "REVISE; generic collision relaxation still fails; no finite certificate",
+    return {"status": "Conditional original-table upper bounds; no whole-program finite certificate",
+            "objective": "Unchanged main implementation; no numerical ceiling",
             "scope": "exact arithmetic and fixed-literal path inspection; no kernel checking, "
                      "no formal evaluator run, and no reachable adversarial input asserted",
             "budget_bytes_pending_decoder_connection": BMAX,
-            "score_max": KMAX, "bootstrap_steps": BOOTSTRAP,
+            "bootstrap_steps": BOOTSTRAP,
             "generic_bounds": {
                 "F": "D*(D-1)/2 + (N-D)*D", "R": "D*(D-1)/2",
                 "F_with_multiplicities_in_first_insertion_order":
@@ -355,9 +353,6 @@ def report():
                 "condition": "valid, non-full, non-growing, append-only linear-probing tables "
                              "with exact keys; no deletion or intervening mutation"},
             "paths": paths, "dimension_relaxations": cases,
-            "equal_price_per_occupied_visit_budget_at_single_table_joint_max": {
-                "whole_remaining_cap_floor": (KMAX - BOOTSTRAP) // joint["combined_occupied"],
-                "quarter_cap_floor": (KMAX // 4) // joint["combined_occupied"]},
             "unpriced_remainders": ["effective input/decoder and schema correspondence",
                 "SSZ/hash work", "table initialization, allocation, growth-exclusion and key copies",
                 "empty-slot tests, per-record setup and hashes", "later queries Q and trie traversal",
@@ -371,7 +366,7 @@ def report():
                 "Multiplicity and equality-prefix distributions can correlate with probe lengths.",
                 "Two-table aggregate relaxation adds fictitious cross-table probes; it is conservative.",
                 "Literal instruction counts need a new quantitative simulation theorem, including clocks.",
-                "No Lean pilot: arithmetic gate failed and selected fixed Named .olean files are absent."]}
+                "Literal target prices remain source inspection; checked original source-clock proofs do not establish those prices or a whole target bound."]}
 
 
 def main():

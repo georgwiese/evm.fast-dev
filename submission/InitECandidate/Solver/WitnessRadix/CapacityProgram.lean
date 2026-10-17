@@ -1,4 +1,4 @@
-import InitECandidate.Solver.WitnessRadix.ConstructorProgram
+import InitECandidate.Solver.ConstructorSyntax
 import InitECandidate.Solver.WitnessRadix.StateSteps
 
 namespace InitECandidate.Solver.WitnessRadix.Capacity
@@ -10,9 +10,7 @@ def condition : ExpHOL 64 := .cmp .lower (localVar "cap")
 def step : ProgHOL 64 := .assign .local (ofString "cap") (.panop .mul [localVar "cap", .const 2#64])
 
 theorem loop_shape : Constructor.capacityLoop = .while condition step := by
-  simp only [Constructor.capacityLoop, Constructor.body, BuildProgram.loops, RawProgram.guestFn_nodedb_build,
-    progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, List.nil_append, List.cons_append,
-    List.append_nil, List.getElem?_cons_zero, Option.getD_some, condition, step, localVar]
+  rfl
 
 theorem condition_read {F : Type} (source : PanSemStateFiniteExact 64 F) (count exponent : Nat)
     (small : count < 2 ^ 31) (powerBound : exponent ≤ 32)

@@ -1,6 +1,7 @@
+import InitECandidate.Solver.WitnessRadix.AllocatedAway
 import InitECandidate.Solver.MutableTable.LayoutEarlier32
 import InitECandidate.Solver.WitnessRadix.MemoryAgreement
-import InitECandidate.Solver.WitnessRadix.ConstructorHashContext
+import InitECandidate.Solver.HashEnvironmentFrame
 
 namespace InitECandidate.Solver.MutableTable.Layout32
 open Flapjack PanSemStateFiniteExact WitnessRadix

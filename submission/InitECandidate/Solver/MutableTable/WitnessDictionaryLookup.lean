@@ -1,6 +1,6 @@
 import InitECandidate.Solver.MutableTable.WitnessDictionaryRecords
 import InitECandidate.Solver.MutableTable.NodeDbDictionary32
-import InitECandidate.Solver.WitnessRadix.QueryExecution
+import InitECandidate.Solver.DictionaryValues
 
 namespace InitECandidate.Solver.MutableTable.WitnessBuild
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -15,7 +15,7 @@ theorem lookup_output (answer : Option Graph.Slice) : NodeDb.output answer=Query
 
 /-- Entire actual original witness lookup from the constructor's preserved
 physical/history/record invariant, for every query at every alignment. It
-returns precisely the last matching input slice in the candidate API format. -/
+returns precisely the last matching input slice as the original three-field return value. -/
 theorem dictionary_lookup (source : PanSemStateFiniteExact 64 Guest.HostMemory) (plan : AllocatedLayout.Plan)
     (ready : AllocatedLayout.Ready plan) (domain : source.memaddrs=InitE.ordinaryDomain)
     (bits : Nat) (small : bits<64) (power : plan.capacity=2^bits) (scratch : BitVec 64) (count : Nat)

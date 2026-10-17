@@ -4705,3 +4705,35 @@ Whole paired witness constructor checkpoint (2026-10-17):
 - Continuing actual caller-local transport and TE/MSG/frame initialization, then
   global ledgers and quantitative unchanged-target transport. Account47%, no
   reset credits. No whole finite bound yet.
+
+
+### 2026-10-17 — caller transport and actual fresh-frame clear checked
+
+- LocalPrefix and LocalPath prove normal continuation reachability and saved
+  local/code/exception-table preservation across arbitrary scoped helper calls.
+  RootCallerProgram checks the complete original prefix, including the blob-fee
+  conditional. RootCallerNormal composes actual validation, caller transport
+  and root split. RootNormalEntry derives both scalar reads and the available
+  min-call clock from a normal run. No intermediate helper success is assumed.
+- Successful original-root-caller-normal-v1.log1094jobs, permitted axioms.
+  WordOperationNormal and NormalCallClock cover the required read/clock inversion.
+- Arenas.Program/Execution/Arithmetic/Calls/Marks check the unchanged upward and
+  downward allocators and marks. Natural aligned room implies both actual guards;
+  allocation changes only its correct global cursor, preserving all memory/FFI.
+- FrameNewProgram identifies the actual first four calls of frame_new.
+  FrameNewZero executes both marks, 280-byte scratch allocation and full memzero,
+  with exact scopes, memory and15-source-clock cost. Every complete frame word
+  is zero, including64/184/192; the clear preserves every outside word. Entry
+  code/cursors/alignment/room/mapped region/clock remain explicit and must be
+  derived from the caller/arena invariants. Later frame initialization remains.
+- Successful combined frame-new-zero-v3.log1102jobs includes the new caller and
+  frame closures. Development failures local-prefix-v1, local-path-v1, root-caller-v1,
+  normal-word-clock-v1, arena-execution-v1, arena-mark-v1, frame-new-zero-v1 were
+  proof/notation normalization errors; only completed successful logs are indexed.
+- Evidence4460modules/7278printed facts;4471Solver modules. Inventory reports no
+  missing imports/replacement dependencies and unchanged source/semantics/ROM/
+  fixed proofs. Incremental policy refreshed, not full verification. Infinity;
+  no whole-program finite bound or target K yet. Account48%, no reset credits.
+- Continue message gas-to-frame cells and helper memory frames, successful child
+  merging/rollback and actual signed block gas, then aggregate source work and
+  unchanged compiler/target transport. No numerical ceiling applies.

@@ -4434,3 +4434,70 @@ Whole paired witness constructor checkpoint (2026-10-17):
   entire branch over main and task obligations, not file count or currentsubtask.
   Claim infinity, no finite bound/full verification. Latest account42%, no reset
   credits; account reset already used. Continue, no checkpoint stop.
+
+
+### 2026-10-17 — actual three-list witness decoding and shared allocation budget
+
+- Strengthened Input.BytesList.body_normal/caller_normal with complete actual
+  BackingLayout.control, including the selected heap update. Body obtains it
+  from the real variable-list call and read-only size-check tail; caller handles
+  both empty/no-allocation and nonempty/allocation branches across its scopes.
+  There are no other external callers besides the new Witness chain. Initial
+  failed control-v1 needed an untyped congrArg intermediate before assigning
+  the expected stripped-state equality; v2 successful1335targets.
+- Input.VarList.Cursor gives nextCursor array N =word(arrayNat+16N), exact
+  natural value, alignment and actual rounded allocator equality. The actual
+  conditional control frame and real initial heap word imply the next heap
+  word, monotonic cursor and <=arrayNat+4*sliceLength, including empty count0.
+  Success decoded-array-cursor-v1.log1300targets.
+- Input.Witness.Program extracts the literal three-call suffix at dropLeading39
+  Header.body. arrays_shape proves all real node/code/header calls and their
+  six field stores/return. list_arguments derives actual slice ABI values from
+  wp/w0/w1/w2/wlen natural offsets. v1 needed trivial after simp reduced six
+  equalities to True conjunction, and explicit first<2^64 instead of decide
+  with free variable. v2 successful1337targets.
+- Input.Witness.Fields proves both actual tuple stores into SI96, exact fields,
+  no-clock payment, outside-cell frame and preservation of actual decoded
+  arrays above SI. v1 required unfolding store aliases before rw and keeping
+  row-number hypotheses and goal at the same actual-array alias. v2 success1339.
+- Input.Witness.StoredListNormal combines the actual byte-list caller, two SI
+  stores and resumed continuation. Normal execution yields Records, max item
+  sizes/count limit, HeapInput, exact next heap, clocks, own earlier-word frame,
+  complete control, real continuation and correct caller restore. success1340.
+- Input.VarList.RecordsIntervalFrame.of_interval only needs preservation on the
+  actual old array interval. witness_count_bound proves combined node/code
+  counts <=(input.length%2^64)/4 from actual decoded Records and adjacent validated
+  subranges; no bound on mathematical list length assumed. success1301.
+- Input.Witness.Environment preserves byte-list metadata through actual control,
+  other locals across tuple bindings, earlier decoded arrays through a later
+  list's fresh allocation/SI stores, and other SI fields. success1342.
+- Input.Witness.HeadersNormal derives the actual final header list call, cap256,
+  max1024, fields72/80, actual heap/control/clocks/frames and same SI return from
+  normal execution. Failed v1 accidentally supplied an unnecessary malformed
+  term for a field proof; removed in v2 successful1343. Failed log not indexed.
+- Input.Witness.ArraysNormal derives all three real decoder calls from normal
+  nodeCall execution. Two earlier actual arrays and four earlier SI fields
+  survive later calls/stores. All three Records, node/code item bounds, cap256,
+  six real SI fields, HeapInput, exact intermediate/final cursors/alignment and
+  finalCursorNat<=initialArrayNat+4*witnessExtent hold at the actual final state.
+  Restores both outer call locals correctly. Source allowance6*encodedBytes+20
+  and cost<=6*encodedBytes+9 deliberately loose; not a target bound. Initial
+  validated adjacent witness offsets, source metadata/copy/layout/heap and
+  combined arena room remain premises. v1 invalid tactic change at projection
+  codeGeometry.1; introduced named actual cursor equalities. v2 checked; v3
+  additionally retains both intermediate cursor equalities/alignment in result.
+  witness-arrays-normal-v3.log1344targets, permitted axioms. Index4668/7629,
+  policy61534entries/2253818207bytes. Claim infinity; no full verifier/finite K.
+- NEXT connect witness prefix: actual wp/wlen declarations, short guard82,
+  three-step offset-store while loop, actual ssz_check_offsets count3/min12,
+  w0/w1/w2 loads, then new arrays_normal. Before that remains payload fixed-list
+  fields, decode_requests normal/control/heap and request continuation reach.
+  Actual suffix is dropLeading39 Header.body; source witness prelude after
+  decode_requests+SI32 starts dropLeading30 Header.body. Initial request decoder
+  reachability currently only carries through completed payload, not to witness.
+  validate_headers later allocates n*8+8,n*32+32 and each decode_header plus
+  real keccak output; it does not release heap. n<=256 from actual suffix.
+  Need preserve all initial decoder data to run_attempt initialization and
+  derive frontend cursor bound. Runtime/global/compiler/target certificate open.
+- Account42% last fresh check, zero reset credits, reset previously used.
+  Continue autonomously; user percentage status remains45% rough35-55%.

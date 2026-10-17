@@ -31,7 +31,10 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
       (∀ position<VarList.decodedCount input start length,
         (VarList.recordLength input start length (VarList.decodedCount input start length) position).toNat≤maximum.toNat) ∧
       source.clock-(2*(length/4)+2)≤post.clock ∧ post.clock≤source.clock ∧
-      (∀ query : BitVec 64,query.toNat<array.toNat→post.memory query=source.memory query) := by
+      (∀ query : BitVec 64,query.toNat<array.toNat→post.memory query=source.memory query) ∧
+      WitnessRadix.BackingLayout.control post=WitnessRadix.BackingLayout.control
+        (if length=0 then source else WitnessRadix.PersistentAlloc.post source array
+          (BitVec.ofNat 64 (16*(Guest.GasLimit.le32 input start/4)))) := by
   classical
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
       some (VarList.values (pointer+BitVec.ofNat 64 start) (BitVec.ofNat 64 length) limit) := by
@@ -78,8 +81,12 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
       rw [postEq,targetEq]
       exact eq
     have postClock : post.clock=next.clock-paid := by rw [postEq,targetEq]; exact clock
+    have postControl : WitnessRadix.BackingLayout.control post=WitnessRadix.BackingLayout.control next := by
+      rw [postEq,targetEq]
+      have stripped:=congrArg WitnessRadix.BackingLayout.control frames
+      exact stripped
     refine ⟨returnedEq,VarList.Records.of_memory next post input pointer array start length postMemory records,countLimit,
-      Blob.HeapInput.of_fields next post input pointer postMemory.symm postDomain.symm postEndian.symm nextHeap,normal.2.2,?_,?_,?_⟩
+      Blob.HeapInput.of_fields next post input pointer postMemory.symm postDomain.symm postEndian.symm nextHeap,normal.2.2,?_,?_,?_,postControl.trans controls⟩
     · omega
     · omega
     · intro query before

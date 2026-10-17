@@ -12,6 +12,20 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked the actual three-list witness decoder suffix: all three real
+  decode_bytes_list calls, pointer/count SI stores, last return and lexical
+  restores. Normal execution derives all three Records, node<=1024/code<=65536
+  item bounds, header count<=256, six stored fields, exact sequential array
+  cursors/alignment and final cursor<=initialArray+4*witnessExtent. Earlier
+  arrays/fields survive later allocations and SI stores. Source clock bound is
+  deliberately loose and is not target K. Actual adjacent witness Records
+  also give combined node/code count<=encodedBytes/4. Initial validated witness
+  offsets, copied input, code/domain/layout/heap and arena room remain explicit;
+  the prefix before this suffix and header validation/startup reachability
+  still need proof. Success witness-arrays-normal-v3.log1344targets; supporting
+  logs in PROGRESS. Index4668/7629, incremental policy61534entries/2253818207bytes.
+  Infinity; no finite K/full verification or global feasibility result.
+
 - [x] Derived both actual decoded constructor invocations and both dictionary
   pairs at the actual runtime entry, without assuming constructor results or
   the second entry heap. Input field geometry and actual own-memory frames

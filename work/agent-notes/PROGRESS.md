@@ -2265,3 +2265,33 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful zero-call-v1 closure (624 targets), permitted axioms only. Initial
   table cap=4 byte-tail clearing still needs checking before htab_new can be
   fully composed; source clocks do not establish target/global certificate.
+
+### 2026-10-17 — byte-tail clearing and literal table allocation sequence
+
+- ZeroByteStore/LoopTail/ByteState/Small/SmallCall prove actual byte stores,
+  full natural-index byte-tail execution, complete short aligned memzero and
+  actual callee call/restore. Cap=4 costs exactly five call clocks and changes
+  only its one aligned word. Arbitrary memory/be are retained in exact updates.
+- ProgramPrefix composes actual declarations, guarded allocator calls and
+  nonreturning commands with exact lexical restoration. TableNewProgram checks
+  the full fixed htab_new action sequence. AllocationExpected connects natural
+  expected cursor/alignment facts to actual allocation prefix steps.
+- Successful allocation-expected-v1 closure (636 targets), permitted axioms.
+  Concrete full htab_new sequence evidence remains to construct; no whole
+  constructor/hash, original-map/guest/target/global finite certificate yet.
+
+### 2026-10-17 — complete literal fixed htab_new
+
+- ProgramPrefixAppend composes exact declarations/allocation/command execution
+  while retaining lexical restoration. TableHeader/Initial/Locals/PreClear/
+  Clear/Finish/Contexts assemble concrete evidence for all actual table steps.
+- TableExecution proves the entire fixed htab_new for 32-byte keys, from actual
+  source ABI/domain/code/heap-cursor and natural layout room/cap-shape facts.
+  No successful whole constructor execution is assumed. Six actual allocation
+  calls, nine header stores, both used-clearing cases, scopes/table return check.
+- TableState exposes exact memory and nonlocal state/heap cursor. Source-clock
+  cost is clearCost(cap)+6: 11 for cap=4, otherwise cap/32+(cap%32)/8+7.
+- Successful table-state-v2 closure (699 targets), permitted axioms only.
+  Header/record postconditions, caller setup and reachable heap-room facts still
+  need connection; hashing/original-map/guest/target/global finite certificate
+  remain open. Continuing concrete table postconditions and constructor setup.

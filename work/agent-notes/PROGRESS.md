@@ -3041,3 +3041,26 @@ Actual encoding writer checkpoint (2026-10-17):
   workpotential, mutablemapmultiplicity/queryQ, originalmaprefinementandcompiled
   targetcertificatepreventcallingtheprojectmorethanhalfcomplete. Claimstill
   infinity; nofullverifier. Account24%,0earnedresetcredits,watcheractive.
+
+Byte writer callers and U256 length checkpoint (2026-10-17):
+- BytesWriteCall real3argtupleABI, lexicaldeclaration/existinglocalassignment
+  withactualwrittenmemoryandoutside-rangeframe; Access/Codes bundlesretain
+  explicitmapped/copy/runtimepremises, sourcebody<=n+20/caller<=n+21clocks.
+- BitLengthProgram actualbit_length64sixstages32,16,8,4,2,1: truebranchupdates
+  n/x, falsebranchskip. Inductivebitrangehalving(count+shift, x<2^shift) without
+  nativeaxioms. Built completeactualfunction<=64 andpureframe0bodyclocks,
+  actualunarycaller1clock. Notusedasmathematicalbitlengthcorrectnessyet, only
+  bound/actualexecution neededforencodingcost/size.
+- U256Value actual4-wordValueHOL.rStruct tuple/shape, realfieldreadsfiniteindex
+  andsingle-tuple-argcalleeenvironment. U256BitsSegment realbit64calls plus
+ 192/128/64addition oractualtailcall; scanprovesactualupperlimbchoice/return
+  <=256, pureframe1bodyclock. Wholefunction/scopedcaller2clocks.
+- U256ByteLength actualcalland(n+7)>>>3, checkednaturalno-wraparithmetic<=32,
+  pureframe2body/3callclocks. All6conditionalstagesandactualtupleABI included.
+- Successinput-u256-byte-length-v2.log1146targets, permittedaxioms only.
+  FailuresExpHOL.rfieldlowercase,opaquecombshapeEqneedshapeEqHOL_eq_true,
+  literalFincoercionrfl, congrArgexpectedtype/offsidecallerargument; fixed.
+- NEXT u256_limb0body/1call,puretuple+scalarABI, thenactualu256_to_be_min
+  loop<=32iterations(2clocks/iter), realrlp_put_u256alloc32/heaprestore/copy;
+  thenwholeencode_headerandblockprefix/guard. No newfullK/globalgoearned.
+  Account25%,0resetcredits. Claim infinity,no fullverification.

@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.HostLength
-import InitECandidate.Solver.WitnessRadix.BuildEntry
+import InitECandidate.Solver.PanDeclarations
 import InitECandidate.Solver.WitnessRadix.BindingLookup
 
 namespace InitECandidate.Solver.Input.Blob

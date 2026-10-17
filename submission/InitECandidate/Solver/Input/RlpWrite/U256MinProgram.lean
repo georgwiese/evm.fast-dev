@@ -1,3 +1,4 @@
+import InitECandidate.Solver.WitnessRadix.WordBits
 import InitECandidate.Solver.Input.RlpWrite.U256Limb
 import InitECandidate.Solver.Input.RlpWrite.U256ByteLength
 

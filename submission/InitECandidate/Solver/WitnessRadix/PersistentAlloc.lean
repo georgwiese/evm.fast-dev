@@ -1,3 +1,4 @@
+import InitECandidate.Solver.PanDeclarations
 import InitECandidate.Solver.WitnessRadix.Copy32Execution
 
 namespace InitECandidate.Solver.WitnessRadix.PersistentAlloc

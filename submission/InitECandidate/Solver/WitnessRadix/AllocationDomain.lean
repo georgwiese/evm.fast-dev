@@ -1,4 +1,4 @@
-import InitECandidate.Solver.WitnessRadix.LayoutOwnership
+import InitECandidate.Solver.WitnessRadix.LayoutMapping
 import InitE.SourceSemantics
 
 namespace InitECandidate.Solver.WitnessRadix.BackingLayout

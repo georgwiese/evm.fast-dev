@@ -1,3 +1,4 @@
+import InitECandidate.Solver.WitnessRadix.WordBits
 import InitECandidate.Solver.WitnessRadix.MemoryBytes
 import InitECandidate.Solver.WitnessRadix.MemeqUnaligned
 

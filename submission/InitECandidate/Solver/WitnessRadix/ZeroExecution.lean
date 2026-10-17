@@ -1,6 +1,6 @@
 import InitECandidate.Solver.WitnessRadix.ZeroState
 import InitECandidate.Solver.WitnessRadix.ZeroTail
-import InitECandidate.Solver.WitnessRadix.BuildEmpty
+import InitECandidate.Solver.PanDeclarations
 
 namespace InitECandidate.Solver.WitnessRadix.Zero
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

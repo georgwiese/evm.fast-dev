@@ -1,5 +1,5 @@
 import InitECandidate.Solver.WitnessRadix.CompareChain
-import InitECandidate.Solver.WitnessRadix.QueryBranchStep
+import InitECandidate.Solver.PanState
 import Guest.Ast
 
 set_option maxRecDepth 100000

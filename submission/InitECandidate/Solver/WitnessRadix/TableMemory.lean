@@ -1,3 +1,4 @@
+import InitECandidate.Solver.TableHeader
 import InitECandidate.Solver.WitnessRadix.TableCells
 import InitECandidate.Solver.WitnessRadix.TableClearFrame
 

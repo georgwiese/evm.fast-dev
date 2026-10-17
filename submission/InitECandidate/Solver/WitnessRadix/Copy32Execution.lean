@@ -1,5 +1,4 @@
 import InitECandidate.Solver.WitnessRadix.Copy32Loop
-import InitECandidate.Solver.WitnessRadix.BuildEmpty
 
 namespace InitECandidate.Solver.WitnessRadix.Copy32
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -52,7 +51,7 @@ theorem execute {F : Type} (source : PanSemStateFiniteExact 64 F) (src dst : Bit
       (some (.returned (.val (.word 0#64))), emptyLocalsHOLFinite written) := by
     rw [StateSteps.next_sequence written written loopBytes _ remaining.2.1 (Nat.le_refl _),
       StateSteps.next_sequence written written loopTail _ remaining.2.2 (Nat.le_refl _)]
-    exact BuildEntry.zero_return written
+    simp [evaluateHOLFiniteState_return, evalHOLExact, shapeOfHOLExact, sizeOfShapeWithContextHOL]
   have sequence := (StateSteps.next_sequence initial written _ _ chosen clockLe).trans tailRun
   let target := restore source "i" (emptyLocalsHOLFinite written)
   refine ⟨target, ?_, rfl⟩

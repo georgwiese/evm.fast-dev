@@ -1,5 +1,4 @@
 import InitECandidate.Solver.WitnessRadix.TableMemory
-import InitECandidate.Solver.WitnessRadix.ConstructorData
 
 namespace InitECandidate.Solver.WitnessRadix.TableNew
 open Flapjack PanSemStateFiniteExact BackingLayout
@@ -53,28 +52,7 @@ theorem record_before (plan : AllocatedLayout.Plan) (ready : AllocatedLayout.Rea
   change plan.records + offset < plan.table
   omega
 
-/-- The actual table constructor preserves all decoded slice words and
-supplies the complete fixed header/record premise for witness construction. -/
-theorem entered_fixed_data {F : Type} (source : PanSemStateFiniteExact 64 F) (plan : AllocatedLayout.Plan)
-    (ready : AllocatedLayout.Ready plan) (domain : source.memaddrs = InitE.ordinaryDomain)
-    (sliceFor : BitVec 64 → Graph.Slice)
-    (pointers : ∀ index < plan.count, source.memory (cell (AllocatedLayout.layout plan) .records (16 * index)) =
-      .word (sliceFor (BitVec.ofNat 64 index)).1)
-    (lengths : ∀ index < plan.count, source.memory (cell (AllocatedLayout.layout plan) .records (16 * index + 8)) =
-      .word (sliceFor (BitVec.ofNat 64 index)).2) :
-    Constructor.FixedData (enteredState source plan) (AllocatedLayout.layout plan) sliceFor := by
-  refine ⟨entered_header source plan ready domain, ?_, ?_⟩
-  · intro index inside
-    change index < plan.count at inside
-    rw [entered_memory, result_earlier _ _ plan ready _ (record_before plan ready _ (by omega))]
-    exact pointers index inside
-  · intro index inside
-    change index < plan.count at inside
-    rw [entered_memory, result_earlier _ _ plan ready _ (record_before plan ready _ (by omega))]
-    exact lengths index inside
-
 end InitECandidate.Solver.WitnessRadix.TableNew
 
 #print axioms InitECandidate.Solver.WitnessRadix.TableNew.result_earlier
 #print axioms InitECandidate.Solver.WitnessRadix.TableNew.record_before
-#print axioms InitECandidate.Solver.WitnessRadix.TableNew.entered_fixed_data

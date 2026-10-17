@@ -1,4 +1,4 @@
-import InitECandidate.Solver.WitnessRadix.BranchAddress
+import InitECandidate.Solver.WitnessRadix.Addressing
 import InitECandidate.Solver.WitnessRadix.MemoryBytes
 
 namespace InitECandidate.Solver.WitnessRadix.BackingLayout
@@ -55,20 +55,6 @@ theorem cell_injective (layout : Layout) (valid : Valid layout) (pool : Pool) (l
   exact byteAddress_ne _ _ _ (by have := valid.noWrap pool; omega)
     (by have := valid.noWrap pool; omega) different
 
-theorem branch_nonzero (layout : Layout) (valid : Valid layout) (allocated : Nat) (inside : allocated < layout.count) :
-    branchAddress layout.keys layout.count allocated ≠ 0#64 :=
-  branch_address_nonzero _ _ _ _ valid.room inside (valid.positive .keys) (valid.noWrap .keys)
-
-theorem branch_even (layout : Layout) (valid : Valid layout) (allocated : Nat) (inside : allocated < layout.count) :
-    branchAddress layout.keys layout.count allocated &&& 1#64 = 0#64 :=
-  branch_address_even _ _ _ _ valid.room inside (valid.aligned .keys) (valid.noWrap .keys)
-
-def leafReads (layout : Layout) (query : BitVec 64) : Prop :=
-  query = cell layout .header 32 ∨ query = cell layout .header 40 ∨
-  (∃ index < layout.count, query = cell layout .vals (8 * index)) ∨
-  (∃ index < layout.count, ∃ field < 2, query = cell layout .records (16 * index + 8 * field)) ∨
-  (∃ index < layout.count, ∃ limb < 4, query = cell layout .keys (32 * index + 8 * limb))
-
 theorem hash_head (layout : Layout) (ordinal : Nat) :
     layout.keys + BitVec.ofNat 64 ordinal * 32#64 = cell layout .keys (32 * ordinal) := by
   change layout.keys + BitVec.ofNat 64 ordinal * BitVec.ofNat 64 32 = layout.keys + BitVec.ofNat 64 (32 * ordinal)
@@ -101,5 +87,4 @@ theorem hash_byte_cell (layout : Layout) (valid : Valid layout) (ordinal : Nat) 
 end InitECandidate.Solver.WitnessRadix.BackingLayout
 
 #print axioms InitECandidate.Solver.WitnessRadix.BackingLayout.count_small
-#print axioms InitECandidate.Solver.WitnessRadix.BackingLayout.branch_even
 #print axioms InitECandidate.Solver.WitnessRadix.BackingLayout.hash_byte_cell

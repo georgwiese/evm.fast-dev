@@ -1,5 +1,5 @@
 import InitECandidate.Solver.MutableTable.LayoutEarlier32
-import InitECandidate.Solver.WitnessRadix.ConstructorProgram
+import InitECandidate.Solver.ConstructorSyntax
 
 namespace InitECandidate.Solver.MutableTable.WitnessBuild
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -15,8 +15,7 @@ def tableTail : ProgHOL 64:=.dec (ofString "i") .one (.const 0#64) (.seq recordL
 
 theorem body_shape : body=.dec (ofString "cap") .one (.const 4#64)
     (.seq Constructor.capacityLoop (.decCall (ofString "t") .one (ofString "htab_new") [.const 32#64,localVar "cap"] tableTail)) := by
-  simp only [body,Guest.guestFn_nodedb_build,Constructor.capacityLoop,Constructor.body,RawProgram.guestFn_nodedb_build,
-    BuildProgram.loops,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,List.cons_append,List.nil_append,
+  simp only [body,Guest.guestFn_nodedb_build,Constructor.capacityLoop,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,List.cons_append,List.nil_append,
     List.append_nil,List.getElem?_cons_zero,Option.getD_some,tableTail,recordLoop,recordBody,afterHash,setArguments,increment,
     Constructor.condition,Constructor.hashArguments,Constructor.scratch,Constructor.scaled,localVar,addConst,Option.map_none]
 

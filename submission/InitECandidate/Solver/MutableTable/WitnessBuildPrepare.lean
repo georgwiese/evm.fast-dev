@@ -1,5 +1,6 @@
 import InitECandidate.Solver.MutableTable.WitnessBuildLoop
-import InitECandidate.Solver.WitnessRadix.ConstructorPreparedContext
+import InitECandidate.Solver.WitnessRadix.TableCall
+import InitECandidate.Solver.PanDeclarations
 import InitECandidate.Solver.WitnessRadix.TableRecords
 
 namespace InitECandidate.Solver.MutableTable.WitnessBuild
@@ -74,12 +75,19 @@ entire concrete hash/set environment used by the original record loop. -/
 theorem prepared_context (source : PanSemStateFiniteExact 64 Guest.HostMemory) (plan : AllocatedLayout.Plan)
     (slices : Nat→Graph.Slice) (stp pad scratch : BitVec 64) (maximum : Nat)
     (context : Context source plan slices stp pad scratch maximum) : Context (prepared source plan) plan slices stp pad scratch maximum := by
-  have environment : Keccak256.Environment (prepared source plan) stp pad:=
-    Keccak256.Environment.of_control (Constructor.preparedState source plan) (prepared source plan) stp pad rfl
-      (Constructor.prepared_environment source plan stp pad context.environment)
+  have globalFrame (name : MlS) (different : ofString "heap_ptr" ≠ name) :
+      (prepared source plan).globals.lookup name = source.globals.lookup name := by
+    simp [prepared, TableNew.callState, QueryBranch.bind, setVarHOLFinite,
+      HolFiniteMapExact.update, FUPDATE, different]
+  have environment : Keccak256.Environment (prepared source plan) stp pad := by
+    refine ⟨context.environment.domain, ?_, ?_, context.environment.zeroCode,
+      context.environment.copyCode, ?_⟩
+    · exact (globalFrame (ofString "keccak_st") (by decide)).trans context.environment.stateGlobal
+    · exact (globalFrame (ofString "keccak_pad") (by decide)).trans context.environment.scratchGlobal
+    · exact ⟨context.environment.hashCode.block, context.environment.hashCode.perm, context.environment.hashCode.oracleEq⟩
   refine ⟨?_,context.keccakCode,environment,context.buffers,context.before,context.aligned,context.little,
     context.hashCode,context.copyCode,context.insertCode,context.memeqCode,context.findCode,context.setCode,context.lengthBound⟩
-  exact (Constructor.prepared_global_other source plan (ofString "mpt_hash_scratch") (by decide)).trans context.global
+  exact (globalFrame (ofString "mpt_hash_scratch") (by decide)).trans context.global
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

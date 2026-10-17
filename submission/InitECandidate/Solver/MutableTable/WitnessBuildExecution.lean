@@ -1,6 +1,6 @@
 import InitECandidate.Solver.MutableTable.WitnessBuildPopulate
 import InitECandidate.Solver.MutableTable.WitnessBuildCapacity
-import InitECandidate.Solver.WitnessRadix.ConstructorPlan
+import InitECandidate.Solver.WitnessAllocationPlan
 
 namespace InitECandidate.Solver.MutableTable.WitnessBuild
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix

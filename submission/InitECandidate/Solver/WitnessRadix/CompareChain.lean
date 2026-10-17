@@ -1,4 +1,4 @@
-import InitECandidate.Solver.WitnessRadix.QueryBranch
+import InitECandidate.Solver.PanState
 
 namespace InitECandidate.Solver.WitnessRadix.CompareChain
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

@@ -13,8 +13,8 @@ inductive Builds {Key Value : Type} (capacity : Nat) (home : Key→Nat) : List (
       (path : ∀ step<distance capacity (home key) index,table (Probe.slot capacity (home key) step)≠none) :
       Builds capacity home (input++[(key,value)]) (put table index key value)
 
-/-- Original linear-table insertion/update semantics has exactly the same
-last-record-wins dictionary as radix construction, under its placement trace. -/
+/-- Original linear-table insertion/update semantics realizes the
+last-record-wins dictionary under its placement trace. -/
 theorem build_invariants {Key Value : Type} [DecidableEq Key] (capacity : Nat) (home : Key→Nat)
     (input : List (Key×Value)) (table : Table Key Value) (trace : Builds capacity home input table) :
     NoGaps capacity home table ∧ Represents capacity table (fun key=>WitnessRadix.lastValue key input) ∧ UniqueKeys capacity table := by
@@ -54,18 +54,8 @@ theorem build_lookup {Key Value : Type} [DecidableEq Key] (capacity : Nat) (posi
   have invariants:=build_invariants capacity home input table trace
   exact lookup_dictionary capacity positive home homes table _ invariants.1 invariants.2.1 query
 
-/-- Abstract original-table/radix agreement for every key, including duplicates
-and absent queries. It is not yet a refinement of the actual mutating code. -/
-theorem build_radix_agreement {Key Value : Type} [DecidableEq Key] (capacity : Nat) (positive : 0<capacity) (home : Key→Nat)
-    (homes : ∀ key,home key<capacity) (input : List (Key×Value)) (table : Table Key Value)
-    (trace : Builds capacity home input table) (bit : Key→Nat→Bool) (position fuel : Nat) (query : Key) :
-    (lookupFrom table capacity (home query) query 0 capacity).map Prod.snd=
-      WitnessRadix.lookup bit query (WitnessRadix.build bit position fuel input) := by
-  rw [build_lookup capacity positive home homes input table trace query,WitnessRadix.lookup_build]
-
 end InitECandidate.Solver.MutableTable.Placement
 
 #print axioms InitECandidate.Solver.MutableTable.Placement.build_invariants
 #print axioms InitECandidate.Solver.MutableTable.Placement.build_cover
 #print axioms InitECandidate.Solver.MutableTable.Placement.build_lookup
-#print axioms InitECandidate.Solver.MutableTable.Placement.build_radix_agreement

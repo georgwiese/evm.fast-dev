@@ -1,0 +1,1718 @@
+{
+  "reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
+  "scope": "Authorized replacement cleanup; deleted files were absent from main. All retained modules affected by cleanup and new original-budget proofs passed targeted Lean dependency checks.",
+  "removed_solver_modules": [
+    "InitECandidate.Solver.MutableTable.WitnessAllocationBounds",
+    "InitECandidate.Solver.MutableTable.WitnessAnyDictionaryCall",
+    "InitECandidate.Solver.MutableTable.WitnessBuildDictionaryAgreement",
+    "InitECandidate.Solver.MutableTable.WitnessBuildEmptyRadixCall",
+    "InitECandidate.Solver.MutableTable.WitnessBuildEmptyRadixCallControl",
+    "InitECandidate.Solver.MutableTable.WitnessBuildEnvironments",
+    "InitECandidate.Solver.MutableTable.WitnessBuildKeyHistory",
+    "InitECandidate.Solver.MutableTable.WitnessBuildNextContext",
+    "InitECandidate.Solver.MutableTable.WitnessBuildPreparedAgreement",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixCall",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixCallFramed",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixCallSupported",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixExecution",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixExecutionFramed",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixExecutionSupported",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixFinish",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixLoop",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixLoopFramed",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixPopulate",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixPopulateFramed",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixPopulateSupported",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixStep",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixStepFramed",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixTable",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixTableFramed",
+    "InitECandidate.Solver.MutableTable.WitnessBuildRadixTableSupported",
+    "InitECandidate.Solver.MutableTable.WitnessCallResult",
+    "InitECandidate.Solver.MutableTable.WitnessDecodedDictionaryCall",
+    "InitECandidate.Solver.MutableTable.WitnessDecodedInitialization",
+    "InitECandidate.Solver.MutableTable.WitnessDictionaryCall",
+    "InitECandidate.Solver.MutableTable.WitnessDictionaryFields",
+    "InitECandidate.Solver.MutableTable.WitnessDictionaryPair",
+    "InitECandidate.Solver.MutableTable.WitnessEmptyDictionaryCall",
+    "InitECandidate.Solver.MutableTable.WitnessInitialization",
+    "InitECandidate.Solver.MutableTable.WitnessInputArgumentsAfterCall",
+    "InitECandidate.Solver.MutableTable.WitnessLookupAgreement",
+    "InitECandidate.Solver.MutableTable.WitnessNextDecodedCall",
+    "InitECandidate.Solver.MutableTable.WitnessNextEnvironment",
+    "InitECandidate.Solver.MutableTable.WitnessPairedEnvironment",
+    "InitECandidate.Solver.MutableTable.WitnessPriorRadixFrame",
+    "InitECandidate.Solver.MutableTable.WitnessRunAttempt",
+    "InitECandidate.Solver.WitnessRadix.AgendaBudget",
+    "InitECandidate.Solver.WitnessRadix.AgendaCost",
+    "InitECandidate.Solver.WitnessRadix.AgendaWeightSteps",
+    "InitECandidate.Solver.WitnessRadix.AllocatedPublicFrame",
+    "InitECandidate.Solver.WitnessRadix.AllocatedReadBounds",
+    "InitECandidate.Solver.WitnessRadix.AllocationBody",
+    "InitECandidate.Solver.WitnessRadix.AllocationCode",
+    "InitECandidate.Solver.WitnessRadix.AllocationMemory",
+    "InitECandidate.Solver.WitnessRadix.AllocationPost",
+    "InitECandidate.Solver.WitnessRadix.BranchAddress",
+    "InitECandidate.Solver.WitnessRadix.BuildCases",
+    "InitECandidate.Solver.WitnessRadix.BuildCopy",
+    "InitECandidate.Solver.WitnessRadix.BuildCopyLoop",
+    "InitECandidate.Solver.WitnessRadix.BuildCopyPost",
+    "InitECandidate.Solver.WitnessRadix.BuildEmpty",
+    "InitECandidate.Solver.WitnessRadix.BuildEntry",
+    "InitECandidate.Solver.WitnessRadix.BuildEquations",
+    "InitECandidate.Solver.WitnessRadix.BuildInitialState",
+    "InitECandidate.Solver.WitnessRadix.BuildInitialize",
+    "InitECandidate.Solver.WitnessRadix.BuildProgram",
+    "InitECandidate.Solver.WitnessRadix.BuildRows",
+    "InitECandidate.Solver.WitnessRadix.CapacityEntry",
+    "InitECandidate.Solver.WitnessRadix.CapacityExact",
+    "InitECandidate.Solver.WitnessRadix.CapacityExactEntry",
+    "InitECandidate.Solver.WitnessRadix.CapacityPairedEntry",
+    "InitECandidate.Solver.WitnessRadix.Compact",
+    "InitECandidate.Solver.WitnessRadix.ConstructionInvariant",
+    "InitECandidate.Solver.WitnessRadix.ConstructorArrayEntry",
+    "InitECandidate.Solver.WitnessRadix.ConstructorCall",
+    "InitECandidate.Solver.WitnessRadix.ConstructorCopy",
+    "InitECandidate.Solver.WitnessRadix.ConstructorData",
+    "InitECandidate.Solver.WitnessRadix.ConstructorEmpty",
+    "InitECandidate.Solver.WitnessRadix.ConstructorEmptyCall",
+    "InitECandidate.Solver.WitnessRadix.ConstructorEmptyControl",
+    "InitECandidate.Solver.WitnessRadix.ConstructorEmptyPublic",
+    "InitECandidate.Solver.WitnessRadix.ConstructorEnvironment",
+    "InitECandidate.Solver.WitnessRadix.ConstructorExecution",
+    "InitECandidate.Solver.WitnessRadix.ConstructorFinish",
+    "InitECandidate.Solver.WitnessRadix.ConstructorFinishPublic",
+    "InitECandidate.Solver.WitnessRadix.ConstructorFinishSupported",
+    "InitECandidate.Solver.WitnessRadix.ConstructorFrame",
+    "InitECandidate.Solver.WitnessRadix.ConstructorHashArguments",
+    "InitECandidate.Solver.WitnessRadix.ConstructorHashContext",
+    "InitECandidate.Solver.WitnessRadix.ConstructorHashFrame",
+    "InitECandidate.Solver.WitnessRadix.ConstructorKeyUpdate",
+    "InitECandidate.Solver.WitnessRadix.ConstructorLayout",
+    "InitECandidate.Solver.WitnessRadix.ConstructorMemory",
+    "InitECandidate.Solver.WitnessRadix.ConstructorPlan",
+    "InitECandidate.Solver.WitnessRadix.ConstructorPopulate",
+    "InitECandidate.Solver.WitnessRadix.ConstructorPrefix",
+    "InitECandidate.Solver.WitnessRadix.ConstructorPrepare",
+    "InitECandidate.Solver.WitnessRadix.ConstructorPrepareFramed",
+    "InitECandidate.Solver.WitnessRadix.ConstructorPreparedContext",
+    "InitECandidate.Solver.WitnessRadix.ConstructorProgram",
+    "InitECandidate.Solver.WitnessRadix.ConstructorPublicFrame",
+    "InitECandidate.Solver.WitnessRadix.ConstructorRecordHash",
+    "InitECandidate.Solver.WitnessRadix.ConstructorRecordLoop",
+    "InitECandidate.Solver.WitnessRadix.ConstructorRecordStep",
+    "InitECandidate.Solver.WitnessRadix.ConstructorRows",
+    "InitECandidate.Solver.WitnessRadix.ConstructorStep",
+    "InitECandidate.Solver.WitnessRadix.ConstructorStepExact",
+    "InitECandidate.Solver.WitnessRadix.ConstructorStores",
+    "InitECandidate.Solver.WitnessRadix.ConstructorTablePopulate",
+    "InitECandidate.Solver.WitnessRadix.ConstructorTransport",
+    "InitECandidate.Solver.WitnessRadix.CopyIntervals",
+    "InitECandidate.Solver.WitnessRadix.CountBody",
+    "InitECandidate.Solver.WitnessRadix.CountDigit",
+    "InitECandidate.Solver.WitnessRadix.CountLoop",
+    "InitECandidate.Solver.WitnessRadix.CountPost",
+    "InitECandidate.Solver.WitnessRadix.CountProgram",
+    "InitECandidate.Solver.WitnessRadix.CountStep",
+    "InitECandidate.Solver.WitnessRadix.FrontierAlignment",
+    "InitECandidate.Solver.WitnessRadix.FrontierBudget",
+    "InitECandidate.Solver.WitnessRadix.HelperBuilt",
+    "InitECandidate.Solver.WitnessRadix.HelperBuiltPublic",
+    "InitECandidate.Solver.WitnessRadix.HelperBuiltSupported",
+    "InitECandidate.Solver.WitnessRadix.HelperCall",
+    "InitECandidate.Solver.WitnessRadix.HelperCallPublic",
+    "InitECandidate.Solver.WitnessRadix.HelperCallSupported",
+    "InitECandidate.Solver.WitnessRadix.HelperCore",
+    "InitECandidate.Solver.WitnessRadix.HelperCorePublic",
+    "InitECandidate.Solver.WitnessRadix.HelperCoreSupported",
+    "InitECandidate.Solver.WitnessRadix.HelperEmpty",
+    "InitECandidate.Solver.WitnessRadix.HelperEmptyPublic",
+    "InitECandidate.Solver.WitnessRadix.HelperEnvironment",
+    "InitECandidate.Solver.WitnessRadix.HelperExecution",
+    "InitECandidate.Solver.WitnessRadix.HelperLoopPublicFrame",
+    "InitECandidate.Solver.WitnessRadix.HelperNonemptyPublic",
+    "InitECandidate.Solver.WitnessRadix.HelperNonemptySupported",
+    "InitECandidate.Solver.WitnessRadix.HelperPublicFootprint",
+    "InitECandidate.Solver.WitnessRadix.ImmutableRecords",
+    "InitECandidate.Solver.WitnessRadix.InitialContext",
+    "InitECandidate.Solver.WitnessRadix.InvariantClock",
+    "InitECandidate.Solver.WitnessRadix.InvariantFinish",
+    "InitECandidate.Solver.WitnessRadix.InvariantFinishSupported",
+    "InitECandidate.Solver.WitnessRadix.InvariantInitial",
+    "InitECandidate.Solver.WitnessRadix.InvariantSplit",
+    "InitECandidate.Solver.WitnessRadix.InvariantTerminal",
+    "InitECandidate.Solver.WitnessRadix.InvariantUnary",
+    "InitECandidate.Solver.WitnessRadix.LayoutBranchFrontier",
+    "InitECandidate.Solver.WitnessRadix.LayoutBranchSafety",
+    "InitECandidate.Solver.WitnessRadix.LayoutChildOwnership",
+    "InitECandidate.Solver.WitnessRadix.LayoutContext",
+    "InitECandidate.Solver.WitnessRadix.LayoutDataPrefix",
+    "InitECandidate.Solver.WitnessRadix.LayoutFrontierSlots",
+    "InitECandidate.Solver.WitnessRadix.LayoutGraphFill",
+    "InitECandidate.Solver.WitnessRadix.LayoutGraphFrame",
+    "InitECandidate.Solver.WitnessRadix.LayoutLeafFrontier",
+    "InitECandidate.Solver.WitnessRadix.LayoutLeafGraph",
+    "InitECandidate.Solver.WitnessRadix.LayoutLeafMemory",
+    "InitECandidate.Solver.WitnessRadix.LayoutLeafRows",
+    "InitECandidate.Solver.WitnessRadix.LayoutLeftContext",
+    "InitECandidate.Solver.WitnessRadix.LayoutLocated",
+    "InitECandidate.Solver.WitnessRadix.LayoutLocationStep",
+    "InitECandidate.Solver.WitnessRadix.LayoutOtherInterval",
+    "InitECandidate.Solver.WitnessRadix.LayoutOwnership",
+    "InitECandidate.Solver.WitnessRadix.LayoutPendingReads",
+    "InitECandidate.Solver.WitnessRadix.LayoutPendingRows",
+    "InitECandidate.Solver.WitnessRadix.LayoutProtected",
+    "InitECandidate.Solver.WitnessRadix.LayoutSeparation",
+    "InitECandidate.Solver.WitnessRadix.LayoutSplitInputs",
+    "InitECandidate.Solver.WitnessRadix.LayoutSplitMemory",
+    "InitECandidate.Solver.WitnessRadix.LayoutStackFrame",
+    "InitECandidate.Solver.WitnessRadix.LayoutStackOffsets",
+    "InitECandidate.Solver.WitnessRadix.LayoutStackPush",
+    "InitECandidate.Solver.WitnessRadix.LayoutTerminalBody",
+    "InitECandidate.Solver.WitnessRadix.LayoutTerminalCells",
+    "InitECandidate.Solver.WitnessRadix.LayoutTerminalFinish",
+    "InitECandidate.Solver.WitnessRadix.LayoutWriteCells",
+    "InitECandidate.Solver.WitnessRadix.LeafGraph",
+    "InitECandidate.Solver.WitnessRadix.LoopCompose",
+    "InitECandidate.Solver.WitnessRadix.LoopResult",
+    "InitECandidate.Solver.WitnessRadix.LoopSupported",
+    "InitECandidate.Solver.WitnessRadix.LoopTermination",
+    "InitECandidate.Solver.WitnessRadix.LoopTerminationSupported",
+    "InitECandidate.Solver.WitnessRadix.OpenGraph",
+    "InitECandidate.Solver.WitnessRadix.OpenGraphCompletedSupport",
+    "InitECandidate.Solver.WitnessRadix.OpenGraphFrontier",
+    "InitECandidate.Solver.WitnessRadix.OpenGraphReplace",
+    "InitECandidate.Solver.WitnessRadix.OpenGraphSafety",
+    "InitECandidate.Solver.WitnessRadix.OpenGraphSelect",
+    "InitECandidate.Solver.WitnessRadix.OrdinalArray",
+    "InitECandidate.Solver.WitnessRadix.OrdinalTree",
+    "InitECandidate.Solver.WitnessRadix.PartitionRows",
+    "InitECandidate.Solver.WitnessRadix.PendingIntervals",
+    "InitECandidate.Solver.WitnessRadix.PendingPush",
+    "InitECandidate.Solver.WitnessRadix.PendingStack",
+    "InitECandidate.Solver.WitnessRadix.PendingValidity",
+    "InitECandidate.Solver.WitnessRadix.PopBody",
+    "InitECandidate.Solver.WitnessRadix.PopParent",
+    "InitECandidate.Solver.WitnessRadix.PopProgram",
+    "InitECandidate.Solver.WitnessRadix.PopReads",
+    "InitECandidate.Solver.WitnessRadix.PopStoreFrame",
+    "InitECandidate.Solver.WitnessRadix.Program",
+    "InitECandidate.Solver.WitnessRadix.QueryBranch",
+    "InitECandidate.Solver.WitnessRadix.QueryBranchStep",
+    "InitECandidate.Solver.WitnessRadix.QueryEmpty",
+    "InitECandidate.Solver.WitnessRadix.QueryExecution",
+    "InitECandidate.Solver.WitnessRadix.QueryFootprint",
+    "InitECandidate.Solver.WitnessRadix.QueryFunction",
+    "InitECandidate.Solver.WitnessRadix.QueryLeaf",
+    "InitECandidate.Solver.WitnessRadix.QueryLeafCall",
+    "InitECandidate.Solver.WitnessRadix.QueryLeafIteration",
+    "InitECandidate.Solver.WitnessRadix.QueryLeafReads",
+    "InitECandidate.Solver.WitnessRadix.QueryLeafStep",
+    "InitECandidate.Solver.WitnessRadix.QueryLoop",
+    "InitECandidate.Solver.WitnessRadix.QueryMemory",
+    "InitECandidate.Solver.WitnessRadix.RawProgram",
+    "InitECandidate.Solver.WitnessRadix.ReadFootprintStable",
+    "InitECandidate.Solver.WitnessRadix.ResumeContext",
+    "InitECandidate.Solver.WitnessRadix.RowsFrame",
+    "InitECandidate.Solver.WitnessRadix.RowsLast",
+    "InitECandidate.Solver.WitnessRadix.Scatter",
+    "InitECandidate.Solver.WitnessRadix.ScatterBody",
+    "InitECandidate.Solver.WitnessRadix.ScatterBucket",
+    "InitECandidate.Solver.WitnessRadix.ScatterCursors",
+    "InitECandidate.Solver.WitnessRadix.ScatterLoop",
+    "InitECandidate.Solver.WitnessRadix.ScatterPartition",
+    "InitECandidate.Solver.WitnessRadix.ScatterPost",
+    "InitECandidate.Solver.WitnessRadix.ScatterProgram",
+    "InitECandidate.Solver.WitnessRadix.ScatterReady",
+    "InitECandidate.Solver.WitnessRadix.ScatterResult",
+    "InitECandidate.Solver.WitnessRadix.ScatterStep",
+    "InitECandidate.Solver.WitnessRadix.ScopedFrame",
+    "InitECandidate.Solver.WitnessRadix.SortCopy",
+    "InitECandidate.Solver.WitnessRadix.SortExecution",
+    "InitECandidate.Solver.WitnessRadix.SortProgram",
+    "InitECandidate.Solver.WitnessRadix.SortProperties",
+    "InitECandidate.Solver.WitnessRadix.SortScatter",
+    "InitECandidate.Solver.WitnessRadix.Space",
+    "InitECandidate.Solver.WitnessRadix.SplitCountExecution",
+    "InitECandidate.Solver.WitnessRadix.SplitCountInputs",
+    "InitECandidate.Solver.WitnessRadix.SplitGraph",
+    "InitECandidate.Solver.WitnessRadix.SplitGraphFill",
+    "InitECandidate.Solver.WitnessRadix.SplitLocals",
+    "InitECandidate.Solver.WitnessRadix.SplitLoop",
+    "InitECandidate.Solver.WitnessRadix.SplitProgram",
+    "InitECandidate.Solver.WitnessRadix.SplitRows",
+    "InitECandidate.Solver.WitnessRadix.SplitScopeExecution",
+    "InitECandidate.Solver.WitnessRadix.SplitScopeInputs",
+    "InitECandidate.Solver.WitnessRadix.SplitScopePost",
+    "InitECandidate.Solver.WitnessRadix.SplitScopeState",
+    "InitECandidate.Solver.WitnessRadix.TableCallData",
+    "InitECandidate.Solver.WitnessRadix.TableFixedData",
+    "InitECandidate.Solver.WitnessRadix.TerminalContinue",
+    "InitECandidate.Solver.WitnessRadix.TerminalFinish",
+    "InitECandidate.Solver.WitnessRadix.TerminalLoopContinue",
+    "InitECandidate.Solver.WitnessRadix.TerminalLoopFinish",
+    "InitECandidate.Solver.WitnessRadix.TerminalProgram",
+    "InitECandidate.Solver.WitnessRadix.TerminalReads",
+    "InitECandidate.Solver.WitnessRadix.UnaryBody",
+    "InitECandidate.Solver.WitnessRadix.UnaryCount",
+    "InitECandidate.Solver.WitnessRadix.UnaryLoop",
+    "InitECandidate.Solver.WitnessRadix.UnaryProgram",
+    "InitECandidate.Solver.WitnessRadix.Visits",
+    "InitECandidate.Solver.WitnessRadix.WordScatter",
+    "InitECandidate.Solver.WitnessRadix.Worklist"
+  ],
+  "removed_build_artifact_count": 2035,
+  "retained_solver_module_count": 4439,
+  "removed_solver_sources": [
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessAllocationBounds.lean",
+      "sha256": "13cc3fcbb7bef99d854421f81d47a5ede16c8ce211c5562f3e8ff6b7f9c16034",
+      "bytes": 3803
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessAnyDictionaryCall.lean",
+      "sha256": "335f3b1d772ac62ab9a23c40c294e812e5fdd91c8f7420713a824ab5353c79f8",
+      "bytes": 6218
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildDictionaryAgreement.lean",
+      "sha256": "f0c5ac244f66512c8dd102a6ed8f9b1518d2aba6a22745a645bdf0b4d71f3784",
+      "bytes": 2309
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildEmptyRadixCall.lean",
+      "sha256": "a9e1e77938d7e914dc63c19c53b3de3aed98b637cd6ddb5772c9e7518583293e",
+      "bytes": 8961
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildEmptyRadixCallControl.lean",
+      "sha256": "1a44e11c1f5bbd58074c82854920f017af73d4e0733334f434df1924e9688245",
+      "bytes": 9632
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildEnvironments.lean",
+      "sha256": "97546ff3eabb927eaca61a79d01872ad04d73b5f327931609a1d233e8801ef72",
+      "bytes": 3268
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildKeyHistory.lean",
+      "sha256": "faec82349cc11f64385d7205e56bc5c5fafec506aba1af30e5e61e27b6a9134d",
+      "bytes": 2278
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildNextContext.lean",
+      "sha256": "36907230b995b4073e2afd4820423cc38e0863db86a6b93426931ab7250803cf",
+      "bytes": 2375
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildPreparedAgreement.lean",
+      "sha256": "5c199153e16b683cc268b3af13257bcf4d22558fe4b02bd4e84f61ddce20a4d3",
+      "bytes": 2635
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixCall.lean",
+      "sha256": "b09c9141c87b3474682534eeccdf2d1b9cff5b8be8866a225091bab824e6fb3d",
+      "bytes": 11449
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixCallFramed.lean",
+      "sha256": "f9eef10406e95396fc23290b85345faac4053fa22a5dc693dce14faa7eeed952",
+      "bytes": 11922
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixCallSupported.lean",
+      "sha256": "ba1313912634fae57a9b1fe34cc2f7108cfcec3d734ab1062ac1e0c1dfdd4d38",
+      "bytes": 12572
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixExecution.lean",
+      "sha256": "9e9f3733eb813ef4934e73e0571dc6fee7546660e34d9acf0bf39c671bd9534a",
+      "bytes": 13891
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixExecutionFramed.lean",
+      "sha256": "d11fd5e7a9fa0243031cf0cde738012a4432dce2dd30ce503338952d82e6d8ba",
+      "bytes": 14644
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixExecutionSupported.lean",
+      "sha256": "3e50e71c8701e839c7fd621d8e3ea87916861a8c320c039bbe7eacd4f0d2314f",
+      "bytes": 15287
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixFinish.lean",
+      "sha256": "3ef99703a8519a7ed2d5b6a16c4d0db981844ad2eeb8cc01d31942eb91ae528a",
+      "bytes": 4228
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixLoop.lean",
+      "sha256": "58b93b98b8be530176f9da64cfbaf508330c941a760f5f0f74b1234e16ec049e",
+      "bytes": 13518
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixLoopFramed.lean",
+      "sha256": "aa0c23474efdf6571988b3dfd9e4de39c709f088042789ea7e8831f1b501e4ed",
+      "bytes": 14537
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixPopulate.lean",
+      "sha256": "245213359aeb779cd8c50468bf7459e6d160447a739ebe1b8c6ba1cce8afb7ce",
+      "bytes": 7399
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixPopulateFramed.lean",
+      "sha256": "22ab7f1ec7de1ef435f022a151665b2425676e961ae14a5a54ec1ee43b82d508",
+      "bytes": 8613
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixPopulateSupported.lean",
+      "sha256": "e84f41e50bd9b96768185ccd761d849a5466cfdf5329aade0c2ce573f8cb2a48",
+      "bytes": 9206
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixStep.lean",
+      "sha256": "582a0232f5e00bf4d861053f626b3a5a97287ccc5c1a5243f28b65ecc61c1a9e",
+      "bytes": 9064
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixStepFramed.lean",
+      "sha256": "54e532b76cc1d0965fcd19013889294dd29a1bbb71f3b3d35393549e87e5b790",
+      "bytes": 10089
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixTable.lean",
+      "sha256": "e2429490d90568151473b1b2a7303b748efd8a9a7f20ccb3cd0fb5cbc6126b8e",
+      "bytes": 12649
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixTableFramed.lean",
+      "sha256": "e05a34e2412c37508f4d42c80f544450b400a68578cc597c257ac4b731e6caf9",
+      "bytes": 13455
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessBuildRadixTableSupported.lean",
+      "sha256": "20ecf9158d06ea882985bf970992cd10213d3dc4f397542263f9c6055f0ff6b5",
+      "bytes": 14137
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessCallResult.lean",
+      "sha256": "f4a4b0933ea01b7876c79f95ca523e93f9098c812c3d68cb7a99e82cb5b9ad5b",
+      "bytes": 3616
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessDecodedDictionaryCall.lean",
+      "sha256": "cc205fe3ce8688db15c6112cd24ef95c322d84d8aa221d7616aa566eeafc9df5",
+      "bytes": 7482
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessDecodedInitialization.lean",
+      "sha256": "30b04bd5df5b6f804de31cf2bb95625a692b292066b885aa31697bb8a8e5848e",
+      "bytes": 9840
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryCall.lean",
+      "sha256": "ccdc2d22fd3433de75c73ef6cd904f72beb09292b09cd0411eac7ac500a0af45",
+      "bytes": 5512
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryFields.lean",
+      "sha256": "7cdb5921f2e439d6daa07cb2831dc80b1b5e84220c73bb09a00af279763c639a",
+      "bytes": 2515
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryPair.lean",
+      "sha256": "fca4f896b41abfd0547c8cf0205267af8679f91e478c1a4c21ceaf4fa98f7802",
+      "bytes": 5611
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessEmptyDictionaryCall.lean",
+      "sha256": "533af4152decefe705c9dedbf0e7d3693d7486bbe12a3e0bfc2676b38856061e",
+      "bytes": 5833
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessInitialization.lean",
+      "sha256": "a2bec9da8997f1d6df6df33a25c8bebc62f3f186e4edc29119902e800672df3e",
+      "bytes": 6452
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessInputArgumentsAfterCall.lean",
+      "sha256": "cc16b7f55203d5b1bfa5d65e0162771686b44491674e96775b5d942f8da7febf",
+      "bytes": 6202
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessLookupAgreement.lean",
+      "sha256": "4979421596f8c4ec8c33106ab4b65037820ece41bf1462bf8ecb9ef1ae91d186",
+      "bytes": 4627
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessNextDecodedCall.lean",
+      "sha256": "760bad452c0771cce6f027295ee44887080510b01cda1a11063144dc3608b80d",
+      "bytes": 9000
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessNextEnvironment.lean",
+      "sha256": "9557b8606683a5d850030e296e052c2d63a5587cfb66c64b4dd989506bfc967c",
+      "bytes": 2624
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessPairedEnvironment.lean",
+      "sha256": "3900089ec57abd248229ac8d22a4a665296993a0d26fbfc0e764726a915b5948",
+      "bytes": 3587
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessPriorRadixFrame.lean",
+      "sha256": "7adb31fb93459f1718ce3e04a21a8e38410a0ba98140697656a0bcd5e61f65e3",
+      "bytes": 3587
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/WitnessRunAttempt.lean",
+      "sha256": "d1753371b416b419bf391500269c5e2c6d791ab93a17569f48413e1f6c29bd80",
+      "bytes": 4810
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AgendaBudget.lean",
+      "sha256": "b5167bad0d190e990d9ae213a92844835ffbd154828528c29d40869a9cfcf86b",
+      "bytes": 2795
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AgendaCost.lean",
+      "sha256": "abd31f53909484add6f71d888dd790a8c06a951a5ab7b390af6f1dd60cd7a03d",
+      "bytes": 4062
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AgendaWeightSteps.lean",
+      "sha256": "b328c86ee8c77e294d792bbbb707b0f1f095399cccf2e5ed4a5d0c24a7ee9eb9",
+      "bytes": 4570
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocatedPublicFrame.lean",
+      "sha256": "dc68d32f66ef3ddda06d0db9187ee2b91b5be1db4f509ce4a58f100ea8650906",
+      "bytes": 2114
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocatedReadBounds.lean",
+      "sha256": "9537b8a63b7de9aab22e73d2c97d72a1be44dd47a5f00fb9b19125f989c81fe9",
+      "bytes": 4327
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationBody.lean",
+      "sha256": "8354d8bd73fde578773480d7b4fc104b035e1c56e13271d01debf3c0615ff71d",
+      "bytes": 5069
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationCode.lean",
+      "sha256": "abcb3be7bcb49ad20115857673491fd595b9373cc3a5715020260a2c2af7c12d",
+      "bytes": 5308
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationMemory.lean",
+      "sha256": "8f81db9ea21828a98d011b3859928dc7696f1fe1b797da6cf3a757ffd3048b87",
+      "bytes": 2367
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationPost.lean",
+      "sha256": "f2b79786dfb3a55f764e5ffe927498dc106f3e5045f7b36493f32b32b56fb7fd",
+      "bytes": 3038
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BranchAddress.lean",
+      "sha256": "cbbf8c851a379bacbd428d677c9dcb4a23ad159363f4222243c6d76651d71420",
+      "bytes": 3024
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildCases.lean",
+      "sha256": "058d8b10e0065c46e61fb8693ca9f53426dcedf836910433c432c9761c649eaa",
+      "bytes": 3901
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildCopy.lean",
+      "sha256": "ea3b733e5ed95002c342d9c0e850151bab087de47216408b1c2c8d979c6d3974",
+      "bytes": 4297
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildCopyLoop.lean",
+      "sha256": "a01a719d99e2879778ab87a21f987e04c90272a95e90d7f8b4e73ed724fda0d8",
+      "bytes": 7015
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildCopyPost.lean",
+      "sha256": "2b2579fb9899edcf5271b119a9145cd100f339e13e84a158be90088ba7b94c37",
+      "bytes": 5104
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildEmpty.lean",
+      "sha256": "7508ad07e31029085035cfb328fa901b245c8c2d39d8d9e37118c96a102e42b6",
+      "bytes": 3786
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildEntry.lean",
+      "sha256": "f0291efadaab3ea59b99344bf8f2585826041e6dfe6235211c9a9789ad911599",
+      "bytes": 2484
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildEquations.lean",
+      "sha256": "fa466b2876f885983ed88e6aab90fe3025f1811a73499a6ff2d820a5b4766125",
+      "bytes": 5446
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildInitialState.lean",
+      "sha256": "dc1b8063fee1e985afbcf337b1d9c696af4b272e800bafc631d618305ff7abb3",
+      "bytes": 2039
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildInitialize.lean",
+      "sha256": "d10dc51f0c79c3b04478df1ffd391b247e9130ac4c5fefbd0e4951a0b5136e33",
+      "bytes": 3527
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildProgram.lean",
+      "sha256": "4d5dfe7bcd1a87c270431b6f479fae5c4c53af050fb81ee9772cab2e893dc29d",
+      "bytes": 1960
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/BuildRows.lean",
+      "sha256": "4ba47cab038da8124b845144844ce914d8337fb2519f1907ae75d8fb113e813d",
+      "bytes": 2657
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CapacityEntry.lean",
+      "sha256": "1c22c5dfb4c1c0f28f2cf9120c086538d71260dba62f63019bfa57606f650088",
+      "bytes": 3112
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CapacityExact.lean",
+      "sha256": "0a6349b2f6ac25153aeae8b44b2a813fc6a556e998a20273f2fe717614e34eb3",
+      "bytes": 5257
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CapacityExactEntry.lean",
+      "sha256": "3bf6c2e7a121ed7e0a85b163dbd874ce4a2e4aefa827a93a5ff401c40310d1b3",
+      "bytes": 2931
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CapacityPairedEntry.lean",
+      "sha256": "56b7bd6cabaf551a7b26b3b0b4fc89f425ee1f650903495cbd8b9b63ed0969e8",
+      "bytes": 4476
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Compact.lean",
+      "sha256": "78c2ef5501cabff8d10b1c1e34eaff0747a03d22636a42c434365850c73beefe",
+      "bytes": 8473
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructionInvariant.lean",
+      "sha256": "99ecdced279f754987d84b45a9649138b44ef185e39e573bc882c3ae43aeca23",
+      "bytes": 4020
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorArrayEntry.lean",
+      "sha256": "bd534f3f7e04a648d476e88c3db88b2c2727067afe9a57574c92241d65d4e716",
+      "bytes": 5218
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorCall.lean",
+      "sha256": "5183ace1c11eaf92d209ad24f94b363063db1a461c89f472013d164bf010e75b",
+      "bytes": 5347
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorCopy.lean",
+      "sha256": "c23e5d368c828e3ddff11fa756a9aaa0567ceef7246b749a6ccb4037c46a07b6",
+      "bytes": 3732
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorData.lean",
+      "sha256": "a6d5734633746b5a66564c0738a35923570b1bbe6a93e4b69514b07720586cdf",
+      "bytes": 3814
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorEmpty.lean",
+      "sha256": "e4826d8a7be8322fa4bd0e6e46c8a17f72373c24964c5c86e8f36ce9fb20d860",
+      "bytes": 8010
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorEmptyCall.lean",
+      "sha256": "5ea23c765ed33c6862677a4b11e350fdf44e6cfcec6a2d9f5d7d4f9c4b078b81",
+      "bytes": 3755
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorEmptyControl.lean",
+      "sha256": "ba9f786d79e7470c9344b21bf5efbfac926705055f06b2c43c56490a80414d5c",
+      "bytes": 10253
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorEmptyPublic.lean",
+      "sha256": "f581d0e6e5f64c964f32309ebc825650f76508c98a10b1ef65ac4e5a396d322c",
+      "bytes": 9313
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorEnvironment.lean",
+      "sha256": "077abe0527a69c95b47f24a4c204e6ad0b9ebec280bd9a2c4e6e887783d0c727",
+      "bytes": 2001
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorExecution.lean",
+      "sha256": "13871087db775756e22b379cd61be653c1dfe858570f30ea6439f4c1d29cedf4",
+      "bytes": 8923
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorFinish.lean",
+      "sha256": "f8d36788779fb1423d8f26bfdca5f23cf05f1ff6302c18a166659b64722b996e",
+      "bytes": 2715
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorFinishPublic.lean",
+      "sha256": "72dc99a247a16d354336addce6cd25b52c033ee8ddec08a482a8bfdbfa61e0c5",
+      "bytes": 2856
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorFinishSupported.lean",
+      "sha256": "acc94ae41a392c25ce408c8ce3120254ff19290eaa706448ca3963cc366a87ba",
+      "bytes": 3319
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorFrame.lean",
+      "sha256": "c2f9c2d5fd92ea373aff6f26a2607f28597465e47af7a34d0c936169a30eb3b0",
+      "bytes": 3295
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorHashArguments.lean",
+      "sha256": "584ee4a604c09104de91f1c8b5c0a7dba54a3ebb8d0ef2cc61d63725c2477a2a",
+      "bytes": 3291
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorHashContext.lean",
+      "sha256": "d6f8ea7b2c5b1c5b4591d407f9ec2bfe52f379541af76a368f8dbb3809f2064e",
+      "bytes": 2996
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorHashFrame.lean",
+      "sha256": "091de527a0e30558c6b12cdd0ba3b423aec8880e8be1a79c877e9f7cc1f599de",
+      "bytes": 4967
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorKeyUpdate.lean",
+      "sha256": "65e058545ea3f3c9a83e7fe62567d1ba27cbba53b9fa52d0632303315ae93c4d",
+      "bytes": 1963
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorLayout.lean",
+      "sha256": "45d86cbf78657746c35caec80c16e29d84dd723959bf97a3ef8b0269e1b6b4ff",
+      "bytes": 4274
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorMemory.lean",
+      "sha256": "823575b57fe6abd2f3e21bf252e8d7f1143f9530db9a7cf0aee62bbf4bee66c0",
+      "bytes": 4453
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorPlan.lean",
+      "sha256": "198ef5fc299faa6b43250042700d3e82556c1aff3bdfc94585d475be5445e5b7",
+      "bytes": 1454
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorPopulate.lean",
+      "sha256": "cc2f47e44d316d213705b122a2e5ce54f1006daccae89bfe7da8e20bfc48252c",
+      "bytes": 4408
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorPrefix.lean",
+      "sha256": "91dfb70c6283d1a8b42fae9e3cab1d400e5e67184cb86f97eb70d851d4b8dd1e",
+      "bytes": 4086
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorPrepare.lean",
+      "sha256": "58c8646281310d59ede4b949676b8bc674003cc9ac68aea449dc1f6c94f1fb66",
+      "bytes": 6295
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorPrepareFramed.lean",
+      "sha256": "a278821f13322b07ac88b84b4330ccf4d613f9a6f03418fe3b9a21bbe73b4d5c",
+      "bytes": 2978
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorPreparedContext.lean",
+      "sha256": "5b480da79d891239af3d7bc5f8a900bd408b3c8a51fd0846bb9f3b78b9c43052",
+      "bytes": 3770
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorProgram.lean",
+      "sha256": "6f730d5daf327ef1a8234f5fb11f24b4434e17c7174e3a43505efb744e8b6753",
+      "bytes": 2686
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorPublicFrame.lean",
+      "sha256": "c232ed4ee2c4310fb69043f94a2b4ee6a02491e33dbaec393b37750cd4c9ef24",
+      "bytes": 1421
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorRecordHash.lean",
+      "sha256": "eb7c1143d578fc25290d81e268181940b727e73efad0c14ab602563278c5995f",
+      "bytes": 6730
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorRecordLoop.lean",
+      "sha256": "131f6b07b044ee53996ef1bd2076c4c205b8a07b75fbe52065a9c37f6d4acf59",
+      "bytes": 6784
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorRecordStep.lean",
+      "sha256": "a3c4b79d54e35d8164bcebfa4451cfadfd1e26f78f1b91da5037f8bb9b5fc96c",
+      "bytes": 6438
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorRows.lean",
+      "sha256": "482127dd7c388d9f493ab9fb28f8cd49e577c9aeb2ceaaaa10b851652905fe3c",
+      "bytes": 3070
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorStep.lean",
+      "sha256": "7ea599b8efb0dd765bff3aca744cee9130924d90bfe68fff6d42a061e488355d",
+      "bytes": 5620
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorStepExact.lean",
+      "sha256": "e342b6213100234dcec88f607a5372a4b0e077420c4d4ff0be5dace087c3f488",
+      "bytes": 4592
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorStores.lean",
+      "sha256": "397dc0c17861bc8df923685ae316d0ab53a84fe6722174464da4d870ec816ccf",
+      "bytes": 2675
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorTablePopulate.lean",
+      "sha256": "e83f5a1ddd1b216c5f7cf6c7b594fcbaafb165e499088d2c0893a5f26876bb39",
+      "bytes": 6782
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ConstructorTransport.lean",
+      "sha256": "354adf99ffef2f92a8d374934a7322ce9d9330a9309bf3cf4c6961008ea78945",
+      "bytes": 1604
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CopyIntervals.lean",
+      "sha256": "15fc449e14babf2d549bded0555739d878f113ae3cbaa051a4cbe89017c109c8",
+      "bytes": 3476
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CountBody.lean",
+      "sha256": "4687343a8cd3b3d6da04c17878f83bc76eb963229e7afa5bd938c6e628c85e2f",
+      "bytes": 6554
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CountDigit.lean",
+      "sha256": "58e86bca1bed999ac4d6a2059be1b35a0359ca74d047dce7efbf3a640901ac95",
+      "bytes": 2806
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CountLoop.lean",
+      "sha256": "fbc6534ea81b48f7b065ba802901885529c53bfd40d42b21770270e003104a8d",
+      "bytes": 8591
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CountPost.lean",
+      "sha256": "ffc5046eaf036608be7206ee77b383638dd93951d1da0268d48ab73fe7f0a97e",
+      "bytes": 2449
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CountProgram.lean",
+      "sha256": "94e65b7042d2f75028f21ab37f91ee5cefc38b938baefdf39fa9c903f01ff2a4",
+      "bytes": 2197
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/CountStep.lean",
+      "sha256": "cc8c3220cc5343faed0a34c5c73ffb97e5089d11ee6a8b6227ca42d2d67fbcfd",
+      "bytes": 4251
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/FrontierAlignment.lean",
+      "sha256": "30cc8d4d90c8013d14cfda41821e0d96aace8556b9b1c3ef8ed928923fb60e77",
+      "bytes": 3654
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/FrontierBudget.lean",
+      "sha256": "43789de73b5371706fd538567bb38ab424f6805356eb80d7cf6d1eb7c6b27a55",
+      "bytes": 3935
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperBuilt.lean",
+      "sha256": "7af29954ee80a8c1fd5460c26666835990f0c461f9372f195b00c580e0eefd63",
+      "bytes": 2690
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperBuiltPublic.lean",
+      "sha256": "6d7cc8f1d5181356f5e083a0fad77069ecf80aba3b4f7448a0f53ac4d1bdafe1",
+      "bytes": 2836
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperBuiltSupported.lean",
+      "sha256": "790e3d090ac08b6c1ed6fa3fe408468d090821179c4f2daa78041461935a79c3",
+      "bytes": 3191
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperCall.lean",
+      "sha256": "e8f1f93beb5b808077d3f44be9f776fdb8d4218151bc054ec1cd2ef1304a71bd",
+      "bytes": 4171
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperCallPublic.lean",
+      "sha256": "8e9b68a4d98cac3367714bb8415f61caa1e1a3d8b274084cf9e2bf89179faa39",
+      "bytes": 4061
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperCallSupported.lean",
+      "sha256": "3b1a3ec96b8499230055cd10471e51a940a8bb1c3c598041a8728a4acf3967fc",
+      "bytes": 4524
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperCore.lean",
+      "sha256": "f4c4be2fcddff8a776fd3ce49199397183ac0d3fffd82a6b77edcb3e7b6fc1c7",
+      "bytes": 1941
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperCorePublic.lean",
+      "sha256": "5104d776304217e28892175794ebcb5355d3207ca66784c82a09c40f841bccd4",
+      "bytes": 2223
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperCoreSupported.lean",
+      "sha256": "9248a68ffe6f1acd33e746b4e483cc801062de162e2e278b4ab7cb2ab3d50b1e",
+      "bytes": 2448
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperEmpty.lean",
+      "sha256": "3c6f3fac9c94bce52e4ca1dc1e3eff94cf06adb3c8a459df2d3ca60898ff1e9a",
+      "bytes": 2108
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperEmptyPublic.lean",
+      "sha256": "9205a72627e7d9a78e793c5ac6dce11f53c51f905b190a594d7df3b86878e3ae",
+      "bytes": 2318
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperEnvironment.lean",
+      "sha256": "3616c51ed10d32d6ba906581a5dfd254690e42312fadb3445aa4246fc68f7c73",
+      "bytes": 2123
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperExecution.lean",
+      "sha256": "2488da4716d505715d49d9a050d96a9a1afb6e1d2356320761d4a4225e0604a1",
+      "bytes": 5000
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperLoopPublicFrame.lean",
+      "sha256": "f1049557abda67f06c6384fc99c40416d0e4cf0e053ac17375fa7cbc197fcccb",
+      "bytes": 10211
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperNonemptyPublic.lean",
+      "sha256": "769b8772b92e77dcc97ea8dc0cc3f89bbca29edac53789c177df10ced2c208d7",
+      "bytes": 5053
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperNonemptySupported.lean",
+      "sha256": "7db3488c094a5b8afab5fc738e0fa7b682d29a423d4f8fb0c07660affe52b984",
+      "bytes": 5613
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/HelperPublicFootprint.lean",
+      "sha256": "855eb73fcc9521d4e02e38d362f4f0cff92d3192b832863453271c2e0a2791e4",
+      "bytes": 3563
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ImmutableRecords.lean",
+      "sha256": "3189dc458a58eadda00ffa729782e9014f988e5554f189213c966b64e6fb97d9",
+      "bytes": 5346
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/InitialContext.lean",
+      "sha256": "32e2462b08379995463a14dfc715cab721d6c8c2d561f8d29b2520604074d4cb",
+      "bytes": 2289
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/InvariantClock.lean",
+      "sha256": "7445f9d773d7fa7d73e21e48920610a3d3352e54e597588e2d9baccc581f17b5",
+      "bytes": 1935
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/InvariantFinish.lean",
+      "sha256": "814fa45b8fa5d50d9cb0e51efdd6ff20eea6b89fbb2c2d87bf5c49a931711a15",
+      "bytes": 4292
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/InvariantFinishSupported.lean",
+      "sha256": "fe1a78dbae76dd93bef9b5a095238c49a2ecab8d45dcce69abe21a227225c0ba",
+      "bytes": 5532
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/InvariantInitial.lean",
+      "sha256": "a174a6f58d1d3212769055329c2c01429b1232672aefd1409adbb02b0a144908",
+      "bytes": 2835
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/InvariantSplit.lean",
+      "sha256": "596bccfc3a66e5ca1af77ce39e64d52e3e0ab0bfd106068391fb228184798110",
+      "bytes": 6639
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/InvariantTerminal.lean",
+      "sha256": "6dbdd7943a5e5f23815035d7a1ce592d3151a1e45c745c12ceb1ecacba58ce02",
+      "bytes": 6990
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/InvariantUnary.lean",
+      "sha256": "66beef303396c3af9f2641bcd8ee3dd643943aaf1938f827a146f864ed0cd277",
+      "bytes": 5152
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutBranchFrontier.lean",
+      "sha256": "57c289ffde03b50b7aadf96183686dba710e317fa2f1b3311bfc736210c4e606",
+      "bytes": 3334
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutBranchSafety.lean",
+      "sha256": "c460a2dc8970991568fcafdc7067f98d018b25416f334ae905dfe66d39892510",
+      "bytes": 5941
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutChildOwnership.lean",
+      "sha256": "1a782b26ab4e33d2c118f9cbf6a85d21098678892a76c91b4d6b054449a60583",
+      "bytes": 3819
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutContext.lean",
+      "sha256": "c4e1f67055a2ea84a6740036f12423132db519efc30f5a7c8086ec4227c7c567",
+      "bytes": 4780
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutDataPrefix.lean",
+      "sha256": "face385221c485604b7b72c0964e0b5d6f3339b083c2aedf5356e61d73fdcaa3",
+      "bytes": 2120
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutFrontierSlots.lean",
+      "sha256": "4006ec27ee69e78da7a1d8f493f1d427694081be0e53ff567b555c78528d6f2a",
+      "bytes": 2817
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutGraphFill.lean",
+      "sha256": "c353a77d8d23a1db99b0df6372dfe9248dfb55df946c125db82873d0a087202d",
+      "bytes": 3698
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutGraphFrame.lean",
+      "sha256": "18a84f9ef751622c7e28b4a19823a39440ff98f715bf9ca14ced14a60e6dae4c",
+      "bytes": 4813
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutLeafFrontier.lean",
+      "sha256": "176f4e42ec98a65927d59f5c9eccf94a92d225ee3385a13624ede4babf600abf",
+      "bytes": 3433
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutLeafGraph.lean",
+      "sha256": "2c2dc381a5c20159e6cfb76c7a176901c56981a2c3c705d01bbdfaa72b4a504e",
+      "bytes": 3508
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutLeafMemory.lean",
+      "sha256": "ab9098237be76d10c1593e44d399ad2033266f9bdf6f98b3d7383f7c5cf3d7c7",
+      "bytes": 5285
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutLeafRows.lean",
+      "sha256": "2c6a0ee30ec540f47673eec80b3badbc09eaad98472b7a5c802a97eb7899b9d0",
+      "bytes": 2862
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutLeftContext.lean",
+      "sha256": "39d1648495bb66be657220b3d96529cb5efe8c0a38a499204afd9b4ef81e1c20",
+      "bytes": 1685
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutLocated.lean",
+      "sha256": "1bf7a9308062ee3820e445653b5dda1b4192718c16b085fe45731a71ff1737a2",
+      "bytes": 5199
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutLocationStep.lean",
+      "sha256": "8273d0b3c85b3868e9dc2adcdfaac70e17d619d69d591667dfd2f2b15d4438c2",
+      "bytes": 3782
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutOtherInterval.lean",
+      "sha256": "3adb1ce73417d7116e4bf2d7d463910313304b9943af34ee60c6962b7d8dc5b7",
+      "bytes": 4038
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutOwnership.lean",
+      "sha256": "96fb393fd8fc3ffa5f4511d83b6eaf1b82a0bfe19fe6bf03cab1e8f45e311368",
+      "bytes": 3226
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutPendingReads.lean",
+      "sha256": "d8212ee7151695c14a081e3d8f95f0f48fed3440114d4fdb2c19c170b0e0de39",
+      "bytes": 3117
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutPendingRows.lean",
+      "sha256": "76186945cdd2d167682c3b154bb8ea69cdbb538e8f1273635f600312c9452257",
+      "bytes": 2489
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutProtected.lean",
+      "sha256": "11e4a69985cc48ed3dca7b313752bb9326ee33d943542078a87d3bab0f74b4df",
+      "bytes": 3512
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutSeparation.lean",
+      "sha256": "32a9e4aa9a753d89d3feac696c6bdcbf1d971710a4a9f3eafc9c03fdae2b1ba2",
+      "bytes": 5118
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutSplitInputs.lean",
+      "sha256": "a58d8547c54c0892476846f9e6437284a813fb467bf7e864fee9704c4f2b1b6d",
+      "bytes": 1943
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutSplitMemory.lean",
+      "sha256": "05b0e7fb5ef94aa50843c836b2ede17e71416a91ee3eee477b01a4a7cc323da6",
+      "bytes": 3895
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutStackFrame.lean",
+      "sha256": "a03bf22e5f65f18138490c8d9d3ea3f4b6b7593e82a0451e9dde5bfcc3cd3222",
+      "bytes": 3773
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutStackOffsets.lean",
+      "sha256": "b5c262f93a5ae1d9061782843705df3f4f7c7f4158ffcd8ca190838e65ba91c3",
+      "bytes": 4747
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutStackPush.lean",
+      "sha256": "18fbd64f6d0d1872bc300ee6e8840083718402aa1803eb91752ad6b4899a8f7c",
+      "bytes": 2868
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutTerminalBody.lean",
+      "sha256": "bcfdbf3379300a83dbfbc0bc83a9073efaa9a1bbd247c119076fa642a5dd352b",
+      "bytes": 4348
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutTerminalCells.lean",
+      "sha256": "a2bb227372c64f79c9b67558ce63c5789985041a4ac577097b71dae93a383885",
+      "bytes": 3395
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutTerminalFinish.lean",
+      "sha256": "dab6513bce1d592bf6d373f7d39bd58d7b49dc7477af8ae9c4823a188797389d",
+      "bytes": 2108
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LayoutWriteCells.lean",
+      "sha256": "85c9bf866bd4b66b7b00a200a0af0f67848c23249d0e6cf580ff735b54a73acb",
+      "bytes": 2150
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LeafGraph.lean",
+      "sha256": "4c8575bb9184fef2f85dbb0c9367365786abefa4ffedcb8c89e4883abd48cbc2",
+      "bytes": 3762
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LoopCompose.lean",
+      "sha256": "795091cad1f349c31e93524c576afced9c257daaa9492c5125145481262959a1",
+      "bytes": 2559
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LoopResult.lean",
+      "sha256": "cbb600354e0577f97b3e96905cc86d1c781855915a09f44102c58c9e83fed9c4",
+      "bytes": 2192
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LoopSupported.lean",
+      "sha256": "9066ab5bd6a75e70d975cd4f2eb3fe5e2c6c71d2bff42d54eea443e76fba3dcb",
+      "bytes": 1887
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LoopTermination.lean",
+      "sha256": "e09649d25277291c0fe047f5b4490ef4025ce0c1cb90bf35d91350c125c11d14",
+      "bytes": 9377
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/LoopTerminationSupported.lean",
+      "sha256": "e1e81937e115fbee0d27d30ea134bf721266bbccd10097498eabb9c3a197ac06",
+      "bytes": 9509
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/OpenGraph.lean",
+      "sha256": "8b8b8007b9e701bfa295b371959c5d56bc194221d164326fb57a5efd4d410710",
+      "bytes": 5717
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/OpenGraphCompletedSupport.lean",
+      "sha256": "47c8f94050971dd778eff101d73fae03a546ca9f70a4effd65adf64f58d0cf3a",
+      "bytes": 3203
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/OpenGraphFrontier.lean",
+      "sha256": "9cea07b31059633cf56468ff8e414552347e11f85e8502539e31307b9c718076",
+      "bytes": 2482
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/OpenGraphReplace.lean",
+      "sha256": "47bb7c4cd6b87ea34377f56519ba33b11507b9d6168b5c3fee2a043e20127e25",
+      "bytes": 4104
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/OpenGraphSafety.lean",
+      "sha256": "8bd0708b2322f2da7df6f6b9dc5466057fc2bc7079289183d6bae05abfe8b145",
+      "bytes": 3287
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/OpenGraphSelect.lean",
+      "sha256": "98fccf7bbc168a5efd0e85646dd70da9d4b68b5d05e74ab26298fdb667d757ec",
+      "bytes": 1949
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/OrdinalArray.lean",
+      "sha256": "eaf80071557b32cb5b8b3530f251bddd3f9e9daf9c23527577f6b35c1980fa7c",
+      "bytes": 1231
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/OrdinalTree.lean",
+      "sha256": "b5bde1962682b842cc9828aee161ca2cd134b9f0e2142b605989d1422f36197e",
+      "bytes": 5348
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PartitionRows.lean",
+      "sha256": "28f807c5d734a8214506eb7b90ac6ac791baa05bca11cdc3212a73e83e4e5a08",
+      "bytes": 4014
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PendingIntervals.lean",
+      "sha256": "6791db238e95b7d7e61c8853d220a51234cf8a56dc3c8d29bc5f9e03ae8a5a8b",
+      "bytes": 2066
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PendingPush.lean",
+      "sha256": "38c9e6daadf534aa0a7f720cd37bb42f3a5847c31507f49c2942a20561df0bee",
+      "bytes": 5325
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PendingStack.lean",
+      "sha256": "07a8173f9cc212c64e570d45fca2018aff4f78c6f07d18c84e37dfcb75cb4f6f",
+      "bytes": 4016
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PendingValidity.lean",
+      "sha256": "35ba2a4478948d9c508101b41efb3a4ff3d999411802a68abc22eb3e5a597b62",
+      "bytes": 2146
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PopBody.lean",
+      "sha256": "13215c03d01bc51f3f98d876d72ca60c341a7f44b0ea2ccb03a0a30137156703",
+      "bytes": 6345
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PopParent.lean",
+      "sha256": "8237ee46babfa7adfa628a04824a65d7252289a2f2d9918a2edb25beb4faf680",
+      "bytes": 4597
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PopProgram.lean",
+      "sha256": "4da95eda1d87fbfb445b864bf2d34fd976cbb4f75fa851c7ddc34123559d996d",
+      "bytes": 1998
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PopReads.lean",
+      "sha256": "1d3247eb5fcdc89f4de4be426d64284c5522d20e6be70c703ffce8164f2d4bc9",
+      "bytes": 2479
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PopStoreFrame.lean",
+      "sha256": "ee2c42b1709112161e238e81d926d899be6e4cb57cc367617bbd104366b279a6",
+      "bytes": 4338
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Program.lean",
+      "sha256": "867413ebb2693489a6f42110fcdaafa91e7300ec6166e3953c65db17b0473f03",
+      "bytes": 3058
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryBranch.lean",
+      "sha256": "cce2baa560a251cbf07b5328c231730ae3acd5cba0d47d471ad8420375b8bf85",
+      "bytes": 6277
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryBranchStep.lean",
+      "sha256": "aa413f94208429b3e58d2bc07f7381046900761f3bce3c08f3579c33fce3d4a8",
+      "bytes": 8778
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryEmpty.lean",
+      "sha256": "ab4a7f3a583d9c5f4f7107835ffb2c26f22378622c02bd20f1e43d66d35c53a0",
+      "bytes": 5612
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryExecution.lean",
+      "sha256": "2b5131e32e60ba899856f6f4e8142d6ff4d0ab39b2bab914c47871dfd6d6dd15",
+      "bytes": 8418
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryFootprint.lean",
+      "sha256": "34593fe8f888ac3b3722cb6a8e8b2356be8ddff42113dba99ad2d9811e32c85f",
+      "bytes": 4870
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryFunction.lean",
+      "sha256": "b3a2e125fa6d9bb9e72abdf95794e09e5089277eb191420d010b848f92fba964",
+      "bytes": 7554
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryLeaf.lean",
+      "sha256": "84817510f4b4d530f6b28751cab45a1071ec8c340e21a5b120ccec5748e69de4",
+      "bytes": 5300
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryLeafCall.lean",
+      "sha256": "c046c97c659f1774a9776eec1b22bbfa7fd321967c10ca875bd6bd60198e2914",
+      "bytes": 4948
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryLeafIteration.lean",
+      "sha256": "887b130c82c769fa07a25a3f59c45eedefba6db6dde2fb0c8b3686695da075ba",
+      "bytes": 3467
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryLeafReads.lean",
+      "sha256": "f4e551ad955963fb06d530cc3523044ab794911e8ba1863a2319a809868fab30",
+      "bytes": 3206
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryLeafStep.lean",
+      "sha256": "11d26cf82f4e3956dab005fe516058e57f79860471085f832d37dc3cb50e9b55",
+      "bytes": 6640
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryLoop.lean",
+      "sha256": "70f59b6e27b6f5586985a46fadf0662eae5f323fbba30bc6ce0a758580cedf53",
+      "bytes": 4033
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/QueryMemory.lean",
+      "sha256": "9e81fb2b22582db92aa72a738c07ab1db079de689e937252cd55d2cee9de61ee",
+      "bytes": 5128
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/RawProgram.lean",
+      "sha256": "1fa9a114fe4d658f2edee2fa3dbdd3670696855aa10269bbe3cbfca05f585b05",
+      "bytes": 23175
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ReadFootprintStable.lean",
+      "sha256": "5e6337e1fb06442fa0b3f04ff4a5210b8b886cbd26b46e3936205418845ea161",
+      "bytes": 2900
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ResumeContext.lean",
+      "sha256": "5fc7e95ab3c61661db407314debbb70adad5cddc679a7bfab663ce8869098c01",
+      "bytes": 2882
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/RowsFrame.lean",
+      "sha256": "9752af56c16d8e6e9eb24a0ed3c69b99ebdc0077809c74dddb7dfafc463fd238",
+      "bytes": 2533
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/RowsLast.lean",
+      "sha256": "eae83264b83e4e095c57a3383a0056bf8bbf625d91b65f1e712e085a51dd514a",
+      "bytes": 3356
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Scatter.lean",
+      "sha256": "9b532f281839ccae8da35147a9d0db7e09b458f9393f683e51e6a5e9158e408d",
+      "bytes": 6644
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterBody.lean",
+      "sha256": "54732b77bc4cafded283e6f1408a032bb294db64a7b394335984253e2e3aad37",
+      "bytes": 8066
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterBucket.lean",
+      "sha256": "4d8011b8967e0da6d2d9f62b4a948a6fda166bb7fc6d5ee0cbf36a8837a4f9e7",
+      "bytes": 4499
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterCursors.lean",
+      "sha256": "899437fced2a79795e105c97ad61c5c7349f9072535ea4e79e57f246edb08da2",
+      "bytes": 3704
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterLoop.lean",
+      "sha256": "89fbb630e4575eedd78f7445668897361806294ca0a294e93ef9df42b94f4bad",
+      "bytes": 9231
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterPartition.lean",
+      "sha256": "d5cb6120569589603bf2bcde96285f55b5eb5178b0cb402a39ae16b4f831e9c0",
+      "bytes": 4574
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterPost.lean",
+      "sha256": "300c58dd468d8cbea7f161fd19863f70a8f31aa25b79fc003940355076f3cf1e",
+      "bytes": 5592
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterProgram.lean",
+      "sha256": "66ff6c29fa3d50da3accc2bcff164cad8eafffbac70bfa3fbe3a0157018bde18",
+      "bytes": 2161
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterReady.lean",
+      "sha256": "0ec5dbf758eb18ef716425539a61931c5906cd258359896e067dbb09f4b0b322",
+      "bytes": 4400
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterResult.lean",
+      "sha256": "ea97705e84909800b807c0ec1dbba87e403051149911b6cd226bda485545a6cf",
+      "bytes": 4531
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScatterStep.lean",
+      "sha256": "c8a35ce7d22798944fe9fbe675c84235918dc4e7d9f88a4cbfa262edcfaef8e8",
+      "bytes": 4575
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/ScopedFrame.lean",
+      "sha256": "04a3396a3a8494f1b6ac70f7cc168efac755303af99f9753a77eb003d1aa1b6c",
+      "bytes": 3201
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SortCopy.lean",
+      "sha256": "b50ff51565468750dd7712206db68262b69e063cf3318d8c51aaf677f2ed3cad",
+      "bytes": 4899
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SortExecution.lean",
+      "sha256": "bb4984dab17d0a9a2515925bc276176802e3de9982c1ae75e8afbaa8869f801e",
+      "bytes": 2560
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SortProgram.lean",
+      "sha256": "70346c185ae0c59d4d0df6ec6ecda7616c557a7124347c6e563dd6693f939c37",
+      "bytes": 3430
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SortProperties.lean",
+      "sha256": "108fc331f60346c1941c78fda833dbf6fdf50d944dfb6e5df38e7a5d147ce8be",
+      "bytes": 4665
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SortScatter.lean",
+      "sha256": "73f4351450622fd44a57519143551cf48b8245f5f6d0611ebc474662184ed3ee",
+      "bytes": 5004
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Space.lean",
+      "sha256": "20ddea3d0b1fab67eb15ba739c562190739319c861b661695dbd4b3b3ea7ea66",
+      "bytes": 4448
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitCountExecution.lean",
+      "sha256": "7647058616286fd8b00f5e9561ea8cb73bcabb256252ffadd35cc579efa9e6ad",
+      "bytes": 6301
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitCountInputs.lean",
+      "sha256": "ed95af1f8a1958e3c539d365e9357d858a43d7934f3e5fd657946854c0e110d1",
+      "bytes": 6038
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitGraph.lean",
+      "sha256": "9348d90788d49b677f59f1d3b97c3172c983ae1e0dacb5cc0f6341a5ba893386",
+      "bytes": 4294
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitGraphFill.lean",
+      "sha256": "68c3dcaa979351e1334d408ebd3c58486dc00efcb7b9edff039e3ad89f3ad326",
+      "bytes": 2523
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitLocals.lean",
+      "sha256": "bd680e87d7330065afcc15338770cf5dd4d2fd693f5af162542505959418bba6",
+      "bytes": 2407
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitLoop.lean",
+      "sha256": "56b1c1345a476f0b5569413e2dfebeca7c47d8f698283c2a262d0708714cce29",
+      "bytes": 3529
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitProgram.lean",
+      "sha256": "fb104dfb348cf837b1a8a5ca9e543dfbb939acf1bf0bf7ec815b845285169e23",
+      "bytes": 3522
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitRows.lean",
+      "sha256": "beec9cf08dfbc4cc489a0ae65a9a30cc5993acf105fe9dbb3bf6e916a3d68bd9",
+      "bytes": 5219
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitScopeExecution.lean",
+      "sha256": "22cc2f5b9b13d76179fd2784930864d5ae9438485c02f246b0b2f89b85caf400",
+      "bytes": 4830
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitScopeInputs.lean",
+      "sha256": "b3de46107c99586a53c6da12650274cd91fe6f42ad475af915c4ad9fde4f1d97",
+      "bytes": 5376
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitScopePost.lean",
+      "sha256": "77a725bc9c6c46a6f0f41dcc7776c39afe76be53e60acce592f5d69200c146c6",
+      "bytes": 1763
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/SplitScopeState.lean",
+      "sha256": "cf15bbd64be80c6b32c32f3d34167105f7d258e0d2b7f7b05ff44f6b5c86e901",
+      "bytes": 3626
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/TableCallData.lean",
+      "sha256": "e323d8d1be1a7b513b7117353d6bf3b802a29289f165a3b4f7613cb3f5e71435",
+      "bytes": 1323
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/TableFixedData.lean",
+      "sha256": "051a40ddf113c09315f6c8a367d1824be454cc5385e3c0902afd8d170809d804",
+      "bytes": 1619
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/TerminalContinue.lean",
+      "sha256": "e77af07216fc48e49aa35f46771d205836051d9502d2f3ab1cd819bf7d26a9e0",
+      "bytes": 5068
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/TerminalFinish.lean",
+      "sha256": "b6377b76c2df9a89d69aaf1c713edae35dbaead1ec6e94f01b01b8d96ece7f83",
+      "bytes": 4528
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/TerminalLoopContinue.lean",
+      "sha256": "c0e2add06f67b3d89fa102ae287aa3292ce4657caf99440667a78b5af9f8ef58",
+      "bytes": 4219
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/TerminalLoopFinish.lean",
+      "sha256": "dea702343a24a66c8e610189f8aa4bf87616d0f5e12f20942057817ed9a7f685",
+      "bytes": 3457
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/TerminalProgram.lean",
+      "sha256": "4e59ceac805f94f7013499511589f07f228dfef2ba516e36f508904a51c51a71",
+      "bytes": 3269
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/TerminalReads.lean",
+      "sha256": "c0c93d15ab83c135156e39e81972c510c4a904e1091f5dfcf6b359e7f9065826",
+      "bytes": 1998
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/UnaryBody.lean",
+      "sha256": "3e408ee0f4bcbdf88f03bbc8cebcd20080dcfcc79b99325e21b21ca7606e128e",
+      "bytes": 3814
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/UnaryCount.lean",
+      "sha256": "2fa1e5ce56480e110357a3a38e3e7ae0d2d9650ddf997dc0b36776d198613251",
+      "bytes": 6978
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/UnaryLoop.lean",
+      "sha256": "0bba5811bce8785a121a06b012facd275db54cfd16354e0dfe5dff76998130b2",
+      "bytes": 6181
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/UnaryProgram.lean",
+      "sha256": "7d3cb64ee31ea8cc87dfaa07fcd69efcbea4a7dab3f79b0c5e1423bae5bfddfd",
+      "bytes": 2216
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Visits.lean",
+      "sha256": "dd102670d164d6dbcb2e0df2e3ca0122eaa42cd20c5c6d0341aecb557a323383",
+      "bytes": 3566
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/WordScatter.lean",
+      "sha256": "23a4633325a29a471f4a5f171130b8ce4104d3e07ae1f10171418c5aef018314",
+      "bytes": 4239
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/Worklist.lean",
+      "sha256": "0e585676e61382c9a0493f7cf12e781b21f34e3d9c198006e39b2394b27a2740",
+      "bytes": 9935
+    }
+  ],
+  "removed_artifact_groups": {
+    "work/agent-notes/witness-radix-candidate.o": {
+      "file_count": 1,
+      "bytes": 992160,
+      "manifest_sha256": "5d7f686e825a4dc27f4edbfda44a278ea9dbfa2c72fcc2f2d44ffdbfda8314ec"
+    },
+    "work/agent-notes/witness-radix-eest-v1": {
+      "file_count": 32,
+      "bytes": 4736,
+      "manifest_sha256": "7fc70d83dec3e590ab6a84eaceff3b2479ef220151001cf60b4ba2617165b8a6"
+    },
+    "work/agent-notes/InspectRadixQuery.lean": {
+      "file_count": 1,
+      "bytes": 246,
+      "manifest_sha256": "64a258013fcfa049258d21c782bbe70a722ed5660be66d53891caf862abb10a0"
+    },
+    "work/agent-notes/witness-radix-unit.o": {
+      "file_count": 1,
+      "bytes": 38464,
+      "manifest_sha256": "66fdc0a37d7a58e9a8c31ac2749df70252f93f409f9d8bc2a2d9e9a166dd423d"
+    },
+    "work/agent-notes/witness-radix-unit.elf": {
+      "file_count": 1,
+      "bytes": 46920,
+      "manifest_sha256": "573441c26bf0b759091fec89c1f96501bcfb2c32493041f429152c81bec111cd"
+    },
+    "work/agent-notes/build-witness-radix.py": {
+      "file_count": 1,
+      "bytes": 6358,
+      "manifest_sha256": "b4b32178472be07da5d5fb7da0cce9111de8fcf3b369bd60276da482cdb7a5e6"
+    },
+    "work/agent-notes/witness-radix-unit.S": {
+      "file_count": 1,
+      "bytes": 156045,
+      "manifest_sha256": "6668a0fbb6a9edcaa4f222d80156af846bd57c29166e18577f47832968edf2e7"
+    },
+    "work/agent-notes/WitnessRadixCheck.lean": {
+      "file_count": 1,
+      "bytes": 5431,
+      "manifest_sha256": "5f3647fa96034d55e62483b3e4b9e81e7b091b5c9ef668a54d3330c17ec5860f"
+    },
+    "work/agent-notes/witness-radix.pp.pnk": {
+      "file_count": 1,
+      "bytes": 3310,
+      "manifest_sha256": "7d5dbc71428fdf70f3eb6f28fbaf22e665759435187e06fe2c1241c62b5d2a86"
+    },
+    "work/agent-notes/witness-radix.pnk": {
+      "file_count": 1,
+      "bytes": 4172,
+      "manifest_sha256": "f265bc335190da5803db6feb3b61877d873ba0e6d6c0de913146ad583ab90d92"
+    },
+    "work/agent-notes/witness-radix-baseline-output-v1.json": {
+      "file_count": 1,
+      "bytes": 7988,
+      "manifest_sha256": "3808c87da5b72a61d1caaadc12f20e0e075b4a73b718ffbfacb69a672c6e241e"
+    },
+    "work/agent-notes/witness-radix-full-output-v1": {
+      "file_count": 32,
+      "bytes": 1049216,
+      "manifest_sha256": "eb9de0d33b7faf0f3bb742bd2cf2a22875c1c3c42da90e3f335206db041ae460"
+    },
+    "work/agent-notes/witness-radix-candidate.S": {
+      "file_count": 1,
+      "bytes": 4995010,
+      "manifest_sha256": "ae82d96498a3f2ce2301932447cf9b48ed76988ba7d38a6bd343a62deb2c9ee9"
+    },
+    "work/agent-notes/witness-radix-checkpoint.json": {
+      "file_count": 1,
+      "bytes": 71667,
+      "manifest_sha256": "cf2b5437fb067c00d8338e1d7eda99aa90eadbfd0252b6ababbb72bcb623ddca"
+    },
+    "work/agent-notes/witness-radix-repro-v1-routines.pp.pnk": {
+      "file_count": 1,
+      "bytes": 3310,
+      "manifest_sha256": "633e9c148e79c07408b55631515aeaaf73792d2063420f3d00293628bd611f0b"
+    },
+    "work/agent-notes/witness-radix-full-output-v1.json": {
+      "file_count": 1,
+      "bytes": 7988,
+      "manifest_sha256": "37f5e40fd67fa82020fb3e037b2eaa61d02f1e88e1a5ccbfaaaf7f0c778f48e2"
+    },
+    "work/agent-notes/witness-radix-eest-v1.json": {
+      "file_count": 1,
+      "bytes": 7988,
+      "manifest_sha256": "61dd6cadd64fa1d0d721fe0b18891e0c48b61def8afd948069a90798cba29715"
+    },
+    "work/agent-notes/witness-radix-generated.lean": {
+      "file_count": 1,
+      "bytes": 23650,
+      "manifest_sha256": "46e487091046e9d525619449a394419f322c4f595e5ee928149857ee6b978813"
+    },
+    "work/agent-notes/witness-radix-repro-v1-generated.lean": {
+      "file_count": 1,
+      "bytes": 23687,
+      "manifest_sha256": "c7b1a4a82ce4c673055d99d87518becca42f38f3c220aac3a442b3d6b7747a03"
+    },
+    "work/agent-notes/witness-radix-candidate.bin": {
+      "file_count": 1,
+      "bytes": 954448,
+      "manifest_sha256": "fae8b2a6ec5db8eb0738001c8c4838ebca00bc70dc66939c755d965ccf20351c"
+    },
+    "work/agent-notes/witness-radix-candidate.elf": {
+      "file_count": 1,
+      "bytes": 999560,
+      "manifest_sha256": "850e283df9365ba2fa2989bd35ae2c8af08ba0a8d45160d5e70bbacf5e780c53"
+    },
+    "work/agent-notes/witness-radix-eest-full-v1.json": {
+      "file_count": 1,
+      "bytes": 16666287,
+      "manifest_sha256": "773479f8aa089da148c98ca71b72988afea527d6ad8f54ed53231d899613cf5a"
+    },
+    "work/agent-notes/witness-radix-unit.s": {
+      "file_count": 1,
+      "bytes": 154856,
+      "manifest_sha256": "e0ec98204ad392a0d66c48d780c74cf2b8ecb23b367bc9d3d926989e6cd52220"
+    },
+    "work/agent-notes/witness-radix-candidate.s": {
+      "file_count": 1,
+      "bytes": 4993685,
+      "manifest_sha256": "c668a71b0b978a9f5bfb1f62e6f955379f0eff0ea066213905ca72e4abb8b1ac"
+    },
+    "work/agent-notes/witness-radix-unit.output": {
+      "file_count": 1,
+      "bytes": 256,
+      "manifest_sha256": "238bc61ddf12224252cafe300f69878157fca0ad41dd3c6dd714eddc95e17307"
+    },
+    "work/agent-notes/witness-radix-candidate.pp.pnk": {
+      "file_count": 1,
+      "bytes": 446290,
+      "manifest_sha256": "b286c2271135eafb65db58395edc94e038e5520cbf307886e2d16a43dc39ad86"
+    },
+    "work/agent-notes/witness-radix-unit.pp.pnk": {
+      "file_count": 1,
+      "bytes": 26235,
+      "manifest_sha256": "a1c1eddc6da15e5c0c9f17930d0d1056c84e6a835d484b645ddbe8fcb2036960"
+    },
+    "work/agent-notes/witness-radix-unit.pnk": {
+      "file_count": 1,
+      "bytes": 2040,
+      "manifest_sha256": "3dccb42910e7c5c7bb5f33e9670e850753251ef54e27b9b4755aa4998611c9cc"
+    },
+    "work/agent-notes/witness-radix-repro-v1-artifacts.json": {
+      "file_count": 1,
+      "bytes": 632,
+      "manifest_sha256": "307b998f14c29b3a248455c2a89d3033ed3874d6a5d9f4a0447179d5455f80c8"
+    },
+    "work/agent-notes/witness-radix-eest-full-v1": {
+      "file_count": 67228,
+      "bytes": 9946549,
+      "manifest_sha256": "24c3702dad49d18c048ddbc6adabb45fb1ebbad1e5f9d397c605b2923ba88d8f"
+    },
+    "work/agent-notes/witness-radix-baseline-output-v1": {
+      "file_count": 32,
+      "bytes": 1049216,
+      "manifest_sha256": "4ff5eb2c37434e2f17501d8e83a5aa0c13f88f19dd4007b7fac26cf53b2db50e"
+    }
+  },
+  "validation": "original-plan-validation-targets.json",
+  "baseline_identity_inventory": "original-plan-inventory.json",
+  "final_removed_solver_module_count": 258
+}

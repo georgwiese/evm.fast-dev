@@ -2353,6 +2353,7 @@
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildHistory.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildKeyHistory.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildLoop.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessBuildNextContext.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildPopulate.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildPrepare.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildPreparedAgreement.lean",
@@ -2379,9 +2380,14 @@
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildRecords.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildSetFfi.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildSetStep.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessCallResult.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessDecodedData.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryCall.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryFields.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryLookup.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryPair.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessDictionaryRecords.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessInitialization.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessLookupAgreement.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessPriorRadixFrame.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessPriorRecordsFrame.lean",
@@ -4649,8 +4655,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61505,
-  "package_bytes": 2253656126,
+  "package_entries": 61511,
+  "package_bytes": 2253682130,
   "claim": {
     "K": "infinity"
   },

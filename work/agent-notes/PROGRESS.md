@@ -4271,3 +4271,54 @@ Whole paired witness constructor checkpoint (2026-10-17):
   compiler/startup/target allowance and finite K still open. No full verifier.
   Claim infinity. Account40%,0resetcredits; RAM1.4GiBused/29available,disk58%.
   Continue autonomously; no final checkpoint stop.
+
+
+### 2026-10-17 — conditional actual two-map initialization composition
+
+- WitnessBuildNextContext.Context.after_allocation/after_constructor transports
+  a second map's complete hash/set context across the first allocation/caller
+  hashControl. Uses first allocation separately from second plan; Context does
+  not depend on mutable memory, which is carried separately by own frames.
+- WitnessDictionaryPair.DictionaryObservation packages chosen bits, distinct
+  count, real insertion history/logical table, key history and stored radix root.
+  DictionaryPair carries Ready, both physical/logical models, history/KeysMatch,
+  actual Records, root and read support. preserved_by_later combines all three
+  checked prior-model preservation bridges. Missing ConstructorPlan import in
+  v1 caused unknown allocationPlan/initialTree; v2 checked. No failed indexing.
+- WitnessDictionaryFields.of_fields transports paired models through actual
+  declaration binding/restoring and clocks, using memory/domain/endian equality.
+  WitnessCallResult.ConstructorReturn packages actual ignored/scoped ABI;
+  .fields derives code/domain/endian/eshapes from actual evaluator invariant.
+  ConstructorPairResult retains complete supported caller with independent
+  earlier safe frames and own hashControls/clocks. WitnessDictionaryCall gives
+  this packaged result from all actual nonempty caller entry premises.
+- WitnessInitialization.initialization_execute composes both actual nodedb/codedb
+  decCalls, resuming real runtime with precisely both scope restores.
+  paired_initialization uses first and second actual ConstructorPairResult,
+  old allocation end<=secondTable and hash buffer ordering to preserve first
+  original Built/Records and radix represented/support, then binds codedb and
+  retains BOTH map models at real runtime entry. Equal caller locals, globals,
+  complete FFI and selected public memory hold there. Does not assume a run of
+  the whole initialization suffix; derives it from actual constructor contracts.
+- Successful mutable-next-context-v1.log1332,mutable-dictionary-pair-v2.log1359,
+  mutable-call-result-v2.log1437,mutable-dictionary-call-v1.log1439 (also fields),
+  mutable-initialization-v2.log1500targets. Permitted printed axioms only.
+  Failed call-result-v1 reserved field scoped renamed resume. Failed init-v1
+  rw would not match abstract withTable against concrete setter; simp only
+  withTable at second call equation and target before rw fixed it. No failed
+  logs indexed.
+- NEXT unify null array/count0 and positive decoded arrays under packaged call
+  API. Existing paired_empty_call must export its individual earlier-memory
+  frames (already proved in body; currently only joint agreement exported).
+  Empty map's logical record arena is ghost table,count0, because actual
+  record pointer0 is never read. DictionaryObservation may therefore use a
+  record base different from actual call argument only when count0. Consider
+  general packet of post globals/cursor + oracle equality (code/domain/endian
+  obtained from ConstructorReturn.fields) instead of requiring whole hashControl
+  for empty API. Source clock allowances +2 uniformly cover empty and nonempty.
+  Then derive second entry raw cells/context from first actual own frame and
+  decoded_constructor_data, initial +both prices supplies second clocks.
+- Conditional composition is now checked but initial concrete call premises,
+  decoder/header/startup reachability and whole runtime contextual refinement
+  remain open. Global gas/state/Q/heap/compiler/target budget and finite K open.
+  Claim infinity, no full verification. Account41%,0resetcredits. Continue.

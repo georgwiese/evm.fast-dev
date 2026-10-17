@@ -12,6 +12,22 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ## Completed, with limits
 
+- [x] Checked conditional composition of the actual two nested run_attempt
+  constructor calls into its actual runtime suffix. DictionaryPair packages
+  common observations, both physical models and read support; own frames and
+  allocation ordering preserve BOTH first-map models across the second call.
+  Actual nested lexical restores, both final dictionary pairs, equal locals/
+  globals/FFI/public memory hold at runtime entry. ConstructorReturn derives
+  code/domain/endian fields from actual evaluator invariants. Context transport
+  handles the first allocation's heap update for a different second array.
+  Success mutable-next-context-v1.log1332,mutable-dictionary-pair-v2.log1359,
+  mutable-call-result-v2.log1437,mutable-dictionary-call-v1.log1439,
+  mutable-initialization-v2.log1500targets; permitted axioms. This composition
+  assumes both concrete constructor-entry contracts and allocation ordering;
+  decoder/header/startup reachability and null-pointer empty API unification
+  remain open. Entire runtime replacement and global/compiler/target finite
+  bound remain open; infinity, no full verification or final acceptance.
+
 - [x] Checked concrete lookup read support from completed construction graph
   through terminal completion, full loop, helper/core/scopes, helper ABI/final
   return, paired population/allocation/full body and actual constructor caller.

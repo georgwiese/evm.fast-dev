@@ -869,6 +869,30 @@
     "submission/InitECandidate/Solver/WitnessRadix/CodeEnvironment.lean": {
       "bytes": 1548,
       "sha256": "31f3bcaee0716558d56ecd6da9ba139f1fb25a654b60c700eb88bb21d2501e87"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/PersistentAlloc.lean": {
+      "bytes": 6431,
+      "sha256": "5ca5dff0cdae1079779bb0da721a77af903819dfb6841960f4af46700892d648"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationArithmetic.lean": {
+      "bytes": 2529,
+      "sha256": "75e829948f60f005b1baff1a5f1384010d9c5a98694c44f72ab6919d9778ff36"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationEnvironment.lean": {
+      "bytes": 1719,
+      "sha256": "8b2d86e96522c7b741325eb8314840ff1a97693e480a02888d2e164c9c845bce"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationCall.lean": {
+      "bytes": 2621,
+      "sha256": "7ad68186d16f12dd9cda1fdc211f48cf497dd453a127604e0226a2bed2af5171"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationDomain.lean": {
+      "bytes": 2486,
+      "sha256": "66496cb0c73206a303a4c7840fec69a2d5df37139b895c0fc58def114556d0a9"
+    },
+    "submission/InitECandidate/Solver/WitnessRadix/AllocatedLayout.lean": {
+      "bytes": 4946,
+      "sha256": "c50251c0b64596d5604234e3b3b24ab9bfc20606a22188fd55f064a20e793ab4"
     }
   },
   "development_artifacts": {
@@ -1095,5 +1119,10 @@
     "successful_log": "witness-radix-constructor-step-v3.log",
     "targets": 774,
     "result": "Actual after-hash iteration derives mapped/separate copy/store premises from shared layout and earlier scratch region, establishes next initialized prefix and fixed records/header, advances actual locals, preserves other fields and costs two source clocks. Completed prefix supplies all helper inputs; actual helper call and table-return tail checked at 1028*N+1. Actual hash calls and htab_new/allocation initialization remain open."
+  },
+  "persistent_allocation_checkpoint": {
+    "successful_log": "witness-radix-allocated-layout-v1.log",
+    "targets": 669,
+    "result": "Complete successful fixed persistent alloc and actual lexical call, natural heap guard/alignment/monotonicity facts, real ordinary-domain mapping, exact table allocation offsets including used-array padding imply full radix layout Valid/Mapped. htab_new call/memzero/store composition and reachable natural heap-room facts remain open."
   }
 }

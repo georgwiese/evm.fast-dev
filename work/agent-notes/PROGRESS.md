@@ -2239,3 +2239,16 @@ Disk is 55%, ~131 GiB free, below the required stop threshold.
 - Successful constructor-step-v3 closure (774 targets), permitted axioms only.
   Actual hash calls, constructor loop assembly, htab_new/allocation setup,
   original-map/whole-guest relation, target/global K and certificate remain open.
+
+### 2026-10-17 — actual persistent allocator and allocated layout
+
+- PersistentAlloc proves the complete fixed successful allocator; Arithmetic
+  derives guards, exact rounding, alignment and monotonicity from natural room.
+  Environment/Call prove actual code/argument setup and lexical call behavior
+  with updated heap_ptr, returned pointer and exactly one call clock.
+- AllocationDomain derives mappings from the real challenge ordinaryDomain.
+  AllocatedLayout derives full radix Valid/Mapped from exact htab_new offsets,
+  including used-array padding, record/table ordering and heap-room facts.
+- Successful allocated-layout-v1 closure (669 targets), permitted axioms only.
+  Actual htab_new call/memzero/store composition and reachable heap-room facts
+  remain open, as do hashing, original-map/whole-guest/target/global certificate.

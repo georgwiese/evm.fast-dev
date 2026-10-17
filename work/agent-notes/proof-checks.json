@@ -11662,12 +11662,32 @@
       "sha256": "b328c86ee8c77e294d792bbbb707b0f1f095399cccf2e5ed4a5d0c24a7ee9eb9"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocatedLayout.lean",
+      "sha256": "c50251c0b64596d5604234e3b3b24ab9bfc20606a22188fd55f064a20e793ab4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationArithmetic.lean",
+      "sha256": "75e829948f60f005b1baff1a5f1384010d9c5a98694c44f72ab6919d9778ff36"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationBody.lean",
       "sha256": "8354d8bd73fde578773480d7b4fc104b035e1c56e13271d01debf3c0615ff71d"
     },
     {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationCall.lean",
+      "sha256": "7ad68186d16f12dd9cda1fdc211f48cf497dd453a127604e0226a2bed2af5171"
+    },
+    {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationCode.lean",
       "sha256": "abcb3be7bcb49ad20115857673491fd595b9373cc3a5715020260a2c2af7c12d"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationDomain.lean",
+      "sha256": "66496cb0c73206a303a4c7840fec69a2d5df37139b895c0fc58def114556d0a9"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationEnvironment.lean",
+      "sha256": "8b2d86e96522c7b741325eb8314840ff1a97693e480a02888d2e164c9c845bce"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationMemory.lean",
@@ -12192,6 +12212,10 @@
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/PendingValidity.lean",
       "sha256": "35ba2a4478948d9c508101b41efb3a4ff3d999411802a68abc22eb3e5a597b62"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/WitnessRadix/PersistentAlloc.lean",
+      "sha256": "5ca5dff0cdae1079779bb0da721a77af903819dfb6841960f4af46700892d648"
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/PopBody.lean",
@@ -63792,7 +63816,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.queryVisits_buildIndex",
@@ -63800,7 +63824,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_lookup",
@@ -63808,7 +63832,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_query_visits",
@@ -63816,7 +63840,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lookup_build",
@@ -63824,7 +63848,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.height_build",
@@ -63832,7 +63856,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.leaves_build",
@@ -63840,7 +63864,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.buildVisits_bound",
@@ -63848,7 +63872,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.branches_buildIndex",
@@ -63856,7 +63880,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.buildIndex_key_pool_fits",
@@ -63864,7 +63888,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.partition_buffers_fit",
@@ -63872,7 +63896,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -63880,7 +63904,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.prefix_pending_separate",
@@ -63888,7 +63912,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.hash_branch_separate",
@@ -63896,7 +63920,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.branch_cells_injective",
@@ -63904,7 +63928,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Program.nonFunctions_preserved",
@@ -63932,17 +63956,17 @@
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_solver_radix_index",
       "axioms": [],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_build",
       "axioms": [],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.RawProgram.guestFn_nodedb_lookup",
       "axioms": [],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.writeBlock_get",
@@ -64011,7 +64035,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryEmpty.empty_table",
@@ -64020,7 +64044,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -64028,7 +64052,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -64036,7 +64060,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.lookup",
@@ -64045,7 +64069,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.query_visits",
@@ -64054,7 +64078,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Graph.lookup_represents",
@@ -64063,7 +64087,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Graph.lookup_built",
@@ -64072,7 +64096,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.implementation_bit",
@@ -64081,7 +64105,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_nonzero",
@@ -64089,7 +64113,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_odd",
@@ -64098,7 +64122,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.leafTag_decode",
@@ -64106,7 +64130,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.expand_decreases",
@@ -64219,7 +64243,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -64228,7 +64252,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -64237,7 +64261,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -64246,7 +64270,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -64255,7 +64279,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -64264,7 +64288,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -64273,7 +64297,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -64282,7 +64306,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -64291,7 +64315,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -64300,7 +64324,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -64309,7 +64333,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.loop_shape",
@@ -64318,7 +64342,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.eval_digit",
@@ -64327,7 +64351,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.assign_child",
@@ -64336,7 +64360,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branch_code",
@@ -64345,7 +64369,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branchPost_eq",
@@ -64354,7 +64378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.branch_iteration",
@@ -64363,7 +64387,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -64371,7 +64395,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -64379,7 +64403,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -64388,7 +64412,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -64397,7 +64421,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -64406,7 +64430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -64414,7 +64438,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -64423,7 +64447,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -64432,7 +64456,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_ready_of_memory",
@@ -64441,7 +64465,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_byteAt",
@@ -64450,7 +64474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -64459,7 +64483,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -64468,7 +64492,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -64477,7 +64501,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -64486,7 +64510,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -64495,7 +64519,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -64504,7 +64528,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -64513,7 +64537,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.memory_execute",
@@ -64522,7 +64546,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_memory",
@@ -64531,7 +64555,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.aligned_offset",
@@ -64539,7 +64563,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -64547,7 +64571,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -64556,7 +64580,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -64565,7 +64589,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -64574,7 +64598,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -64583,7 +64607,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.environment",
@@ -64592,7 +64616,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_of_fields",
@@ -64601,7 +64625,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryExecution.loop_execute",
@@ -64637,7 +64661,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.after_miss",
@@ -64646,7 +64670,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.after_hit",
@@ -64655,7 +64679,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.comparison_return",
@@ -64664,7 +64688,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.leaf_iteration",
@@ -64673,7 +64697,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.read_ordinal",
@@ -64682,7 +64706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.read_arguments",
@@ -64691,7 +64715,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.read_record",
@@ -64700,7 +64724,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLeaf.leaf_return",
@@ -64709,7 +64733,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryLoop.branch",
@@ -64736,7 +64760,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryMemory.query_digit",
@@ -64745,7 +64769,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bind_other",
@@ -64754,7 +64778,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -64763,7 +64787,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.body_execute",
@@ -64772,7 +64796,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.loop_execute",
@@ -64816,7 +64840,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildProgram.copy_loop_shape",
@@ -64825,7 +64849,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.rows_store_away",
@@ -64833,7 +64857,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildCopy.copyMemory_away",
@@ -64841,7 +64865,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.body_execute",
@@ -64886,7 +64910,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.loop_shape",
@@ -64895,7 +64919,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CountProgram.iteration",
@@ -64913,7 +64937,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.loop_shape",
@@ -64922,7 +64946,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.execute",
@@ -64931,7 +64955,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -64940,7 +64964,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordScatter.scatter_eq_blocks",
@@ -64957,7 +64981,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.bucket_execute",
@@ -64966,7 +64990,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.state_zero",
@@ -65011,7 +65035,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.post_byteView",
@@ -65020,7 +65044,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.post_rows",
@@ -65029,7 +65053,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.ready_next",
@@ -65038,7 +65062,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ScatterProgram.state_frame",
@@ -65074,7 +65098,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEquations.treeAt_empty_iff",
@@ -65107,7 +65131,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.body_shape",
@@ -65116,7 +65140,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.core_shape",
@@ -65125,7 +65149,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.declarations_execute",
@@ -65134,7 +65158,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEquations.step",
@@ -65170,7 +65194,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.entered_frame",
@@ -65179,7 +65203,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.initialize_entry",
@@ -65188,7 +65212,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.prefix_execute",
@@ -65197,7 +65221,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PopProgram.pop_execute",
@@ -65242,7 +65266,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TerminalProgram.terminal_finish",
@@ -65544,7 +65568,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_unique",
@@ -65552,7 +65576,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
@@ -65561,7 +65585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_of_cells",
@@ -65570,7 +65594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.SplitCount.execute",
@@ -65667,7 +65691,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryMemory.represents_of_agreement",
@@ -65676,7 +65700,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.task_cost_potential",
@@ -65934,7 +65958,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.branch_address_even",
@@ -65943,7 +65967,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.branch_address_fresh",
@@ -65951,7 +65975,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.frontier_branch_room",
@@ -66015,7 +66039,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.branch_even",
@@ -66024,7 +66048,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.hash_byte_cell",
@@ -66032,7 +66056,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.immutable_leaf_cells",
@@ -66041,7 +66065,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.immutable_of_agreement",
@@ -66050,7 +66074,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.addresses_nodup",
@@ -66150,7 +66174,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.read_write_separate",
@@ -66158,7 +66182,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.leaf_write_separate",
@@ -66166,7 +66190,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.split_inputs",
@@ -66890,7 +66914,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.call_execute",
@@ -66899,7 +66923,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.environment",
@@ -66908,7 +66932,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.execute",
@@ -66917,7 +66941,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop_execute",
@@ -66926,7 +66950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.remaining_loops",
@@ -66935,7 +66959,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.word_view",
@@ -66943,7 +66967,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.byte_view",
@@ -66952,7 +66976,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop32_shape",
@@ -66961,7 +66985,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.body_shape",
@@ -66970,7 +66994,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.condition_read",
@@ -66979,7 +67003,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.alignment_read",
@@ -66988,7 +67012,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CodeEnvironment.finite_lookup",
@@ -66996,7 +67020,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "witness-radix-constructor-step-v3.log"
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Constructor.suffix_fixed_data",
@@ -67214,6 +67238,85 @@
         "Quot.sound"
       ],
       "successful_log": "witness-radix-constructor-step-v3.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.valid",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-allocated-layout-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.mapped",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-allocated-layout-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_nat",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-allocated-layout-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guards",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-allocated-layout-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-allocated-layout-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.ordinary_mapped",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-allocated-layout-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.mapped_of_allocated",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-allocated-layout-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-allocated-layout-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "witness-radix-allocated-layout-v1.log"
     }
   ]
 }

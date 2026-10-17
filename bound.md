@@ -95,6 +95,8 @@ Future agent: update this checklist after each meaningful result, failed feasibi
 
 ---
 
+**Actual request/payload/gas entry connection:** RequestOffsetsProgram/Stores/Setup execute all three real declarations and word stores, preserving copied bytes and lexical scopes. OffsetsNormal covers all count-three validator outcomes and rules out rejected arrays before continuation, at most five source clocks. OffsetValues derives raw le32(input,18)=44, ordering/ranges, and the actual decode_payload call at blob+62 with contained slice le32(input,22)-44. PayloadProgram/Call/CalleeNormal check the real >=540 guard, SszErr50 propagation, two-argument ABI and normal-callee-return inversion. RequestPayloadFromHeader composes from genuine normal full decode_stateless_input execution: encoded extent>=602, both raw fixed offsets16/44, actual payload entry/copied bytes/code/domain/globals and a source-clock lower frame. RequestGasFromHeader proves the actual fixed gas expression at that entry is <=200M from the declared-gas premise. Initial runtime/code/copied input/natural ssZoffs/cursor allocation96 room remain explicit. The gas store after alloc136 and nested list decoding, global reachability, witness records, map/compiler/target/global finite certificate remain open. Successful joint closure input-payload-flat-prefix-v1.log,1153 targets, permitted axioms only. PayloadPrefixProgram extracts the literal alloc136/two stores/four offset declarations for the next connection. Claim is still infinity.
+
 ## 1. What the task actually requires
 
 The challenge asks for RISC-V bytes and a Lean proof of the fixed contract in [InitE/Challenge.lean](InitE/Challenge.lean). Lower finite K is better. The initial submission has no uniform bound: it claims infinity.

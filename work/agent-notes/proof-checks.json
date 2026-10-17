@@ -4262,6 +4262,10 @@
       "sha256": "ebdd62dae3638587332e002bea23d3a6bbf4b8809caa8c80d5302ae74ebc4f81"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/HeapFlatScalar.lean",
+      "sha256": "e918f61178c83a599ce358c7c43b9e4e81e4c6b668aa357bacd29067e2996907"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/HeapFrame.lean",
       "sha256": "cd37737f6257ac0274447675804419bc6a1b394113c9e7e9a4e5db8c67e6063d"
     },
@@ -4354,8 +4358,24 @@
       "sha256": "7d517c8e7b7c1adc429235ed6709d9b433a06ca5c578e116daaf1a5955ceb65b"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/PayloadCall.lean",
+      "sha256": "236348fc4624dc4d403f650a3fce6db534eacf53875f06c556b190b943d28597"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/PayloadCalleeNormal.lean",
+      "sha256": "62a26045d9c35e68a6dc7381b8fc0c379305a98b87adfe775eb1b95eef2fdfa7"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/PayloadGas.lean",
       "sha256": "cb69ac67980cd96c7a0aa397ca9592e7b3c03090405662ca508b552151b3869b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/PayloadPrefixProgram.lean",
+      "sha256": "fad6ca1b6bf5ba48eb201e5c73921caaf2cca0492c464801af8e3ea792a704ae"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/PayloadProgram.lean",
+      "sha256": "0f2fa80a24188007e8026227d6dd7ea84a9bbbd1069ffb64eb2281b5cd608b77"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/RequestChain.lean",
@@ -4366,8 +4386,40 @@
       "sha256": "d6f11a7e48767aa0e23f8dc58dce686eed978501c08586c194469ba19f00c396"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/RequestGasFromHeader.lean",
+      "sha256": "57d21a9989549f291c5a105f4eef424416a4158d6a524d4daef2f2656a5ae955"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/RequestLoad.lean",
       "sha256": "e598ceb79953f53488fb71ec88c57942ee52248d604896377d75d82d9e7275e0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RequestOffsetValues.lean",
+      "sha256": "e4f111dae92355aad11f6e662d028c5bf7ecd3075c96c1bb524ae8c3b50ef5c1"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RequestOffsetsNormal.lean",
+      "sha256": "11837db1c92b7e5eb22331030da3c84e97f78a5382e8569f8f8d037bf32f2de6"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RequestOffsetsProgram.lean",
+      "sha256": "42d84aa69dd5c0133b84f4012cc0c1344398503d31833c84341154ab202fae0b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RequestOffsetsSetup.lean",
+      "sha256": "e5c971237294ac47bff148e7d43a1027ef734157042c66a4e7e910ddbb211074"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RequestOffsetsStores.lean",
+      "sha256": "a904ad735ef2e6dcdc4c499376f49cd3edb9c16340895e5928a0080ebd0e5c82"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RequestPayloadEntry.lean",
+      "sha256": "b3582c03ef692e9402741df9205fe2ce859e681f3c7b6d034194f2993be8436b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RequestPayloadFromHeader.lean",
+      "sha256": "25ee69190d8c80a627e19495e9fd2c59d73e00bd3b4f38150cfb14272f30d427"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/RequestPositions.lean",
@@ -64894,7 +64946,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -64902,19 +64954,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -64923,7 +64975,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -64932,7 +64984,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -64941,7 +64993,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -64950,7 +65002,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -70436,7 +70488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -70445,7 +70497,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.framed_byte",
@@ -70453,7 +70505,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -70462,7 +70514,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -70471,7 +70523,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -70480,21 +70532,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -70503,7 +70555,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -70512,7 +70564,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -70521,7 +70573,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -70529,7 +70581,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -70538,7 +70590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -70547,7 +70599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -70556,7 +70608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -70564,14 +70616,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -70580,7 +70632,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -70589,7 +70641,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -70598,7 +70650,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -70606,7 +70658,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -70614,7 +70666,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -70622,7 +70674,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -70630,7 +70682,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -70638,7 +70690,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -70646,7 +70698,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -70655,7 +70707,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -70663,7 +70715,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -70672,7 +70724,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -70680,7 +70732,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -70689,7 +70741,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -70698,7 +70750,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -70707,7 +70759,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -70716,7 +70768,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -70725,7 +70777,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -70734,7 +70786,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -70743,7 +70795,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -70752,7 +70804,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -70761,7 +70813,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -70770,7 +70822,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -70779,7 +70831,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -70788,7 +70840,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -70797,7 +70849,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -70806,7 +70858,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -70815,7 +70867,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -70824,7 +70876,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -70833,7 +70885,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -70842,7 +70894,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -70851,7 +70903,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -70860,7 +70912,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -70869,14 +70921,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -70885,7 +70937,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -70894,7 +70946,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -70903,7 +70955,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -70912,7 +70964,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -70920,7 +70972,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -70928,7 +70980,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -70936,7 +70988,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -70945,14 +70997,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.sum_words",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_read",
@@ -70961,7 +71013,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_append",
@@ -70970,7 +71022,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat32_equiv",
@@ -70979,7 +71031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat64_equiv",
@@ -70988,14 +71040,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.convert_nat",
       "axioms": [
         "propext"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le32",
@@ -71004,7 +71056,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le64",
@@ -71013,7 +71065,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_read",
@@ -71022,7 +71074,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_store_shape",
@@ -71031,7 +71083,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_expression_shape",
@@ -71040,7 +71092,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.payload_gas_read",
@@ -71049,7 +71101,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le64_read",
@@ -71058,7 +71110,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -71067,7 +71119,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.op_congr",
@@ -71076,7 +71128,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_congr",
@@ -71085,7 +71137,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_congr",
@@ -71094,7 +71146,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_congr",
@@ -71103,7 +71155,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_congr",
@@ -71112,7 +71164,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_read",
@@ -71121,7 +71173,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -71130,7 +71182,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -71139,7 +71191,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -71148,7 +71200,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -71156,7 +71208,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -71165,7 +71217,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.execute",
@@ -71174,7 +71226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.environment",
@@ -71183,7 +71235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.call_execute",
@@ -71192,7 +71244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.body_shape",
@@ -71201,7 +71253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.last_test_read",
@@ -71210,7 +71262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.tail_execute",
@@ -71219,7 +71271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.loop_shape",
@@ -71228,7 +71280,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.loop_body_shape",
@@ -71237,7 +71289,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.cell_address_read",
@@ -71246,7 +71298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.condition_read",
@@ -71255,7 +71307,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.range_read",
@@ -71264,7 +71316,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.has_previous_read",
@@ -71273,7 +71325,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.previous_read",
@@ -71282,7 +71334,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.order_read",
@@ -71291,7 +71343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.fault_checks",
@@ -71300,7 +71352,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.fault_step",
@@ -71309,7 +71361,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_execute",
@@ -71326,7 +71378,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_loop",
@@ -71335,7 +71387,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_checks",
@@ -71344,7 +71396,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.valid_step",
@@ -71353,7 +71405,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.walk_frame",
@@ -71362,7 +71414,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.walk_clock",
@@ -71371,7 +71423,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.walk_other",
@@ -71380,7 +71432,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.of_fields",
@@ -71389,7 +71441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -71398,7 +71450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -71407,7 +71459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -71416,7 +71468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_loop",
@@ -71425,7 +71477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.call_execute",
@@ -71434,7 +71486,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.call_normal_first",
@@ -71443,7 +71495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.environment",
@@ -71452,7 +71504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.normal_first",
@@ -71461,7 +71513,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.active_unroll",
@@ -71470,7 +71522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.guard_normal",
@@ -71479,7 +71531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.pair_execute",
@@ -71488,7 +71540,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.after_header_shape",
@@ -71497,7 +71549,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.store_le32",
@@ -71506,7 +71558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.after_normal",
@@ -71515,7 +71567,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.entry_execute",
@@ -71524,7 +71576,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.normal_entry",
@@ -71533,7 +71585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.entry_shape",
@@ -71542,7 +71594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.length_read",
@@ -71551,7 +71603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.shift_execute",
@@ -71560,7 +71612,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.first_container",
@@ -71569,7 +71621,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.test_guard_execute",
@@ -71578,7 +71630,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.length_guard_execute",
@@ -71587,7 +71639,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.schema_guard_execute",
@@ -71596,7 +71648,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.guard_ready",
@@ -71605,7 +71657,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.byte_word_equal",
@@ -71613,7 +71665,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.schema_read",
@@ -71622,7 +71674,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.chain_execute",
@@ -71631,7 +71683,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.from_header",
@@ -71640,7 +71692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.first_read",
@@ -71649,7 +71701,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.second_read",
@@ -71658,7 +71710,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.loaded_locals",
@@ -71667,7 +71719,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.word_read",
@@ -71676,7 +71728,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.chained_locals",
@@ -71685,7 +71737,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.pointer_read",
@@ -71694,7 +71746,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.length_read",
@@ -71703,7 +71755,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.length_test_read",
@@ -71712,7 +71764,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.prefix_execute",
@@ -71721,7 +71773,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.normal_prefix",
@@ -71730,7 +71782,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.actions_shape",
@@ -71739,7 +71791,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.prefix_shape",
@@ -71748,7 +71800,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.request_shape",
@@ -71757,7 +71809,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Request.setup",
@@ -71766,7 +71818,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.store_le64",
@@ -71775,7 +71827,257 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "input-request-from-header-v2.log"
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Scalar.flat_heap_le32",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Scalar.flat_heap_le64",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Payload.reject_call",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Payload.normal_length",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Payload.callee_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Payload.prefix_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Payload.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Payload.length_test_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Payload.entry_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Payload.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.gas_from_header",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.le32_number",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.request_values",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.payload_call_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.payload_arguments",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.offsets_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.guard_arguments_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.state_from_frame",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.offset_actions_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.request_read",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.offsets_setup",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.command_single",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.command_prepend",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.offsets_stores",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.local_word",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.offsets_global",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.payload_reachable",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Request.payload_from_header",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "input-payload-flat-prefix-v1.log"
     }
   ]
 }

@@ -2378,6 +2378,7 @@
     "submission/InitECandidate/Solver/MutableTable/DeleteAfterHash.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteDecision.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteFinalSlots.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteHashExecution.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteInitial.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteMoveExecution.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteMoveMemory.lean",
@@ -2386,6 +2387,13 @@
     "submission/InitECandidate/Solver/MutableTable/DeleteMoveStores.lean",
     "submission/InitECandidate/Solver/MutableTable/DeletePending.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteProgram.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteScanEnd.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteScanFrontier.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteScanLocals.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteScanLoop.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteScanModel.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteScanReads.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteScanStep.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteSlots.lean",
     "submission/InitECandidate/Solver/MutableTable/DictionaryData.lean",
     "submission/InitECandidate/Solver/MutableTable/FindAligned32.lean",
@@ -4675,8 +4683,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61540,
-  "package_bytes": 2253801109,
+  "package_entries": 61548,
+  "package_bytes": 2253840151,
   "claim": {
     "K": "infinity"
   },

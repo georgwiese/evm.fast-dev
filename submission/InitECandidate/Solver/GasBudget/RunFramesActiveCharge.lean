@@ -65,13 +65,10 @@ theorem active_charge_site (kind : OpcodeChargeSites.Kind)
     (normal : evaluateHOLFiniteState source loopBody = (none, post)) :
     TerminalPrefix source post view.frame view.continuation (kind.names.length + 6) ∨
     ∃ ready, ChargeEvent source ready view.frame (kind.names.length + 3) kind.fee ∧ ScopedSuffixFinish source post kind ready := by
-  obtain ⟨inner, opcodeRun, postEq, clock, memory⟩ := active_body_normal source post view.frame view.continuation running pc length header normal
-  rw [opcode_shape] at opcodeRun
-  obtain ⟨handled, caughtRun, innerEq⟩ := Input.declaration_none (activeEntry source pc) inner "err" (.const 0#64) 0#64 caughtDispatch rfl opcodeRun
+  obtain ⟨handled, caughtRun, postScope⟩ := active_caught_normal source post view.frame view.continuation running pc length header normal
   let phase := bind (activeEntry source pc) "err" 0#64
   have setup : StackPop.PrefixEffect source phase view.frame 0 := (StackPop.PrefixEffect.refl source view.frame).of_emptyLocals rfl
   let current := view.after_prefix setup
-  have postScope : emptyLocalsHOLFinite post = emptyLocalsHOLFinite handled := by rw [postEq, innerEq]; rfl
   rcases caught_charge_site kind phase handled current sp used op arguments selected read installed shapes spMapped spCell usedCell caughtRun with terminal | charged
   · exact Or.inl (terminal.of_scopes rfl postScope)
   · obtain ⟨ready, event, finish⟩ := charged

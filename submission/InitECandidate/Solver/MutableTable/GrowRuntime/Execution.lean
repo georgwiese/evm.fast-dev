@@ -1,5 +1,6 @@
 import InitECandidate.Solver.MutableTable.GrowRuntime.Setup
 import InitECandidate.Solver.MutableTable.GrowRuntime.Loop
+import InitECandidate.Solver.MutableTable.GrowRuntime.Footprint
 
 namespace InitECandidate.Solver.MutableTable.GrowRuntime
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
@@ -34,7 +35,8 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : Ke
         memory := memory, clock := source.clock - paid} ∧
       next.length = slots.length ∧
       MemoryModel.Header memory kind (relocated kind (old.base .header) start (2 * old.capacity)) (BitVec.ofNat 64 next.length) ∧
-      MemoryModel.Occupied target kind (relocated kind (old.base .header) start (2 * old.capacity)) next ∧ OldArrays target source kind old := by
+      MemoryModel.Occupied target kind (relocated kind (old.base .header) start (2 * old.capacity)) next ∧ OldArrays target source kind old ∧
+      TableFootprint.Frame source.memory memory kind (relocated kind (old.base .header) start (2 * old.capacity)) := by
   let plan := relocated kind (old.base .header) start (2 * old.capacity)
   let prepared := preparedState source kind old start slots.length
   have newRoom : slots.length < 2 * old.capacity := by have positive := oldValid.positive; omega
@@ -46,7 +48,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : Ke
     rw [prepared_clock]
     dsimp only [price] at enough
     omega
-  obtain ⟨paid, memory, target, next, bounded, run, frame, length, nextHeader, nextModel, nextOld⟩ :=
+  obtain ⟨paid, memory, target, next, bounded, run, frame, length, nextHeader, nextModel, nextOld, loopFootprint⟩ :=
     loop_execute source kind old oldValid start (2 * old.capacity) newValid earlier slots room newRoom occupied bits small power prepared domain little
       0 slots.length (Nat.zero_add _) preparedLocals [] rfl preparedHeader preparedModel preparedOld hashCode copyCode insertCode loopEnough
   have clock : target.clock = prepared.clock - paid := congrArg PanSemStateFiniteExact.clock frame
@@ -72,12 +74,13 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : Ke
   have restoredMemory : target.memory = (restoreStack (emptyLocalsHOLFinite target)).memory := (congrArg PanSemStateFiniteExact.memory (restoreFrame (emptyLocalsHOLFinite target))).symm
   have restoredDomain : target.memaddrs = (restoreStack (emptyLocalsHOLFinite target)).memaddrs := (congrArg PanSemStateFiniteExact.memaddrs (restoreFrame (emptyLocalsHOLFinite target))).symm
   have restoredEndian : target.be = (restoreStack (emptyLocalsHOLFinite target)).be := (congrArg PanSemStateFiniteExact.be (restoreFrame (emptyLocalsHOLFinite target))).symm
-  refine ⟨setupPrice (2 * old.capacity) + paid, memory, restoreStack (emptyLocalsHOLFinite target), next, ?_, setupRun, ?_, length, nextHeader, ?_, ?_⟩
+  refine ⟨setupPrice (2 * old.capacity) + paid, memory, restoreStack (emptyLocalsHOLFinite target), next, ?_, setupRun, ?_, length, nextHeader, ?_, ?_, ?_⟩
   · dsimp only [price]
     omega
   · exact (restoreFrame (emptyLocalsHOLFinite target)).trans (frame.trans canonical)
   · exact MemoryModel.Occupied.of_fields target _ kind plan next nextModel restoredMemory restoredDomain restoredEndian
   · exact OldArrays.of_memory target _ source kind old restoredMemory nextOld
+  · exact TableFootprint.Frame.trans source.memory prepared.memory memory kind plan (prepared_footprint source kind old start slots.length) loopFootprint
 
 end InitECandidate.Solver.MutableTable.GrowRuntime
 

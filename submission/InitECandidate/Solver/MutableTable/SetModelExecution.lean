@@ -65,7 +65,7 @@ theorem model_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kin
   · rw [body_shape]
     exact callRun
   · refine ⟨?_, tailPost.shape, tailPost.countBound, tailPost.grew, tailPost.half, tailPost.header,
-      MemoryModel.Occupied.of_fields post (restore source "i" post) kind plan next tailPost.occupied rfl rfl rfl⟩
+      MemoryModel.Occupied.of_fields post (restore source "i" post) kind plan next tailPost.occupied rfl rfl rfl, tailPost.footprint⟩
     change emptyLocalsHOLFinite post = _
     rw [tailPost.frame]
     change emptyLocalsHOLFinite {source with globals := globals, memory := memory, clock := source.clock - findPaid - tailPaid} = _

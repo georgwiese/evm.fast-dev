@@ -61,7 +61,7 @@ theorem model_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind :
     · exact newValid
   refine ⟨paid + 1, globals, memory, plan, next, by omega, (by intro same; have boundedOld := oldBound same; omega), callRun.trans (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => (none, state)) replaced), ?_, nextValid, post.half half⟩
   exact ⟨rfl, post.shape, post.countBound, post.grew, post.half, post.header,
-    MemoryModel.Occupied.of_fields target _ kind plan next post.occupied memoryEq domainEq endianEq⟩
+    MemoryModel.Occupied.of_fields target _ kind plan next post.occupied memoryEq domainEq endianEq, post.footprint⟩
 
 end InitECandidate.Solver.MutableTable.Set
 

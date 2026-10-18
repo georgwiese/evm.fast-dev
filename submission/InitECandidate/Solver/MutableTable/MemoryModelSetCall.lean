@@ -1,6 +1,7 @@
 import InitECandidate.Solver.MutableTable.MemoryModelSet
 import InitECandidate.Solver.MutableTable.MemoryModelEntry
 import InitECandidate.Solver.MutableTable.SetNoGrowthCall
+import InitECandidate.Solver.MutableTable.TableFootprint
 
 namespace InitECandidate.Solver.MutableTable.MemoryModel
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
@@ -32,7 +33,8 @@ theorem setter_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind 
       (next = slots ∨ ∃ slot, next = slots ++ [slot]) ∧
       next.length ≤ slots.length + 1 ∧
       Header memory kind plan (BitVec.ofNat 64 next.length) ∧
-      Occupied {source with memory := memory, clock := source.clock - paid} kind plan next := by
+      Occupied {source with memory := memory, clock := source.clock - paid} kind plan next ∧
+      TableFootprint.Frame source.memory memory kind plan := by
   have free : slots.length < plan.capacity := by omega
   have data := runtime_data source kind plan valid domain query slots free header occupied bits small power queryFits queryMapped little hashCode copyCode
   have countBound : (BitVec.ofNat 64 slots.length).toNat ≤ slots.length := by
@@ -44,7 +46,8 @@ theorem setter_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind 
   have lengthBound : next.length ≤ slots.length + 1 := by
     rcases shape with rfl | ⟨slot, rfl⟩ <;> simp
   exact ⟨paid, memory, next, bounded, actual, shape, lengthBound, nextHeader,
-    Occupied.of_fields _ _ kind plan next nextOccupied rfl rfl rfl⟩
+    Occupied.of_fields _ _ kind plan next nextOccupied rfl rfl rfl,
+    TableFootprint.setter_effect source kind plan valid query _ value (Nat.lt_of_le_of_lt countBound free) memory effect⟩
 
 end InitECandidate.Solver.MutableTable.MemoryModel
 

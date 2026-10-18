@@ -36,12 +36,13 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind
         (none, callState source kind old start memory paid) ∧ next.length = slots.length ∧
       MemoryModel.Header memory kind (relocated kind (old.base .header) start (2 * old.capacity)) (BitVec.ofNat 64 next.length) ∧
       MemoryModel.Occupied (callState source kind old start memory paid) kind (relocated kind (old.base .header) start (2 * old.capacity)) next ∧
-      OldArrays (callState source kind old start memory paid) source kind old := by
+      OldArrays (callState source kind old start memory paid) source kind old ∧
+      TableFootprint.Frame source.memory memory kind (relocated kind (old.base .header) start (2 * old.capacity)) := by
   obtain ⟨newSmall, newPower, multiple⟩ := MemoryModel.growth_shape kind old oldValid bits power minimum
   obtain ⟨callee, called, tableLocal⟩ := Grow.environment source.code.lookup (cell old .header 0) growCode
   let entry := callEntryStateHOLFinite source callee
   have entryOccupied := MemoryModel.Occupied.of_fields source entry kind old slots occupied rfl rfl rfl
-  obtain ⟨paid, memory, target, next, bounded, actual, frame, length, nextHeader, nextOccupied, oldFrame⟩ := execute entry kind old oldValid start newValid earlier domain little multiple
+  obtain ⟨paid, memory, target, next, bounded, actual, frame, length, nextHeader, nextOccupied, oldFrame, footprint⟩ := execute entry kind old oldValid start newValid earlier domain little multiple
     slots (MemoryModel.Occupied.length_le source kind old slots occupied) header entryOccupied tableLocal heap (bits + 1) newSmall newPower allocCode zeroCode hashCode copyCode insertCode
     (by change price kind (2 * old.capacity) slots.length ≤ source.clock - 1; omega)
   have callRun := evaluateHOLFiniteState_call_return_caller_locals source none (ofString "htab_grow") arguments (Grow.values (cell old .header 0)) Grow.body callee .one (.val (.word 0#64)) target
@@ -53,7 +54,7 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind
   have memoryEq := congrArg PanSemStateFiniteExact.memory replaced
   have domainEq := congrArg PanSemStateFiniteExact.memaddrs replaced
   have endianEq := congrArg PanSemStateFiniteExact.be replaced
-  refine ⟨paid + 1, memory, next, by omega, callRun.trans (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => (none, state)) replaced), length, nextHeader, ?_, ?_⟩
+  refine ⟨paid + 1, memory, next, by omega, callRun.trans (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => (none, state)) replaced), length, nextHeader, ?_, ?_, footprint⟩
   · exact MemoryModel.Occupied.of_fields target _ kind _ next nextOccupied memoryEq domainEq endianEq
   · exact OldArrays.of_memory target _ source kind old memoryEq oldFrame
 

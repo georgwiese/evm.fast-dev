@@ -19,6 +19,7 @@ structure ModelPost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind 
   half : 2 * count ≤ old.capacity → 2 * slots.length ≤ plan.capacity
   header : MemoryModel.Header memory kind plan (BitVec.ofNat 64 slots.length)
   occupied : MemoryModel.Occupied target kind plan slots
+  footprint : TableFootprint.Frame source.memory memory kind plan
 
 /-- Transfer the physical model to the actual returned state using its
 checked nonlocal frame, including returns that empty/restore local scopes. -/
@@ -32,12 +33,13 @@ theorem ModelPost.of_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (grew : plan ≠ old → old.capacity < 2 * count + 2)
     (half : 2 * count ≤ old.capacity → 2 * slots.length ≤ plan.capacity)
     (header : MemoryModel.Header memory kind plan (BitVec.ofNat 64 slots.length))
-    (occupied : MemoryModel.Occupied {source with memory := memory} kind plan slots) :
+    (occupied : MemoryModel.Occupied {source with memory := memory} kind plan slots)
+    (footprint : TableFootprint.Frame source.memory memory kind plan) :
     ModelPost source kind old start count paid globals memory target plan slots := by
   have memoryEq := congrArg PanSemStateFiniteExact.memory frame
   have domainEq := congrArg PanSemStateFiniteExact.memaddrs frame
   have endianEq := congrArg PanSemStateFiniteExact.be frame
-  exact ⟨frame, shape, countBound, grew, half, header, MemoryModel.Occupied.of_fields _ target kind plan slots occupied memoryEq.symm domainEq.symm endianEq.symm⟩
+  exact ⟨frame, shape, countBound, grew, half, header, MemoryModel.Occupied.of_fields _ target kind plan slots occupied memoryEq.symm domainEq.symm endianEq.symm, footprint⟩
 
 end InitECandidate.Solver.MutableTable.Set
 

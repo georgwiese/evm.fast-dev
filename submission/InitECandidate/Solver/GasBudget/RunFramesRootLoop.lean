@@ -5,7 +5,7 @@ namespace InitECandidate.Solver.GasBudget.RunFrames
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch MutableTable
 
-/-- The real marked-root while executes exactly one iteration, then reads
+/-- The real immediately completed root while executes exactly one iteration, then reads
 its actual cleared go flag and exits. Funding includes the real loop clock;
 all ordinary outcome alternatives, including return/break/continue, are
 resolved from execution. Dispatching/child frames are separate obligations. -/
@@ -32,8 +32,7 @@ theorem marked_root_loop {ι : Type} [Fintype ι] [DecidableEq ι]
     (parentStored : source.memory (cont + 0#64) = .word parent)
     (previousStored : source.memory (cont + 8#64) = .word previous)
     (kindStored : source.memory (cont + 16#64) = .word 0#64)
-    (flag : BitVec 64) (markedMapped : source.memaddrs (cont + 32#64))
-    (markedStored : source.memory (cont + 32#64) = .word flag) (markedNonzero : flag ≠ 0#64)
+    (doneReady : ImmediateDone source frame cont)
     (go : source.locals.lookup (ofString "go") = some (.val (.word 1#64)))
     (result : Option (PanSemResultExact 64)) (control : Input.ControlResult result)
     (normal : evaluateHOLFiniteState source loop = (result, target)) :
@@ -60,7 +59,7 @@ theorem marked_root_loop {ι : Type} [Fintype ι] [DecidableEq ι]
     nextGo, finalEV, finalCont, codes, nextEnvironment, effect, floorFrame, budget⟩ :=
     marked_root_body entry middle cursor objects base cap count snap population entries snapSmall entryFamily entryImage zone countBound populations
       (environment.of_fields rfl rfl rfl) deleteCode restoreCode journal counter frame cont err ev continuation errorMapped errorStored snapshotMapped snapshotStored code
-      parent previous cut cutSmall floors contSmall frameSmall rootMapped parentStored previousStored kindStored flag markedMapped markedStored markedNonzero bodyResult bodyControl bodyRun
+      parent previous cut cutSmall floors contSmall frameSmall rootMapped parentStored previousStored kindStored (doneReady.of_fields rfl rfl) bodyResult bodyControl bodyRun
   rw [bodyNone] at bodyRun
   have tailRun := normal
   rw [loop, evaluateHOLFiniteState_while_total] at tailRun

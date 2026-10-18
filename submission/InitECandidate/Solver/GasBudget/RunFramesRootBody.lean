@@ -1,4 +1,4 @@
-import InitECandidate.Solver.GasBudget.RunFramesMarked
+import InitECandidate.Solver.GasBudget.RunFramesDone
 import InitECandidate.Solver.GasBudget.RootExitControl
 import InitECandidate.Solver.Input.ScopeLookup
 
@@ -6,7 +6,7 @@ namespace InitECandidate.Solver.GasBudget.RunFrames
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch MutableTable
 
-/-- The complete marked-root loop body, including done's real lexical scope.
+/-- The complete immediately completed root loop body, including done's real lexical scope.
 An ordinary control outcome is proved to be normal, not a hidden break or
 continue, and its actual go flag is zero with all resource models retained. -/
 theorem marked_root_body {ι : Type} [Fintype ι] [DecidableEq ι]
@@ -32,8 +32,7 @@ theorem marked_root_body {ι : Type} [Fintype ι] [DecidableEq ι]
     (parentStored : source.memory (cont + 0#64) = .word parent)
     (previousStored : source.memory (cont + 8#64) = .word previous)
     (kindStored : source.memory (cont + 16#64) = .word 0#64)
-    (flag : BitVec 64) (markedMapped : source.memaddrs (cont + 32#64))
-    (markedStored : source.memory (cont + 32#64) = .word flag) (markedNonzero : flag ≠ 0#64)
+    (doneReady : ImmediateDone source frame cont)
     (result : Option (PanSemResultExact 64)) (control : Input.ControlResult result)
     (normal : evaluateHOLFiniteState source loopBody = (result, target)) :
     result = none ∧
@@ -47,7 +46,7 @@ theorem marked_root_body {ι : Type} [Fintype ι] [DecidableEq ι]
       target.globals.lookup (ofString "ev") = some (.val (.word parent)) ∧
       target.globals.lookup (ofString "cur_cont") = some (.val (.word previous)) ∧ target.code = source.code ∧ WarmKeys.Environment target ∧
       Journal.CounterEffect source target 0 (FrameEpilogue.removed err count snap) 0 ∧ TableFamily.FloorFrame objects next source target ∧ regularBudget target.memory frame = regularBudget source.memory frame := by
-  have actual := marked_body_execute source cont flag continuation markedMapped markedStored markedNonzero
+  have actual := done_body_execute source frame cont ev continuation doneReady
   rw [actual] at normal
   let entered := markedState source
   let inner := (evaluateHOLFiniteState entered RootExit.selected).2

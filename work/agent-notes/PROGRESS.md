@@ -5139,3 +5139,9 @@ Eleven new modules: generic no-return leaves/sequence, actual trap_with no norma
 - For D initial entries/n remaining keys: paid+P(C0)<= (13D+17)n+13triangle(n)+P(Cfinal). Count in[D,D+n], Cfinal<=max(C0,4(D+n+1)). Constructor/input/global reachability still explicit; no target runtime K.
 - Successful root-warm-keys-complete-v1.log, 1363 jobs, exit0, allowed axioms, MaxRSS2093836KiB. Proof index4764modules/8020facts; inventory4777modules, replacement closure0, frozen files unchanged. Local incremental policy check passed; claim infinity. Not full verification.
 - Next: derive actual htab_new entry/post states for warm-up loops and carry message/table ownership through the rest of the real root caller.
+
+## Derive original warm-table allocation room — 2026-10-18
+
+- Normal htab_new body/caller derives exact source-clock funding; for word-multiple capacities all six actual allocators derive their total fresh reservation room. Header stores are inverted from actual normal outcomes and the real memzero preserves the heap cursor, without future-layout or mapping oracles.
+- Actual process_transaction storage constructor(52,16), i=0 and entire key warm-up now compose from an incoming bounded/aligned heap cursor plus code/input extent. Empty Header/Occupied arrays are established by actual constructor memory. Price10+17n+13triangle(n)+P(Cfinal)-P(16); earlier words preserved. Input extent/global reachability, address warm-ups, subsequent message/root execution, weighted target transport and finite whole-program K remain open.
+- Successful root-warm-constructor-normal-v1.log1384jobs, exit0, permitted axioms, MaxRSS1885544KiB. Index4776modules/8042facts; inventory4789modules, replacement closure0, frozen files unchanged. Incremental policy check passed, claim infinity; no full verification.

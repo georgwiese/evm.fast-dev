@@ -54,6 +54,7 @@ theorem noncreate_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       ready.memory (BitVec.ofNat 64 messageStart + 112#64) = .word (BitVec.ofNat 64 cursor) ∧
       ready.memory (BitVec.ofNat 64 messageStart + 120#64) = .word 0#64 ∧
       ready.memory (BitVec.ofNat 64 messageStart + 48#64) = source.memory (BitVec.ofNat 64 messageStart + 48#64) ∧
+      ready.memory (BitVec.ofNat 64 messageStart + 24#64) = source.memory (BitVec.ofNat 64 messageStart + 24#64) ∧
       ready.memory (BitVec.ofNat 64 messageStart + 152#64) = .word (cell nextPlan .header 0) ∧
       ready.memory (BitVec.ofNat 64 messageStart + 160#64) = .word (cell reader .header 0) ∧
       evaluateHOLFiniteState ready messageSite = (some (.returned value), finish) ∧ post = restore source "empty" finish ∧
@@ -89,6 +90,7 @@ theorem noncreate_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (messageFrame 112 (by decide) (by decide) (by decide) (by decide)).trans (result_code source.memory _ recipient data length _),
     (messageFrame 120 (by decide) (by decide) (by decide) (by decide)).trans (result_length source.memory _ recipient data length _),
     (messageFrame 48 (by decide) (by decide) (by decide) (by decide)).trans (result_reservoir source.memory _ recipient data length _),
+    (messageFrame 24 (by decide) (by decide) (by decide) (by decide)).trans (result_destination source.memory _ recipient data length _),
     pointerAA, pointerAK, readyRun, restored, ?_⟩
   · change paid ≤ source.clock - 1 at fits
     omega

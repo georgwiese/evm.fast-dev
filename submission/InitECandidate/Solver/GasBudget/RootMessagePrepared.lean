@@ -13,6 +13,7 @@ structure Prepared (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
   funded : 10 ≤ source.clock
   frame : target = {MsgNew.callState source "m" start with memory := target.memory}
   gas : target.memory (BitVec.ofNat 64 start + 40#64) = .word gas
+  recipient : CopiesRecipient source target start
   outside : ∀ query : BitVec 64, query.toNat < start ∨ start + 176 ≤ query.toNat → target.memory query = source.memory query
 
 /-- Actual message constructor, first four field stores and MSG_GAS, with
@@ -40,7 +41,7 @@ theorem allocation_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
   have constructedBlock : constructed.globals.lookup (ofString "be") = some (.val blockEnv) := blockGlobal
   have constructedTx : constructed.locals.lookup (ofString "te") = some (.val txEnv) := (bind_lookup_other _ "m" "te" _ (by decide)).trans txLocal
   have constructedSender : constructed.locals.lookup (ofString "sender") = some (.val (.word sender)) := (bind_lookup_other _ "m" "sender" _ (by decide)).trans senderLocal
-  obtain ⟨ready, gasSiteRun, readyFrame, readyOutside⟩ := first_stores_normal constructed inner value start blockEnv txEnv (.word sender) region constructedMessage constructedBlock constructedTx constructedSender afterNew
+  obtain ⟨ready, gasSiteRun, readyFrame, readyRecipient, readyOutside⟩ := first_stores_normal constructed inner value start blockEnv txEnv (.word sender) region constructedMessage constructedBlock constructedTx constructedSender afterNew
   have readyMessage : ready.locals.lookup (ofString "m") = some (.val (.word (BitVec.ofNat 64 start))) := by rw [readyFrame]; exact constructedMessage
   have readyGas : ready.locals.lookup (ofString "mgas") = some (.val (.word gas)) := by
     rw [readyFrame]
@@ -63,7 +64,15 @@ theorem allocation_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
       omega
     have unchanged : stored.memory query = ready.memory query := by rw [storedEq]; simp only [StoreWord.put, if_neg different]
     exact unchanged.trans ((readyOutside query away).trans (MsgNew.memory_away source "m" start region query away))
-  exact ⟨stored, inner, ⟨region, funded, frame, gasCell, outside⟩, restRun, restored⟩
+  have copies : CopiesRecipient source stored start := by
+    intro tx recipient read
+    have constructedRead : TxRecipient constructed start tx recipient := read.of_frame
+      (bind_lookup_other _ "m" "tx" _ (by decide)) rfl (fun query before => MsgNew.memory_away source "m" start region query (Or.inl before))
+    have copied := readyRecipient tx recipient constructedRead
+    rw [storedEq]
+    simpa only [WitnessRadix.StoreWord.put, BitVec.add_right_inj,
+      show (24#64 : BitVec 64) ≠ 40#64 from by decide, ↓reduceIte] using copied
+  exact ⟨stored, inner, ⟨region, funded, frame, gasCell, copies, outside⟩, restRun, restored⟩
 
 end InitECandidate.Solver.GasBudget.RootMessage
 

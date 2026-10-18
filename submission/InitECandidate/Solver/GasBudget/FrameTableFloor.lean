@@ -4,6 +4,20 @@ import InitECandidate.Solver.GasBudget.Frame
 namespace InitECandidate.Solver.GasBudget
 open Flapjack PanSemStateFiniteExact MutableTable
 
+theorem word_below_tables {ι : Type} {objects next : ι → TableFamily.Object}
+    {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (saved : TableFamily.FloorFrame objects next source target) (pointer : BitVec 64) (offset cut : Nat)
+    (floors : ∀ index, cut ≤ (objects index).floor)
+    (before : pointer.toNat + offset < cut) (cutSmall : cut < 2 ^ 64) :
+    target.memory (pointer + BitVec.ofNat 64 offset) = source.memory (pointer + BitVec.ofNat 64 offset) := by
+  apply saved.below cut floors
+  have offsetSmall : offset < 2 ^ 64 := by omega
+  have sumSmall : pointer.toNat + (BitVec.ofNat 64 offset).toNat < 2 ^ 64 := by
+    rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt offsetSmall]
+    omega
+  rw [BitVec.toNat_add_of_lt sumSmall, BitVec.toNat_ofNat, Nat.mod_eq_of_lt offsetSmall]
+  exact before
+
 /-- A table/journal mutation frame retains the active regular-gas ledger
 when its three real words precede every persistent table lifetime floor.
 The arena split and reachable table floors remain caller obligations. -/
@@ -37,4 +51,5 @@ theorem regularBudget_below_tables {ι : Type} {objects next : ι → TableFamil
 end InitECandidate.Solver.GasBudget
 
 #print axioms InitECandidate.Solver.GasBudget.regularBudget_of_table_frame
+#print axioms InitECandidate.Solver.GasBudget.word_below_tables
 #print axioms InitECandidate.Solver.GasBudget.regularBudget_below_tables

@@ -6,6 +6,30 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 def resultWord (a b : BitVec 64) : BitVec 64 := if a+b<a then 18446744073709551615#64 else a+b
 
+theorem carry_iff (a b : BitVec 64) : a + b < a ↔ 2 ^ 64 ≤ a.toNat + b.toNat := by
+  change (a + b).toNat < a.toNat ↔ _
+  rw [BitVec.toNat_add]
+  have first := a.isLt
+  have second := b.isLt
+  omega
+
+theorem result_nat (a b : BitVec 64) : (resultWord a b).toNat = min (2 ^ 64 - 1) (a.toNat + b.toNat) := by
+  by_cases carry : a + b < a
+  · have overflow := (carry_iff a b).mp carry
+    simp only [resultWord, if_pos carry]
+    change 18446744073709551615 = min (2 ^ 64 - 1) (a.toNat + b.toNat)
+    omega
+  · have notOverflow : ¬2 ^ 64 ≤ a.toNat + b.toNat := fun larger => carry ((carry_iff a b).mpr larger)
+    have fits : a.toNat + b.toNat < 2 ^ 64 := by omega
+    rw [resultWord, if_neg carry, BitVec.toNat_add_of_lt fits]
+    omega
+
+theorem covers (a b amount : BitVec 64) (affordable : amount.toNat ≤ a.toNat + b.toNat) : amount ≤ resultWord a b := by
+  change amount.toNat ≤ (resultWord a b).toNat
+  rw [result_nat]
+  have small := amount.isLt
+  omega
+
 /-- Both actual add_sat branches, including overflow. The lower bound used
 for up-front call fees does not require exact natural addition. -/
 theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b : BitVec 64)
@@ -69,3 +93,7 @@ end InitECandidate.Solver.GasBudget.SaturatingAdd
 #print axioms InitECandidate.Solver.GasBudget.SaturatingAdd.ge_left
 #print axioms InitECandidate.Solver.GasBudget.SaturatingAdd.call_execute
 #print axioms InitECandidate.Solver.GasBudget.SaturatingAdd.value_fee_lower
+
+#print axioms InitECandidate.Solver.GasBudget.SaturatingAdd.carry_iff
+#print axioms InitECandidate.Solver.GasBudget.SaturatingAdd.result_nat
+#print axioms InitECandidate.Solver.GasBudget.SaturatingAdd.covers

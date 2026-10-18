@@ -23,7 +23,8 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
       post = emptyLocalsHOLFinite {source with memory := post.memory, clock := source.clock - 1} ∧
       regularBudget post.memory frame = regularBudget source.memory frame ∧
       post.memory (frame + 104#64) = .word 0#64 ∧
-      post.memory (frame + 184#64) = source.memory (frame + 184#64) := by
+      post.memory (frame + 184#64) = source.memory (frame + 184#64) ∧
+      (∀ address, address ≠ frame + 0#64 → address ≠ frame + 104#64 → post.memory address = source.memory address) := by
   rw [body_shape] at normal
   have markSafe : Input.LocalPrefix (ofString "setup") markHalted := .store _ _
   obtain ⟨marked, markRun, restRun, _⟩ := markSafe.normal_continue source post _ value normal
@@ -51,7 +52,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     rw [markClock] at canonical
     exact canonical.trans (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory =>
       {state with memory := advanced.memory, clock := source.clock - 1}) markedEq)
-  refine ⟨by rw [markedEq] at fits; exact fits, valueEq, ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨by rw [markedEq] at fits; exact fits, valueEq, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · rw [postEq]; change advanced.clock = _; rw [clock, markedEq]
   · rw [postEq]; exact congrArg emptyLocalsHOLFinite advancedFrame
   · rw [postEq]
@@ -66,6 +67,10 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     change advanced.memory (frame + 184#64) = _
     rw [usedSame, markedEq]
     exact FrameField.put_other source.memory frame 104#64 0#64 184#64 (by decide)
+  · intro address notPC notRunning
+    rw [postEq, advancedEq, markedEq]
+    change StoreWord.put (StoreWord.put source.memory (frame + 104#64) 0#64) (frame + 0#64) (pc + 1#64) address = _
+    simp only [StoreWord.put, if_neg notPC, if_neg notRunning]
 
 theorem call_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (frame : BitVec 64)
     (code : source.code.lookup (ofString "op_stop") = some ([], body, .one))
@@ -76,13 +81,14 @@ theorem call_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
       target = {source with memory := target.memory, clock := source.clock - 2} ∧
       regularBudget target.memory frame = regularBudget source.memory frame ∧
       target.memory (frame + 104#64) = .word 0#64 ∧
-      target.memory (frame + 184#64) = source.memory (frame + 184#64) := by
+      target.memory (frame + 184#64) = source.memory (frame + 184#64) ∧
+      (∀ address, address ≠ frame + 0#64 → address ≠ frame + 104#64 → target.memory address = source.memory address) := by
   have raw : lookupCodeHOLExact source.code.lookup (ofString "op_stop") [] = some (body, (fun _ => none), .one) := by
     simp [lookupCodeHOLExact, code]
   obtain ⟨callee, called, locals⟩ := CodeEnvironment.finite_lookup source.code.lookup (ofString "op_stop") [] body (fun _ => none) .one raw
   obtain ⟨positive, post, value, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "op_stop") [] [] body callee .one rfl called normal
   let entry := callEntryStateHOLFinite source callee
-  obtain ⟨fits, returned, clock, frameEq, budget, halted, usedSame⟩ := body_normal entry post frame ev pcCode value bodyRun
+  obtain ⟨fits, returned, clock, frameEq, budget, halted, usedSame, outside⟩ := body_normal entry post frame ev pcCode value bodyRun
   rw [returned] at bodyRun
   have frame2 : emptyLocalsHOLFinite post = emptyLocalsHOLFinite {source with memory := post.memory, clock := source.clock - 2} := by
     have calleeFrame := congrArg emptyLocalsHOLFinite frameEq
@@ -91,11 +97,14 @@ theorem call_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   have actual := ignored_return source post (ofString "op_stop") [] [] body callee 2 rfl called positive bodyRun frame2
   have same := congrArg Prod.snd (normal.symm.trans actual)
   change target = {source with memory := post.memory, clock := source.clock - 2} at same
-  refine ⟨by change 1 ≤ source.clock - 1 at fits; omega, by rw [same], ?_, ?_, ?_, ?_⟩
+  refine ⟨by change 1 ≤ source.clock - 1 at fits; omega, by rw [same], ?_, ?_, ?_, ?_, ?_⟩
   · rw [same]
   · rw [same]; exact budget
   · rw [same]; exact halted
   · rw [same]; exact usedSame
+  · intro address notPC notRunning
+    rw [same]
+    exact outside address notPC notRunning
 
 end InitECandidate.Solver.GasBudget.Stop
 

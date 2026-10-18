@@ -17,17 +17,21 @@ theorem stop_body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       post = emptyLocalsHOLFinite {source with memory := post.memory, clock := source.clock - 2} ∧
       regularBudget post.memory frame = regularBudget source.memory frame ∧
       post.memory (frame + 104#64) = .word 0#64 ∧
-      post.memory (frame + 184#64) = source.memory (frame + 184#64) := by
+      post.memory (frame + 184#64) = source.memory (frame + 184#64) ∧
+      (∀ address, address ≠ frame + 0#64 → address ≠ frame + 104#64 → post.memory address = source.memory address) := by
   obtain ⟨returned, function, arguments, middle, selected, helperRun, postEq⟩ := normal_helper source post 0#64 opLocal value normal
   rw [selection_stop] at selected
   cases selected
-  obtain ⟨fits, clock, frameEq, budget, halted, usedSame⟩ := Stop.call_normal source middle frame code ev pcCode helperRun
-  refine ⟨fits, returned, ?_, ?_, ?_, ?_, ?_⟩
+  obtain ⟨fits, clock, frameEq, budget, halted, usedSame, outside⟩ := Stop.call_normal source middle frame code ev pcCode helperRun
+  refine ⟨fits, returned, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · rw [postEq]; exact clock
   · rw [postEq]; exact congrArg emptyLocalsHOLFinite frameEq
   · rw [postEq]; exact budget
   · rw [postEq]; exact halted
   · rw [postEq]; exact usedSame
+  · intro address notPC notRunning
+    rw [postEq]
+    exact outside address notPC notRunning
 
 /-- Actual zero-opcode dispatch costs three source clocks, clears the real
 running field and preserves the regular ledger. It is a terminal event even
@@ -44,11 +48,12 @@ theorem stop_call_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
       target = {source with memory := target.memory, clock := source.clock - 3} ∧
       regularBudget target.memory frame = regularBudget source.memory frame ∧
       target.memory (frame + 104#64) = .word 0#64 ∧
-      target.memory (frame + 184#64) = source.memory (frame + 184#64) := by
+      target.memory (frame + 184#64) = source.memory (frame + 184#64) ∧
+      (∀ address, address ≠ frame + 0#64 → address ≠ frame + 104#64 → target.memory address = source.memory address) := by
   obtain ⟨callee, called, opLocal⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "op_dispatch") "op" body 0#64 dispatchCode
   obtain ⟨positive, post, value, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "op_dispatch") arguments [.val (.word 0#64)] body callee .one args called normal
   let entry := callEntryStateHOLFinite source callee
-  obtain ⟨fits, returned, clock, frameEq, budget, halted, usedSame⟩ := stop_body_normal entry post frame opLocal code ev pcCode value bodyRun
+  obtain ⟨fits, returned, clock, frameEq, budget, halted, usedSame, outside⟩ := stop_body_normal entry post frame opLocal code ev pcCode value bodyRun
   rw [returned] at bodyRun
   have frame3 : emptyLocalsHOLFinite post = emptyLocalsHOLFinite {source with memory := post.memory, clock := source.clock - 3} := by
     have calleeFrame := congrArg emptyLocalsHOLFinite frameEq
@@ -57,11 +62,14 @@ theorem stop_call_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
   have actual := ignored_return source post (ofString "op_dispatch") arguments [.val (.word 0#64)] body callee 3 args called positive bodyRun frame3
   have same := congrArg Prod.snd (normal.symm.trans actual)
   change target = {source with memory := post.memory, clock := source.clock - 3} at same
-  refine ⟨by change 2 ≤ source.clock - 1 at fits; omega, by rw [same], ?_, ?_, ?_, ?_⟩
+  refine ⟨by change 2 ≤ source.clock - 1 at fits; omega, by rw [same], ?_, ?_, ?_, ?_, ?_⟩
   · rw [same]
   · rw [same]; exact budget
   · rw [same]; exact halted
   · rw [same]; exact usedSame
+  · intro address notPC notRunning
+    rw [same]
+    exact outside address notPC notRunning
 
 end InitECandidate.Solver.GasBudget.OpcodeDispatch
 

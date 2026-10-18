@@ -72,7 +72,19 @@ theorem active_body_dispatch_cases (source post : PanSemStateFiniteExact 64 Gues
   · rw [memory, innerEq]
     rfl
 
+/-- Expose the actual caught call itself, retaining all surrounding scopes. -/
+theorem active_caught_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame cont running pc length : BitVec 64)
+    (header : ActiveHeader source frame cont running pc length)
+    (normal : evaluateHOLFiniteState source loopBody = (none, post)) :
+    ∃ handled, evaluateHOLFiniteState (bind (activeEntry source pc) "err" 0#64) caughtDispatch = (none, handled) ∧
+      emptyLocalsHOLFinite post = emptyLocalsHOLFinite handled := by
+  obtain ⟨inner, opcodeRun, postEq, clock, memory⟩ := active_body_normal source post frame cont running pc length header normal
+  rw [opcode_shape] at opcodeRun
+  obtain ⟨handled, caughtRun, innerEq⟩ := Input.declaration_none (activeEntry source pc) inner "err" (.const 0#64) 0#64 caughtDispatch rfl opcodeRun
+  exact ⟨handled, caughtRun, by rw [postEq, innerEq]; rfl⟩
+
 end InitECandidate.Solver.GasBudget.RunFrames
 
 #print axioms InitECandidate.Solver.GasBudget.RunFrames.active_body_normal
 #print axioms InitECandidate.Solver.GasBudget.RunFrames.active_body_dispatch_cases
+#print axioms InitECandidate.Solver.GasBudget.RunFrames.active_caught_normal

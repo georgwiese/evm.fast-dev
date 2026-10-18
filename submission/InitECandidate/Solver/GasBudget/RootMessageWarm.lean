@@ -42,14 +42,15 @@ theorem warm_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
       warmed.locals.lookup (ofString "aa") = some (.val (.word (cell accountPlan .header 0))) ∧
       warmed.locals.lookup (ofString "ak") = some (.val (.word (cell storagePlan .header 0))) ∧
       warmed.locals.lookup (ofString "m") = some (.val (.word (BitVec.ofNat 64 messageStart))) ∧
-      warmed.memory (BitVec.ofNat 64 messageStart + 40#64) = .word gas ∧ gas.toNat + intrinsicRegular ≤ 16777216 ∧
+      warmed.memory (BitVec.ofNat 64 messageStart + 40#64) = .word gas ∧
+      warmed.memory (BitVec.ofNat 64 messageStart + 48#64) = .word reservoir ∧ gas.toNat + intrinsicRegular ≤ 16777216 ∧
       evaluateHOLFiniteState warmed WarmKeys.afterLoop = (some (.returned value), finish) ∧
       post = restore ready "aa" (restore entered "ak" finish) ∧ warmed.code = source.code ∧ WarmKeys.Environment warmed ∧
       PointerArray warmed.memory 20 addressesStart addressCount messageStart pointers ∧
       accountPlan.capacity ≤ max 64 (4 * (addressCount + 20)) ∧ storagePlan.capacity ≤ max 16 (4 * (keyCount + 1)) ∧
       (∀ key : MlS, key ≠ ofString "aa" → key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key) ∧
       ∀ query : BitVec 64, query.toNat < messageStart → warmed.memory query = source.memory query := by
-  obtain ⟨ready, readyRun, readyFrame, readyGas, readyOutside⟩ := stores_normal source post value messageStart reservoir region messageLocal reservoirLocal normal
+  obtain ⟨ready, readyRun, readyFrame, readyGas, readyReservoir, readyOutside⟩ := stores_normal source post value messageStart reservoir region messageLocal reservoirLocal normal
   have locals := congrArg PanSemStateFiniteExact.locals readyFrame
   have globals := congrArg PanSemStateFiniteExact.globals readyFrame
   have codes := congrArg PanSemStateFiniteExact.code readyFrame
@@ -84,10 +85,14 @@ theorem warm_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     intro query before
     exact (finalProtected query (by omega)).trans (readyOutside query (Or.inl before))
   refine ⟨paid, accountPlan, storagePlan, accountSlots, storageSlots, nextCursor, storageStart, ready, entered, warmed, finish,
-    by omega, price, by omega, budget, accountTable, storageTable, separated, accountCount, storageCount, accountLocal, storageLocals.table, ?_, ?_, cap, restRun, restored, finalCodes.trans codes, finalEnvironment, array.of_protected earlierWords,
+    by omega, price, by omega, budget, accountTable, storageTable, separated, accountCount, storageCount, accountLocal, storageLocals.table, ?_, ?_, ?_, cap, restRun, restored, finalCodes.trans codes, finalEnvironment, array.of_protected earlierWords,
     accountCapacity, storageCapacity, ?_, earlierWords⟩
   · exact (finalLocalFrame _ (by decide) (by decide) (by decide)).trans (localWord _ _ messageLocal)
   · exact (finalProtected _ gasBefore).trans (readyGas.trans gasCell)
+  · have reservoirBefore : (BitVec.ofNat 64 messageStart + 48#64).toNat < cursor := by
+      rw [MessageField.field_number messageStart 48 region (by decide)]
+      omega
+    exact (finalProtected _ reservoirBefore).trans readyReservoir
   · intro key notAccount notStorage notIndex
     rw [finalLocalFrame key notAccount notStorage notIndex, locals]
 

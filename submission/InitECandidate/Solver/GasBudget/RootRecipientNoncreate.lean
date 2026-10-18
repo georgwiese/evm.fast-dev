@@ -62,7 +62,7 @@ theorem noncreate_initialized_normal (source post : PanSemStateFiniteExact 64 Gu
     (msgCode : source.code.lookup (ofString "msg_new") = some (MsgNew.formals, MsgNew.body, .one))
     (cap : gas.toNat + intrinsicRegular ≤ 16777216)
     (normal : evaluateHOLFiniteState source initialSite = (some (.returned value), post)) :
-    ∃ paid accountPlan storagePlan accountSlots storageSlots nextCursor storageStart ready entered warmed final finish,
+    ∃ paid accountPlan storagePlan accountSlots storageSlots nextCursor storageStart emptyStart ready entered warmed final finish,
       paid ≤ source.clock ∧ paid ≤ noncreatePrice addressCount keyCount ∧ final.clock = source.clock - paid ∧
       MemoryRegion.Valid ⟨start, 176⟩ ∧
       TableState final .account accountPlan accountSlots nextCursor (start + 176) ∧ TableState final .storage storagePlan storageSlots nextCursor storageStart ∧
@@ -71,6 +71,9 @@ theorem noncreate_initialized_normal (source post : PanSemStateFiniteExact 64 Gu
       final.locals.lookup (ofString "aa") = some (.val (.word (cell accountPlan .header 0))) ∧
       final.locals.lookup (ofString "ak") = some (.val (.word (cell storagePlan .header 0))) ∧
       final.memory (BitVec.ofNat 64 start + 40#64) = .word gas ∧ gas.toNat + intrinsicRegular ≤ 16777216 ∧
+      final.memory (BitVec.ofNat 64 start + 48#64) = .word reservoir ∧
+      final.memory (BitVec.ofNat 64 start + 112#64) = .word (BitVec.ofNat 64 emptyStart) ∧
+      final.memory (BitVec.ofNat 64 start + 120#64) = .word 0#64 ∧
       final.memory (BitVec.ofNat 64 start + 152#64) = .word (cell accountPlan .header 0) ∧
       final.memory (BitVec.ofNat 64 start + 160#64) = .word (cell storagePlan .header 0) ∧
       evaluateHOLFiniteState final Recipient.messageSite = (some (.returned value), finish) ∧
@@ -78,7 +81,7 @@ theorem noncreate_initialized_normal (source post : PanSemStateFiniteExact 64 Gu
       final.code = source.code ∧ WarmKeys.Environment final ∧
       ∀ query : BitVec 64, query.toNat < start → final.memory query = source.memory query := by
   obtain ⟨first, accountPlan, storagePlan, accountSlots, storageSlots, cursor, storageStart, ready, entered, warmed, warmFinish,
-    firstFits, firstPrice, firstClock, firstBudget, region, table, reader, separated, count, storageCount, aa, ak, message, gasWord, gasCap,
+    firstFits, firstPrice, firstClock, firstBudget, region, table, reader, separated, count, storageCount, aa, ak, message, gasWord, reservoirWord, gasCap,
     warmRun, restored, codes, warmEnvironment, finalArray, accountCapacity, storageCapacity, localFrame, earlierWords⟩ :=
     initialized_normal source post value start addressesStart addressCount keysStart keyCount precompileStart blockEnv txEnv sender gas reservoir intrinsicRegular pointers
       environment lower bounded aligned precompileValid array positive keyRegion heap precompiles blockGlobal txEnvLocal gasLocal reservoirLocal senderLocal
@@ -97,16 +100,16 @@ theorem noncreate_initialized_normal (source post : PanSemStateFiniteExact 64 Gu
     exact recipientMapped offset inside
   obtain ⟨second, nextPlan, nextSlots, nextCursor, final, finish, secondFits, secondPrice, secondClock, forward, secondBudget,
     nextTable, nextReader, nextApart, nextLow, nextHigh, nextCapacity, finalMessage, finalAA, finalAK, finalCodes, finalEnvironment,
-    finalGas, pointerAA, pointerAK, finalRun, finalRestored, finalProtected⟩ :=
+    finalGas, finalCode, finalLength, finalReservoir, pointerAA, pointerAK, finalRun, finalRestored, finalProtected⟩ :=
     Recipient.noncreate_normal warmed warmFinish value accountPlan storagePlan accountSlots storageSlots cursor (start + 176) storageStart start txStart
       recipient data length gas warmEnvironment table reader (fun first second => Or.inl (separated first second)) region (Nat.le_refl _) readerLater warmRecord
       message warmTx aa ak gasWord nonzero recipientFits mapped warmRun
   have totalPrice := noncreate_price_bound first second accountPlan.capacity accountSlots.length nextPlan.capacity nextSlots.length storagePlan.capacity addressCount keyCount
     firstBudget secondBudget count nextHigh accountCapacity nextCapacity storageCapacity
   rw [finalRestored] at restored
-  refine ⟨first + second, nextPlan, storagePlan, nextSlots, storageSlots, nextCursor, storageStart, ready, entered, warmed, final, finish,
+  refine ⟨first + second, nextPlan, storagePlan, nextSlots, storageSlots, nextCursor, storageStart, cursor, ready, entered, warmed, final, finish,
     by omega, totalPrice, by omega, region, nextTable, nextReader, by omega, storageCount, finalMessage, finalAA, finalAK, finalGas, gasCap,
-    pointerAA, pointerAK, finalRun, restored, finalCodes.trans codes, finalEnvironment, ?_⟩
+    finalReservoir.trans reservoirWord, finalCode, finalLength, pointerAA, pointerAK, finalRun, restored, finalCodes.trans codes, finalEnvironment, ?_⟩
   intro query earlier
   exact (finalProtected query earlier).trans (earlierWords query earlier)
 

@@ -8,9 +8,9 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- Actual effects at the first charge, before the remaining opcode body. -/
 structure ChargedEffect (source ready : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (frame sp remaining : BitVec 64) (popCount : Nat) (amount : BitVec 64) : Prop where
-  fits : popCount + 1 ≤ source.clock
-  clock : ready.clock = source.clock - (popCount + 1)
+    (frame sp remaining : BitVec 64) (popCount : Nat) (amount : BitVec 64) (overhead : Nat := 0) : Prop where
+  fits : popCount + 1 + overhead ≤ source.clock
+  clock : ready.clock = source.clock - (popCount + 1 + overhead)
   fields : emptyLocalsHOLFinite ready = emptyLocalsHOLFinite {source with memory := ready.memory, clock := ready.clock}
   budget : regularBudget ready.memory frame = regularBudget source.memory frame
   used : (wordAt ready.memory (frame + 184#64)).toNat = (wordAt source.memory (frame + 184#64)).toNat + amount.toNat

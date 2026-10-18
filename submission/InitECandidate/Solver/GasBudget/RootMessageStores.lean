@@ -18,6 +18,7 @@ theorem stores_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       ready = {source with memory := ready.memory} ∧
       ready.memory (BitVec.ofNat 64 start + 40#64) = source.memory (BitVec.ofNat 64 start + 40#64) ∧
       ready.memory (BitVec.ofNat 64 start + 48#64) = .word reservoir ∧
+      ready.memory (BitVec.ofNat 64 start + 24#64) = source.memory (BitVec.ofNat 64 start + 24#64) ∧
       ∀ query : BitVec 64, query.toNat < start ∨ start + 176 ≤ query.toNat → ready.memory query = source.memory query := by
   rw [after_gas_shape] at normal
   have reservoirSafe : Input.LocalPrefix (ofString "m") reservoirStore := .store _ _
@@ -41,7 +42,8 @@ theorem stores_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     simpa only [Option.some.injEq, ValueHOL.val.injEq, HolWordLab.word.injEq] using pointerLocal.symm.trans messageLocal
   subst pointer
   refine ⟨ready, afterValue, frame, (secondGas 40 (by decide) (Or.inl (by decide))).trans (firstGas 40 (by decide) (Or.inl (by decide))),
-    (secondGas 48 (by decide) (Or.inl (by decide))).trans reservoirCell, ?_⟩
+    (secondGas 48 (by decide) (Or.inl (by decide))).trans reservoirCell,
+    (secondGas 24 (by decide) (Or.inl (by decide))).trans (firstGas 24 (by decide) (Or.inl (by decide))), ?_⟩
   intro query outside
   exact (secondOutside query outside).trans (firstOutside query outside)
 

@@ -16,6 +16,10 @@ theorem result_reservoir (memory : WordWrites.Memory) (message recipient data le
     resultMemory memory message recipient data length empty (message + 48#64) = memory (message + 48#64) := by
   simp [resultMemory, FieldStores.writes, fields, FieldStores.Value.word, WordWrites.write, StoreWord.put, BitVec.add_right_inj]
 
+theorem result_destination (memory : WordWrites.Memory) (message recipient data length empty : BitVec 64) :
+    resultMemory memory message recipient data length empty (message + 24#64) = memory (message + 24#64) := by
+  simp [resultMemory, FieldStores.writes, fields, FieldStores.Value.word, WordWrites.write, StoreWord.put, BitVec.add_right_inj]
+
 theorem linked_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (start field : Nat) (aa ak : BitVec 64)
     (inside : field < 176) (notAA : field ≠ 152) (notAK : field ≠ 160) :
     (linkedState source start aa ak).memory (BitVec.ofNat 64 start + BitVec.ofNat 64 field) = source.memory (BitVec.ofNat 64 start + BitVec.ofNat 64 field) := by
@@ -27,4 +31,5 @@ end InitECandidate.Solver.GasBudget.Recipient
 #print axioms InitECandidate.Solver.GasBudget.Recipient.result_code
 #print axioms InitECandidate.Solver.GasBudget.Recipient.result_length
 #print axioms InitECandidate.Solver.GasBudget.Recipient.result_reservoir
+#print axioms InitECandidate.Solver.GasBudget.Recipient.result_destination
 #print axioms InitECandidate.Solver.GasBudget.Recipient.linked_other

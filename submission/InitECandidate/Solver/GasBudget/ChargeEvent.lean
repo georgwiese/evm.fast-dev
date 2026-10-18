@@ -4,8 +4,9 @@ import InitECandidate.Solver.GasBudget.OpcodeChargeInstalled
 namespace InitECandidate.Solver.GasBudget
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
-/-- A genuine positive first-charge event at a reached source state, with
-exact paid call/loop clocks and the physical pre-suffix memory frame. -/
+/-- A genuine positive first-charge used-counter credit at a reached source
+state, with exact paid call/loop clocks and the physical pre-suffix frame.
+Later child-gas transfers are separate global accounting obligations. -/
 structure ChargeEvent (source ready : PanSemStateFiniteExact 64 Guest.HostMemory) (frame : BitVec 64) (paid amount : Nat) : Prop where
   fits : paid ≤ source.clock
   clock : ready.clock = source.clock - paid

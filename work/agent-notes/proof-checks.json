@@ -4194,6 +4194,18 @@
       "sha256": "962ad040ead9e7834d7913c9a086b6727b159ffa1b2a8402e5605f08e4476408"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/ExponentAllPrice.lean",
+      "sha256": "d9a37b00484095f5c03c251cfe44cf7e1ac61c8a4700c4eb6a0f3997cbc17b55"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/ExponentLoop.lean",
+      "sha256": "d08862a299e00b6f1df1407d20d651ecc21c7cfab1f23111ad14c33723170999"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/ExponentPrice.lean",
+      "sha256": "01d863b8f106850bc83ad8995af108b5eedf80e482612e7715139df75960e3dd"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GasBudget/ForwardBudget.lean",
       "sha256": "4541e7af43cfda71db2d21aa94311f80a4f92ea06b946ac44dcab6a9cd43b02b"
     },
@@ -5566,6 +5578,10 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/ClockCostLoop.lean",
+      "sha256": "7123a842b9183a2584a366cd783e93dfd0a32eb5084ec631639613413187ee23"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/ClockCostScoped.lean",
       "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb"
     },
@@ -5608,6 +5624,14 @@
     {
       "path": "submission/InitECandidate/Solver/Input/CopyWalk.lean",
       "sha256": "224aec65dfb1e874d4f8fc0c8628e03f1465ef4cfa33bab987055b3fbafb87db"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CounterFlow.lean",
+      "sha256": "be1efc7954c40124359d7e0ebd414c54e8accf8a33f80ccb4592ad7baa745aea"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CounterLoopCost.lean",
+      "sha256": "ac890157e76885efd5c4104272a6785d78a5b23e34aa89c0858417129efb4296"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterLoopLocal.lean",
@@ -6430,6 +6454,10 @@
       "sha256": "9363339453112f25834ce95640f93e901f64278feb1c78ec01660e69fbef1af9"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/LengthNormal.lean",
+      "sha256": "e2125a9eaa053458bddf8b544ff3d3f49440d4e8af12b4f220d3701435a15213"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/RlpWrite/LengthTail.lean",
       "sha256": "c45d6ad8ea4383d0486462573a9616549535671994b061f5e2a6ba3d69daf59d"
     },
@@ -6470,6 +6498,10 @@
       "sha256": "95953fbe21b2361b52871903e374fc2986c14501415f842cdd31637d9f5c1257"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/U256Lookup.lean",
+      "sha256": "f1dc2a267d35d23801ecf8acc769c5d71597749a4d3c3731937752b90a1cdaed"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/RlpWrite/U256MinBuilt.lean",
       "sha256": "94e97252db138d24eca63b2c607f2a9f6e06b298f6a83c440c5525b47e5a933e"
     },
@@ -6508,6 +6540,10 @@
     {
       "path": "submission/InitECandidate/Solver/Input/RlpWrite/U256PutSuffix.lean",
       "sha256": "71a27bbef88a1d15d0ee05e8dcbc52a25d7849f77a21cfbcebb9d9e3a03036cf"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/U256Shape.lean",
+      "sha256": "13cfa1bfae283161685d1665d868a2d984fc75125cf1dbe1cd1af56f75fef1e8"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/RlpWrite/U256Value.lean",
@@ -67948,7 +67984,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -67956,19 +67992,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -67977,7 +68013,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -67986,7 +68022,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -67995,7 +68031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -68004,7 +68040,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -68013,7 +68049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -68022,7 +68058,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -68031,7 +68067,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -68040,7 +68076,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -68049,7 +68085,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -68058,7 +68094,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -68067,7 +68103,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -68076,7 +68112,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -68085,7 +68121,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -68094,7 +68130,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -68103,7 +68139,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -68111,7 +68147,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -68119,7 +68155,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -68128,7 +68164,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -68137,7 +68173,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -68146,7 +68182,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -68154,7 +68190,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -68163,7 +68199,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -68190,7 +68226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -68199,7 +68235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -68208,7 +68244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -68217,7 +68253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -68226,7 +68262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -68235,7 +68271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -68244,7 +68280,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -68253,7 +68289,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_memory",
@@ -68270,7 +68306,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -68278,7 +68314,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -68287,7 +68323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -68296,7 +68332,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -68305,7 +68341,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -68332,7 +68368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.execute",
@@ -68341,7 +68377,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -68350,7 +68386,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.bind_lookup_other",
@@ -68359,7 +68395,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StateSteps.assign_execute",
@@ -68368,14 +68404,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_unique",
@@ -68383,7 +68419,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
@@ -68418,7 +68454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.block_execute",
@@ -68427,7 +68463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.call_execute",
@@ -68436,7 +68472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.environment",
@@ -68445,7 +68481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop_execute",
@@ -68454,7 +68490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.remaining_loops",
@@ -68463,7 +68499,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.word_view",
@@ -68471,7 +68507,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.byte_view",
@@ -68480,7 +68516,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop32_shape",
@@ -68489,7 +68525,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.body_shape",
@@ -68498,7 +68534,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.condition_read",
@@ -68507,7 +68543,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.alignment_read",
@@ -68516,7 +68552,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CodeEnvironment.finite_lookup",
@@ -68524,7 +68560,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.valid",
@@ -68551,7 +68587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guards",
@@ -68560,7 +68596,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_execute",
@@ -68569,7 +68605,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.environment",
@@ -68578,7 +68614,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.block32_execute",
@@ -68587,7 +68623,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.blockWord_execute",
@@ -68596,7 +68632,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_execute",
@@ -68605,7 +68641,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.condition_read",
@@ -68614,7 +68650,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.alignment_read",
@@ -68623,7 +68659,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.environment",
@@ -68632,7 +68668,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_execute",
@@ -68641,7 +68677,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_execute",
@@ -68650,7 +68686,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_frame",
@@ -68659,7 +68695,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_memory_away",
@@ -68667,7 +68703,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_shape",
@@ -68676,7 +68712,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_shape",
@@ -68685,7 +68721,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.body_shape",
@@ -68694,7 +68730,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_frame",
@@ -68703,7 +68739,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_other",
@@ -68712,7 +68748,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_index",
@@ -68721,7 +68757,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_frame",
@@ -68730,7 +68766,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_other",
@@ -68739,7 +68775,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_index",
@@ -68748,7 +68784,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.remaining_loops",
@@ -68757,7 +68793,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_expected",
@@ -68784,7 +68820,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ProgramPrefix.restoration_frame",
@@ -68793,7 +68829,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.body_shape",
@@ -68838,7 +68874,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_body_execute",
@@ -68847,7 +68883,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_condition",
@@ -68856,7 +68892,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopTail_execute",
@@ -68865,7 +68901,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_small",
@@ -69167,7 +69203,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.aligned_cell",
@@ -69175,7 +69211,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_exists",
@@ -69184,7 +69220,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read200",
@@ -69193,7 +69229,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.mapped_region",
@@ -69202,7 +69238,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.of_cells",
@@ -69211,7 +69247,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.load_expression",
@@ -69220,7 +69256,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute",
@@ -69229,21 +69265,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.stores_execute",
@@ -69252,7 +69288,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.block_execute",
@@ -69261,7 +69297,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_shapes",
@@ -69270,7 +69306,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.address_read",
@@ -69279,7 +69315,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.store_execute",
@@ -69288,7 +69324,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.environment",
@@ -69297,7 +69333,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_execute",
@@ -69306,7 +69342,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_mapped",
@@ -69315,7 +69351,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_memory_away",
@@ -69324,7 +69360,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.answer_length",
@@ -69332,7 +69368,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.oracle",
@@ -69341,21 +69377,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_frame",
@@ -69364,7 +69400,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_index",
@@ -69373,7 +69409,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_other",
@@ -69382,7 +69418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.test_read",
@@ -69391,7 +69427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_execute",
@@ -69400,7 +69436,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_frame",
@@ -69409,7 +69445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_other",
@@ -69418,7 +69454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_index",
@@ -69427,7 +69463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryWalk_away",
@@ -69435,7 +69471,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Mapped.of_domain",
@@ -69443,7 +69479,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.byte_walk",
@@ -69452,7 +69488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.word_walk",
@@ -69461,7 +69497,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_domain",
@@ -69470,7 +69506,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_domain",
@@ -69479,7 +69515,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_clock",
@@ -69488,7 +69524,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_clock",
@@ -69497,7 +69533,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.cost_le",
@@ -69506,7 +69542,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_clock",
@@ -69515,7 +69551,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_control",
@@ -69524,7 +69560,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.alignment_false",
@@ -69533,7 +69569,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_execute",
@@ -69542,7 +69578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.execute",
@@ -69551,7 +69587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_execute",
@@ -69560,7 +69596,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_memory_away",
@@ -69569,7 +69605,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_control",
@@ -69577,7 +69613,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.environment",
@@ -69586,7 +69622,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_memory",
@@ -69595,7 +69631,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_memory",
@@ -69604,7 +69640,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_memory_away",
@@ -69613,7 +69649,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_memory_away",
@@ -69622,7 +69658,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory_away",
@@ -69631,7 +69667,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.byte_walk_be",
@@ -69640,7 +69676,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.word_walk_be",
@@ -69649,7 +69685,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory",
@@ -69658,7 +69694,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_away",
@@ -69667,21 +69703,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.control_of_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.frame_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_control",
@@ -69690,7 +69726,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_control",
@@ -69699,7 +69735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_args",
@@ -69708,7 +69744,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_domain",
@@ -69717,7 +69753,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_control",
@@ -69726,7 +69762,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_control",
@@ -69735,7 +69771,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_cost_le",
@@ -69743,14 +69779,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.stores_execute",
@@ -69759,7 +69795,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.block_execute",
@@ -69768,21 +69804,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_frame",
@@ -69791,7 +69827,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_index",
@@ -69800,7 +69836,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_other",
@@ -69809,7 +69845,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_execute",
@@ -69818,7 +69854,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_bounds",
@@ -69827,7 +69863,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_execute",
@@ -69836,7 +69872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_clock",
@@ -69845,7 +69881,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_index",
@@ -69854,7 +69890,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_shapes",
@@ -69863,7 +69899,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.store_execute",
@@ -69872,7 +69908,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_frame",
@@ -69881,7 +69917,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_other",
@@ -69890,7 +69926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_index",
@@ -69899,7 +69935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryWalk_away",
@@ -69907,7 +69943,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.call_execute",
@@ -69916,7 +69952,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.environment",
@@ -69925,7 +69961,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.alignment_read",
@@ -69934,7 +69970,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.execute",
@@ -69943,7 +69979,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_value_read",
@@ -69952,7 +69988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_execute",
@@ -69961,7 +69997,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_memory_away",
@@ -69970,7 +70006,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_other",
@@ -69979,7 +70015,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.condition_read",
@@ -69988,7 +70024,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.loop_execute",
@@ -69997,7 +70033,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.body_shape",
@@ -70006,7 +70042,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_read",
@@ -70015,7 +70051,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_clock",
@@ -70024,7 +70060,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_control",
@@ -70033,7 +70069,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_other",
@@ -70042,7 +70078,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_domain",
@@ -70051,7 +70087,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_memory_away",
@@ -70060,14 +70096,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.permutation_control",
@@ -70076,21 +70112,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_clock",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_empty",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_restore",
@@ -70099,7 +70135,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_clock",
@@ -70108,7 +70144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_control",
@@ -70117,7 +70153,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_memory_away",
@@ -70126,7 +70162,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute_word",
@@ -70135,7 +70171,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_blocks_execute",
@@ -70144,7 +70180,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.afterBlocks_shape",
@@ -70153,7 +70189,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.block_execute",
@@ -70162,7 +70198,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.call_execute",
@@ -70171,7 +70207,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.Mapped.of_domain",
@@ -70179,7 +70215,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Code.of_control",
@@ -70188,7 +70224,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.mapped_of_control",
@@ -70196,7 +70232,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Args.of_index",
@@ -70205,7 +70241,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.condition_read",
@@ -70214,7 +70250,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.EntryData.of_control",
@@ -70223,7 +70259,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Protected.tail",
@@ -70231,7 +70267,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.environment",
@@ -70240,7 +70276,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.execute",
@@ -70249,7 +70285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.loop_execute",
@@ -70258,7 +70294,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_address_read",
@@ -70267,7 +70303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_store_execute",
@@ -70276,7 +70312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_stores_execute",
@@ -70285,7 +70321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_words_execute",
@@ -70294,14 +70330,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_memory_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_alignment_read",
@@ -70310,7 +70346,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_execute",
@@ -70319,7 +70355,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_first_execute",
@@ -70328,7 +70364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_last_execute",
@@ -70337,7 +70373,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.padding_execute",
@@ -70346,7 +70382,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_locals",
@@ -70354,7 +70390,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_control",
@@ -70362,7 +70398,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_clock",
@@ -70370,7 +70406,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_execute",
@@ -70379,7 +70415,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_memory_away",
@@ -70388,7 +70424,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.body_shape",
@@ -70397,7 +70433,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailLocals.of_locals",
@@ -70406,7 +70442,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.OutMapped.of_domain",
@@ -70414,7 +70450,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailData.of_control",
@@ -70423,7 +70459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.away_above",
@@ -70447,7 +70483,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.ordinary_byte_mapped",
@@ -70455,7 +70491,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.weaken",
@@ -70463,7 +70499,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.subrange",
@@ -70471,7 +70507,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.byte_mapped",
@@ -70479,7 +70515,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.word_mapped",
@@ -70487,7 +70523,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.mask_aligned",
@@ -70496,7 +70532,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.copy_mapped",
@@ -70505,7 +70541,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.absorb_mapped",
@@ -70549,7 +70585,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -70558,7 +70594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -70567,7 +70603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -70576,21 +70612,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -70599,7 +70635,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -70608,7 +70644,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -70617,7 +70653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -70625,7 +70661,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -70634,7 +70670,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -70643,7 +70679,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -70652,7 +70688,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -70660,14 +70696,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -70676,7 +70712,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -70685,7 +70721,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -70694,7 +70730,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -70702,7 +70738,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -70710,7 +70746,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -70718,7 +70754,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -70726,7 +70762,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -70734,7 +70770,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -70742,7 +70778,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -70751,7 +70787,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -70759,7 +70795,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -70768,7 +70804,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -70776,7 +70812,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -70785,7 +70821,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -70794,7 +70830,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -70803,7 +70839,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -70812,7 +70848,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -70821,7 +70857,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -70830,7 +70866,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -70839,7 +70875,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -70848,7 +70884,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -70857,7 +70893,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -70866,7 +70902,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -70875,7 +70911,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -70884,7 +70920,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -70893,7 +70929,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -70902,7 +70938,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -70911,7 +70947,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -70920,7 +70956,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -70929,7 +70965,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -70938,7 +70974,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -70947,7 +70983,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -70956,7 +70992,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -70965,14 +71001,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -70981,7 +71017,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -70990,7 +71026,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -70999,7 +71035,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -71008,7 +71044,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -71016,7 +71052,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -71024,7 +71060,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -71032,7 +71068,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -71041,14 +71077,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.sum_words",
       "axioms": [
         "propext"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_read",
@@ -71057,7 +71093,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_append",
@@ -71066,7 +71102,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat32_equiv",
@@ -71075,7 +71111,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat64_equiv",
@@ -71084,14 +71120,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.convert_nat",
       "axioms": [
         "propext"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le32",
@@ -71100,7 +71136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le64",
@@ -71109,7 +71145,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_read",
@@ -71118,7 +71154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_store_shape",
@@ -71154,7 +71190,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -71163,7 +71199,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.op_congr",
@@ -71172,7 +71208,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_congr",
@@ -71181,7 +71217,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_congr",
@@ -71190,7 +71226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_congr",
@@ -71199,7 +71235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_congr",
@@ -71208,7 +71244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_read",
@@ -71217,7 +71253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -71226,7 +71262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -71235,7 +71271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -71244,7 +71280,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -71252,7 +71288,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -71485,7 +71521,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -71494,7 +71530,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -71503,7 +71539,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -71880,7 +71916,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_heap_le64",
@@ -71889,7 +71925,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.reject_call",
@@ -72509,7 +72545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -72518,7 +72554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -72527,7 +72563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -72536,7 +72572,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "dispatch-provenance-v3.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.record_test_read",
@@ -72929,7 +72965,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -72938,7 +72974,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -73508,7 +73544,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.caller_normal",
@@ -73641,7 +73677,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.UDivMod.shifted_number",
@@ -73733,7 +73769,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.pure_return_execute",
@@ -73742,7 +73778,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_environment",
@@ -73751,7 +73787,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.execute",
@@ -73760,7 +73796,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.environment",
@@ -73769,7 +73805,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.call_execute",
@@ -73778,7 +73814,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.loop_execute",
@@ -73787,7 +73823,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_shape",
@@ -73796,7 +73832,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_execute",
@@ -73805,7 +73841,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.step_fields",
@@ -73814,7 +73850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.loop_execute",
@@ -73832,7 +73868,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.test_read",
@@ -73912,7 +73948,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.call_execute",
@@ -73921,7 +73957,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.assign_execute",
@@ -73939,7 +73975,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Header.call_execute",
@@ -73948,7 +73984,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.execute",
@@ -73957,7 +73993,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.call_execute",
@@ -73966,7 +74002,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.short_or_be",
@@ -73975,7 +74011,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.execute",
@@ -73984,7 +74020,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.call_execute",
@@ -73993,7 +74029,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.body_shape",
@@ -74002,7 +74038,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.scalar_read",
@@ -74011,7 +74047,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.after_transactions_execute",
@@ -74038,7 +74074,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.assign_execute",
@@ -74047,7 +74083,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.body_shape",
@@ -74056,7 +74092,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.condition_read",
@@ -74065,7 +74101,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.environment",
@@ -74074,7 +74110,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_after_first_execute",
@@ -74083,7 +74119,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_decoded_loop",
@@ -74146,7 +74182,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.wrap_read",
@@ -74155,7 +74191,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_length_read",
@@ -74233,7 +74269,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.long_form_execute",
@@ -74242,7 +74278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.body_shape",
@@ -74251,7 +74287,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.execute",
@@ -74260,7 +74296,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.length_tail_execute",
@@ -74269,7 +74305,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.execute",
@@ -74278,7 +74314,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.environment",
@@ -74287,7 +74323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.call_execute",
@@ -74296,7 +74332,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.loop_execute",
@@ -74305,7 +74341,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.step_other",
@@ -74314,7 +74350,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.body_shape",
@@ -74323,7 +74359,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.step_execute",
@@ -74332,7 +74368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.body_shape",
@@ -74359,7 +74395,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.memory_assign_execute",
@@ -74368,7 +74404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.execute",
@@ -74377,7 +74413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.general_execute",
@@ -74386,7 +74422,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.body_shape",
@@ -74395,7 +74431,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.first_guard_one",
@@ -74404,7 +74440,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.environment",
@@ -74413,7 +74449,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.call_execute",
@@ -74422,7 +74458,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.tail_call_execute",
@@ -74431,7 +74467,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.environment",
@@ -74467,7 +74503,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.call_execute",
@@ -74476,7 +74512,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.body_shape",
@@ -74485,7 +74521,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.stage_execute",
@@ -74494,7 +74530,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.environment",
@@ -74503,7 +74539,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.call_execute",
@@ -74512,7 +74548,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.assign_execute",
@@ -74521,7 +74557,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.scan_execute",
@@ -74530,7 +74566,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.execute",
@@ -74539,7 +74575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.call_execute",
@@ -74548,7 +74584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.segment_execute",
@@ -74557,7 +74593,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.tail_execute",
@@ -74566,7 +74602,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256ByteLength.rounded_word",
@@ -74574,7 +74610,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256ByteLength.execute",
@@ -74583,7 +74619,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256ByteLength.call_execute",
@@ -74592,7 +74628,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "original-affected-closure-v3.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Value.limb_read",
@@ -74601,7 +74637,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Value.environment",
@@ -74610,7 +74646,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "frame-exception-normal-call-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HeapScope.mark_call_execute",
@@ -78859,7 +78895,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.initialization_frame",
@@ -78868,7 +78904,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.restoration_frame",
@@ -78877,7 +78913,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.zero_return",
@@ -78886,7 +78922,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -78894,7 +78930,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_ne",
@@ -78902,7 +78938,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_aligned",
@@ -78910,7 +78946,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.ordinary_mapped",
@@ -78918,7 +78954,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.mapped_of_allocated",
@@ -78926,7 +78962,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.count_small",
@@ -78934,7 +78970,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.hash_byte_cell",
@@ -78942,7 +78978,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bind_other",
@@ -78951,7 +78987,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -78960,7 +78996,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -78968,7 +79004,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -78976,7 +79012,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.execute",
@@ -78985,7 +79021,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_execute",
@@ -78994,7 +79030,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_clock",
@@ -79003,7 +79039,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_ffi",
@@ -79012,7 +79048,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.ext_execute",
@@ -79021,7 +79057,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_execute",
@@ -79030,7 +79066,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lastValue_filter",
@@ -79038,7 +79074,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.execute",
@@ -79047,7 +79083,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_aligned",
@@ -79056,7 +79092,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.body_shape",
@@ -79065,7 +79101,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -79074,7 +79110,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_clock",
@@ -79727,7 +79763,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.PureGuard.normal_continue",
@@ -79736,7 +79772,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RootBudget.initialize_validated",
@@ -79781,7 +79817,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPrefix.normal_continue",
@@ -79790,7 +79826,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPath.normal_reaches",
@@ -81261,7 +81297,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPrefix.summary_full",
@@ -81270,7 +81306,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameOpen.geometry",
@@ -86414,7 +86450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.while_none_step",
@@ -90532,7 +90568,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.scoped_normal",
@@ -90550,7 +90586,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticEffects.execution_frame",
@@ -90559,7 +90595,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticEffects.original_call_preserves",
@@ -90712,7 +90748,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.assign",
@@ -90721,7 +90757,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.returned",
@@ -90730,7 +90766,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.raised",
@@ -90739,7 +90775,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.stopped",
@@ -90748,7 +90784,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.sequence",
@@ -90757,7 +90793,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.conditional",
@@ -90766,7 +90802,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.declared",
@@ -90775,21 +90811,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.code_of_erase",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.memory_of_erase",
       "axioms": [
         "propext"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.called",
@@ -90798,7 +90834,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.lookup_body",
@@ -90806,7 +90842,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.call_body",
@@ -90815,7 +90851,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.loop",
@@ -90824,7 +90860,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.primitive",
@@ -90833,7 +90869,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.scoped_call",
@@ -90842,7 +90878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.scoped_body",
@@ -90851,7 +90887,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticEffects.scoped_prefix",
@@ -91053,7 +91089,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticEffects.fixed_clock_spent",
@@ -91062,7 +91098,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticEffects.fixed_call_spent",
@@ -91071,7 +91107,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticEffects.quiet_preserves",
@@ -91080,7 +91116,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticEffects.quiet_clock",
@@ -91089,7 +91125,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.of_quiet",
@@ -91098,7 +91134,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.mono",
@@ -91107,7 +91143,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.sequence",
@@ -91116,7 +91152,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.conditional",
@@ -91125,7 +91161,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.declared",
@@ -91134,7 +91170,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.called",
@@ -91143,7 +91179,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.call_body",
@@ -91152,7 +91188,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.scoped_call",
@@ -91161,7 +91197,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.scoped_body",
@@ -91170,7 +91206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.skip",
@@ -91179,7 +91215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.assign",
@@ -91188,7 +91224,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.returned",
@@ -91197,7 +91233,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.raised",
@@ -91206,7 +91242,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.stopped",
@@ -91215,7 +91251,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.sequence",
@@ -91224,7 +91260,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.conditional",
@@ -91233,7 +91269,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.declared",
@@ -91242,7 +91278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.primitive",
@@ -91251,7 +91287,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.store",
@@ -91260,7 +91296,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticCalls.normal",
@@ -91877,7 +91913,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "run-frames-tstore-v1.log"
+      "successful_log": "u256-lookup-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChargeEvent.prepend",
@@ -92563,6 +92599,220 @@
         "Quot.sound"
       ],
       "successful_log": "run-frames-tstore-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.length_call_any_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.full_body_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.call_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.scoped_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.original_body",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.body_advances",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.body_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.loop_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.bits_signature",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.bit_signature",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.after_length_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Exponent.length_call_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ClockCost.ranked_loop",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CounterFlow.preserved",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CounterFlow.increment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CounterFlow.sequence",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CounterFlow.scoped_call",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CounterFlow.loop_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.normal_of_funded",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256ByteLength.normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Value.unary_lookup",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Value.scalar_word",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Value.of_shape",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "u256-lookup-v2.log"
     }
   ]
 }

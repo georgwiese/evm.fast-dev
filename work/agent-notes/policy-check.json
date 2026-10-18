@@ -1032,6 +1032,9 @@
     "submission/InitECandidate/Solver/GasBudget/CallGasProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/Calls.lean",
     "submission/InitECandidate/Solver/GasBudget/ChargeEvent.lean",
+    "submission/InitECandidate/Solver/GasBudget/ChargeWithMemoryPrefix.lean",
+    "submission/InitECandidate/Solver/GasBudget/ChargeWithMemoryProgram.lean",
+    "submission/InitECandidate/Solver/GasBudget/ChargeWithMemorySetup.lean",
     "submission/InitECandidate/Solver/GasBudget/ChildError.lean",
     "submission/InitECandidate/Solver/GasBudget/ChildErrorCall.lean",
     "submission/InitECandidate/Solver/GasBudget/ChildErrorNormalCall.lean",
@@ -1395,6 +1398,7 @@
     "submission/InitECandidate/Solver/GuestWork/ZeroStoreProgram.lean",
     "submission/InitECandidate/Solver/HashEnvironmentFrame.lean",
     "submission/InitECandidate/Solver/Input/AllocationControl.lean",
+    "submission/InitECandidate/Solver/Input/ArgumentValues.lean",
     "submission/InitECandidate/Solver/Input/AssignNormal.lean",
     "submission/InitECandidate/Solver/Input/AssignedCallNormal.lean",
     "submission/InitECandidate/Solver/Input/BlobBytes.lean",
@@ -5127,8 +5131,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61992,
-  "package_bytes": 2256005813,
+  "package_entries": 61996,
+  "package_bytes": 2256025000,
   "claim": {
     "K": "infinity"
   },

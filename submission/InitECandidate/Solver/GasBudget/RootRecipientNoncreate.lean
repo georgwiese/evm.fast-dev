@@ -66,6 +66,7 @@ theorem noncreate_initialized_normal (source post : PanSemStateFiniteExact 64 Gu
       paid ≤ source.clock ∧ paid ≤ noncreatePrice addressCount keyCount ∧ final.clock = source.clock - paid ∧
       MemoryRegion.Valid ⟨start, 176⟩ ∧
       TableState final .account accountPlan accountSlots nextCursor (start + 176) ∧ TableState final .storage storagePlan storageSlots nextCursor storageStart ∧
+      (∀ pool, start + 176 ≤ storagePlan.base pool) ∧
       accountSlots.length ≤ 20 + addressCount ∧ storageSlots.length ≤ keyCount ∧
       final.locals.lookup (ofString "m") = some (.val (.word (BitVec.ofNat 64 start))) ∧
       final.locals.lookup (ofString "aa") = some (.val (.word (cell accountPlan .header 0))) ∧
@@ -80,10 +81,11 @@ theorem noncreate_initialized_normal (source post : PanSemStateFiniteExact 64 Gu
       evaluateHOLFiniteState final Recipient.messageSite = (some (.returned value), finish) ∧
       post = restore source "m" (restore ready "aa" (restore entered "ak" (restore warmed "empty" finish))) ∧
       final.code = source.code ∧ WarmKeys.Environment final ∧
+      HeapGlobals source final ∧
       ∀ query : BitVec 64, query.toNat < start → final.memory query = source.memory query := by
   obtain ⟨first, accountPlan, storagePlan, accountSlots, storageSlots, cursor, storageStart, ready, entered, warmed, warmFinish,
     firstFits, firstPrice, firstClock, firstBudget, region, table, reader, separated, count, storageCount, aa, ak, message, gasWord, reservoirWord, copiedRecipient, gasCap,
-    warmRun, restored, codes, warmEnvironment, finalArray, accountCapacity, storageCapacity, localFrame, earlierWords⟩ :=
+    warmRun, restored, codes, warmEnvironment, initialGlobals, finalArray, accountCapacity, storageCapacity, localFrame, earlierWords⟩ :=
     initialized_normal source post value start addressesStart addressCount keysStart keyCount precompileStart blockEnv txEnv sender gas reservoir intrinsicRegular pointers
       environment lower bounded aligned precompileValid array positive keyRegion heap precompiles blockGlobal txEnvLocal gasLocal reservoirLocal senderLocal
       addressesLocal countLocal keysLocal keyCountLocal senderFits senderMapped newCode msgCode cap normal
@@ -107,7 +109,7 @@ theorem noncreate_initialized_normal (source post : PanSemStateFiniteExact 64 Gu
     exact recipientMapped offset inside
   obtain ⟨second, nextPlan, nextSlots, nextCursor, final, finish, secondFits, secondPrice, secondClock, forward, secondBudget,
     nextTable, nextReader, nextApart, nextLow, nextHigh, nextCapacity, finalMessage, finalAA, finalAK, finalCodes, finalEnvironment,
-    finalGas, finalCode, finalLength, finalReservoir, finalDestination, pointerAA, pointerAK, finalRun, finalRestored, finalProtected⟩ :=
+    finalGas, finalCode, finalLength, finalReservoir, finalDestination, pointerAA, pointerAK, finalRun, finalRestored, finalGlobals, finalProtected⟩ :=
     Recipient.noncreate_normal warmed warmFinish value accountPlan storagePlan accountSlots storageSlots cursor (start + 176) storageStart start txStart
       recipient data length gas warmEnvironment table reader (fun first second => Or.inl (separated first second)) region (Nat.le_refl _) readerLater warmRecord
       message warmTx aa ak gasWord nonzero recipientFits mapped warmRun
@@ -115,8 +117,8 @@ theorem noncreate_initialized_normal (source post : PanSemStateFiniteExact 64 Gu
     firstBudget secondBudget count nextHigh accountCapacity nextCapacity storageCapacity
   rw [finalRestored] at restored
   refine ⟨first + second, nextPlan, storagePlan, nextSlots, storageSlots, nextCursor, storageStart, cursor, ready, entered, warmed, final, finish,
-    by omega, totalPrice, by omega, region, nextTable, nextReader, by omega, storageCount, finalMessage, finalAA, finalAK, finalGas, gasCap,
-    finalReservoir.trans reservoirWord, finalCode, finalLength, finalDestination.trans (copiedRecipient _ _ initialRead), pointerAA, pointerAK, finalRun, restored, finalCodes.trans codes, finalEnvironment, ?_⟩
+    by omega, totalPrice, by omega, region, nextTable, nextReader, readerLater, by omega, storageCount, finalMessage, finalAA, finalAK, finalGas, gasCap,
+    finalReservoir.trans reservoirWord, finalCode, finalLength, finalDestination.trans (copiedRecipient _ _ initialRead), pointerAA, pointerAK, finalRun, restored, finalCodes.trans codes, finalEnvironment, initialGlobals.trans finalGlobals, ?_⟩
   intro query earlier
   exact (finalProtected query earlier).trans (earlierWords query earlier)
 

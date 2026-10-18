@@ -26,6 +26,7 @@ theorem normal_bound (source target : PanSemStateFiniteExact 64 Guest.HostMemory
       (∀ first second, nextPlan.base first + size kind nextPlan first ≤ reader.base second ∨ reader.base second + size readerKind reader second ≤ nextPlan.base first) ∧
       slots.length ≤ nextSlots.length ∧ nextSlots.length ≤ slots.length + 1 ∧ nextPlan.capacity ≤ max plan.capacity (4 * (nextSlots.length + 1)) ∧
       cell nextPlan .header 0 = cell plan .header 0 ∧ target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧
+      HeapGlobals source target ∧
       ∀ address : BitVec 64, address.toNat < floor → target.memory address = source.memory address := by
   obtain ⟨bits, power, minimum⟩ := table.power
   obtain ⟨paid, globals, memory, nextPlan, nextSlots, bounded, unchanged, fits, post, nextValid, nextHalf, sameLocals⟩ :=
@@ -55,7 +56,7 @@ theorem normal_bound (source target : PanSemStateFiniteExact 64 Guest.HostMemory
       (by intro pool; have prior := readerTable.earlier pool; omega), readerTable.lower⟩
   exact ⟨paid, nextPlan, nextSlots, nextCursor, fits, clockEq, forward, post.amortized_power bits power minimum table.half bounded unchanged,
     nextTable, nextReader, nextApart, post.countBound.1, post.countBound.2, post.capacity_high_water, post.header_pointer, sameLocals, codes,
-    environment.of_fields codes domain endian, fun address before => post.protected_before nextValid floor table.lower table.earlier address before⟩
+    environment.of_fields codes domain endian, post.heap_globals, fun address before => post.protected_before nextValid floor table.lower table.earlier address before⟩
 
 end InitECandidate.Solver.GasBudget.LiveTableSetter
 

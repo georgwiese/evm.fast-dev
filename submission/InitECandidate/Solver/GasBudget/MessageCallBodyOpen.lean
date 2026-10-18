@@ -32,7 +32,9 @@ theorem body_open_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       ready.clock = source.clock - paid ∧ regularBudget ready.memory (FrameNew.framePointer scratch) = words.gas.toNat ∧
       ready.globals.lookup (ofString "ev") = some (.val (.word (FrameNew.framePointer scratch))) ∧
       ready.globals.lookup (ofString "cur_cont") = some (.val (.word (FrameOpen.recordPointer (FrameNew.finalScratch scratch words.length)))) ∧
-      ready.code = source.code ∧ evaluateHOLFiniteState ready ProcessMessage.afterOpen = (some (.returned returned), finish) ∧
+      ready.code = source.code ∧ ready.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 (cursor + 96)))) ∧
+      cursor + 96 ≤ 33806089496 ∧ ready.memaddrs = source.memaddrs ∧ ready.be = source.be ∧
+      evaluateHOLFiniteState ready ProcessMessage.afterOpen = (some (.returned returned), finish) ∧
       ∀ query, Arenas.Outside lower scratch query → query.toNat < cursor → ready.memory query = source.memory query := by
   obtain ⟨outputRegion, prefixFits, inner, restRun, restored⟩ := prefix_normal source post cursor environment cursorLower cursorBound cursorAligned heap value normal
   let cleared := clearedState source cursor
@@ -71,10 +73,13 @@ theorem body_open_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
   have declaredEntry : FrameNew.Entry declared scratch lower (BitVec.ofNat 64 start) empty words addresses keys addressCount keyCount := clearEntry.relocals_clock declared.locals cleared.clock
   have globals (name : String) (different : ofString "heap_ptr" ≠ ofString name) : declared.globals.lookup (ofString name) = source.globals.lookup (ofString name) := by
     simp [declared, cleared, clearedState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, different, Ne.symm different]
-  obtain ⟨paid, ready, returned, finish, fits, price, clock, budget, active, activeContinuation, codes, afterOpenRun, outside⟩ :=
+  obtain ⟨paid, ready, returned, finish, fits, price, clock, budget, active, activeContinuation, codes, domain, endian, heapSame, afterOpenRun, outside⟩ :=
     invoke_open_normal declared called scratch lower (BitVec.ofNat 64 start) empty parent continuation words addresses keys addressCount keyCount declaredEntry known openCode newCode declaredMessage
       ((globals "ev" (by decide)).trans evGlobal) ((globals "cur_cont" (by decide)).trans continuationGlobal) room invokeRun
-  refine ⟨5 + paid, ready, returned, finish, ?_, by omega, ?_, budget, active, activeContinuation, codes, afterOpenRun, ?_⟩
+  have nextHeap : ready.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 (cursor + 96)))) := by
+    rw [heapSame]
+    simp [declared, cleared, clearedState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE]
+  refine ⟨5 + paid, ready, returned, finish, ?_, by omega, ?_, budget, active, activeContinuation, codes, nextHeap, outputRegion.upper, domain, endian, afterOpenRun, ?_⟩
   · change paid ≤ source.clock - 5 at fits
     omega
   · change ready.clock = source.clock - 5 - paid at clock

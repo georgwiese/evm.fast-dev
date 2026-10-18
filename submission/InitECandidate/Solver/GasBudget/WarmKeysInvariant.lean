@@ -2,6 +2,7 @@ import InitECandidate.Solver.GasBudget.WarmKeysLocals
 import InitECandidate.Solver.MutableTable.SetModelCursor
 import InitECandidate.Solver.MutableTable.SetAmortized
 import InitECandidate.Solver.MutableTable.TableState
+import InitECandidate.Solver.MutableTable.SetModelGlobals
 
 namespace InitECandidate.Solver.GasBudget.WarmKeys
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

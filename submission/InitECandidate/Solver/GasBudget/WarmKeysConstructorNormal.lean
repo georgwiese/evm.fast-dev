@@ -25,6 +25,7 @@ theorem constructor_normal_bound (source post : PanSemStateFiniteExact 64 Guest.
       plan.capacity ≤ max 16 (4 * (total + 1)) ∧
       evaluateHOLFiniteState warmed afterLoop = (some (.returned value), finish) ∧ post = restore source "ak" finish ∧
       warmed.code = source.code ∧
+      HeapGlobals source warmed ∧
       (∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address) ∧
       ∀ key : MlS, key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key := by
   have callRun := normal

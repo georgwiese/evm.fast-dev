@@ -22,6 +22,7 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
       Locals target (cell nextPlan .header 0) start count (index + 1) ∧
       slots.length ≤ nextSlots.length ∧ nextSlots.length ≤ slots.length + 1 ∧
       nextPlan.capacity ≤ max plan.capacity (4 * (nextSlots.length + 1)) ∧
+      HeapGlobals source target ∧
       ∀ address : BitVec 64, address.toNat < floor → target.memory address = source.memory address := by
   obtain ⟨called, setRun, incrementRun⟩ := Input.sequence_none source target setCall increment normal
   obtain ⟨bits, power, minimum⟩ := table.power
@@ -61,7 +62,7 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   have linear : Set.noGrowthPrice .account slots.length + 1 = 9 * slots.length + 12 := Set.no_growth_caller_price .account slots.length
   rw [linear] at amortized
   refine ⟨paid, nextPlan, nextSlots, nextCursor, fits, clockEq, amortized, nextTable,
-    calledEnvironment.of_fields rfl rfl rfl, ?_, ?_, post.countBound.1, post.countBound.2, post.capacity_high_water, ?_⟩
+    calledEnvironment.of_fields rfl rfl rfl, ?_, ?_, post.countBound.1, post.countBound.2, post.capacity_high_water, post.heap_globals, ?_⟩
   · exact array.of_protected (fun address earlier => post.protected_before nextValid floor table.lower table.earlier address earlier)
   · rw [post.header_pointer]
     exact calledLocals.next

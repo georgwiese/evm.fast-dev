@@ -48,6 +48,7 @@ theorem initialized_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
       warmed.memory (BitVec.ofNat 64 start + 48#64) = .word reservoir ∧ CopiesRecipient source warmed start ∧ gas.toNat + intrinsicRegular ≤ 16777216 ∧
       evaluateHOLFiniteState warmed WarmKeys.afterLoop = (some (.returned value), finish) ∧
       post = restore source "m" (restore ready "aa" (restore entered "ak" finish)) ∧ warmed.code = source.code ∧ WarmKeys.Environment warmed ∧
+      HeapGlobals source warmed ∧
       PointerArray warmed.memory 20 addressesStart addressCount start pointers ∧
       accountPlan.capacity ≤ max 64 (4 * (addressCount + 20)) ∧ storagePlan.capacity ≤ max 16 (4 * (keyCount + 1)) ∧
       (∀ key : MlS, key ≠ ofString "m" → key ≠ ofString "aa" → key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key) ∧
@@ -77,7 +78,7 @@ theorem initialized_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   have mapped : ∀ offset < 20, stored.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress sender offset)) := by intro offset inside; rw [domain]; exact queryMapped offset inside
   have nextAligned : (start + 176) % 8 = 0 := by omega
   obtain ⟨paid, accountPlan, storagePlan, accountSlots, storageSlots, nextCursor, storageStart, ready, entered, warmed, finish,
-    fits, price, spent, budget, accountTable, storageTable, separated, accountCount, storageCount, finalAccount, finalStorage, finalMessage, finalGas, finalReservoir, finalRecipient, finalCap, restRun, restored, finalCodes, finalEnvironment, finalArray,
+    fits, price, spent, budget, accountTable, storageTable, separated, accountCount, storageCount, finalAccount, finalStorage, finalMessage, finalGas, finalReservoir, finalRecipient, finalCap, restRun, restored, finalCodes, finalEnvironment, finalGlobals, finalArray,
     accountCapacity, storageCapacity, finalLocalFrame, finalProtected⟩ :=
     warm_normal stored inner value start (start + 176) addressesStart addressCount keysStart keyCount precompileStart sender gas reservoir intrinsicRegular pointers storedEnvironment
       prepared.region (Nat.le_refl _) prepared.region.upper nextAligned precompileValid storedArray positive keyRegion storedHeap storedPrecompiles storedMessage
@@ -88,10 +89,14 @@ theorem initialized_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     intro query before
     exact (finalProtected query before).trans (prepared.outside query (Or.inl before))
   have funded := prepared.funded
+  have initialGlobals : HeapGlobals source stored := by
+    intro key different
+    rw [prepared.frame]
+    simp [MsgNew.callState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, different, Ne.symm different]
   refine ⟨10 + paid, accountPlan, storagePlan, accountSlots, storageSlots, nextCursor, storageStart, ready, entered, warmed, finish,
     by omega, by omega, by omega, by omega, prepared.region, accountTable, storageTable, separated, accountCount, storageCount, finalAccount, finalStorage, finalMessage, finalGas, finalReservoir,
     (fun tx recipient read => finalRecipient.trans (prepared.recipient tx recipient read)), finalCap,
-    restRun, ?_, finalCodes.trans codes, finalEnvironment, array.of_protected earlierWords, accountCapacity, storageCapacity, ?_, earlierWords⟩
+    restRun, ?_, finalCodes.trans codes, finalEnvironment, initialGlobals.trans finalGlobals, array.of_protected earlierWords, accountCapacity, storageCapacity, ?_, earlierWords⟩
   · rw [restored] at sourceRestored
     exact sourceRestored
   · intro key notMessage notAccount notStorage notIndex

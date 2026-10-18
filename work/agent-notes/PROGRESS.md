@@ -5211,3 +5211,10 @@ Eleven new modules: generic no-return leaves/sequence, actual trap_with no norma
 - Actual refund/refill normal callers derive their exact2/1clocks, full caller frames and preserved capped regular ledger. Current owned message/frame mappings and words remain explicit; no helper result or ledger result is assumed.
 - Successful gas-normal-transitions-v2.log1592jobs, exit0, permitted axioms, MaxRSS1855800KiB. Index4858modules/8205facts; inventory4871modules, frozen files unchanged/replacement closure0. Incremental policy passed61740entries/2254690801bytes; infinity, no full verification/whole-program finite K.
 - Continuing with original frame exception/exit paths and global frame-loop progress. Depth0 preparation, all-opcode/child/rollback ownership, event counts, input/startup/arena reachability and weighted target K remain open.
+
+## Actual frame exception and done marker — 2026-10-18
+
+- Actual frame_halt caller derives its single clock and non-wrap from the capped regular ledger, with exact used/liquid/error writes, preserved budget and zero liquid gas.
+- Exact original frame_exception AST and both branches now compose actual refill, optional halt, return-data/direct-error stores, final continuation+32 done store and return. Full body and caller derive1or2/2or3source clocks, preserve the regular ledger and mark the real continuation done. Nonmemory state/caller locals are framed; no successful-helper or entry-clock premise.
+- Current frame/message mappings/words, source code and continuation separation remain explicit. The done-marker/run_frames exit connection, opcode/child/rollback ownership/progress and global event counts remain open, along with creation/input/startup/arena reachability and target K.
+- Successful frame-exception-normal-call-v1.log1598jobs, exit0, permitted axioms, MaxRSS1827404KiB. Index4864modules/8216facts; inventory4877modules, frozen files unchanged/replacement closure0. Incremental policy passed61746entries/2254716861bytes; infinity, no full verification/whole-program finite K.

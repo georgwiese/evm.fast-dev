@@ -47,6 +47,7 @@ theorem warm_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
       warmed.memory (BitVec.ofNat 64 messageStart + 24#64) = source.memory (BitVec.ofNat 64 messageStart + 24#64) ∧ gas.toNat + intrinsicRegular ≤ 16777216 ∧
       evaluateHOLFiniteState warmed WarmKeys.afterLoop = (some (.returned value), finish) ∧
       post = restore ready "aa" (restore entered "ak" finish) ∧ warmed.code = source.code ∧ WarmKeys.Environment warmed ∧
+      HeapGlobals source warmed ∧
       PointerArray warmed.memory 20 addressesStart addressCount messageStart pointers ∧
       accountPlan.capacity ≤ max 64 (4 * (addressCount + 20)) ∧ storagePlan.capacity ≤ max 16 (4 * (keyCount + 1)) ∧
       (∀ key : MlS, key ≠ ofString "aa" → key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key) ∧
@@ -73,7 +74,7 @@ theorem warm_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
   have mapped : ∀ offset < 20, ready.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress sender offset)) := by intro offset inside; rw [domain]; exact queryMapped offset inside
   obtain ⟨paid, accountPlan, storagePlan, accountSlots, storageSlots, nextCursor, storageStart, entered, warmed, finish,
     fits, price, spent, budget, accountTable, storageTable, separated, accountCount, storageCount, accountCapacity, storageCapacity, accountLocal, storageLocals, finalEnvironment,
-    restRun, restored, finalCodes, finalArray, finalProtected, finalLocalFrame⟩ :=
+    restRun, restored, finalCodes, finalGlobals, finalArray, finalProtected, finalLocalFrame⟩ :=
     WarmTables.normal_bound ready post value cursor addressesStart addressCount keysStart keyCount sender pointers readyEnvironment
       (by have lower := region.lower; change 2701131776 ≤ messageStart at lower; omega) cursorBound cursorAligned precompileStart precompileValid readyArray positive keyRegion
       (globalWord _ _ heap) (globalWord _ _ precompiles) (localWord _ _ senderLocal) (localWord _ _ addressesLocal) (localWord _ _ countLocal)
@@ -86,7 +87,7 @@ theorem warm_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     intro query before
     exact (finalProtected query (by omega)).trans (readyOutside query (Or.inl before))
   refine ⟨paid, accountPlan, storagePlan, accountSlots, storageSlots, nextCursor, storageStart, ready, entered, warmed, finish,
-    by omega, price, by omega, budget, accountTable, storageTable, separated, accountCount, storageCount, accountLocal, storageLocals.table, ?_, ?_, ?_, ?_, cap, restRun, restored, finalCodes.trans codes, finalEnvironment, array.of_protected earlierWords,
+    by omega, price, by omega, budget, accountTable, storageTable, separated, accountCount, storageCount, accountLocal, storageLocals.table, ?_, ?_, ?_, ?_, cap, restRun, restored, finalCodes.trans codes, finalEnvironment, ?_, array.of_protected earlierWords,
     accountCapacity, storageCapacity, ?_, earlierWords⟩
   · exact (finalLocalFrame _ (by decide) (by decide) (by decide)).trans (localWord _ _ messageLocal)
   · exact (finalProtected _ gasBefore).trans (readyGas.trans gasCell)
@@ -98,6 +99,8 @@ theorem warm_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
       rw [MessageField.field_number messageStart 24 region (by decide)]
       omega
     exact (finalProtected _ recipientBefore).trans readyRecipient
+  · intro key different
+    rw [finalGlobals key different, globals]
   · intro key notAccount notStorage notIndex
     rw [finalLocalFrame key notAccount notStorage notIndex, locals]
 

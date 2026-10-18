@@ -33,7 +33,9 @@ theorem call_open_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       regularBudget ready.memory (FrameNew.framePointer scratch) + intrinsicRegular ≤ 16777216 ∧
       ready.globals.lookup (ofString "ev") = some (.val (.word (FrameNew.framePointer scratch))) ∧
       ready.globals.lookup (ofString "cur_cont") = some (.val (.word (FrameOpen.recordPointer (FrameNew.finalScratch scratch words.length)))) ∧
-      ready.code = source.code ∧ evaluateHOLFiniteState ready ProcessMessage.afterOpen = (some (.returned returned), finish) ∧
+      ready.code = source.code ∧ ready.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 (cursor + 96)))) ∧
+      cursor + 96 ≤ 33806089496 ∧ ready.memaddrs = source.memaddrs ∧ ready.be = source.be ∧
+      evaluateHOLFiniteState ready ProcessMessage.afterOpen = (some (.returned returned), finish) ∧
       ∀ query, Arenas.Outside lower scratch query → query.toNat < cursor → ready.memory query = source.memory query := by
   rw [actual_call] at normal
   have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) [localVar "m"] = some [.val (.word (BitVec.ofNat 64 start))] := by
@@ -44,7 +46,7 @@ theorem call_open_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     body afterCall callee .one args called positive value normal
   let calleeSource := callEntryStateHOLFinite source callee
   have calleeEntry : FrameNew.Entry calleeSource scratch lower (BitVec.ofNat 64 start) empty words addresses keys addressCount keyCount := entry.relocals_clock callee (source.clock - 1)
-  obtain ⟨paid, ready, bodyValue, finish, fits, price, clock, budget, active, activeContinuation, codes, restRun, outside⟩ :=
+  obtain ⟨paid, ready, bodyValue, finish, fits, price, clock, budget, active, activeContinuation, codes, nextHeap, nextBound, domain, endian, restRun, outside⟩ :=
     body_open_normal calleeSource target returned start cursor scratch lower empty parent continuation recipient words addresses keys addressCount keyCount calleeEntry
       (environment.of_fields rfl rfl rfl) cursorLower cursorBound cursorAligned heap messageRegion messageBefore addressesBefore keysBefore messageLocal recipientCell nonzero
       known openCode newCode evGlobal continuationGlobal room bodyRun
@@ -53,7 +55,7 @@ theorem call_open_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     change source.memory (BitVec.ofNat 64 start + 40#64) = .word words.gas at stored
     exact HolWordLab.word.inj (stored.symm.trans gasCell)
   rw [gasEq] at budget
-  refine ⟨paid + 1, ready, bodyValue, finish, ?_, by omega, ?_, budget, by omega, active, activeContinuation, codes, restRun, outside⟩
+  refine ⟨paid + 1, ready, bodyValue, finish, ?_, by omega, ?_, budget, by omega, active, activeContinuation, codes, nextHeap, nextBound, domain, endian, restRun, outside⟩
   · change paid ≤ source.clock - 1 at fits
     omega
   · change ready.clock = source.clock - 1 - paid at clock

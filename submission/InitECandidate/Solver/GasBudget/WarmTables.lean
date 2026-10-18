@@ -59,11 +59,12 @@ theorem normal_bound (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
       WarmKeys.Locals warmed (cell storagePlan .header 0) keysStart keyCount keyCount ∧ WarmKeys.Environment warmed ∧
       evaluateHOLFiniteState warmed WarmKeys.afterLoop = (some (.returned value), finish) ∧
       post = restore source "aa" (restore entered "ak" finish) ∧ warmed.code = source.code ∧
+      HeapGlobals source warmed ∧
       PointerArray warmed.memory 20 addressesStart addressCount cursor pointers ∧
       (∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address) ∧
       ∀ key : MlS, key ≠ ofString "aa" → key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key := by
   obtain ⟨accountPaid, accountPlan, accountSlots, storageStart, entered, accountFinish, accountFits, accountClock, accountBound,
-    accountTable, accountEnvironment, accountArray, accountLocals, accountCount, accountCapacity, accountRun, accountRestored, accountCodes, accountProtected, accountLocalFrame⟩ :=
+    accountTable, accountEnvironment, accountArray, accountLocals, accountCount, accountCapacity, accountRun, accountRestored, accountCodes, accountGlobals, accountProtected, accountLocalFrame⟩ :=
     WarmAccounts.normal_bound source post value cursor addressesStart addressCount sender pointers environment lower bounded aligned precompileStart precompileValid array positive
       heap precompiles senderLocal addressesLocal countLocal queryFits queryMapped newCode normal
   have forward : cursor ≤ storageStart := by
@@ -79,7 +80,7 @@ theorem normal_bound (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
     (accountLocalFrame _ (by decide) (by decide)).trans keyCountLocal
   have constructorCode : entered.code.lookup (ofString "htab_new") = some (WitnessRadix.TableNew.formals, WitnessRadix.TableNew.body, .one) := by rw [accountCodes]; exact newCode
   obtain ⟨storagePaid, storagePlan, storageSlots, nextCursor, warmed, finish, storageFits, storageClock, storageBound, storageTable, finalEnvironment,
-    finalLocals, storageCount, storageCapacity, restRun, storageRestored, storageCodes, storageProtected, storageLocalFrame⟩ :=
+    finalLocals, storageCount, storageCapacity, restRun, storageRestored, storageCodes, storageGlobals, storageProtected, storageLocalFrame⟩ :=
     WarmKeys.constructor_normal_bound entered accountFinish value storageStart keysStart keyCount accountEnvironment (by omega) accountTable.bounded accountTable.aligned
       keyRegion accountTable.heap storedKeys storedCount constructorCode accountRun
   have pools := MemoryModel.PoolFrame.of_protected_before entered.memory warmed.memory .account accountPlan accountTable.valid storageStart accountTable.earlier storageProtected
@@ -103,7 +104,7 @@ theorem normal_bound (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
   have totalPrice := price_bound (accountPaid + storagePaid) accountPlan.capacity storagePlan.capacity addressCount keyCount combined accountCapacity storageCapacity
   refine ⟨accountPaid + storagePaid, accountPlan, storagePlan, accountSlots, storageSlots, nextCursor, storageStart, entered, warmed, finish,
     by omega, totalPrice, by omega, combined, finalAccountTable, storageTable, ?_, accountCount, storageCount, accountCapacity, storageCapacity, ?_,
-    finalLocals, finalEnvironment, restRun, ?_, storageCodes.trans accountCodes, array.of_protected finalProtected, finalProtected, ?_⟩
+    finalLocals, finalEnvironment, restRun, ?_, storageCodes.trans accountCodes, accountGlobals.trans storageGlobals, array.of_protected finalProtected, finalProtected, ?_⟩
   · intro first second
     have before := accountTable.earlier first
     have after := storageTable.lower second

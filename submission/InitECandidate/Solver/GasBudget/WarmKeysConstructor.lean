@@ -27,6 +27,7 @@ theorem constructor_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
       plan.capacity ≤ max 16 (4 * (total + 1)) ∧
       evaluateHOLFiniteState warmed afterLoop = (some (.returned value), finish) ∧ post = restore source "ak" finish ∧
       warmed.code = source.code ∧
+      HeapGlobals source warmed ∧
       (∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address) ∧
       ∀ key : MlS, key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key := by
   rw [constructor_shape] at normal
@@ -46,7 +47,7 @@ theorem constructor_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   have readyTable : Table ready (fresh .storage cursor 16) [] (freshEnd .storage cursor 16) cursor := constructedTable.of_fields rfl rfl rfl rfl
   have readyEnvironment : Environment ready := environment.of_fields rfl rfl rfl
   obtain ⟨paid, plan, slots, nextCursor, fits, clockEq, bounded, finalTable, finalEnvironment, finalLocals,
-    lower, upper, capacityBound, earlierWords⟩ := loop_normal total ready warmed start total 0 cursor (freshEnd .storage cursor 16) (fresh .storage cursor 16) [] inputValid
+    lower, upper, capacityBound, finalGlobals, earlierWords⟩ := loop_normal total ready warmed start total 0 cursor (freshEnd .storage cursor 16) (fresh .storage cursor 16) [] inputValid
       (by omega) readyEnvironment readyTable (initial_locals source cursor start total keys count) loopRun
   have readyClock : ready.clock = source.clock - 10 := by
     change source.clock - (TableRuntime.price 16 + 1) = source.clock - 10
@@ -54,8 +55,11 @@ theorem constructor_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   change paid + GrowRuntime.growthPotential .storage 16 ≤ price 0 total + GrowRuntime.growthPotential .storage plan.capacity at bounded
   change slots.length ≤ 0 + total at upper
   change plan.capacity ≤ max 16 (4 * (0 + total + 1)) at capacityBound
+  have initialGlobals : HeapGlobals source ready := by
+    intro key different
+    simp [ready, constructed, TableRuntime.callState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, different, Ne.symm different]
   refine ⟨10 + paid, plan, slots, nextCursor, warmed, inner, by omega, by omega, by omega,
-    finalTable, finalEnvironment, finalLocals, by omega, by simpa only [Nat.zero_add] using capacityBound, restRun, restored, ?_, ?_, ?_⟩
+    finalTable, finalEnvironment, finalLocals, by omega, by simpa only [Nat.zero_add] using capacityBound, restRun, restored, ?_, initialGlobals.trans finalGlobals, ?_, ?_⟩
   · have fields := Input.evaluation_fields ready warmed loop none loopRun
     exact fields.2.2.2
   · intro address earlier

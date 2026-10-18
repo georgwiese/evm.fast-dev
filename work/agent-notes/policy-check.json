@@ -1088,6 +1088,8 @@
     "submission/InitECandidate/Solver/GasBudget/RegularCharge.lean",
     "submission/InitECandidate/Solver/GasBudget/RegularChargeCall.lean",
     "submission/InitECandidate/Solver/GasBudget/Repayment.lean",
+    "submission/InitECandidate/Solver/GasBudget/RootActiveEntry.lean",
+    "submission/InitECandidate/Solver/GasBudget/RootActiveFrame.lean",
     "submission/InitECandidate/Solver/GasBudget/RootCallerNormal.lean",
     "submission/InitECandidate/Solver/GasBudget/RootCallerProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/RootEntry.lean",
@@ -2700,6 +2702,7 @@
     "submission/InitECandidate/Solver/MutableTable/SetModelCall.lean",
     "submission/InitECandidate/Solver/MutableTable/SetModelCursor.lean",
     "submission/InitECandidate/Solver/MutableTable/SetModelExecution.lean",
+    "submission/InitECandidate/Solver/MutableTable/SetModelGlobals.lean",
     "submission/InitECandidate/Solver/MutableTable/SetModelHeap.lean",
     "submission/InitECandidate/Solver/MutableTable/SetModelNoGrowth.lean",
     "submission/InitECandidate/Solver/MutableTable/SetModelOwnership.lean",
@@ -2799,6 +2802,7 @@
     "submission/InitECandidate/Solver/PanDeclarations.lean",
     "submission/InitECandidate/Solver/PanFieldStores.lean",
     "submission/InitECandidate/Solver/PanFieldStoresFrame.lean",
+    "submission/InitECandidate/Solver/PanHeapGlobals.lean",
     "submission/InitECandidate/Solver/PanState.lean",
     "submission/InitECandidate/Solver/PanTraversal.lean",
     "submission/InitECandidate/Solver/RiscVEvaluatorCosts.lean",
@@ -4861,8 +4865,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61726,
-  "package_bytes": 2254626571,
+  "package_entries": 61730,
+  "package_bytes": 2254648487,
   "claim": {
     "K": "infinity"
   },

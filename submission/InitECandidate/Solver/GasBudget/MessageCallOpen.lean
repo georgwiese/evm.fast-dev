@@ -25,6 +25,8 @@ theorem invoke_open_normal (source target : PanSemStateFiniteExact 64 Guest.Host
       ready.globals.lookup (ofString "ev") = some (.val (.word (FrameNew.framePointer scratch))) ∧
       ready.globals.lookup (ofString "cur_cont") = some (.val (.word (FrameOpen.recordPointer (FrameNew.finalScratch scratch words.length)))) ∧
       ready.code = source.code ∧
+      ready.memaddrs = source.memaddrs ∧ ready.be = source.be ∧
+      ready.globals.lookup (ofString "heap_ptr") = source.globals.lookup (ofString "heap_ptr") ∧
       evaluateHOLFiniteState ready ProcessMessage.afterOpen = (some (.returned returned), finish) ∧
       ∀ query, Arenas.Outside lower scratch query → ready.memory query = source.memory query := by
   have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) [localVar "msg"] = some [.val (.word message)] := by
@@ -46,10 +48,16 @@ theorem invoke_open_normal (source target : PanSemStateFiniteExact 64 Guest.Host
     change source.clock - 1 - (WitnessRadix.Zero.price (JumpDest.bitmapBytes words.length.toNat) + 45 + spent) = source.clock - paid
     dsimp [paid]
     omega
-  refine ⟨paid, ready, returned, finish, funded, by dsimp [paid]; omega, clock, budget, ?_, ?_, rfl, restRun, outside⟩
+  refine ⟨paid, ready, returned, finish, funded, by dsimp [paid]; omega, clock, budget, ?_, ?_, rfl, rfl, rfl, ?_, restRun, outside⟩
   · simp [ready, FrameOpen.openedState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE,
       show ofString "cur_cont" ≠ ofString "ev" from by decide]
   · simp [ready, FrameOpen.openedState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE]
+  · simp [ready, FrameOpen.openedState, ProcessMessage.enteredState, calleeSource, callEntryStateHOLFinite,
+      WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE,
+      show ofString "cur_cont" ≠ ofString "heap_ptr" from by decide,
+      show ofString "ev" ≠ ofString "heap_ptr" from by decide,
+      show ofString "scratch_ptr" ≠ ofString "heap_ptr" from by decide,
+      show ofString "frame_mem_ptr" ≠ ofString "heap_ptr" from by decide]
 
 end InitECandidate.Solver.GasBudget.MessageCall
 

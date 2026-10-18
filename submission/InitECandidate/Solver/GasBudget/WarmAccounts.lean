@@ -30,6 +30,7 @@ theorem normal_bound (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
       WarmAddresses.Locals warmed (cell plan .header 0) start count count ∧ slots.length ≤ 19 + count ∧
       plan.capacity ≤ max 64 (4 * (count + 20)) ∧
       evaluateHOLFiniteState warmed WarmAddresses.afterLoop = (some (.returned value), finish) ∧ post = restore source "aa" finish ∧ warmed.code = source.code ∧
+      HeapGlobals source warmed ∧
       (∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address) ∧
       ∀ key : MlS, key ≠ ofString "aa" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key := by
   obtain ⟨prefixPaid, prefixSlots, prewarmed, inner, prefixBound, prefixFits, prefixClock, prefixFrame, prefixHeader, prefixModel, prefixCount, prefixLocals,
@@ -78,15 +79,20 @@ theorem normal_bound (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
   obtain ⟨warmed, loopRun, restRun, _⟩ := loopSafe.normal_continue ready inner WarmAddresses.afterLoop value siteRun
   have readyTable : TableState ready .account initialPlan prefixSlots initialCursor cursor := prefixTable.of_fields rfl rfl rfl rfl
   have readyEnvironment : WarmKeys.Environment ready := prefixEnvironment.of_fields rfl rfl rfl
-  obtain ⟨loopPaid, plan, slots, nextCursor, loopFits, loopClock, loopBound, finalTable, finalEnvironment, finalArray, finalLocals, finalLower, finalUpper, finalCapacity, finalProtected⟩ :=
+  obtain ⟨loopPaid, plan, slots, nextCursor, loopFits, loopClock, loopBound, finalTable, finalEnvironment, finalArray, finalLocals, finalLower, finalUpper, finalCapacity, finalGlobals, finalProtected⟩ :=
     WarmAddresses.loop_normal count ready warmed start count 0 cursor initialCursor initialPlan prefixSlots pointers prefixArray positive (by omega) readyEnvironment readyTable readyLocals loopRun
   have priced := WarmPrecompiles.price_mono prefixSlots.length 19 count prefixCount
   change loopPaid + GrowRuntime.growthPotential .account 64 ≤ WarmPrecompiles.price prefixSlots.length count + GrowRuntime.growthPotential .account plan.capacity at loopBound
   change loopPaid ≤ prewarmed.clock at loopFits
   change warmed.clock = prewarmed.clock - loopPaid at loopClock
   change plan.capacity ≤ max 64 (4 * (prefixSlots.length + count + 1)) at finalCapacity
+  have initialGlobals : HeapGlobals source ready := by
+    intro key different
+    change prewarmed.globals.lookup key = source.globals.lookup key
+    rw [globals]
+    simp [TableRuntime.callState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, different, Ne.symm different]
   refine ⟨prefixPaid + loopPaid, plan, slots, nextCursor, warmed, inner, by omega, by omega, by omega,
-    finalTable, finalEnvironment, finalArray, finalLocals, by omega, by omega, restRun, restored, ?_, ?_, ?_⟩
+    finalTable, finalEnvironment, finalArray, finalLocals, by omega, by omega, restRun, restored, ?_, initialGlobals.trans finalGlobals, ?_, ?_⟩
   · have fields := Input.evaluation_fields ready warmed WarmAddresses.loop none loopRun
     exact fields.2.2.2.trans codes
   · intro address before

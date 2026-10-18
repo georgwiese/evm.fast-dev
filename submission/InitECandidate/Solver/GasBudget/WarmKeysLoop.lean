@@ -31,6 +31,7 @@ theorem loop_normal (remaining : Nat) (source target : PanSemStateFiniteExact 64
       Locals target (cell nextPlan .header 0) start total total ∧
       slots.length ≤ nextSlots.length ∧ nextSlots.length ≤ slots.length + remaining ∧
       nextPlan.capacity ≤ max plan.capacity (4 * (slots.length + remaining + 1)) ∧
+      HeapGlobals source target ∧
       ∀ address : BitVec 64, address.toNat < floor → target.memory address = source.memory address := by
   induction remaining generalizing source index plan slots cursor with
   | zero =>
@@ -46,7 +47,7 @@ theorem loop_normal (remaining : Nat) (source target : PanSemStateFiniteExact 64
     change target = source at same
     subst target
     refine ⟨0, plan, slots, cursor, by omega, by simp, by simp [price, WitnessBuild.triangle], table, environment,
-      by simpa only [finished] using locals, by omega, by omega, Nat.le_max_left _ _, ?_⟩
+      by simpa only [finished] using locals, by omega, by omega, Nat.le_max_left _ _, HeapGlobals.refl _, ?_⟩
     intro address earlier
     rfl
   | succ remaining ih =>
@@ -60,10 +61,10 @@ theorem loop_normal (remaining : Nat) (source target : PanSemStateFiniteExact 64
     have entryTable : Table entry plan slots cursor floor := table.of_fields rfl rfl rfl rfl
     have entryLocals : Locals entry (cell plan .header 0) start total index := locals.of_locals rfl
     obtain ⟨paid, middlePlan, middleSlots, middleCursor, fits, clockEq, localBound, middleTable, middleEnvironment,
-      middleLocals, lower, upper, middleCapacity, middleProtected⟩ :=
+      middleLocals, lower, upper, middleCapacity, middleGlobals, middleProtected⟩ :=
       body_normal entry middle start total index floor cursor plan slots inputValid active entryEnvironment entryTable entryLocals bodyRun
     obtain ⟨restPaid, finalPlan, finalSlots, finalCursor, restFits, restClock, restBound, finalTable, finalEnvironment,
-      finalLocals, finalLower, finalUpper, finalCapacity, finalProtected⟩ :=
+      finalLocals, finalLower, finalUpper, finalCapacity, finalGlobals, finalProtected⟩ :=
       ih (source := middle) (index := index + 1) (cursor := middleCursor) (plan := middlePlan) (slots := middleSlots) (by omega)
         middleEnvironment middleTable middleLocals tailRun
     change paid ≤ source.clock - 1 at fits
@@ -74,7 +75,7 @@ theorem loop_normal (remaining : Nat) (source target : PanSemStateFiniteExact 64
       rw [price_step]
       omega
     refine ⟨1 + paid + restPaid, finalPlan, finalSlots, finalCursor, by omega, by omega, totalBound,
-      finalTable, finalEnvironment, finalLocals, by omega, by omega, ?_, ?_⟩
+      finalTable, finalEnvironment, finalLocals, by omega, by omega, ?_, middleGlobals.trans finalGlobals, ?_⟩
     · omega
     · intro address earlier
       exact (finalProtected address earlier).trans (middleProtected address earlier)

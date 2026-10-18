@@ -36,6 +36,7 @@ theorem final_set_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       ready.memory (BitVec.ofNat 64 messageStart + 152#64) = .word (cell nextPlan .header 0) ∧
       ready.memory (BitVec.ofNat 64 messageStart + 160#64) = .word (cell reader .header 0) ∧
       evaluateHOLFiniteState ready messageSite = (some (.returned value), post) ∧
+      HeapGlobals source ready ∧
       (∀ field < 176, field ≠ 136 → field ≠ 152 → field ≠ 160 →
         ready.memory (BitVec.ofNat 64 messageStart + BitVec.ofNat 64 field) = source.memory (BitVec.ofNat 64 messageStart + BitVec.ofNat 64 field)) ∧
       ∀ query : BitVec 64, query.toNat < messageStart → ready.memory query = source.memory query := by
@@ -64,7 +65,7 @@ theorem final_set_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     simp only [evalListHOLFinite, evalListHOLExact, recipientRead]
     simp [evalHOLExact, localVar, toExact, aaLocal, flagged, MessageField.putState, TableCall.values]
   obtain ⟨paid, nextPlan, nextSlots, nextCursor, fits, clockEq, forward, budget, nextTable, nextReader, nextApart, countLow, countHigh, capacity, headerSame,
-    localsSame, codesSame, nextEnvironment, protectedWords⟩ :=
+    localsSame, codesSame, nextEnvironment, nextGlobals, protectedWords⟩ :=
     LiveTableSetter.normal_bound flagged called .account .storage plan reader slots readerSlots cursor floor readerFloor
       (environment.of_fields rfl rfl rfl) flaggedTable flaggedReader apart recipient 1#64 _ queryFits queryMapped args setRun
   have calledMessage : called.locals.lookup (ofString "m") = some (.val (.word (BitVec.ofNat 64 messageStart))) := by rw [localsSame]; exact messageLocal
@@ -84,7 +85,7 @@ theorem final_set_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     linked_table called .account nextPlan nextSlots nextCursor floor messageStart _ _ nextTable region nextLater,
     linked_table called .storage reader readerSlots nextCursor readerFloor messageStart _ _ nextReader region readerLater,
     nextApart, countLow, countHigh, capacity, headerSame, localsSame, codesSame, nextEnvironment.of_fields rfl rfl rfl,
-    (linked_gas called messageStart _ _).trans calledGas, pointers.1, pointers.2, readyRun, ?_, ?_⟩
+    (linked_gas called messageStart _ _).trans calledGas, pointers.1, pointers.2, readyRun, nextGlobals, ?_, ?_⟩
   · intro field inside notFlag notAA notAK
     have fieldBefore : (BitVec.ofNat 64 messageStart + BitVec.ofNat 64 field).toNat < floor := by
       rw [MessageField.field_number messageStart field region (by omega)]

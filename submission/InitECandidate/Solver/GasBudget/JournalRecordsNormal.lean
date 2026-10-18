@@ -8,9 +8,9 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch MutableTable
 intermediate helper execution or source-clock budget premise. -/
 theorem records_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (objects : ι → TableFamily.Object)
-    (base count index population : Nat) (entries : Nat → Entry ι)
+    (base cap count index population : Nat) (entries : Nat → Entry ι)
     (family : TableFamily.Model source cursor objects) (image : Image source objects base count entries)
-    (extent : base + 32 * count ≤ cursor) (inside : index < count)
+    (zone : Zone objects base cap cursor) (countBound : count ≤ cap) (inside : index < count)
     (populations : ∀ table, (objects table).slots.length ≤ population)
     (environment : WarmKeys.Environment source)
     (deleteCode : source.code.lookup (ofString "htab_del") = some (Find.formals, Delete.body, .one))
@@ -19,7 +19,7 @@ theorem records_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     (normal : evaluateHOLFiniteState source records = (none, target)) :
     ∃ (paid nextCursor : Nat) (next : ι → TableFamily.Object),
       paid ≤ source.clock ∧ target.clock = source.clock - paid ∧ cursor ≤ nextCursor ∧
-      TableFamily.Model target nextCursor next ∧ Image target next base count entries ∧
+      TableFamily.Model target nextCursor next ∧ Image target next base count entries ∧ Zone next base cap nextCursor ∧
       paid + TableFamily.potential objects ≤ 38 * population + 39 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + 1) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ HeapGlobals source target := by
@@ -37,15 +37,15 @@ theorem records_normal {ι : Type} [Fintype ι] [DecidableEq ι]
   have entryImage : Image entry objects base count entries :=
     image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
   have entryEnvironment : WarmKeys.Environment entry := environment.of_fields rfl rfl rfl
-  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, bounded, nextPopulations, localEq, codes, nextEnvironment, globals⟩ :=
-    selected_normal entry called cursor objects base count index population entries entryFamily entryImage extent inside populations entryEnvironment deleteCode
+  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, nextZone, bounded, nextPopulations, localEq, codes, nextEnvironment, globals⟩ :=
+    selected_normal entry called cursor objects base cap count index population entries entryFamily entryImage zone countBound inside populations entryEnvironment deleteCode
       (CallLocals.entered source objects base index (entries index)) selected
   subst target
   have finalFamily : TableFamily.Model (restored source called) nextCursor next :=
     ⟨fun table => (nextFamily.tables table).of_fields rfl rfl rfl rfl, nextFamily.apart⟩
   have finalImage : Image (restored source called) next base count entries :=
     nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
-  exact ⟨paid, nextCursor, next, fits, clock, forward, finalFamily, finalImage, bounded, nextPopulations, codes,
+  exact ⟨paid, nextCursor, next, fits, clock, forward, finalFamily, finalImage, nextZone, bounded, nextPopulations, codes,
     nextEnvironment.of_fields rfl rfl rfl, globals⟩
 
 end InitECandidate.Solver.GasBudget.Journal

@@ -23,8 +23,8 @@ theorem scan_finish (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind 
       evaluateHOLFiniteState source (.seq loop afterLoop) = (some (.returned (.val (.word 1#64))), target) ∧
       emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with memory := memory, clock := source.clock - paid} ∧
       next.length = slots.length - 1 ∧ MemoryModel.Header memory kind plan (BitVec.ofNat 64 next.length) ∧
-      MemoryModel.Occupied target kind plan next := by
-  obtain ⟨stop, paid, scanMemory, scanned, entries, hole, stopPositive, stopBound, bounded, scanRun, scanFrame, scanLocals, pending, scanHeader, stable, other⟩ :=
+      MemoryModel.Occupied target kind plan next ∧ TableFootprint.Frame source.memory memory kind plan := by
+  obtain ⟨stop, paid, scanMemory, scanned, entries, hole, stopPositive, stopBound, bounded, scanRun, scanFrame, scanLocals, pending, scanHeader, stable, other, scanFootprint⟩ :=
     scan_from_occupied source kind plan valid domain little slots room occupied deleted bits small power locals header hashCode copyCode enough
   have memoryEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.memory) scanFrame
   have domainEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.memaddrs) scanFrame
@@ -44,10 +44,14 @@ theorem scan_finish (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind 
   have finishedFrame : emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with memory := finalMemory, clock := source.clock - paid} := finishFrame.trans replaceMemory
   have finalMemoryEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.memory) finishedFrame
   change target.memory = finalMemory at finalMemoryEq
-  refine ⟨paid, finalMemory, target, finalSlots entries deleted, bounded, ?_, finishedFrame, final_length _ _, ?_, finishOccupied⟩
+  refine ⟨paid, finalMemory, target, finalSlots entries deleted, bounded, ?_, finishedFrame, final_length _ _, ?_, finishOccupied, ?_⟩
   · rw [StateSteps.next_sequence source scanned loop afterLoop scanRun (by omega), finishRun]
   · rw [final_length, ← finalMemoryEq]
     exact finishHeader
+  · apply TableFootprint.Frame.trans source.memory scanned.memory finalMemory kind plan
+    · rw [memoryEq]
+      exact scanFootprint
+    · exact Finish.footprint scanned.memory kind plan valid slots.length deleted entries hole pending.room pending.holeInside pending.inside
 
 end InitECandidate.Solver.MutableTable.Delete
 

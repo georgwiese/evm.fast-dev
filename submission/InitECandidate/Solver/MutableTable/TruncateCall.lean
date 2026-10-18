@@ -36,7 +36,7 @@ theorem call_bound (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
   have actual := evaluateHOLFiniteState_call_return_caller_locals source none (ofString "htab_truncate") arguments _ body callee .one (.val (.word 0#64)) bodyTarget args called (by omega) bodyRun (by simp [shapeOfHOLExact, shapeEqHOL])
   have targetEq := congrArg Prod.snd (normal.symm.trans actual)
   change target = {bodyTarget with locals := source.locals} at targetEq
-  refine ⟨paid + 1, memory, next, by omega, ?_, ?_, post.length, post.header, ?_⟩
+  refine ⟨paid + 1, memory, next, by omega, ?_, ?_, post.length, post.header, ?_, post.footprint⟩
   · change paid ≤ source.clock - 1 at fits
     omega
   · rw [targetEq]

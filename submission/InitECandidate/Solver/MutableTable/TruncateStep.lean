@@ -80,7 +80,7 @@ theorem step_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind
     rw [restore_bound]
     change restore canonical "pos" (bind canonical "pos" (BitVec.ofNat 64 (slots.length - 1))) = canonical
     exact restore_bound _ _ _
-  refine ⟨paid, memory, next, flag, bounded, ?_, rfl, post.shape, post.header, ?_⟩
+  refine ⟨paid, memory, next, flag, bounded, ?_, rfl, post.shape, post.header, ?_, post.footprint⟩
   · simpa only [loopBody, restored] using posRun
   · exact MemoryModel.Occupied.of_fields _ canonical kind plan next post.occupied rfl rfl rfl
 

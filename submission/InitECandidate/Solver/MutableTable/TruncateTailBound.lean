@@ -34,7 +34,7 @@ theorem tail_bound (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
     domain little slots rfl room paddedModel header tableLocal strideLocal limitLocal hashCode copyCode memeqCode findCode deleteCode
     (by change price kind slots.length ≤ source.clock + extra; omega) lifted
   have stripped := InitECandidate.Solver.strip_clock_padding source target {source with memory := memory} paid extra (by omega) post.frame
-  refine ⟨paid, memory, next, bounded, stripped.1, resultEq, stripped.2, post.length, post.header, ?_⟩
+  refine ⟨paid, memory, next, bounded, stripped.1, resultEq, stripped.2, post.length, post.header, ?_, post.footprint⟩
   exact MemoryModel.Occupied.of_fields paddedTarget target kind plan next post.occupied rfl rfl rfl
 
 end InitECandidate.Solver.MutableTable.Truncate

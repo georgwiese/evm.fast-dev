@@ -38,13 +38,14 @@ theorem scan_loop (kind : KeyHash.Kind) (plan : Plan) (valid : Valid kind plan)
       (∀ query < plan.capacity, Find.usedByte {source with memory := memory} (parameters kind plan 0#64) (BitVec.ofNat 64 query) =
         Find.usedByte source (parameters kind plan 0#64) (BitVec.ofNat 64 query)) ∧
       (∀ name : String, ofString "i" ≠ ofString name → ofString "j" ≠ ofString name →
-        target.locals.lookup (ofString name) = source.locals.lookup (ofString name)) := by
+        target.locals.lookup (ofString name) = source.locals.lookup (ofString name)) ∧
+      TableFootprint.Frame source.memory memory kind plan := by
   classical
   induction remaining generalizing source cursor entries hole with
   | zero =>
     let target := WitnessRadix.QueryBranch.bind (decClockHOLFinite source) "j" (BitVec.ofNat 64 (Probe.slot plan.capacity start (cursor + 1)))
     have actual := scan_end source kind plan hole bits start cursor small power locals (by simpa only [Nat.add_zero] using empty) (by simpa only [Nat.mul_zero, Nat.zero_add] using enough)
-    refine ⟨1, source.memory, target, entries, hole, by simp, actual, rfl, ?_, ?_, ?_, header, ?_, ?_⟩
+    refine ⟨1, source.memory, target, entries, hole, by simp, actual, rfl, ?_, ?_, ?_, header, ?_, ?_, TableFootprint.Frame.refl _ _ _⟩
     · exact ScanLocals.advance _ kind plan hole _ _ (ScanLocals.of_locals source _ kind plan hole _ locals rfl)
     · exact Pending.of_fields source target kind plan count deleted entries hole pending rfl rfl rfl
     · exact frontier_after_choice plan.capacity start cursor hole hole frontier (Or.inl rfl)
@@ -58,7 +59,7 @@ theorem scan_loop (kind : KeyHash.Kind) (plan : Plan) (valid : Valid kind plan)
     let entry := decClockHOLFinite source
     have entryLocals := ScanLocals.of_locals source entry kind plan hole _ locals rfl
     have entryPending := Pending.of_fields source entry kind plan count deleted entries hole pending rfl rfl rfl
-    obtain ⟨paid, memory, nextEntries, nextHole, bounded, bodyRun, nextPending, nextFrontier, nextHeader, stable⟩ :=
+    obtain ⟨paid, memory, nextEntries, nextHole, bounded, bodyRun, nextPending, nextFrontier, nextHeader, stable, firstFootprint⟩ :=
       scan_step entry kind plan valid domain little count deleted entries hole entryPending bits start cursor small power startInside (by omega) frontier entryLocals
         (occupied (cursor + 1) (by omega) (by omega)) header hashCode copyCode
         (by change KeyHash.hashPrice kind + MemeqByteRuntime.price (KeyHash.keySize kind) + 1 ≤ source.clock - 1; unfold scanPrice at funded; omega)
@@ -71,7 +72,7 @@ theorem scan_loop (kind : KeyHash.Kind) (plan : Plan) (valid : Valid kind plan)
       change scanPrice kind * remaining + 1 ≤ source.clock - 1 - paid
       omega
     have sum : cursor + 1 + remaining + 1 = cursor + (remaining + 1) + 1 := by omega
-    obtain ⟨restPaid, finalMemory, target, finalEntries, finalHole, restBound, restRun, restFrame, finalLocals, finalPending, finalFrontier, finalHeader, restStable, restOther⟩ :=
+    obtain ⟨restPaid, finalMemory, target, finalEntries, finalHole, restBound, restRun, restFrame, finalLocals, finalPending, finalFrontier, finalHeader, restStable, restOther, restFootprint⟩ :=
       ih nextState domain little (cursor + 1) nextEntries nextHole (by omega) nextPending nextFrontier nextLocals
         (by
           intro rank lower upper
@@ -89,7 +90,7 @@ theorem scan_loop (kind : KeyHash.Kind) (plan : Plan) (valid : Valid kind plan)
       have subtract : source.clock - 1 - paid - restPaid = source.clock - (1 + paid + restPaid) := by omega
       rw [subtract]
     refine ⟨1 + paid + restPaid, finalMemory, target, finalEntries, finalHole, totalBound, ?_, restFrame.trans frameEq,
-      by simpa only [sum] using finalLocals, finalPending, by simpa only [sum] using finalFrontier, finalHeader, ?_, ?_⟩
+      by simpa only [sum] using finalLocals, finalPending, by simpa only [sum] using finalFrontier, finalHeader, ?_, ?_, TableFootprint.Frame.trans source.memory memory finalMemory kind plan firstFootprint restFootprint⟩
     · rw [loop, evaluateHOLFiniteState_while_total]
       simp only [evalHOLFinite, evalHOLExact, if_neg positive]
       change evaluateHOLFiniteState entry loopBody = (none, nextState) at bodyRun

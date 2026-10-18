@@ -10,6 +10,7 @@ structure ModelPost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind 
   length : next.length = min initialCount limit.toNat
   header : MemoryModel.Header memory kind plan (BitVec.ofNat 64 next.length)
   occupied : MemoryModel.Occupied target kind plan next
+  footprint : TableFootprint.Frame source.memory memory kind plan
 
 theorem stopped_post (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : KeyHash.Kind) (plan : Plan) (valid : Valid kind plan)
     (domain : source.memaddrs = InitE.ordinaryDomain) (slots : List Nat) (room : slots.length < plan.capacity)
@@ -24,7 +25,7 @@ theorem stopped_post (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   change target = emptyLocalsHOLFinite source at targetEq
   subst target
   exact ⟨by simp only [Nat.sub_zero, emptyLocalsHOLFinite], (Nat.min_eq_left stopped).symm, header,
-    MemoryModel.Occupied.of_fields source _ kind plan slots occupied rfl rfl rfl⟩
+    MemoryModel.Occupied.of_fields source _ kind plan slots occupied rfl rfl rfl, TableFootprint.Frame.refl _ _ _⟩
 
 
 theorem stopped_post_result (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : KeyHash.Kind) (plan : Plan) (valid : Valid kind plan)

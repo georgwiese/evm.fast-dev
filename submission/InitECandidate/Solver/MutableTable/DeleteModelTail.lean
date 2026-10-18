@@ -44,13 +44,13 @@ theorem model_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind :
     let target := restore source "cap" (emptyLocalsHOLFinite entered)
     refine ⟨0, source.memory, target, slots, 0#64, Nat.zero_le _, scopeRun, ?_⟩
     exact ⟨by simp only [target, entered, restore, emptyLocalsHOLFinite, Nat.sub_zero, WitnessRadix.QueryBranch.bind, setVarHOLFinite], Or.inl ⟨rfl, rfl, rfl⟩, header,
-      MemoryModel.Occupied.of_fields source target kind plan slots occupied rfl rfl rfl⟩
+      MemoryModel.Occupied.of_fields source target kind plan slots occupied rfl rfl rfl, TableFootprint.Frame.refl _ _ _⟩
   · obtain ⟨deleted, selected⟩ := List.mem_iff_get.mp (presentMember absent)
     have indexWord : BitVec.ofNat 64 (slots.get deleted) = index := by
       rw [selected, BitVec.ofNat_toNat, BitVec.setWidth_eq]
     have enteredModel := MemoryModel.Occupied.of_fields source entered kind plan slots occupied rfl rfl rfl
     have enteredT : entered.locals.lookup (ofString "t") = some (.val (.word (cell plan .header 0))) := (bind_lookup_other _ "cap" "t" _ (by decide)).trans tableLocal
-    obtain ⟨paid, memory, target, next, bounded, presentRun, frame, length, nextHeader, nextModel⟩ :=
+    obtain ⟨paid, memory, target, next, bounded, presentRun, frame, length, nextHeader, nextModel, footprint⟩ :=
       present_execute entered kind plan valid domain little slots room enteredModel deleted bits small power header enteredT
         (by rw [indexWord]; exact enteredI) enteredCap hashCode copyCode enough
     have skipRun : evaluateHOLFiniteState entered test = (none, entered) := by
@@ -60,7 +60,7 @@ theorem model_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind :
       rw [StateSteps.next_sequence entered entered test _ skipRun (Nat.le_refl _), presentRun]
     have scopeRun := Input.ScalarScope.declare_execute source _ "cap" (Find.tableLoad 16#64) cap (.seq test (program headerActions afterHeaders)) _ capRead inner
     refine ⟨paid, memory, restore source "cap" target, next, 1#64, bounded, scopeRun, ?_⟩
-    refine ⟨frame, Or.inr ⟨rfl, ?_⟩, nextHeader, MemoryModel.Occupied.of_fields target _ kind plan next nextModel rfl rfl rfl⟩
+    refine ⟨frame, Or.inr ⟨rfl, ?_⟩, nextHeader, MemoryModel.Occupied.of_fields target _ kind plan next nextModel rfl rfl rfl, footprint⟩
     have positive : 0 < slots.length := by have := deleted.isLt; omega
     omega
 

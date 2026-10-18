@@ -73,7 +73,8 @@ theorem tail_non_timeout (kind : KeyHash.Kind) (plan : Plan) (valid : Valid kind
           change emptyLocalsHOLFinite {source with memory := finalMemory, clock := source.clock - 1 - stepPaid - restPaid} = _
           have subtract : source.clock - 1 - stepPaid - restPaid = source.clock - (1 + stepPaid + restPaid) := by omega
           rw [subtract]
-        refine ⟨1 + stepPaid + restPaid, finalMemory, finalSlots, totalBound, resultEq, restPost.frame.trans frameEq, ?_, restPost.header, restPost.occupied⟩
+        refine ⟨1 + stepPaid + restPaid, finalMemory, finalSlots, totalBound, resultEq, restPost.frame.trans frameEq, ?_, restPost.header, restPost.occupied,
+          TableFootprint.Frame.trans source.memory memory finalMemory kind plan stepPost.footprint restPost.footprint⟩
         have within : limit.toNat ≤ count := by omega
         simpa only [Nat.min_eq_right within, Nat.min_eq_right (show limit.toNat ≤ count + 1 from by omega)] using restPost.length
 

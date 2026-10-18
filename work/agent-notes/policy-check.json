@@ -2406,6 +2406,7 @@
     "submission/InitECandidate/Solver/MutableTable/DeleteFinishFields.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteFinishMemory.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteFinishModel.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteFootprint.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteHashExecution.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteHeader.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteInitial.lean",
@@ -2414,6 +2415,7 @@
     "submission/InitECandidate/Solver/MutableTable/DeleteModelBudget.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteModelCall.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteModelExecution.lean",
+    "submission/InitECandidate/Solver/MutableTable/DeleteModelOwnership.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteModelPost.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteModelTail.lean",
     "submission/InitECandidate/Solver/MutableTable/DeleteMoveExecution.lean",
@@ -2658,6 +2660,7 @@
     "submission/InitECandidate/Solver/MutableTable/TruncateCall.lean",
     "submission/InitECandidate/Solver/MutableTable/TruncateExecution.lean",
     "submission/InitECandidate/Solver/MutableTable/TruncateLoop.lean",
+    "submission/InitECandidate/Solver/MutableTable/TruncateOwnership.lean",
     "submission/InitECandidate/Solver/MutableTable/TruncatePost.lean",
     "submission/InitECandidate/Solver/MutableTable/TruncateProgram.lean",
     "submission/InitECandidate/Solver/MutableTable/TruncateReads.lean",
@@ -4757,8 +4760,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61622,
-  "package_bytes": 2254169329,
+  "package_entries": 61625,
+  "package_bytes": 2254180346,
   "claim": {
     "K": "infinity"
   },

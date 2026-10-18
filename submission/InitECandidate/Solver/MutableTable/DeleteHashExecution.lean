@@ -24,7 +24,8 @@ theorem hash_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind
       Pending (WitnessRadix.QueryBranch.bind {source with memory := memory, clock := source.clock - paid} "i" (BitVec.ofNat 64 nextHole)) kind plan count deleted nextEntries nextHole ∧
       MemoryModel.Header memory kind plan (BitVec.ofNat 64 count) ∧
       (∀ query < plan.capacity, Find.usedByte {source with memory := memory} (parameters kind plan 0#64) (BitVec.ofNat 64 query) =
-        Find.usedByte source (parameters kind plan 0#64) (BitVec.ofNat 64 query)) := by
+        Find.usedByte source (parameters kind plan 0#64) (BitVec.ofNat 64 query)) ∧
+      TableFootprint.Frame source.memory memory kind plan := by
   let pointer := cell plan .keys 0 + BitVec.ofNat 64 (entries moved) * BitVec.ofNat 64 (stride kind)
   have inside := pending.inside moved active
   have vectorInside : (BitVec.ofNat 64 (entries moved)).toNat < plan.capacity := by
@@ -50,7 +51,7 @@ theorem hash_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind
       (bind_lookup_other _ "h" "i" _ (by decide)).trans locals.hole,
       (bind_lookup_other _ "h" "j" _ (by decide)).trans locals.slot⟩
   have enteredPending := Pending.of_fields source entered kind plan count deleted entries hole pending rfl rfl rfl
-  obtain ⟨tailPaid, memory, nextEntries, nextHole, bounded, tailRun, choice, nextPending, nextHeader, usedStable⟩ := after_hash_execute entered kind plan valid domain count deleted entries hole enteredPending moved active enteredLocals value hash valueCell header
+  obtain ⟨tailPaid, memory, nextEntries, nextHole, bounded, tailRun, choice, nextPending, nextHeader, usedStable, footprint⟩ := after_hash_execute entered kind plan valid domain count deleted entries hole enteredPending moved active enteredLocals value hash valueCell header
     (bind_lookup_same _ _ _) ((bind_lookup_other _ "h" "cap" _ (by decide)).trans capLocal) copyCode
     (by change MemeqByteRuntime.price (KeyHash.keySize kind) + 1 ≤ source.clock - KeyHash.hashPrice kind; omega)
   rw [tailRun] at hashRun
@@ -65,7 +66,7 @@ theorem hash_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind
     rw [targetEq, restore_bind_other source (WitnessRadix.QueryBranch.bind canonical "h" hash) "h" "i" _ (by decide)]
     change WitnessRadix.QueryBranch.bind (restore canonical "h" (WitnessRadix.QueryBranch.bind canonical "h" hash)) "i" _ = _
     rw [restore_bound]
-  refine ⟨KeyHash.hashPrice kind + tailPaid, memory, nextEntries, nextHole, by omega, ?_, choice, ?_, nextHeader, usedStable⟩
+  refine ⟨KeyHash.hashPrice kind + tailPaid, memory, nextEntries, nextHole, by omega, ?_, choice, ?_, nextHeader, usedStable, footprint⟩
   · simpa only [hashCall, restored] using hashRun
   · exact Pending.of_fields _ _ kind plan count deleted nextEntries nextHole nextPending rfl rfl rfl
 

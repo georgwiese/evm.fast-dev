@@ -4,14 +4,20 @@ namespace InitECandidate.Solver.GasBudget.ChildSuccess
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
+def memoryAfter (memory : Memory) (parent : BitVec 64) (p c : ChildError.Amounts) (parentSpill childSpill : BitVec 64) : Memory :=
+  WitnessRadix.WordWrites.write
+    (WitnessRadix.StoreWord.put (WitnessRadix.WordWrites.write memory (ChildError.writes parent p c))
+      (parent + 192#64) (parentSpill + childSpill))
+    (Repayment.writes parent (p.gas + c.gas) (p.state + c.state) (parentSpill + childSpill))
+
 /-- Successful child incorporation through the real spill repayment. Following
 log/delete-table work stays as a continuation: its memory frame is still needed. -/
-theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (parent child : BitVec 64)
+theorem execute_prefix_full (source : PanSemStateFiniteExact 64 Guest.HostMemory) (parent child : BitVec 64)
     (p c : ChildError.Amounts) (parentSpill childSpill : BitVec 64)
     (ready : Ready source parent child p c parentSpill childSpill)
     (code : source.code.lookup (ofString "incorporate_child_on_error")=some (ChildError.formals,ChildError.body,.one))
     (fits : regularBudget source.memory parent+regularBudget source.memory child<2^64) (enough : 1≤source.clock) :
-    ∃ target,
+    ∃ target, target.memory = memoryAfter source.memory parent p c parentSpill childSpill ∧
       emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with memory:=target.memory,clock:=source.clock-1} ∧
       regularBudget target.memory parent=regularBudget source.memory parent+regularBudget source.memory child ∧
       (∀ name : String,ofString "rep"≠ofString name→target.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
@@ -89,7 +95,7 @@ theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pa
     rw [BitVec.toNat_add_of_lt spillFits]
     omega
   have repayBudget:=Repayment.preserves_regular_budget merged.memory parent (p.gas+c.gas) (p.state+c.state) (parentSpill+childSpill) gasM spillM repayFits
-  refine ⟨target,repayFrame,?_,locals,?_⟩
+  refine ⟨target,memoryEq,repayFrame,?_,locals,?_⟩
   · rw [memoryEq,repayBudget,mergeBudget]
     change regularBudget memory parent+childSpill.toNat=regularBudget source.memory parent+regularBudget source.memory child
     simpa only [wordAt,ready.childSpillCell,WitnessRadix.MemoryBytes.wordBits] using transfer
@@ -98,6 +104,23 @@ theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pa
       WitnessRadix.StateSteps.next_sequence returned merged _ _ spillRun (Nat.le_refl _)]
     simpa only [restore,returned,merged] using repayRun continuation
 
+theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (parent child : BitVec 64)
+    (p c : ChildError.Amounts) (parentSpill childSpill : BitVec 64)
+    (ready : Ready source parent child p c parentSpill childSpill)
+    (code : source.code.lookup (ofString "incorporate_child_on_error")=some (ChildError.formals,ChildError.body,.one))
+    (fits : regularBudget source.memory parent+regularBudget source.memory child<2^64) (enough : 1≤source.clock) :
+    ∃ target,
+      emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with memory:=target.memory,clock:=source.clock-1} ∧
+      regularBudget target.memory parent=regularBudget source.memory parent+regularBudget source.memory child ∧
+      (∀ name : String,ofString "rep"≠ofString name→target.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
+      (∀ continuation,evaluateHOLFiniteState source (program continuation)=
+        (let output:=evaluateHOLFiniteState target continuation
+        (output.1,restore source "rep" output.2))) := by
+  obtain ⟨target, memory, frame, budget, locals, run⟩ := execute_prefix_full source parent child p c parentSpill childSpill ready code fits enough
+  exact ⟨target, frame, budget, locals, run⟩
+
 end InitECandidate.Solver.GasBudget.ChildSuccess
 
 #print axioms InitECandidate.Solver.GasBudget.ChildSuccess.execute_prefix
+
+#print axioms InitECandidate.Solver.GasBudget.ChildSuccess.execute_prefix_full

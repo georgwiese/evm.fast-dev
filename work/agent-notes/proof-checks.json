@@ -4126,6 +4126,14 @@
       "sha256": "1a92720898b9f9b6ef80838e588fa8e6a6e7c2a65fa880bdf0859e2064c8e422"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/ChildErrorFrameSums.lean",
+      "sha256": "beda2c121cba4a7f49e220854a841ddf47bca03b788da728d3ca96ade9098c1e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/ChildErrorMemory.lean",
+      "sha256": "39b518b7c619b8a2e5758e31d99c0afcc62c5fe11fb8f917ae110e5e1147749d"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GasBudget/ChildErrorNormalCall.lean",
       "sha256": "a8c25bdfc589f59ddb17a2ae5f91a9120ca5c303a77fb1344e20aa1566fc3de1"
     },
@@ -4135,7 +4143,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/ChildSuccess.lean",
-      "sha256": "641bd92a1bb23ca6d27997f3d8d08f4afda1944d123d3e2e691b81c5f76abd97"
+      "sha256": "dee8652e0859fcf7da36c7a96b2a025f3d6cf4b825a2e2eee8afdc3da8c00a09"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/ChildSuccessFrameSums.lean",
+      "sha256": "48d3bb6b1558b50d0a15ad57e9c139ff04b608198e0e846afe4cd96099646bd7"
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/ChildSuccessNormalPrefix.lean",
@@ -68120,7 +68132,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -68128,19 +68140,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -68149,7 +68161,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -68158,7 +68170,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -68167,7 +68179,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -68176,7 +68188,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -68185,7 +68197,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -68194,7 +68206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -68203,7 +68215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -68212,7 +68224,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -68221,7 +68233,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -68230,7 +68242,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -68239,7 +68251,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -68248,7 +68260,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -68257,7 +68269,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -68266,7 +68278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -68275,7 +68287,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -68283,7 +68295,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -68291,7 +68303,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -68300,7 +68312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -68309,7 +68321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -68318,7 +68330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -68326,7 +68338,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -68335,7 +68347,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -68362,7 +68374,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -68371,7 +68383,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -68380,7 +68392,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -68389,7 +68401,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -68398,7 +68410,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -68407,7 +68419,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -68416,7 +68428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -68425,7 +68437,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_memory",
@@ -68442,7 +68454,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -68450,7 +68462,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -68459,7 +68471,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -68468,7 +68480,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -68477,7 +68489,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -68504,7 +68516,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.execute",
@@ -68513,7 +68525,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -68522,7 +68534,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.bind_lookup_other",
@@ -68531,7 +68543,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StateSteps.assign_execute",
@@ -68540,14 +68552,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_unique",
@@ -68555,7 +68567,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
@@ -68590,7 +68602,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.block_execute",
@@ -68599,7 +68611,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.call_execute",
@@ -68608,7 +68620,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.environment",
@@ -68617,7 +68629,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop_execute",
@@ -68626,7 +68638,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.remaining_loops",
@@ -68635,7 +68647,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.word_view",
@@ -68643,7 +68655,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.byte_view",
@@ -68652,7 +68664,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop32_shape",
@@ -68661,7 +68673,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.body_shape",
@@ -68670,7 +68682,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.condition_read",
@@ -68679,7 +68691,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.alignment_read",
@@ -68688,7 +68700,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CodeEnvironment.finite_lookup",
@@ -68696,7 +68708,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.valid",
@@ -68723,7 +68735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guards",
@@ -68732,7 +68744,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_execute",
@@ -68741,7 +68753,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.environment",
@@ -68750,7 +68762,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.block32_execute",
@@ -68759,7 +68771,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.blockWord_execute",
@@ -68768,7 +68780,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_execute",
@@ -68777,7 +68789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.condition_read",
@@ -68786,7 +68798,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.alignment_read",
@@ -68795,7 +68807,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.environment",
@@ -68804,7 +68816,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_execute",
@@ -68813,7 +68825,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_execute",
@@ -68822,7 +68834,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_frame",
@@ -68831,7 +68843,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_memory_away",
@@ -68839,7 +68851,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_shape",
@@ -68848,7 +68860,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_shape",
@@ -68857,7 +68869,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.body_shape",
@@ -68866,7 +68878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_frame",
@@ -68875,7 +68887,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_other",
@@ -68884,7 +68896,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_index",
@@ -68893,7 +68905,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_frame",
@@ -68902,7 +68914,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_other",
@@ -68911,7 +68923,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_index",
@@ -68920,7 +68932,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.remaining_loops",
@@ -68929,7 +68941,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_expected",
@@ -68956,7 +68968,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ProgramPrefix.restoration_frame",
@@ -68965,7 +68977,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.body_shape",
@@ -69010,7 +69022,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_body_execute",
@@ -69019,7 +69031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_condition",
@@ -69028,7 +69040,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopTail_execute",
@@ -69037,7 +69049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_small",
@@ -69339,7 +69351,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.aligned_cell",
@@ -69347,7 +69359,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_exists",
@@ -69356,7 +69368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read200",
@@ -69365,7 +69377,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.mapped_region",
@@ -69374,7 +69386,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.of_cells",
@@ -69383,7 +69395,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.load_expression",
@@ -69392,7 +69404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute",
@@ -69401,21 +69413,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.stores_execute",
@@ -69424,7 +69436,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.block_execute",
@@ -69433,7 +69445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_shapes",
@@ -69442,7 +69454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.address_read",
@@ -69451,7 +69463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.store_execute",
@@ -69460,7 +69472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.environment",
@@ -69469,7 +69481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_execute",
@@ -69478,7 +69490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_mapped",
@@ -69487,7 +69499,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_memory_away",
@@ -69496,7 +69508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.answer_length",
@@ -69504,7 +69516,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.oracle",
@@ -69513,21 +69525,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_frame",
@@ -69536,7 +69548,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_index",
@@ -69545,7 +69557,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_other",
@@ -69554,7 +69566,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.test_read",
@@ -69563,7 +69575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_execute",
@@ -69572,7 +69584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_frame",
@@ -69581,7 +69593,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_other",
@@ -69590,7 +69602,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_index",
@@ -69599,7 +69611,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryWalk_away",
@@ -69607,7 +69619,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Mapped.of_domain",
@@ -69615,7 +69627,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.byte_walk",
@@ -69624,7 +69636,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.word_walk",
@@ -69633,7 +69645,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_domain",
@@ -69642,7 +69654,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_domain",
@@ -69651,7 +69663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_clock",
@@ -69660,7 +69672,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_clock",
@@ -69669,7 +69681,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.cost_le",
@@ -69678,7 +69690,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_clock",
@@ -69687,7 +69699,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_control",
@@ -69696,7 +69708,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.alignment_false",
@@ -69705,7 +69717,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_execute",
@@ -69714,7 +69726,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.execute",
@@ -69723,7 +69735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_execute",
@@ -69732,7 +69744,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_memory_away",
@@ -69741,7 +69753,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_control",
@@ -69749,7 +69761,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.environment",
@@ -69758,7 +69770,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_memory",
@@ -69767,7 +69779,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_memory",
@@ -69776,7 +69788,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_memory_away",
@@ -69785,7 +69797,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_memory_away",
@@ -69794,7 +69806,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory_away",
@@ -69803,7 +69815,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.byte_walk_be",
@@ -69812,7 +69824,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.word_walk_be",
@@ -69821,7 +69833,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory",
@@ -69830,7 +69842,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_away",
@@ -69839,21 +69851,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.control_of_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.frame_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_control",
@@ -69862,7 +69874,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_control",
@@ -69871,7 +69883,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_args",
@@ -69880,7 +69892,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_domain",
@@ -69889,7 +69901,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_control",
@@ -69898,7 +69910,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_control",
@@ -69907,7 +69919,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_cost_le",
@@ -69915,14 +69927,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.stores_execute",
@@ -69931,7 +69943,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.block_execute",
@@ -69940,21 +69952,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_frame",
@@ -69963,7 +69975,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_index",
@@ -69972,7 +69984,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_other",
@@ -69981,7 +69993,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_execute",
@@ -69990,7 +70002,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_bounds",
@@ -69999,7 +70011,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_execute",
@@ -70008,7 +70020,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_clock",
@@ -70017,7 +70029,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_index",
@@ -70026,7 +70038,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_shapes",
@@ -70035,7 +70047,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.store_execute",
@@ -70044,7 +70056,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_frame",
@@ -70053,7 +70065,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_other",
@@ -70062,7 +70074,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_index",
@@ -70071,7 +70083,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryWalk_away",
@@ -70079,7 +70091,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.call_execute",
@@ -70088,7 +70100,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.environment",
@@ -70097,7 +70109,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.alignment_read",
@@ -70106,7 +70118,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.execute",
@@ -70115,7 +70127,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_value_read",
@@ -70124,7 +70136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_execute",
@@ -70133,7 +70145,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_memory_away",
@@ -70142,7 +70154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_other",
@@ -70151,7 +70163,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.condition_read",
@@ -70160,7 +70172,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.loop_execute",
@@ -70169,7 +70181,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.body_shape",
@@ -70178,7 +70190,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_read",
@@ -70187,7 +70199,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_clock",
@@ -70196,7 +70208,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_control",
@@ -70205,7 +70217,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_other",
@@ -70214,7 +70226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_domain",
@@ -70223,7 +70235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_memory_away",
@@ -70232,14 +70244,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.permutation_control",
@@ -70248,21 +70260,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_clock",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_empty",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_restore",
@@ -70271,7 +70283,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_clock",
@@ -70280,7 +70292,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_control",
@@ -70289,7 +70301,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_memory_away",
@@ -70298,7 +70310,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute_word",
@@ -70307,7 +70319,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_blocks_execute",
@@ -70316,7 +70328,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.afterBlocks_shape",
@@ -70325,7 +70337,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.block_execute",
@@ -70334,7 +70346,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.call_execute",
@@ -70343,7 +70355,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.Mapped.of_domain",
@@ -70351,7 +70363,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Code.of_control",
@@ -70360,7 +70372,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.mapped_of_control",
@@ -70368,7 +70380,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Args.of_index",
@@ -70377,7 +70389,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.condition_read",
@@ -70386,7 +70398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.EntryData.of_control",
@@ -70395,7 +70407,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Protected.tail",
@@ -70403,7 +70415,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.environment",
@@ -70412,7 +70424,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.execute",
@@ -70421,7 +70433,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.loop_execute",
@@ -70430,7 +70442,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_address_read",
@@ -70439,7 +70451,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_store_execute",
@@ -70448,7 +70460,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_stores_execute",
@@ -70457,7 +70469,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_words_execute",
@@ -70466,14 +70478,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_memory_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_alignment_read",
@@ -70482,7 +70494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_execute",
@@ -70491,7 +70503,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_first_execute",
@@ -70500,7 +70512,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_last_execute",
@@ -70509,7 +70521,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.padding_execute",
@@ -70518,7 +70530,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_locals",
@@ -70526,7 +70538,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_control",
@@ -70534,7 +70546,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_clock",
@@ -70542,7 +70554,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_execute",
@@ -70551,7 +70563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_memory_away",
@@ -70560,7 +70572,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.body_shape",
@@ -70569,7 +70581,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailLocals.of_locals",
@@ -70578,7 +70590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.OutMapped.of_domain",
@@ -70586,7 +70598,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailData.of_control",
@@ -70595,7 +70607,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.away_above",
@@ -70619,7 +70631,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.ordinary_byte_mapped",
@@ -70627,7 +70639,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.weaken",
@@ -70635,7 +70647,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.subrange",
@@ -70643,7 +70655,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.byte_mapped",
@@ -70651,7 +70663,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.word_mapped",
@@ -70659,7 +70671,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.mask_aligned",
@@ -70668,7 +70680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.copy_mapped",
@@ -70677,7 +70689,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.absorb_mapped",
@@ -70721,7 +70733,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -70730,7 +70742,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -70739,7 +70751,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -70748,21 +70760,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -70771,7 +70783,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -70780,7 +70792,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -70789,7 +70801,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -70797,7 +70809,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -70806,7 +70818,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -70815,7 +70827,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -70824,7 +70836,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -70832,14 +70844,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -70848,7 +70860,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -70857,7 +70869,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -70866,7 +70878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -70874,7 +70886,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -70882,7 +70894,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -70890,7 +70902,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -70898,7 +70910,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -70906,7 +70918,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -70914,7 +70926,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -70923,7 +70935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -70931,7 +70943,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -70940,7 +70952,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -70948,7 +70960,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -70957,7 +70969,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -70966,7 +70978,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -70975,7 +70987,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -70984,7 +70996,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -70993,7 +71005,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -71002,7 +71014,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -71011,7 +71023,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -71020,7 +71032,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -71029,7 +71041,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -71038,7 +71050,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -71047,7 +71059,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -71056,7 +71068,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -71065,7 +71077,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -71074,7 +71086,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -71083,7 +71095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -71092,7 +71104,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -71101,7 +71113,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -71110,7 +71122,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -71119,7 +71131,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -71128,7 +71140,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -71137,14 +71149,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -71153,7 +71165,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -71162,7 +71174,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -71171,7 +71183,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -71180,7 +71192,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -71188,7 +71200,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -71196,7 +71208,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -71204,7 +71216,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -71213,14 +71225,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.sum_words",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_read",
@@ -71229,7 +71241,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_append",
@@ -71238,7 +71250,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat32_equiv",
@@ -71247,7 +71259,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat64_equiv",
@@ -71256,14 +71268,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.convert_nat",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le32",
@@ -71272,7 +71284,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.heap_le64",
@@ -71281,7 +71293,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_read",
@@ -71290,7 +71302,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.gas_store_shape",
@@ -71326,7 +71338,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -71335,7 +71347,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.op_congr",
@@ -71344,7 +71356,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_congr",
@@ -71353,7 +71365,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_congr",
@@ -71362,7 +71374,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_congr",
@@ -71371,7 +71383,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_congr",
@@ -71380,7 +71392,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.plus_read",
@@ -71389,7 +71401,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -71398,7 +71410,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -71407,7 +71419,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -71416,7 +71428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -71424,7 +71436,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -71657,7 +71669,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -71666,7 +71678,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -71675,7 +71687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -72052,7 +72064,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.flat_heap_le64",
@@ -72061,7 +72073,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.reject_call",
@@ -72681,7 +72693,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -72690,7 +72702,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -72699,7 +72711,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -72708,7 +72720,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.record_test_read",
@@ -73101,7 +73113,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -73110,7 +73122,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -73680,7 +73692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.caller_normal",
@@ -73813,7 +73825,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.UDivMod.shifted_number",
@@ -73905,7 +73917,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.pure_return_execute",
@@ -73914,7 +73926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_environment",
@@ -73923,7 +73935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.execute",
@@ -73932,7 +73944,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.environment",
@@ -73941,7 +73953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.call_execute",
@@ -73950,7 +73962,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.loop_execute",
@@ -73959,7 +73971,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_shape",
@@ -73968,7 +73980,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_execute",
@@ -73977,7 +73989,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.step_fields",
@@ -73986,7 +73998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.loop_execute",
@@ -74004,7 +74016,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.test_read",
@@ -74084,7 +74096,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.call_execute",
@@ -74093,7 +74105,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.assign_execute",
@@ -74111,7 +74123,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Header.call_execute",
@@ -74120,7 +74132,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.execute",
@@ -74129,7 +74141,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.call_execute",
@@ -74138,7 +74150,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.short_or_be",
@@ -74147,7 +74159,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.execute",
@@ -74156,7 +74168,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.call_execute",
@@ -74165,7 +74177,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.body_shape",
@@ -74174,7 +74186,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.scalar_read",
@@ -74183,7 +74195,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.after_transactions_execute",
@@ -74210,7 +74222,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.assign_execute",
@@ -74219,7 +74231,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.body_shape",
@@ -74228,7 +74240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.condition_read",
@@ -74237,7 +74249,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.environment",
@@ -74246,7 +74258,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_after_first_execute",
@@ -74255,7 +74267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_decoded_loop",
@@ -74318,7 +74330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.wrap_read",
@@ -74327,7 +74339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_length_read",
@@ -74405,7 +74417,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.long_form_execute",
@@ -74414,7 +74426,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.body_shape",
@@ -74423,7 +74435,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.execute",
@@ -74432,7 +74444,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.length_tail_execute",
@@ -74441,7 +74453,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.execute",
@@ -74450,7 +74462,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.environment",
@@ -74459,7 +74471,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.call_execute",
@@ -74468,7 +74480,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.loop_execute",
@@ -74477,7 +74489,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.step_other",
@@ -74486,7 +74498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.body_shape",
@@ -74495,7 +74507,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.step_execute",
@@ -74504,7 +74516,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.body_shape",
@@ -74531,7 +74543,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.memory_assign_execute",
@@ -74540,7 +74552,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.execute",
@@ -74549,7 +74561,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.general_execute",
@@ -74558,7 +74570,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.body_shape",
@@ -74567,7 +74579,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.first_guard_one",
@@ -74576,7 +74588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.environment",
@@ -74585,7 +74597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.call_execute",
@@ -74594,7 +74606,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.tail_call_execute",
@@ -74603,7 +74615,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.environment",
@@ -74639,7 +74651,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.call_execute",
@@ -74648,7 +74660,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.body_shape",
@@ -74657,7 +74669,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BitLength.stage_execute",
@@ -74666,7 +74678,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.environment",
@@ -74675,7 +74687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.call_execute",
@@ -74684,7 +74696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.assign_execute",
@@ -74693,7 +74705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Bits.scan_execute",
@@ -74773,7 +74785,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Value.environment",
@@ -74782,7 +74794,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HeapScope.mark_call_execute",
@@ -75529,7 +75541,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refund_call",
@@ -75538,7 +75550,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refill_call",
@@ -75547,7 +75559,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.address_read",
@@ -75556,7 +75568,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.frame_read",
@@ -75565,14 +75577,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
@@ -75581,7 +75593,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.selected_number",
@@ -75589,7 +75601,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.environment",
@@ -75598,7 +75610,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.call_execute",
@@ -75607,7 +75619,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.body_shape",
@@ -75616,7 +75628,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.execute",
@@ -75625,7 +75637,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.preserves_regular_budget",
@@ -75633,7 +75645,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.body_shape",
@@ -75642,7 +75654,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.execute",
@@ -75651,7 +75663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.preserves_regular_budget",
@@ -75659,7 +75671,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.body_shape",
@@ -75668,7 +75680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.execute",
@@ -75677,7 +75689,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.environment",
@@ -75686,7 +75698,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.call_execute",
@@ -75695,7 +75707,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.first_execute",
@@ -75704,7 +75716,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.execute",
@@ -75713,7 +75725,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.preserves_regular_budget",
@@ -75722,7 +75734,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.call_execute",
@@ -75731,7 +75743,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed_call",
@@ -75740,7 +75752,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed",
@@ -75749,7 +75761,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.body_shape",
@@ -75758,7 +75770,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.spill_execute",
@@ -75767,7 +75779,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.execute",
@@ -75776,7 +75788,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.budget_transfer",
@@ -75785,7 +75797,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.call_execute",
@@ -75794,7 +75806,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.returned_budget_bound",
@@ -75803,7 +75815,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.body_shape",
@@ -75812,7 +75824,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.child_read",
@@ -75821,7 +75833,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.sum_execute",
@@ -75830,14 +75842,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.stored_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.body_shape",
@@ -75846,7 +75858,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.execute",
@@ -75855,7 +75867,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.preserves_regular_budget",
@@ -75863,7 +75875,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.call_execute",
@@ -75872,7 +75884,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.body_shape",
@@ -75881,7 +75893,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.execute",
@@ -75890,7 +75902,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.failed",
@@ -75899,7 +75911,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.quantitative",
@@ -75907,7 +75919,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.call_execute",
@@ -75916,7 +75928,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.failed_call",
@@ -75925,7 +75937,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.stipend_update_execute",
@@ -75934,7 +75946,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.after_zero_execute",
@@ -75943,7 +75955,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.execute",
@@ -75952,7 +75964,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.forwarded_number",
@@ -75960,7 +75972,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.environment",
@@ -75969,7 +75981,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.call_execute",
@@ -75978,7 +75990,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.cap_execute",
@@ -75987,7 +75999,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.temporary_away",
@@ -75996,7 +76008,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.Inputs.of_locals",
@@ -76005,7 +76017,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.Inputs.bind",
@@ -76014,7 +76026,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.after_need_execute",
@@ -76023,7 +76035,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.after_stipend_execute",
@@ -76032,7 +76044,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.body_shape",
@@ -76041,7 +76053,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.cap_number",
@@ -76049,7 +76061,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.capped_number",
@@ -76057,7 +76069,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.stipend_bound",
@@ -76065,7 +76077,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.forward_counter_number",
@@ -76074,7 +76086,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.used_debit_budget",
@@ -76082,7 +76094,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.stipend_funded_by_value_fee",
@@ -76090,7 +76102,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ForwardPrefix.execute",
@@ -76099,7 +76111,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ForwardPrefix.opcode_sites",
@@ -76125,7 +76137,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.U256Zero.execute",
@@ -76134,7 +76146,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.U256Zero.call_execute",
@@ -76143,7 +76155,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.execute",
@@ -76302,7 +76314,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "dispatch-provenance-v3.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildSuccess.body_shape",
@@ -76311,7 +76323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "dispatch-provenance-v3.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Repayment.execute",
@@ -76320,7 +76332,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "dispatch-provenance-v3.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Repayment.preserves_regular_budget",
@@ -76328,7 +76340,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "dispatch-provenance-v3.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.MergeBudget.propagation_bound",
@@ -79031,7 +79043,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.initialization_frame",
@@ -79040,7 +79052,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.restoration_frame",
@@ -79049,7 +79061,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.zero_return",
@@ -79058,7 +79070,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -79066,7 +79078,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_ne",
@@ -79074,7 +79086,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_aligned",
@@ -79082,7 +79094,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.ordinary_mapped",
@@ -79090,7 +79102,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.mapped_of_allocated",
@@ -79098,7 +79110,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.count_small",
@@ -79106,7 +79118,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.hash_byte_cell",
@@ -79114,7 +79126,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bind_other",
@@ -79123,7 +79135,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -79132,7 +79144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -79140,7 +79152,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -79148,7 +79160,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.execute",
@@ -79157,7 +79169,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_execute",
@@ -79166,7 +79178,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_clock",
@@ -79175,7 +79187,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_ffi",
@@ -79184,7 +79196,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.ext_execute",
@@ -79193,7 +79205,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_execute",
@@ -79202,7 +79214,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lastValue_filter",
@@ -79210,7 +79222,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.execute",
@@ -79219,7 +79231,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_aligned",
@@ -79228,7 +79240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.body_shape",
@@ -79237,7 +79249,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -79246,7 +79258,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_clock",
@@ -79881,7 +79893,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.declaration_normal_entry",
@@ -79890,7 +79902,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.PureGuard.summary",
@@ -79899,7 +79911,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.PureGuard.normal_continue",
@@ -79908,7 +79920,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RootBudget.initialize_validated",
@@ -79953,7 +79965,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPrefix.normal_continue",
@@ -79962,7 +79974,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPath.normal_reaches",
@@ -81433,7 +81445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPrefix.summary_full",
@@ -81442,7 +81454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameOpen.geometry",
@@ -85253,7 +85265,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Truncate.price_formula",
@@ -86708,7 +86720,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.store_normal_continue",
@@ -86717,7 +86729,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.TableRuntime.body_normal",
@@ -87423,7 +87435,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.words_away",
@@ -87432,7 +87444,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.PointerArray.floor_mono",
@@ -87992,7 +88004,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RootMessage.empty_activation_price",
@@ -88077,7 +88089,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.normal_affordable",
@@ -88086,7 +88098,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.ledger_fits",
@@ -88094,7 +88106,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.call_normal",
@@ -88103,7 +88115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.positive_progress",
@@ -88111,7 +88123,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.carry_iff",
@@ -88183,7 +88195,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.raise_ne_none",
@@ -88192,7 +88204,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.op_length",
@@ -88201,7 +88213,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.load_one_mapped",
@@ -88210,7 +88222,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.stores_nonempty_mapped",
@@ -88219,7 +88231,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.store_mapped_normal",
@@ -88228,7 +88240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameException.clear_data_normal",
@@ -88291,28 +88303,28 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameField.put_other",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameField.put_budget",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameField.put_budget_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.call_normal",
@@ -89942,7 +89954,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "dispatch-provenance-v3.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildSuccess.body_normal_prefix",
@@ -89951,7 +89963,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "dispatch-provenance-v3.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.regularBudget_of_table_frame",
@@ -90659,7 +90671,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_shape",
@@ -90668,7 +90680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_normal",
@@ -90677,7 +90689,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.pops_normal",
@@ -90686,7 +90698,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.PureGuard.normal_prefix",
@@ -90695,7 +90707,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.return_normal",
@@ -90704,7 +90716,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.scoped_normal",
@@ -90713,7 +90725,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticEffects.original_preserves",
@@ -90758,7 +90770,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.call_other_word",
@@ -90767,7 +90779,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.empty_execute",
@@ -90776,7 +90788,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPush.non_growth_normal",
@@ -90884,7 +90896,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.assign",
@@ -90893,7 +90905,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.returned",
@@ -90902,7 +90914,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.raised",
@@ -90911,7 +90923,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.stopped",
@@ -90920,7 +90932,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.sequence",
@@ -90929,7 +90941,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.conditional",
@@ -90938,7 +90950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.declared",
@@ -90947,21 +90959,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.code_of_erase",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.memory_of_erase",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.called",
@@ -90970,7 +90982,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.lookup_body",
@@ -90978,7 +90990,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.call_body",
@@ -90987,7 +90999,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.loop",
@@ -90996,7 +91008,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.primitive",
@@ -91131,7 +91143,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_lookup_data",
@@ -91351,7 +91363,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.assign",
@@ -91360,7 +91372,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.returned",
@@ -91369,7 +91381,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.raised",
@@ -91378,7 +91390,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.stopped",
@@ -91387,7 +91399,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.sequence",
@@ -91396,7 +91408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.conditional",
@@ -91405,7 +91417,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.declared",
@@ -91414,7 +91426,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.primitive",
@@ -91423,7 +91435,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.store",
@@ -91432,7 +91444,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticCalls.normal",
@@ -91822,7 +91834,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_clock",
@@ -91831,7 +91843,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_frame",
@@ -91840,7 +91852,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_gas_frame",
@@ -91849,7 +91861,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.positive_execution",
@@ -91858,7 +91870,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.exception_empty",
@@ -91867,7 +91879,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.exception_underflow",
@@ -91876,14 +91888,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.refl",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.resumed",
@@ -91892,14 +91904,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.unchanged",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.restore",
@@ -91908,14 +91920,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.of_emptyLocals",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.trans",
@@ -91923,7 +91935,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.pops_exception",
@@ -91941,7 +91953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RunFrames.active_body_normal",
@@ -92256,7 +92268,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RunFrames.active_caught_normal",
@@ -93188,35 +93200,35 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.globals_eq",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.eshapes_eq",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.memaddrs_eq",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.memory_word",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RunFrames.caught_exp",
@@ -93759,7 +93771,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ForwardPrefix.normal",
@@ -93768,7 +93780,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameSums.used_le_budget",
@@ -93776,21 +93788,73 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameSums.outside_preserved",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameSums.add_child",
       "axioms": [
         "propext"
       ],
-      "successful_log": "forward-frame-sums-v2.log"
+      "successful_log": "child-success-frame-sums-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.call_sums",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "child-success-frame-sums-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildError.call_memory",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "child-success-frame-sums-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildSuccess.execute_prefix_full",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "child-success-frame-sums-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildSuccess.memory_after_away",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "child-success-frame-sums-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildSuccess.memory_after_used",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "child-success-frame-sums-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.ChildSuccess.body_normal_sums",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "child-success-frame-sums-v2.log"
     }
   ]
 }

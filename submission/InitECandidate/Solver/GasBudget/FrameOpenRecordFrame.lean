@@ -28,6 +28,25 @@ theorem record_memory_outside (source : PanSemStateFiniteExact 64 Guest.HostMemo
       List.mem_cons, List.not_mem_nil, or_false, not_or]
     exact ⟨away 0 (by decide), away 8 (by decide), away 16 (by decide), away 40 (by decide)⟩
 
+theorem record_seed (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch lower child parent continuation kind message gas : BitVec 64)
+    (seed : GasSeed source.memory child gas)
+    (lowerAligned : lower.toNat % 8 = 0) (room : lower.toNat + 104 ≤ scratch.toNat)
+    (above : scratch.toNat ≤ child.toNat) (fits : child.toNat + 280 < 2^64) :
+    GasSeed (recordClosed source scratch child parent continuation kind message).memory child gas := by
+  apply seed.transfer
+  intro offset member
+  apply record_memory_outside source scratch lower child parent continuation kind message _ lowerAligned room
+  apply Or.inr
+  have small : offset < 280 := by
+    simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl <;> decide
+  have number := WitnessRadix.byteAddress_toNat child offset (by omega)
+  change scratch.toNat ≤ (WitnessRadix.byteAddress child offset).toNat
+  rw [number]
+  omega
+
 end InitECandidate.Solver.GasBudget.FrameOpen
 
 #print axioms InitECandidate.Solver.GasBudget.FrameOpen.record_memory_outside
+#print axioms InitECandidate.Solver.GasBudget.FrameOpen.record_seed

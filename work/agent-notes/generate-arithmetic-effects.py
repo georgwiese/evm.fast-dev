@@ -123,7 +123,128 @@ lines += ['', '/-- Every checked arithmetic helper retains all nonlocal fields a
 'end InitECandidate.Solver.GasBudget.ArithmeticEffects', '',
 '#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.original_preserves',
 '#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.execution_frame']
-parser=argparse.ArgumentParser();parser.add_argument('--output',type=Path,default=root/'submission/InitECandidate/Solver/GasBudget/ArithmeticEffects.lean');args=parser.parse_args()
+def quiet_program(name):
+    definition=ast.split('def guestFn_'+name+' :',1)[1].split('\ndef ',1)[0]
+    return definition.split('      body :=\n',1)[1].split('\n      returnShape :=',1)[0].strip()
+quiet_names=[name for name in ordered if not re.search(r'\bProg\.(?:while|call|decCall|tick|extCall)\b',quiet_program(name))]
+
+def quiet_lines():
+    result=['import InitECandidate.Solver.GasBudget.ArithmeticEffects',
+      'import InitECandidate.Solver.Input.QuietClock', '',
+      'namespace InitECandidate.Solver.GasBudget.ArithmeticEffects',
+      'open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact', '',
+      '-- Generated proof data: each true case is checked against the original AST.',
+      'def Kind.quiet : Kind → Bool']
+    result += [f'  | .{name} => '+('true' if name in quiet_names else 'false') for name in ordered]
+    result += ['', 'theorem quiet_preserves (kind : Kind) (code) (checked : kind.quiet = true) : Input.QuietClock.Preserves code kind.body := by', '  cases kind with']
+    for name in ordered:
+        if name not in quiet_names:
+            result += [f'  | {name} => cases checked']
+        else:
+            result += [f'  | {name} =>', f'    simp only [Kind.body, Kind.signature, Kind.original, Guest.guestFn_{name}, progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, Option.map_none]']
+            result += ['    '+line.replace('Input.LocalEffects','Input.QuietClock') for line in steps(quiet_program(name))]
+    result += ['', '/-- Zero source clocks means no charged calls/loops; it does not',
+      'mean zero straight-line target work. This covers all actual outcomes. -/',
+      'theorem quiet_clock (kind : Kind) (checked : kind.quiet = true)',
+      '    (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (outcome : Option (PanSemResultExact 64))',
+      '    (run : evaluateHOLFiniteState source kind.body = (outcome, target)) : target.clock = source.clock := by',
+      '  have clock := quiet_preserves kind source.code checked source rfl',
+      '  simpa only [run] using clock', '',
+      'end InitECandidate.Solver.GasBudget.ArithmeticEffects', '',
+      '#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.quiet_preserves',
+      '#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.quiet_clock']
+    return result
+
+def program_price(program):
+    terms=split_terms(program);tag=terms[0]
+    if tag=='Prog.seq':return program_price(terms[1])+program_price(terms[2])
+    if tag=='Prog.ite':return max(program_price(terms[2]),program_price(terms[3]))
+    if tag=='Prog.dec':return program_price(terms[4])
+    if tag=='Prog.call':return fixed_prices[terms[2].strip('"')]+1
+    if tag=='Prog.decCall':return fixed_prices[terms[3].strip('"')]+1+program_price(terms[5])
+    assert tag in {'Prog.skip','Prog.assign','Prog.primitive','Prog.return','Prog.raise','Prog.break','Prog.continue'},tag
+    return 0
+
+fixed_prices={}
+for name in ordered:
+    if not re.search(r'\bProg\.(?:while|tick|extCall)\b',quiet_program(name)) and calls[name]<=fixed_prices.keys():
+        fixed_prices[name]=program_price(quiet_program(name))
+
+def price_steps(program):
+    terms=split_terms(program);tag=terms[0]
+    if tag=='Prog.seq':
+        return [f'apply Input.ClockCost.sequence code _ _ {program_price(terms[1])} {program_price(terms[2])}']+branch(price_steps(terms[1]))+branch(price_steps(terms[2]))
+    if tag=='Prog.ite':
+        return [f'apply Input.ClockCost.conditional code _ _ _ {program_price(terms[2])} {program_price(terms[3])}']+branch(price_steps(terms[2]))+branch(price_steps(terms[3]))
+    if tag=='Prog.dec':return [f'apply Input.ClockCost.declared code _ _ _ _ {program_price(terms[4])}']+price_steps(terms[4])
+    if tag=='Prog.decCall':
+        dep=terms[3].strip('"')
+        return [f'refine Input.ClockCost.scoped_body code _ _ (ofString "{dep}") _ _ _ _ _ {fixed_prices[dep]} {program_price(terms[5])} (environment .{dep}) (price_{dep} code environment) ?_']+price_steps(terms[5])
+    if tag=='Prog.call':
+        dep=terms[2].strip('"')
+        if terms[1]=='none':dest='none'
+        elif 'VarKind.local' in terms[1]:dest='(some (some _))'
+        else:
+            assert 'some (none, none)' in terms[1]
+            dest='(some none)'
+        return [f'exact Input.ClockCost.call_body code {dest} (ofString "{dep}") _ _ _ _ {fixed_prices[dep]} (environment .{dep}) (price_{dep} code environment)']
+    return [line.replace('Input.LocalEffects','Input.ClockCost') for line in steps(program)]
+
+def price_lines():
+    result=['import InitECandidate.Solver.GasBudget.ArithmeticQuietClock',
+      'import InitECandidate.Solver.Input.ClockCostScoped', '',
+      'namespace InitECandidate.Solver.GasBudget.ArithmeticEffects',
+      'open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact',
+      'open Flapjack.Basis.Pure.MlString', '',
+      '-- Every optional price is checked against its unchanged original body.',
+      'def Kind.fixedPrice : Kind → Option Nat']
+    result += [f'  | .{name} => '+('some '+str(fixed_prices[name]) if name in fixed_prices else 'none') for name in ordered]
+    for name,price in fixed_prices.items():
+        result += ['', f'theorem price_{name} (code) (environment : Environment code) : Input.ClockCost.Bound code Kind.{name}.body {price} := by']
+        if name in quiet_names:
+            result += [f'  exact Input.ClockCost.of_quiet code _ (quiet_preserves .{name} code rfl)']
+        else:
+            result += [f'  simp only [Kind.body, Kind.signature, Kind.original, Guest.guestFn_{name}, progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, Option.map_none]']
+            result += ['  '+line for line in price_steps(quiet_program(name))]
+    result += ['', 'theorem fixed_price (kind : Kind) (price : Nat) (code) (environment : Environment code)',
+      '    (checked : kind.fixedPrice = some price) : Input.ClockCost.Bound code kind.body price := by', '  cases kind with']
+    for name in ordered:
+        if name not in fixed_prices:result += [f'  | {name} => cases checked']
+        else:
+            result += [f'  | {name} =>', f'    have equal : price = {fixed_prices[name]} := by simpa only [Kind.fixedPrice, Option.some.injEq] using checked.symm',
+              '    subst price', f'    exact price_{name} code environment']
+    result += ['', '/-- Actual source clocks spent, for every real helper outcome.',
+      'These are call/loop units and omit straight-line target instructions. -/',
+      'theorem fixed_clock_spent (kind : Kind) (price : Nat) (checked : kind.fixedPrice = some price)',
+      '    (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (environment : Environment source.code)',
+      '    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source kind.body = (outcome, target)) :',
+      '    source.clock - target.clock ≤ price := by',
+      '  have cost := fixed_price kind price source.code environment checked source rfl',
+      '  simpa only [run] using cost', '',
+      'theorem fixed_call_spent (kind : Kind) (price : Nat) (checked : kind.fixedPrice = some price)',
+      '    (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (environment : Environment source.code)',
+      '    (destination : Option (Option MlS)) (arguments : List (ExpHOL 64)) (outcome : Option (PanSemResultExact 64))',
+      '    (run : evaluateHOLFiniteState source (.call (Input.LocalEffects.callInfo destination) kind.name arguments) = (outcome, target)) :',
+      '    source.clock - target.clock ≤ price + 1 := by',
+      '  have bound := Input.ClockCost.call_body source.code destination kind.name arguments kind.signature.1 kind.body kind.signature.2.2 price',
+      '    (environment kind) (fixed_price kind price source.code environment checked)',
+      '  have actual := bound source rfl',
+      '  simpa only [run] using actual', '',
+      'end InitECandidate.Solver.GasBudget.ArithmeticEffects', '',
+      '#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.fixed_price',
+      '#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.fixed_clock_spent',
+      '#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.fixed_call_spent']
+    return result
+
+parser=argparse.ArgumentParser()
+parser.add_argument('--quiet',action='store_true',help='Generate the original zero-source-clock subcatalogue.')
+parser.add_argument('--prices',action='store_true',help='Generate source call/loop clock prices for the closed no-loop helper subcatalogue.')
+parser.add_argument('--output',type=Path)
+args=parser.parse_args()
+if args.quiet and args.prices:parser.error('--quiet and --prices are mutually exclusive')
+if args.output is None:
+    filename='ArithmeticClockPrice.lean' if args.prices else ('ArithmeticQuietClock.lean' if args.quiet else 'ArithmeticEffects.lean')
+    args.output=root/'submission/InitECandidate/Solver/GasBudget'/filename
 assert not args.output.exists(),f'Refusing overwrite: {args.output}'
-args.output.write_text('\n'.join(lines)+'\n')
-print({'helpers':len(ordered),'bytes':args.output.stat().st_size})
+args.output.write_text('\n'.join(price_lines() if args.prices else (quiet_lines() if args.quiet else lines))+'\n')
+print({'helpers':len(fixed_prices) if args.prices else (len(quiet_names) if args.quiet else len(ordered)),'bytes':args.output.stat().st_size})

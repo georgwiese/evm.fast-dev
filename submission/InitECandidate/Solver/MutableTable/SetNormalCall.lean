@@ -34,7 +34,7 @@ theorem model_call_bound (source target : PanSemStateFiniteExact 64 Guest.HostMe
     ∃ paid globals memory plan next, paid ≤ modelPrice kind old.capacity slots.length + 1 ∧
       (plan = old → paid ≤ noGrowthPrice kind slots.length + 1) ∧ paid ≤ source.clock ∧
       ModelPost source kind old start slots.length paid globals memory target plan next ∧
-      Valid kind plan ∧ 2 * next.length ≤ plan.capacity := by
+      Valid kind plan ∧ 2 * next.length ≤ plan.capacity ∧ target.locals = source.locals := by
   obtain ⟨newSmall, _, _⟩ := MemoryModel.growth_shape kind old oldValid bits power minimum
   have small : bits < 64 := by omega
   have room : slots.length < old.capacity := by have positive := oldValid.positive; omega
@@ -60,7 +60,7 @@ theorem model_call_bound (source target : PanSemStateFiniteExact 64 Guest.HostMe
   have model : MemoryModel.Occupied target kind plan next := by
     rw [targetEq]
     exact MemoryModel.Occupied.of_fields bodyTarget _ kind plan next post.occupied rfl rfl rfl
-  refine ⟨paid + 1, globals, memory, plan, next, by omega, ?_, ?_, ?_, nextValid, post.half half⟩
+  refine ⟨paid + 1, globals, memory, plan, next, by omega, ?_, ?_, ?_, nextValid, post.half half, by rw [targetEq]⟩
   · intro same
     have old := oldBound same
     omega

@@ -12,6 +12,8 @@
 
 **Current authorization:** continue autonomously toward the corrected goal. The user's earlier no-stop-point instruction remains in effect. Local/offline, memory/disk, permitted-axiom and full-verifier restrictions remain in force. Do not silently reintroduce a score threshold or an implementation change as a prerequisite.
 
+**New checked original storage-key warming loop:** the exact `process_transaction` loop over 52-byte input keys now has a complete normal-execution source-clock/model bound. Its signed counter derives the number of actual setters; alternating key alignments are mapped from the owned input interval. Every actual setter derives reached allocation room, returns the next valid physical table/half occupancy/power/heap cursor, preserves caller locals, and protects all words below the table lifetime floor. For initial population D and n remaining keys, paid+P(initialCapacity)<= (13D+17)*n+13*triangle(n)+P(finalCapacity); final population is in[D,D+n] and final capacity<=max(initialCapacity,4*(D+n+1)). A checked path through the real post-MSG_GAS suffix supplies an actual normal loop execution and retains the message binding. Successful root-warm-keys-complete-v1.log1363jobs, exit0, permitted axioms, MaxRSS2093836KiB. Entry input extent, initial constructor/table ownership and global reachability are still explicit; source clocks omit straight-line work, so this is not target runtime K or whole-program completion.
+
 ## Current plan — authoritative
 
 - [x] Correct the objective and pin the unchanged reference above; retire the numerical score gate and replacement route.

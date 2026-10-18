@@ -17,6 +17,30 @@ theorem ModelPost.protected_word (post : ModelPost source kind old start count p
   rw [actual]
   exact post.footprint address outside
 
+theorem ModelPost.pool_floor (post : ModelPost source kind old start count paid globals memory target plan slots)
+    (floor : Nat) (lower : ∀ pool, floor ≤ old.base pool)
+    (earlier : ∀ pool, old.base pool + size kind old pool ≤ start) : ∀ pool, floor ≤ plan.base pool := by
+  rcases post.shape with ⟨rfl, _⟩ | ⟨rfl, _⟩
+  · exact lower
+  · intro pool
+    have before := earlier .header
+    have low := lower .header
+    change old.base .header + 72 ≤ start at before
+    cases pool <;> simp only [relocated] <;> omega
+
+/-- Objects allocated before this table's lifetime retain their words
+through every subsequent original setter growth. -/
+theorem ModelPost.protected_before (post : ModelPost source kind old start count paid globals memory target plan slots)
+    (valid : Valid kind plan) (floor : Nat) (lower : ∀ pool, floor ≤ old.base pool)
+    (earlier : ∀ pool, old.base pool + size kind old pool ≤ start)
+    (address : BitVec 64) (before : address.toNat < floor) : target.memory address = source.memory address := by
+  apply post.protected_word address
+  apply TableFootprint.Outside.of_regions kind plan valid address
+  intro pool
+  left
+  have bounded := post.pool_floor floor lower earlier pool
+  omega
+
 theorem ModelPost.other_pools (post : ModelPost source kind old start count paid globals memory target plan slots)
     (valid : Valid kind plan) (readerKind : KeyHash.Kind) (reader : Plan) (readerValid : Valid readerKind reader)
     (apart : ∀ first second, plan.base first + size kind plan first ≤ reader.base second ∨ reader.base second + size readerKind reader second ≤ plan.base first) :
@@ -43,5 +67,7 @@ theorem ModelPost.other_model (post : ModelPost source kind old start count paid
 end InitECandidate.Solver.MutableTable.Set
 
 #print axioms InitECandidate.Solver.MutableTable.Set.ModelPost.protected_word
+#print axioms InitECandidate.Solver.MutableTable.Set.ModelPost.pool_floor
+#print axioms InitECandidate.Solver.MutableTable.Set.ModelPost.protected_before
 #print axioms InitECandidate.Solver.MutableTable.Set.ModelPost.other_pools
 #print axioms InitECandidate.Solver.MutableTable.Set.ModelPost.other_model

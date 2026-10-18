@@ -1068,7 +1068,10 @@
     "submission/InitECandidate/Solver/GasBudget/ExponentPrice.lean",
     "submission/InitECandidate/Solver/GasBudget/ExponentScopedPrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/ForwardBudget.lean",
+    "submission/InitECandidate/Solver/GasBudget/ForwardCredit.lean",
+    "submission/InitECandidate/Solver/GasBudget/ForwardFrameSums.lean",
     "submission/InitECandidate/Solver/GasBudget/ForwardPrefix.lean",
+    "submission/InitECandidate/Solver/GasBudget/ForwardPrefixNormal.lean",
     "submission/InitECandidate/Solver/GasBudget/ForwardSites.lean",
     "submission/InitECandidate/Solver/GasBudget/Frame.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameEntryAfterClear.lean",
@@ -1114,6 +1117,7 @@
     "submission/InitECandidate/Solver/GasBudget/FrameOpenRecord.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenRecordFrame.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenStores.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameSums.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameTableFloor.lean",
     "submission/InitECandidate/Solver/GasBudget/Halt.lean",
     "submission/InitECandidate/Solver/GasBudget/HaltNormal.lean",
@@ -5139,8 +5143,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62004,
-  "package_bytes": 2256061572,
+  "package_entries": 62008,
+  "package_bytes": 2256080457,
   "claim": {
     "K": "infinity"
   },

@@ -1,4 +1,5 @@
 import InitECandidate.Solver.GasBudget.RootMessageProgram
+import InitECandidate.Solver.Input.NormalScalarStore
 
 namespace InitECandidate.Solver.GasBudget.RootMessage
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -16,6 +17,7 @@ theorem stores_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       evaluateHOLFiniteState ready WarmPrecompiles.constructorSite = (some (.returned value), post) ∧
       ready = {source with memory := ready.memory} ∧
       ready.memory (BitVec.ofNat 64 start + 40#64) = source.memory (BitVec.ofNat 64 start + 40#64) ∧
+      ready.memory (BitVec.ofNat 64 start + 48#64) = .word reservoir ∧
       ∀ query : BitVec 64, query.toNat < start ∨ start + 176 ≤ query.toNat → ready.memory query = source.memory query := by
   rw [after_gas_shape] at normal
   have reservoirSafe : Input.LocalPrefix (ofString "m") reservoirStore := .store _ _
@@ -34,7 +36,12 @@ theorem stores_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   obtain ⟨readyFrame, secondOutside, secondGas⟩ := MessageField.normal_frame stored ready start 56 4 valueExpression region (by decide) storedMessage valueWidth valueRun
   have composite := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => {state with memory := ready.memory}) storedFrame
   have frame : ready = {source with memory := ready.memory} := readyFrame.trans composite
-  refine ⟨ready, afterValue, frame, (secondGas 40 (by decide) (Or.inl (by decide))).trans (firstGas 40 (by decide) (Or.inl (by decide))), ?_⟩
+  obtain ⟨pointer, pointerLocal, _, _, reservoirCell⟩ := Input.scalar_store_normal source stored "m" "reservoir" 48#64 reservoir reservoirLocal storeRun
+  have pointerEq : pointer = BitVec.ofNat 64 start := by
+    simpa only [Option.some.injEq, ValueHOL.val.injEq, HolWordLab.word.injEq] using pointerLocal.symm.trans messageLocal
+  subst pointer
+  refine ⟨ready, afterValue, frame, (secondGas 40 (by decide) (Or.inl (by decide))).trans (firstGas 40 (by decide) (Or.inl (by decide))),
+    (secondGas 48 (by decide) (Or.inl (by decide))).trans reservoirCell, ?_⟩
   intro query outside
   exact (secondOutside query outside).trans (firstOutside query outside)
 

@@ -1,5 +1,6 @@
 import InitECandidate.Solver.GasBudget.RecipientLinks
 import InitECandidate.Solver.GasBudget.LiveTableSetter
+import InitECandidate.Solver.GasBudget.RecipientPayload
 
 namespace InitECandidate.Solver.GasBudget.Recipient
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -35,6 +36,8 @@ theorem final_set_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       ready.memory (BitVec.ofNat 64 messageStart + 152#64) = .word (cell nextPlan .header 0) ∧
       ready.memory (BitVec.ofNat 64 messageStart + 160#64) = .word (cell reader .header 0) ∧
       evaluateHOLFiniteState ready messageSite = (some (.returned value), post) ∧
+      (∀ field < 176, field ≠ 136 → field ≠ 152 → field ≠ 160 →
+        ready.memory (BitVec.ofNat 64 messageStart + BitVec.ofNat 64 field) = source.memory (BitVec.ofNat 64 messageStart + BitVec.ofNat 64 field)) ∧
       ∀ query : BitVec 64, query.toNat < messageStart → ready.memory query = source.memory query := by
   let flagged := MessageField.putState source messageStart 136 1#64
   have flagRun := MessageField.scalar_execute source messageStart 136 1#64 (.const 1#64) region (by decide) (by decide) environment.domain messageLocal rfl
@@ -81,10 +84,16 @@ theorem final_set_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     linked_table called .account nextPlan nextSlots nextCursor floor messageStart _ _ nextTable region nextLater,
     linked_table called .storage reader readerSlots nextCursor readerFloor messageStart _ _ nextReader region readerLater,
     nextApart, countLow, countHigh, capacity, headerSame, localsSame, codesSame, nextEnvironment.of_fields rfl rfl rfl,
-    (linked_gas called messageStart _ _).trans calledGas, pointers.1, pointers.2, readyRun, ?_⟩
-  intro query earlier
-  exact (linked_outside called messageStart _ _ query region (Or.inl earlier)).trans
-    ((protectedWords query (by omega)).trans (MessageField.scalar_outside source messageStart 136 1#64 query region (by decide) (Or.inl earlier)))
+    (linked_gas called messageStart _ _).trans calledGas, pointers.1, pointers.2, readyRun, ?_, ?_⟩
+  · intro field inside notFlag notAA notAK
+    have fieldBefore : (BitVec.ofNat 64 messageStart + BitVec.ofNat 64 field).toNat < floor := by
+      rw [MessageField.field_number messageStart field region (by omega)]
+      omega
+    exact (linked_other called messageStart field _ _ inside notAA notAK).trans
+      ((protectedWords _ fieldBefore).trans (MessageField.scalar_other source messageStart 136 field 1#64 notFlag (by omega) (by decide)))
+  · intro query earlier
+    exact (linked_outside called messageStart _ _ query region (Or.inl earlier)).trans
+      ((protectedWords query (by omega)).trans (MessageField.scalar_outside source messageStart 136 1#64 query region (by decide) (Or.inl earlier)))
 
 end InitECandidate.Solver.GasBudget.Recipient
 

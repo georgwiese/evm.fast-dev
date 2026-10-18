@@ -51,6 +51,9 @@ theorem noncreate_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       ready.locals.lookup (ofString "ak") = some (.val (.word (cell reader .header 0))) ∧
       ready.code = source.code ∧ WarmKeys.Environment ready ∧
       ready.memory (BitVec.ofNat 64 messageStart + 40#64) = .word gas ∧
+      ready.memory (BitVec.ofNat 64 messageStart + 112#64) = .word (BitVec.ofNat 64 cursor) ∧
+      ready.memory (BitVec.ofNat 64 messageStart + 120#64) = .word 0#64 ∧
+      ready.memory (BitVec.ofNat 64 messageStart + 48#64) = source.memory (BitVec.ofNat 64 messageStart + 48#64) ∧
       ready.memory (BitVec.ofNat 64 messageStart + 152#64) = .word (cell nextPlan .header 0) ∧
       ready.memory (BitVec.ofNat 64 messageStart + 160#64) = .word (cell reader .header 0) ∧
       evaluateHOLFiniteState ready messageSite = (some (.returned value), finish) ∧ post = restore source "empty" finish ∧
@@ -76,13 +79,17 @@ theorem noncreate_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (readerTable.after_alloc "empty" (cursor + 8) (by omega) room (by have aligned := table.aligned; omega)) region readerLater
   have chosenGas : chosen.memory (BitVec.ofNat 64 messageStart + 40#64) = .word gas := (result_gas source.memory _ recipient data length _).trans gasCell
   obtain ⟨paid, nextPlan, nextSlots, nextCursor, ready, fits, clockEq, forward, budget, nextTable, nextReader, nextApart, countLow, countHigh, capacity,
-    headSame, localsSame, codesSame, nextEnvironment, nextGas, pointerAA, pointerAK, readyRun, protectedWords⟩ :=
+    headSame, localsSame, codesSame, nextEnvironment, nextGas, pointerAA, pointerAK, readyRun, messageFrame, protectedWords⟩ :=
     final_set_normal chosen finish value plan reader slots readerSlots (cursor + 8) floor readerFloor messageStart recipient gas
       (environment.of_fields rfl rfl rfl) chosenAccount chosenReader apart region before readerLater allocatedMessage allocatedAA allocatedAK
       (result_recipient source.memory _ recipient data length _) chosenGas queryFits queryMapped chosenRun
   have totalBudget : paid + 1 + GrowRuntime.growthPotential .account plan.capacity ≤ Set.noGrowthPrice .account slots.length + 2 + GrowRuntime.growthPotential .account nextPlan.capacity := by omega
   refine ⟨paid + 1, nextPlan, nextSlots, nextCursor, ready, finish, ?_, price_bound _ _ _ _ _ totalBudget countHigh capacity, ?_, forward, totalBudget, nextTable, nextReader, nextApart,
-    countLow, countHigh, capacity, ?_, ?_, ?_, codesSame, nextEnvironment, nextGas, pointerAA, pointerAK, readyRun, restored, ?_⟩
+    countLow, countHigh, capacity, ?_, ?_, ?_, codesSame, nextEnvironment, nextGas,
+    (messageFrame 112 (by decide) (by decide) (by decide) (by decide)).trans (result_code source.memory _ recipient data length _),
+    (messageFrame 120 (by decide) (by decide) (by decide) (by decide)).trans (result_length source.memory _ recipient data length _),
+    (messageFrame 48 (by decide) (by decide) (by decide) (by decide)).trans (result_reservoir source.memory _ recipient data length _),
+    pointerAA, pointerAK, readyRun, restored, ?_⟩
   · change paid ≤ source.clock - 1 at fits
     omega
   · change ready.clock = source.clock - 1 - paid at clockEq

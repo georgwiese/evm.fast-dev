@@ -47,7 +47,7 @@ theorem model_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kin
   refine ⟨findPaid + tailPaid, memory, restore source "i" target, next, flag, ?_, ?_, ?_⟩
   · dsimp only [modelPrice]; omega
   · rw [body_shape]; exact callRun
-  · refine ⟨?_, tailPost.shape, tailPost.header, MemoryModel.Occupied.of_fields target _ kind plan next tailPost.occupied rfl rfl rfl⟩
+  · refine ⟨?_, tailPost.shape, tailPost.header, MemoryModel.Occupied.of_fields target _ kind plan next tailPost.occupied rfl rfl rfl, tailPost.footprint⟩
     change emptyLocalsHOLFinite target = _
     rw [tailPost.frame]
     change emptyLocalsHOLFinite {source with memory := memory, clock := source.clock - findPaid - tailPaid} = _

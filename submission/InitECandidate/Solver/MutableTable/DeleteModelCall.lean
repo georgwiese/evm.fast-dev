@@ -45,7 +45,7 @@ theorem model_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind :
   have endianEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.be) replaced
   refine ⟨paid + 1, memory, next, flag, by omega, ?_, ?_, ?_⟩
   · simpa only [modelCallState, subtract] using callRun
-  · exact ⟨rfl, post.shape, post.header, MemoryModel.Occupied.of_fields target _ kind plan next post.occupied memoryEq domainEq endianEq⟩
+  · exact ⟨rfl, post.shape, post.header, MemoryModel.Occupied.of_fields target _ kind plan next post.occupied memoryEq domainEq endianEq, post.footprint⟩
   · intro half
     have high := (ModelPost.count_bound entry kind plan slots paid memory target next flag post).2
     omega

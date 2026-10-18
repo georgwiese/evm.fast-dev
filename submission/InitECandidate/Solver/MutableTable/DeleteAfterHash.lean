@@ -1,5 +1,6 @@
 import InitECandidate.Solver.MutableTable.DeleteDecision
 import InitECandidate.Solver.MutableTable.DeleteMoveExecution
+import InitECandidate.Solver.MutableTable.DeleteFootprint
 
 namespace InitECandidate.Solver.MutableTable.Delete
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
@@ -37,7 +38,8 @@ theorem after_hash_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       Pending (WitnessRadix.QueryBranch.bind {source with memory := memory, clock := source.clock - paid} "i" (BitVec.ofNat 64 nextHole)) kind plan count deleted nextEntries nextHole ∧
       MemoryModel.Header memory kind plan (BitVec.ofNat 64 count) ∧
       (∀ query < plan.capacity, Find.usedByte {source with memory := memory} (parameters kind plan 0#64) (BitVec.ofNat 64 query) =
-        Find.usedByte source (parameters kind plan 0#64) (BitVec.ofNat 64 query)) := by
+        Find.usedByte source (parameters kind plan 0#64) (BitVec.ofNat 64 query)) ∧
+      TableFootprint.Frame source.memory memory kind plan := by
   let home := hash &&& (BitVec.ofNat 64 plan.capacity - 1#64)
   let homeState := WitnessRadix.QueryBranch.bind source "home" home
   let zeroState := WitnessRadix.QueryBranch.bind homeState "movable" 0#64
@@ -82,7 +84,7 @@ theorem after_hash_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       rw [restore_bound, restore_bind_other source canonicalHome "home" "i" _ (by decide)]
       change WitnessRadix.QueryBranch.bind (restore canonical "home" (WitnessRadix.QueryBranch.bind canonical "home" home)) "i" _ = _
       rw [restore_bound]
-    refine ⟨paid, memory, Function.update entries moved hole, entries moved, bounded, ?_, Or.inr rfl, ?_, nextHeader, ?_⟩
+    refine ⟨paid, memory, Function.update entries moved hole, entries moved, bounded, ?_, Or.inr rfl, ?_, nextHeader, ?_, Move.footprint source.memory source.be kind plan valid hole (entries moved) moved.val value pending.holeInside (Nat.lt_trans moved.isLt pending.room)⟩
     · simpa only [afterHash, restored] using homeRun
     · exact Pending.of_fields _ _ kind plan count deleted _ _ nextPending rfl rfl rfl
     · intro query inside
@@ -98,7 +100,7 @@ theorem after_hash_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     have homeRun := Input.ScalarScope.declare_execute source _ "home" (.op .and [localVar "h", Find.mask]) home
       (.dec (ofString "movable") .one (.const 0#64) (.seq decision tail)) none homeRead movableRun
     have unchanged := JumpDest.bind_existing source "i" (BitVec.ofNat 64 hole) locals.hole
-    refine ⟨0, source.memory, entries, hole, Nat.zero_le _, ?_, Or.inl rfl, ?_, header, ?_⟩
+    refine ⟨0, source.memory, entries, hole, Nat.zero_le _, ?_, Or.inl rfl, ?_, header, ?_, TableFootprint.Frame.refl _ _ _⟩
     · simpa only [afterHash, flaggedEq, zeroState, homeState, restore_bound, Nat.sub_zero, unchanged] using homeRun
     · exact Pending.of_fields source _ kind plan count deleted entries hole pending rfl rfl rfl
     · intro query inside; rfl

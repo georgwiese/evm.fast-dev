@@ -31,7 +31,8 @@ theorem scan_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : 
       Frontier plan.capacity start (cursor + 1) nextHole ∧
       MemoryModel.Header memory kind plan (BitVec.ofNat 64 count) ∧
       (∀ query < plan.capacity, Find.usedByte {source with memory := memory} (parameters kind plan 0#64) (BitVec.ofNat 64 query) =
-        Find.usedByte source (parameters kind plan 0#64) (BitVec.ofNat 64 query)) := by
+        Find.usedByte source (parameters kind plan 0#64) (BitVec.ofNat 64 query)) ∧
+      TableFootprint.Frame source.memory memory kind plan := by
   classical
   let next := Probe.slot plan.capacity start (cursor + 1)
   let advanced := WitnessRadix.QueryBranch.bind source "j" (BitVec.ofNat 64 next)
@@ -55,9 +56,9 @@ theorem scan_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : 
   have moveLocals : Move.Locals advanced kind plan hole (entries moved) := by
     rw [selectedSlot]
     exact advancedLocals.toLocals
-  obtain ⟨paid, memory, nextEntries, nextHole, bounded, hashRun, choice, finalPending, finalHeader, stable⟩ :=
+  obtain ⟨paid, memory, nextEntries, nextHole, bounded, hashRun, choice, finalPending, finalHeader, stable, footprint⟩ :=
     hash_execute advanced kind plan valid domain little count deleted entries hole advancedPending moved active moveLocals value valueCell header advancedLocals.cap hashCode copyCode enough
-  refine ⟨paid, memory, nextEntries, nextHole, bounded, ?_, finalPending, ?_, finalHeader, stable⟩
+  refine ⟨paid, memory, nextEntries, nextHole, bounded, ?_, finalPending, ?_, finalHeader, stable, footprint⟩
   · rw [loopBody, StateSteps.next_sequence source advanced incrementJ _ incrementRun (Nat.le_refl _),
       StateSteps.next_sequence advanced advanced (.ite emptyTest .break .skip) hashCall skipRun (Nat.le_refl _)]
     exact hashRun

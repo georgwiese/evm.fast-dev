@@ -39,7 +39,7 @@ theorem execute_bound (source target : PanSemStateFiniteExact 64 Guest.HostMemor
   obtain ⟨paid, memory, next, bounded, fits, actualResult, post⟩ := tail_bound entered output.2 kind plan valid domain little slots room entryModel bits small power header limit
     ((bind_lookup_other _ "stride" "t" _ (by decide)).trans tableLocal) (bind_lookup_same _ _ _)
     ((bind_lookup_other _ "stride" "n" _ (by decide)).trans limitLocal) hashCode copyCode memeqCode findCode deleteCode result notTimeout tailRun
-  refine ⟨paid, memory, next, bounded, fits, actualResult, ?_, post.length, post.header, ?_⟩
+  refine ⟨paid, memory, next, bounded, fits, actualResult, ?_, post.length, post.header, ?_, post.footprint⟩
   · rw [targetEq]
     exact post.frame
   · rw [targetEq]

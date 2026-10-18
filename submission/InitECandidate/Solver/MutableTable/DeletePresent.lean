@@ -22,7 +22,7 @@ theorem present_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (k
       evaluateHOLFiniteState source (program headerActions afterHeaders) = (some (.returned (.val (.word 1#64))), target) ∧
       emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with memory := memory, clock := source.clock - paid} ∧
       next.length = slots.length - 1 ∧ MemoryModel.Header memory kind plan (BitVec.ofNat 64 next.length) ∧
-      MemoryModel.Occupied target kind plan next := by
+      MemoryModel.Occupied target kind plan next ∧ TableFootprint.Frame source.memory memory kind plan := by
   let hs := headerState source kind plan
   let ds := bind hs "deleted_pos" (BitVec.ofNat 64 deleted.val)
   let js := bind ds "j" (BitVec.ofNat 64 (slots.get deleted))
@@ -51,7 +51,7 @@ theorem present_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (k
   have jsDeleted : js.locals.lookup (ofString "deleted_pos") = some (.val (.word (BitVec.ofNat 64 deleted.val))) :=
     (bind_lookup_other _ "j" "deleted_pos" _ (by decide)).trans (bind_lookup_same _ _ _)
   have entryModel := MemoryModel.Occupied.of_fields source js kind plan slots occupied rfl rfl rfl
-  obtain ⟨paid, memory, target, next, bounded, actual, frame, length, nextHeader, nextModel⟩ :=
+  obtain ⟨paid, memory, target, next, bounded, actual, frame, length, nextHeader, nextModel, footprint⟩ :=
     scan_finish js kind plan valid domain little slots room entryModel deleted bits small power scanLocals header jsT jsDeleted hashCode copyCode enough
   have slotInside := occupied.inside _ (List.get_mem slots deleted)
   have positionMapped : hs.memaddrs (cell plan .position 0 + BitVec.ofNat 64 (slots.get deleted) * 8#64) := by
@@ -75,7 +75,7 @@ theorem present_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (k
   change evaluateHOLFiniteState hs afterHeaders = (some (.returned (.val (.word 1#64))), restore hs "deleted_pos" (restore ds "j" target)) at dRun
   rw [dRun] at prefixRun
   let output := restoreStack (restore hs "deleted_pos" (restore ds "j" target))
-  refine ⟨paid, memory, output, next, bounded, prefixRun, ?_, length, nextHeader, ?_⟩
+  refine ⟨paid, memory, output, next, bounded, prefixRun, ?_, length, nextHeader, ?_, footprint⟩
   · rw [ProgramPrefix.restoration_frame setup]
     exact frame
   · have restoredFrame := ProgramPrefix.restoration_frame setup (restore hs "deleted_pos" (restore ds "j" target))

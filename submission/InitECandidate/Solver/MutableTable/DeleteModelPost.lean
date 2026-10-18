@@ -9,6 +9,7 @@ structure ModelPost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind 
   shape : (flag = 0#64 ∧ memory = source.memory ∧ next = slots) ∨ (flag = 1#64 ∧ next.length + 1 = slots.length)
   header : MemoryModel.Header memory kind plan (BitVec.ofNat 64 next.length)
   occupied : MemoryModel.Occupied target kind plan next
+  footprint : TableFootprint.Frame source.memory memory kind plan
 
 theorem ModelPost.count_bound (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : KeyHash.Kind) (plan : Plan) (slots : List Nat)
     (paid : Nat) (memory : WordWrites.Memory) (target : PanSemStateFiniteExact 64 Guest.HostMemory) (next : List Nat) (flag : BitVec 64)

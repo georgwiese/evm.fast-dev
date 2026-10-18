@@ -9,7 +9,7 @@ open Flapjack.Basis.Pure.MlString
 The next sp is the actual stored word, not a fresh assumed stack model. -/
 def Entry.advance (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (frame : BitVec 64)
     (entry : Entry source frame)
-    (canonical : target = {source with memory := target.memory, clock := target.clock})
+    (canonical : emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with memory := target.memory, clock := target.clock})
     (budget : regularBudget target.memory frame = regularBudget source.memory frame)
     (capCell : target.memory (frame + 232#64) = .word entry.capacity)
     (baseCell : target.memory (frame + 8#64) = .word entry.base)
@@ -17,16 +17,34 @@ def Entry.advance (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (
   { base := entry.base
     sp := wordAt target.memory (frame + 16#64)
     capacity := entry.capacity
-    ev := by rw [canonical]; exact entry.ev
-    popCode := by rw [canonical]; exact entry.popCode
-    chargeCode := by rw [canonical]; exact entry.chargeCode
-    pushCode := by rw [canonical]; exact entry.pushCode
-    pcCode := by rw [canonical]; exact entry.pcCode
+    ev := by
+      have projected := congrArg PanSemStateFiniteExact.globals canonical
+      change target.globals = source.globals at projected
+      rw [projected]; exact entry.ev
+    popCode := by
+      have projected := congrArg PanSemStateFiniteExact.code canonical
+      change target.code = source.code at projected
+      rw [projected]; exact entry.popCode
+    chargeCode := by
+      have projected := congrArg PanSemStateFiniteExact.code canonical
+      change target.code = source.code at projected
+      rw [projected]; exact entry.chargeCode
+    pushCode := by
+      have projected := congrArg PanSemStateFiniteExact.code canonical
+      change target.code = source.code at projected
+      rw [projected]; exact entry.pushCode
+    pcCode := by
+      have projected := congrArg PanSemStateFiniteExact.code canonical
+      change target.code = source.code at projected
+      rw [projected]; exact entry.pcCode
     spCell := by
       cases actual : target.memory (frame + 16#64) with
       | word word => simp only [wordAt, actual, WitnessRadix.MemoryBytes.wordBits]
     capCell := capCell
-    baseMapped := by rw [canonical]; exact entry.baseMapped
+    baseMapped := by
+      have projected := congrArg PanSemStateFiniteExact.memaddrs canonical
+      change target.memaddrs = source.memaddrs at projected
+      rw [projected]; exact entry.baseMapped
     baseCell := baseCell
     depthBound := depthBound
     capBound := entry.capBound
@@ -45,7 +63,7 @@ def Entry.after_footprint (source target : PanSemStateFiniteExact 64 Guest.HostM
     (header 232 (by decide) (by decide) (by decide) (by decide) (by decide)).trans entry.capCell
   have baseCell : target.memory (frame + 8#64) = .word entry.base :=
     (header 8 (by decide) (by decide) (by decide) (by decide) (by decide)).trans entry.baseCell
-  exact Entry.advance source target frame entry canonical budget capCell baseCell depthBound
+  exact Entry.advance source target frame entry (congrArg emptyLocalsHOLFinite canonical) budget capCell baseCell depthBound
 
 /-- The actual helper caller establishes the next physical entry model.
 Owned frame/stack separation remains a current-state geometric obligation. -/

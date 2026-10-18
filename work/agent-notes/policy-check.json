@@ -1029,6 +1029,11 @@
     "submission/InitECandidate/Solver/GasBudget/ForwardSites.lean",
     "submission/InitECandidate/Solver/GasBudget/Frame.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameEntryAfterClear.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameExceptionBranches.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameExceptionNormal.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameExceptionNormalCall.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameExceptionProgram.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameField.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewAllocation.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewCall.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewCounts.lean",
@@ -1060,6 +1065,7 @@
     "submission/InitECandidate/Solver/GasBudget/FrameOpenRecordFrame.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenStores.lean",
     "submission/InitECandidate/Solver/GasBudget/Halt.lean",
+    "submission/InitECandidate/Solver/GasBudget/HaltNormal.lean",
     "submission/InitECandidate/Solver/GasBudget/LiveTableSetter.lean",
     "submission/InitECandidate/Solver/GasBudget/MergeBudget.lean",
     "submission/InitECandidate/Solver/GasBudget/MessageCallBodyOpen.lean",
@@ -4875,8 +4881,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61740,
-  "package_bytes": 2254690801,
+  "package_entries": 61746,
+  "package_bytes": 2254716861,
   "claim": {
     "K": "infinity"
   },

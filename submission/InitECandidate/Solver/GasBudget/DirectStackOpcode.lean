@@ -37,6 +37,13 @@ structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frame : B
   separate : ∀ slot < capacity.toNat, ∀ offset ∈ ([64, 184, 192] : List Nat), ∀ index < 4,
     frame + BitVec.ofNat 64 offset ≠ (base + BitVec.ofNat 64 slot * 32#64) + BitVec.ofNat 64 (8 * index)
 
+/-- Only pc/sp/liquid/used cells and the actual newly pushed four-word slot
+can change in these original opcodes. The slot is derived from real pop depth. -/
+def Footprint (source target : Memory) (frame base sp : BitVec 64) (popCount : Nat) : Prop :=
+  ∀ address, address ≠ frame + 0#64 → address ≠ frame + 16#64 → address ≠ frame + 64#64 → address ≠ frame + 184#64 →
+    (∀ index < 4, address ≠ (base + BitVec.ofNat 64 (sp.toNat - popCount) * 32#64) + BitVec.ofNat 64 (8 * index)) →
+    target address = source address
+
 /-- Full original AND/OR/XOR/NOT bodies: real pops, charge3, tuple push,
 pc advance, return and scopes. Existing free stack room is derived from the
 actual pop depth and incoming bounded stack; no future-room premise. -/
@@ -49,7 +56,9 @@ theorem body_normal (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest
       regularBudget post.memory frame = regularBudget source.memory frame ∧
       (wordAt post.memory (frame + 184#64)).toNat = (wordAt source.memory (frame + 184#64)).toNat + 3 ∧
       (wordAt post.memory (frame + 16#64)).toNat + kind.site.names.length = entry.sp.toNat + 1 ∧
-      (wordAt post.memory (frame + 16#64)).toNat ≤ entry.capacity.toNat := by
+      (wordAt post.memory (frame + 16#64)).toNat ≤ entry.capacity.toNat ∧
+      Footprint source.memory post.memory frame entry.base entry.sp kind.site.names.length ∧
+      kind.site.names.length ≤ entry.sp.toNat := by
   obtain ⟨ready, inner, prefixFits, prefixClock, prefixFrame, suffixRun, scopeEq, prefixBudget, credit, progress, depth, outside⟩ :=
     OpcodeChargeSites.normal kind.site source post frame entry.popCode entry.chargeCode entry.ev entry.gasCap value normal
   have readyGlobals := congrArg PanSemStateFiniteExact.globals prefixFrame
@@ -80,7 +89,7 @@ theorem body_normal (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest
       have actual := entry.separate currentSP.toNat room offset member index inside
       simpa only [BitVec.ofNat_toNat, BitVec.setWidth_eq] using actual
     rw [suffix_shape] at suffixRun
-    obtain ⟨finishFits, returned, finishClock, finishFrame, finishBudget, usedSame, spFinal, finalDepth⟩ :=
+    obtain ⟨finishFits, returned, finishClock, finishFrame, finishBudget, usedSame, spFinal, finalDepth, finishOutside⟩ :=
       StackPush.finish_normal ready inner frame entry.base currentSP entry.capacity kind.arguments readyPush readyPC readyEV currentSPCell readyCap
         readyBaseMapped readyBase room entry.capBound separated value suffixRun
     have postMemory := congrArg PanSemStateFiniteExact.memory scopeEq
@@ -93,7 +102,7 @@ theorem body_normal (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest
     rw [← postMemory, prefixClock, sub] at canonical
     have transport := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory =>
       {state with memory := post.memory, clock := source.clock - (kind.site.names.length + 3)}) prefixFrame
-    refine ⟨by omega, returned, by omega, canonical.trans transport, ?_, ?_, ?_, ?_⟩
+    refine ⟨by omega, returned, by omega, canonical.trans transport, ?_, ?_, ?_, ?_, ?_, by omega⟩
     · rw [postMemory, finishBudget, prefixBudget]
     · change (WitnessRadix.MemoryBytes.wordBits (post.memory (frame + 184#64))).toNat = _
       rw [postMemory, usedSame]
@@ -104,6 +113,13 @@ theorem body_normal (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest
     · rw [postMemory, finalDepth]
       change currentSP.toNat < entry.capacity.toNat at room
       omega
+    · intro address notPC notSP notGas notUsed away
+      have currentSPWord : BitVec.ofNat 64 (entry.sp.toNat - kind.site.names.length) = currentSP := by
+        have difference : entry.sp.toNat - kind.site.names.length = currentSP.toNat := by omega
+        rw [difference, BitVec.ofNat_toNat, BitVec.setWidth_eq]
+      rw [currentSPWord] at away
+      rw [postMemory]
+      exact (finishOutside address notPC notSP away).trans (outside address notSP notGas notUsed)
 
 end InitECandidate.Solver.GasBudget.DirectStackOpcode
 

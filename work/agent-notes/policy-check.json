@@ -1029,6 +1029,8 @@
     "submission/InitECandidate/Solver/GasBudget/ChildSuccess.lean",
     "submission/InitECandidate/Solver/GasBudget/ChildSuccessNormalPrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/ChildSuccessProgram.lean",
+    "submission/InitECandidate/Solver/GasBudget/DirectStackFootprint.lean",
+    "submission/InitECandidate/Solver/GasBudget/DirectStackInvariant.lean",
     "submission/InitECandidate/Solver/GasBudget/DirectStackOpcode.lean",
     "submission/InitECandidate/Solver/GasBudget/DirectStackOpcodeCall.lean",
     "submission/InitECandidate/Solver/GasBudget/DispatchDirectStack.lean",
@@ -5032,8 +5034,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61897,
-  "package_bytes": 2255482421,
+  "package_entries": 61899,
+  "package_bytes": 2255496464,
   "claim": {
     "K": "infinity"
   },

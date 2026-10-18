@@ -25,18 +25,21 @@ theorem direct_stack_body_normal (kind : DirectStackOpcode.Kind)
       regularBudget post.memory frame = regularBudget source.memory frame ∧
       (wordAt post.memory (frame + 184#64)).toNat = (wordAt source.memory (frame + 184#64)).toNat + 3 ∧
       (wordAt post.memory (frame + 16#64)).toNat + kind.site.names.length = entry.sp.toNat + 1 ∧
-      (wordAt post.memory (frame + 16#64)).toNat ≤ entry.capacity.toNat := by
+      (wordAt post.memory (frame + 16#64)).toNat ≤ entry.capacity.toNat ∧
+      DirectStackOpcode.Footprint source.memory post.memory frame entry.base entry.sp kind.site.names.length ∧
+      kind.site.names.length ≤ entry.sp.toNat := by
   obtain ⟨returned, function, arguments, middle, selected, helperRun, postEq⟩ := normal_helper source post kind.opcode opLocal value normal
   rw [selection_direct_stack] at selected
   cases selected
-  obtain ⟨fits, clock, frameEq, budget, credit, depth, depthBound⟩ := DirectStackOpcode.call_normal kind source middle frame entry code helperRun
-  refine ⟨fits, returned, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  obtain ⟨fits, clock, frameEq, budget, credit, depth, depthBound, footprint, popsFit⟩ := DirectStackOpcode.call_normal kind source middle frame entry code helperRun
+  refine ⟨fits, returned, ?_, ?_, ?_, ?_, ?_, ?_, ?_, popsFit⟩
   · rw [postEq]; exact clock
   · rw [postEq]; exact congrArg emptyLocalsHOLFinite frameEq
   · rw [postEq]; exact budget
   · rw [postEq]; exact credit
   · rw [postEq]; exact depth
   · rw [postEq]; exact depthBound
+  · rw [postEq]; exact footprint
 
 /-- Full original dispatch caller for AND/OR/XOR/NOT. Every normal call
 derives its available clocks, preserves the capped physical regular ledger,
@@ -54,11 +57,13 @@ theorem direct_stack_call_normal (kind : DirectStackOpcode.Kind)
       regularBudget target.memory frame = regularBudget source.memory frame ∧
       (wordAt target.memory (frame + 184#64)).toNat = (wordAt source.memory (frame + 184#64)).toNat + 3 ∧
       (wordAt target.memory (frame + 16#64)).toNat + kind.site.names.length = entry.sp.toNat + 1 ∧
-      (wordAt target.memory (frame + 16#64)).toNat ≤ entry.capacity.toNat := by
+      (wordAt target.memory (frame + 16#64)).toNat ≤ entry.capacity.toNat ∧
+      DirectStackOpcode.Footprint source.memory target.memory frame entry.base entry.sp kind.site.names.length ∧
+      kind.site.names.length ≤ entry.sp.toNat := by
   obtain ⟨callee, called, opLocal⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "op_dispatch") "op" body kind.opcode dispatchCode
   obtain ⟨positive, post, value, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "op_dispatch") arguments [.val (.word kind.opcode)] body callee .one args called normal
   let incoming := entry.call_entry source frame callee
-  obtain ⟨fits, returned, clock, frameEq, budget, credit, depth, depthBound⟩ :=
+  obtain ⟨fits, returned, clock, frameEq, budget, credit, depth, depthBound, footprint, popsFit⟩ :=
     direct_stack_body_normal kind (callEntryStateHOLFinite source callee) post frame incoming opLocal code value bodyRun
   rw [returned] at bodyRun
   have callerFrame : emptyLocalsHOLFinite post = emptyLocalsHOLFinite {source with memory := post.memory, clock := source.clock - (kind.site.names.length + 5)} := by
@@ -68,12 +73,13 @@ theorem direct_stack_call_normal (kind : DirectStackOpcode.Kind)
   have actual := ignored_return source post (ofString "op_dispatch") arguments [.val (.word kind.opcode)] body callee (kind.site.names.length + 5) args called positive bodyRun callerFrame
   have same := congrArg Prod.snd (normal.symm.trans actual)
   change target = {source with memory := post.memory, clock := source.clock - (kind.site.names.length + 5)} at same
-  refine ⟨by change kind.site.names.length + 4 ≤ source.clock - 1 at fits; omega, by rw [same], ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨by change kind.site.names.length + 4 ≤ source.clock - 1 at fits; omega, by rw [same], ?_, ?_, ?_, ?_, ?_, ?_, popsFit⟩
   · rw [same]
   · rw [same]; exact budget
   · rw [same]; exact credit
   · rw [same]; exact depth
   · rw [same]; exact depthBound
+  · rw [same]; exact footprint
 
 end InitECandidate.Solver.GasBudget.OpcodeDispatch
 

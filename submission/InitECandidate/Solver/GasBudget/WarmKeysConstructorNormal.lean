@@ -24,7 +24,9 @@ theorem constructor_normal_bound (source post : PanSemStateFiniteExact 64 Guest.
       Locals warmed (cell plan .header 0) start total total ∧ slots.length ≤ total ∧
       plan.capacity ≤ max 16 (4 * (total + 1)) ∧
       evaluateHOLFiniteState warmed afterLoop = (some (.returned value), finish) ∧ post = restore source "ak" finish ∧
-      ∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address := by
+      warmed.code = source.code ∧
+      (∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address) ∧
+      ∀ key : MlS, key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key := by
   have callRun := normal
   rw [constructor_shape] at callRun
   have valid := TableRuntime.normal_call_layout source post .storage cursor 16 "ak" newArguments (.seq resetIndex site)

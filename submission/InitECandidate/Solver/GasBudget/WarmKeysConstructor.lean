@@ -2,6 +2,7 @@ import InitECandidate.Solver.GasBudget.WarmKeysConstructorProgram
 import InitECandidate.Solver.GasBudget.WarmKeysInitial
 import InitECandidate.Solver.GasBudget.WarmKeysLoop
 import InitECandidate.Solver.Input.AssignNormal
+import InitECandidate.Solver.Input.CounterLoopLocal
 
 namespace InitECandidate.Solver.GasBudget.WarmKeys
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -25,7 +26,9 @@ theorem constructor_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
       Locals warmed (cell plan .header 0) start total total ∧ slots.length ≤ total ∧
       plan.capacity ≤ max 16 (4 * (total + 1)) ∧
       evaluateHOLFiniteState warmed afterLoop = (some (.returned value), finish) ∧ post = restore source "ak" finish ∧
-      ∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address := by
+      warmed.code = source.code ∧
+      (∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address) ∧
+      ∀ key : MlS, key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key := by
   rw [constructor_shape] at normal
   obtain ⟨funded, inner, afterNew, restored⟩ := TableRuntime.call_normal source post .storage cursor 16 "ak" newArguments (.seq resetIndex site)
     valid environment.domain (Or.inr (by decide)) rfl newCode heap environment.allocCode environment.zeroCode value normal
@@ -52,9 +55,17 @@ theorem constructor_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   change slots.length ≤ 0 + total at upper
   change plan.capacity ≤ max 16 (4 * (0 + total + 1)) at capacityBound
   refine ⟨10 + paid, plan, slots, nextCursor, warmed, inner, by omega, by omega, by omega,
-    finalTable, finalEnvironment, finalLocals, by omega, by simpa only [Nat.zero_add] using capacityBound, restRun, restored, ?_⟩
-  intro address earlier
-  exact (earlierWords address earlier).trans (TableRuntime.caller_memory_away source "ak" .storage cursor 16 valid address (Or.inl earlier))
+    finalTable, finalEnvironment, finalLocals, by omega, by simpa only [Nat.zero_add] using capacityBound, restRun, restored, ?_, ?_, ?_⟩
+  · have fields := Input.evaluation_fields ready warmed loop none loopRun
+    exact fields.2.2.2
+  · intro address earlier
+    exact (earlierWords address earlier).trans (TableRuntime.caller_memory_away source "ak" .storage cursor 16 valid address (Or.inl earlier))
+  · intro key notTable notIndex
+    have same := Input.counter_loop_local ready warmed condition (ofString "htab_set") [localVar "ak", query, .const 1#64] "i" (.op .add [localVar "i", .const 1#64]) key notIndex loopRun
+    calc
+      warmed.locals.lookup key = ready.locals.lookup key := same
+      _ = constructed.locals.lookup key := by simp [ready, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, Ne.symm notIndex]
+      _ = source.locals.lookup key := by simp [constructed, TableRuntime.callState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, Ne.symm notTable]
 
 end InitECandidate.Solver.GasBudget.WarmKeys
 

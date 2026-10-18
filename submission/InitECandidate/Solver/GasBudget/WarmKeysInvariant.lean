@@ -1,6 +1,7 @@
 import InitECandidate.Solver.GasBudget.WarmKeysLocals
 import InitECandidate.Solver.MutableTable.SetModelCursor
 import InitECandidate.Solver.MutableTable.SetAmortized
+import InitECandidate.Solver.MutableTable.TableState
 
 namespace InitECandidate.Solver.GasBudget.WarmKeys
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -37,25 +38,13 @@ theorem Environment.of_fields {source target : PanSemStateFiniteExact 64 Guest.H
   · rw [codes]; exact k
   · rw [codes]; exact l
 
-structure Table (source : PanSemStateFiniteExact 64 Guest.HostMemory) (plan : Plan) (slots : List Nat) (cursor floor : Nat) : Prop where
-  valid : Valid .storage plan
-  half : 2 * slots.length ≤ plan.capacity
-  header : MemoryModel.Header source.memory .storage plan (BitVec.ofNat 64 slots.length)
-  occupied : MemoryModel.Occupied source .storage plan slots
-  power : ∃ bits, plan.capacity = 2 ^ bits ∧ 2 ≤ bits
-  heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 cursor)))
-  bounded : cursor ≤ 33806089496
-  aligned : cursor % 8 = 0
-  earlier : ∀ pool, plan.base pool + size .storage plan pool ≤ cursor
-  lower : ∀ pool, floor ≤ plan.base pool
+abbrev Table (source : PanSemStateFiniteExact 64 Guest.HostMemory) (plan : Plan) (slots : List Nat) (cursor floor : Nat) : Prop :=
+  TableState source .storage plan slots cursor floor
 
 theorem Table.of_fields {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {plan : Plan} {slots : List Nat} {cursor floor : Nat}
     (table : Table source plan slots cursor floor) (globals : target.globals = source.globals) (memory : target.memory = source.memory)
-    (domain : target.memaddrs = source.memaddrs) (endian : target.be = source.be) : Table target plan slots cursor floor := by
-  refine ⟨table.valid, table.half, ?_, ?_, table.power, ?_, table.bounded, table.aligned, table.earlier, table.lower⟩
-  · rw [memory]; exact table.header
-  · exact MemoryModel.Occupied.of_fields source target .storage plan slots table.occupied memory.symm domain.symm endian.symm
-  · rw [globals]; exact table.heap
+    (domain : target.memaddrs = source.memaddrs) (endian : target.be = source.be) : Table target plan slots cursor floor :=
+  TableState.of_fields table globals memory domain endian
 
 end InitECandidate.Solver.GasBudget.WarmKeys
 

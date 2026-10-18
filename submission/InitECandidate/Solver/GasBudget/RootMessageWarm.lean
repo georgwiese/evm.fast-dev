@@ -34,14 +34,20 @@ theorem warm_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (normal : evaluateHOLFiniteState source RootCaller.afterMsgGas = (some (.returned value), post)) :
     ∃ paid accountPlan storagePlan accountSlots storageSlots nextCursor storageStart ready entered warmed finish,
       paid ≤ source.clock ∧ paid ≤ WarmTables.price addressCount keyCount ∧ warmed.clock = source.clock - paid ∧
+      paid + GrowRuntime.growthPotential .account 64 + GrowRuntime.growthPotential .storage 16 ≤
+        1805 + WarmPrecompiles.price 19 addressCount + WarmKeys.price 0 keyCount + GrowRuntime.growthPotential .account accountPlan.capacity + GrowRuntime.growthPotential .storage storagePlan.capacity ∧
       TableState warmed .account accountPlan accountSlots nextCursor cursor ∧ TableState warmed .storage storagePlan storageSlots nextCursor storageStart ∧
       (∀ first second, accountPlan.base first + size .account accountPlan first ≤ storagePlan.base second) ∧
       accountSlots.length ≤ 19 + addressCount ∧ storageSlots.length ≤ keyCount ∧
+      warmed.locals.lookup (ofString "aa") = some (.val (.word (cell accountPlan .header 0))) ∧
+      warmed.locals.lookup (ofString "ak") = some (.val (.word (cell storagePlan .header 0))) ∧
       warmed.locals.lookup (ofString "m") = some (.val (.word (BitVec.ofNat 64 messageStart))) ∧
       warmed.memory (BitVec.ofNat 64 messageStart + 40#64) = .word gas ∧ gas.toNat + intrinsicRegular ≤ 16777216 ∧
       evaluateHOLFiniteState warmed WarmKeys.afterLoop = (some (.returned value), finish) ∧
       post = restore ready "aa" (restore entered "ak" finish) ∧ warmed.code = source.code ∧ WarmKeys.Environment warmed ∧
       PointerArray warmed.memory 20 addressesStart addressCount messageStart pointers ∧
+      accountPlan.capacity ≤ max 64 (4 * (addressCount + 20)) ∧ storagePlan.capacity ≤ max 16 (4 * (keyCount + 1)) ∧
+      (∀ key : MlS, key ≠ ofString "aa" → key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key) ∧
       ∀ query : BitVec 64, query.toNat < messageStart → warmed.memory query = source.memory query := by
   obtain ⟨ready, readyRun, readyFrame, readyGas, readyOutside⟩ := stores_normal source post value messageStart reservoir region messageLocal reservoirLocal normal
   have locals := congrArg PanSemStateFiniteExact.locals readyFrame
@@ -78,9 +84,12 @@ theorem warm_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     intro query before
     exact (finalProtected query (by omega)).trans (readyOutside query (Or.inl before))
   refine ⟨paid, accountPlan, storagePlan, accountSlots, storageSlots, nextCursor, storageStart, ready, entered, warmed, finish,
-    by omega, price, by omega, accountTable, storageTable, separated, accountCount, storageCount, ?_, ?_, cap, restRun, restored, finalCodes.trans codes, finalEnvironment, array.of_protected earlierWords, earlierWords⟩
+    by omega, price, by omega, budget, accountTable, storageTable, separated, accountCount, storageCount, accountLocal, storageLocals.table, ?_, ?_, cap, restRun, restored, finalCodes.trans codes, finalEnvironment, array.of_protected earlierWords,
+    accountCapacity, storageCapacity, ?_, earlierWords⟩
   · exact (finalLocalFrame _ (by decide) (by decide) (by decide)).trans (localWord _ _ messageLocal)
   · exact (finalProtected _ gasBefore).trans (readyGas.trans gasCell)
+  · intro key notAccount notStorage notIndex
+    rw [finalLocalFrame key notAccount notStorage notIndex, locals]
 
 end InitECandidate.Solver.GasBudget.RootMessage
 

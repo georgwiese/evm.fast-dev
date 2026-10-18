@@ -28,6 +28,11 @@ theorem PrefixEffect.resumed (source : PanSemStateFiniteExact 64 Guest.HostMemor
   · intro address away
     exact if_neg away
 
+theorem PrefixEffect.call_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (callee : HolFiniteMapExact MlS (ValueHOL 64)) (frame : BitVec 64) (positive : 1 ≤ source.clock) :
+    PrefixEffect source (callEntryStateHOLFinite source callee) frame 1 :=
+  ⟨positive, rfl, rfl, rfl, rfl, by intros; rfl⟩
+
 theorem PrefixEffect.unchanged (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (frame : BitVec 64) (paid : Nat)
     (fits : paid ≤ source.clock) (clock : target.clock = source.clock - paid)
     (fields : emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid}) :
@@ -83,6 +88,7 @@ end InitECandidate.Solver.GasBudget.StackPop
 
 #print axioms InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.refl
 #print axioms InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.resumed
+#print axioms InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.call_entry
 #print axioms InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.unchanged
 #print axioms InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.restore
 #print axioms InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.of_emptyLocals

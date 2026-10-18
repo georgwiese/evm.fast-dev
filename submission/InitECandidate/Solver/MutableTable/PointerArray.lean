@@ -38,8 +38,15 @@ theorem PointerArray.of_protected {source target : WordWrites.Memory} {width sta
   rw [frame _ earlier]
   exact array.words index inside
 
+theorem PointerArray.floor_mono {memory : WordWrites.Memory} {width start count floor : Nat} {pointers : Nat → BitVec 64}
+    (array : PointerArray memory width start count floor pointers) (next : Nat) (forward : floor ≤ next) :
+    PointerArray memory width start count next pointers :=
+  ⟨array.valid, array.earlier.trans forward, array.words, array.fits, array.mapped⟩
+
 end InitECandidate.Solver.MutableTable
 
 #print axioms InitECandidate.Solver.MutableTable.PointerArray.cell_number
 #print axioms InitECandidate.Solver.MutableTable.PointerArray.cell_mapped
 #print axioms InitECandidate.Solver.MutableTable.PointerArray.of_protected
+
+#print axioms InitECandidate.Solver.MutableTable.PointerArray.floor_mono

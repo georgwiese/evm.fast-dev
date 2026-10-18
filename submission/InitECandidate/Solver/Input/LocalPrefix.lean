@@ -10,6 +10,8 @@ inductive LocalPrefix (key : MlS) : ProgHOL 64 → Prop where
   | skip : LocalPrefix key .skip
   | assign (name : MlS) (expression : ExpHOL 64) (other : key ≠ name) :
       LocalPrefix key (.assign .local name expression)
+  | globalAssign (name : MlS) (expression : ExpHOL 64) :
+      LocalPrefix key (.assign .global name expression)
   | store (address value : ExpHOL 64) : LocalPrefix key (.store address value)
   | call (destination : Option MlS) (function : MlS) (arguments : List (ExpHOL 64))
       (other : ∀ name, destination = some name → key ≠ name) :
@@ -54,6 +56,11 @@ theorem LocalPrefix.summary_full {F : Type} {key : MlS} {program : ProgHOL 64}
       · simpa only [setKvarHOLFinite] using
           And.intro (fun _ => lookup_set_other source key name _ other) (by simp)
       · simp
+  | globalAssign name expression =>
+    rw [evaluateHOLFiniteState_assign]
+    split
+    · simp
+    · split <;> simp [setKvarHOLFinite, setGlobalHOLFinite]
   | store address value =>
     rw [evaluateHOLFiniteState_store]
     split

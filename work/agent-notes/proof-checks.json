@@ -4626,12 +4626,20 @@
       "sha256": "e179093515ae1ee2c53b7d81d85ccb3b255680dabf6180718d0c063f95f9060b"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/OpcodeChargeException.lean",
+      "sha256": "de3e7b09f8ea55bdb70a0b7a0cffd61ca00b683252e678c55ee67f7e3df85195"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GasBudget/OpcodeChargePrefix.lean",
       "sha256": "9fd86735a20821268638b605acbbdb1b4e55f0f251da438d039777437ed95096"
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/OpcodeChargeSites.lean",
       "sha256": "910cf854a1ec2ded8213575f5f85e48d4c726ca58877571bcc1e22710b85dbc9"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/OpcodeChargeSitesException.lean",
+      "sha256": "8c217765673f7b93a590505ac9abe4ed01e3b015ccd97fb5ec76a49d358aeb36"
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/OpcodeEntry.lean",
@@ -4706,6 +4714,10 @@
       "sha256": "0fbb9ea17a9ab60d5889f5464682fdc5ef3edc05264f6d1b85e5924c4d9a0378"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/RegularChargeLiteralOutcomes.lean",
+      "sha256": "a0c86f40db282315f8e3520946df47585de90a74966d2d1c6485b97a4c6b30d9"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GasBudget/RegularChargeMemory.lean",
       "sha256": "472826a771bd8397574dc38482f08655b335c26e8ab87015ffdf738a40cc93db"
     },
@@ -4716,6 +4728,10 @@
     {
       "path": "submission/InitECandidate/Solver/GasBudget/RegularChargeNormalCall.lean",
       "sha256": "bbe3d40ca98b41fd3e044e67d92f568cf5a3c70e64d2bc10840b2b8c4dbaf1ef"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/RegularChargeOutcomes.lean",
+      "sha256": "bfcbecb69fef4f931a115c80ff99a23c41d14695a53f418fb48a825bd3c22151"
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/Repayment.lean",
@@ -4886,8 +4902,16 @@
       "sha256": "6ca5e81cda8b4066e2ed2c4c568cd46c694bacf8903a595e0999847247d57149"
     },
     {
+      "path": "submission/InitECandidate/Solver/GasBudget/StackPopCallException.lean",
+      "sha256": "19fd381b7fc71b02ba147f67a4d03530410b920f101b7b6fe4ce259d0ed6456e"
+    },
+    {
       "path": "submission/InitECandidate/Solver/GasBudget/StackPopCallNormal.lean",
       "sha256": "9971f92b3e96445e44be8946a78d83977ea3eca65d5dbab4227ba847f04b755c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/StackPopEffects.lean",
+      "sha256": "fa350a70044cf0afa8542d2f4ea92150dbb5e61518da91649d0e03feeab970f1"
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/StackPopEmpty.lean",
@@ -4896,6 +4920,18 @@
     {
       "path": "submission/InitECandidate/Solver/GasBudget/StackPopNormal.lean",
       "sha256": "b2d0468fd3f7e23e86c6da832e49cc74ee65988277535c296d1270b65452fd73"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/StackPopOutcomes.lean",
+      "sha256": "6664df2a9c247ab32ff9915c45893ef9188142af4f441388ef1734a8548c0cb4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/StackPopPrefixEffect.lean",
+      "sha256": "406d5e49b882a9a97a4baf6592eeb59b18db9ed8e2f89d1f0f3e1f6b5cd9e52e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/GasBudget/StackPopsException.lean",
+      "sha256": "7c931ef02ea4591e3258e397c4672e6a16511ad0dcce4cdeef7c4624ef1116a1"
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/StackPopsPrefix.lean",
@@ -6372,6 +6408,10 @@
     {
       "path": "submission/InitECandidate/Solver/Input/ScopedCallData.lean",
       "sha256": "8e1017d9cf3003016fc9728600058de3d2a21b704c9c2803942d091ab4cf3070"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/ScopedCallException.lean",
+      "sha256": "16cd90dabe351b2fe19a0a9b3ba89a7160d5f5de55585f3f8cb9ad59c630b172"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ScopedCallNormal.lean",
@@ -67768,7 +67808,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -67776,19 +67816,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -67797,7 +67837,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -67806,7 +67846,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -67815,7 +67855,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -67824,7 +67864,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -67833,7 +67873,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -67842,7 +67882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -67851,7 +67891,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -67860,7 +67900,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -67869,7 +67909,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -67878,7 +67918,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -67887,7 +67927,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -67896,7 +67936,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -67905,7 +67945,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -67914,7 +67954,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -67923,7 +67963,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -67931,7 +67971,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -67939,7 +67979,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -67948,7 +67988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -67957,7 +67997,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -67966,7 +68006,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -67974,7 +68014,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -67983,7 +68023,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -68010,7 +68050,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -68019,7 +68059,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -68028,7 +68068,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -68037,7 +68077,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -68046,7 +68086,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -68055,7 +68095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -68064,7 +68104,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -68073,7 +68113,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_memory",
@@ -68090,7 +68130,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -68098,7 +68138,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -68107,7 +68147,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -68116,7 +68156,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -68125,7 +68165,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -68152,7 +68192,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.execute",
@@ -68161,7 +68201,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -68170,7 +68210,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.bind_lookup_other",
@@ -68179,7 +68219,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StateSteps.assign_execute",
@@ -68188,14 +68228,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_unique",
@@ -68203,7 +68243,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
@@ -68238,7 +68278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.block_execute",
@@ -68247,7 +68287,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.call_execute",
@@ -68256,7 +68296,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.environment",
@@ -68265,7 +68305,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop_execute",
@@ -68274,7 +68314,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.remaining_loops",
@@ -68283,7 +68323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.word_view",
@@ -68291,7 +68331,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.byte_view",
@@ -68300,7 +68340,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop32_shape",
@@ -68309,7 +68349,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.body_shape",
@@ -68318,7 +68358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.condition_read",
@@ -68327,7 +68367,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.alignment_read",
@@ -68336,7 +68376,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CodeEnvironment.finite_lookup",
@@ -68344,7 +68384,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.valid",
@@ -68371,7 +68411,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guards",
@@ -68380,7 +68420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_execute",
@@ -68389,7 +68429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.environment",
@@ -68398,7 +68438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.block32_execute",
@@ -68407,7 +68447,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.blockWord_execute",
@@ -68416,7 +68456,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_execute",
@@ -68425,7 +68465,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.condition_read",
@@ -68434,7 +68474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.alignment_read",
@@ -68443,7 +68483,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.environment",
@@ -68452,7 +68492,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_execute",
@@ -68461,7 +68501,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_execute",
@@ -68470,7 +68510,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_frame",
@@ -68479,7 +68519,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_memory_away",
@@ -68487,7 +68527,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_shape",
@@ -68496,7 +68536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_shape",
@@ -68505,7 +68545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.body_shape",
@@ -68514,7 +68554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_frame",
@@ -68523,7 +68563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_other",
@@ -68532,7 +68572,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_index",
@@ -68541,7 +68581,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_frame",
@@ -68550,7 +68590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_other",
@@ -68559,7 +68599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_index",
@@ -68568,7 +68608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.remaining_loops",
@@ -68577,7 +68617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_expected",
@@ -68604,7 +68644,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ProgramPrefix.restoration_frame",
@@ -68613,7 +68653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.body_shape",
@@ -68658,7 +68698,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_body_execute",
@@ -68667,7 +68707,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_condition",
@@ -68676,7 +68716,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopTail_execute",
@@ -68685,7 +68725,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_small",
@@ -68987,7 +69027,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.aligned_cell",
@@ -68995,7 +69035,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_exists",
@@ -69004,7 +69044,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read200",
@@ -69013,7 +69053,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.mapped_region",
@@ -69022,7 +69062,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.of_cells",
@@ -69031,7 +69071,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.load_expression",
@@ -69040,7 +69080,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute",
@@ -69049,21 +69089,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.stores_execute",
@@ -69072,7 +69112,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.block_execute",
@@ -69081,7 +69121,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_shapes",
@@ -69090,7 +69130,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.address_read",
@@ -69099,7 +69139,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.store_execute",
@@ -69108,7 +69148,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.environment",
@@ -69117,7 +69157,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_execute",
@@ -69126,7 +69166,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_mapped",
@@ -69135,7 +69175,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_memory_away",
@@ -69144,7 +69184,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.answer_length",
@@ -69152,7 +69192,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.oracle",
@@ -69161,21 +69201,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_frame",
@@ -69184,7 +69224,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_index",
@@ -69193,7 +69233,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_other",
@@ -69202,7 +69242,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.test_read",
@@ -69211,7 +69251,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_execute",
@@ -69220,7 +69260,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_frame",
@@ -69229,7 +69269,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_other",
@@ -69238,7 +69278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_index",
@@ -69247,7 +69287,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryWalk_away",
@@ -69255,7 +69295,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Mapped.of_domain",
@@ -69263,7 +69303,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.byte_walk",
@@ -69272,7 +69312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.word_walk",
@@ -69281,7 +69321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_domain",
@@ -69290,7 +69330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_domain",
@@ -69299,7 +69339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_clock",
@@ -69308,7 +69348,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_clock",
@@ -69317,7 +69357,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.cost_le",
@@ -69326,7 +69366,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_clock",
@@ -69335,7 +69375,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_control",
@@ -69344,7 +69384,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.alignment_false",
@@ -69353,7 +69393,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_execute",
@@ -69362,7 +69402,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.execute",
@@ -69371,7 +69411,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_execute",
@@ -69380,7 +69420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_memory_away",
@@ -69389,7 +69429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_control",
@@ -69397,7 +69437,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.environment",
@@ -69406,7 +69446,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_memory",
@@ -69415,7 +69455,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_memory",
@@ -69424,7 +69464,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_memory_away",
@@ -69433,7 +69473,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_memory_away",
@@ -69442,7 +69482,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory_away",
@@ -69451,7 +69491,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.byte_walk_be",
@@ -69460,7 +69500,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.word_walk_be",
@@ -69469,7 +69509,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory",
@@ -69478,7 +69518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_away",
@@ -69487,21 +69527,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.control_of_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.frame_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_control",
@@ -69510,7 +69550,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_control",
@@ -69519,7 +69559,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_args",
@@ -69528,7 +69568,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_domain",
@@ -69537,7 +69577,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_control",
@@ -69546,7 +69586,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_control",
@@ -69555,7 +69595,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_cost_le",
@@ -69563,14 +69603,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.stores_execute",
@@ -69579,7 +69619,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.block_execute",
@@ -69588,21 +69628,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_frame",
@@ -69611,7 +69651,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_index",
@@ -69620,7 +69660,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_other",
@@ -69629,7 +69669,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_execute",
@@ -69638,7 +69678,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_bounds",
@@ -69647,7 +69687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_execute",
@@ -69656,7 +69696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_clock",
@@ -69665,7 +69705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_index",
@@ -69674,7 +69714,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_shapes",
@@ -69683,7 +69723,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.store_execute",
@@ -69692,7 +69732,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_frame",
@@ -69701,7 +69741,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_other",
@@ -69710,7 +69750,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_index",
@@ -69719,7 +69759,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryWalk_away",
@@ -69727,7 +69767,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.call_execute",
@@ -69736,7 +69776,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.environment",
@@ -69745,7 +69785,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.alignment_read",
@@ -69754,7 +69794,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.execute",
@@ -69763,7 +69803,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_value_read",
@@ -69772,7 +69812,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_execute",
@@ -69781,7 +69821,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_memory_away",
@@ -69790,7 +69830,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_other",
@@ -69799,7 +69839,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.condition_read",
@@ -69808,7 +69848,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.loop_execute",
@@ -69817,7 +69857,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.body_shape",
@@ -69826,7 +69866,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_read",
@@ -69835,7 +69875,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_clock",
@@ -69844,7 +69884,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_control",
@@ -69853,7 +69893,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_other",
@@ -69862,7 +69902,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_domain",
@@ -69871,7 +69911,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_memory_away",
@@ -69880,14 +69920,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.permutation_control",
@@ -69896,21 +69936,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_clock",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_empty",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_restore",
@@ -69919,7 +69959,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_clock",
@@ -69928,7 +69968,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_control",
@@ -69937,7 +69977,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_memory_away",
@@ -69946,7 +69986,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute_word",
@@ -69955,7 +69995,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_blocks_execute",
@@ -69964,7 +70004,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.afterBlocks_shape",
@@ -69973,7 +70013,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.block_execute",
@@ -69982,7 +70022,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.call_execute",
@@ -69991,7 +70031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.Mapped.of_domain",
@@ -69999,7 +70039,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Code.of_control",
@@ -70008,7 +70048,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.mapped_of_control",
@@ -70016,7 +70056,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Args.of_index",
@@ -70025,7 +70065,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.condition_read",
@@ -70034,7 +70074,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.EntryData.of_control",
@@ -70043,7 +70083,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Protected.tail",
@@ -70051,7 +70091,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.environment",
@@ -70060,7 +70100,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.execute",
@@ -70069,7 +70109,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.loop_execute",
@@ -70078,7 +70118,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_address_read",
@@ -70087,7 +70127,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_store_execute",
@@ -70096,7 +70136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_stores_execute",
@@ -70105,7 +70145,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_words_execute",
@@ -70114,14 +70154,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_memory_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_alignment_read",
@@ -70130,7 +70170,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_execute",
@@ -70139,7 +70179,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_first_execute",
@@ -70148,7 +70188,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_last_execute",
@@ -70157,7 +70197,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.padding_execute",
@@ -70166,7 +70206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_locals",
@@ -70174,7 +70214,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_control",
@@ -70182,7 +70222,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_clock",
@@ -70190,7 +70230,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_execute",
@@ -70199,7 +70239,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_memory_away",
@@ -70208,7 +70248,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.body_shape",
@@ -70217,7 +70257,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailLocals.of_locals",
@@ -70226,7 +70266,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.OutMapped.of_domain",
@@ -70234,7 +70274,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailData.of_control",
@@ -70243,7 +70283,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.away_above",
@@ -70267,7 +70307,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.ordinary_byte_mapped",
@@ -70275,7 +70315,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.weaken",
@@ -70283,7 +70323,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.subrange",
@@ -70291,7 +70331,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.byte_mapped",
@@ -70299,7 +70339,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.word_mapped",
@@ -70307,7 +70347,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.mask_aligned",
@@ -70316,7 +70356,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.copy_mapped",
@@ -70325,7 +70365,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.absorb_mapped",
@@ -70369,7 +70409,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -70378,7 +70418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -70387,7 +70427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -70396,21 +70436,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -70419,7 +70459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -70428,7 +70468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -70437,7 +70477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -70445,7 +70485,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -70454,7 +70494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -70463,7 +70503,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -70472,7 +70512,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -70480,14 +70520,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -70496,7 +70536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -70505,7 +70545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -70514,7 +70554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -70522,7 +70562,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -70530,7 +70570,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -70538,7 +70578,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -70546,7 +70586,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -70554,7 +70594,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -70562,7 +70602,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -70571,7 +70611,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -70579,7 +70619,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -70588,7 +70628,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -70596,7 +70636,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -70605,7 +70645,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -70614,7 +70654,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -70623,7 +70663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -70632,7 +70672,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -70641,7 +70681,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -70650,7 +70690,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -70659,7 +70699,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -70668,7 +70708,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -70677,7 +70717,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -70686,7 +70726,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -70695,7 +70735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -70704,7 +70744,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -70713,7 +70753,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -70722,7 +70762,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -70731,7 +70771,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -70740,7 +70780,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -70749,7 +70789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -70758,7 +70798,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -70767,7 +70807,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -70776,7 +70816,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -70785,14 +70825,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -70801,7 +70841,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -70810,7 +70850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -70819,7 +70859,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -70828,7 +70868,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -71305,7 +71345,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -71314,7 +71354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -71323,7 +71363,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -72329,7 +72369,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -72338,7 +72378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -72347,7 +72387,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -72749,7 +72789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -72758,7 +72798,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -73328,7 +73368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Payload.caller_normal",
@@ -73562,7 +73602,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_environment",
@@ -73571,7 +73611,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.execute",
@@ -75177,7 +75217,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refund_call",
@@ -75186,7 +75226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refill_call",
@@ -75195,7 +75235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.address_read",
@@ -75204,7 +75244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.frame_read",
@@ -75213,14 +75253,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
@@ -75229,7 +75269,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.selected_number",
@@ -75237,7 +75277,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.environment",
@@ -75246,7 +75286,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.call_execute",
@@ -75255,7 +75295,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.body_shape",
@@ -75264,7 +75304,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.execute",
@@ -75273,7 +75313,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refill.preserves_regular_budget",
@@ -75281,7 +75321,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.body_shape",
@@ -75290,7 +75330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.execute",
@@ -75299,7 +75339,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Refund.preserves_regular_budget",
@@ -75307,7 +75347,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.body_shape",
@@ -75316,7 +75356,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.execute",
@@ -75325,7 +75365,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.environment",
@@ -75334,7 +75374,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.AddExact.call_execute",
@@ -75343,7 +75383,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.first_execute",
@@ -75352,7 +75392,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.execute",
@@ -75361,7 +75401,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.preserves_regular_budget",
@@ -75370,7 +75410,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.call_execute",
@@ -75379,7 +75419,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed_call",
@@ -75388,7 +75428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.failed",
@@ -75397,7 +75437,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.body_shape",
@@ -75406,7 +75446,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StateCharge.spill_execute",
@@ -75415,7 +75455,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.execute",
@@ -75424,7 +75464,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.budget_transfer",
@@ -75433,7 +75473,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.call_execute",
@@ -75442,7 +75482,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.returned_budget_bound",
@@ -75451,7 +75491,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.body_shape",
@@ -75460,7 +75500,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.child_read",
@@ -75469,7 +75509,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.sum_execute",
@@ -75478,14 +75518,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChildError.stored_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.body_shape",
@@ -75494,7 +75534,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.execute",
@@ -75503,7 +75543,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.preserves_regular_budget",
@@ -75511,7 +75551,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.call_execute",
@@ -75520,7 +75560,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.body_shape",
@@ -75529,7 +75569,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.execute",
@@ -75538,7 +75578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.failed",
@@ -75547,7 +75587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.quantitative",
@@ -75555,7 +75595,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.call_execute",
@@ -75564,7 +75604,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.failed_call",
@@ -75573,7 +75613,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.CallGas.stipend_update_execute",
@@ -78679,7 +78719,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.initialization_frame",
@@ -78688,7 +78728,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.restoration_frame",
@@ -78697,7 +78737,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.zero_return",
@@ -78706,7 +78746,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -78714,7 +78754,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_ne",
@@ -78722,7 +78762,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_aligned",
@@ -78730,7 +78770,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.ordinary_mapped",
@@ -78738,7 +78778,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.mapped_of_allocated",
@@ -78746,7 +78786,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.count_small",
@@ -78754,7 +78794,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.hash_byte_cell",
@@ -78762,7 +78802,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bind_other",
@@ -78771,7 +78811,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -78780,7 +78820,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -78788,7 +78828,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -78796,7 +78836,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.execute",
@@ -78805,7 +78845,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_execute",
@@ -78814,7 +78854,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_clock",
@@ -78823,7 +78863,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_ffi",
@@ -78832,7 +78872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.ext_execute",
@@ -78841,7 +78881,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_execute",
@@ -78850,7 +78890,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lastValue_filter",
@@ -78858,7 +78898,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.execute",
@@ -78867,7 +78907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_aligned",
@@ -78876,7 +78916,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.body_shape",
@@ -78885,7 +78925,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -78894,7 +78934,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_clock",
@@ -79529,7 +79569,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.declaration_normal_entry",
@@ -79538,7 +79578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.PureGuard.summary",
@@ -79547,7 +79587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.PureGuard.normal_continue",
@@ -79556,7 +79596,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RootBudget.initialize_validated",
@@ -79601,7 +79641,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPrefix.normal_continue",
@@ -79610,7 +79650,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPath.normal_reaches",
@@ -81081,7 +81121,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPrefix.summary_full",
@@ -81090,7 +81130,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameOpen.geometry",
@@ -84901,7 +84941,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Truncate.price_formula",
@@ -86356,7 +86396,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.store_normal_continue",
@@ -86365,7 +86405,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.TableRuntime.body_normal",
@@ -87071,7 +87111,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.words_away",
@@ -87080,7 +87120,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.PointerArray.floor_mono",
@@ -87640,7 +87680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RootMessage.empty_activation_price",
@@ -87725,7 +87765,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.normal_affordable",
@@ -87734,7 +87774,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.ledger_fits",
@@ -87742,7 +87782,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.call_normal",
@@ -87751,7 +87791,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.positive_progress",
@@ -87759,7 +87799,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.SaturatingAdd.carry_iff",
@@ -87831,7 +87871,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.raise_ne_none",
@@ -87840,7 +87880,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.op_length",
@@ -87849,7 +87889,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.load_one_mapped",
@@ -87858,7 +87898,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.stores_nonempty_mapped",
@@ -87867,7 +87907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.store_mapped_normal",
@@ -87876,7 +87916,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameException.clear_data_normal",
@@ -87939,28 +87979,28 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameField.put_other",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameField.put_budget",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameField.put_budget_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Halt.call_normal",
@@ -90275,7 +90315,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.OpcodeChargeSites.body_shape",
@@ -90284,12 +90324,12 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.OpcodeChargeSites.fee_positive",
       "axioms": [],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.OpcodeChargeSites.normal",
@@ -90298,7 +90338,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.call_normal",
@@ -90307,7 +90347,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_shape",
@@ -90316,7 +90356,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_normal",
@@ -90325,7 +90365,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.pops_normal",
@@ -90334,7 +90374,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.PureGuard.normal_prefix",
@@ -90343,7 +90383,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.return_normal",
@@ -90352,7 +90392,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.scoped_normal",
@@ -90361,7 +90401,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticEffects.original_preserves",
@@ -90406,7 +90446,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.call_other_word",
@@ -90415,7 +90455,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPop.empty_execute",
@@ -90424,7 +90464,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "arithmetic-stack-effects-v1.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.StackPush.non_growth_normal",
@@ -90532,7 +90572,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.assign",
@@ -90541,7 +90581,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.returned",
@@ -90550,7 +90590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.raised",
@@ -90559,7 +90599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.stopped",
@@ -90568,7 +90608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.sequence",
@@ -90577,7 +90617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.conditional",
@@ -90586,7 +90626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.declared",
@@ -90595,21 +90635,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.code_of_erase",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.memory_of_erase",
       "axioms": [
         "propext"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.called",
@@ -90618,7 +90658,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.lookup_body",
@@ -90626,7 +90666,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.call_body",
@@ -90635,7 +90675,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.loop",
@@ -90644,7 +90684,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.primitive",
@@ -90779,7 +90819,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_lookup_data",
@@ -90999,7 +91039,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.assign",
@@ -91008,7 +91048,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.returned",
@@ -91017,7 +91057,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.raised",
@@ -91026,7 +91066,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.stopped",
@@ -91035,7 +91075,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.sequence",
@@ -91044,7 +91084,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.conditional",
@@ -91053,7 +91093,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.declared",
@@ -91062,7 +91102,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.primitive",
@@ -91071,7 +91111,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.store",
@@ -91080,7 +91120,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "source-entry-v4.log"
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ArithmeticCalls.normal",
@@ -91417,6 +91457,179 @@
         "Quot.sound"
       ],
       "successful_log": "source-entry-v4.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.OpcodeChargePrefix.exception",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.OpcodeChargeSites.exception",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.literal_outcomes",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.body_clock",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.RegularCharge.body_outcomes",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.call_exception",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_clock",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.body_gas_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.positive_execution",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.exception_empty",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.exception_underflow",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.refl",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.resumed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.unchanged",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.restore",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.of_emptyLocals",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.PrefixEffect.trans",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.StackPop.pops_exception",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CallNormal.scoped_exception_data",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "opcode-charge-sites-exception-v1.log"
     }
   ]
 }

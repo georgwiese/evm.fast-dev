@@ -1100,6 +1100,7 @@
     "submission/InitECandidate/Solver/GasBudget/FrameNewFresh.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewFreshCanonical.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewFreshFields.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameNewGasSeed.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewGeometry.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewInitialization.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameNewLogs.lean",
@@ -1113,6 +1114,7 @@
     "submission/InitECandidate/Solver/GasBudget/FrameNewZero.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenCall.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenExecution.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameOpenFrameSums.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenGeometry.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenNormal.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenNormalCall.lean",
@@ -1120,8 +1122,10 @@
     "submission/InitECandidate/Solver/GasBudget/FrameOpenRecord.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenRecordFrame.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameOpenStores.lean",
+    "submission/InitECandidate/Solver/GasBudget/FrameRank.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameSums.lean",
     "submission/InitECandidate/Solver/GasBudget/FrameTableFloor.lean",
+    "submission/InitECandidate/Solver/GasBudget/GasSeed.lean",
     "submission/InitECandidate/Solver/GasBudget/Halt.lean",
     "submission/InitECandidate/Solver/GasBudget/HaltNormal.lean",
     "submission/InitECandidate/Solver/GasBudget/JournalAggregatePrice.lean",
@@ -5146,8 +5150,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62011,
-  "package_bytes": 2256097074,
+  "package_entries": 62015,
+  "package_bytes": 2256124851,
   "claim": {
     "K": "infinity"
   },

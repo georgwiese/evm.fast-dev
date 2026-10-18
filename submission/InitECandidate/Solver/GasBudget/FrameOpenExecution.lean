@@ -12,7 +12,7 @@ set_option maxRecDepth 6000 in
 initialize its actual continuation record, activate both globals and return.
 Entry ownership remains explicit. This initializes the active child's regular
 ledger from MSG_GAS; its price+n+44 allowance is in source clocks only. -/
-theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem execute_full (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (scratch lower message empty parent continuation kind : BitVec 64) (words : FrameNew.MessageWords)
     (addresses keys addressCount keyCount : BitVec 64)
     (entry : FrameNew.Entry source scratch lower message empty words addresses keys addressCount keyCount)
@@ -34,6 +34,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
         memory := target.memory
         clock := source.clock - (WitnessRadix.Zero.price (JumpDest.bitmapBytes words.length.toNat) + 44 + spent)} ∧
       regularBudget target.memory (FrameNew.framePointer scratch) = words.gas.toNat ∧
+      GasSeed target.memory (FrameNew.framePointer scratch) words.gas ∧
       ∀ query, Arenas.Outside lower scratch query → target.memory query = source.memory query := by
   let declared := WitnessRadix.QueryBranch.bind source "parent" parent
   let child := FrameNew.framePointer scratch
@@ -47,8 +48,8 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (bind_lookup_other _ "parent" "msg" _ (by decide)).trans messageLocal
   have args : evalListHOLFinite declared (h := fun address => Classical.propDecidable (declared.memaddrs address)) [localVar "msg"] = some [.val (.word message)] := by
     simp [evalListHOLFinite, evalListHOLExact, localVar, evalHOLExact, toExact, declaredMsg]
-  obtain ⟨childMemory, spent, spentBound, childBudget, inputsKept, outsideKept, childRun⟩ :=
-    FrameNew.call_execute declared "child" [localVar "msg"] recordProgram scratch lower message empty words
+  obtain ⟨childMemory, spent, spentBound, childBudget, childSeed, inputsKept, outsideKept, childRun⟩ :=
+    FrameNew.call_execute_full declared "child" [localVar "msg"] recordProgram scratch lower message empty words
       addresses keys addressCount keyCount declaredEntry args known (by change words.length.toNat + price + 38 ≤ source.clock; change words.length.toNat + price + 44 ≤ source.clock at enough; omega)
   let childSource := WitnessRadix.QueryBranch.bind {declared with
     globals := (source.globals.update (ofString "frame_mem_ptr", .val (.word nextLower))).update
@@ -96,7 +97,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have whole := Input.ScalarScope.declare_execute source _ "parent" (.var .global (ofString "ev")) parent
     (.decCall (ofString "child") .one (ofString "frame_new") [localVar "msg"] recordProgram) _ parentRead childRun
   let target := restore source "parent" (restore declared "child" (recordClosed childSource nextScratch child parent continuation kind message))
-  refine ⟨target, spent, spentBound, ?_, ?_, ?_, ?_⟩
+  refine ⟨target, spent, spentBound, ?_, ?_, ?_, ?_, ?_⟩
   · rw [body_shape]
     exact whole
   · have clocks : source.clock - (price + 38 + spent) - 6 = source.clock - (price + 44 + spent) := by omega
@@ -114,6 +115,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       clock := source.clock - (price + 38 + spent) - 6} = _
     rw [overwrite, clocks]
   · exact (record_budget childSource nextScratch nextLower child parent continuation kind message memoryAligned recordRoom geo.2.2.2 frameFits).trans childBudget
+  · exact record_seed childSource nextScratch nextLower child parent continuation kind message words.gas childSeed memoryAligned recordRoom geo.2.2.2 frameFits
   · intro query outside
     have nextOutside : Arenas.Outside nextLower nextScratch query := by
       rcases outside with below | high
@@ -123,6 +125,35 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     rw [record_memory_outside childSource nextScratch nextLower child parent continuation kind message query memoryAligned recordRoom nextOutside]
     exact outsideKept query outside
 
+theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (scratch lower message empty parent continuation kind : BitVec 64) (words : FrameNew.MessageWords)
+    (addresses keys addressCount keyCount : BitVec 64)
+    (entry : FrameNew.Entry source scratch lower message empty words addresses keys addressCount keyCount)
+    (known : source.code.lookup (ofString "frame_new") = some (FrameNew.formals, FrameNew.body, .one))
+    (messageLocal : source.locals.lookup (ofString "msg") = some (.val (.word message)))
+    (kindLocal : source.locals.lookup (ofString "kind") = some (.val (.word kind)))
+    (evGlobal : source.globals.lookup (ofString "ev") = some (.val (.word parent)))
+    (continuationGlobal : source.globals.lookup (ofString "cur_cont") = some (.val (.word continuation)))
+    (room : lower.toNat + JumpDest.bitmapBytes words.length.toNat + 2760 ≤ scratch.toNat)
+    (enough : words.length.toNat + WitnessRadix.Zero.price (JumpDest.bitmapBytes words.length.toNat) + 44 ≤ source.clock) :
+    ∃ (target : PanSemStateFiniteExact 64 Guest.HostMemory) (spent : Nat),
+      spent ≤ words.length.toNat ∧
+      evaluateHOLFiniteState source body = (some (.returned (.val (.word (FrameNew.framePointer scratch)))), target) ∧
+      emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with
+        globals := (((source.globals.update (ofString "frame_mem_ptr", .val (.word (FrameNew.memoryPointer lower)))).update
+          (ofString "scratch_ptr", .val (.word (recordPointer (FrameNew.finalScratch scratch words.length))))).update
+          (ofString "ev", .val (.word (FrameNew.framePointer scratch)))).update
+          (ofString "cur_cont", .val (.word (recordPointer (FrameNew.finalScratch scratch words.length))))
+        memory := target.memory
+        clock := source.clock - (WitnessRadix.Zero.price (JumpDest.bitmapBytes words.length.toNat) + 44 + spent)} ∧
+      regularBudget target.memory (FrameNew.framePointer scratch) = words.gas.toNat ∧
+      ∀ query, Arenas.Outside lower scratch query → target.memory query = source.memory query := by
+  obtain ⟨target, spent, bound, run, frame, budget, seed, outside⟩ := execute_full source scratch lower message empty parent continuation kind words
+    addresses keys addressCount keyCount entry known messageLocal kindLocal evGlobal continuationGlobal room enough
+  exact ⟨target, spent, bound, run, frame, budget, outside⟩
+
 end InitECandidate.Solver.GasBudget.FrameOpen
 
 #print axioms InitECandidate.Solver.GasBudget.FrameOpen.execute
+
+#print axioms InitECandidate.Solver.GasBudget.FrameOpen.execute_full

@@ -5160,3 +5160,9 @@ Eleven new modules: generic no-return leaves/sequence, actual trap_with no norma
 - A addresses and S keys: paid+P_account64+P_storage16<=1805+184A+9triangleA+17S+13triangleS+P_accountCa+P_storageCs, with Ca<=max64(4(A+20)), Cs<=max16(4(S+1)). WarmTables.price gives a concrete finite source-clock phase price after substituting those capacities. Entry input/heap/code reachability and source clock/target-work distinction remain explicit.
 - Successful root-warm-tables-price-v1.log1404jobs, exit0, allowed axioms. Index4796modules/8083facts; inventory4809modules, replacement closure0, frozen files unchanged. Incremental policy passed; claim infinity; no full verification.
 - Continuing with original message allocation/setup and preservation of its actual MSG_GAS through this warm-up stage. Later destination setup/helpers/final AA setter/message execution, global gas, weighted target transport and whole-program finite K remain open.
+
+## Original persistent message constructor — 2026-10-18
+
+- Actual msg_new allocator and full176byte clear derive reservation room and returned pointer,9body/10caller source clocks, real normal continuation/scopes and all cleared words. Outside-allocation memory is preserved. No entry-clock or prospective-room premise.
+- Successful message-new-call-v2.log1161jobs, exit0, allowed axioms, MaxRSS1860576KiB. Index4800modules/8091facts; inventory4813modules, frozen files unchanged/replacement closure0; incremental policy passed; claim infinity.
+- Continuing with caller message stores and physical MSG_GAS preservation through the checked warm tables. Source heap/domain/code entry reachability and all later root/message/global/target work remain open.

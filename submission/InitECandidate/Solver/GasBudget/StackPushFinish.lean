@@ -29,7 +29,10 @@ theorem finish_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       regularBudget post.memory frame = regularBudget source.memory frame ∧
       post.memory (frame + 184#64) = source.memory (frame + 184#64) ∧
       post.memory (frame + 16#64) = .word (sp + 1#64) ∧
-      (wordAt post.memory (frame + 16#64)).toNat = sp.toNat + 1 := by
+      (wordAt post.memory (frame + 16#64)).toNat = sp.toNat + 1 ∧
+      (∀ address, address ≠ frame + 0#64 → address ≠ frame + 16#64 →
+        (∀ index < 4, address ≠ (base + sp * 32#64) + BitVec.ofNat 64 (8 * index)) →
+        post.memory address = source.memory address) := by
   rw [finish] at normal
   have pushSafe : Input.LocalPrefix (ofString "setup") (.call (some (none, none)) (ofString "stack_push") arguments) :=
     .call none _ _ (by intro name impossible; cases impossible)
@@ -56,7 +59,7 @@ theorem finish_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have pcSP : advanced.memory (frame + 16#64) = pushed.memory (frame + 16#64) := by
     rw [pcFrame]
     exact FrameField.put_other pushed.memory frame 0#64 (pc + 1#64) 16#64 (by decide)
-  refine ⟨by omega, valueEq, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨by omega, valueEq, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · rw [postEq]; change advanced.clock = _; omega
   · rw [postEq]; exact congrArg emptyLocalsHOLFinite fullFrame
   · rw [postEq]; exact pcBudget.trans pushBudget
@@ -66,6 +69,11 @@ theorem finish_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     change (WitnessRadix.MemoryBytes.wordBits (advanced.memory (frame + 16#64))).toNat = _
     rw [pcSP]
     exact depth
+  · intro address notPC notSP away
+    rw [postEq, pcFrame]
+    change WitnessRadix.StoreWord.put pushed.memory (frame + 0#64) (pc + 1#64) address = source.memory address
+    rw [show WitnessRadix.StoreWord.put pushed.memory (frame + 0#64) (pc + 1#64) address = pushed.memory address from if_neg notPC]
+    exact outside address notSP away
 
 end InitECandidate.Solver.GasBudget.StackPush
 

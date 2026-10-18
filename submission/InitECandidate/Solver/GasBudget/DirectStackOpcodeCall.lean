@@ -26,13 +26,15 @@ theorem call_normal (kind : Kind) (source target : PanSemStateFiniteExact 64 Gue
       regularBudget target.memory frame = regularBudget source.memory frame ∧
       (wordAt target.memory (frame + 184#64)).toNat = (wordAt source.memory (frame + 184#64)).toNat + 3 ∧
       (wordAt target.memory (frame + 16#64)).toNat + kind.site.names.length = entry.sp.toNat + 1 ∧
-      (wordAt target.memory (frame + 16#64)).toNat ≤ entry.capacity.toNat := by
+      (wordAt target.memory (frame + 16#64)).toNat ≤ entry.capacity.toNat ∧
+      Footprint source.memory target.memory frame entry.base entry.sp kind.site.names.length ∧
+      kind.site.names.length ≤ entry.sp.toNat := by
   have raw : lookupCodeHOLExact source.code.lookup kind.function [] = some (kind.site.body, (fun _ => none), .one) := by
     simp [lookupCodeHOLExact, code]
   obtain ⟨callee, called, locals⟩ := CodeEnvironment.finite_lookup source.code.lookup kind.function [] kind.site.body (fun _ => none) .one raw
   obtain ⟨positive, post, value, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target kind.function [] [] kind.site.body callee .one rfl called normal
   let incoming := entry.call_entry source frame callee
-  obtain ⟨fits, returned, clock, frameEq, budget, credit, depth, depthBound⟩ := body_normal kind (callEntryStateHOLFinite source callee) post frame incoming value bodyRun
+  obtain ⟨fits, returned, clock, frameEq, budget, credit, depth, depthBound, footprint, popsFit⟩ := body_normal kind (callEntryStateHOLFinite source callee) post frame incoming value bodyRun
   rw [returned] at bodyRun
   have sub : source.clock - 1 - (kind.site.names.length + 3) = source.clock - (kind.site.names.length + 4) := by omega
   have callerFrame : emptyLocalsHOLFinite post = emptyLocalsHOLFinite {source with memory := post.memory, clock := source.clock - (kind.site.names.length + 4)} := by
@@ -41,12 +43,13 @@ theorem call_normal (kind : Kind) (source target : PanSemStateFiniteExact 64 Gue
   have actual := ignored_return source post kind.function [] [] kind.site.body callee (kind.site.names.length + 4) rfl called positive bodyRun callerFrame
   have same := congrArg Prod.snd (normal.symm.trans actual)
   change target = {source with memory := post.memory, clock := source.clock - (kind.site.names.length + 4)} at same
-  refine ⟨by change kind.site.names.length + 3 ≤ source.clock - 1 at fits; omega, by rw [same], ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨by change kind.site.names.length + 3 ≤ source.clock - 1 at fits; omega, by rw [same], ?_, ?_, ?_, ?_, ?_, ?_, popsFit⟩
   · rw [same]
   · rw [same]; exact budget
   · rw [same]; exact credit
   · rw [same]; exact depth
   · rw [same]; exact depthBound
+  · rw [same]; exact footprint
 
 end InitECandidate.Solver.GasBudget.DirectStackOpcode
 

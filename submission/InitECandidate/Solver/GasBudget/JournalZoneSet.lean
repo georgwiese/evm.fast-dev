@@ -1,5 +1,6 @@
 import InitECandidate.Solver.GasBudget.JournalZone
 import InitECandidate.Solver.MutableTable.FamilySet
+import InitECandidate.Solver.MutableTable.FamilyFloorFrame
 
 namespace InitECandidate.Solver.GasBudget.Journal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -26,7 +27,7 @@ theorem set_zone_normal {ι : Type} [DecidableEq ι] (source target : PanSemStat
       paid + GrowRuntime.growthPotential (objects writer).kind (objects writer).plan.capacity ≤
         Set.noGrowthPrice (objects writer).kind (objects writer).slots.length + 1 + GrowRuntime.growthPotential (objects writer).kind next.plan.capacity ∧
       next.slots.length ≤ (objects writer).slots.length + 1 ∧ target.locals = source.locals ∧ target.code = source.code ∧
-      WarmKeys.Environment target ∧ HeapGlobals source target := by
+      WarmKeys.Environment target ∧ HeapGlobals source target ∧ TableFamily.FloorFrame objects (Function.update objects writer next) source target := by
   obtain ⟨paid, nextCursor, next, fits, clock, forward, kind, floor, models, pointers, bounded, lower, upper, capacity, locals, codes, nextEnvironment, globals, beforeFloor, earlier⟩ :=
     TableFamily.set_normal source target cursor objects writer family environment query value arguments queryFits queryMapped args normal
   have cursorSmall : cursor < 2 ^ 64 := by have bounded := (family.tables writer).bounded; omega
@@ -46,7 +47,8 @@ theorem set_zone_normal {ι : Type} [DecidableEq ι] (source target : PanSemStat
     image.transfer (nextEnvironment.domain.trans environment.domain.symm) pointers kinds
       (fun index inside field => (words index (by omega) field).2)
       (fun index inside field => nextZone.separate index (by omega) field)
-  exact ⟨paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, upper, locals, codes, nextEnvironment, globals⟩
+  exact ⟨paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, upper, locals, codes, nextEnvironment, globals,
+    TableFamily.FloorFrame.of_update objects writer next source target floor beforeFloor⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

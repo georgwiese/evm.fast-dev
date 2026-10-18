@@ -21,7 +21,7 @@ theorem selected_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       TableFamily.Model target nextCursor next ∧ Image target next base count entries ∧ Zone next base cap nextCursor ∧
       paid + TableFamily.potential objects ≤ 38 * population + 39 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + 1) ∧
-      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ HeapGlobals source target := by
+      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ HeapGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
   let writer := (entries index).writer
   have actual := select_read source objects base count index entries inside image locals
   rw [actual] at normal
@@ -29,7 +29,7 @@ theorem selected_normal {ι : Type} [Fintype ι] [DecidableEq ι]
   have priceBound := step_price_bound (objects writer).kind (objects writer).slots.length
   by_cases zero : (entries index).flag = 0#64
   · rw [if_pos zero] at normal
-    obtain ⟨paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, populationUpper, localEq, globalEq, codes, nextEnvironment⟩ :=
+    obtain ⟨paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, populationUpper, localEq, globalEq, codes, nextEnvironment, floorFrame⟩ :=
       delete_zone_normal source target cursor objects writer base cap count entries family image zone environment (entries index).key
         (image.queryFits index inside) (image.queryMapped index inside) deleteCode _
         (delete_arguments source objects base index (entries index) locals) normal
@@ -42,11 +42,11 @@ theorem selected_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       omega
     refine ⟨paid, cursor, Function.update objects writer next, fits, clock, Nat.le_refl _, models, nextImage, nextZone,
       TableFamily.amortized_update objects writer next paid _ charged,
-      TableFamily.population_update objects writer next population populations (by dsimp only [writer] at *; omega), localEq, codes, nextEnvironment, ?_⟩
+      TableFamily.population_update objects writer next population populations (by dsimp only [writer] at *; omega), localEq, codes, nextEnvironment, ?_, floorFrame⟩
     intro key different
     rw [globalEq]
   · rw [if_neg zero] at normal
-    obtain ⟨paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, populationUpper, localEq, codes, nextEnvironment, globals⟩ :=
+    obtain ⟨paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, populationUpper, localEq, codes, nextEnvironment, globals, floorFrame⟩ :=
       set_zone_normal source target cursor objects writer base cap count entries family image zone countBound environment (entries index).key (entries index).value
         (image.queryFits index inside) (image.queryMapped index inside) _
         (set_arguments source objects base count index entries inside image locals) normal
@@ -59,7 +59,7 @@ theorem selected_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       omega
     exact ⟨paid, nextCursor, Function.update objects writer next, fits, clock, forward, models, nextImage, nextZone,
       TableFamily.amortized_update objects writer next paid _ charged,
-      TableFamily.population_update objects writer next population populations populationUpper, localEq, codes, nextEnvironment, globals⟩
+      TableFamily.population_update objects writer next population populations populationUpper, localEq, codes, nextEnvironment, globals, floorFrame⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

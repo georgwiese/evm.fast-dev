@@ -1,5 +1,6 @@
 import InitECandidate.Solver.GasBudget.StateFreshTxOwned
 import InitECandidate.Solver.Input.IgnoredCallNormal
+import InitECandidate.Solver.GasBudget.JournalCounterLedger
 
 namespace InitECandidate.Solver.GasBudget.StateFreshTx
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -34,7 +35,8 @@ theorem call_normal {ι : Type} (source target : PanSemStateFiniteExact 64 Guest
       target.globals.lookup (ofString "journal_n") = some (.val (.word 0#64)) ∧
       target.globals.lookup (ofString "ts") = some (.val (.word (BitVec.ofNat 64 start))) ∧
       target.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 (start + 17176)))) ∧
-      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target := by
+      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧
+      Journal.CounterEffect source target 0 0 (Journal.currentCount source) := by
   have raw : lookupCodeHOLExact source.code.lookup (ofString "state_fresh_tx") [] = some (body, (fun _ => none), .one) := by
     simp [lookupCodeHOLExact, code]
   obtain ⟨callee, called, locals⟩ := CodeEnvironment.finite_lookup source.code.lookup (ofString "state_fresh_tx") [] body (fun _ => none) .one raw
@@ -54,7 +56,8 @@ theorem call_normal {ι : Type} (source target : PanSemStateFiniteExact 64 Guest
   change 81 ≤ source.clock - 1 at funded
   change post.clock = source.clock - 1 - 81 at clockEq
   exact ⟨by omega, by change post.clock = _; omega, room, models.of_control rfl rfl rfl rfl, nextZone,
-    Journal.Image.empty _ _ _ _, fields, savedBs, counter, finalTs, finalHeap, rfl, codes, nextEnvironment.of_fields rfl rfl rfl⟩
+    Journal.Image.empty _ _ _ _, fields, savedBs, counter, finalTs, finalHeap, rfl, codes, nextEnvironment.of_fields rfl rfl rfl,
+    Journal.CounterEffect.reset source _ counter⟩
 
 end InitECandidate.Solver.GasBudget.StateFreshTx
 

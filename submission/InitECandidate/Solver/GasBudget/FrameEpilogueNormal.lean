@@ -31,11 +31,12 @@ theorem body_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       paid + TableFamily.potential objects ≤ price err population count snap + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + removed err count snap) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (nextCount err count snap)))) ∧
-      target.code = source.code ∧ WarmKeys.Environment target ∧ Journal.OtherGlobals source target := by
+      target.code = source.code ∧ WarmKeys.Environment target ∧ Journal.OtherGlobals source target ∧
+      Journal.CounterEffect source target 0 (removed err count snap) 0 := by
   rw [body_shape] at normal
   obtain ⟨middle, choiceRun, returnRun, saved⟩ := choice_safe.normal_continue source target (.return (.const 0#64)) returned normal
   obtain ⟨paid, nextCursor, next, fits, clock, forward, models, nextImage, nextZone, bounded, nextPopulations, nextCounter,
-    locals, codes, nextEnvironment, globals⟩ :=
+    locals, codes, nextEnvironment, globals, effect⟩ :=
     choice_normal source middle cursor objects base cap count snap population entries snapSmall family image zone countBound populations environment
       deleteCode restoreCode journal counter frame cont err ev continuation errorMapped errorStored snapshotMapped snapshotStored choiceRun
   have actualReturn : evaluateHOLFiniteState middle (.return (.const 0#64)) =
@@ -47,7 +48,7 @@ theorem body_normal {ι : Type} [Fintype ι] [DecidableEq ι]
   change target = emptyLocalsHOLFinite middle at same
   subst target
   refine ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, models.of_control rfl rfl rfl rfl,
-    ?_, nextZone, bounded, nextPopulations, nextCounter, codes, nextEnvironment.of_fields rfl rfl rfl, globals⟩
+    ?_, nextZone, bounded, nextPopulations, nextCounter, codes, nextEnvironment.of_fields rfl rfl rfl, globals, effect⟩
   exact nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
 
 end InitECandidate.Solver.GasBudget.FrameEpilogue

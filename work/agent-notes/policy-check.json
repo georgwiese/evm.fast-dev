@@ -1070,6 +1070,7 @@
     "submission/InitECandidate/Solver/GasBudget/FrameOpenStores.lean",
     "submission/InitECandidate/Solver/GasBudget/Halt.lean",
     "submission/InitECandidate/Solver/GasBudget/HaltNormal.lean",
+    "submission/InitECandidate/Solver/GasBudget/JournalAggregatePrice.lean",
     "submission/InitECandidate/Solver/GasBudget/JournalAppendCounter.lean",
     "submission/InitECandidate/Solver/GasBudget/JournalAppendDeleteCall.lean",
     "submission/InitECandidate/Solver/GasBudget/JournalAppendDeleteNormal.lean",
@@ -1089,6 +1090,7 @@
     "submission/InitECandidate/Solver/GasBudget/JournalAppendSetTail.lean",
     "submission/InitECandidate/Solver/GasBudget/JournalAppendStores.lean",
     "submission/InitECandidate/Solver/GasBudget/JournalCounter.lean",
+    "submission/InitECandidate/Solver/GasBudget/JournalCounterLedger.lean",
     "submission/InitECandidate/Solver/GasBudget/JournalDelete.lean",
     "submission/InitECandidate/Solver/GasBudget/JournalDeleteGuard.lean",
     "submission/InitECandidate/Solver/GasBudget/JournalFamilyExtend.lean",
@@ -2597,7 +2599,9 @@
     "submission/InitECandidate/Solver/MutableTable/FamilyDelete.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilyExtend.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilyMemoryFrame.lean",
+    "submission/InitECandidate/Solver/MutableTable/FamilyPacking.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilyPotential.lean",
+    "submission/InitECandidate/Solver/MutableTable/FamilyPotentialBound.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilyRegion.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilySet.lean",
     "submission/InitECandidate/Solver/MutableTable/FindAligned32.lean",
@@ -4962,8 +4966,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61827,
-  "package_bytes": 2255081251,
+  "package_entries": 61831,
+  "package_bytes": 2255102325,
   "claim": {
     "K": "infinity"
   },

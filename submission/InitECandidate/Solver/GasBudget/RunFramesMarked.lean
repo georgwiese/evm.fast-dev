@@ -6,6 +6,28 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch MutableT
 
 def markedState (source : PanSemStateFiniteExact 64 Guest.HostMemory) := bind (bind source "done" 0#64) "done" 1#64
 
+theorem body_after_head (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (headRun : evaluateHOLFiniteState (bind source "done" 0#64) head = (none, markedState source)) :
+    evaluateHOLFiniteState source loopBody =
+      (let output := evaluateHOLFiniteState (markedState source) RootExit.selected
+       (output.1, restore source "done" output.2)) := by
+  let declared := bind source "done" 0#64
+  let marked := markedState source
+  have doneLocal : marked.locals.lookup (ofString "done") = some (.val (.word 1#64)) := bind_lookup_same _ _ _
+  have doneTest : eval marked doneCondition = some (.val (.word 1#64)) := by
+    simp [eval, doneCondition, evalHOLExact, localVar, toExact, doneLocal, Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have branchRun : evaluateHOLFiniteState marked (.ite doneCondition RootExit.selected .skip) = evaluateHOLFiniteState marked RootExit.selected := by
+    simp only [eval] at doneTest
+    rw [evaluateHOLFiniteState_ite, doneTest]
+    simp
+  have seqRun : evaluateHOLFiniteState declared (.seq head (.ite doneCondition RootExit.selected .skip)) = evaluateHOLFiniteState marked RootExit.selected := by
+    rw [StateSteps.next_sequence declared marked _ _ headRun (Nat.le_refl _), branchRun]
+  have allRun := Input.ScalarScope.declare_execute source (evaluateHOLFiniteState marked RootExit.selected).2 "done" (.const 0#64) 0#64
+    (.seq head (.ite doneCondition RootExit.selected .skip)) (evaluateHOLFiniteState marked RootExit.selected).1 rfl seqRun
+  rw [loop_body_shape]
+  exact allRun
+
+
 /-- An already-marked continuation selects the actual completion branch in
 the full loop body. Its done declaration/assignment and lexical restoration
 are exact, including any result from the real epilogue/exit continuation. -/
@@ -28,20 +50,10 @@ theorem marked_body_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory
     simp only [eval] at test
     rw [head_shape, evaluateHOLFiniteState_ite, test]
     simpa using assignRun
-  have doneLocal : marked.locals.lookup (ofString "done") = some (.val (.word 1#64)) := bind_lookup_same _ _ _
-  have doneTest : eval marked doneCondition = some (.val (.word 1#64)) := by
-    simp [eval, doneCondition, evalHOLExact, localVar, toExact, doneLocal, Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-  have branchRun : evaluateHOLFiniteState marked (.ite doneCondition RootExit.selected .skip) = evaluateHOLFiniteState marked RootExit.selected := by
-    simp only [eval] at doneTest
-    rw [evaluateHOLFiniteState_ite, doneTest]
-    simp
-  have seqRun : evaluateHOLFiniteState declared (.seq head (.ite doneCondition RootExit.selected .skip)) = evaluateHOLFiniteState marked RootExit.selected := by
-    rw [StateSteps.next_sequence declared marked _ _ headRun (Nat.le_refl _), branchRun]
-  have allRun := Input.ScalarScope.declare_execute source (evaluateHOLFiniteState marked RootExit.selected).2 "done" (.const 0#64) 0#64
-    (.seq head (.ite doneCondition RootExit.selected .skip)) (evaluateHOLFiniteState marked RootExit.selected).1 rfl seqRun
-  rw [loop_body_shape]
-  exact allRun
+  exact body_after_head source headRun
 
 end InitECandidate.Solver.GasBudget.RunFrames
 
 #print axioms InitECandidate.Solver.GasBudget.RunFrames.marked_body_execute
+
+#print axioms InitECandidate.Solver.GasBudget.RunFrames.body_after_head

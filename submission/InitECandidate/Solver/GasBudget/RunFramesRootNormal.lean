@@ -6,7 +6,7 @@ namespace InitECandidate.Solver.GasBudget.RunFrames
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch MutableTable
 
-/-- Complete original run_frames body on an already-marked root frame,
+/-- Complete original run_frames body on an immediately completed root frame,
 including the actual go declaration, sole iteration, real final return and
 both lexical restorations. Other dispatch/child paths are still open. -/
 theorem marked_root_normal {ι : Type} [Fintype ι] [DecidableEq ι]
@@ -32,8 +32,7 @@ theorem marked_root_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     (parentStored : source.memory (cont + 0#64) = .word parent)
     (previousStored : source.memory (cont + 8#64) = .word previous)
     (kindStored : source.memory (cont + 16#64) = .word 0#64)
-    (flag : BitVec 64) (markedMapped : source.memaddrs (cont + 32#64))
-    (markedStored : source.memory (cont + 32#64) = .word flag) (markedNonzero : flag ≠ 0#64)
+    (doneReady : ImmediateDone source frame cont)
     (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source RootExit.runBody = (some (.returned returned), target)) :
     returned = .val (.word 0#64) ∧
@@ -62,7 +61,7 @@ theorem marked_root_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     nextGo, finalEV, finalCont, codes, nextEnvironment, effect, floorFrame, budget⟩ :=
     marked_root_loop entry loopPost cursor objects base cap count snap population entries snapSmall entryFamily entryImage zone countBound populations
       (environment.of_fields rfl rfl rfl) deleteCode restoreCode journal counter frame cont err ev continuation errorMapped errorStored snapshotMapped snapshotStored code
-      parent previous cut cutSmall floors contSmall frameSmall rootMapped parentStored previousStored kindStored flag markedMapped markedStored markedNonzero
+      parent previous cut cutSmall floors contSmall frameSmall rootMapped parentStored previousStored kindStored (doneReady.of_fields rfl rfl)
       (bind_lookup_same _ _ _) loopResult loopControl loopRun
   have tailRun := tailIf loopNone
   have actualReturn : evaluateHOLFiniteState loopPost (.return (.const 0#64)) =

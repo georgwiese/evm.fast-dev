@@ -4,7 +4,7 @@ namespace InitECandidate.Solver.GasBudget.RunFrames
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch MutableTable
 
-/-- The real run_frames caller on a marked root frame, restoring caller
+/-- The real run_frames caller on an immediately completed root frame, restoring caller
 locals after the complete original loop/body return. Its source-clock bound
 includes call, loop, epilogue and any actual rollback. Other paths remain open. -/
 theorem marked_root_call {ι : Type} [Fintype ι] [DecidableEq ι]
@@ -30,8 +30,7 @@ theorem marked_root_call {ι : Type} [Fintype ι] [DecidableEq ι]
     (parentStored : source.memory (cont + 0#64) = .word parent)
     (previousStored : source.memory (cont + 8#64) = .word previous)
     (kindStored : source.memory (cont + 16#64) = .word 0#64)
-    (flag : BitVec 64) (markedMapped : source.memaddrs (cont + 32#64))
-    (markedStored : source.memory (cont + 32#64) = .word flag) (markedNonzero : flag ≠ 0#64)
+    (doneReady : ImmediateDone source frame cont)
     (runCode : source.code.lookup (ofString "run_frames") = some ([], RootExit.runBody, .one))
     (normal : evaluateHOLFiniteState source (.call (some (none, none)) (ofString "run_frames") []) = (none, target)) :
     ∃ (paid nextCursor : Nat) (next : ι → TableFamily.Object),
@@ -55,7 +54,7 @@ theorem marked_root_call {ι : Type} [Fintype ι] [DecidableEq ι]
     finalEV, finalCont, codes, nextEnvironment, effect, floorFrame, budget⟩ :=
     marked_root_normal entry post cursor objects base cap count snap population entries snapSmall entryFamily entryImage zone countBound populations
       (environment.of_fields rfl rfl rfl) deleteCode restoreCode journal counter frame cont err ev continuation errorMapped errorStored snapshotMapped snapshotStored code
-      parent previous cut cutSmall floors contSmall frameSmall rootMapped parentStored previousStored kindStored flag markedMapped markedStored markedNonzero returned bodyRun
+      parent previous cut cutSmall floors contSmall frameSmall rootMapped parentStored previousStored kindStored (doneReady.of_fields rfl rfl) returned bodyRun
   rw [returnedEq] at bodyRun
   have actual := evaluateHOLFiniteState_call_return_caller_locals source none (ofString "run_frames") [] [] RootExit.runBody callee .one
     (.val (.word 0#64)) post rfl called (by omega) bodyRun (by simp [shapeOfHOLExact, shapeEqHOL])

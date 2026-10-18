@@ -279,14 +279,17 @@ theorem normal (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest.Host
       emptyLocalsHOLFinite post = emptyLocalsHOLFinite inner ∧
       regularBudget ready.memory frame = regularBudget source.memory frame ∧
       (wordAt ready.memory (frame + 184#64)).toNat = (wordAt source.memory (frame + 184#64)).toNat + kind.fee ∧
-      (wordAt source.memory (frame + 184#64)).toNat < (wordAt ready.memory (frame + 184#64)).toNat := by
+      (wordAt source.memory (frame + 184#64)).toNat < (wordAt ready.memory (frame + 184#64)).toNat ∧
+      (wordAt ready.memory (frame + 16#64)).toNat + kind.names.length = (wordAt source.memory (frame + 16#64)).toNat ∧
+      (∀ address, address ≠ frame + 16#64 → address ≠ frame + 64#64 → address ≠ frame + 184#64 →
+        ready.memory address = source.memory address) := by
   rw [body_shape] at run
-  obtain ⟨ready, inner, fits, clock, frameEq, continuationRun, postEq, budget, credit⟩ :=
+  obtain ⟨ready, inner, fits, clock, frameEq, continuationRun, postEq, budget, credit, depth, outside⟩ :=
     OpcodeChargePrefix.normal kind.names source post frame (BitVec.ofNat 64 kind.fee) kind.suffix stackCode chargeCode ev cap value run
   have feeSmall : kind.fee < 2 ^ 64 := by cases kind <;> decide
   have positive := fee_positive kind
   rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt feeSmall] at credit positive
-  exact ⟨ready, inner, fits, clock, frameEq, continuationRun, postEq, budget, credit, by omega⟩
+  exact ⟨ready, inner, fits, clock, frameEq, continuationRun, postEq, budget, credit, by omega, depth, outside⟩
 
 end InitECandidate.Solver.GasBudget.OpcodeChargeSites
 

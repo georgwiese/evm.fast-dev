@@ -1,4 +1,5 @@
 import InitECandidate.Solver.GasBudget.JournalAppendSetNormal
+import InitECandidate.Solver.GasBudget.JournalCounterLedger
 
 namespace InitECandidate.Solver.GasBudget.Journal.Append
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -33,7 +34,7 @@ theorem set_call_normal {ι : Type} [DecidableEq ι]
         setPrice (objects writer).kind (objects writer).slots.length + 1 + GrowRuntime.growthPotential (objects writer).kind next.plan.capacity ∧
       next.slots.length ≤ (objects writer).slots.length + 1 ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
-      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target := by
+      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ CounterEffect source target 1 0 0 := by
   obtain ⟨callee, called, t, key, v⟩ := TableCall.environment source.code.lookup (ofString "jset") setBody (objects writer).pointer query value code
   obtain ⟨positive, post, returned, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "jset") arguments _ setBody callee .one args called normal
   let entry := callEntryStateHOLFinite source callee
@@ -57,8 +58,13 @@ theorem set_call_normal {ι : Type} [DecidableEq ι]
     nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
   change paid ≤ source.clock - 1 at fits
   change post.clock = source.clock - 1 - paid at clock
+  have countSmall : count + 1 < 2 ^ 64 := by
+    have upper := zone.valid.upper
+    change base + 32 * cap ≤ 33806089496 at upper
+    omega
+  have effect := CounterEffect.append source {post with locals := source.locals} count countSmall counter nextCounter
   exact ⟨room, 1 + paid, nextCursor, next, flag, oldValue, by omega, by omega, by change post.clock = _; omega, forward, kind, binary,
-    finalFamily, finalImage, nextZone, by omega, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals⟩
+    finalFamily, finalImage, nextZone, by omega, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, effect⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

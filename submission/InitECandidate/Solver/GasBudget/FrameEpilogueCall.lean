@@ -29,7 +29,8 @@ theorem call_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       paid + TableFamily.potential objects ≤ price err population count snap + 1 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + removed err count snap) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (nextCount err count snap)))) ∧
-      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ Journal.OtherGlobals source target := by
+      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ Journal.OtherGlobals source target ∧
+      Journal.CounterEffect source target 0 (removed err count snap) 0 := by
   have raw : lookupCodeHOLExact source.code.lookup (ofString "frame_epilogue") [] = some (body, (fun _ => none), .one) := by
     simp [lookupCodeHOLExact, code]
   obtain ⟨callee, called, calleeLocals⟩ := WitnessRadix.CodeEnvironment.finite_lookup source.code.lookup (ofString "frame_epilogue") [] body (fun _ => none) .one raw
@@ -39,7 +40,7 @@ theorem call_normal {ι : Type} [Fintype ι] [DecidableEq ι]
   have entryImage : Journal.Image entry objects base count entries :=
     image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
   obtain ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, models, nextImage, nextZone, bounded, nextPopulations, nextCounter,
-    codes, nextEnvironment, globals⟩ :=
+    codes, nextEnvironment, globals, effect⟩ :=
     body_normal entry post cursor objects base cap count snap population entries snapSmall entryFamily entryImage zone countBound populations
       (environment.of_fields rfl rfl rfl) deleteCode restoreCode journal counter frame cont err ev continuation errorMapped errorStored snapshotMapped snapshotStored returned bodyRun
   rw [returnedEq] at bodyRun
@@ -52,7 +53,7 @@ theorem call_normal {ι : Type} [Fintype ι] [DecidableEq ι]
   change post.clock = source.clock - 1 - paid at clock
   refine ⟨1 + paid, nextCursor, next, by omega, by omega, by change post.clock = _; omega, forward,
     models.of_control rfl rfl rfl rfl, ?_, nextZone, by omega, nextPopulations, nextCounter, rfl, codes,
-    nextEnvironment.of_fields rfl rfl rfl, globals⟩
+    nextEnvironment.of_fields rfl rfl rfl, globals, effect⟩
   exact nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
 
 end InitECandidate.Solver.GasBudget.FrameEpilogue

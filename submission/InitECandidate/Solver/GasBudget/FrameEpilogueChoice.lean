@@ -1,4 +1,5 @@
 import InitECandidate.Solver.GasBudget.FrameEpilogueProgram
+import InitECandidate.Solver.GasBudget.JournalCounterLedger
 
 namespace InitECandidate.Solver.GasBudget.FrameEpilogue
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -29,7 +30,8 @@ theorem choice_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       paid + TableFamily.potential objects ≤ price err population count snap + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + removed err count snap) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (nextCount err count snap)))) ∧
-      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ Journal.OtherGlobals source target := by
+      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ Journal.OtherGlobals source target ∧
+      Journal.CounterEffect source target 0 (removed err count snap) 0 := by
   have test := condition_read source frame err ev errorMapped errorStored
   simp only [eval] at test
   rw [choice, evaluateHOLFiniteState_ite, test] at normal
@@ -39,11 +41,12 @@ theorem choice_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       have selected : evaluateHOLFiniteState source (.skip : ProgHOL 64) = (none, target) := by simpa [zero] using normal
       exact congrArg Prod.snd (selected.symm.trans actual)
     subst target
-    refine ⟨0, cursor, objects, Nat.zero_le _, by simp, Nat.le_refl _, family, ?_, zone, ?_, ?_, ?_, rfl, rfl, environment, Journal.OtherGlobals.refl source⟩
+    refine ⟨0, cursor, objects, Nat.zero_le _, by simp, Nat.le_refl _, family, ?_, zone, ?_, ?_, ?_, rfl, rfl, environment, Journal.OtherGlobals.refl source, ?_⟩
     · simpa only [nextCount, if_pos zero] using image
     · simp [price, zero]
     · simpa only [removed, if_pos zero, Nat.add_zero] using populations
     · simpa only [nextCount, if_pos zero] using counter
+    · simpa only [removed, if_pos zero] using Journal.CounterEffect.unchanged source source rfl
   · have restoreRun : evaluateHOLFiniteState source rollback = (none, target) := by simpa [zero] using normal
     have snapshotRead := Input.global_field_read source "cur_cont" cont 24#64 (BitVec.ofNat 64 snap) continuation snapshotMapped snapshotStored
     have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) [snapshot] =
@@ -61,7 +64,8 @@ theorem choice_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     exact ⟨paid, nextCursor, next, fits, clock, forward, models, by simpa only [nextCount, if_neg zero] using nextImage, nextZone,
       by simpa only [price, if_neg zero] using bounded,
       by simpa only [removed, if_neg zero] using nextPopulations,
-      by simpa only [nextCount, if_neg zero] using nextCounter, locals, codes, nextEnvironment, globals⟩
+      by simpa only [nextCount, if_neg zero] using nextCounter, locals, codes, nextEnvironment, globals,
+      by simpa only [removed, if_neg zero] using Journal.CounterEffect.restore source target count snap countSmall counter nextCounter⟩
 
 end InitECandidate.Solver.GasBudget.FrameEpilogue
 

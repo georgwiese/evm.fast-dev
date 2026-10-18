@@ -1,4 +1,5 @@
 import InitECandidate.Solver.GasBudget.JournalAppendDeleteNormal
+import InitECandidate.Solver.GasBudget.JournalCounterLedger
 
 namespace InitECandidate.Solver.GasBudget.Journal.Append
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -41,7 +42,7 @@ theorem delete_call_normal {ι : Type} [DecidableEq ι]
     (arguments : List (ExpHOL 64))
     (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) arguments = some [.val (.word (objects writer).pointer), .val (.word query)])
     (normal : evaluateHOLFiniteState source (.call (some (none, none)) (ofString "jdel") arguments) = (none, target)) :
-    (∃ paid, 2 ≤ paid ∧ paid ≤ Get.bodyPrice (objects writer).kind (objects writer).slots.length + 2 ∧ paid ≤ source.clock ∧ target = {source with clock := source.clock - paid}) ∨
+    (∃ paid, 2 ≤ paid ∧ paid ≤ Get.bodyPrice (objects writer).kind (objects writer).slots.length + 2 ∧ paid ≤ source.clock ∧ target = {source with clock := source.clock - paid} ∧ CounterEffect source target 0 0 0) ∨
     (count < cap ∧ ∃ (paid : Nat) (next : TableFamily.Object) (oldValue : BitVec 64),
       2 ≤ paid ∧ paid ≤ deletePrice (objects writer).kind (objects writer).slots.length + 1 ∧ paid ≤ source.clock ∧ target.clock = source.clock - paid ∧
       next.kind = (objects writer).kind ∧ next.plan = (objects writer).plan ∧
@@ -50,7 +51,7 @@ theorem delete_call_normal {ι : Type} [DecidableEq ι]
       Zone (Function.update objects writer next) base cap (cursor + NaturalLayout.stride (objects writer).kind) ∧
       next.slots.length ≤ (objects writer).slots.length ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
-      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target) := by
+      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ CounterEffect source target 1 0 0) := by
   obtain ⟨callee, called, t, key⟩ := delete_environment source.code.lookup (objects writer).pointer query code
   obtain ⟨positive, post, returned, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "jdel") arguments _ deleteBody callee .one args called normal
   let entry := callEntryStateHOLFinite source callee
@@ -73,7 +74,8 @@ theorem delete_call_normal {ι : Type} [DecidableEq ι]
     change paid ≤ source.clock - 1 at fits
     have subtract : source.clock - 1 - paid = source.clock - (paid + 1) := by omega
     left
-    exact ⟨paid + 1, by omega, by omega, by omega, by simpa only [subtract] using restored⟩
+    exact ⟨paid + 1, by omega, by omega, by omega, by simpa only [subtract] using restored,
+      CounterEffect.unchanged source _ (by rw [restored])⟩
   · obtain ⟨room, paid, next, oldValue, bodyPositive, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population,
       nextCounter, codes, nextEnvironment, globals⟩ := present
     have finalFamily : TableFamily.Model {post with locals := source.locals} (cursor + NaturalLayout.stride (objects writer).kind) (Function.update objects writer next) :=
@@ -82,9 +84,14 @@ theorem delete_call_normal {ι : Type} [DecidableEq ι]
       nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
     change paid ≤ source.clock - 1 at fits
     change post.clock = source.clock - 1 - paid at clock
+    have countSmall : count + 1 < 2 ^ 64 := by
+      have upper := zone.valid.upper
+      change base + 32 * cap ≤ 33806089496 at upper
+      omega
+    have effect := CounterEffect.append source {post with locals := source.locals} count countSmall counter nextCounter
     right
     exact ⟨room, paid + 1, next, oldValue, by omega, by omega, by omega, by change post.clock = _; omega, kind, plan,
-      finalFamily, finalImage, nextZone, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals⟩
+      finalFamily, finalImage, nextZone, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, effect⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

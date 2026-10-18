@@ -1,5 +1,6 @@
 import InitECandidate.Solver.MutableTable.GrowRuntime.Frames
 import InitECandidate.Solver.WitnessRadix.Bindings
+import InitECandidate.Solver.MutableTable.TableFootprint
 
 namespace InitECandidate.Solver.MutableTable.GrowRuntime
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
@@ -28,7 +29,8 @@ theorem step_execute (source snapshot : PanSemStateFiniteExact 64 Guest.HostMemo
         (none, WitnessRadix.QueryBranch.bind {source with memory := memory, clock := source.clock - paid} "k" (BitVec.ofNat 64 (cursor.val + 1))) ∧
       MemoryModel.Header memory kind (relocated kind (old.base .header) start capacity) (BitVec.ofNat 64 (slots ++ [nextSlot]).length) ∧
       MemoryModel.Occupied {source with memory := memory, clock := source.clock - paid} kind (relocated kind (old.base .header) start capacity) (slots ++ [nextSlot]) ∧
-      OldArrays {source with memory := memory, clock := source.clock - paid} snapshot kind old := by
+      OldArrays {source with memory := memory, clock := source.clock - paid} snapshot kind old ∧
+      TableFootprint.Frame source.memory memory kind (relocated kind (old.base .header) start capacity) := by
   let plan := relocated kind (old.base .header) start capacity
   let oldSlot := BitVec.ofNat 64 (oldSlots.get cursor)
   let query := cell old .keys 0 + oldSlot * BitVec.ofNat 64 (NaturalLayout.stride kind)
@@ -85,10 +87,11 @@ theorem step_execute (source snapshot : PanSemStateFiniteExact 64 Guest.HostMemo
       rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (Nat.lt_trans room (capacity_small kind plan newValid))]
       exact room
     have kept := inserted_old_arrays source snapshot kind old oldValid start capacity newValid earlier frame query index _ value inside countInside
-    refine ⟨paid, memory, index.toNat, bounded, ?_, nextHeader, ?_, ?_⟩
+    refine ⟨paid, memory, index.toNat, bounded, ?_, nextHeader, ?_, ?_, ?_⟩
     · simpa only [Grow.loopBody, restored] using run
     · exact MemoryModel.Occupied.of_fields _ _ kind plan _ nextOccupied rfl rfl rfl
     · exact OldArrays.of_memory _ _ snapshot kind old rfl kept
+    · exact TableFootprint.inserted source.memory source.be kind plan newValid query index _ value inside countInside
 
 end InitECandidate.Solver.MutableTable.GrowRuntime
 

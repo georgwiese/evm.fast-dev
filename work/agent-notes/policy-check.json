@@ -2470,6 +2470,7 @@
     "submission/InitECandidate/Solver/MutableTable/GrowRuntime/Clear.lean",
     "submission/InitECandidate/Solver/MutableTable/GrowRuntime/Environment.lean",
     "submission/InitECandidate/Solver/MutableTable/GrowRuntime/Execution.lean",
+    "submission/InitECandidate/Solver/MutableTable/GrowRuntime/Footprint.lean",
     "submission/InitECandidate/Solver/MutableTable/GrowRuntime/Frames.lean",
     "submission/InitECandidate/Solver/MutableTable/GrowRuntime/Header.lean",
     "submission/InitECandidate/Solver/MutableTable/GrowRuntime/Locals.lean",
@@ -2601,6 +2602,7 @@
     "submission/InitECandidate/Solver/MutableTable/NaturalLayoutSlots.lean",
     "submission/InitECandidate/Solver/MutableTable/NodeDbDictionary32.lean",
     "submission/InitECandidate/Solver/MutableTable/NodeDbTail32.lean",
+    "submission/InitECandidate/Solver/MutableTable/OriginalCallSites.lean",
     "submission/InitECandidate/Solver/MutableTable/OriginalWitnessEntry.lean",
     "submission/InitECandidate/Solver/MutableTable/Placement.lean",
     "submission/InitECandidate/Solver/MutableTable/PlacementBuild.lean",
@@ -2616,6 +2618,7 @@
     "submission/InitECandidate/Solver/MutableTable/SetModelCall.lean",
     "submission/InitECandidate/Solver/MutableTable/SetModelExecution.lean",
     "submission/InitECandidate/Solver/MutableTable/SetModelHeap.lean",
+    "submission/InitECandidate/Solver/MutableTable/SetModelOwnership.lean",
     "submission/InitECandidate/Solver/MutableTable/SetModelPost.lean",
     "submission/InitECandidate/Solver/MutableTable/SetModelTail.lean",
     "submission/InitECandidate/Solver/MutableTable/SetNoGrowthBudget.lean",
@@ -2632,6 +2635,7 @@
     "submission/InitECandidate/Solver/MutableTable/TableCallEnvironment.lean",
     "submission/InitECandidate/Solver/MutableTable/TableEmpty.lean",
     "submission/InitECandidate/Solver/MutableTable/TableEmptyHeader.lean",
+    "submission/InitECandidate/Solver/MutableTable/TableFootprint.lean",
     "submission/InitECandidate/Solver/MutableTable/TableRuntime/Budget.lean",
     "submission/InitECandidate/Solver/MutableTable/TableRuntime/Call.lean",
     "submission/InitECandidate/Solver/MutableTable/TableRuntime/Cells.lean",
@@ -4753,8 +4757,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 61618,
-  "package_bytes": 2254154274,
+  "package_entries": 61622,
+  "package_bytes": 2254169329,
   "claim": {
     "K": "infinity"
   },

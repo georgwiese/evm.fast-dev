@@ -46,7 +46,8 @@ theorem model_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind :
     have lengths : slots.length ≤ next.length ∧ next.length ≤ slots.length + 1 := by
       rcases shape with rfl | ⟨slot, rfl⟩ <;> simp
     refine ⟨paid, source.globals, memory, target, old, next, ?_, (by intro same; exact paidBound), actual,
-      ModelPost.of_frame source kind old start slots.length paid source.globals memory target old next frame (Or.inl ⟨rfl, rfl⟩) lengths (by intro different; exact (different rfl).elim) (by intro initial; have high := lengths.2; omega) nextHeader nextModel⟩
+      ModelPost.of_frame source kind old start slots.length paid source.globals memory target old next frame (Or.inl ⟨rfl, rfl⟩) lengths (by intro different; exact (different rfl).elim) (by intro initial; have high := lengths.2; omega) nextHeader nextModel
+        (TableFootprint.setter_effect source kind old oldValid query _ value (by rw [countNat]; exact room) memory effect)⟩
     dsimp only [afterGrowPrice, Insert.rawPrice] at paidBound ⊢
     omega
   · have capRead := Find.table_read source (cell old .header 0) 16#64 p.capacity tableLocal (data.header.mapped 16 (by simp)) data.header.capacity
@@ -55,10 +56,10 @@ theorem model_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind :
         simp only [eval] at capRead
         simp [evaluateHOLFiniteState_ite, presentTest, evalHOLExact, toExact, localVar, iLocal, capRead, absent,
           Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-      obtain ⟨paid, memory, target, next, paidBound, actual, frame, length, nextHeader, nextModel⟩ := after_grow source kind old oldValid start newValid earlier domain little slots header occupied
+      obtain ⟨paid, memory, target, next, paidBound, actual, frame, length, nextHeader, nextModel, growFootprint⟩ := after_grow source kind old oldValid start newValid earlier domain little slots header occupied
         tableLocal query value keyLocal valueLocal data.queryFits data.queryMapped (by omega) heap bits power minimum allocCode zeroCode data.hashCode data.copyCode insertCode growCode enough
       refine ⟨paid, (GrowRuntime.callState source kind old start memory paid).globals, memory, target, relocated kind (old.base .header) start (2 * old.capacity), next,
-        paidBound, ?_, ?_, frame, Or.inr ⟨rfl, rfl⟩, by omega, (by intro different; omega), (by intro initial; change 2 * next.length ≤ 2 * old.capacity; omega), nextHeader, nextModel⟩
+        paidBound, ?_, ?_, frame, Or.inr ⟨rfl, rfl⟩, by omega, (by intro different; omega), (by intro initial; change 2 * next.length ≤ 2 * old.capacity; omega), nextHeader, nextModel, growFootprint⟩
       · intro same
         have numeric := congrArg Plan.capacity same
         change 2 * old.capacity = old.capacity at numeric
@@ -83,6 +84,7 @@ theorem model_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind :
       exact ModelPost.of_frame source kind old start slots.length 0 source.globals memory target old slots frame (Or.inl ⟨rfl, rfl⟩) ⟨Nat.le_refl _, by omega⟩ (by intro different; exact (different rfl).elim) (by intro initial; exact initial)
         (MemoryModel.Header.after_update source.memory kind old oldValid index value _ indexInside header)
         (MemoryModel.Occupied.after_update source kind old oldValid slots (Nat.le_of_lt room) occupied index value indexInside)
+        (TableFootprint.updated source.memory kind old index value indexInside)
 
 end InitECandidate.Solver.MutableTable.Set
 

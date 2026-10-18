@@ -12,7 +12,7 @@ theorem TerminalPrefix.of_scopes {source phase endpoint post : PanSemStateFinite
     (start : emptyLocalsHOLFinite phase = emptyLocalsHOLFinite source)
     (finish : emptyLocalsHOLFinite post = emptyLocalsHOLFinite endpoint) :
     TerminalPrefix source post frame cont ceiling := by
-  obtain ⟨paid, bound, fits, clock, fields, budget, done, mapped, continuation⟩ := terminal
+  obtain ⟨paid, bound, fits, clock, fields, budget, done, mapped, continuation, memoryEffect⟩ := terminal
   have sourceClock := congrArg PanSemStateFiniteExact.clock start
   change phase.clock = source.clock at sourceClock
   have sourceMemory := congrArg PanSemStateFiniteExact.memory start
@@ -27,7 +27,7 @@ theorem TerminalPrefix.of_scopes {source phase endpoint post : PanSemStateFinite
   change post.globals = endpoint.globals at globals
   have lift := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory =>
     emptyLocalsHOLFinite {state with memory := endpoint.memory, clock := endpoint.clock}) start
-  refine ⟨paid, bound, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨paid, bound, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · rw [← sourceClock]; exact fits
   · rw [targetClock, clock, sourceClock]
   · rw [targetMemory, targetClock]
@@ -36,10 +36,11 @@ theorem TerminalPrefix.of_scopes {source phase endpoint post : PanSemStateFinite
   · rw [targetMemory]; exact done
   · rw [domain]; exact mapped
   · rw [globals]; exact continuation
+  · rw [targetMemory, ← sourceMemory]; exact memoryEffect
 
 theorem TerminalPrefix.immediate_done {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frame cont : BitVec 64} {ceiling : Nat}
     (terminal : TerminalPrefix source post frame cont ceiling) : ImmediateDone post frame cont := by
-  obtain ⟨paid, bound, fits, clock, fields, budget, done, mapped, continuation⟩ := terminal
+  obtain ⟨paid, bound, fits, clock, fields, budget, done, mapped, continuation, memoryEffect⟩ := terminal
   exact .marked 1#64 mapped done (by decide)
 
 /-- Retain the genuine caller locals and handler endpoint through the

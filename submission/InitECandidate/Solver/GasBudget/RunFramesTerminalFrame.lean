@@ -16,7 +16,7 @@ def TerminalFrame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (fr
 theorem TerminalFrame.of_prefix {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frame cont : BitVec 64} {ceiling : Nat}
     (terminal : TerminalPrefix source post frame cont ceiling)
     (ev : source.globals.lookup (ofString "ev") = some (.val (.word frame))) : TerminalFrame source post frame cont ceiling := by
-  obtain ⟨paid, bound, fits, clock, fields, budget, done, mapped, continuation⟩ := terminal
+  obtain ⟨paid, bound, fits, clock, fields, budget, done, mapped, continuation, memoryEffect⟩ := terminal
   have globals := congrArg PanSemStateFiniteExact.globals fields
   change post.globals = source.globals at globals
   exact ⟨paid, bound, fits, clock, fields, budget, by rw [globals]; exact ev, continuation, .marked 1#64 mapped done (by decide)⟩

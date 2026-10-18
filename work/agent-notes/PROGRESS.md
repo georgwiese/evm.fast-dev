@@ -2,6 +2,13 @@
 
 > **AUTHORITATIVE SCOPE CORRECTION — 2026-10-17:** The user requires a reasonably tight finite runtime bound for the current, unchanged Pancake implementation on main. There is NO numerical ceiling. Stop replacement/radix refinement/candidate compilation work. The current plan at the top of bound.md supersedes historical below-Yukon-limit objectives and checklists here. Keep reusable original-program proofs; remove the authorized replacement code after dependency review, retaining history in Git. The previous 45% estimate does not measure this corrected goal.
 
+## 2026-10-18: exact terminal-handler memory and live-rank transport
+
+- Added actual refill/clear/halt/exception memory contracts and proved used-word monotonicity from the current capped ledger. No replacement program or supplied future execution/model.
+- Strengthened TerminalPrefix with the real SP/handler/continuation footprint and used-word monotonicity. Rebuilt all current terminal classifications through lexical scopes; current ancestor separation yields conserved live budget and strict active-to-done rank descent.
+- Checked frame-exception-handler-memory-v1.log (1645 jobs) and run-frames-terminal-rank-v1.log (1770 jobs), exit0, only permitted axioms. Two preliminary helper builds failed on wordAt/projection normalization and were corrected; failed logs were not indexed.
+- No whole-loop invariant, whole-program finite K or verifier acceptance. Remaining ownership/global accounting and target transport obligations are unchanged.
+
 ## 2026-10-16: setup and source inspection
 
 - Branch: `agent/baseline-steps`; initial checkout clean, based on `main`.

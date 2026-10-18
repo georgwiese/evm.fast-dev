@@ -22,7 +22,7 @@ theorem records_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       TableFamily.Model target nextCursor next ∧ Image target next base count entries ∧ Zone next base cap nextCursor ∧
       paid + TableFamily.potential objects ≤ 38 * population + 39 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + 1) ∧
-      target.code = source.code ∧ WarmKeys.Environment target ∧ HeapGlobals source target := by
+      target.code = source.code ∧ WarmKeys.Environment target ∧ HeapGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
   have actual := records_execute source objects base count index entries inside image journal counter
   rw [actual] at normal
   let entry := entered source objects base index (entries index)
@@ -37,7 +37,7 @@ theorem records_normal {ι : Type} [Fintype ι] [DecidableEq ι]
   have entryImage : Image entry objects base count entries :=
     image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
   have entryEnvironment : WarmKeys.Environment entry := environment.of_fields rfl rfl rfl
-  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, nextZone, bounded, nextPopulations, localEq, codes, nextEnvironment, globals⟩ :=
+  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, nextZone, bounded, nextPopulations, localEq, codes, nextEnvironment, globals, floorFrame⟩ :=
     selected_normal entry called cursor objects base cap count index population entries entryFamily entryImage zone countBound inside populations entryEnvironment deleteCode
       (CallLocals.entered source objects base index (entries index)) selected
   subst target
@@ -46,7 +46,7 @@ theorem records_normal {ι : Type} [Fintype ι] [DecidableEq ι]
   have finalImage : Image (restored source called) next base count entries :=
     nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
   exact ⟨paid, nextCursor, next, fits, clock, forward, finalFamily, finalImage, nextZone, bounded, nextPopulations, codes,
-    nextEnvironment.of_fields rfl rfl rfl, globals⟩
+    nextEnvironment.of_fields rfl rfl rfl, globals, ⟨floorFrame.floors, floorFrame.words⟩⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

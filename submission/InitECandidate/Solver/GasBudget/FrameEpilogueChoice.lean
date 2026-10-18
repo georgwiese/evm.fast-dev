@@ -31,7 +31,7 @@ theorem choice_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + removed err count snap) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (nextCount err count snap)))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ Journal.OtherGlobals source target ∧
-      Journal.CounterEffect source target 0 (removed err count snap) 0 := by
+      Journal.CounterEffect source target 0 (removed err count snap) 0 ∧ TableFamily.FloorFrame objects next source target := by
   have test := condition_read source frame err ev errorMapped errorStored
   simp only [eval] at test
   rw [choice, evaluateHOLFiniteState_ite, test] at normal
@@ -41,7 +41,7 @@ theorem choice_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       have selected : evaluateHOLFiniteState source (.skip : ProgHOL 64) = (none, target) := by simpa [zero] using normal
       exact congrArg Prod.snd (selected.symm.trans actual)
     subst target
-    refine ⟨0, cursor, objects, Nat.zero_le _, by simp, Nat.le_refl _, family, ?_, zone, ?_, ?_, ?_, rfl, rfl, environment, Journal.OtherGlobals.refl source, ?_⟩
+    refine ⟨0, cursor, objects, Nat.zero_le _, by simp, Nat.le_refl _, family, ?_, zone, ?_, ?_, ?_, rfl, rfl, environment, Journal.OtherGlobals.refl source, ?_, TableFamily.FloorFrame.refl objects source⟩
     · simpa only [nextCount, if_pos zero] using image
     · simp [price, zero]
     · simpa only [removed, if_pos zero, Nat.add_zero] using populations
@@ -58,14 +58,14 @@ theorem choice_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       change base + 32 * cap ≤ 33806089496 at upper
       omega
     obtain ⟨paid, nextCursor, next, positive, fits, clock, forward, models, nextImage, nextZone, bounded, nextPopulations, nextCounter,
-      locals, codes, nextEnvironment, globals⟩ :=
+      locals, codes, nextEnvironment, globals, floorFrame⟩ :=
       Journal.restore_call_bound source target cursor objects base cap count snap population entries countSmall snapSmall family image zone countBound populations environment
         deleteCode restoreCode journal counter [snapshot] args restoreRun
     exact ⟨paid, nextCursor, next, fits, clock, forward, models, by simpa only [nextCount, if_neg zero] using nextImage, nextZone,
       by simpa only [price, if_neg zero] using bounded,
       by simpa only [removed, if_neg zero] using nextPopulations,
       by simpa only [nextCount, if_neg zero] using nextCounter, locals, codes, nextEnvironment, globals,
-      by simpa only [removed, if_neg zero] using Journal.CounterEffect.restore source target count snap countSmall counter nextCounter⟩
+      by simpa only [removed, if_neg zero] using Journal.CounterEffect.restore source target count snap countSmall counter nextCounter, floorFrame⟩
 
 end InitECandidate.Solver.GasBudget.FrameEpilogue
 

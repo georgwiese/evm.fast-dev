@@ -59,7 +59,7 @@ theorem restore_call_bound {ι : Type} [Fintype ι] [DecidableEq ι]
       paid + TableFamily.potential objects ≤ price population (count - snap) + 1 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + (count - snap)) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (min count snap)))) ∧
-      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target := by
+      target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
   by_cases ordered : snap ≤ count
   · simpa only [Nat.min_eq_right ordered] using restore_call_normal source target cursor objects base cap count snap population entries ordered countSmall family image zone countBound populations environment deleteCode code journal counter arguments args normal
   · have finished : count ≤ snap := by omega
@@ -75,7 +75,7 @@ theorem restore_call_bound {ι : Type} [Fintype ι] [DecidableEq ι]
     rw [Nat.min_eq_left finished]
     exact ⟨1, cursor, objects, by omega, positive, rfl, Nat.le_refl _, nextFamily, nextImage, zone,
       by simp [price, WitnessBuild.triangle, Nat.sub_eq_zero_of_le finished],
-      (by intro table; have bounded := populations table; omega), counter, rfl, rfl, environment.of_fields rfl rfl rfl, OtherGlobals.refl source⟩
+      (by intro table; have bounded := populations table; omega), counter, rfl, rfl, environment.of_fields rfl rfl rfl, OtherGlobals.refl source, ⟨fun _ => rfl, fun _ _ => rfl⟩⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

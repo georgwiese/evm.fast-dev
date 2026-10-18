@@ -34,7 +34,7 @@ theorem loop_normal {ι : Type} [Fintype ι] [DecidableEq ι] (remaining : Nat)
       (∀ table, (next table).slots.length ≤ population + remaining) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.locals.lookup (ofString "snap") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
-      target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target := by
+      target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
   induction remaining generalizing source cursor objects count population with
   | zero =>
     have finished : count = snap := by omega
@@ -49,7 +49,7 @@ theorem loop_normal {ι : Type} [Fintype ι] [DecidableEq ι] (remaining : Nat)
     change target = source at same
     subst target
     refine ⟨0, cursor, objects, by omega, by simp, Nat.le_refl _, family, ?_, zone, by simp [price, WitnessBuild.triangle], ?_, ?_, snapshot, rfl,
-      environment, OtherGlobals.refl source⟩
+      environment, OtherGlobals.refl source, TableFamily.FloorFrame.refl objects source⟩
     · simpa only [finished] using image
     · simpa only [Nat.add_zero] using populations
     · simpa only [finished] using counter
@@ -67,7 +67,7 @@ theorem loop_normal {ι : Type} [Fintype ι] [DecidableEq ι] (remaining : Nat)
       image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
     have entryEnvironment : WarmKeys.Environment entry := environment.of_fields rfl rfl rfl
     obtain ⟨paid, middleCursor, middleObjects, fits, clock, forward, middleFamily, middleImage, middleZone, bounded, middlePopulations,
-      middleCounter, codes, middleEnvironment, globals⟩ :=
+      middleCounter, codes, middleEnvironment, globals, bodyFrame⟩ :=
       body_normal entry middle cursor objects base cap count population entries entryFamily entryImage zone countBound (by omega) populations entryEnvironment deleteCode journal counter bodyRun
     have info := body_safe.summary entry
     rw [bodyRun] at info
@@ -76,13 +76,14 @@ theorem loop_normal {ι : Type} [Fintype ι] [DecidableEq ι] (remaining : Nat)
       (globals (ofString "journal") (by decide) (by decide)).trans journal
     have middleDelete : middle.code.lookup (ofString "htab_del") = some (Find.formals, Delete.body, .one) := by rw [codes]; exact deleteCode
     obtain ⟨restPaid, nextCursor, next, restFits, restClock, restForward, nextFamily, nextImage, nextZone, restBound, nextPopulations,
-      nextCounter, nextSnapshot, finalCodes, nextEnvironment, finalGlobals⟩ :=
+      nextCounter, nextSnapshot, finalCodes, nextEnvironment, finalGlobals, restFrame⟩ :=
       ih (source := middle) (cursor := middleCursor) (objects := middleObjects) (count := count - 1) (population := population + 1)
         (by omega) (by omega) middleFamily middleImage middleZone (by omega) middlePopulations middleEnvironment middleDelete middleJournal middleCounter middleSnapshot tailRun
     change paid ≤ source.clock - 1 at fits
     change middle.clock = source.clock - 1 - paid at clock
+    have headFrame : TableFamily.FloorFrame objects middleObjects source middle := ⟨bodyFrame.floors, bodyFrame.words⟩
     refine ⟨1 + paid + restPaid, nextCursor, next, by omega, by omega, by omega, nextFamily, nextImage, nextZone, ?_, ?_, nextCounter, nextSnapshot,
-      finalCodes.trans codes, nextEnvironment, globals.trans finalGlobals⟩
+      finalCodes.trans codes, nextEnvironment, globals.trans finalGlobals, headFrame.trans restFrame⟩
     · rw [price_step]
       omega
     · intro table

@@ -1,5 +1,6 @@
 import InitECandidate.Solver.GasBudget.JournalZone
 import InitECandidate.Solver.MutableTable.FamilyDelete
+import InitECandidate.Solver.MutableTable.FamilyFloorFrame
 
 namespace InitECandidate.Solver.GasBudget.Journal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -23,7 +24,7 @@ theorem delete_zone_normal {ι : Type} [DecidableEq ι] (source target : PanSemS
       TableFamily.Model target cursor (Function.update objects writer next) ∧
       Image target (Function.update objects writer next) base count entries ∧ Zone (Function.update objects writer next) base cap cursor ∧
       next.slots.length ≤ (objects writer).slots.length ∧ target.locals = source.locals ∧ target.globals = source.globals ∧
-      target.code = source.code ∧ WarmKeys.Environment target := by
+      target.code = source.code ∧ WarmKeys.Environment target ∧ TableFamily.FloorFrame objects (Function.update objects writer next) source target := by
   obtain ⟨paid, next, bounded, fits, clock, kind, plan, floor, models, pointers, lower, upper, locals, globals, codes, nextEnvironment, protectedWords⟩ :=
     TableFamily.delete_normal source target cursor objects writer family environment query queryFits queryMapped deleteCode arguments args normal
   have kinds (table : ι) : (Function.update objects writer next table).kind = (objects table).kind := by
@@ -43,7 +44,9 @@ theorem delete_zone_normal {ι : Type} [DecidableEq ι] (source target : PanSemS
     image.transfer (nextEnvironment.domain.trans environment.domain.symm) pointers kinds
       (fun index inside field => protectedWords _ (image.separate index inside field writer))
       (fun index inside field table => by rw [kinds, plans]; exact image.separate index inside field table)
-  exact ⟨paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, upper, locals, globals, codes, nextEnvironment⟩
+  exact ⟨paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, upper, locals, globals, codes, nextEnvironment,
+    TableFamily.FloorFrame.of_update objects writer next source target floor (fun address before => protectedWords address
+      (TableFamily.outside_floor source _ _ _ _ _ (family.tables writer) address before))⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

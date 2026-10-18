@@ -51,7 +51,7 @@ theorem set_tail_normal {ι : Type} [DecidableEq ι]
     have key : entry.locals.lookup (ofString "key") = some (.val (.word query)) := keyLocal
     have v : entry.locals.lookup (ofString "value") = some (.val (.word value)) := valueLocal
     simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, localVar, toExact, t, key, v, TableCall.values]
-  obtain ⟨paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, population, locals, codes, nextEnvironment, globals⟩ :=
+  obtain ⟨paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, population, locals, codes, nextEnvironment, globals, _floorFrame⟩ :=
     set_zone_normal entry called cursor objects writer base cap (count + 1) entries entryFamily entryImage zone (by omega)
       (environment.of_fields rfl rfl rfl) query value queryFits queryMapped _ args mutationRun
   have entryCounter : entry.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) := by

@@ -47,7 +47,7 @@ theorem delete_tail_normal {ι : Type} [DecidableEq ι]
     have t : entry.locals.lookup (ofString "t") = some (.val (.word (objects writer).pointer)) := tableLocal
     have key : entry.locals.lookup (ofString "key") = some (.val (.word query)) := keyLocal
     simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, localVar, toExact, t, key]
-  obtain ⟨paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population, locals, globalEq, codes, nextEnvironment⟩ :=
+  obtain ⟨paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population, locals, globalEq, codes, nextEnvironment, _floorFrame⟩ :=
     delete_zone_normal entry called cursor objects writer base cap (count + 1) entries entryFamily entryImage zone
       (environment.of_fields rfl rfl rfl) query queryFits queryMapped deleteCode _ args mutationRun
   have entryCounter : entry.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) := by

@@ -1,5 +1,5 @@
 import InitECandidate.Solver.GasBudget.StackPopsPrefix
-import InitECandidate.Solver.GasBudget.RegularChargeNormalCall
+import InitECandidate.Solver.GasBudget.RegularChargeMemory
 
 namespace InitECandidate.Solver.GasBudget.OpcodeChargePrefix
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -23,8 +23,11 @@ theorem normal (names : List String) (source post : PanSemStateFiniteExact 64 Gu
       evaluateHOLFiniteState ready continuation = (some (.returned value), inner) ∧
       emptyLocalsHOLFinite post = emptyLocalsHOLFinite inner ∧
       regularBudget ready.memory frame = regularBudget source.memory frame ∧
-      (wordAt ready.memory (frame + 184#64)).toNat = (wordAt source.memory (frame + 184#64)).toNat + amount.toNat := by
-  obtain ⟨popped, scopePost, popFits, popClock, popFrame, poppedRun, scopeEq, popBudget, popUsed⟩ :=
+      (wordAt ready.memory (frame + 184#64)).toNat = (wordAt source.memory (frame + 184#64)).toNat + amount.toNat ∧
+      (wordAt ready.memory (frame + 16#64)).toNat + names.length = (wordAt source.memory (frame + 16#64)).toNat ∧
+      (∀ address, address ≠ frame + 16#64 → address ≠ frame + 64#64 → address ≠ frame + 184#64 →
+        ready.memory address = source.memory address) := by
+  obtain ⟨popped, scopePost, popFits, popClock, popFrame, poppedRun, scopeEq, popBudget, popUsed, popOutside, popDepth⟩ :=
     StackPop.pops_normal names source post frame _ stackCode ev value run
   have poppedGlobals := congrArg PanSemStateFiniteExact.globals popFrame
   change popped.globals = source.globals at poppedGlobals
@@ -47,12 +50,20 @@ theorem normal (names : List String) (source post : PanSemStateFiniteExact 64 Gu
     rw [popClock, sub] at combined
     exact combined
   refine ⟨charged, scopePost, by omega, by rw [chargeClock, popClock, sub], chargedFrame, continuationRun, scopeEq,
-    chargeBudget.trans popBudget, ?_⟩
-  have oldUsed : wordAt source.memory (frame + 184#64) = used := by
-    unfold wordAt
-    rw [← popUsed, usedCell]
-    rfl
-  rw [credit, oldUsed]
+    chargeBudget.trans popBudget, ?_, ?_, ?_⟩
+  · have oldUsed : wordAt source.memory (frame + 184#64) = used := by
+      unfold wordAt
+      rw [← popUsed, usedCell]
+      rfl
+    rw [credit, oldUsed]
+  · have spSame := RegularCharge.call_other_word popped charged frame amount (frame + 16#64) [.const amount] rfl poppedCharge poppedEV poppedCap chargeRun
+      (offsets_ne frame 16#64 64#64 (by decide)) (offsets_ne frame 16#64 184#64 (by decide))
+    change (WitnessRadix.MemoryBytes.wordBits (charged.memory (frame + 16#64))).toNat + names.length = _
+    rw [spSame]
+    exact popDepth
+  · intro address notSP notGas notUsed
+    exact (RegularCharge.call_other_word popped charged frame amount address [.const amount] rfl poppedCharge poppedEV poppedCap chargeRun notGas notUsed).trans
+      (popOutside address notSP)
 
 end InitECandidate.Solver.GasBudget.OpcodeChargePrefix
 

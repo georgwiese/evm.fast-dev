@@ -46,8 +46,7 @@ theorem TerminalPrefix.immediate_done {source post : PanSemStateFiniteExact 64 G
 zero-clock lexical scopes of the complete original active loop body. -/
 def ScopedSuffixFinish (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : OpcodeChargeSites.Kind)
     (ready : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop :=
-  ∃ caller endpoint, emptyLocalsHOLFinite caller = emptyLocalsHOLFinite source ∧
-    emptyLocalsHOLFinite post = emptyLocalsHOLFinite endpoint ∧ SuffixFinish caller endpoint kind ready
+  ScopedProgramSuffixFinish source post kind.suffix ready
 
 /-- Whole actual active loop-body gas-or-terminal classification at all59
 original sites. Underflow/out-of-gas completes the real handler; every other

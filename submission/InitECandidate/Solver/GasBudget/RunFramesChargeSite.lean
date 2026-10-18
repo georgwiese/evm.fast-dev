@@ -1,4 +1,5 @@
 import InitECandidate.Solver.GasBudget.RunFramesCaughtDispatch
+import InitECandidate.Solver.GasBudget.RunFramesSuffixFinish
 import InitECandidate.Solver.GasBudget.DispatchChargeNormal
 import InitECandidate.Solver.GasBudget.DispatchChargeException
 import InitECandidate.Solver.GasBudget.FrameExceptionHandler
@@ -16,12 +17,7 @@ def TerminalPrefix (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (f
 
 def SuffixFinish (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : OpcodeChargeSites.Kind)
     (ready : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop :=
-  (∃ inner returned, evaluateHOLFiniteState ready kind.suffix = (some (.returned returned), inner) ∧
-      emptyLocalsHOLFinite post = emptyLocalsHOLFinite inner) ∨
-  ∃ inner exceptionPost err,
-    evaluateHOLFiniteState ready kind.suffix = (some (.exception (ofString "EvmErr") (.val (.word err))), inner) ∧
-    emptyLocalsHOLFinite exceptionPost = emptyLocalsHOLFinite inner ∧
-    evaluateHOLFiniteState (bind {exceptionPost with locals := source.locals} "err" err) opcodeHandler = (none, post)
+  ProgramSuffixFinish source post kind.suffix ready
 
 theorem terminal_after_prefix (source exceptionPost post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (view : FrameException.View source) (err : BitVec 64) (paid ceiling : Nat)

@@ -47,7 +47,7 @@ theorem model_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kin
   have resumedData := Insert.GeneralData.of_fields source resumed (cell old .header 0) p kind
     (cell old .values 0) (cell old .order 0) (cell old .position 0) (BitVec.ofNat 64 slots.length) bits slots data rfl rfl rfl rfl
   have resumedModel := MemoryModel.Occupied.of_fields source resumed kind old slots occupied rfl rfl rfl
-  obtain ⟨tailPaid, globals, memory, post, plan, next, tailBound, tailOldBound, tailRun, tailPost⟩ := model_tail resumed kind old oldValid start newValid earlier domain little slots room header resumedModel query value index bits small power minimum resumedData
+  obtain ⟨tailPaid, globals, memory, post, plan, next, tailBound, tailOldBound, tailRun, tailPost, _⟩ := model_tail resumed kind old oldValid start earlier domain little slots (fun _ _ => newValid) room header resumedModel query value index bits small power minimum resumedData
     ((bind_lookup_other _ "i" "t" _ (by decide)).trans tableLocal) ((bind_lookup_other _ "i" "key" _ (by decide)).trans keyLocal)
     ((bind_lookup_other _ "i" "value" _ (by decide)).trans valueLocal) (bind_lookup_same _ _ _)
     (Find.Selection.of_fields source resumed p index rfl rfl rfl selected) indexBound heap allocCode zeroCode insertCode growCode

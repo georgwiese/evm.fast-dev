@@ -5152,3 +5152,11 @@ Eleven new modules: generic no-return leaves/sequence, actual trap_with no norma
 - Constructor derives allocation room and empty physical model. Combined source-clock bound1795, no prospective room or clock-budget premise. Preserves every word below the incoming account-table cursor. Sender/precompile mappings and actual global reachability remain entry obligations, as do access-list address warming and all subsequent message/whole-target work.
 - Successful root-warm-precompile-constructor-v3.log1386jobs, exit0, permitted axioms, MaxRSS1931560KiB. Index4785modules/8063facts. Incremental inventory/policy passed; frozen source unchanged, claim infinity, no full verification.
 - Next active work: access-list address warming with protected actual pointer-array reads and growth. A generic TableState refactor is pending/checking, not evidence yet.
+
+## Complete original transaction table warm-up — 2026-10-18
+
+- Shared generic physical TableState replaces the storage-only duplicate while both retained warm-up proofs still build. Exact protected pointer-array model supplies real access-list query loads and persists through every actual setter/growth.
+- Entire AA constructor/sender/precompile/coinbase/access-list prefix joins the actual AK constructor/storage-key loop. Both resulting Header/Occupied models and half/power/heap invariants are retained, arrays naturally separated. All earlier words and unrelated caller locals survive.
+- A addresses and S keys: paid+P_account64+P_storage16<=1805+184A+9triangleA+17S+13triangleS+P_accountCa+P_storageCs, with Ca<=max64(4(A+20)), Cs<=max16(4(S+1)). WarmTables.price gives a concrete finite source-clock phase price after substituting those capacities. Entry input/heap/code reachability and source clock/target-work distinction remain explicit.
+- Successful root-warm-tables-price-v1.log1404jobs, exit0, allowed axioms. Index4796modules/8083facts; inventory4809modules, replacement closure0, frozen files unchanged. Incremental policy passed; claim infinity; no full verification.
+- Continuing with original message allocation/setup and preservation of its actual MSG_GAS through this warm-up stage. Later destination setup/helpers/final AA setter/message execution, global gas, weighted target transport and whole-program finite K remain open.

@@ -2,6 +2,7 @@ import InitECandidate.Solver.GasBudget.WarmPrecompilesSender
 import InitECandidate.Solver.GasBudget.WarmPrecompilesLoop
 import InitECandidate.Solver.MutableTable.TableRuntime.NormalRoom
 import InitECandidate.Solver.Input.AssignNormal
+import InitECandidate.Solver.Input.CounterLoopLocal
 
 namespace InitECandidate.Solver.GasBudget.WarmPrecompiles
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -30,7 +31,8 @@ theorem constructor_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
       MemoryModel.Occupied warmed .account (fresh .account cursor 64) slots ∧ slots.length ≤ 19 ∧
       Locals warmed (cell (fresh .account cursor 64) .header 0) start 18 ∧
       evaluateHOLFiniteState warmed afterLoop = (some (.returned value), finish) ∧ post = restore source "aa" finish ∧
-      ∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address := by
+      (∀ address : BitVec 64, address.toNat < cursor → warmed.memory address = source.memory address) ∧
+      ∀ key : MlS, key ≠ ofString "aa" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key := by
   rw [constructor_shape] at normal
   have valid := TableRuntime.normal_call_layout source post .account cursor 64 "aa" newArguments afterNew
     (by decide) lower bounded aligned (by decide) (by decide) (by decide) (by decide) environment.domain rfl newCode heap
@@ -104,13 +106,20 @@ theorem constructor_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   have finalFrame := loopFrame.trans composite
   rw [spent] at finalFrame
   refine ⟨10 + senderPaid + loopPaid, finalSlots, warmed, inner, by omega, by omega, spent, finalFrame,
-    finalHeader, finalModel, by omega, finalLocals, restRun, restored, ?_⟩
-  intro address before
-  have outside : TableFootprint.Outside .account plan address := by
-    intro pool offset inside
-    exact fresh_cell_away .account cursor 64 valid address (Or.inl before) pool offset inside
-  exact (loopFootprint address outside).trans ((senderFootprint address outside).trans
-    (TableRuntime.caller_memory_away source "aa" .account cursor 64 valid address (Or.inl before)))
+    finalHeader, finalModel, by omega, finalLocals, restRun, restored, ?_, ?_⟩
+  · intro address before
+    have outside : TableFootprint.Outside .account plan address := by
+      intro pool offset inside
+      exact fresh_cell_away .account cursor 64 valid address (Or.inl before) pool offset inside
+    exact (loopFootprint address outside).trans ((senderFootprint address outside).trans
+      (TableRuntime.caller_memory_away source "aa" .account cursor 64 valid address (Or.inl before)))
+  · intro key notTable notIndex
+    have same := Input.counter_loop_local ready warmed condition (ofString "htab_set") [localVar "aa", query, .const 1#64] "i" (.op .add [localVar "i", .const 1#64]) key notIndex loopRun
+    calc
+      warmed.locals.lookup key = ready.locals.lookup key := same
+      _ = middle.locals.lookup key := by simp [ready, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, notIndex, Ne.symm notIndex]
+      _ = constructed.locals.lookup key := by rw [sameLocals]
+      _ = source.locals.lookup key := by simp [constructed, TableRuntime.callState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, notTable, Ne.symm notTable]
 
 end InitECandidate.Solver.GasBudget.WarmPrecompiles
 

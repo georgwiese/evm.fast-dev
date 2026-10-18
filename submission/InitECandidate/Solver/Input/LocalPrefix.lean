@@ -16,6 +16,8 @@ inductive LocalPrefix (key : MlS) : ProgHOL 64 → Prop where
   | call (destination : Option MlS) (function : MlS) (arguments : List (ExpHOL 64))
       (other : ∀ name, destination = some name → key ≠ name) :
       LocalPrefix key (.call (some (destination.map (fun name => (.local, name)), none)) function arguments)
+  | globalCall (destination function : MlS) (arguments : List (ExpHOL 64)) :
+      LocalPrefix key (.call (some (some (.global, destination), none)) function arguments)
   | dec (name : MlS) (shape : ShapeHOL) (expression : ExpHOL 64) {rest : ProgHOL 64}
       (other : key ≠ name) (tail : LocalPrefix key rest) :
       LocalPrefix key (.dec name shape expression rest)
@@ -93,6 +95,31 @@ theorem LocalPrefix.summary_full {F : Type} {key : MlS} {program : ProgHOL 64}
                   · simp only [setKvarHOLFinite]
                     exact ⟨fun _ => lookup_set_other _ key name returned (other name rfl), by simp⟩
                   · simp
+              · simp
+            | error => simp
+            | timeOut => simp
+            | «break» => simp
+            | «continue» => simp
+            | exception identifier payload => simp
+            | finalFfi event => simp
+  | globalCall destination function arguments =>
+    rw [evaluateHOLFiniteState_call]
+    split
+    · simp
+    · split
+      · simp
+      · split
+        · simp
+        · generalize computed : evaluateHOLFiniteState (callEntryStateHOLFinite source _) _ = output
+          obtain ⟨result, target⟩ := output
+          cases result with
+          | none => simp
+          | some result =>
+            cases result with
+            | returned returned =>
+              simp only
+              split
+              · split <;> simp [setKvarHOLFinite, setGlobalHOLFinite]
               · simp
             | error => simp
             | timeOut => simp

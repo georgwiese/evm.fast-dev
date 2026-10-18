@@ -9482,12 +9482,40 @@
       "sha256": "08c01bf7236eb33ceb4be5377048fa1669218124527887e0c4924c149c1b3599"
     },
     {
+      "path": "submission/InitECandidate/Solver/MutableTable/DeleteFinishArrays.lean",
+      "sha256": "64a463412e73ad971e2afff412a028c3939b2946261bcde44c3edec935c8ae28"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/DeleteFinishExecution.lean",
+      "sha256": "882e192c2fbfbaa867126f138b21c4e2c2d6fb35d0dfed9ac78dbdd8300fd1db"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/DeleteFinishFields.lean",
+      "sha256": "000e7d846940295ef7e4f7892cd65482e42ac5dbfeecad2b8d4c57cbebeff6f3"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/DeleteFinishMemory.lean",
+      "sha256": "dbe62d19a267efb64b40f381dfe58b007a21d1666348eb57d0df47de4777732b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/DeleteFinishModel.lean",
+      "sha256": "8d0c1d6ba6104832ce12245299097da9385658f8b1424dee21df191bdc901662"
+    },
+    {
       "path": "submission/InitECandidate/Solver/MutableTable/DeleteHashExecution.lean",
       "sha256": "82b995f0ffd9b7a8ae11ed168362704c8857a433decc7d527732237e82ab611d"
     },
     {
       "path": "submission/InitECandidate/Solver/MutableTable/DeleteInitial.lean",
       "sha256": "b50763862d34406114ff7522d6af98f0762f031cb59bbadb2f13a31af7942de9"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/DeleteLastDecision.lean",
+      "sha256": "aac1fb48d1a05df89e732eaeb4a7986c8223c84261262e30e156017702e85f31"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/DeleteLastSwap.lean",
+      "sha256": "22bfe96affcaf3305e594cd48747816f5fcf5359852aa0578607a0d2cc36171e"
     },
     {
       "path": "submission/InitECandidate/Solver/MutableTable/DeleteMoveExecution.lean",
@@ -9520,6 +9548,10 @@
     {
       "path": "submission/InitECandidate/Solver/MutableTable/DeleteScanEnd.lean",
       "sha256": "ca28806bb07602a57cd91d611ef47c6d203debf890dd7b25c315e985d64c43f2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/MutableTable/DeleteScanFinish.lean",
+      "sha256": "5d9b1fc921ca06443d67e67c0e32a31213b0c486316a120cb9fb06eb445f53f5"
     },
     {
       "path": "submission/InitECandidate/Solver/MutableTable/DeleteScanFrontier.lean",
@@ -66280,7 +66312,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -66288,19 +66320,19 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
@@ -66309,7 +66341,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -66318,7 +66350,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.declared_eq_host_field",
@@ -66327,7 +66359,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.host_word_bound",
@@ -66336,7 +66368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute",
@@ -66345,7 +66377,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CompareChain.execute_prefix",
@@ -66354,7 +66386,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.body_shape",
@@ -66363,7 +66395,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.thirtyTwo_shape",
@@ -66372,7 +66404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_wordAt",
@@ -66381,7 +66413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.fast_execute",
@@ -66390,7 +66422,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_execute",
@@ -66399,7 +66431,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval",
@@ -66408,7 +66440,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.ready_of_words",
@@ -66417,7 +66449,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.agrees_iff_keys",
@@ -66426,7 +66458,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.aligned_memory",
@@ -66435,7 +66467,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.injective",
@@ -66443,7 +66475,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordKeys.equal_iff",
@@ -66451,7 +66483,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.alignment_eval_not",
@@ -66460,7 +66492,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_agree_iff",
@@ -66469,7 +66501,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.allBytes_agree_iff",
@@ -66478,7 +66510,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.widened_byte",
@@ -66486,7 +66518,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_execute",
@@ -66495,7 +66527,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byteChecks_ready",
@@ -66504,7 +66536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_loop_ready_of_memory",
@@ -66513,7 +66545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_byteAt",
@@ -66522,7 +66554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition8",
@@ -66531,7 +66563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.eval_condition1_done",
@@ -66540,7 +66572,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_tail_execute",
@@ -66549,7 +66581,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_execute",
@@ -66558,7 +66590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.tail_shape",
@@ -66567,7 +66599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_shape",
@@ -66576,7 +66608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.byte_body_execute",
@@ -66585,7 +66617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.unaligned_memory",
@@ -66594,7 +66626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.aligned_offset",
@@ -66602,7 +66634,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byte_from_word",
@@ -66610,7 +66642,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.wordView_bytes",
@@ -66619,7 +66651,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_words",
@@ -66628,7 +66660,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_unique",
@@ -66637,7 +66669,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.call_execute",
@@ -66646,7 +66678,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Memeq32.environment",
@@ -66655,7 +66687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.byteView_of_fields",
@@ -66664,7 +66696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.execute",
@@ -66673,7 +66705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StoreWord.byteView_away",
@@ -66682,7 +66714,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.bind_lookup_other",
@@ -66691,7 +66723,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.StateSteps.assign_execute",
@@ -66700,14 +66732,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordWrites.write_unique",
@@ -66715,7 +66747,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.MemoryBytes.read_of_cell",
@@ -66750,7 +66782,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.block_execute",
@@ -66759,7 +66791,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.call_execute",
@@ -66768,7 +66800,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.environment",
@@ -66777,7 +66809,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop_execute",
@@ -66786,7 +66818,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.remaining_loops",
@@ -66795,7 +66827,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.word_view",
@@ -66803,7 +66835,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.byte_view",
@@ -66812,7 +66844,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.loop32_shape",
@@ -66821,7 +66853,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.body_shape",
@@ -66830,7 +66862,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.condition_read",
@@ -66839,7 +66871,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.alignment_read",
@@ -66848,7 +66880,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CodeEnvironment.finite_lookup",
@@ -66856,7 +66888,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.valid",
@@ -66883,7 +66915,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guards",
@@ -66892,7 +66924,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_execute",
@@ -66901,7 +66933,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.environment",
@@ -66910,7 +66942,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.block32_execute",
@@ -66919,7 +66951,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.blockWord_execute",
@@ -66928,7 +66960,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_execute",
@@ -66937,7 +66969,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.condition_read",
@@ -66946,7 +66978,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.alignment_read",
@@ -66955,7 +66987,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.environment",
@@ -66964,7 +66996,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_execute",
@@ -66973,7 +67005,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_execute",
@@ -66982,7 +67014,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_frame",
@@ -66991,7 +67023,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.final_memory_away",
@@ -66999,7 +67031,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loop32_shape",
@@ -67008,7 +67040,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopWord_shape",
@@ -67017,7 +67049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.body_shape",
@@ -67026,7 +67058,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_frame",
@@ -67035,7 +67067,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_other",
@@ -67044,7 +67076,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.state32_index",
@@ -67053,7 +67085,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_frame",
@@ -67062,7 +67094,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_other",
@@ -67071,7 +67103,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.stateWord_index",
@@ -67080,7 +67112,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.remaining_loops",
@@ -67089,7 +67121,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_expected",
@@ -67116,7 +67148,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ProgramPrefix.restoration_frame",
@@ -67125,7 +67157,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.body_shape",
@@ -67170,7 +67202,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_body_execute",
@@ -67179,7 +67211,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.tail_condition",
@@ -67188,7 +67220,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.loopTail_execute",
@@ -67197,7 +67229,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_small",
@@ -67499,7 +67531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.aligned_cell",
@@ -67507,7 +67539,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read_exists",
@@ -67516,7 +67548,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteArray.read200",
@@ -67525,7 +67557,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.mapped_region",
@@ -67534,7 +67566,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.of_cells",
@@ -67543,7 +67575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteRegion.load_expression",
@@ -67552,7 +67584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute",
@@ -67561,21 +67593,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.stores_execute",
@@ -67584,7 +67616,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.block_execute",
@@ -67593,7 +67625,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_shapes",
@@ -67602,7 +67634,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.address_read",
@@ -67611,7 +67643,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.store_execute",
@@ -67620,7 +67652,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.environment",
@@ -67629,7 +67661,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_execute",
@@ -67638,7 +67670,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_mapped",
@@ -67647,7 +67679,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.post_memory_away",
@@ -67656,7 +67688,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.answer_length",
@@ -67664,7 +67696,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.oracle",
@@ -67673,21 +67705,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_frame",
@@ -67696,7 +67728,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_index",
@@ -67705,7 +67737,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.advance_other",
@@ -67714,7 +67746,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.test_read",
@@ -67723,7 +67755,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.loop_execute",
@@ -67732,7 +67764,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_frame",
@@ -67741,7 +67773,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_other",
@@ -67750,7 +67782,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.walk_index",
@@ -67759,7 +67791,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.memoryWalk_away",
@@ -67767,7 +67799,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Mapped.of_domain",
@@ -67775,7 +67807,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.byte_walk",
@@ -67784,7 +67816,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.Args.word_walk",
@@ -67793,7 +67825,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_domain",
@@ -67802,7 +67834,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_domain",
@@ -67811,7 +67843,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_clock",
@@ -67820,7 +67852,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_clock",
@@ -67829,7 +67861,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.cost_le",
@@ -67838,7 +67870,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_clock",
@@ -67847,7 +67879,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_control",
@@ -67856,7 +67888,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.alignment_false",
@@ -67865,7 +67897,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_execute",
@@ -67874,7 +67906,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.execute",
@@ -67883,7 +67915,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_execute",
@@ -67892,7 +67924,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_memory_away",
@@ -67901,7 +67933,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_control",
@@ -67909,7 +67941,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.environment",
@@ -67918,7 +67950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_memory",
@@ -67927,7 +67959,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_memory",
@@ -67936,7 +67968,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_memory_away",
@@ -67945,7 +67977,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_memory_away",
@@ -67954,7 +67986,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory_away",
@@ -67963,7 +67995,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.byte_walk_be",
@@ -67972,7 +68004,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.word_walk_be",
@@ -67981,7 +68013,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory",
@@ -67990,7 +68022,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_away",
@@ -67999,21 +68031,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.control_of_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.frame_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.byte_walk_control",
@@ -68022,7 +68054,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_control",
@@ -68031,7 +68063,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_args",
@@ -68040,7 +68072,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_domain",
@@ -68049,7 +68081,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_control",
@@ -68058,7 +68090,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_control",
@@ -68067,7 +68099,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_cost_le",
@@ -68075,14 +68107,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_fields",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.stores_execute",
@@ -68091,7 +68123,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.block_execute",
@@ -68100,21 +68132,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.writeMany_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryMany_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_frame",
@@ -68123,7 +68155,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_index",
@@ -68132,7 +68164,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.advance_other",
@@ -68141,7 +68173,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_execute",
@@ -68150,7 +68182,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_bounds",
@@ -68159,7 +68191,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_execute",
@@ -68168,7 +68200,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_clock",
@@ -68177,7 +68209,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.prefix_index",
@@ -68186,7 +68218,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.loop_shapes",
@@ -68195,7 +68227,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.store_execute",
@@ -68204,7 +68236,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_frame",
@@ -68213,7 +68245,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_other",
@@ -68222,7 +68254,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.walk_index",
@@ -68231,7 +68263,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyWords.memoryWalk_away",
@@ -68239,7 +68271,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.call_execute",
@@ -68248,7 +68280,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.environment",
@@ -68257,7 +68289,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.alignment_read",
@@ -68266,7 +68298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.execute",
@@ -68275,7 +68307,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_value_read",
@@ -68284,7 +68316,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_execute",
@@ -68293,7 +68325,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_memory_away",
@@ -68302,7 +68334,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.lane_other",
@@ -68311,7 +68343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.condition_read",
@@ -68320,7 +68352,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.loop_execute",
@@ -68329,7 +68361,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.body_shape",
@@ -68338,7 +68370,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.input_read",
@@ -68347,7 +68379,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_clock",
@@ -68356,7 +68388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_control",
@@ -68365,7 +68397,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_other",
@@ -68374,7 +68406,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_domain",
@@ -68383,7 +68415,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.stateLanes_memory_away",
@@ -68392,14 +68424,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_of_control",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.permutation_control",
@@ -68408,21 +68440,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_clock",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_empty",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.hashControl_restore",
@@ -68431,7 +68463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_clock",
@@ -68440,7 +68472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_control",
@@ -68449,7 +68481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.target_memory_away",
@@ -68458,7 +68490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteStore.execute_word",
@@ -68467,7 +68499,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.after_blocks_execute",
@@ -68476,7 +68508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.afterBlocks_shape",
@@ -68485,7 +68517,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.block_execute",
@@ -68494,7 +68526,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.call_execute",
@@ -68503,7 +68535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.KeccakAbsorb.Mapped.of_domain",
@@ -68511,7 +68543,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Code.of_control",
@@ -68520,7 +68552,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.mapped_of_control",
@@ -68528,7 +68560,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Args.of_index",
@@ -68537,7 +68569,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.condition_read",
@@ -68546,7 +68578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.EntryData.of_control",
@@ -68555,7 +68587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.Protected.tail",
@@ -68563,7 +68595,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.environment",
@@ -68572,7 +68604,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.execute",
@@ -68581,7 +68613,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.loop_execute",
@@ -68590,7 +68622,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_address_read",
@@ -68599,7 +68631,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_store_execute",
@@ -68608,7 +68640,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_stores_execute",
@@ -68617,7 +68649,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_words_execute",
@@ -68626,14 +68658,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.out_memory_away",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_alignment_read",
@@ -68642,7 +68674,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.output_execute",
@@ -68651,7 +68683,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_first_execute",
@@ -68660,7 +68692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.pad_last_execute",
@@ -68669,7 +68701,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.padding_execute",
@@ -68678,7 +68710,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_locals",
@@ -68686,7 +68718,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_control",
@@ -68694,7 +68726,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_clock",
@@ -68702,7 +68734,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_execute",
@@ -68711,7 +68743,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.paddingPrefix_memory_away",
@@ -68720,7 +68752,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.body_shape",
@@ -68729,7 +68761,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailLocals.of_locals",
@@ -68738,7 +68770,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.OutMapped.of_domain",
@@ -68746,7 +68778,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.TailData.of_control",
@@ -68755,7 +68787,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.away_above",
@@ -68779,7 +68811,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.ordinary_byte_mapped",
@@ -68787,7 +68819,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.weaken",
@@ -68795,7 +68827,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.Arena.subrange",
@@ -68803,7 +68835,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.byte_mapped",
@@ -68811,7 +68843,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.word_mapped",
@@ -68819,7 +68851,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.mask_aligned",
@@ -68828,7 +68860,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedBytes.copy_mapped",
@@ -68837,7 +68869,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak256.absorb_mapped",
@@ -68881,7 +68913,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.host_byte",
@@ -68890,7 +68922,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.bytes",
@@ -68899,7 +68931,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostLength.present",
@@ -68908,21 +68940,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.dataBytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.offset_address",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.host_byte",
@@ -68931,7 +68963,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.bytes",
@@ -68940,7 +68972,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.present",
@@ -68949,7 +68981,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostWords.final_word_visible",
@@ -68957,7 +68989,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_mapped",
@@ -68966,7 +68998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.load_length",
@@ -68975,7 +69007,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.length_entry",
@@ -68984,7 +69016,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_read",
@@ -68992,14 +69024,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -69008,7 +69040,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -69017,7 +69049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -69026,7 +69058,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -69034,7 +69066,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -69042,7 +69074,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -69050,7 +69082,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -69058,7 +69090,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -69066,7 +69098,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -69074,7 +69106,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -69083,7 +69115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_address_number",
@@ -69091,7 +69123,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.data_mapped",
@@ -69100,7 +69132,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.heap_copy_mapped",
@@ -69108,7 +69140,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_loop",
@@ -69117,7 +69149,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_return",
@@ -69126,7 +69158,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_scopes",
@@ -69135,7 +69167,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_other",
@@ -69144,7 +69176,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_index",
@@ -69153,7 +69185,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_word",
@@ -69162,7 +69194,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.wordPost_frame",
@@ -69171,7 +69203,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_test",
@@ -69180,7 +69212,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copy_step",
@@ -69189,7 +69221,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_clock",
@@ -69198,7 +69230,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_other",
@@ -69207,7 +69239,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_index",
@@ -69216,7 +69248,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_frame",
@@ -69225,7 +69257,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_bounds",
@@ -69234,7 +69266,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.copyRounds_fit",
@@ -69243,7 +69275,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversized_read",
@@ -69252,7 +69284,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.guard_pass",
@@ -69261,7 +69293,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.bounded_entry",
@@ -69270,7 +69302,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute_bytes",
@@ -69279,7 +69311,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.tuple_byte",
@@ -69288,7 +69320,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.decoded_byte",
@@ -69297,14 +69329,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.dataBytes_at",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_byte",
@@ -69313,7 +69345,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_away",
@@ -69322,7 +69354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_cell",
@@ -69331,7 +69363,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.walk_endian",
@@ -69340,7 +69372,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.or_upper",
@@ -69348,7 +69380,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word4_eq",
@@ -69356,7 +69388,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.word8_eq",
@@ -69364,7 +69396,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.const_list",
@@ -69486,7 +69518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.list_congr",
@@ -69549,7 +69581,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.byte_read",
@@ -69558,7 +69590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.shift_read",
@@ -69567,7 +69599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.le32_read",
@@ -69576,7 +69608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Scalar.or_zero_raw",
@@ -69584,7 +69616,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.body_shape",
@@ -69817,7 +69849,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_away",
@@ -69826,7 +69858,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.store_separate",
@@ -69835,7 +69867,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.any_execute",
@@ -70841,7 +70873,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.bind",
@@ -70850,7 +70882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.HeapInput.restore",
@@ -70859,7 +70891,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ScalarScope.restore_other",
@@ -71261,7 +71293,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -71270,7 +71302,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -72074,7 +72106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.unary_environment",
@@ -72083,7 +72115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.execute",
@@ -73716,7 +73748,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.frame_read",
@@ -73725,14 +73757,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.offsets_ne",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Minimum.execute",
@@ -74763,7 +74795,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.condition_read",
@@ -74772,7 +74804,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.next_read",
@@ -74781,7 +74813,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.after_equal",
@@ -74790,7 +74822,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.comparison_arguments",
@@ -74799,7 +74831,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.step32",
@@ -74808,7 +74840,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.power_mask",
@@ -74817,7 +74849,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.increment",
@@ -74826,7 +74858,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.slot_injective",
@@ -74834,7 +74866,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.visited_distinct",
@@ -74843,7 +74875,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.occupied_prefix_bound",
@@ -74852,7 +74884,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Probe.empty_within_count",
@@ -74861,7 +74893,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.usedByte_of_fields",
@@ -74870,7 +74902,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_execute",
@@ -74879,7 +74911,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_prefix",
@@ -74888,7 +74920,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.first_empty",
@@ -74897,7 +74929,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.tail32_execute",
@@ -74906,7 +74938,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_number",
@@ -74915,7 +74947,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.path_advance",
@@ -74924,7 +74956,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain32_of_order",
@@ -74933,7 +74965,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.scan32_count_bound",
@@ -74942,7 +74974,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.aligned32_find",
@@ -74960,7 +74992,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.table_read",
@@ -74969,7 +75001,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.header_executes",
@@ -74978,7 +75010,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.prepared_locals",
@@ -74987,7 +75019,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.initial_index_read",
@@ -74996,7 +75028,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.masked_start",
@@ -75005,7 +75037,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_core",
@@ -75014,7 +75046,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_execute",
@@ -75023,7 +75055,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.environment",
@@ -75032,7 +75064,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.aligned32_call",
@@ -75041,7 +75073,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_core",
@@ -75050,7 +75082,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.environment",
@@ -75059,7 +75091,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.memory32_call",
@@ -75068,7 +75100,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.memory32_find",
@@ -75077,7 +75109,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.packed_roundtrip",
@@ -75085,7 +75117,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.unaligned32_execute",
@@ -75094,7 +75126,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_execute",
@@ -75103,7 +75135,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.memory_call",
@@ -75112,7 +75144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Hash.rebuild_word",
@@ -75120,7 +75152,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_answer_model",
@@ -75129,7 +75161,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_absent_iff",
@@ -75138,7 +75170,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.distance_bound",
@@ -75146,7 +75178,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.slot_distance",
@@ -75154,21 +75186,21 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_sound",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_index_bound",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_exists_before",
@@ -75177,7 +75209,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.lookup_dictionary",
@@ -75186,7 +75218,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Placement.build_invariants",
@@ -75260,7 +75292,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.dictionary32_find",
@@ -75269,7 +75301,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.dictionary32_call",
@@ -75278,7 +75310,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.lift_tail32",
@@ -75287,7 +75319,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.chain_slot_spec",
@@ -75296,7 +75328,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Get.environment",
@@ -75350,7 +75382,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.pure_value_call",
@@ -75359,7 +75391,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NodeDb.dictionary32_lookup",
@@ -75395,7 +75427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.projection",
@@ -75404,7 +75436,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.read_write",
@@ -75413,7 +75445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ByteStore.execute",
@@ -75422,7 +75454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.after_count",
@@ -75431,7 +75463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.after_used",
@@ -75440,7 +75472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.body_shape",
@@ -75449,7 +75481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.scan_prefix",
@@ -75458,7 +75490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.scan_model",
@@ -75476,7 +75508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.used_store",
@@ -75485,7 +75517,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.after_copy",
@@ -75494,7 +75526,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Set.body_shape",
@@ -75640,7 +75672,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.lift_copy32",
@@ -75649,7 +75681,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.result_away",
@@ -75674,7 +75706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.prepared_locals",
@@ -75683,7 +75715,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.copied_key_views",
@@ -75710,7 +75742,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.lift_tail32",
@@ -75719,7 +75751,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.result_keys",
@@ -75950,7 +75982,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Layout32.result_earlier",
@@ -76076,7 +76108,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.ignored_memory_call",
@@ -76085,7 +76117,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.key_model_fields",
@@ -76117,7 +76149,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.WitnessBuild.record_step",
@@ -77191,7 +77223,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.initialization_frame",
@@ -77200,7 +77232,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.restoration_frame",
@@ -77209,7 +77241,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BuildEntry.zero_return",
@@ -77218,7 +77250,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_toNat",
@@ -77226,7 +77258,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_ne",
@@ -77234,7 +77266,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.byteAddress_aligned",
@@ -77242,7 +77274,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.ordinary_mapped",
@@ -77250,7 +77282,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.mapped_of_allocated",
@@ -77258,7 +77290,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.count_small",
@@ -77266,7 +77298,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.BackingLayout.hash_byte_cell",
@@ -77274,7 +77306,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bind_other",
@@ -77283,7 +77315,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.QueryBranch.restore_bound",
@@ -77292,7 +77324,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.separates",
@@ -77300,7 +77332,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.ByteKeys.bit_at",
@@ -77308,7 +77340,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Copy32.execute",
@@ -77317,7 +77349,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_execute",
@@ -77326,7 +77358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyBytes.suffix_clock",
@@ -77335,7 +77367,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.call_ffi",
@@ -77344,7 +77376,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.ext_execute",
@@ -77353,7 +77385,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Keccak.f1600_execute",
@@ -77362,7 +77394,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.lastValue_filter",
@@ -77370,7 +77402,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.execute",
@@ -77379,7 +77411,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.execute_aligned",
@@ -77388,7 +77420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.body_shape",
@@ -77397,7 +77429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -77406,7 +77438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_clock",
@@ -77652,7 +77684,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.TableNew.result_header",
@@ -77696,14 +77728,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.WordBits.shift3",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Records.byte_budget",
@@ -78221,7 +78253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.rounded_down_nat",
@@ -78230,7 +78262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.downward_guards",
@@ -78239,7 +78271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.upward_guards",
@@ -78248,7 +78280,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.execute",
@@ -78257,7 +78289,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.room_guards",
@@ -78266,7 +78298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.call_execute",
@@ -78275,7 +78307,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Arenas.mark_body",
@@ -78526,7 +78558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bytes_number",
@@ -78534,7 +78566,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bytes_read",
@@ -78543,7 +78575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bytes_geometry",
@@ -78552,7 +78584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.selected_word",
@@ -78560,7 +78592,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.range_read",
@@ -78569,7 +78601,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.wide_read",
@@ -78578,7 +78610,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.next_test_read",
@@ -78587,7 +78619,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.word_offset_number",
@@ -78595,7 +78627,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bitmap_address_read",
@@ -78604,7 +78636,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bind_overwrite",
@@ -78613,7 +78645,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.next_bind",
@@ -78622,7 +78654,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.continuation_execute",
@@ -78631,7 +78663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bind_existing",
@@ -78640,7 +78672,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.push_execute",
@@ -78649,7 +78681,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.pushed_number",
@@ -78657,7 +78689,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.selected_bounds",
@@ -78666,7 +78698,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.selected_progress",
@@ -78675,7 +78707,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.JumpDest.bit_shift_small",
@@ -79778,7 +79810,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.unaligned_core",
@@ -79787,7 +79819,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.initialized_other",
@@ -79796,7 +79828,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.initialized_h",
@@ -79805,7 +79837,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.initialized_w",
@@ -79814,7 +79846,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.close_core",
@@ -79823,7 +79855,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.canonical",
@@ -79832,7 +79864,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.aligned_execute",
@@ -79841,7 +79873,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.unaligned_execute",
@@ -79850,7 +79882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.environment",
@@ -79859,7 +79891,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.aligned_call",
@@ -79868,7 +79900,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.unaligned_call",
@@ -79877,7 +79909,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.environment",
@@ -79886,7 +79918,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.aligned_call",
@@ -79895,7 +79927,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.body_shape",
@@ -79904,7 +79936,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.aligned_execute",
@@ -79913,7 +79945,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.other_shape",
@@ -79922,7 +79954,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.branch_shape",
@@ -79931,7 +79963,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.branch_execute",
@@ -79940,7 +79972,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.byte_read",
@@ -79949,7 +79981,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.checks_ready",
@@ -79958,7 +79990,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.alignment_read",
@@ -79967,7 +79999,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.aligned_of_data",
@@ -79976,7 +80008,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashSized.call_of_mapped",
@@ -79985,7 +80017,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.price_step",
@@ -79993,7 +80025,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.price_small",
@@ -80001,7 +80033,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.blocks_execute",
@@ -80010,7 +80042,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.block_ready",
@@ -80019,7 +80051,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.block_execute",
@@ -80028,7 +80060,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.byte_execute",
@@ -80037,7 +80069,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.environment",
@@ -80046,7 +80078,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.unaligned_call",
@@ -80055,22 +80087,22 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.caller_price20",
       "axioms": [],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.caller_price52",
       "axioms": [],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.caller_price60",
       "axioms": [],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.loop_continue",
@@ -80079,7 +80111,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.loop_return",
@@ -80088,7 +80120,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.loop_stop",
@@ -80097,7 +80129,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.actual_tail",
@@ -80106,7 +80138,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.unaligned_execute",
@@ -80115,7 +80147,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.observed_read",
@@ -80124,7 +80156,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.inputs_of_mapped",
@@ -80133,7 +80165,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.byte_body_shape",
@@ -80142,7 +80174,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.Inputs.indexed",
@@ -80151,7 +80183,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.condition8_read",
@@ -80160,7 +80192,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.condition1_read",
@@ -80169,7 +80201,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.tail_execute",
@@ -80178,7 +80210,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.word_inside",
@@ -80186,7 +80218,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.tail_inside",
@@ -80194,7 +80226,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.data_of_mapped",
@@ -80203,7 +80235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqSized.call_of_mapped",
@@ -80212,7 +80244,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Get.sized_tail",
@@ -80257,7 +80289,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.Inputs.byte_next",
@@ -80266,7 +80298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.block_execute",
@@ -80275,7 +80307,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.byte_execute",
@@ -80284,7 +80316,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.finish_execute",
@@ -80293,7 +80325,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.environment",
@@ -80302,7 +80334,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.call_of_mapped",
@@ -80311,7 +80343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.skip_front",
@@ -80320,7 +80352,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.execute",
@@ -80329,7 +80361,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.tail_execute",
@@ -80338,7 +80370,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.blocks_execute",
@@ -80347,7 +80379,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.after_locals_shape",
@@ -80356,7 +80388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.program_shape",
@@ -80365,7 +80397,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.tail_shape",
@@ -80374,7 +80406,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.condition8_read",
@@ -80383,7 +80415,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.HashByteRuntime.condition1_read",
@@ -80392,7 +80424,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.price_step32",
@@ -80400,7 +80432,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned32_blocks_execute",
@@ -80409,7 +80441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_body32_shape",
@@ -80418,7 +80450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.condition32_read",
@@ -80427,7 +80459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_word_ready",
@@ -80436,7 +80468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_block32_execute",
@@ -80445,7 +80477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_blocks_execute",
@@ -80454,7 +80486,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_body_shape",
@@ -80463,7 +80495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_loops_shape",
@@ -80472,7 +80504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.WordInputs.indexed",
@@ -80481,7 +80513,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_block_execute",
@@ -80490,7 +80522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.skip_size_continuation",
@@ -80499,7 +80531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.aligned_other_execute",
@@ -80508,14 +80540,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.observed_word",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.word_mapped",
@@ -80524,7 +80556,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.word_inputs_of_mapped",
@@ -80533,7 +80565,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemeqByteRuntime.other_call_of_mapped",
@@ -80542,7 +80574,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.CopyMapped.word_mapped",
@@ -80551,7 +80583,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.CopyMapped.of_regions",
@@ -80560,7 +80592,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.CopyMapped.cost_le_price",
@@ -80568,7 +80600,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.scan_count_bound",
@@ -80577,7 +80609,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.general_result_count",
@@ -80585,7 +80617,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.general_call",
@@ -80594,7 +80626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.GeneralData.of_fields",
@@ -80603,7 +80635,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.general_execute",
@@ -80612,7 +80644,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.general_tail_execute",
@@ -80621,7 +80653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.KeyHash.observed_view",
@@ -80630,19 +80662,19 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.KeyHash.key_size_small",
       "axioms": [],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.KeyHash.hash_price_positive",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.KeyHash.call_of_mapped",
@@ -80651,7 +80683,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Find.general_chain_of_prefix",
@@ -80834,7 +80866,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.runtime_data",
@@ -80848,7 +80880,7 @@
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.stride_bounds",
       "axioms": [],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.rounded_bounds",
@@ -80857,7 +80889,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.capacity_small",
@@ -80866,7 +80898,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.base_number",
@@ -80874,7 +80906,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.number",
@@ -80882,14 +80914,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.offset_cell",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.byte_cell",
@@ -80897,7 +80929,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.separate",
@@ -80905,7 +80937,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.mapped",
@@ -80913,7 +80945,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.byte_mapped",
@@ -80921,7 +80953,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.fresh_valid",
@@ -80930,21 +80962,21 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.plain_cell",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.constant_cell",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.word_offset_inside",
@@ -80952,7 +80984,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.used_offset_inside",
@@ -80961,7 +80993,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.header_key_away",
@@ -80969,7 +81001,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.slot_data",
@@ -80978,7 +81010,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.relocated_valid",
@@ -80987,7 +81019,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.stride_word",
@@ -80995,21 +81027,21 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.scaled_cell",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.slot_byte",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.slot_inside",
@@ -81017,7 +81049,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.slot_extent",
@@ -81025,7 +81057,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.slot_fits",
@@ -81033,7 +81065,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.slot_mapped",
@@ -81041,7 +81073,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Insert.general_result_away",
@@ -81050,7 +81082,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.Occupied.of_fields",
@@ -81059,7 +81091,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.inserted_header_away",
@@ -81068,7 +81100,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.Header.after_insert",
@@ -81077,7 +81109,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.fresh_bounds",
@@ -81103,7 +81135,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.NaturalLayout.pool_key_away",
@@ -81111,7 +81143,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.TableRuntime.caller_price",
@@ -81548,7 +81580,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.append_get_old",
@@ -81646,7 +81678,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.copied_value_pool_away",
@@ -81655,7 +81687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.flag_pool_away",
@@ -81664,7 +81696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.inserted_used",
@@ -81673,7 +81705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.setter_effect",
@@ -81699,14 +81731,14 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.header_offset_bound",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.Header.after_update",
@@ -81714,7 +81746,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.MemoryModel.Occupied.after_update",
@@ -81723,7 +81755,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Grow.body_shape",
@@ -82314,7 +82346,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.decision_execute",
@@ -82323,7 +82355,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.Locals.bind_flag",
@@ -82332,7 +82364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.remaining_active",
@@ -82340,7 +82372,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.remaining_injective",
@@ -82348,7 +82380,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.remaining_surjective",
@@ -82356,7 +82388,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.final_length",
@@ -82364,7 +82396,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.final_distinct",
@@ -82373,7 +82405,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.final_member",
@@ -82381,7 +82413,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.final_get",
@@ -82389,7 +82421,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.initial_pending",
@@ -82398,7 +82430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.stores_copy_memory",
@@ -82407,7 +82439,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.execute_pending",
@@ -82416,7 +82448,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.copied_pool_away",
@@ -82425,7 +82457,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.metadata_pool_away",
@@ -82433,7 +82465,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.pool_away",
@@ -82442,7 +82474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.word_cell_eq",
@@ -82450,7 +82482,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.order_cell",
@@ -82459,7 +82491,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.position_cell",
@@ -82468,7 +82500,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.used_byte",
@@ -82477,7 +82509,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.header",
@@ -82486,7 +82518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Pending.after_move",
@@ -82495,7 +82527,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.Locals.of_locals",
@@ -82504,7 +82536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.Locals.bind_position",
@@ -82513,7 +82545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.natural_word_address",
@@ -82522,7 +82554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.word_address_read",
@@ -82531,7 +82563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.word_read",
@@ -82540,7 +82572,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.copy_arguments",
@@ -82549,7 +82581,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.branch_shape",
@@ -82558,7 +82590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Move.after_copy_execute",
@@ -82567,7 +82599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Pending.of_fields",
@@ -82576,7 +82608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.Pending.active",
@@ -82585,7 +82617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.body_shape",
@@ -82594,35 +82626,35 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.entries_update_injective",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.entries_update_fresh",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.covered_update",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.covered_initial",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.hash_execute",
@@ -82631,7 +82663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.scan_end",
@@ -82640,14 +82672,14 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.frontier_initial",
       "axioms": [
         "propext"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.frontier_next_different",
@@ -82655,7 +82687,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.frontier_after_choice",
@@ -82663,7 +82695,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.deletion_first_empty",
@@ -82672,7 +82704,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.ScanLocals.of_locals",
@@ -82681,7 +82713,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.ScanLocals.advance",
@@ -82690,7 +82722,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.ScanLocals.after_hash",
@@ -82699,7 +82731,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.scan_loop",
@@ -82708,7 +82740,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.scan_from_occupied",
@@ -82717,7 +82749,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.next_j_read",
@@ -82726,7 +82758,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.scan_advance",
@@ -82735,7 +82767,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.increment_j_execute",
@@ -82744,7 +82776,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.empty_test_read",
@@ -82753,7 +82785,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Delete.scan_step",
@@ -82762,7 +82794,165 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "table-delete-scan-model-v1.log"
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.order_cell",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.position_cell",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.final_order",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.final_position",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.used_byte",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.header_away",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.count_cell",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.header",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.last_active",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.cleared_pool_away",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.writes_pool_away",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.writes_distinct",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.occupied",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.last_swap_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.memory_eq_count",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.Finish.last_branch_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.MutableTable.Delete.scan_finish",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "table-delete-scan-finish-v1.log"
     }
   ]
 }

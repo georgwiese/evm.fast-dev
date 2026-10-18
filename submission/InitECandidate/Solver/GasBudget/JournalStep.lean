@@ -21,9 +21,9 @@ record loads choose the writer; the helper preserves the new counter and all
 remaining record images. No helper execution or iteration budget is assumed. -/
 theorem body_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (objects : ι → TableFamily.Object)
-    (base count population : Nat) (entries : Nat → Entry ι)
+    (base cap count population : Nat) (entries : Nat → Entry ι)
     (family : TableFamily.Model source cursor objects) (image : Image source objects base count entries)
-    (extent : base + 32 * count ≤ cursor) (positive : 0 < count)
+    (zone : Zone objects base cap cursor) (countBound : count ≤ cap) (positive : 0 < count)
     (populations : ∀ table, (objects table).slots.length ≤ population)
     (environment : WarmKeys.Environment source)
     (deleteCode : source.code.lookup (ofString "htab_del") = some (Find.formals, Delete.body, .one))
@@ -32,7 +32,7 @@ theorem body_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     (normal : evaluateHOLFiniteState source loopBody = (none, target)) :
     ∃ (paid nextCursor : Nat) (next : ι → TableFamily.Object),
       paid ≤ source.clock ∧ target.clock = source.clock - paid ∧ cursor ≤ nextCursor ∧
-      TableFamily.Model target nextCursor next ∧ Image target next base (count - 1) entries ∧
+      TableFamily.Model target nextCursor next ∧ Image target next base (count - 1) entries ∧ Zone next base cap nextCursor ∧
       paid + TableFamily.potential objects ≤ 38 * population + 39 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + 1) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count - 1)))) ∧
@@ -54,10 +54,10 @@ theorem body_normal {ι : Type} [Fintype ι] [DecidableEq ι]
   have entryCounter : entry.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count - 1)))) := by
     change (Input.putGlobal source "journal_n" (BitVec.ofNat 64 count - 1#64)).globals.lookup _ = _
     rw [Input.putGlobal.lookup_same, wordSub]
-  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, bounded, nextPopulations, codes, nextEnvironment, globals⟩ :=
-    records_normal entry target cursor objects base count (count - 1) population entries entryFamily entryImage extent (by omega) populations
+  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, nextZone, bounded, nextPopulations, codes, nextEnvironment, globals⟩ :=
+    records_normal entry target cursor objects base cap count (count - 1) population entries entryFamily entryImage zone countBound (by omega) populations
       entryEnvironment deleteCode entryJournal entryCounter recordRun
-  refine ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage.restrict (Nat.sub_le count 1), bounded, nextPopulations,
+  refine ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage.restrict (Nat.sub_le count 1), nextZone, bounded, nextPopulations,
     (globals (ofString "journal_n") (by decide)).trans entryCounter, codes, nextEnvironment, ?_⟩
   intro key heap different
   exact (globals key heap).trans (Input.putGlobal.lookup_other source "journal_n" _ key different)

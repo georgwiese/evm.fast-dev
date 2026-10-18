@@ -10,9 +10,9 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch MutableTable
 the iteration count; the actual normal call supplies all clock funding. -/
 theorem restore_call_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (objects : ι → TableFamily.Object)
-    (base count snap population : Nat) (entries : Nat → Entry ι) (ordered : snap ≤ count) (small : count < 2 ^ 64)
+    (base cap count snap population : Nat) (entries : Nat → Entry ι) (ordered : snap ≤ count) (small : count < 2 ^ 64)
     (family : TableFamily.Model source cursor objects) (image : Image source objects base count entries)
-    (extent : base + 32 * count ≤ cursor) (populations : ∀ table, (objects table).slots.length ≤ population)
+    (zone : Zone objects base cap cursor) (countBound : count ≤ cap) (populations : ∀ table, (objects table).slots.length ≤ population)
     (environment : WarmKeys.Environment source)
     (deleteCode : source.code.lookup (ofString "htab_del") = some (Find.formals, Delete.body, .one))
     (code : source.code.lookup (ofString "state_restore") = some (formals, body, .one))
@@ -23,7 +23,7 @@ theorem restore_call_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     (normal : evaluateHOLFiniteState source (.call (some (none, none)) (ofString "state_restore") arguments) = (none, target)) :
     ∃ (paid nextCursor : Nat) (next : ι → TableFamily.Object),
       1 ≤ paid ∧ paid ≤ source.clock ∧ target.clock = source.clock - paid ∧ cursor ≤ nextCursor ∧
-      TableFamily.Model target nextCursor next ∧ Image target next base snap entries ∧
+      TableFamily.Model target nextCursor next ∧ Image target next base snap entries ∧ Zone next base cap nextCursor ∧
       paid + TableFamily.potential objects ≤ price population (count - snap) + 1 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + (count - snap)) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
@@ -35,9 +35,9 @@ theorem restore_call_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     ⟨fun table => (family.tables table).of_fields rfl rfl rfl rfl, family.apart⟩
   have entryImage : Image entry objects base count entries :=
     image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
-  obtain ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, models, nextImage, bounded, nextPopulations, nextCounter,
+  obtain ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, models, nextImage, nextZone, bounded, nextPopulations, nextCounter,
     codes, nextEnvironment, globals⟩ :=
-    restore_body_normal entry post cursor objects base count snap population entries ordered small entryFamily entryImage extent populations
+    restore_body_normal entry post cursor objects base cap count snap population entries ordered small entryFamily entryImage zone countBound populations
       (environment.of_fields rfl rfl rfl) deleteCode journal counter snapshot returned bodyRun
   rw [returnedEq] at bodyRun
   have actual := evaluateHOLFiniteState_call_return_caller_locals source none (ofString "state_restore") arguments _ body callee .one
@@ -51,7 +51,7 @@ theorem restore_call_normal {ι : Type} [Fintype ι] [DecidableEq ι]
     nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
   change paid ≤ source.clock - 1 at fits
   change post.clock = source.clock - 1 - paid at clock
-  exact ⟨1 + paid, nextCursor, next, by omega, by omega, by change post.clock = _; omega, forward, finalFamily, finalImage,
+  exact ⟨1 + paid, nextCursor, next, by omega, by omega, by change post.clock = _; omega, forward, finalFamily, finalImage, nextZone,
     by omega, nextPopulations, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals⟩
 
 end InitECandidate.Solver.GasBudget.Journal

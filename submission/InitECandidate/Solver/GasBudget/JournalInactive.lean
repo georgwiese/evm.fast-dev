@@ -42,9 +42,9 @@ theorem inactive_call_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
 no-op. Otherwise actual journal progress determines the precise loop count. -/
 theorem restore_call_bound {ι : Type} [Fintype ι] [DecidableEq ι]
     (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (objects : ι → TableFamily.Object)
-    (base count snap population : Nat) (entries : Nat → Entry ι) (countSmall : count < 2 ^ 64) (snapSmall : snap < 2 ^ 64)
+    (base cap count snap population : Nat) (entries : Nat → Entry ι) (countSmall : count < 2 ^ 64) (snapSmall : snap < 2 ^ 64)
     (family : TableFamily.Model source cursor objects) (image : Image source objects base count entries)
-    (extent : base + 32 * count ≤ cursor) (populations : ∀ table, (objects table).slots.length ≤ population)
+    (zone : Zone objects base cap cursor) (countBound : count ≤ cap) (populations : ∀ table, (objects table).slots.length ≤ population)
     (environment : WarmKeys.Environment source)
     (deleteCode : source.code.lookup (ofString "htab_del") = some (Find.formals, Delete.body, .one))
     (code : source.code.lookup (ofString "state_restore") = some (formals, body, .one))
@@ -55,13 +55,13 @@ theorem restore_call_bound {ι : Type} [Fintype ι] [DecidableEq ι]
     (normal : evaluateHOLFiniteState source (.call (some (none, none)) (ofString "state_restore") arguments) = (none, target)) :
     ∃ (paid nextCursor : Nat) (next : ι → TableFamily.Object),
       1 ≤ paid ∧ paid ≤ source.clock ∧ target.clock = source.clock - paid ∧ cursor ≤ nextCursor ∧
-      TableFamily.Model target nextCursor next ∧ Image target next base (min count snap) entries ∧
+      TableFamily.Model target nextCursor next ∧ Image target next base (min count snap) entries ∧ Zone next base cap nextCursor ∧
       paid + TableFamily.potential objects ≤ price population (count - snap) + 1 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + (count - snap)) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (min count snap)))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target := by
   by_cases ordered : snap ≤ count
-  · simpa only [Nat.min_eq_right ordered] using restore_call_normal source target cursor objects base count snap population entries ordered countSmall family image extent populations environment deleteCode code journal counter arguments args normal
+  · simpa only [Nat.min_eq_right ordered] using restore_call_normal source target cursor objects base cap count snap population entries ordered countSmall family image zone countBound populations environment deleteCode code journal counter arguments args normal
   · have finished : count ≤ snap := by omega
     have wordFinished : (BitVec.ofNat 64 count).toNat ≤ (BitVec.ofNat 64 snap).toNat := by
       rw [BitVec.toNat_ofNat, BitVec.toNat_ofNat, Nat.mod_eq_of_lt countSmall, Nat.mod_eq_of_lt snapSmall]
@@ -73,7 +73,7 @@ theorem restore_call_bound {ι : Type} [Fintype ι] [DecidableEq ι]
     have nextImage : Image {source with clock := source.clock - 1} objects base count entries :=
       image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
     rw [Nat.min_eq_left finished]
-    exact ⟨1, cursor, objects, by omega, positive, rfl, Nat.le_refl _, nextFamily, nextImage,
+    exact ⟨1, cursor, objects, by omega, positive, rfl, Nat.le_refl _, nextFamily, nextImage, zone,
       by simp [price, WitnessBuild.triangle, Nat.sub_eq_zero_of_le finished],
       (by intro table; have bounded := populations table; omega), counter, rfl, rfl, environment.of_fields rfl rfl rfl, OtherGlobals.refl source⟩
 

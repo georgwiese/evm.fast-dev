@@ -1,6 +1,6 @@
 import InitECandidate.Solver.GasBudget.JournalRecords
-import InitECandidate.Solver.GasBudget.JournalSet
-import InitECandidate.Solver.GasBudget.JournalDelete
+import InitECandidate.Solver.GasBudget.JournalZoneSet
+import InitECandidate.Solver.GasBudget.JournalZoneDelete
 import InitECandidate.Solver.MutableTable.FamilyPotential
 
 namespace InitECandidate.Solver.GasBudget.Journal

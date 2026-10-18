@@ -4,6 +4,7 @@ import InitECandidate.Solver.GasBudget.DispatchChargeNormal
 import InitECandidate.Solver.GasBudget.DispatchChargeException
 import InitECandidate.Solver.GasBudget.FrameExceptionHandler
 import InitECandidate.Solver.GasBudget.ChargeEvent
+import InitECandidate.Solver.GasBudget.RunFramesTerminalMemory
 
 namespace InitECandidate.Solver.GasBudget.RunFrames
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -13,7 +14,8 @@ def TerminalPrefix (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (f
   ∃ paid, paid ≤ ceiling ∧ paid ≤ source.clock ∧ post.clock = source.clock - paid ∧
     emptyLocalsHOLFinite post = emptyLocalsHOLFinite {source with memory := post.memory, clock := post.clock} ∧
     regularBudget post.memory frame = regularBudget source.memory frame ∧ post.memory (cont + 32#64) = .word 1#64 ∧
-    post.memaddrs (cont + 32#64) ∧ post.globals.lookup (ofString "cur_cont") = some (.val (.word cont))
+    post.memaddrs (cont + 32#64) ∧ post.globals.lookup (ofString "cur_cont") = some (.val (.word cont)) ∧
+    TerminalMemory source.memory post.memory frame cont
 
 def SuffixFinish (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : OpcodeChargeSites.Kind)
     (ready : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop :=
@@ -31,9 +33,10 @@ theorem terminal_after_prefix (source exceptionPost post : PanSemStateFiniteExac
   change post.memaddrs = source.memaddrs at domain
   have globals := congrArg PanSemStateFiniteExact.globals fields
   change post.globals = source.globals at globals
-  refine ⟨paid + (2 + FrameException.choicePrice err), bounded, fits, clock, fields, budget, done, ?_, ?_⟩
+  refine ⟨paid + (2 + FrameException.choicePrice err), bounded, fits, clock, fields, budget, done, ?_, ?_, ?_⟩
   · rw [domain]; exact view.continuationMapped
   · rw [globals]; exact view.curCont
+  · exact terminal_memory_after_prefix source exceptionPost source post view err paid installed effect normal
 
 /-- A genuine normal caught opcode call at any of the59 sites either
 terminates the current frame through the real handler, or exposes a real

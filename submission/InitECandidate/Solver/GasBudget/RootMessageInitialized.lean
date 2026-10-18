@@ -35,15 +35,21 @@ theorem initialized_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (normal : evaluateHOLFiniteState source initialSite = (some (.returned value), post)) :
     ∃ paid accountPlan storagePlan accountSlots storageSlots nextCursor storageStart ready entered warmed finish,
       paid ≤ source.clock ∧ paid ≤ 10 + WarmTables.price addressCount keyCount ∧ warmed.clock = source.clock - paid ∧
+      paid + GrowRuntime.growthPotential .account 64 + GrowRuntime.growthPotential .storage 16 ≤
+        1815 + WarmPrecompiles.price 19 addressCount + WarmKeys.price 0 keyCount + GrowRuntime.growthPotential .account accountPlan.capacity + GrowRuntime.growthPotential .storage storagePlan.capacity ∧
       MemoryRegion.Valid ⟨start, 176⟩ ∧
       TableState warmed .account accountPlan accountSlots nextCursor (start + 176) ∧ TableState warmed .storage storagePlan storageSlots nextCursor storageStart ∧
       (∀ first second, accountPlan.base first + size .account accountPlan first ≤ storagePlan.base second) ∧
       accountSlots.length ≤ 19 + addressCount ∧ storageSlots.length ≤ keyCount ∧
+      warmed.locals.lookup (ofString "aa") = some (.val (.word (cell accountPlan .header 0))) ∧
+      warmed.locals.lookup (ofString "ak") = some (.val (.word (cell storagePlan .header 0))) ∧
       warmed.locals.lookup (ofString "m") = some (.val (.word (BitVec.ofNat 64 start))) ∧
       warmed.memory (BitVec.ofNat 64 start + 40#64) = .word gas ∧ gas.toNat + intrinsicRegular ≤ 16777216 ∧
       evaluateHOLFiniteState warmed WarmKeys.afterLoop = (some (.returned value), finish) ∧
       post = restore source "m" (restore ready "aa" (restore entered "ak" finish)) ∧ warmed.code = source.code ∧ WarmKeys.Environment warmed ∧
       PointerArray warmed.memory 20 addressesStart addressCount start pointers ∧
+      accountPlan.capacity ≤ max 64 (4 * (addressCount + 20)) ∧ storagePlan.capacity ≤ max 16 (4 * (keyCount + 1)) ∧
+      (∀ key : MlS, key ≠ ofString "m" → key ≠ ofString "aa" → key ≠ ofString "ak" → key ≠ ofString "i" → warmed.locals.lookup key = source.locals.lookup key) ∧
       ∀ query : BitVec 64, query.toNat < start → warmed.memory query = source.memory query := by
   obtain ⟨stored, inner, prepared, storedRun, sourceRestored⟩ := allocation_normal source post value start blockEnv txEnv sender gas lower bounded aligned environment.domain heap
     blockGlobal txLocal senderLocal gasLocal environment.allocCode environment.trapCode environment.zeroCode msgCode normal
@@ -70,7 +76,8 @@ theorem initialized_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   have mapped : ∀ offset < 20, stored.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress sender offset)) := by intro offset inside; rw [domain]; exact queryMapped offset inside
   have nextAligned : (start + 176) % 8 = 0 := by omega
   obtain ⟨paid, accountPlan, storagePlan, accountSlots, storageSlots, nextCursor, storageStart, ready, entered, warmed, finish,
-    fits, price, spent, accountTable, storageTable, separated, accountCount, storageCount, finalMessage, finalGas, finalCap, restRun, restored, finalCodes, finalEnvironment, finalArray, finalProtected⟩ :=
+    fits, price, spent, budget, accountTable, storageTable, separated, accountCount, storageCount, finalAccount, finalStorage, finalMessage, finalGas, finalCap, restRun, restored, finalCodes, finalEnvironment, finalArray,
+    accountCapacity, storageCapacity, finalLocalFrame, finalProtected⟩ :=
     warm_normal stored inner value start (start + 176) addressesStart addressCount keysStart keyCount precompileStart sender gas reservoir intrinsicRegular pointers storedEnvironment
       prepared.region (Nat.le_refl _) prepared.region.upper nextAligned precompileValid storedArray positive keyRegion storedHeap storedPrecompiles storedMessage
       (localWord "reservoir" _ (by decide) reservoirLocal) (localWord "sender" _ (by decide) senderLocal)
@@ -81,10 +88,13 @@ theorem initialized_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     exact (finalProtected query before).trans (prepared.outside query (Or.inl before))
   have funded := prepared.funded
   refine ⟨10 + paid, accountPlan, storagePlan, accountSlots, storageSlots, nextCursor, storageStart, ready, entered, warmed, finish,
-    by omega, by omega, by omega, prepared.region, accountTable, storageTable, separated, accountCount, storageCount, finalMessage, finalGas, finalCap,
-    restRun, ?_, finalCodes.trans codes, finalEnvironment, array.of_protected earlierWords, earlierWords⟩
-  rw [restored] at sourceRestored
-  exact sourceRestored
+    by omega, by omega, by omega, by omega, prepared.region, accountTable, storageTable, separated, accountCount, storageCount, finalAccount, finalStorage, finalMessage, finalGas, finalCap,
+    restRun, ?_, finalCodes.trans codes, finalEnvironment, array.of_protected earlierWords, accountCapacity, storageCapacity, ?_, earlierWords⟩
+  · rw [restored] at sourceRestored
+    exact sourceRestored
+  · intro key notMessage notAccount notStorage notIndex
+    rw [finalLocalFrame key notAccount notStorage notIndex, prepared.frame]
+    simp [MsgNew.callState, WitnessRadix.QueryBranch.bind, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, notMessage, Ne.symm notMessage]
 
 end InitECandidate.Solver.GasBudget.RootMessage
 

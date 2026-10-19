@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 5564,
+  "solver_modules": 5570,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 11,
@@ -64,7 +64,7 @@
     "PanState": 1,
     "PanTraversal": 1,
     "RiscVEvaluatorCosts": 1,
-    "Rlp": 11,
+    "Rlp": 17,
     "ScratchList": 2,
     "ScratchTable": 8,
     "ShiftLslImmediateCost": 1,

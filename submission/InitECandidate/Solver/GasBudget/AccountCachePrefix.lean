@@ -1,4 +1,5 @@
 import InitECandidate.Solver.GasBudget.AccountCacheOutcome
+import InitECandidate.Solver.Input.EvaluationOracle
 
 namespace InitECandidate.Solver.GasBudget.AccountCache
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -27,10 +28,12 @@ theorem outcome_cache_prefix (outcome : Outcome) (kind : Kind) {ι : Type} [Deci
       paid + GrowRuntime.growthPotential .account (objects writer).plan.capacity ≤
         9 * (objects writer).slots.length + 8 * (Function.update objects writer next reader).slots.length + 15 +
           GrowRuntime.growthPotential .account next.plan.capacity ∧
-      next.kind = .account ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
+      next.kind = .account ∧ cursor≤nextCursor ∧ (objects writer).slots.length≤next.slots.length ∧ next.slots.length≤(objects writer).slots.length+1 ∧
+      next.plan.capacity≤max (objects writer).plan.capacity (4*(next.slots.length+1)) ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
       (∀ index, (Function.update objects writer next index).pointer = (objects index).pointer) ∧
-      WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
+      ready.code=source.code ∧ ready.ffi.oracle=source.ffi.oracle ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
       TableFamily.FloorFrame objects (Function.update objects writer next) source ready ∧
+      (∀ address : BitVec 64,address.toNat<(objects writer).floor → ready.memory address=source.memory address) ∧
       (flag = 0#64 ∨ flag = 1#64) ∧
       ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
       ready.locals.lookup (ofString "w") = some (Get.pair flag value) ∧
@@ -103,8 +106,9 @@ theorem outcome_cache_prefix (outcome : Outcome) (kind : Kind) {ι : Type} [Deci
   have clock : ready.clock = source.clock - (setPaid + getPaid) := by change called.clock - getPaid = _; rw [setClock]; omega
   change getPaid ≤ 8 * (Function.update objects writer next reader).slots.length + 3 at getBound
   refine ⟨setPaid + getPaid, nextCursor, next, flag, value, ready, inner, funded, clock, by omega,
-    nextKind.trans writerKind, nextFamily.of_control rfl rfl rfl rfl, pointers, nextEnvironment.of_fields rfl rfl rfl,
-    globals, TableFamily.FloorFrame.of_update objects writer next source ready nextFloor protectedWords, binary, ?_, ?_, tailRun, ?_, ?_⟩
+    nextKind.trans writerKind, forward, countLower, countUpper, capacity, nextFamily.of_control rfl rfl rfl rfl, pointers, codes,
+    Input.evaluation_oracle source called setCall none setRun, nextEnvironment.of_fields rfl rfl rfl,
+    globals, TableFamily.FloorFrame.of_update objects writer next source ready nextFloor protectedWords, protectedWords, binary, ?_, ?_, tailRun, ?_, ?_⟩
   · simpa [ready, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, ofString] using currentQuery
   · simp [ready, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE]
   · rw [scope]; rfl
@@ -130,10 +134,12 @@ theorem normal_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (source p
       paid + GrowRuntime.growthPotential .account (objects writer).plan.capacity ≤
         9 * (objects writer).slots.length + 8 * (Function.update objects writer next reader).slots.length + 15 +
           GrowRuntime.growthPotential .account next.plan.capacity ∧
-      next.kind = .account ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
+      next.kind = .account ∧ cursor≤nextCursor ∧ (objects writer).slots.length≤next.slots.length ∧ next.slots.length≤(objects writer).slots.length+1 ∧
+      next.plan.capacity≤max (objects writer).plan.capacity (4*(next.slots.length+1)) ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
       (∀ index, (Function.update objects writer next index).pointer = (objects index).pointer) ∧
-      WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
+      ready.code=source.code ∧ ready.ffi.oracle=source.ffi.oracle ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
       TableFamily.FloorFrame objects (Function.update objects writer next) source ready ∧
+      (∀ address : BitVec 64,address.toNat<(objects writer).floor → ready.memory address=source.memory address) ∧
       (flag = 0#64 ∨ flag = 1#64) ∧
       ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
       ready.locals.lookup (ofString "w") = some (Get.pair flag value) ∧
@@ -163,10 +169,12 @@ theorem exception_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (sourc
       paid + GrowRuntime.growthPotential .account (objects writer).plan.capacity ≤
         9 * (objects writer).slots.length + 8 * (Function.update objects writer next reader).slots.length + 15 +
           GrowRuntime.growthPotential .account next.plan.capacity ∧
-      next.kind = .account ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
+      next.kind = .account ∧ cursor≤nextCursor ∧ (objects writer).slots.length≤next.slots.length ∧ next.slots.length≤(objects writer).slots.length+1 ∧
+      next.plan.capacity≤max (objects writer).plan.capacity (4*(next.slots.length+1)) ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
       (∀ index, (Function.update objects writer next index).pointer = (objects index).pointer) ∧
-      WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
+      ready.code=source.code ∧ ready.ffi.oracle=source.ffi.oracle ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
       TableFamily.FloorFrame objects (Function.update objects writer next) source ready ∧
+      (∀ address : BitVec 64,address.toNat<(objects writer).floor → ready.memory address=source.memory address) ∧
       (flag = 0#64 ∨ flag = 1#64) ∧
       ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
       ready.locals.lookup (ofString "w") = some (Get.pair flag value) ∧

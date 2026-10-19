@@ -26,10 +26,12 @@ theorem normal_cache_prefix {ι : Type} [DecidableEq ι] (source post : PanSemSt
       paid + GrowRuntime.growthPotential .account (objects writer).plan.capacity ≤
         9 * (objects writer).slots.length + 8 * (Function.update objects writer next reader).slots.length + 15 +
           GrowRuntime.growthPotential .account next.plan.capacity ∧
-      next.kind = .account ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
+      next.kind = .account ∧ cursor≤nextCursor ∧ (objects writer).slots.length≤next.slots.length ∧ next.slots.length≤(objects writer).slots.length+1 ∧
+      next.plan.capacity≤max (objects writer).plan.capacity (4*(next.slots.length+1)) ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
       (∀ index, (Function.update objects writer next index).pointer = (objects index).pointer) ∧
-      WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
+      ready.code=source.code ∧ ready.ffi.oracle=source.ffi.oracle ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
       TableFamily.FloorFrame objects (Function.update objects writer next) source ready ∧
+      (∀ address : BitVec 64,address.toNat<(objects writer).floor → ready.memory address=source.memory address) ∧
       (flag = 0#64 ∨ flag = 1#64) ∧
       ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
       ready.locals.lookup (ofString "w") = some (Get.pair flag value) ∧

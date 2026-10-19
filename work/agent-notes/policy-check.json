@@ -2059,6 +2059,7 @@
     "submission/InitECandidate/Solver/Input/RlpWrite/U256BitsSegment.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/U256ByteLength.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/U256Limb.lean",
+    "submission/InitECandidate/Solver/Input/RlpWrite/U256Load.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/U256Lookup.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/U256MinBuilt.lean",
     "submission/InitECandidate/Solver/Input/RlpWrite/U256MinCall.lean",
@@ -3158,6 +3159,11 @@
     "submission/InitECandidate/Solver/Mpt/AccountFieldsCost.lean",
     "submission/InitECandidate/Solver/Mpt/AccountFieldsNormal.lean",
     "submission/InitECandidate/Solver/Mpt/AccountImage.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountIsEmptyCall.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountIsEmptyExecution.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountIsEmptyNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountIsEmptyProgram.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountIsEmptyReads.lean",
     "submission/InitECandidate/Solver/Mpt/AccountNewCallNormal.lean",
     "submission/InitECandidate/Solver/Mpt/AccountNewCost.lean",
     "submission/InitECandidate/Solver/Mpt/AccountNewEnvironment.lean",
@@ -3544,6 +3550,7 @@
     "submission/InitECandidate/Solver/MutableTable/MemeqSmallExecution.lean",
     "submission/InitECandidate/Solver/MutableTable/MemeqSmallNonePrefix.lean",
     "submission/InitECandidate/Solver/MutableTable/MemeqSmallNormal.lean",
+    "submission/InitECandidate/Solver/MutableTable/MemeqSmallScopedCall.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryFrame.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryModel.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryModelAppend.lean",
@@ -5938,8 +5945,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62805,
-  "package_bytes": 2259605790,
+  "package_entries": 62812,
+  "package_bytes": 2259632232,
   "claim": {
     "K": "infinity"
   },

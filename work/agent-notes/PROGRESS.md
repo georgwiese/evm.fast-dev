@@ -2,6 +2,13 @@
 
 > **AUTHORITATIVE SCOPE CORRECTION — 2026-10-17:** The user requires a reasonably tight finite runtime bound for the current, unchanged Pancake implementation on main. There is NO numerical ceiling. Stop replacement/radix refinement/candidate compilation work. The current plan at the top of bound.md supersedes historical below-Yukon-limit objectives and checklists here. Keep reusable original-program proofs; remove the authorized replacement code after dependency review, retaining history in Git. The previous 45% estimate does not measure this corrected goal.
 
+## 2026-10-19: actual original stack growth
+
+- Checked exact original stack_push growth branch and complete body/caller for full positive capacity<=512. Actual aligned memcpy copies four words per source loop clock: capacity body clocks, complete body capacity+2 and caller capacity+3.
+- Actual normal calls derive argument tuple shape, funding, new pointer/capacity, natural bounded depth and the real scratch cursor. Gas cells survive the current copy/slot footprint under explicit physical ownership; no supplied helper execution or future model.
+- Successful stack-push-growth-call-v1.log1116jobs; indexed current-source evidence only, permitted axioms. Preliminary failures concerned scoped-local restoration, folded clock projections and header/list normalization; corrected without admissions.
+- Reachable ownership/capacity, exceptional growth, global growth/loop counts and weighted target K remain open. No finite whole-program K or verification claim.
+
 ## 2026-10-18: exact terminal-handler memory and live-rank transport
 
 - Added actual refill/clear/halt/exception memory contracts and proved used-word monotonicity from the current capped ledger. No replacement program or supplied future execution/model.

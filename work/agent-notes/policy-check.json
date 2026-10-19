@@ -1314,6 +1314,13 @@
     "submission/InitECandidate/Solver/GasBudget/StackPopsException.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPopsPrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushFinish.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPushGrowthBody.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPushGrowthBodyEntry.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPushGrowthCall.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPushGrowthControl.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPushGrowthExecution.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPushGrowthNormal.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPushGrowthProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushNonGrowth.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushNonGrowthCall.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushNonGrowthEntry.lean",
@@ -5156,8 +5163,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62021,
-  "package_bytes": 2256157559,
+  "package_entries": 62028,
+  "package_bytes": 2256197692,
   "claim": {
     "K": "infinity"
   },

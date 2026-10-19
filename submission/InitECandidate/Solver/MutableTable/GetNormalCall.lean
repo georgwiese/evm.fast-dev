@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.GetCallOrigin
 import InitECandidate.Solver.MutableTable.GetNormalBody
 import InitECandidate.Solver.MutableTable.GetCall32
 import InitECandidate.Solver.Input.NormalCallClock
@@ -22,29 +23,9 @@ theorem model_normal_entry (source post : PanSemStateFiniteExact 64 Guest.HostMe
     ∃ paid flag value finish, 1 ≤ paid ∧ paid ≤ bodyPrice kind slots.length + 1 ∧ paid ≤ source.clock ∧ (flag = 0#64 ∨ flag = 1#64) ∧
       evaluateHOLFiniteState (setVarHOLFinite (ofString name) (pair flag value) {source with clock := source.clock - paid}) continuation = (some (.returned returned), finish) ∧
       post = restore source name finish := by
-  have positive := Input.CallNormal.normal_clock source post (ofString name) pairShape (ofString "htab_get") arguments continuation returned normal
-  obtain ⟨callee, called, tableLocal, keyLocal⟩ := Get.environment source.code.lookup (cell plan .header 0) query getCode
-  obtain ⟨target, actualReturned, bodyRun⟩ := Input.CallNormal.callee_return source post (ofString name) pairShape (ofString "htab_get") arguments _ body continuation callee pairShape args called positive returned normal
-  let entry := callEntryStateHOLFinite source callee
-  have entryTable : TableState entry kind plan slots cursor floor := table.of_fields rfl rfl rfl rfl
-  obtain ⟨paid, flag, value, bounded, fits, binary, resultEq, frame⟩ := model_body_normal entry target kind plan slots cursor floor entryTable
-    (environment.of_fields rfl rfl rfl) query queryFits queryMapped tableLocal keyLocal actualReturned bodyRun
-  rw [resultEq] at bodyRun
-  have shapePass : (shapeEqHOL (shapeOfHOLExact (pair flag value)) pairShape && shapeEqHOL (shapeOfHOLExact (pair flag value)) pairShape) = true := by
-    simp [pair, pairShape, shapeOfHOLExact, shapeEqHOL_eq_true]
-  have callerFrame : emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - 1 - paid} := frame
-  have actual := pure_value_call source target name (ofString "htab_get") pairShape pairShape arguments _ body continuation callee
-    (pair flag value) paid args called positive bodyRun shapePass callerFrame
-  have subtract : source.clock - 1 - paid = source.clock - (paid + 1) := by omega
-  rw [subtract] at actual
-  rw [actual] at normal
-  let ready := setVarHOLFinite (ofString name) (pair flag value) {source with clock := source.clock - (paid + 1)}
-  let finish := (evaluateHOLFiniteState ready continuation).2
-  have result := congrArg Prod.fst normal
-  change (evaluateHOLFiniteState ready continuation).1 = some (.returned returned) at result
-  have frameEq := congrArg Prod.snd normal
-  change paid ≤ source.clock - 1 at fits
-  exact ⟨paid + 1, flag, value, finish, by omega, by omega, by omega, binary, Prod.ext result rfl, frameEq.symm⟩
+  obtain ⟨paid,flag,value,finish,positive,price,funded,binary,origin,run,frame⟩ := model_normal_entry_origin source post kind plan slots cursor floor table environment query queryFits queryMapped
+    getCode name arguments continuation args returned normal
+  exact ⟨paid,flag,value,finish,positive,price,funded,binary,run,frame⟩
 
 end InitECandidate.Solver.MutableTable.Get
 

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.GetSizedOrigin
 import InitECandidate.Solver.MutableTable.GetTail32
 
 namespace InitECandidate.Solver.MutableTable.Get
@@ -17,33 +18,8 @@ theorem sized_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table 
     (bounded : index.toNat ≤ capacity.toNat) :
     ∃ flag value, (flag = 0#64 ∨ flag = 1#64) ∧
       evaluateHOLFiniteState source afterIndex = (some (.returned (pair flag value)), emptyLocalsHOLFinite source) := by
-  classical
-  have capRead := Find.table_read source table 16#64 capacity tLocal capMapped capCell
-  simp only [eval] at capRead
-  by_cases same : index = capacity
-  · have stopped : evaluateHOLFiniteState source (.ite condition absent .skip) =
-        (some (.returned (pair 0#64 0#64)), emptyLocalsHOLFinite source) := by
-      simp [condition, evaluateHOLFiniteState_ite, evalHOLExact, toExact, localVar, iLocal, capRead, same,
-        Flapjack.Compiler.Encoders.Asm.wordCmpHOL, absent, pair, evaluateHOLFiniteState_return, evalListHOLExact, shapeOfHOLExact, sizeOfShapeWithContextHOL]
-    refine ⟨0#64, 0#64, Or.inl rfl, ?_⟩
-    rw [afterIndex, WitnessRadix.StateSteps.stopped_sequence source (emptyLocalsHOLFinite source) _ _ _ stopped (Nat.le_refl _)]
-  · have unequal : index.toNat ≠ capacity.toNat := fun equality => same (BitVec.eq_of_toNat_eq equality)
-    have inside : index.toNat < capacity.toNat := by omega
-    have skipped : evaluateHOLFiniteState source (.ite condition absent .skip) = (none, source) := by
-      simp [condition, evaluateHOLFiniteState_ite, evalHOLExact, toExact, localVar, iLocal, capRead, same,
-        Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-    have valsRead := Find.table_read source table 40#64 vals tLocal valsMapped valsCell
-    obtain ⟨value, valueMapped, valueCell⟩ := values index inside
-    have read : eval source valueExpression = some (.val (.word value)) := by
-      simp only [eval] at valsRead ⊢
-      simp [valueExpression, evalHOLExact, evalListHOLExact, toExact, localVar, iLocal, valsRead, valueIsWord, valueWord, wordOpHOL, wordOp,
-        panOpHOL, memLoadHOLExact, isWfShapeExactHOL, valueMapped, valueCell]
-    have returned : evaluateHOLFiniteState source present = (some (.returned (pair 1#64 value)), emptyLocalsHOLFinite source) := by
-      simp only [eval] at read
-      simp [present, pair, evaluateHOLFiniteState_return, evalHOLExact, evalListHOLExact, read, shapeOfHOLExact, sizeOfShapeWithContextHOL]
-    refine ⟨1#64, value, Or.inr rfl, ?_⟩
-    rw [afterIndex, WitnessRadix.StateSteps.next_sequence source source _ _ skipped (Nat.le_refl _)]
-    exact returned
+  obtain ⟨flag,value,binary,origin,run⟩ := sized_tail_origin source table vals index capacity tLocal iLocal capMapped capCell valsMapped valsCell values bounded
+  exact ⟨flag,value,binary,run⟩
 
 end InitECandidate.Solver.MutableTable.Get
 

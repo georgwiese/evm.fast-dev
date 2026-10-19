@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 5814,
+  "solver_modules": 5821,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 16,
@@ -52,7 +52,7 @@
     "LocCost": 1,
     "MemoryCost": 1,
     "Mpt": 137,
-    "MutableTable": 380,
+    "MutableTable": 387,
     "NopBound": 1,
     "NopCost": 1,
     "NopCostTight": 1,
@@ -119,7 +119,7 @@
     "original_mutable_key_operations": [
       {
         "module": "MutableTable.GetGeneralCall",
-        "solver_dependency_count": 211,
+        "solver_dependency_count": 213,
         "imports_replacement_ast": false
       },
       {

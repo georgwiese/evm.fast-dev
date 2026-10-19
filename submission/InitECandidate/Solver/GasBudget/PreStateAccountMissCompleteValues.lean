@@ -1,6 +1,7 @@
 import InitECandidate.Solver.GasBudget.PreStateAccountMiss
 import InitECandidate.Solver.Mpt.WsAccountOptionalRegisteredCallValues
 import InitECandidate.Solver.Rlp.ValidationHeapGlobals
+import InitECandidate.Solver.MutableTable.FamilyMetadata
 
 namespace InitECandidate.Solver.GasBudget.AccountCache
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -10,7 +11,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch MutableT
 table growth, original witness provider and return. Current witness/table
 ownership is retained through both actual phases, and the combined source
 price uses the fixed successful provider bound rather than witness size. -/
-theorem pre_state_miss_complete_values {ι : Type} [DecidableEq ι]
+theorem pre_state_miss_complete_values_framed {ι : Type} [DecidableEq ι]
     (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (block query ws root nibs stp pad scratchPtr limit emptyRoot emptyHash : BitVec 64)
     (cursor cutoff frozenEnd valueLimit : Nat) (objects : ι → TableFamily.Object) (writer : ι)
     (family : TableFamily.Model source cursor objects) (kind : (objects writer).kind=.account)
@@ -44,6 +45,8 @@ theorem pre_state_miss_complete_values {ι : Type} [DecidableEq ι]
       AccountDecode.Registry post cutoff nextCursor (Function.update objects writer next) nextAccounts ∧
       TableFamily.ValuesHave post (Function.update objects writer next) property ∧
       AccountDecode.Registry.Extension accounts nextAccounts cursor ∧
+      TableFamily.PersistentFrame cutoff cursor objects (Function.update objects writer next) source post ∧
+      TableFamily.Metadata objects (Function.update objects writer next) ∧
       (∃ value : BitVec 64,returned=.val (.word value) ∧ AccountDecode.Registry.Known nextAccounts value) := by
   obtain ⟨recordPaid,recordCursor,next,recordReady,funded,recordClock,forward,nextKind,amortized,recordFamily,pointers,countLower,countUpper,capacity,codeEq,oracleEq,nextTableEnvironment,recordGlobals,floorFrame,queryCell,providerRun,recordValues,persistent⟩ :=
     pre_state_miss_normal_values source post block query cursor objects writer family kind tableEnvironment installed property tableValues owned blockGlobal mapped stored queryLocal
@@ -115,19 +118,71 @@ theorem pre_state_miss_complete_values {ι : Type} [DecidableEq ι]
     · exact Or.inl absent
     · obtain ⟨current⟩ := image
       exact Or.inr ⟨AccountDecode.Image.of_agreement ready post heap current (by rw [postEq]; rfl) (by rw [postEq]; rfl) (by rw [postEq]; rfl)⟩
+  have providerPersistent : TableFamily.PersistentFrame cutoff recordCursor (Function.update objects writer next) (Function.update objects writer next) recordReady ready := by
+    simpa only [heapNumber] using providerFrame
+  have combined := selectedFrame.trans providerPersistent forward
+  have finalPersistent : TableFamily.PersistentFrame cutoff cursor objects (Function.update objects writer next) source post := by
+    constructor
+    intro address above earlier outside
+    obtain ⟨nextOutside,same⟩ := combined.words address above earlier outside
+    exact ⟨nextOutside,by rw [postEq]; exact same⟩
+  have nextFloor : next.floor = (objects writer).floor := by simpa only [Function.update_self] using floorFrame.floors writer
+  have metadata := TableFamily.Metadata.of_update objects writer next (nextKind.trans kind.symm) nextFloor pointers
   have postClock : post.clock=ready.clock := by rw [postEq]; rfl
   have overall := evaluateHOLFiniteState_clock_le source Kind.preState.afterMiss
   rw [run] at overall
   change post.clock≤source.clock at overall
   let paid := source.clock-post.clock
   refine ⟨paid,recordCursor,next,nextCursor,nextAccounts,Nat.sub_le _ _,by dsimp [paid]; omega,forward,nextKind,?_,finalFamily,pointers,floorFrame.floors,?_,countLower,countUpper,capacity,
-    ⟨finalWorld⟩,finalHashEnvironment,finalResult,finalGlobals,?_,finalImage,finalRegistry,finalValues,weakening.lower (by rw [heapNumber]; exact forward),finalOwned⟩
+    ⟨finalWorld⟩,finalHashEnvironment,finalResult,finalGlobals,?_,finalImage,finalRegistry,finalValues,weakening.lower (by rw [heapNumber]; exact forward),finalPersistent,metadata,finalOwned⟩
   · simpa only [heapNumber] using choice
   · dsimp [paid]
     omega
   · rw [postEq]
     exact providerCode.trans codeEq
 
+theorem pre_state_miss_complete_values {ι : Type} [DecidableEq ι]
+    (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (block query ws root nibs stp pad scratchPtr limit emptyRoot emptyHash : BitVec 64)
+    (cursor cutoff frozenEnd valueLimit : Nat) (objects : ι → TableFamily.Object) (writer : ι)
+    (family : TableFamily.Model source cursor objects) (kind : (objects writer).kind=.account)
+    (tableEnvironment : WarmKeys.Environment source) (installed : Input.OriginalCode.Installed source.code)
+    (accounts : List (BitVec 64)) (registry : AccountDecode.Registry source cutoff cursor objects accounts)
+    (property : ι → BitVec 64 → Prop) (tableValues : TableFamily.ValuesHave source objects property) (owned : property writer 1#64)
+    (world : WsAccountLeaf.World source ws root nibs cutoff frozenEnd valueLimit) (afterWorld : frozenEnd≤cursor) (floors : ∀ index,frozenEnd≤(objects index).floor)
+    (hashEnvironment : Keccak256.Environment source stp pad)
+    (stateArena : AllocatedBytes.Arena stp 200) (stateAligned : stp.toNat%8=0)
+    (padArena : AllocatedBytes.Arena pad 136) (padAligned : pad.toNat%8=0) (queryArena : AllocatedBytes.Arena query 20)
+    (stateBelow : stp.toNat+200≤cutoff) (padBelow : pad.toNat+136≤cutoff)
+    (arena : Rlp.Validation.Arena source scratchPtr limit) (scratchBelow : scratchPtr.toNat≤cutoff) (aligned : cutoff%8=0) (sizeBound : 16*valueLimit<2^64)
+    (rootGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
+    (hashGlobal : source.globals.lookup (ofString "empty_code_hash")=some (.val (.word emptyHash)))
+    (rootArena : AllocatedBytes.Arena emptyRoot 32) (hashArena : AllocatedBytes.Arena emptyHash 32)
+    (blockGlobal : source.globals.lookup (ofString "bs")=some (.val (.word block)))
+    (mapped : source.memaddrs (block+72#64)) (stored : source.memory (block+72#64)=.word (objects writer).pointer)
+    (queryLocal : source.locals.lookup (ofString "addr")=some (.val (.word query)))
+    (returned : ValueHOL 64) (run : evaluateHOLFiniteState source Kind.preState.afterMiss=(some (.returned returned),post)) :
+    ∃ paid recordCursor next nextCursor nextAccounts,
+      paid≤source.clock ∧ post.clock=source.clock-paid ∧ cursor≤recordCursor ∧ next.kind=.account ∧
+      (nextCursor=recordCursor ∨ nextCursor=recordCursor+120) ∧ TableFamily.Model post nextCursor (Function.update objects writer next) ∧
+      (∀ index,(Function.update objects writer next index).pointer=(objects index).pointer) ∧
+      (∀ index,(Function.update objects writer next index).floor=(objects index).floor) ∧
+      paid+GrowRuntime.growthPotential .account (objects writer).plan.capacity≤9*(objects writer).slots.length+31065+GrowRuntime.growthPotential .account next.plan.capacity ∧
+      (objects writer).slots.length≤next.slots.length ∧ next.slots.length≤(objects writer).slots.length+1 ∧
+      next.plan.capacity≤max (objects writer).plan.capacity (4*(next.slots.length+1)) ∧
+      Nonempty (WsAccountLeaf.World post ws root nibs cutoff frozenEnd valueLimit) ∧ Keccak256.Environment post stp pad ∧
+      WsAccountOptional.Result post (BitVec.ofNat 64 recordCursor) scratchPtr limit returned ∧ HeapGlobals source post ∧ post.code=source.code ∧
+      (returned=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image post (BitVec.ofNat 64 recordCursor))) ∧
+      AccountDecode.Registry post cutoff nextCursor (Function.update objects writer next) nextAccounts ∧
+      TableFamily.ValuesHave post (Function.update objects writer next) property ∧
+      AccountDecode.Registry.Extension accounts nextAccounts cursor ∧
+      (∃ value : BitVec 64,returned=.val (.word value) ∧ AccountDecode.Registry.Known nextAccounts value) := by
+  obtain ⟨paid,recordCursor,next,nextCursor,nextAccounts,funded,clock,forward,nextKind,choice,models,pointers,floors,price,countLower,countUpper,capacity,worldNext,hashNext,result,globals,codes,image,nextRegistry,nextValues,extension,persistent,metadata,scalar⟩ :=
+    pre_state_miss_complete_values_framed source post block query ws root nibs stp pad scratchPtr limit emptyRoot emptyHash cursor cutoff frozenEnd valueLimit objects writer family kind tableEnvironment installed
+      accounts registry property tableValues owned world afterWorld floors hashEnvironment stateArena stateAligned padArena padAligned queryArena stateBelow padBelow arena scratchBelow aligned sizeBound
+      rootGlobal hashGlobal rootArena hashArena blockGlobal mapped stored queryLocal returned run
+  exact ⟨paid,recordCursor,next,nextCursor,nextAccounts,funded,clock,forward,nextKind,choice,models,pointers,floors,price,countLower,countUpper,capacity,worldNext,hashNext,result,globals,codes,image,nextRegistry,nextValues,extension,scalar⟩
+
 end InitECandidate.Solver.GasBudget.AccountCache
 
+#print axioms InitECandidate.Solver.GasBudget.AccountCache.pre_state_miss_complete_values_framed
 #print axioms InitECandidate.Solver.GasBudget.AccountCache.pre_state_miss_complete_values

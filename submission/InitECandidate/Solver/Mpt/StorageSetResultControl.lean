@@ -41,8 +41,8 @@ theorem Result.prepend_readonly (result : Result ready post cursor cutoff popula
     simpa only [Journal.CounterEffect,Journal.currentCount,readyGlobals] using effect
   refine ⟨κ,finite,embed,next,nextProperty,prefixPaid + paid,nextCursor,added,created,nextEntries,injective,card,totalFunded,totalClock,forward,appends,room,models,image,zone,
     by dsimp only; omega,populations,codes.trans readyCode,environment,totalGlobals,values,saved,registry,totalEffect,?_,metadata,counter,propertyEmbed,propertyOthers,references⟩
-  intro query earlier outside away
-  obtain ⟨nextOutside,equal⟩ := frame query earlier outside away
+  intro query above earlier outside away
+  obtain ⟨nextOutside,equal⟩ := frame query above earlier outside away
   exact ⟨nextOutside,equal.trans (congrFun readyMemory query)⟩
 
 end InitECandidate.Solver.Mpt.StorageSet

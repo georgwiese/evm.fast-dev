@@ -61,6 +61,14 @@ theorem after_slices_shape : afterSlices=.seq (.ite (.cmp .notEqual (field "sl" 
   simp only [afterSlices,afterDecode,afterFields,fields,body,seqRest,decBody,callBody,field,fieldArguments,fail,Rlp.Item.resultShape,localVar,
     Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 
+theorem fields_shape : fields=
+    .decCall (ofString "f0") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 0)
+      (.decCall (ofString "f1") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 1)
+        (.decCall (ofString "f2") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 2)
+          (.decCall (ofString "f3") Rlp.Item.resultShape (ofString "rlp_item") (fieldArguments 3) afterFields))) := by
+  simp only [fields,afterSlices,afterDecode,afterFields,body,seqRest,decBody,callBody,fieldArguments,Rlp.Item.resultShape,localVar,
+    Guest.guestFn_decode_account_from_leaf,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+
 theorem after_fields_shape : afterFields=.seq
     (.ite (.cmp .notEqual (.op .or [field "f0" 0,field "f1" 0,field "f2" 0,field "f3" 0]) (.const 0#64)) (fail 20#64) .skip)
     (.seq (.ite (.cmp .lower (.const 8#64) (field "f0" 2)) (fail 21#64) .skip)
@@ -122,6 +130,7 @@ end InitECandidate.Solver.Mpt.AccountDecode
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.body_shape
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.after_decode_shape
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.after_slices_shape
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.fields_shape
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.after_fields_shape
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.nonce_loop_shape
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.balance_loop_shape

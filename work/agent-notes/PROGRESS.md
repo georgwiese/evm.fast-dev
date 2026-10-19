@@ -4,6 +4,8 @@
 
 ## 2026-10-19: affordable next length and actual arena room
 
+- Original st_be32/st_be64/u256_to_be32 code lookup and all-outcome writer prices checked (0/2/12body clocks; quad caller<=13). Non-fallthrough guards give max rather than summed branch prices. Actual four-byte stores/ignored caller export exact memory effect and1caller clock. Successful memory-writer-price-v2.log1231jobs, be32-call-v3.log1233jobs, priced-scalar-prefix-v1.log1133jobs, permitted axioms. 64/256-bit effects and complete MSTORE/global composition remain open.
+
 - Full original MLOAD normal body/caller/dispatcher now composes real pop/charge/expansion/scalar/read/push/PC/return. Pop derives free stack room; final depth equals incoming depth. Buffer/cost<=used and precise buffer/header/reused-slot footprint retained. Current ownership/live cap yields conserved live budget, >=3used credit and strict physical rank descent; observed dispatcher caller clocks+old potential<=new potential+67. Successful memory-load-rank-v1.log1439jobs,4.96s/1874124KiBMaxRSS, permitted axioms. Remaining MSTORE/other suffixes/child/global reachability/counts/weighted K still open.
 
 - Original u256_from_be full all-outcome body price<=max(4,n), from real counter advance/limit preservation and non-fallthrough aligned branch; actual scoped caller derives tuple/readonly continuation and price<=max(4,n)+1. For actual MLOAD n32this is<=33caller clocks. Successful u256-from-be-call-v2.log1277jobs, permitted axioms. MLOAD's remaining stack/PC/ownership and global composition still open.

@@ -4,6 +4,8 @@
 
 ## 2026-10-19: affordable next length and actual arena room
 
+- Full original quad writer both paths/ignored caller now checked (<=13caller clocks, exact32byte backing footprint/nonmemory frame). Complete original MSTORE normal body/caller/dispatch preserves buffer/cost<=used, decrements stack2, and under current ownership/live cap conserves live budget, credits used>=3and strictly decreases FrameRank. Observed dispatcher caller clocks+old memory potential<=new potential+47. Successful memory-store-rank-v1.log1453jobs,5.17s/1878016KiBMaxRSS, permitted axioms. Full local normal contracts now cover all three memory opcodes; reachable invariant/cost2/remaining child/opcode/global/weighted K obligations remain open.
+
 - Original st_be64 normal aligned/unaligned bodies/ignored caller checked with<=3caller clocks, exact nonmemory preservation and actual eight-byte footprint. Original quad writer unaligned path composes four actual calls, <=12body clocks and32byte footprint. Successful quad-writer-slow-v2.log1287jobs, permitted axioms. Aligned quad assignment calls/MSTORE/global composition still open.
 
 - Original st_be32/st_be64/u256_to_be32 code lookup and all-outcome writer prices checked (0/2/12body clocks; quad caller<=13). Non-fallthrough guards give max rather than summed branch prices. Actual four-byte stores/ignored caller export exact memory effect and1caller clock. Successful memory-writer-price-v2.log1231jobs, be32-call-v3.log1233jobs, priced-scalar-prefix-v1.log1133jobs, permitted axioms. 64/256-bit effects and complete MSTORE/global composition remain open.

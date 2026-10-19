@@ -1206,6 +1206,16 @@
     "submission/InitECandidate/Solver/GasBudget/MemoryExpansionCostRounded.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExpansionCostSaturated.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExpansionCostValue.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendArithmetic.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendClamp.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendFinalClear.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendGeometry.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendGrowBranch.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendGrowthClear.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendGuard.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendProgram.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendTail.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendTailView.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryGasArithmetic.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryGasCostValue.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryOpcodePrefix.lean",
@@ -5197,8 +5207,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62062,
-  "package_bytes": 2256362854,
+  "package_entries": 62072,
+  "package_bytes": 2256420008,
   "claim": {
     "K": "infinity"
   },

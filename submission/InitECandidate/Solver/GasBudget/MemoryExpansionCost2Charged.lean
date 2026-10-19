@@ -1,5 +1,6 @@
 import InitECandidate.Solver.GasBudget.MemoryExpansionCost2Range
 import InitECandidate.Solver.GasBudget.ChargeWithMemoryExpansion
+import InitECandidate.Solver.GasBudget.MemoryExtendGlobals
 
 namespace InitECandidate.Solver.GasBudget.MemoryExpansionCost2
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -41,6 +42,8 @@ theorem charged_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory
         (MemoryExtend.newLength current (resultPair s1 n1 s2 n2 current).2).toNat) ∧
       (U256Zero.resultWord n2 = 0#64 → (SatWord.resultWord s2).toNat + (SatWord.resultWord n2).toNat ≤
         (MemoryExtend.newLength current (resultPair s1 n1 s2 n2 current).2).toNat) ∧
+      (∀ key, key ≠ ofString "frame_mem_ptr" → ready.globals.lookup key = source.globals.lookup key) ∧
+      ready.memaddrs = source.memaddrs ∧
       evaluateHOLFiniteState ready continuation = (some (.returned returned), post) := by
   let expand := (resultPair s1 n1 s2 n2 current).2
   have chargeSafe : Input.LocalPrefix (ofString "x") (.call (some (none, none)) (ofString "charge_gas") arguments) := .call none _ _ (by simp)
@@ -74,7 +77,7 @@ theorem charged_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory
     [.rfield 1 (localVar "x")] chargedView advance extendArgs extendRun
   have readyBudget : regularBudget ready.memory frame = regularBudget charged.memory frame := by simpa [FrameSums.budget] using budgetSum
   have readyUsed : (wordAt ready.memory (frame + 184#64)).toNat = (wordAt charged.memory (frame + 184#64)).toNat := by simpa [FrameSums.used] using usedSum
-  refine ⟨ready, ?_, ?_, ?_, readyView, readyBudget.trans chargeBudget, ?_, ?_, ?_, firstRange, secondRange, tailRun⟩
+  refine ⟨ready, ?_, ?_, ?_, readyView, readyBudget.trans chargeBudget, ?_, ?_, ?_, firstRange, secondRange, ?_, ?_, tailRun⟩
   · rw [chargeClock] at extendFits
     change MemoryExtend.price current capacity expand + 2 ≤ source.clock
     omega
@@ -90,6 +93,13 @@ theorem charged_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory
     rw [extendAway query outside notLength notCapacity]
     exact RegularCharge.call_other_word source charged frame amount query arguments args
       (OriginalCodeEnvironment.charge_gas source.code view.installed) view.ev cap chargeRun notGas notUsed
+  · intro key different
+    have global := MemoryExtend.call_global_other charged ready frame base current capacity pointer scratch expand amount used.toNat
+      [.rfield 1 (localVar "x")] chargedView advance extendArgs extendRun key different
+    rw [global, chargeFrame]
+  · have extendFields := Input.evaluation_fields charged ready _ none extendRun
+    have chargeFields := Input.evaluation_fields source charged _ none chargeRun
+    exact extendFields.1.trans chargeFields.1
 
 end InitECandidate.Solver.GasBudget.MemoryExpansionCost2
 

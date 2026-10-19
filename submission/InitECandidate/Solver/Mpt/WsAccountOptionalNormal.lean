@@ -28,7 +28,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
     Result post heap cursor limit returned ∧ heap.toNat+32≤33806089496 ∧ source.clock-post.clock≤191*valueLimit+2593 ∧ HeapGlobals source post := by
   have originalRun := normal
-  obtain ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,leafGlobals,codeEq,tailRun,restored⟩ :=
+  obtain ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,leafGlobals,leafMemory,codeEq,tailRun,restored⟩ :=
     body_leaf source post ws root addr heap nibs stp pad cursor limit cutoff valueLimit data values protectedValues hashData graphProtection valueProtection rootProtection
       addressCell arena heapGlobal heapBound installed returned normal
   have readyInstalled : Input.OriginalCode.Installed ready.code := by rw [codeEq]; exact installed

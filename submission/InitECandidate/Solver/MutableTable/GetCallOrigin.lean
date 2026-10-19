@@ -19,7 +19,7 @@ theorem model_normal_entry_origin (source post : PanSemStateFiniteExact 64 Guest
     (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) arguments = some [.val (.word (cell plan .header 0)), .val (.word query)])
     (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) pairShape (ofString "htab_get") arguments continuation) = (some (.returned returned), post)) :
-    ∃ paid flag value finish, 1 ≤ paid ∧ paid ≤ (Find.generalProbePrice kind * slots.length + (KeyHash.hashPrice kind + 1)) + 1 ∧ paid ≤ source.clock ∧ (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source (cell plan .values 0) (BitVec.ofNat 64 plan.capacity) flag value ∧
+    ∃ paid flag value finish, 1 ≤ paid ∧ paid ≤ (Find.generalProbePrice kind * slots.length + (KeyHash.hashPrice kind + 1)) + 1 ∧ paid ≤ source.clock ∧ (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source (cell plan .values 0) (BitVec.ofNat 64 plan.capacity) flag value (fun slot=>slot.toNat∈slots) ∧
       evaluateHOLFiniteState (setVarHOLFinite (ofString name) (pair flag value) {source with clock := source.clock - paid}) continuation = (some (.returned returned), finish) ∧
       post = restore source name finish := by
   have positive := Input.CallNormal.normal_clock source post (ofString name) pairShape (ofString "htab_get") arguments continuation returned normal

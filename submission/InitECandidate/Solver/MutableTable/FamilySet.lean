@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.FamilySetValues
 import InitECandidate.Solver.MutableTable.TableFamily
 import InitECandidate.Solver.GasBudget.WarmKeysInvariant
 import InitECandidate.Solver.MutableTable.SetEarlierFootprint
@@ -29,64 +30,12 @@ theorem set_normal {ι : Type} [DecidableEq ι] (source target : PanSemStateFini
       (∀ address : BitVec 64, address.toNat < (objects writer).floor → target.memory address = source.memory address) ∧
       ∀ address : BitVec 64, address.toNat < cursor → TableFootprint.Outside (objects writer).kind (objects writer).plan address →
         TableFootprint.Outside next.kind next.plan address ∧ target.memory address = source.memory address := by
-  let old := objects writer
-  have table := family.tables writer
-  obtain ⟨bits, power, minimum⟩ := table.power
-  obtain ⟨paid, globals, memory, plan, slots, bounded, unchanged, fits, post, valid, half, locals⟩ :=
-    Set.model_call_bound source target old.kind old.plan table.valid cursor table.bounded table.aligned table.earlier environment.domain environment.little old.slots table.half table.header table.occupied
-      query value bits power minimum queryFits queryMapped table.heap environment.allocCode environment.trapCode environment.zeroCode environment.hashCode environment.copyCode environment.memeqCode
-      environment.findCode environment.insertCode environment.growCode environment.setCode arguments args normal
-  obtain ⟨nextCursor, forward, cursorBound, cursorAligned, heap, before⟩ := post.cursor valid table.bounded table.aligned table.earlier table.heap
-  obtain ⟨nextBits, _, nextMinimum, nextPower⟩ := post.next_power table.valid bits power minimum
-  have memoryEq := congrArg PanSemStateFiniteExact.memory post.frame
-  change target.memory = memory at memoryEq
-  have clock := congrArg PanSemStateFiniteExact.clock post.frame
-  change target.clock = source.clock - paid at clock
-  have codes := congrArg PanSemStateFiniteExact.code post.frame
-  have domain := congrArg PanSemStateFiniteExact.memaddrs post.frame
-  have endian := congrArg PanSemStateFiniteExact.be post.frame
-  change target.code = source.code at codes
-  change target.memaddrs = source.memaddrs at domain
-  change target.be = source.be at endian
-  let next : Object := {old with plan := plan, slots := slots}
-  have writerTable : TableState target next.kind next.plan next.slots nextCursor next.floor :=
-    ⟨valid, half, by rw [memoryEq]; exact post.header, post.occupied, ⟨nextBits, nextPower, nextMinimum⟩,
-      heap, cursorBound, cursorAligned, before, post.pool_floor old.floor table.lower table.earlier⟩
-  have separated (reader : ι) (different : reader ≠ writer) : Apart next (objects reader) :=
-    post.reader_separate (objects reader).kind (objects reader).plan (family.tables reader).earlier (family.apart writer reader (Ne.symm different))
-  have readerTable (reader : ι) (different : reader ≠ writer) :
-      TableState target (objects reader).kind (objects reader).plan (objects reader).slots nextCursor (objects reader).floor := by
-    have oldReader := family.tables reader
-    obtain ⟨header, model⟩ := post.other_model valid (objects reader).kind (objects reader).plan oldReader.valid (separated reader different)
-      (objects reader).slots oldReader.header oldReader.occupied
-    exact ⟨oldReader.valid, oldReader.half, header, model, oldReader.power, heap, cursorBound, cursorAligned,
-      (by intro pool; have earlier := oldReader.earlier pool; omega), oldReader.lower⟩
-  have nextFamily : Model target nextCursor (Function.update objects writer next) := by
-    constructor
-    · intro index
-      by_cases same : index = writer
-      · subst index
-        simpa only [Function.update_self] using writerTable
-      · simpa only [Function.update_of_ne same] using readerTable index same
-    · intro first second different
-      by_cases firstWriter : first = writer
-      · subst first
-        simpa only [Function.update_self, Function.update_of_ne (Ne.symm different)] using separated second (Ne.symm different)
-      · by_cases secondWriter : second = writer
-        · subst second
-          simpa only [Function.update_self, Function.update_of_ne firstWriter] using (separated first firstWriter).symm
-        · simpa only [Function.update_of_ne firstWriter, Function.update_of_ne secondWriter] using family.apart first second different
-  refine ⟨paid, nextCursor, next, fits, clock, forward, rfl, rfl, nextFamily, ?_, post.amortized_power bits power minimum table.half bounded unchanged,
-    post.countBound.1, post.countBound.2, post.capacity_high_water, locals, codes, environment.of_fields codes domain endian, post.heap_globals,
-    (fun address earlier => post.protected_before valid old.floor table.lower table.earlier address earlier), ?_⟩
-  · intro index
-    by_cases same : index = writer
-    · subst index
-      simpa only [Function.update_self, Object.pointer] using post.header_pointer
-    · rw [Function.update_of_ne same]
-  · intro address earlier outside
-    have nextOutside := post.outside_earlier valid address earlier outside
-    exact ⟨nextOutside, post.protected_word address nextOutside⟩
+  obtain ⟨paid, nextCursor, next, funded, clock, forward, nextKind, nextFloor, nextFamily, pointers, price,
+    countLower, countUpper, capacity, locals, codeEq, nextEnvironment, globals, beforeWords, earlier, _⟩ :=
+    set_normal_values source target cursor objects writer family environment query value arguments
+      (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro queryFits queryMapped args normal
+  exact ⟨paid, nextCursor, next, funded, clock, forward, nextKind, nextFloor, nextFamily, pointers, price,
+    countLower, countUpper, capacity, locals, codeEq, nextEnvironment, globals, beforeWords, earlier⟩
 
 end InitECandidate.Solver.MutableTable.TableFamily
 

@@ -6,8 +6,9 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- Absent results or the actual bounded value-array word loaded by the
 original getter. This records physical provenance without key equality. -/
-def ValueOrigin (source : PanSemStateFiniteExact 64 Guest.HostMemory) (vals capacity flag value : BitVec 64) : Prop :=
-  flag=0#64 ∨ ∃ slot : BitVec 64,slot.toNat<capacity.toNat ∧ source.memory (vals+slot*8#64)=.word value
+def ValueOrigin (source : PanSemStateFiniteExact 64 Guest.HostMemory) (vals capacity flag value : BitVec 64)
+    (eligible : BitVec 64 → Prop := fun _=>True) : Prop :=
+  flag=0#64 ∨ ∃ slot : BitVec 64,slot.toNat<capacity.toNat ∧ eligible slot ∧ source.memory (vals+slot*8#64)=.word value
 
 /-- The original retrieval suffix performs its actual absent/present branch
 and mapped value read. This runtime contract needs typed occupied values, not
@@ -19,8 +20,8 @@ theorem sized_tail_origin (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     (valsMapped : source.memaddrs (table + 40#64)) (valsCell : source.memory (table + 40#64) = .word vals)
     (values : ∀ slot : BitVec 64, slot.toNat < capacity.toNat →
       ∃ value, source.memaddrs (vals + slot * 8#64) ∧ source.memory (vals + slot * 8#64) = .word value)
-    (bounded : index.toNat ≤ capacity.toNat) :
-    ∃ flag value, (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source vals capacity flag value ∧
+    (bounded : index.toNat ≤ capacity.toNat) (eligible : BitVec 64 → Prop) (eligibleIndex : index.toNat<capacity.toNat → eligible index) :
+    ∃ flag value, (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source vals capacity flag value eligible ∧
       evaluateHOLFiniteState source afterIndex = (some (.returned (pair flag value)), emptyLocalsHOLFinite source) := by
   classical
   have capRead := Find.table_read source table 16#64 capacity tLocal capMapped capCell
@@ -46,7 +47,7 @@ theorem sized_tail_origin (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     have returned : evaluateHOLFiniteState source present = (some (.returned (pair 1#64 value)), emptyLocalsHOLFinite source) := by
       simp only [eval] at read
       simp [present, pair, evaluateHOLFiniteState_return, evalHOLExact, evalListHOLExact, read, shapeOfHOLExact, sizeOfShapeWithContextHOL]
-    refine ⟨1#64, value, Or.inr rfl, Or.inr ⟨index,inside,valueCell⟩, ?_⟩
+    refine ⟨1#64, value, Or.inr rfl, Or.inr ⟨index,inside,eligibleIndex inside,valueCell⟩, ?_⟩
     rw [afterIndex, WitnessRadix.StateSteps.next_sequence source source _ _ skipped (Nat.le_refl _)]
     exact returned
 

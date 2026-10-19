@@ -17,22 +17,20 @@ structure Registry {ι : Type} (source : PanSemStateFiniteExact 64 Guest.HostMem
     first.toNat+56≤second.toNat ∨ second.toNat+56≤first.toNat
   referencesOutside : ∀ account,account∈accounts → ∀ offset : Nat,offset=40 ∨ offset=48 → TableFamily.Outside objects (account+BitVec.ofNat 64 offset)
 
-/-- Unused zero cells and the actual absent sentinel are allowed alongside
-registered account pointers. The predicate is independent of memory. -/
-def Registry.Known (accounts : List (BitVec 64)) (value : BitVec 64) : Prop := value=0#64 ∨ value=1#64 ∨ value∈accounts
+/-- An occupied cache value is the actual absent sentinel or a registered
+account pointer. Uninitialized unused value cells impose no obligation. -/
+def Registry.Known (accounts : List (BitVec 64)) (value : BitVec 64) : Prop := value=1#64 ∨ value∈accounts
 
 theorem Registry.known_mono (accounts next : List (BitVec 64)) (subset : ∀ value,value∈accounts → value∈next)
     (value : BitVec 64) (known : Registry.Known accounts value) : Registry.Known next value := by
-  rcases known with zero | absent | member
-  · exact Or.inl zero
-  · exact Or.inr (Or.inl absent)
-  · exact Or.inr (Or.inr (subset value member))
+  rcases known with absent | member
+  · exact Or.inl absent
+  · exact Or.inr (subset value member)
 
 theorem Registry.known_image {ι : Type} (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff cursor : Nat)
     (objects : ι → TableFamily.Object) (accounts : List (BitVec 64)) (registry : Registry source cutoff cursor objects accounts)
-    (value : BitVec 64) (known : Registry.Known accounts value) (nonzero : value≠0#64) (present : value≠1#64) : Nonempty (Image source value) := by
-  rcases known with zero | absent | member
-  · exact (nonzero zero).elim
+    (value : BitVec 64) (known : Registry.Known accounts value) (present : value≠1#64) : Nonempty (Image source value) := by
+  rcases known with absent | member
   · exact (present absent).elim
   · exact registry.images value member
 

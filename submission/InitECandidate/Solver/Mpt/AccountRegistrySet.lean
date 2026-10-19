@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Mpt.AccountRegistrySetValues
 import InitECandidate.Solver.Mpt.AccountRegistry
 import InitECandidate.Solver.MutableTable.FamilySetPersistent
 
@@ -27,10 +28,9 @@ theorem Registry.set_normal {ι : Type} [DecidableEq ι]
       next.plan.capacity≤max (objects writer).plan.capacity (4*(next.slots.length+1)) ∧
       TableFamily.PersistentFrame cutoff cursor objects (Function.update objects writer next) source target ∧
       HeapGlobals source target ∧ target.code=source.code ∧ target.locals=source.locals := by
-  obtain ⟨paid,nextCursor,next,funded,clock,forward,nextKind,nextFloor,nextFamily,pointers,price,countLower,countUpper,capacity,frame,locals,codeEq,nextEnvironment,globals,beforeWords,earlier⟩ :=
-    TableFamily.set_normal_framed source target cutoff cursor objects writer family environment query value arguments queryFits queryMapped args normal
-  have domain : target.memaddrs=source.memaddrs := nextEnvironment.domain.trans environment.domain.symm
-  have nextRegistry := registry.framed source target cutoff cursor nextCursor objects (Function.update objects writer next) accounts frame forward domain
+  obtain ⟨paid,nextCursor,next,funded,clock,forward,nextKind,nextFloor,nextFamily,nextRegistry,pointers,price,countLower,countUpper,capacity,frame,globals,codeEq,locals,_⟩ :=
+    Registry.set_normal_values source target cutoff cursor objects writer family accounts registry environment query value arguments
+      (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro queryFits queryMapped args normal
   exact ⟨paid,nextCursor,next,funded,clock,forward,nextKind,nextFloor,nextFamily,nextRegistry,pointers,price,countLower,countUpper,capacity,frame,globals,codeEq,locals⟩
 
 end InitECandidate.Solver.Mpt.AccountDecode

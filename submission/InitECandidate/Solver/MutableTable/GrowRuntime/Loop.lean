@@ -1,12 +1,8 @@
-import InitECandidate.Solver.MutableTable.GrowRuntime.Step
+import InitECandidate.Solver.MutableTable.GrowRuntime.LoopValues
 
 namespace InitECandidate.Solver.MutableTable.GrowRuntime
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
-
-def loopPrice (kind : KeyHash.Kind) (cursor : Nat) : Nat → Nat
-  | 0 => 0
-  | remaining + 1 => cursor + KeyHash.hashPrice kind + MemeqByteRuntime.price (KeyHash.keySize kind) + 3 + loopPrice kind (cursor + 1) remaining
 
 /-- Whole original signed rehash loop. Each iteration derives its old-row
 read and new-table mutation from actual execution. The price sums increasing
@@ -34,49 +30,11 @@ theorem loop_execute (snapshot : PanSemStateFiniteExact 64 Guest.HostMemory) (ki
       MemoryModel.Header memory kind (relocated kind (old.base .header) start capacity) (BitVec.ofNat 64 next.length) ∧
       MemoryModel.Occupied target kind (relocated kind (old.base .header) start capacity) next ∧ OldArrays target snapshot kind old ∧
       TableFootprint.Frame source.memory memory kind (relocated kind (old.base .header) start capacity) := by
-  induction remaining generalizing source cursor slots with
-  | zero =>
-    have last : cursor = oldSlots.length := by omega
-    have test := condition_read source kind old oldValid oldSlots.length cursor oldRoom (by omega) locals
-    rw [if_neg (show ¬ cursor < oldSlots.length from by omega)] at test
-    refine ⟨0, source.memory, source, slots, Nat.le_refl _, ?_, ?_, by omega, header, occupied, frame, TableFootprint.Frame.refl _ _ _⟩
-    · rw [Grow.loop, evaluateHOLFiniteState_while_total, test]
-      simp
-    · simp only [Nat.sub_zero]
-  | succ remaining ih =>
-    have active : cursor < oldSlots.length := by omega
-    have priced : loopPrice kind cursor (remaining + 1) = cursor + KeyHash.hashPrice kind + MemeqByteRuntime.price (KeyHash.keySize kind) + 3 + loopPrice kind (cursor + 1) remaining := rfl
-    have nonzero : source.clock ≠ 0 := by rw [priced] at enough; omega
-    let entry := decClockHOLFinite source
-    have entryLocals : LoopLocals entry kind old oldSlots.length cursor :=
-      ⟨locals.table, locals.stride, locals.keys, locals.vals, locals.order, locals.countLocal, locals.indexLocal⟩
-    have entryOccupied := MemoryModel.Occupied.of_fields source entry kind _ slots occupied rfl rfl rfl
-    obtain ⟨paid, memory, slot, bounded, bodyRun, nextHeader, nextOccupied, nextFrame, firstFootprint⟩ := step_execute entry snapshot kind old oldValid start capacity newValid earlier domain little
-      oldSlots oldRoom oldOccupied frame ⟨cursor, active⟩ entryLocals slots (by omega) header entryOccupied bits small power hashCode copyCode insertCode
-      (by change slots.length + KeyHash.hashPrice kind + MemeqByteRuntime.price (KeyHash.keySize kind) + 2 ≤ source.clock - 1; rw [priced] at enough; omega)
-    let nextState := WitnessRadix.QueryBranch.bind {entry with memory := memory, clock := entry.clock - paid} "k" (BitVec.ofNat 64 (cursor + 1))
-    have nextLocals : LoopLocals nextState kind old oldSlots.length (cursor + 1) := LoopLocals.next entry kind old _ _ entryLocals memory paid
-    have model := MemoryModel.Occupied.of_fields _ nextState kind _ _ nextOccupied rfl rfl rfl
-    have oldFrame := OldArrays.of_memory _ nextState snapshot kind old rfl nextFrame
-    have nextEnough : loopPrice kind (cursor + 1) remaining ≤ nextState.clock := by
-      change loopPrice kind (cursor + 1) remaining ≤ source.clock - 1 - paid
-      rw [priced] at enough
-      omega
-    obtain ⟨restPaid, finalMemory, target, finalSlots, restBound, actual, restFrame, finalLength, finalHeader, finalOccupied, finalFrame, restFootprint⟩ :=
-      ih nextState domain little (cursor + 1) (by omega) nextLocals (slots ++ [slot]) (by simp [length]) nextHeader model oldFrame hashCode copyCode insertCode nextEnough
-    have totalBound : 1 + paid + restPaid ≤ loopPrice kind cursor (remaining + 1) := by rw [priced]; omega
-    have frameEq : emptyLocalsHOLFinite {nextState with memory := finalMemory, clock := nextState.clock - restPaid} =
-        emptyLocalsHOLFinite {source with memory := finalMemory, clock := source.clock - (1 + paid + restPaid)} := by
-      change emptyLocalsHOLFinite {source with memory := finalMemory, clock := source.clock - 1 - paid - restPaid} = _
-      have subtract : source.clock - 1 - paid - restPaid = source.clock - (1 + paid + restPaid) := by omega
-      rw [subtract]
-    refine ⟨1 + paid + restPaid, finalMemory, target, finalSlots, totalBound, ?_, restFrame.trans frameEq, finalLength, finalHeader, finalOccupied, finalFrame, TableFootprint.Frame.trans source.memory memory finalMemory kind _ firstFootprint restFootprint⟩
-    have test := condition_read source kind old oldValid oldSlots.length cursor oldRoom (by omega) locals
-    rw [if_pos active] at test
-    rw [Grow.loop, evaluateHOLFiniteState_while_total, test]
-    simp only [show (1#64 : BitVec 64) ≠ 0#64 from by decide, ↓reduceIte, if_neg nonzero]
-    rw [bodyRun, StateSteps.fixed_clock entry nextState none (by change source.clock - 1 - paid ≤ source.clock - 1; omega)]
-    exact actual
+  obtain ⟨paid, memory, target, next, bounded, run, fields, length, nextHeader, nextOccupied, arrays, footprint, _⟩ :=
+    loop_execute_values snapshot kind old oldValid start capacity newValid earlier oldSlots oldRoom newRoom oldOccupied
+      bits small power source domain little cursor remaining count locals slots length header occupied frame
+      (fun _=>True) (fun _ _ _ _ _=>True.intro) (fun _ _ _ _ _=>True.intro) hashCode copyCode insertCode enough
+  exact ⟨paid, memory, target, next, bounded, run, fields, length, nextHeader, nextOccupied, arrays, footprint⟩
 
 end InitECandidate.Solver.MutableTable.GrowRuntime
 

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.GetCallOrigin
 import InitECandidate.Solver.GasBudget.AccountCacheProgram
 import InitECandidate.Solver.MutableTable.GetExceptionPrefix
 import InitECandidate.Solver.MutableTable.SetNoOtherException
@@ -34,6 +35,25 @@ theorem set_before_outcome (outcome : Outcome) (kind : Kind)
       exact (safe source rfl payload (congrArg Prod.fst failed)).elim
     · exact continued
 
+theorem getter_before_outcome_origin (outcome : Outcome) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : KeyHash.Kind) (plan : Plan)
+    (slots : List Nat) (cursor floor : Nat) (table : TableState source kind plan slots cursor floor)
+    (environment : GasBudget.WarmKeys.Environment source) (query : BitVec 64)
+    (queryFits : query.toNat + KeyHash.keySize kind < 2 ^ 64)
+    (queryMapped : ∀ offset < KeyHash.keySize kind, source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress query offset)))
+    (getCode : source.code.lookup (ofString "htab_get") = some (Get.formals, Get.body, Get.pairShape))
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) arguments = some [.val (.word (cell plan .header 0)), .val (.word query)])
+    (run : evaluateHOLFiniteState source (.decCall (ofString name) Get.pairShape (ofString "htab_get") arguments continuation) = (outcome.result, post)) :
+    ∃ paid flag value inner, 1 ≤ paid ∧ paid ≤ Get.bodyPrice kind slots.length + 1 ∧ paid ≤ source.clock ∧ (flag = 0#64 ∨ flag = 1#64) ∧
+      Get.ValueOrigin source (cell plan .values 0) (BitVec.ofNat 64 plan.capacity) flag value (fun slot=>slot.toNat∈slots) ∧
+      evaluateHOLFiniteState (setVarHOLFinite (ofString name) (Get.pair flag value) {source with clock := source.clock - paid}) continuation = (outcome.result, inner) ∧
+      post = restore source name inner := by
+  cases outcome with
+  | returned value =>
+    exact Get.model_normal_entry_origin source post kind plan slots cursor floor table environment query queryFits queryMapped getCode name arguments continuation args value run
+  | exception identifier payload other =>
+    exact Get.model_exception_prefix_origin source post kind plan slots cursor floor table environment query queryFits queryMapped getCode name arguments continuation args identifier payload run
+
 theorem getter_before_outcome (outcome : Outcome) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : KeyHash.Kind) (plan : Plan)
     (slots : List Nat) (cursor floor : Nat) (table : TableState source kind plan slots cursor floor)
     (environment : GasBudget.WarmKeys.Environment source) (query : BitVec 64)
@@ -46,13 +66,13 @@ theorem getter_before_outcome (outcome : Outcome) (source post : PanSemStateFini
     ∃ paid flag value inner, 1 ≤ paid ∧ paid ≤ Get.bodyPrice kind slots.length + 1 ∧ paid ≤ source.clock ∧ (flag = 0#64 ∨ flag = 1#64) ∧
       evaluateHOLFiniteState (setVarHOLFinite (ofString name) (Get.pair flag value) {source with clock := source.clock - paid}) continuation = (outcome.result, inner) ∧
       post = restore source name inner := by
-  cases outcome with
-  | returned value =>
-    exact Get.model_normal_entry source post kind plan slots cursor floor table environment query queryFits queryMapped getCode name arguments continuation args value run
-  | exception identifier payload other =>
-    exact Get.model_exception_prefix source post kind plan slots cursor floor table environment query queryFits queryMapped getCode name arguments continuation args identifier payload run
+  obtain ⟨paid, flag, value, inner, positive, bounded, funded, binary, _, tailRun, scope⟩ :=
+    getter_before_outcome_origin outcome source post kind plan slots cursor floor table environment query queryFits queryMapped
+      getCode name arguments continuation args run
+  exact ⟨paid, flag, value, inner, positive, bounded, funded, binary, tailRun, scope⟩
 
 end InitECandidate.Solver.GasBudget.AccountCache
 
 #print axioms InitECandidate.Solver.GasBudget.AccountCache.set_before_outcome
+#print axioms InitECandidate.Solver.GasBudget.AccountCache.getter_before_outcome_origin
 #print axioms InitECandidate.Solver.GasBudget.AccountCache.getter_before_outcome

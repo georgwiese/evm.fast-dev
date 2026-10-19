@@ -19,7 +19,7 @@ theorem model_assigned_origin (source post : PanSemStateFiniteExact 64 Guest.Hos
       some [.val (.word (cell plan .header 0)), .val (.word query)])
     (normal : evaluateHOLFiniteState source (.call (some (some (.local, name), none)) (ofString "htab_get") arguments) = (none, post)) :
     ∃ paid flag value, 1 ≤ paid ∧ paid ≤ (Find.generalProbePrice kind * slots.length + (KeyHash.hashPrice kind + 1)) + 1 ∧ paid ≤ source.clock ∧
-      (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source (cell plan .values 0) (BitVec.ofNat 64 plan.capacity) flag value ∧
+      (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source (cell plan .values 0) (BitVec.ofNat 64 plan.capacity) flag value (fun slot=>slot.toNat∈slots) ∧
       post = setVarHOLFinite name (pair flag value) {source with clock := source.clock - paid} := by
   obtain ⟨positive, values, actual, callee, returnShape, target, returned, args, called, bodyRun, checked, postEq⟩ :=
     Input.CallNormal.local_data source post name (ofString "htab_get") arguments normal

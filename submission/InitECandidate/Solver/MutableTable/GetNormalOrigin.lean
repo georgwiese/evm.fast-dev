@@ -16,7 +16,7 @@ theorem model_body_normal_origin (source target : PanSemStateFiniteExact 64 Gues
     (keyLocal : source.locals.lookup (ofString "key") = some (.val (.word query)))
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body = (some (.returned returned), target)) :
     ∃ paid flag value, paid ≤ (Find.generalProbePrice kind * slots.length + (KeyHash.hashPrice kind + 1)) ∧ paid ≤ source.clock ∧ (flag = 0#64 ∨ flag = 1#64) ∧
-      ValueOrigin source (cell plan .values 0) (BitVec.ofNat 64 plan.capacity) flag value ∧ returned = pair flag value ∧ emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
+      ValueOrigin source (cell plan .values 0) (BitVec.ofNat 64 plan.capacity) flag value (fun slot=>slot.toNat∈slots) ∧ returned = pair flag value ∧ emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
   let extra := (Find.generalProbePrice kind * slots.length + (KeyHash.hashPrice kind + 1))
   let padded := {source with clock := source.clock + extra}
   have paddedTable : TableState padded kind plan slots cursor floor := table.of_fields rfl rfl rfl rfl

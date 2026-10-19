@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.SetNormalExecutionValues
 import InitECandidate.Solver.MutableTable.SetModelExecution
 import InitECandidate.Solver.MutableTable.SetNormalGrowthRoom
 
@@ -34,58 +35,11 @@ theorem model_execute_normal (source actualTarget : PanSemStateFiniteExact 64 Gu
     ∃ paid globals memory plan next, paid ≤ modelPrice kind old.capacity slots.length ∧
       (plan = old → paid ≤ noGrowthPrice kind slots.length) ∧ actualValue = .val (.word 0#64) ∧
       ModelPost source kind old start slots.length paid globals memory actualTarget plan next ∧ Valid kind plan := by
-  let p := parameters kind old query
-  have data := MemoryModel.runtime_data source kind old oldValid domain query slots room header occupied bits small power queryFits queryMapped little hashCode copyCode
-  have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) [localVar "t", localVar "key"] =
-      some [.val (.word (cell old .header 0)), .val (.word query)] := by
-    simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, toExact, localVar, tableLocal, keyLocal]
-  obtain ⟨findPaid, index, findBound, indexBound, callRun, selected⟩ := Insert.GeneralData.find_call source (cell old .header 0) p kind
-    (cell old .values 0) (cell old .order 0) (cell old .position 0) (BitVec.ofNat 64 slots.length) bits slots data memeqCode findCode "i" [localVar "t", localVar "key"] afterIndex args
-    (by dsimp only [modelPrice] at enough; omega)
-  let resumed := WitnessRadix.QueryBranch.bind {source with clock := source.clock - findPaid} "i" index
-  have expanded := normal
-  rw [body_shape] at expanded
-  have compared := callRun.symm.trans expanded
-  have tailResult := congrArg Prod.fst compared
-  change (evaluateHOLFiniteState resumed afterIndex).1 = some (.returned actualValue) at tailResult
-  have tailNormal : evaluateHOLFiniteState resumed afterIndex = (some (.returned actualValue), (evaluateHOLFiniteState resumed afterIndex).2) := Prod.ext tailResult rfl
-  have resumedT : resumed.locals.lookup (ofString "t") = some (.val (.word (cell old .header 0))) := (bind_lookup_other _ "i" "t" _ (by decide)).trans tableLocal
-  have needed : resumed.locals.lookup (ofString "i") = some (.val (.word (BitVec.ofNat 64 old.capacity))) →
-      old.capacity < 2 * slots.length + 2 → Valid kind (relocated kind (old.base .header) start (2 * old.capacity)) := by
-    intro absent threshold
-    exact growth_layout_of_normal_tail resumed (evaluateHOLFiniteState resumed afterIndex).2 kind old oldValid start slots.length startBound startAligned earlier domain
-      (MemoryModel.Occupied.length_le source kind old slots occupied) header resumedT absent threshold heap allocCode trapCode growCode actualValue tailNormal
-  have resumedData := Insert.GeneralData.of_fields source resumed (cell old .header 0) p kind
-    (cell old .values 0) (cell old .order 0) (cell old .position 0) (BitVec.ofNat 64 slots.length) bits slots data rfl rfl rfl rfl
-  have resumedModel := MemoryModel.Occupied.of_fields source resumed kind old slots occupied rfl rfl rfl
-  obtain ⟨tailPaid, globals, memory, post, plan, next, tailBound, tailOldBound, tailRun, tailPost, nextValid⟩ :=
-    model_tail resumed kind old oldValid start earlier domain little slots needed room header resumedModel query value index bits small power minimum resumedData resumedT
-      ((bind_lookup_other _ "i" "key" _ (by decide)).trans keyLocal) ((bind_lookup_other _ "i" "value" _ (by decide)).trans valueLocal) (bind_lookup_same _ _ _)
-      (Find.Selection.of_fields source resumed p index rfl rfl rfl selected) indexBound heap allocCode zeroCode insertCode growCode
-      (by change afterGrowPrice kind old.capacity slots.length ≤ source.clock - findPaid; dsimp only [modelPrice] at enough; omega)
-  rw [tailRun] at callRun
-  have actual : evaluateHOLFiniteState source body = (some (.returned (.val (.word 0#64))), restore source "i" post) := by
-    rw [body_shape]
-    exact callRun
-  have agree := normal.symm.trans actual
-  have resultEq := congrArg Prod.fst agree
-  have targetEq := congrArg Prod.snd agree
-  change actualTarget = restore source "i" post at targetEq
-  refine ⟨findPaid + tailPaid, globals, memory, plan, next, ?_, ?_, ?_, ?_, nextValid⟩
-  · dsimp only [modelPrice]
-    omega
-  · intro same
-    have bounded := tailOldBound same
-    dsimp only [noGrowthPrice]
-    omega
-  · simpa only [Option.some.injEq, PanSemResultExact.returned.injEq] using resultEq
-  · rw [targetEq]
-    refine ⟨?_, tailPost.shape, tailPost.countBound, tailPost.grew, tailPost.half, tailPost.header,
-      MemoryModel.Occupied.of_fields post (restore source "i" post) kind plan next tailPost.occupied rfl rfl rfl, tailPost.footprint⟩
-    change emptyLocalsHOLFinite post = _
-    rw [tailPost.frame]
-    change emptyLocalsHOLFinite {source with globals := globals, memory := memory, clock := source.clock - findPaid - tailPaid} = _
-    rw [Nat.sub_sub]
+  obtain ⟨paid, globals, memory, plan, next, bounded, oldBound, resultEq, post, valid, _⟩ :=
+    model_execute_normal_values source actualTarget kind old oldValid start startBound startAligned earlier domain little slots room header occupied
+      query value (fun _=>True) (fun _ _ _ _ _=>True.intro) True.intro bits small power minimum queryFits queryMapped tableLocal keyLocal valueLocal heap
+      allocCode trapCode zeroCode hashCode copyCode memeqCode findCode insertCode growCode actualValue normal enough
+  exact ⟨paid, globals, memory, plan, next, bounded, oldBound, resultEq, post, valid⟩
 
 end InitECandidate.Solver.MutableTable.Set
 

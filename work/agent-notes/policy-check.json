@@ -1206,9 +1206,14 @@
     "submission/InitECandidate/Solver/GasBudget/MemoryExpansionCostRounded.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExpansionCostSaturated.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExpansionCostValue.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendAmortized.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExtendArithmetic.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendBody.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendBodyEntry.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendCall.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExtendClamp.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExtendFinalClear.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryExtendFrameSums.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExtendGeometry.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExtendGrowBranch.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryExtendGrowthClear.lean",
@@ -1590,6 +1595,7 @@
     "submission/InitECandidate/Solver/Input/NormalCallEntry.lean",
     "submission/InitECandidate/Solver/Input/NormalDeclarationEntry.lean",
     "submission/InitECandidate/Solver/Input/NormalScalarStore.lean",
+    "submission/InitECandidate/Solver/Input/NormalWordDeclaration.lean",
     "submission/InitECandidate/Solver/Input/OffsetsAnyExecute.lean",
     "submission/InitECandidate/Solver/Input/OffsetsAnyLoop.lean",
     "submission/InitECandidate/Solver/Input/OffsetsCall.lean",
@@ -5207,8 +5213,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62072,
-  "package_bytes": 2256420008,
+  "package_entries": 62078,
+  "package_bytes": 2256440633,
   "claim": {
     "K": "infinity"
   },

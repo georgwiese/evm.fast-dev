@@ -2,6 +2,13 @@
 
 > **AUTHORITATIVE SCOPE CORRECTION — 2026-10-17:** The user requires a reasonably tight finite runtime bound for the current, unchanged Pancake implementation on main. There is NO numerical ceiling. Stop replacement/radix refinement/candidate compilation work. The current plan at the top of bound.md supersedes historical below-Yukon-limit objectives and checklists here. Keep reusable original-program proofs; remove the authorized replacement code after dependency review, retaining history in Git. The previous 45% estimate does not measure this corrected goal.
 
+## 2026-10-19: deterministic scalar values for memory costs
+
+- Checked actual ceil32/words_of deterministic values, exact branch-dependent body clocks0/1and1/2, funded executors and actual normal value/funding/clock extraction. Rounding is monotone over its input; word count>=floor(bytes/32), with exact zeros.
+- Checked original mul64x64 result as its actual mask/shift/carry expression (without asserting a natural-product identity). All declarations/primitive updates and lexical scopes execute, preserve nonlocal fields and use zero source clocks; exact zero result checked.
+- Added generic PureStraight declarations/carry execution and PureNormal clock-padding removal. Broad symbolic-state simplification attempts were terminated as memory grew; naming each reached intermediate state reduced successful multiplication to1843720KiBMaxRSS/7.53s. No failed/terminated log indexed.
+- Successful memory-cost-normal-values-v2.log1300jobs and mul64-value-v8.log1233jobs, permitted axioms. Real memory-cost/expansion composition and global byte/gas potential reachability/target K remain open.
+
 ## 2026-10-19: dynamic copy/hash charge prefixes
 
 - Original words_of actual return derives scalar<=2^59-1; normal and exceptional scoped continuations derive1..3clocks and exact nonlocal preservation. Fixed-base copy/hash fee additions/multiplications are proved nonwrapping for this range.

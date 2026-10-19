@@ -44,7 +44,9 @@ theorem setup_exception (source post : PanSemStateFiniteExact 64 Guest.HostMemor
       ready.locals.lookup (ofString "transfer_cost") = some (.val (.word (ForwardCredit.valueFee words))) ∧
       ready.locals.lookup (ofString "x") = some (.rStruct [.val (.word memoryCost), .val (.word expand)]) ∧
       evaluateHOLFiniteState ready (program continuation) = (some (.exception identifier payload), inner) ∧
-      post = restore source "transfer_cost" inner := by
+      post = restore source "transfer_cost" inner ∧
+      (∀ key : String, ofString "transfer_cost" ≠ ofString key →
+        ready.locals.lookup (ofString key) = source.locals.lookup (ofString key)) := by
   obtain ⟨inner, declaredRun, scope⟩ := Input.declaration_exception_word source post "transfer_cost" (.const 0#64) 0#64
     (.seq transferUpdate (program continuation)) identifier payload rfl run
   let initial := bind source "transfer_cost" 0#64
@@ -56,9 +58,11 @@ theorem setup_exception (source post : PanSemStateFiniteExact 64 Guest.HostMemor
   have clock := congrArg PanSemStateFiniteExact.clock canonical
   change ready.clock = initial.clock at clock
   rw [WitnessRadix.StateSteps.next_sequence initial ready transferUpdate (program continuation) updateRun (by omega)] at declaredRun
-  exact ⟨ready, inner, fields,
+  refine ⟨ready, inner, fields,
     (other "access_cost" (by decide)).trans ((bind_lookup_other _ _ _ _ (by decide)).trans accessCell), transferCell,
-    (other "x" (by decide)).trans ((bind_lookup_other _ _ _ _ (by decide)).trans xCell), declaredRun, scope⟩
+    (other "x" (by decide)).trans ((bind_lookup_other _ _ _ _ (by decide)).trans xCell), declaredRun, scope, ?_⟩
+  intro key different
+  exact (other key different).trans (bind_lookup_other _ _ _ _ different)
 
 end InitECandidate.Solver.GasBudget.CallValueFee
 

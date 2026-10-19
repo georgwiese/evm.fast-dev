@@ -31,7 +31,11 @@ theorem exception_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     ∃ warm paid ready inner, paid ≤ 8 * slots.length + 6 ∧ ChargeEvent source ready frame paid (amount warm memoryCost words).toNat ∧
       memoryCost.toNat + (CallGas.stipend words).toNat + 100 ≤ (amount warm memoryCost words).toNat ∧
       evaluateHOLFiniteState ready continuation = (some (.exception identifier payload), inner) ∧
-      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock := by
+      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock ∧
+      ready.locals.lookup (ofString "warm") = some (.val (.word warm)) ∧
+      (∀ key : String, ofString "need" ≠ ofString key → ofString "transfer_cost" ≠ ofString key →
+        ofString "access_cost" ≠ ofString key → ofString "warm" ≠ ofString key →
+        ready.locals.lookup (ofString key) = source.locals.lookup (ofString key)) := by
   obtain ⟨warmPaid, warm, warmPost, positive, warmBound, warmFits, binary, warmRun, warmScope⟩ :=
     WarmAddress.exception_prefix source post frame query plan slots cursor floor table environment installed ev tableMapped tableCell queryFits queryMapped
       "warm" arguments (CallAccessFee.program (CallValueFee.withTransfer continuation)) args identifier payload run
@@ -41,7 +45,7 @@ theorem exception_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemo
   have warmOther (key : String) (other : ofString "warm" ≠ ofString key) : warmed.locals.lookup (ofString key) = source.locals.lookup (ofString key) := bind_lookup_other _ _ _ _ other
   have accessVZ := (accessOther "vz" (by decide)).trans ((warmOther "vz" (by decide)).trans vz)
   have accessX := (accessOther "x" (by decide)).trans ((warmOther "x" (by decide)).trans xCell)
-  obtain ⟨feeSource, feePost, transferFields, feeAccess, transferCell, feeX, feeRun, transferScope⟩ :=
+  obtain ⟨feeSource, feePost, transferFields, feeAccess, transferCell, feeX, feeRun, transferScope, transferOther⟩ :=
     CallValueFee.setup_exception accessReady accessPost (CallAccessFee.resultWord warm) memoryCost expand words continuation identifier payload accessVZ accessCell accessX accessRun
   have before : emptyLocalsHOLFinite feeSource = emptyLocalsHOLFinite {source with clock := source.clock - warmPaid} := transferFields.trans accessFields
   have beforeMemory := congrArg PanSemStateFiniteExact.memory before
@@ -75,8 +79,21 @@ theorem exception_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     refine ⟨actualId, actualPayload, warmPaid + 2, ?_, (effect.trans failedEffect).of_emptyLocals scopes⟩
     have price := price_exact slots.length
     omega
-  · obtain ⟨ready, inner, event, surplus, tailRun, feeScope⟩ := charged
-    refine Or.inr ⟨warm, warmPaid + 2, ready, inner, ?_, event.prepend effect, surplus, tailRun, ?_, ?_⟩
+  · obtain ⟨ready, inner, event, surplus, tailRun, feeScope, feeLocals⟩ := charged
+    have feeOther (key : String) (different : ofString "need" ≠ ofString key) :
+        ready.locals.lookup (ofString key) = feeSource.locals.lookup (ofString key) := by
+      rw [feeLocals]
+      exact bind_lookup_other _ _ _ _ different
+    have warmCell : ready.locals.lookup (ofString "warm") = some (.val (.word warm)) :=
+      (feeOther "warm" (by decide)).trans ((transferOther "warm" (by decide)).trans
+        ((accessOther "warm" (by decide)).trans (bind_lookup_same _ _ _)))
+    have localsOther (key : String) (notNeed : ofString "need" ≠ ofString key)
+        (notTransfer : ofString "transfer_cost" ≠ ofString key)
+        (notAccess : ofString "access_cost" ≠ ofString key) (notWarm : ofString "warm" ≠ ofString key) :
+        ready.locals.lookup (ofString key) = source.locals.lookup (ofString key) :=
+      (feeOther key notNeed).trans ((transferOther key notTransfer).trans
+        ((accessOther key notAccess).trans (warmOther key notWarm)))
+    refine Or.inr ⟨warm, warmPaid + 2, ready, inner, ?_, event.prepend effect, surplus, tailRun, ?_, ?_, warmCell, localsOther⟩
     · have price := price_exact slots.length
       omega
     · rw [warmScope, accessScope, transferScope, feeScope]; rfl

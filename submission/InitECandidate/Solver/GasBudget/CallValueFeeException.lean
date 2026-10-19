@@ -28,7 +28,9 @@ theorem exception_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (identifier = ofString "EvmErr" ∧ payload = .val (.word 4#64) ∧ StackPop.PrefixEffect source post frame 2) ∨
     ∃ ready inner, ChargeEvent source ready frame 2 (SaturatingAdd.resultWord (access + ForwardCredit.valueFee words) memoryCost).toNat ∧
       memoryCost.toNat + (CallGas.stipend words).toNat + 100 ≤ (SaturatingAdd.resultWord (access + ForwardCredit.valueFee words) memoryCost).toNat ∧
-      evaluateHOLFiniteState ready continuation = (some (.exception identifier payload), inner) ∧ post = restore source "need" inner := by
+      evaluateHOLFiniteState ready continuation = (some (.exception identifier payload), inner) ∧ post = restore source "need" inner ∧
+      ready.locals = (bind {source with clock := source.clock - 1} "need"
+        (SaturatingAdd.resultWord (access + ForwardCredit.valueFee words) memoryCost)).locals := by
   obtain ⟨a, b, inner, addFits, actualArgs, lower, chargeRun, scope⟩ :=
     SaturatingAdd.exception_prefix source post "need" [feeExpression, .rfield 0 (localVar "x")] (afterFee continuation) addCode identifier payload run
   have expectedArgs : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address))
@@ -72,7 +74,8 @@ theorem exception_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     rw [subtraction] at fields
     have readyClock : ready.clock = source.clock - 2 := by rw [clock]; exact subtraction
     change 1 ≤ source.clock - 1 at chargeFits
-    refine Or.inr ⟨ready, inner, ?_, surplus, tailRun, scope⟩
+    have locals := congrArg PanSemStateFiniteExact.locals canonical
+    refine Or.inr ⟨ready, inner, ?_, surplus, tailRun, scope, locals⟩
     refine ⟨by omega, readyClock, by rw [readyClock]; exact fields, budget, by rw [oldUsed]; exact credit, by omega, ?_⟩
     intro address notSP notGas notUsed
     exact RegularCharge.call_other_word first ready frame amount address [localVar "need"] args chargeCode ev cap actualCharge notGas notUsed

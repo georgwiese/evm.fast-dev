@@ -37,7 +37,10 @@ theorem cost_prefix_exception (source post : PanSemStateFiniteExact 64 Guest.Hos
       ready.locals.lookup (ofString "x") = some (MemoryExpansionCost.pairValue (MemoryExpansionCost2.resultPair inStart inSize outStart outSize current)) ∧
       ready.locals.lookup (ofString "to") = some (.val (.word query)) ∧
       evaluateHOLFiniteState ready afterCost = (some (.exception identifier payload), inner) ∧
-      emptyLocalsHOLFinite post = emptyLocalsHOLFinite inner := by
+      emptyLocalsHOLFinite post = emptyLocalsHOLFinite inner ∧
+      ready.locals.lookup (ofString "msg") = some (.val (.word message)) ∧
+      (∀ key : String, ofString "x" ≠ ofString key → ofString "vz" ≠ ofString key → ofString "msg" ≠ ofString key →
+        ready.locals.lookup (ofString key) = source.locals.lookup (ofString key)) := by
   have messageRead := frame_read source frame 112#64 message view.ev messageMapped messageCell
   rw [message_shape] at run
   obtain ⟨messagePost, messageRun, messageScope⟩ := Input.declaration_exception_word source post "msg" (frameLoad 112#64) message afterMessage identifier payload messageRead run
@@ -83,7 +86,15 @@ theorem cost_prefix_exception (source post : PanSemStateFiniteExact 64 Guest.Hos
         [localVar "in_start", localVar "in_size", localVar "out_start", localVar "out_size"] afterCost identifier payload args costRun
     have finalFields : Input.LocalEffects.erase ready = Input.LocalEffects.erase source := readyFields.trans firstFields
     have clock : ready.clock = source.clock - (1 + costPaid) := by rw [readyEq]; change first.clock - costPaid = _; rw [firstClock]; omega
-    refine Or.inr ⟨1 + costPaid, ready, inner, by omega, ?_, clock, finalFields, ?_, Input.KnownUnaryPrefix.lookup_same readyEq, ?_, tailRun, ?_⟩
+    have msgCell : ready.locals.lookup (ofString "msg") = some (.val (.word message)) :=
+      (Input.KnownUnaryPrefix.lookup_other readyEq "msg" (by decide)).trans
+        ((firstOther "msg" (by decide)).trans (bind_lookup_same _ _ _))
+    have localsOther (key : String) (notX : ofString "x" ≠ ofString key)
+        (notVZ : ofString "vz" ≠ ofString key) (notMsg : ofString "msg" ≠ ofString key) :
+        ready.locals.lookup (ofString key) = source.locals.lookup (ofString key) :=
+      (Input.KnownUnaryPrefix.lookup_other readyEq key notX).trans
+        ((firstOther key notVZ).trans (entryOther key notMsg))
+    refine Or.inr ⟨1 + costPaid, ready, inner, by omega, ?_, clock, finalFields, ?_, Input.KnownUnaryPrefix.lookup_same readyEq, ?_, tailRun, ?_, msgCell, localsOther⟩
     · rw [firstClock] at costFits
       change 1 ≤ source.clock at zeroFits
       omega

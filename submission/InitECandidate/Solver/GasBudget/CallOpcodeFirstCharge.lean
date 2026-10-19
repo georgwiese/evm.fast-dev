@@ -1,3 +1,4 @@
+import InitECandidate.Solver.GasBudget.CallOpcodeLocals
 import InitECandidate.Solver.GasBudget.CallOpcodeEntry
 import InitECandidate.Solver.GasBudget.CallOpcodeCostPrefix
 import InitECandidate.Solver.GasBudget.CallEntryTable
@@ -30,7 +31,8 @@ theorem normal_first_charge (source post : PanSemStateFiniteExact 64 Guest.HostM
       (MemoryExpansionCost2.resultPair inStart inSize outStart outSize current).1.toNat + (CallGas.stipend value).toNat + 100 ≤
         (CallFirstFee.amount warm (MemoryExpansionCost2.resultPair inStart inSize outStart outSize current).1 value).toNat ∧
       evaluateHOLFiniteState ready afterFee = (some (.returned returned), inner) ∧
-      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock := by
+      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock ∧
+      ChargedLocals ready frame message current value inStart inSize outStart outSize warm := by
   obtain ⟨entryPaid, entry, entryPost, entryBound, entryFits, entryClock, entryView, cells, queryCell, entryBudget, entryUsed, depth, entryFields, costRun, entryScope, entryPostClock, entryOutside⟩ :=
     entry_normal source post frame base current capacity pointer scratch view aligned queryMapped returned run
   have tableEntry := preserve_table frame .account plan slots cursor floor table aligned view.frameFits separate entryFields entryOutside
@@ -51,7 +53,7 @@ theorem normal_first_charge (source post : PanSemStateFiniteExact 64 Guest.HostM
   obtain ⟨inSize, inSizeCell⟩ := cells "in_size" (by simp [firstNames, remainingNames])
   obtain ⟨outStart, outStartCell⟩ := cells "out_start" (by simp [firstNames, remainingNames])
   obtain ⟨outSize, outSizeCell⟩ := cells "out_size" (by simp [firstNames, remainingNames])
-  obtain ⟨costPaid, costReady, costPost, costBound, costFits, costClock, costFields, costView, vzCell, xCell, queryReady, feeRun, costScope, costPostClock⟩ :=
+  obtain ⟨costPaid, costReady, costPost, costBound, costFits, costClock, costFields, costView, vzCell, xCell, queryReady, feeRun, costScope, costPostClock, costMsg, costOther⟩ :=
     cost_prefix_normal entry entryPost frame base current capacity pointer scratch message (frame + 240#64) value inStart inSize outStart outSize entryView
       entryMessageMapped entryMessage valueCell inStartCell inSizeCell outStartCell outSizeCell queryCell returned costRun
   have costMemory := Input.LocalEffects.memory_of_erase entry costReady costFields
@@ -81,7 +83,7 @@ theorem normal_first_charge (source post : PanSemStateFiniteExact 64 Guest.HostM
   have args : evalListHOLFinite costReady (h := fun query => Classical.propDecidable (costReady.memaddrs query)) [localVar "to"] = some [.val (.word (frame + 240#64))] := by
     simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, toExact, localVar, queryReady]
   rw [first_fee_shape] at feeRun
-  obtain ⟨warm, feePaid, ready, inner, feeBound, event, surplus, tailRun, feeScope, feePostClock⟩ :=
+  obtain ⟨warm, feePaid, ready, inner, feeBound, event, surplus, tailRun, feeScope, feePostClock, warmCell, feeOther⟩ :=
     CallFirstFee.normal costReady costPost frame (frame + 240#64) _ _ value plan slots cursor floor costTable costEnvironment costView.installed costView.ev
       costTableMapped costTableCell queryFits currentMapped vzCell xCell currentCap [localVar "to"] afterFee returned args feeRun
   have unchanged := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => {state with clock := costReady.clock}) costFields
@@ -94,7 +96,11 @@ theorem normal_first_charge (source post : PanSemStateFiniteExact 64 Guest.HostM
   change Input.LocalEffects.erase costPost = Input.LocalEffects.erase inner at feeErase
   rw [CallFirstFee.price_exact] at feeBound
   refine ⟨value, inStart, inSize, outStart, outSize, warm, entryPaid + (costPaid + feePaid), ready, inner, by omega,
-    fromSource, surplus, tailRun, entryScope.trans (costScope.trans feeErase), entryPostClock.trans (costPostClock.trans feePostClock)⟩
+    fromSource, surplus, tailRun, entryScope.trans (costScope.trans feeErase), entryPostClock.trans (costPostClock.trans feePostClock),
+    charged_locals_of_preservation entry costReady ready frame message current value inStart inSize outStart outSize warm
+      valueCell inStartCell inSizeCell outStartCell outSizeCell
+      (cells "gasv" (by simp [firstNames, remainingNames])) (cells "tov" (by simp [firstNames, remainingNames]))
+      xCell vzCell queryReady costMsg costOther warmCell feeOther⟩
 
 end InitECandidate.Solver.GasBudget.CallOpcode
 

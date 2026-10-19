@@ -1,3 +1,4 @@
+import InitECandidate.Solver.GasBudget.CallOpcodeLocals
 import InitECandidate.Solver.GasBudget.CallOpcodeEntryException
 import InitECandidate.Solver.GasBudget.CallOpcodeCostException
 import InitECandidate.Solver.GasBudget.CallFirstFeeException
@@ -32,7 +33,8 @@ theorem exception_first_charge (source post : PanSemStateFiniteExact 64 Guest.Ho
       (MemoryExpansionCost2.resultPair inStart inSize outStart outSize current).1.toNat + (CallGas.stipend value).toNat + 100 ≤
         (CallFirstFee.amount warm (MemoryExpansionCost2.resultPair inStart inSize outStart outSize current).1 value).toNat ∧
       evaluateHOLFiniteState ready afterFee = (some (.exception identifier payload), inner) ∧
-      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock := by
+      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock ∧
+      ChargedLocals ready frame message current value inStart inSize outStart outSize warm := by
   rcases entry_exception source post frame base current capacity pointer scratch sp view aligned queryMapped spMapped spCell shape identifier payload run with failed | continued
   · obtain ⟨actualId, actualPayload, paid, bound, effect⟩ := failed
     exact Or.inl ⟨actualId, Or.inl actualPayload, paid, by omega, effect⟩
@@ -51,7 +53,7 @@ theorem exception_first_charge (source post : PanSemStateFiniteExact 64 Guest.Ho
     · obtain ⟨actualId, actualPayload, costEffect⟩ := failed
       exact Or.inl ⟨actualId, Or.inr (Or.inl actualPayload), entryPaid + 1, by omega,
         (entryEffect.trans costEffect.frame_effect).of_emptyLocals entryScope⟩
-    · obtain ⟨costPaid, costReady, costPost, costBound, costFits, costClock, costFields, vzCell, xCell, queryReady, feeRun, costScope⟩ := continued
+    · obtain ⟨costPaid, costReady, costPost, costBound, costFits, costClock, costFields, vzCell, xCell, queryReady, feeRun, costScope, costMsg, costOther⟩ := continued
       have unchanged := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => {state with clock := costReady.clock}) costFields
       change emptyLocalsHOLFinite costReady = emptyLocalsHOLFinite {entry with clock := costReady.clock} at unchanged
       rw [costClock] at unchanged
@@ -89,7 +91,7 @@ theorem exception_first_charge (source post : PanSemStateFiniteExact 64 Guest.Ho
       · obtain ⟨actualId, actualPayload, feePaid, feeBound, failedEffect⟩ := failed
         exact Or.inl ⟨actualId, Or.inr (Or.inr actualPayload), entryPaid + costPaid + feePaid, by omega,
           (before.trans failedEffect.frame_effect).of_emptyLocals (entryScope.trans costScope)⟩
-      · obtain ⟨warm, feePaid, ready, inner, feeBound, event, surplus, tailRun, feeScope, feeClock⟩ := charged
+      · obtain ⟨warm, feePaid, ready, inner, feeBound, event, surplus, tailRun, feeScope, feeClock, warmCell, feeOther⟩ := charged
         have fullEvent := event.prepend_frame before.fits before.clock before.fields before.budget before.used before.outside
         have scopes := entryScope.trans costScope
         have erased := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => {state with clock := 0}) scopes
@@ -97,7 +99,11 @@ theorem exception_first_charge (source post : PanSemStateFiniteExact 64 Guest.Ho
         have clock := congrArg PanSemStateFiniteExact.clock scopes
         change post.clock = costPost.clock at clock
         exact Or.inr ⟨value, inStart, inSize, outStart, outSize, warm, entryPaid + costPaid + feePaid, ready, inner, by omega,
-          fullEvent, surplus, tailRun, erased.trans feeScope, clock.trans feeClock⟩
+          fullEvent, surplus, tailRun, erased.trans feeScope, clock.trans feeClock,
+          charged_locals_of_preservation entry costReady ready frame message current value inStart inSize outStart outSize warm
+            valueCell inStartCell inSizeCell outStartCell outSizeCell
+            (cells "gasv" (by simp [firstNames, remainingNames])) (cells "tov" (by simp [firstNames, remainingNames]))
+            xCell vzCell queryReady costMsg costOther warmCell feeOther⟩
 
 end InitECandidate.Solver.GasBudget.CallOpcode
 

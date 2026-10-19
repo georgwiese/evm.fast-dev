@@ -36,7 +36,11 @@ theorem normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame
       ChargeEvent source ready frame paid (amount warm memoryCost words).toNat ∧
       memoryCost.toNat + (CallGas.stipend words).toNat + 100 ≤ (amount warm memoryCost words).toNat ∧
       evaluateHOLFiniteState ready continuation = (some (.returned returned), inner) ∧
-      emptyLocalsHOLFinite post = emptyLocalsHOLFinite inner ∧ post.clock = inner.clock := by
+      emptyLocalsHOLFinite post = emptyLocalsHOLFinite inner ∧ post.clock = inner.clock ∧
+      ready.locals.lookup (ofString "warm") = some (.val (.word warm)) ∧
+      (∀ key : String, ofString "need" ≠ ofString key → ofString "transfer_cost" ≠ ofString key →
+        ofString "access_cost" ≠ ofString key → ofString "warm" ≠ ofString key →
+        ready.locals.lookup (ofString key) = source.locals.lookup (ofString key)) := by
   obtain ⟨warmPaid, warm, warmPost, positive, warmBound, warmFits, binary, warmRun, warmScope⟩ :=
     WarmAddress.call_normal source post frame query plan slots cursor floor table environment installed ev tableMapped tableCell queryFits queryMapped
       "warm" arguments (CallAccessFee.program (CallValueFee.withTransfer continuation)) args returned run
@@ -47,7 +51,7 @@ theorem normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame
     bind_lookup_other _ _ _ _ other
   have accessVZ := (accessOther "vz" (by decide)).trans ((warmOther "vz" (by decide)).trans vz)
   have accessX := (accessOther "x" (by decide)).trans ((warmOther "x" (by decide)).trans xCell)
-  obtain ⟨feeSource, feePost, transferFields, feeAccess, transferCell, feeX, feeRun, transferScope⟩ :=
+  obtain ⟨feeSource, feePost, transferFields, feeAccess, transferCell, feeX, feeRun, transferScope, transferOther⟩ :=
     CallValueFee.setup_normal accessReady accessPost (CallAccessFee.resultWord warm) memoryCost expand words continuation returned accessVZ accessCell accessX accessRun
   have before : emptyLocalsHOLFinite feeSource = emptyLocalsHOLFinite {source with clock := source.clock - warmPaid} :=
     transferFields.trans accessFields
@@ -66,7 +70,7 @@ theorem normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame
     have code := OriginalCodeEnvironment.arithmetic feeSource.code currentOriginal .add_sat
     rw [ChargeWithMemory.add_signature] at code
     exact code
-  obtain ⟨ready, inner, feeFits, feeFields, tailRun, feeScope, budget, credit, surplus, outside⟩ :=
+  obtain ⟨ready, inner, feeFits, feeFields, tailRun, feeScope, budget, credit, surplus, outside, feeLocals⟩ :=
     CallValueFee.normal feeSource feePost frame (CallAccessFee.resultWord warm) memoryCost expand words continuation returned currentEv feeAccess transferCell feeX
       (CallAccessFee.range warm).1 (CallAccessFee.range warm).2 addCode (OriginalCodeEnvironment.charge_gas feeSource.code currentOriginal) currentCap feeRun
   have readyClock := congrArg PanSemStateFiniteExact.clock feeFields
@@ -84,7 +88,20 @@ theorem normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame
       rfl
     · intro address notSP notGas notUsed
       exact (outside address notGas notUsed).trans (congrFun beforeMemory address)
-  refine ⟨warm, warmPaid + 2, ready, inner, by omega, event, surplus, tailRun, ?_, ?_⟩
+  have feeOther (key : String) (different : ofString "need" ≠ ofString key) :
+      ready.locals.lookup (ofString key) = feeSource.locals.lookup (ofString key) := by
+    rw [feeLocals]
+    exact bind_lookup_other _ _ _ _ different
+  have warmCell : ready.locals.lookup (ofString "warm") = some (.val (.word warm)) :=
+    (feeOther "warm" (by decide)).trans ((transferOther "warm" (by decide)).trans
+      ((accessOther "warm" (by decide)).trans (bind_lookup_same _ _ _)))
+  have localsOther (key : String) (notNeed : ofString "need" ≠ ofString key)
+      (notTransfer : ofString "transfer_cost" ≠ ofString key)
+      (notAccess : ofString "access_cost" ≠ ofString key) (notWarm : ofString "warm" ≠ ofString key) :
+      ready.locals.lookup (ofString key) = source.locals.lookup (ofString key) :=
+    (feeOther key notNeed).trans ((transferOther key notTransfer).trans
+      ((accessOther key notAccess).trans (warmOther key notWarm)))
+  refine ⟨warm, warmPaid + 2, ready, inner, by omega, event, surplus, tailRun, ?_, ?_, warmCell, localsOther⟩
   · rw [warmScope, accessScope, transferScope, feeScope]
     rfl
   · rw [warmScope, accessScope, transferScope, feeScope]

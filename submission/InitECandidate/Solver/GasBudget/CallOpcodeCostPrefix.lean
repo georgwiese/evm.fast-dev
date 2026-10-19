@@ -25,7 +25,10 @@ theorem cost_prefix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
       ready.locals.lookup (ofString "x") = some (MemoryExpansionCost.pairValue (MemoryExpansionCost2.resultPair inStart inSize outStart outSize current)) ∧
       ready.locals.lookup (ofString "to") = some (.val (.word query)) ∧
       evaluateHOLFiniteState ready afterCost = (some (.returned returned), inner) ∧
-      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock := by
+      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock ∧
+      ready.locals.lookup (ofString "msg") = some (.val (.word message)) ∧
+      (∀ key : String, ofString "x" ≠ ofString key → ofString "vz" ≠ ofString key → ofString "msg" ≠ ofString key →
+        ready.locals.lookup (ofString key) = source.locals.lookup (ofString key)) := by
   have messageRead := frame_read source frame 112#64 message view.ev messageMapped messageCell
   rw [message_shape] at run
   obtain ⟨messagePost, messageRun, messageScope⟩ := Input.declaration_return_word source post "msg" (frameLoad 112#64) message afterMessage returned messageRead run
@@ -57,8 +60,16 @@ theorem cost_prefix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   have finalFields : Input.LocalEffects.erase ready = Input.LocalEffects.erase source := readyFields.trans firstFields
   have firstClock : first.clock = source.clock - zeroPaid := by rw [firstEq]; rfl
   have clock : ready.clock = source.clock - (zeroPaid + costPaid) := by rw [readyEq]; change first.clock - costPaid = _; rw [firstClock]; omega
+  have msgCell : ready.locals.lookup (ofString "msg") = some (.val (.word message)) :=
+    (Input.KnownUnaryPrefix.lookup_other readyEq "msg" (by decide)).trans
+      ((firstOther "msg" (by decide)).trans (bind_lookup_same _ _ _))
+  have localsOther (key : String) (notX : ofString "x" ≠ ofString key)
+      (notVZ : ofString "vz" ≠ ofString key) (notMsg : ofString "msg" ≠ ofString key) :
+      ready.locals.lookup (ofString key) = source.locals.lookup (ofString key) :=
+    (Input.KnownUnaryPrefix.lookup_other readyEq key notX).trans
+      ((firstOther key notVZ).trans (entryOther key notMsg))
   refine ⟨zeroPaid + costPaid, ready, inner, by change zeroPaid ≤ 1 at zeroBound; omega, ?_, clock, finalFields,
-    view.after_erase finalFields, ?_, Input.KnownUnaryPrefix.lookup_same readyEq, ?_, tailRun, ?_, ?_⟩
+    view.after_erase finalFields, ?_, Input.KnownUnaryPrefix.lookup_same readyEq, ?_, tailRun, ?_, ?_, msgCell, localsOther⟩
   · rw [firstClock] at costFits
     change zeroPaid ≤ source.clock at zeroFits
     omega

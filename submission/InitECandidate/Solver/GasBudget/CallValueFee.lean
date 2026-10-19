@@ -36,7 +36,9 @@ theorem normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
         (SaturatingAdd.resultWord (access + ForwardCredit.valueFee words) memoryCost).toNat ∧
       memoryCost.toNat + (CallGas.stipend words).toNat + 100 ≤
         (SaturatingAdd.resultWord (access + ForwardCredit.valueFee words) memoryCost).toNat ∧
-      (∀ address, address ≠ frame + 64#64 → address ≠ frame + 184#64 → ready.memory address = source.memory address) := by
+      (∀ address, address ≠ frame + 64#64 → address ≠ frame + 184#64 → ready.memory address = source.memory address) ∧
+      ready.locals = (bind {source with clock := source.clock - 1} "need"
+        (SaturatingAdd.resultWord (access + ForwardCredit.valueFee words) memoryCost)).locals := by
   obtain ⟨a, b, inner, addFits, actualArgs, lower, chargeRun, scope⟩ :=
     SaturatingAdd.normal_prefix source post "need" [feeExpression, .rfield 0 (localVar "x")] (afterFee continuation) addCode returned run
   have expectedArgs : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address))
@@ -74,7 +76,8 @@ theorem normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have subtraction : source.clock - 1 - 1 = source.clock - 2 := by omega
   rw [subtraction] at fields
   change 1 ≤ source.clock - 1 at chargeFits
-  refine ⟨ready, inner, by omega, fields, tailRun, scope, budget, by rw [oldUsed]; exact credit, surplus, ?_⟩
+  have locals := congrArg PanSemStateFiniteExact.locals canonical
+  refine ⟨ready, inner, by omega, fields, tailRun, scope, budget, by rw [oldUsed]; exact credit, surplus, ?_, locals⟩
   intro address notGas notUsed
   exact RegularCharge.call_other_word first ready frame amount address [localVar "need"] args chargeCode ev cap actualCharge notGas notUsed
 

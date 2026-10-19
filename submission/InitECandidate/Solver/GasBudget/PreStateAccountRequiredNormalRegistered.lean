@@ -41,7 +41,7 @@ theorem pre_state_body_registered {ι : Type} [Fintype ι] [DecidableEq ι]
       Keccak256.Environment post stp pad ∧ Rlp.Validation.Arena post scratchPtr limit ∧ HeapGlobals source post ∧ post.code=source.code ∧
       paid+TableFamily.potential objects≤26*count+31101+TableFamily.potential nextObjects ∧
       AccountDecode.Registry post cutoff nextCursor nextObjects nextAccounts ∧ TableFamily.ValuesHave post nextObjects property ∧
-      (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
+      AccountDecode.Registry.Extension accounts nextAccounts cursor ∧
       word∈nextAccounts ∧ returned=.val (.word word) ∧ Nonempty (AccountDecode.Image post word) := by
   rw [body_shape .preState] at run
   change evaluateHOLFiniteState source (.decCall (ofString "a") .one (ofString "get_pre_state_account_optional") [localVar "addr"] afterGet)=(some (.returned returned),post) at run
@@ -76,7 +76,7 @@ theorem pre_state_body_registered {ι : Type} [Fintype ι] [DecidableEq ι]
   refine ⟨prefixPaid+tailPaid,finalCursor,nextObjects,finalAccounts,word,by omega,by omega,by omega,postFamily,nextPopulation,nextFloors,pointers,⟨postWorld⟩,postHash,postArena,globals,?_,by omega,
     postRegistry,postValues,?_,member,returnedEq,postRegistry.images word member⟩
   · rw [restored]; exact innerCode.trans codeEq
-  · intro item old; exact tailWeakening item (weakening item old)
+  · exact weakening.trans tailWeakening forward
 
 end InitECandidate.Solver.GasBudget.AccountRequired
 

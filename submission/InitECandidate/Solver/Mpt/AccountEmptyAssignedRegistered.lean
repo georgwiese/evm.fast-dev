@@ -25,7 +25,7 @@ theorem assigned_registered {ι : Type} (source post : PanSemStateFiniteExact 64
       Rlp.Slices.Window source post heap.toNat (heap.toNat+56) ∧ HeapGlobals source post ∧
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 56#64))) ∧ MutableTable.TableFamily.Model post (heap.toNat+56) objects ∧
       AccountDecode.Registry post cutoff (heap.toNat+56) objects (accounts++[heap]) ∧ MutableTable.TableFamily.ValuesHave post objects property ∧
-      (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known (accounts++[heap]) value) ∧ AccountDecode.Registry.Known (accounts++[heap]) heap := by
+      AccountDecode.Registry.Extension accounts (accounts++[heap]) heap.toNat ∧ AccountDecode.Registry.Known (accounts++[heap]) heap := by
   obtain ⟨funded,room,canonical,cell,clock,rounded,⟨image⟩,window,globals,heapAfter⟩ :=
     assigned_normal source post heap root hash rootGlobal hashGlobal heapGlobal heapLower heapBound heapAligned domain rootArena hashArena installed name expressions expectedArgs normal
   have nextWord : BitVec.ofNat 64 (heap.toNat+56)=PersistentAlloc.rounded heap 56#64 := by

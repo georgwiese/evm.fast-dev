@@ -40,7 +40,7 @@ theorem pre_state_body_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
       Keccak256.Environment post stp pad ∧ Rlp.Validation.Arena post scratchPtr limit ∧ HeapGlobals source post ∧ post.code=source.code ∧
       paid+TableFamily.potential objects≤26*count+31097+TableFamily.potential nextObjects ∧
       AccountDecode.Registry post cutoff nextCursor nextObjects nextAccounts ∧ TableFamily.ValuesHave post nextObjects property ∧
-      (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
+      AccountDecode.Registry.Extension accounts nextAccounts cursor ∧
       ∃ value : BitVec 64,returned=.val (.word value) ∧ (property reader value ∨ AccountDecode.Registry.Known nextAccounts value) := by
   obtain ⟨prefixPaid,prefixCursor,next,flag,value,ready,inner,funded,prefixClock,forward,nextKind,countLower,countUpper,capacity,prefixFamily,prefixPopulation,pointers,prefixPrice,⟨currentWorld⟩,currentHash,currentArena,currentEnvironment,codeEq,prefixGlobals,floorFrame,beforeWords,queryCell,resultCell,tailRun,frame,postClock,prefixValues,valueOwnership,persistent⟩ :=
     world_cache_prefix_values .preState source post transaction block query ws root nibs stp pad scratchPtr limit cursor cutoff frozenEnd valueLimit count objects writer reader
@@ -64,7 +64,7 @@ theorem pre_state_body_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
       Keccak256.Environment inner stp pad ∧ Rlp.Validation.Arena inner scratchPtr limit ∧ HeapGlobals ready inner ∧
       ready.clock-inner.clock+TableFamily.potential current≤9*count+31074+TableFamily.potential finalObjects ∧
       AccountDecode.Registry inner cutoff finalCursor finalObjects finalAccounts ∧ TableFamily.ValuesHave inner finalObjects property ∧
-      (∀ word : BitVec 64,AccountDecode.Registry.Known accounts word → AccountDecode.Registry.Known finalAccounts word) ∧
+      AccountDecode.Registry.Extension accounts finalAccounts prefixCursor ∧
       ∃ word : BitVec 64,returned=.val (.word word) ∧ (property reader word ∨ AccountDecode.Registry.Known finalAccounts word) := by
     rw [cache_dispatch .preState ready flag value resultCell] at tailRun
     by_cases zero : flag=0#64
@@ -105,7 +105,7 @@ theorem pre_state_body_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
       refine ⟨prefixCursor,current,accounts,by omega,prefixFamily.of_control rfl rfl rfl rfl,?_,currentFloors,by intro index; rfl,
         ⟨currentWorld.of_agreement ready _ ws root nibs cutoff frozenEnd valueLimit rfl rfl rfl rfl (by intros; rfl)⟩,
         currentHash.of_fields ready _ stp pad rfl rfl rfl (HeapGlobals.refl ready),currentArena.of_fields ready _ scratchPtr limit rfl rfl,
-        HeapGlobals.refl ready,?_,innerRegistry,prefixValues,(fun word known=>known),value,returnedEq,Or.inl owned⟩
+        HeapGlobals.refl ready,?_,innerRegistry,prefixValues,AccountDecode.Registry.Extension.refl accounts prefixCursor,value,returnedEq,Or.inl owned⟩
       · intro index; have := prefixPopulation index; omega
       · change ready.clock-ready.clock+TableFamily.potential current≤_; omega
   obtain ⟨finalCursor,finalObjects,finalAccounts,finalForward,innerFamily,finalPopulation,finalFloors,finalPointers,⟨innerWorld⟩,innerHash,innerArena,tailGlobals,tailPrice,innerRegistry,innerValues,weakening,scalar⟩ := tail
@@ -133,7 +133,7 @@ theorem pre_state_body_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
   change post.clock≤source.clock at overall
   let paid := source.clock-post.clock
   refine ⟨paid,finalCursor,finalObjects,finalAccounts,Nat.sub_le _ _,by dsimp [paid]; omega,by omega,finalFamily,finalPopulation,finalFloors,?_,⟨finalWorld⟩,
-    finalHash,finalArena,finalGlobals,(Input.evaluation_fields source post Kind.preState.body _ run).2.2.2,?_,finalRegistry,finalValues,weakening,scalar⟩
+    finalHash,finalArena,finalGlobals,(Input.evaluation_fields source post Kind.preState.body _ run).2.2.2,?_,finalRegistry,finalValues,weakening.lower forward,scalar⟩
   · intro index; exact (finalPointers index).trans (pointers index)
   · dsimp [paid]; omega
 

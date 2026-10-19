@@ -34,7 +34,7 @@ theorem scoped_registered {ι : Type} (source post : PanSemStateFiniteExact 64 G
       ready.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 56#64))) ∧
       MutableTable.TableFamily.Model ready (heap.toNat+56) objects ∧
       AccountDecode.Registry ready cutoff (heap.toNat+56) objects (accounts++[heap]) ∧ MutableTable.TableFamily.ValuesHave ready objects property ∧
-      (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known (accounts++[heap]) value) ∧ AccountDecode.Registry.Known (accounts++[heap]) heap ∧
+      AccountDecode.Registry.Extension accounts (accounts++[heap]) heap.toNat ∧ AccountDecode.Registry.Known (accounts++[heap]) heap ∧
       evaluateHOLFiniteState ready continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by
   obtain ⟨funded,room,ready,inner,cell,clock,frame,rounded,⟨image⟩,window,globals,heapAfter,tailRun,restored⟩ :=
     scoped_normal source post heap nonce balance root hash rootGlobal heapGlobal heapLower heapBound heapAligned domain rootArena hashArena installed

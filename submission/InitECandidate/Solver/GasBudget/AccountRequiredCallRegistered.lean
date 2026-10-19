@@ -44,7 +44,7 @@ theorem scoped_transaction_registered {ι : Type} [Fintype ι] [DecidableEq ι]
       Keccak256.Environment ready stp pad ∧ Rlp.Validation.Arena ready scratchPtr limit ∧ HeapGlobals source ready ∧ ready.code=source.code ∧
       paid+TableFamily.potential objects≤43*count+31152+TableFamily.potential nextObjects ∧
       AccountDecode.Registry ready cutoff nextCursor nextObjects nextAccounts ∧ TableFamily.ValuesHave ready nextObjects property ∧
-      (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
+      AccountDecode.Registry.Extension accounts nextAccounts cursor ∧
       word∈nextAccounts ∧ Nonempty (AccountDecode.Image ready word) ∧
       ready.locals.lookup (ofString name)=some (.val (.word word)) ∧
       evaluateHOLFiniteState ready continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by

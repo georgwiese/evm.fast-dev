@@ -25,7 +25,7 @@ theorem fallback_normal {ι : Type} (source post : PanSemStateFiniteExact 64 Gue
     ∃ paid nextCursor nextAccounts word,paid≤3 ∧ paid≤source.clock ∧ post.clock=source.clock-paid ∧ cursor≤nextCursor ∧
       (nextCursor=cursor ∨ nextCursor=cursor+56) ∧ TableFamily.Model post nextCursor objects ∧
       AccountDecode.Registry post cutoff nextCursor objects nextAccounts ∧ TableFamily.ValuesHave post objects property ∧
-      (∀ item : BitVec 64,AccountDecode.Registry.Known accounts item → AccountDecode.Registry.Known nextAccounts item) ∧
+      AccountDecode.Registry.Extension accounts nextAccounts cursor ∧
       word∈nextAccounts ∧ returned=.val (.word word) ∧ Nonempty (AccountDecode.Image post word) ∧ HeapGlobals source post ∧
       post.code=source.code ∧ post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.ffi.oracle=source.ffi.oracle ∧
       (∀ query : BitVec 64,query.toNat<cursor → post.memory query=source.memory query) := by
@@ -54,7 +54,7 @@ theorem fallback_normal {ι : Type} (source post : PanSemStateFiniteExact 64 Gue
       AccountEmpty.assigned_registered source assigned heap root hash cutoff objects accounts currentFamily currentRegistry property tableValues
         (by rw [heapNumber]; exact above) rootGlobal hashGlobal table.heap heapLower (by rw [heapNumber]; exact table.bounded)
         (by rw [heapNumber]; exact table.aligned) domain rootArena hashArena installed (ofString "a") [] rfl assignRun
-    rw [heapNumber] at nextFamily nextRegistry
+    rw [heapNumber] at nextFamily nextRegistry weakening
     have actual := Input.return_normal assigned post (localVar "a") returned returnRun
     have read : eval assigned (localVar "a")=some (.val (.word heap)) := by simp [eval,localVar,evalHOLExact,toExact,assignedCell]
     have returnedEq : returned=.val (.word heap) := Option.some.inj (actual.1.symm.trans read)
@@ -90,7 +90,7 @@ theorem fallback_normal {ι : Type} (source post : PanSemStateFiniteExact 64 Gue
     have postRegistry := registry.framed source post cutoff cursor cursor objects objects accounts
       (TableFamily.PersistentFrame.of_memory cutoff cursor objects source post (by rw [postEq] <;> rfl)) (Nat.le_refl _) (by rw [postEq] <;> rfl)
     have postValues := tableValues.of_memory source post objects property (by rw [postEq] <;> rfl)
-    refine ⟨0,cursor,accounts,value,by decide,Nat.zero_le _,?_,Nat.le_refl _,Or.inl rfl,postFamily,postRegistry,postValues,(fun item known=>known),member,returnedEq,
+    refine ⟨0,cursor,accounts,value,by decide,Nat.zero_le _,?_,Nat.le_refl _,Or.inl rfl,postFamily,postRegistry,postValues,AccountDecode.Registry.Extension.refl accounts cursor,member,returnedEq,
       postRegistry.images value member,?_,?_,?_,?_,?_,?_⟩
     · rw [postEq]; simp only [Nat.sub_zero]; rfl
     · rw [postEq]; exact HeapGlobals.refl source

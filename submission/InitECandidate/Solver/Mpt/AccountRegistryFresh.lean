@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Mpt.AccountRegistryExtension
 import InitECandidate.Solver.Mpt.AccountRegistryAppend
 import InitECandidate.Solver.MutableTable.FamilyAdvancePools
 import InitECandidate.Solver.MutableTable.FamilyValues
@@ -20,7 +21,7 @@ theorem Registry.after_fresh_account {ι : Type} (source target : PanSemStateFin
     (before : ∀ query : BitVec 64,query.toNat<cursor → target.memory query=source.memory query) :
     TableFamily.Model target nextCursor objects ∧ Registry target cutoff nextCursor objects (accounts++[fresh]) ∧
       TableFamily.ValuesHave target objects property ∧
-      (∀ value : BitVec 64,Registry.Known accounts value → Registry.Known (accounts++[fresh]) value) ∧
+      Registry.Extension accounts (accounts++[fresh]) cursor ∧
       Registry.Known (accounts++[fresh]) fresh := by
   have pools : ∀ index,MemoryModel.PoolFrame source.memory target.memory (objects index).kind (objects index).plan := by
     intro index pool offset inside
@@ -43,7 +44,7 @@ theorem Registry.after_fresh_account {ι : Type} (source target : PanSemStateFin
     rw [capNumber] at inside
     rw [scaled_cell]
     exact pools index .values _ (word_offset_inside (objects index).kind _ .values slot.toNat (Or.inl rfl) inside)
-  exact ⟨nextFamily,nextRegistry,nextValues,fun value known=>Registry.known_append accounts fresh value known,Or.inr (by simp)⟩
+  exact ⟨nextFamily,nextRegistry,nextValues,Registry.Extension.append accounts fresh cursor after,Or.inr (by simp)⟩
 
 end InitECandidate.Solver.Mpt.AccountDecode
 

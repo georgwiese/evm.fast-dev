@@ -1,4 +1,4 @@
-import InitECandidate.Solver.GasBudget.AccountCacheProgram
+import InitECandidate.Solver.GasBudget.AccountCacheOutcome
 
 namespace InitECandidate.Solver.GasBudget.AccountCache
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -7,7 +7,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch MutableTable NaturalL
 set_option maxHeartbeats 2000000 in
 /-- The actual original account lookup records its read and reaches the
 transaction-cache result with the full family retained through real growth. -/
-theorem normal_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem outcome_cache_prefix (outcome : Outcome) (kind : Kind) {ι : Type} [DecidableEq ι] (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (transaction readerRecord query : BitVec 64) (cursor : Nat) (objects : ι → TableFamily.Object) (writer reader : ι)
     (family : TableFamily.Model source cursor objects)
     (writerKind : (objects writer).kind = .account) (readerKind : (objects reader).kind = .account)
@@ -20,7 +20,7 @@ theorem normal_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (source p
     (queryLocal : source.locals.lookup (ofString "addr") = some (.val (.word query)))
     (queryFits : query.toNat + 20 < 2^64)
     (queryMapped : ∀ offset < 20, source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress query offset)))
-    (returned : ValueHOL 64) (run : evaluateHOLFiniteState source kind.body = (some (.returned returned), post)) :
+    (run : evaluateHOLFiniteState source kind.body = (outcome.result, post)) :
     ∃ (paid nextCursor : Nat) (next : TableFamily.Object) (flag value : BitVec 64)
       (ready inner : PanSemStateFiniteExact 64 Guest.HostMemory),
       paid ≤ source.clock ∧ ready.clock = source.clock - paid ∧
@@ -34,7 +34,7 @@ theorem normal_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (source p
       (flag = 0#64 ∨ flag = 1#64) ∧
       ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
       ready.locals.lookup (ofString "w") = some (Get.pair flag value) ∧
-      evaluateHOLFiniteState ready kind.afterGet = (some (.returned returned), inner) ∧
+      evaluateHOLFiniteState ready kind.afterGet = (outcome.result, inner) ∧
       Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock := by
   classical
   have setRead := Input.global_field_read source "ts" transaction 8#64 (objects writer).pointer transactionGlobal setMapped setCell
@@ -46,9 +46,7 @@ theorem normal_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (source p
     simp only [AccountOptional.tableField]
     rw [setRead]
     simp [TableCall.values, evalListHOLExact, evalHOLExact, toExact, localVar, queryLocal]
-  rw [kind.body_shape] at run
-  have safe : Input.LocalPrefix (ofString "addr") setCall := .call none _ _ (by intro name impossible; cases impossible)
-  obtain ⟨called, setRun, getterRun, saved⟩ := safe.normal_continue source post kind.afterSet returned run
+  obtain ⟨called, setRun, getterRun⟩ := set_before_outcome outcome kind source post environment run
   obtain ⟨setPaid, nextCursor, next, setFits, setClock, forward, nextKind, nextFloor, nextFamily, pointers, amortized,
     countLower, countUpper, capacity, locals, codes, nextEnvironment, globals, protectedWords, earlier⟩ :=
     TableFamily.set_normal source called cursor objects writer family environment query 1#64 setArguments
@@ -98,8 +96,8 @@ theorem normal_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (source p
     exact queryMapped offset inside
   rw [kind.getter_shape] at getterRun
   obtain ⟨getPaid, flag, value, inner, getPositive, getBound, getFits, binary, tailRun, scope⟩ :=
-    Get.model_normal_entry called post .account cache.plan cache.slots nextCursor cache.floor cacheTable nextEnvironment query queryFits currentQueryMapped
-      (Get.original_code called.code currentOriginal) "w" kind.getArguments kind.afterGet getArgs returned getterRun
+    getter_before_outcome outcome called post .account cache.plan cache.slots nextCursor cache.floor cacheTable nextEnvironment query queryFits currentQueryMapped
+      (Get.original_code called.code currentOriginal) "w" kind.getArguments kind.afterGet getArgs getterRun
   let ready := setVarHOLFinite (ofString "w") (Get.pair flag value) {called with clock := called.clock - getPaid}
   have funded : setPaid + getPaid ≤ source.clock := by rw [setClock] at getFits; omega
   have clock : ready.clock = source.clock - (setPaid + getPaid) := by change called.clock - getPaid = _; rw [setClock]; omega
@@ -112,6 +110,73 @@ theorem normal_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (source p
   · rw [scope]; rfl
   · rw [scope]; rfl
 
+theorem normal_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (transaction readerRecord query : BitVec 64) (cursor : Nat) (objects : ι → TableFamily.Object) (writer reader : ι)
+    (family : TableFamily.Model source cursor objects)
+    (writerKind : (objects writer).kind = .account) (readerKind : (objects reader).kind = .account)
+    (environment : WarmKeys.Environment source) (installed : Input.OriginalCode.Installed source.code)
+    (transactionGlobal : source.globals.lookup (ofString "ts") = some (.val (.word transaction)))
+    (readerGlobal : source.globals.lookup (ofString kind.readerGlobal) = some (.val (.word readerRecord)))
+    (recordBefore : readerRecord.toNat + 72 ≤ (objects writer).floor)
+    (setMapped : source.memaddrs (transaction + 8#64)) (setCell : source.memory (transaction + 8#64) = .word (objects writer).pointer)
+    (getMapped : source.memaddrs (readerRecord + 16#64)) (getCell : source.memory (readerRecord + 16#64) = .word (objects reader).pointer)
+    (queryLocal : source.locals.lookup (ofString "addr") = some (.val (.word query)))
+    (queryFits : query.toNat + 20 < 2^64)
+    (queryMapped : ∀ offset < 20, source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress query offset)))
+    (returned : ValueHOL 64) (run : evaluateHOLFiniteState source kind.body = (some (.returned returned), post)) :
+    ∃ (paid nextCursor : Nat) (next : TableFamily.Object) (flag value : BitVec 64)
+      (ready inner : PanSemStateFiniteExact 64 Guest.HostMemory),
+      paid ≤ source.clock ∧ ready.clock = source.clock - paid ∧
+      paid + GrowRuntime.growthPotential .account (objects writer).plan.capacity ≤
+        9 * (objects writer).slots.length + 8 * (Function.update objects writer next reader).slots.length + 15 +
+          GrowRuntime.growthPotential .account next.plan.capacity ∧
+      next.kind = .account ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
+      (∀ index, (Function.update objects writer next index).pointer = (objects index).pointer) ∧
+      WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
+      TableFamily.FloorFrame objects (Function.update objects writer next) source ready ∧
+      (flag = 0#64 ∨ flag = 1#64) ∧
+      ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
+      ready.locals.lookup (ofString "w") = some (Get.pair flag value) ∧
+      evaluateHOLFiniteState ready kind.afterGet = (some (.returned returned), inner) ∧
+      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock := by
+  exact outcome_cache_prefix (.returned returned) kind source post transaction readerRecord query cursor objects writer reader family writerKind readerKind environment installed
+    transactionGlobal readerGlobal recordBefore setMapped setCell getMapped getCell queryLocal queryFits queryMapped run
+
+theorem exception_cache_prefix (kind : Kind) {ι : Type} [DecidableEq ι] (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (transaction readerRecord query : BitVec 64) (cursor : Nat) (objects : ι → TableFamily.Object) (writer reader : ι)
+    (family : TableFamily.Model source cursor objects)
+    (writerKind : (objects writer).kind = .account) (readerKind : (objects reader).kind = .account)
+    (environment : WarmKeys.Environment source) (installed : Input.OriginalCode.Installed source.code)
+    (transactionGlobal : source.globals.lookup (ofString "ts") = some (.val (.word transaction)))
+    (readerGlobal : source.globals.lookup (ofString kind.readerGlobal) = some (.val (.word readerRecord)))
+    (recordBefore : readerRecord.toNat + 72 ≤ (objects writer).floor)
+    (setMapped : source.memaddrs (transaction + 8#64)) (setCell : source.memory (transaction + 8#64) = .word (objects writer).pointer)
+    (getMapped : source.memaddrs (readerRecord + 16#64)) (getCell : source.memory (readerRecord + 16#64) = .word (objects reader).pointer)
+    (queryLocal : source.locals.lookup (ofString "addr") = some (.val (.word query)))
+    (queryFits : query.toNat + 20 < 2^64)
+    (queryMapped : ∀ offset < 20, source.memaddrs (panByteAlignHOL (width := 64) (WitnessRadix.byteAddress query offset)))
+    (identifier : MlS) (payload : ValueHOL 64) (other : ofString "TrapErr" ≠ identifier)
+    (run : evaluateHOLFiniteState source kind.body = (some (.exception identifier payload), post)) :
+    ∃ (paid nextCursor : Nat) (next : TableFamily.Object) (flag value : BitVec 64)
+      (ready inner : PanSemStateFiniteExact 64 Guest.HostMemory),
+      paid ≤ source.clock ∧ ready.clock = source.clock - paid ∧
+      paid + GrowRuntime.growthPotential .account (objects writer).plan.capacity ≤
+        9 * (objects writer).slots.length + 8 * (Function.update objects writer next reader).slots.length + 15 +
+          GrowRuntime.growthPotential .account next.plan.capacity ∧
+      next.kind = .account ∧ TableFamily.Model ready nextCursor (Function.update objects writer next) ∧
+      (∀ index, (Function.update objects writer next index).pointer = (objects index).pointer) ∧
+      WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
+      TableFamily.FloorFrame objects (Function.update objects writer next) source ready ∧
+      (flag = 0#64 ∨ flag = 1#64) ∧
+      ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
+      ready.locals.lookup (ofString "w") = some (Get.pair flag value) ∧
+      evaluateHOLFiniteState ready kind.afterGet = (some (.exception identifier payload), inner) ∧
+      Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock := by
+  exact outcome_cache_prefix (.exception identifier payload other) kind source post transaction readerRecord query cursor objects writer reader family writerKind readerKind environment installed
+    transactionGlobal readerGlobal recordBefore setMapped setCell getMapped getCell queryLocal queryFits queryMapped run
+
 end InitECandidate.Solver.GasBudget.AccountCache
 
+#print axioms InitECandidate.Solver.GasBudget.AccountCache.outcome_cache_prefix
 #print axioms InitECandidate.Solver.GasBudget.AccountCache.normal_cache_prefix
+#print axioms InitECandidate.Solver.GasBudget.AccountCache.exception_cache_prefix

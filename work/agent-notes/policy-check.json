@@ -1014,6 +1014,7 @@
     "submission/InitECandidate/Solver/FlattenWeighted/WholeCall.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/Work.lean",
     "submission/InitECandidate/Solver/GasBudget/AccountCacheCases.lean",
+    "submission/InitECandidate/Solver/GasBudget/AccountCacheOutcome.lean",
     "submission/InitECandidate/Solver/GasBudget/AccountCachePrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/AccountCacheProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/AccountOptionalCacheCases.lean",
@@ -1403,8 +1404,10 @@
     "submission/InitECandidate/Solver/GasBudget/OpcodeTstoreProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/OriginalCodeEnvironment.lean",
     "submission/InitECandidate/Solver/GasBudget/PcAddNormal.lean",
+    "submission/InitECandidate/Solver/GasBudget/PreStateAccountMiss.lean",
     "submission/InitECandidate/Solver/GasBudget/PreStateReadRecord.lean",
     "submission/InitECandidate/Solver/GasBudget/PreStateReadRecordCall.lean",
+    "submission/InitECandidate/Solver/GasBudget/PreStateReadRecordSafe.lean",
     "submission/InitECandidate/Solver/GasBudget/PrefixEnvironment.lean",
     "submission/InitECandidate/Solver/GasBudget/ProcessMessageOpen.lean",
     "submission/InitECandidate/Solver/GasBudget/ProcessMessageProgram.lean",
@@ -3299,6 +3302,7 @@
     "submission/InitECandidate/Solver/MutableTable/SetNoGrowthCall.lean",
     "submission/InitECandidate/Solver/MutableTable/SetNoGrowthExecution.lean",
     "submission/InitECandidate/Solver/MutableTable/SetNoGrowthTail.lean",
+    "submission/InitECandidate/Solver/MutableTable/SetNoOtherException.lean",
     "submission/InitECandidate/Solver/MutableTable/SetNormalBound.lean",
     "submission/InitECandidate/Solver/MutableTable/SetNormalCall.lean",
     "submission/InitECandidate/Solver/MutableTable/SetNormalExecution.lean",
@@ -5458,8 +5462,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62323,
-  "package_bytes": 2257533686,
+  "package_entries": 62327,
+  "package_bytes": 2257558557,
   "claim": {
     "K": "infinity"
   },

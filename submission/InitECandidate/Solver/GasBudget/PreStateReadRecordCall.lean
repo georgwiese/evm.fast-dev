@@ -26,7 +26,7 @@ theorem call_normal {ι : Type} [DecidableEq ι] (source post : PanSemStateFinit
       (objects writer).slots.length ≤ next.slots.length ∧ next.slots.length ≤ (objects writer).slots.length + 1 ∧
       next.plan.capacity ≤ max (objects writer).plan.capacity (4 * (next.slots.length + 1)) ∧
       post.code = source.code ∧ WarmKeys.Environment post ∧ HeapGlobals source post ∧
-      TableFamily.FloorFrame objects (Function.update objects writer next) source post := by
+      TableFamily.FloorFrame objects (Function.update objects writer next) source post ∧ post.locals = source.locals := by
   obtain ⟨positive, values, actual, callee, shape, target, returned, args, called, bodyRun, checked, postEq, callerFields⟩ :=
     Input.CallNormal.ignored_data source post (ofString "record_pre_state_read") expressions run
   obtain ⟨argument, valuesEq, bodyEq, shapeEq, typed, binding⟩ := Input.CallNormal.unary_lookup_data source.code.lookup
@@ -50,7 +50,7 @@ theorem call_normal {ι : Type} [DecidableEq ι] (source post : PanSemStateFinit
   refine ⟨paid + 1, nextCursor, next, by omega, by rw [postEq]; exact clock.trans subtract, forward, nextKind,
     nextFamily.of_control (by rw [postEq]) (by rw [postEq]) (by rw [postEq]) (by rw [postEq]),
     pointers, by omega, countLower, countUpper, capacity, by rw [postEq]; exact codes,
-    nextEnvironment.of_fields (by rw [postEq]) (by rw [postEq]) (by rw [postEq]), ?_, ?_⟩
+    nextEnvironment.of_fields (by rw [postEq]) (by rw [postEq]) (by rw [postEq]), ?_, ?_, by rw [postEq]⟩
   · intro key different
     rw [postEq]
     exact globals key different

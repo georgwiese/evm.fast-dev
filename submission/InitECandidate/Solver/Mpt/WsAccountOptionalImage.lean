@@ -27,23 +27,28 @@ theorem body_image (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (w
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
     Result post heap cursor limit returned ∧ HeapGlobals source post ∧ source.clock-post.clock≤191*valueLimit+2593 ∧
-      (returned=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image post heap)) := by
+      (returned=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image post heap)) ∧
+      (∀ query : BitVec 64,cursor.toNat≤query.toNat → query.toNat<heap.toNat → Keccak256.Protected stp pad heap query →
+        (∀ offset<64,query≠panByteAlignHOL (width:=64) (byteAddress nibs offset)) → post.memory query=source.memory query) := by
   obtain ⟨basic,room,price,nonheap⟩ := body_normal source post ws root addr heap nibs stp pad cursor limit cutoff valueLimit data values protectedValues hashData
     graphProtection valueProtection rootProtection addressCell arena heapGlobal heapBound heapLower heapAligned sizeBound aligned scratchBelow installed returned normal
-  obtain ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,leafGlobals,codeEq,tailRun,restored⟩ :=
+  obtain ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,leafGlobals,leafMemory,codeEq,tailRun,restored⟩ :=
     body_leaf source post ws root addr heap nibs stp pad cursor limit cutoff valueLimit data values protectedValues hashData graphProtection valueProtection rootProtection
       addressCell arena heapGlobal heapBound installed returned normal
   have readyInstalled : Input.OriginalCode.Installed ready.code := by rw [codeEq]; exact installed
   obtain ⟨image,window⟩ := after_leaf_image ready inner heap cursor limit emptyRoot emptyHash cutoff valueLimit answer readyCell result readyArena nextHeap heapBound heapLower heapAligned
     sizeBound aligned scratchBelow ((leafGlobals _ (by decide)).trans rootGlobal) ((leafGlobals _ (by decide)).trans hashGlobal)
     rootArena hashArena readyInstalled returned tailRun
-  refine ⟨basic,nonheap,price,?_⟩
-  rcases image with absent | image
-  · exact Or.inl absent
-  · right
-    obtain ⟨present⟩ := image
+  refine ⟨basic,nonheap,price,?_,?_⟩
+  · rcases image with absent | image
+    · exact Or.inl absent
+    · right
+      obtain ⟨present⟩ := image
+      rw [restored]
+      exact ⟨AccountDecode.Image.of_agreement inner _ heap present rfl (by rfl) (by rfl)⟩
+  · intro query beyond below guarded outside
     rw [restored]
-    exact ⟨AccountDecode.Image.of_agreement inner _ heap present rfl (by rfl) (by rfl)⟩
+    exact (window query beyond below).trans (leafMemory query guarded outside)
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

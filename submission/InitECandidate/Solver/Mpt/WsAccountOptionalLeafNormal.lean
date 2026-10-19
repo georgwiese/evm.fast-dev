@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.WsAccountOptionalProgram
 import InitECandidate.Solver.Mpt.WsAccountLeafNormal
 import InitECandidate.Solver.Mpt.WsAccountLeafCall
+import InitECandidate.Solver.Mpt.WsAccountLeafMemory
 import InitECandidate.Solver.Mpt.WsAccountLeafCursors
 import InitECandidate.Solver.Mpt.LookupGlobals
 import InitECandidate.Solver.Input.CallNormal
@@ -32,7 +33,7 @@ theorem body_leaf (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws
       TrieWalk.Answer ready.memaddrs valueLimit answer (fun p n=>cutoff≤p.toNat ∧ p.toNat+n.toNat≤heap.toNat) ∧
       Rlp.Validation.Arena ready cursor limit ∧
       ready.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
-      HeapGlobals source ready ∧ ready.code=source.code ∧
+      HeapGlobals source ready ∧ WsAccountLeaf.MemoryFrame source ready stp pad heap nibs ∧ ready.code=source.code ∧
       evaluateHOLFiniteState ready afterLeaf=(some (.returned returned),inner) ∧ post=restore source "leaf" inner := by
   rw [body_shape] at normal
   obtain ⟨callee,called,addrCell⟩ := WsAccountLeaf.environment source.code.lookup addr (WsAccountLeaf.original_code source.code installed)
@@ -61,7 +62,9 @@ theorem body_leaf (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws
     have preserved := WsAccountLeaf.globals key source.code installed notHeap entry rfl
     rw [bodyRun] at preserved
     exact congrArg Prod.snd preserved
-  exact ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,nonheap,codeEq,tailRun,restored⟩
+  have memory := WsAccountLeaf.body_memory entry target ws root addr heap nibs stp pad entryData entryHash entryGraphProtection rootProtection
+    addrCell heapGlobal heapBound installed answer bodyRun
+  exact ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,nonheap,memory,codeEq,tailRun,restored⟩
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

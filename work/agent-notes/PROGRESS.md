@@ -2,6 +2,12 @@
 
 > **AUTHORITATIVE SCOPE CORRECTION — 2026-10-17:** The user requires a reasonably tight finite runtime bound for the current, unchanged Pancake implementation on main. There is NO numerical ceiling. Stop replacement/radix refinement/candidate compilation work. The current plan at the top of bound.md supersedes historical below-Yukon-limit objectives and checklists here. Keep reusable original-program proofs; remove the authorized replacement code after dependency review, retaining history in Git. The previous 45% estimate does not measure this corrected goal.
 
+## 2026-10-19: affordable next length and actual arena room
+
+- Actual normal cost1 output plus current aligned length/cost coverage, capped used+available gas and an affordable covering charge imply nonwrapping next length, alignment, memoryCost<=used+charged and nextLength<=178956960. Actual expansion stores/loops remain to be composed.
+- Both original arena allocators now derive room from actual normal execution and current cursor order by ruling out the real trap. Ignored allocation caller derives1clock and exact full cursor update; no future allocation room/execution is assumed.
+- Successful memory-expansion-cost-affordable-v1.log1316jobs and arena-normal-ignored-v1.log1087jobs, permitted axioms; current-source evidence indexed. Global ownership/charge reachability and totals/weighted target K remain open.
+
 ## 2026-10-19: complete original memory-expansion cost helper
 
 - Checked exact saturated-rounding arithmetic, aligned fixed points and alignment except at the max-word sentinel. Added actual sat_word value; reused existing U256Zero and removed the duplicate new proof before saving.

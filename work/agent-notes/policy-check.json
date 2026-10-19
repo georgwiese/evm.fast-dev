@@ -3490,11 +3490,17 @@
     "submission/InitECandidate/Solver/RiscVEvaluatorCosts.lean",
     "submission/InitECandidate/Solver/Rlp/Fail.lean",
     "submission/InitECandidate/Solver/Rlp/FailGuard.lean",
+    "submission/InitECandidate/Solver/Rlp/FailGuardReturn.lean",
     "submission/InitECandidate/Solver/Rlp/HeaderCall.lean",
+    "submission/InitECandidate/Solver/Rlp/HeaderCallNormal.lean",
     "submission/InitECandidate/Solver/Rlp/HeaderControl.lean",
     "submission/InitECandidate/Solver/Rlp/HeaderCost.lean",
+    "submission/InitECandidate/Solver/Rlp/HeaderLongValues.lean",
+    "submission/InitECandidate/Solver/Rlp/HeaderNormal.lean",
     "submission/InitECandidate/Solver/Rlp/HeaderPrices.lean",
     "submission/InitECandidate/Solver/Rlp/HeaderProgram.lean",
+    "submission/InitECandidate/Solver/Rlp/HeaderShortValues.lean",
+    "submission/InitECandidate/Solver/Rlp/HeaderValue.lean",
     "submission/InitECandidate/Solver/Rlp/NumericGuards.lean",
     "submission/InitECandidate/Solver/Rlp/ReadLengthCall.lean",
     "submission/InitECandidate/Solver/Rlp/ReadLengthCost.lean",
@@ -5568,8 +5574,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62435,
-  "package_bytes": 2257986316,
+  "package_entries": 62441,
+  "package_bytes": 2258016781,
   "claim": {
     "K": "infinity"
   },

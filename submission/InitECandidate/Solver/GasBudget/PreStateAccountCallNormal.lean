@@ -1,3 +1,4 @@
+import InitECandidate.Solver.GasBudget.PreStateAccountCallNormalValues
 import InitECandidate.Solver.GasBudget.PreStateAccountNormal
 
 namespace InitECandidate.Solver.GasBudget.AccountCache
@@ -38,33 +39,13 @@ theorem scoped_pre_state_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       paid+TableFamily.potential objects≤26*count+31098+TableFamily.potential nextObjects ∧
       ready.locals.lookup (ofString name)=some (.val (.word word)) ∧
       evaluateHOLFiniteState ready continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by
-  obtain ⟨callee,called,queryCell⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "get_pre_state_account_optional") "addr" Kind.preState.body query
-    (Kind.preState.original_code source.code installed)
-  obtain ⟨positive,target,answer,inner,bodyRun,checked,tailRun,restored⟩ := Input.CallNormal.scoped_normal source post name .one
-    (ofString "get_pre_state_account_optional") arguments _ Kind.preState.body continuation callee .one args called returned normal
-  let entry := callEntryStateHOLFinite source callee
-  let entryWorld := world.of_agreement source entry ws root nibs cutoff frozenEnd valueLimit rfl rfl rfl rfl (by intros; rfl)
-  have entryHash := hashEnvironment.of_fields source entry stp pad rfl rfl rfl (HeapGlobals.refl source)
-  have entryFamily : TableFamily.Model entry cursor objects := family.of_control rfl rfl rfl rfl
-  obtain ⟨bodyPaid,nextCursor,nextObjects,funded,clock,forward,nextFamily,nextPopulation,nextFloors,pointers,⟨targetWorld⟩,targetHash,targetArena,globals,codeEq,price,word,answerEq⟩ :=
-    pre_state_body_normal entry target transaction block query ws root nibs stp pad scratchPtr limit emptyRoot emptyHash cursor cutoff frozenEnd valueLimit count objects writer reader recorder
-      entryFamily population writerKind readerKind recorderKind (environment.of_fields rfl rfl rfl) installed entryWorld afterWorld floors entryHash
-      stateArena stateAligned padArena padAligned queryArena stateBelow padBelow (arena.of_fields source entry scratchPtr limit rfl rfl) scratchBelow aligned sizeBound
-      rootGlobal hashGlobal rootArena hashArena transactionGlobal blockGlobal blockArena blockBefore setMapped setCell getMapped getCell recordMapped recordCell queryCell answer bodyRun
-  rw [answerEq] at tailRun
-  let ready := Input.CallNormal.continuationEntry source target name (.val (.word word))
-  let readyWorld := targetWorld.of_agreement target ready ws root nibs cutoff frozenEnd valueLimit rfl rfl rfl rfl (by intros; rfl)
-  have readyHash := targetHash.of_fields target ready stp pad rfl rfl rfl (HeapGlobals.refl target)
-  have readyFamily : TableFamily.Model ready nextCursor nextObjects := nextFamily.of_control rfl rfl rfl rfl
-  have readyArena := targetArena.of_fields target ready scratchPtr limit rfl rfl
-  change bodyPaid≤source.clock-1 at funded
-  change target.clock=source.clock-1-bodyPaid at clock
-  let paid := bodyPaid+1
-  have paidFits : paid≤source.clock := by dsimp [paid]; omega
-  have readyClock : ready.clock=source.clock-paid := by change target.clock=source.clock-paid; dsimp [paid]; omega
-  exact ⟨paid,nextCursor,nextObjects,ready,word,inner,paidFits,readyClock,forward,readyFamily,nextPopulation,nextFloors,pointers,
-    ⟨readyWorld⟩,readyHash,readyArena,globals,codeEq,by dsimp [paid]; omega,
-    Input.CallNormal.continuation_lookup_same source target name (.val (.word word)),tailRun,restored⟩
+  obtain ⟨paid,nextCursor,nextObjects,nextAccounts,ready,word,inner,funded,clock,forward,nextFamily,nextPopulation,nextFloors,pointers,nextWorld,nextHash,nextArena,globals,codeEq,price,_,_,_,_,resultCell,tailRun,restored⟩ :=
+    scoped_pre_state_normal_values source post transaction block query ws root nibs stp pad scratchPtr limit emptyRoot emptyHash cursor cutoff frozenEnd valueLimit count objects writer reader recorder
+      family population writerKind readerKind recorderKind environment installed [] (AccountDecode.Registry.empty source cutoff cursor objects)
+      (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro True.intro world afterWorld floors hashEnvironment stateArena stateAligned padArena padAligned queryArena stateBelow padBelow
+      arena scratchBelow aligned sizeBound rootGlobal hashGlobal rootArena hashArena transactionGlobal blockGlobal blockArena blockBefore setMapped setCell getMapped getCell recordMapped recordCell
+      name arguments continuation args returned normal
+  exact ⟨paid,nextCursor,nextObjects,ready,word,inner,funded,clock,forward,nextFamily,nextPopulation,nextFloors,pointers,nextWorld,nextHash,nextArena,globals,codeEq,price,resultCell,tailRun,restored⟩
 
 end InitECandidate.Solver.GasBudget.AccountCache
 

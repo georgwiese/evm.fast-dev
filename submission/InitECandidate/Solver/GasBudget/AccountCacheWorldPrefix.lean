@@ -1,3 +1,4 @@
+import InitECandidate.Solver.GasBudget.AccountCacheWorldPrefixValues
 import InitECandidate.Solver.GasBudget.AccountCachePrefix
 import InitECandidate.Solver.Mpt.WsAccountWorldAgreement
 import InitECandidate.Solver.WitnessRadix.Keccak256EnvironmentFields
@@ -41,24 +42,11 @@ theorem world_cache_prefix (kind : Kind) {ι : Type} [Fintype ι] [DecidableEq �
       ready.locals.lookup (ofString "addr")=some (.val (.word query)) ∧ ready.locals.lookup (ofString "w")=some (Get.pair flag value) ∧
       evaluateHOLFiniteState ready kind.afterGet=(some (.returned returned),inner) ∧
       Input.LocalEffects.erase post=Input.LocalEffects.erase inner ∧ post.clock=inner.clock := by
-  obtain ⟨paid,nextCursor,next,flag,value,ready,inner,funded,clock,amortized,nextKind,forward,countLower,countUpper,capacity,nextFamily,pointers,codeEq,oracleEq,nextEnvironment,globals,floorFrame,beforeWords,binary,queryCell,resultCell,tailRun,frame,postClock⟩ :=
-    normal_cache_prefix kind source post transaction readerRecord query cursor objects writer reader family writerKind readerKind environment installed
-      transactionGlobal readerGlobal recordBefore setMapped setCell getMapped getCell queryLocal (by have := queryArena.upper; omega)
-      (fun offset active=>AllocatedBytes.byte_mapped source query 20 offset world.domain queryArena active) returned run
-  have domain : ready.memaddrs=source.memaddrs := nextEnvironment.domain.trans environment.domain.symm
-  have endian : ready.be=source.be := nextEnvironment.little.trans environment.little.symm
-  let nextWorld := world.after_family source ready ws root nibs cutoff frozenEnd valueLimit objects (Function.update objects writer next) floorFrame floors domain endian globals
-  have nextHashEnvironment := hashEnvironment.of_fields source ready stp pad domain codeEq oracleEq globals
-  have nextArena := arena.of_heap_globals source ready scratchPtr limit domain globals
-  have nextPopulation := TableFamily.population_update objects writer next count population countUpper
-  have familyPrice := TableFamily.amortized_update objects writer next paid (9*(objects writer).slots.length+8*(Function.update objects writer next reader).slots.length+15)
-    (by simpa only [TableFamily.Object.potential,writerKind,nextKind] using amortized)
-  have price : paid+TableFamily.potential objects≤17*count+23+TableFamily.potential (Function.update objects writer next) := by
-    have := population writer
-    have := nextPopulation reader
-    omega
-  exact ⟨paid,nextCursor,next,flag,value,ready,inner,funded,clock,forward,nextKind,countLower,countUpper,capacity,nextFamily,nextPopulation,pointers,price,
-    ⟨nextWorld⟩,nextHashEnvironment,nextArena,nextEnvironment,codeEq,globals,floorFrame,beforeWords,queryCell,resultCell,tailRun,frame,postClock⟩
+  obtain ⟨paid,nextCursor,next,flag,value,ready,inner,funded,clock,forward,nextKind,countLower,countUpper,capacity,nextFamily,nextPopulation,pointers,price,nextWorld,nextHash,nextArena,nextEnvironment,codeEq,globals,floorFrame,beforeWords,queryCell,resultCell,tailRun,frame,postClock,_,_,_⟩ :=
+    world_cache_prefix_values kind source post transaction readerRecord query ws root nibs stp pad scratchPtr limit cursor cutoff frozenEnd valueLimit count objects writer reader
+      family population writerKind readerKind environment installed (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro world floors hashEnvironment arena queryArena
+      transactionGlobal readerGlobal recordBefore setMapped setCell getMapped getCell queryLocal returned run
+  exact ⟨paid,nextCursor,next,flag,value,ready,inner,funded,clock,forward,nextKind,countLower,countUpper,capacity,nextFamily,nextPopulation,pointers,price,nextWorld,nextHash,nextArena,nextEnvironment,codeEq,globals,floorFrame,beforeWords,queryCell,resultCell,tailRun,frame,postClock⟩
 
 end InitECandidate.Solver.GasBudget.AccountCache
 

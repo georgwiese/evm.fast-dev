@@ -34,7 +34,7 @@ theorem body_registered {ι : Type} (source post : PanSemStateFiniteExact 64 Gue
       Nonempty (WsAccountLeaf.World post ws root nibs cutoff frozenEnd valueLimit) ∧ Keccak256.Environment post stp pad ∧
       Result post heap cursor limit returned ∧ HeapGlobals source post ∧ source.clock-post.clock≤31051 ∧
       (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
-      (∀ query : BitVec 64,cutoff≤query.toNat → query.toNat<heap.toNat → post.memory query=source.memory query) := by
+      (∀ query : BitVec 64,cutoff≤query.toNat → query.toNat<heap.toNat → post.memory query=source.memory query) ∧ (nextCursor=heap.toNat ∨ nextCursor=heap.toNat+120) := by
   obtain ⟨nextCursor,choice,nextFamily,nextWorld,nextEnvironment,result,globals,frame,beforeMemory,price,image⟩ :=
     body_world_family source post ws root addr heap nibs stp pad cursor limit emptyRoot emptyHash cutoff frozenEnd valueLimit world environment
       stateArena stateAligned padArena padAligned queryArena stateBelow padBelow objects family floors addressCell arena heapGlobal heapBound heapAligned afterWorld
@@ -53,7 +53,7 @@ theorem body_registered {ι : Type} (source post : PanSemStateFiniteExact 64 Gue
   · have cursorEq := actualCursor heap absent.2
     have registered : AccountDecode.Registry post cutoff nextCursor objects accounts := by rw [cursorEq]; exact retained
     exact ⟨nextCursor,accounts,Or.inl ⟨rfl,absent.1⟩,nextFamily,registered,nextWorld,nextEnvironment,result,globals,price,
-      fun value owned=>owned,beforeMemory⟩
+      fun value owned=>owned,beforeMemory,Or.inl cursorEq⟩
   · have cursorWord := actualCursor (heap+120#64) present.2.1
     have room := present.2.2
     have cursorEq : nextCursor=heap.toNat+120 := by
@@ -74,7 +74,7 @@ theorem body_registered {ι : Type} (source post : PanSemStateFiniteExact 64 Gue
     have registered := retained.append post cutoff heap.toNat nextCursor objects accounts heap accountImage (Nat.le_refl _)
       (by have := world.ordered; omega) (by rw [cursorEq]; omega) outside
     exact ⟨nextCursor,accounts++[heap],Or.inr ⟨rfl,present.1⟩,nextFamily,registered,nextWorld,nextEnvironment,result,globals,price,
-      fun value owned=>AccountDecode.Registry.known_append accounts heap value owned,beforeMemory⟩
+      fun value owned=>AccountDecode.Registry.known_append accounts heap value owned,beforeMemory,Or.inr cursorEq⟩
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

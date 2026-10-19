@@ -3138,6 +3138,9 @@
     "submission/InitECandidate/Solver/Mpt/AccountCopyImage.lean",
     "submission/InitECandidate/Solver/Mpt/AccountCopyNormal.lean",
     "submission/InitECandidate/Solver/Mpt/AccountCopyRegistered.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountCreatedCall.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountCreatedNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountCreatedProgram.lean",
     "submission/InitECandidate/Solver/Mpt/AccountDecodeBalanceCost.lean",
     "submission/InitECandidate/Solver/Mpt/AccountDecodeCall.lean",
     "submission/InitECandidate/Solver/Mpt/AccountDecodeCallImage.lean",
@@ -3186,6 +3189,7 @@
     "submission/InitECandidate/Solver/Mpt/AccountNonceSetupNormal.lean",
     "submission/InitECandidate/Solver/Mpt/AccountObjectGeometry.lean",
     "submission/InitECandidate/Solver/Mpt/AccountReferenceChoice.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountReferenceStore.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistry.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistryAppend.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistryExtension.lean",
@@ -5978,8 +5982,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62845,
-  "package_bytes": 2259846602,
+  "package_entries": 62849,
+  "package_bytes": 2259864220,
   "claim": {
     "K": "infinity"
   },

@@ -4,6 +4,7 @@
 
 ## 2026-10-19: actual original stack growth
 
+- Follow-up ownership/live-sum composition checked in stack-push-growth-frame-sums-v1.log1140jobs. Real allocator bounds discharge copy/backing-word/new-slot separation for older owned objects. Actual caller preserves the complete physical live budget and used sums; paid+oldCapacity=3+newCapacity follows from its actual clock/header outputs. Current ownership and reachable-capacity obligations remain explicit.
 - Checked exact original stack_push growth branch and complete body/caller for full positive capacity<=512. Actual aligned memcpy copies four words per source loop clock: capacity body clocks, complete body capacity+2 and caller capacity+3.
 - Actual normal calls derive argument tuple shape, funding, new pointer/capacity, natural bounded depth and the real scratch cursor. Gas cells survive the current copy/slot footprint under explicit physical ownership; no supplied helper execution or future model.
 - Successful stack-push-growth-call-v1.log1116jobs; indexed current-source evidence only, permitted axioms. Preliminary failures concerned scoped-local restoration, folded clock projections and header/list normalization; corrected without admissions.

@@ -1319,7 +1319,9 @@
     "submission/InitECandidate/Solver/GasBudget/StackPushGrowthCall.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushGrowthControl.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushGrowthExecution.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPushGrowthFrameSums.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushGrowthNormal.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPushGrowthOwnership.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushGrowthProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushNonGrowth.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPushNonGrowthCall.lean",
@@ -5163,8 +5165,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62028,
-  "package_bytes": 2256197692,
+  "package_entries": 62030,
+  "package_bytes": 2256206899,
   "claim": {
     "K": "infinity"
   },

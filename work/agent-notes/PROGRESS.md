@@ -2,6 +2,12 @@
 
 > **AUTHORITATIVE SCOPE CORRECTION — 2026-10-17:** The user requires a reasonably tight finite runtime bound for the current, unchanged Pancake implementation on main. There is NO numerical ceiling. Stop replacement/radix refinement/candidate compilation work. The current plan at the top of bound.md supersedes historical below-Yukon-limit objectives and checklists here. Keep reusable original-program proofs; remove the authorized replacement code after dependency review, retaining history in Git. The previous 45% estimate does not measure this corrected goal.
 
+## 2026-10-19: actual memory-gas value and conditional byte accounting
+
+- Original memory_gas_cost normal execution now derives its exact source-defined scalar through real word count, carry multiplication, overflow guard and saturated addition. Exact value0and lower bound3*floor(bytes/32) checked.
+- Word subtraction arithmetic derives no-wrap and nextCost<=used+charged from current old-cost coverage and actual charge affordability. Aligned-size sums with actual summed cost<=16777216 imply<=178956960bytes; this cost budget still needs global reachability, so it is not an instantiated whole-run byte bound.
+- Successful memory-gas-arithmetic-v2.log1304jobs, only permitted axioms; failed intermediate normalizations were corrected and not indexed. Real expansion helper/body composition, memory potential/frame ownership and global counts/target transport remain open.
+
 ## 2026-10-19: deterministic scalar values for memory costs
 
 - Checked actual ceil32/words_of deterministic values, exact branch-dependent body clocks0/1and1/2, funded executors and actual normal value/funding/clock extraction. Rounding is monotone over its input; word count>=floor(bytes/32), with exact zeros.

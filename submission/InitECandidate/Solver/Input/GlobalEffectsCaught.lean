@@ -5,12 +5,12 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
 /-- The selected global is preserved through every result of a genuine
 caught ignored call, including its actual handler execution. -/
-theorem caught_body (key : MlS) (code) (function : MlS) (arguments : List (ExpHOL 64))
+theorem caught_destination (key : MlS) (code) (destination : Option MlS) (function : MlS) (arguments : List (ExpHOL 64))
     (formals : List (MlS×ShapeHOL)) (body : ProgHOL 64) (shape : ShapeHOL)
     (identifier parameter : MlS) (handler : ProgHOL 64)
     (entry : code.lookup function=some (formals,body,shape))
     (pureBody : Preserves key code body) (pureHandler : Preserves key code handler) :
-    Preserves key code (.call (some (none,some (identifier,parameter,handler))) function arguments) := by
+    Preserves key code (.call (some (destination.map (fun name=>(.local,name)),some (identifier,parameter,handler))) function arguments) := by
   intro source installed
   rw [evaluateHOLFiniteState_call]
   cases args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments with
@@ -38,7 +38,11 @@ theorem caught_body (key : MlS) (code) (function : MlS) (arguments : List (ExpHO
           cases result with
           | returned value =>
             simp only
-            split <;> exact postFrame
+            split
+            · cases destination with
+              | none => exact postFrame
+              | some name => simp only [Option.map_some]; split <;> exact postFrame
+            · exact postFrame
           | exception exceptionId value =>
             simp only
             split
@@ -56,6 +60,17 @@ theorem caught_body (key : MlS) (code) (function : MlS) (arguments : List (ExpHO
           | «continue» => exact postFrame
           | finalFfi event => exact postFrame
 
+/-- Ignored-result specialization of the shared caught-call effect rule. -/
+theorem caught_body (key : MlS) (code) (function : MlS) (arguments : List (ExpHOL 64))
+    (formals : List (MlS×ShapeHOL)) (body : ProgHOL 64) (shape : ShapeHOL)
+    (identifier parameter : MlS) (handler : ProgHOL 64)
+    (entry : code.lookup function=some (formals,body,shape))
+    (pureBody : Preserves key code body) (pureHandler : Preserves key code handler) :
+    Preserves key code (.call (some (none,some (identifier,parameter,handler))) function arguments) :=
+  caught_destination key code none function arguments formals body shape identifier parameter handler entry pureBody pureHandler
+
 end InitECandidate.Solver.Input.GlobalEffects
 
 #print axioms InitECandidate.Solver.Input.GlobalEffects.caught_body
+
+#print axioms InitECandidate.Solver.Input.GlobalEffects.caught_destination

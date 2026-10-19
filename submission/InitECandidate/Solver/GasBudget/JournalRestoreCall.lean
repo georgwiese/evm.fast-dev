@@ -1,6 +1,4 @@
-import InitECandidate.Solver.GasBudget.JournalRestoreNormal
-import InitECandidate.Solver.Input.IgnoredCallNormal
-import InitECandidate.Solver.Input.PureReturn
+import InitECandidate.Solver.GasBudget.JournalRestoreCallValues
 
 namespace InitECandidate.Solver.GasBudget.Journal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -28,31 +26,9 @@ theorem restore_call_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + (count - snap)) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
-  obtain ⟨callee, called, snapshot⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "state_restore") "snap" body (BitVec.ofNat 64 snap) code
-  obtain ⟨positive, post, returned, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "state_restore") arguments _ body callee .one args called normal
-  let entry := callEntryStateHOLFinite source callee
-  have entryFamily : TableFamily.Model entry cursor objects :=
-    ⟨fun table => (family.tables table).of_fields rfl rfl rfl rfl, family.apart⟩
-  have entryImage : Image entry objects base count entries :=
-    image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
-  obtain ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, models, nextImage, nextZone, bounded, nextPopulations, nextCounter,
-    codes, nextEnvironment, globals, floorFrame⟩ :=
-    restore_body_normal entry post cursor objects base cap count snap population entries ordered small entryFamily entryImage zone countBound populations
-      (environment.of_fields rfl rfl rfl) deleteCode journal counter snapshot returned bodyRun
-  rw [returnedEq] at bodyRun
-  have actual := evaluateHOLFiniteState_call_return_caller_locals source none (ofString "state_restore") arguments _ body callee .one
-    (.val (.word 0#64)) post args called (by omega) bodyRun (by simp [shapeOfHOLExact, shapeEqHOL])
-  have targetEq := congrArg Prod.snd (normal.symm.trans actual)
-  change target = {post with locals := source.locals} at targetEq
-  subst target
-  have finalFamily : TableFamily.Model {post with locals := source.locals} nextCursor next :=
-    ⟨fun table => (models.tables table).of_fields rfl rfl rfl rfl, models.apart⟩
-  have finalImage : Image {post with locals := source.locals} next base snap entries :=
-    nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
-  change paid ≤ source.clock - 1 at fits
-  change post.clock = source.clock - 1 - paid at clock
-  exact ⟨1 + paid, nextCursor, next, by omega, by omega, by change post.clock = _; omega, forward, finalFamily, finalImage, nextZone,
-    by omega, nextPopulations, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, ⟨floorFrame.floors, floorFrame.words⟩⟩
+  obtain ⟨paid,nextCursor,next,positive,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,locals,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved⟩ :=
+    restore_call_normal_values source target cursor objects base cap count snap population entries ordered small family image zone countBound populations environment (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) deleteCode code journal counter arguments args normal
+  exact ⟨paid,nextCursor,next,positive,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,locals,codes,nextEnvironment,globals,floorFrame⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

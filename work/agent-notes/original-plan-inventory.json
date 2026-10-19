@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 5896,
+  "solver_modules": 5928,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 16,
@@ -38,7 +38,7 @@
     "EncoderClock": 1,
     "FlattenBound": 19,
     "FlattenWeighted": 30,
-    "GasBudget": 653,
+    "GasBudget": 670,
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Input": 451,
@@ -52,7 +52,7 @@
     "LocCost": 1,
     "MemoryCost": 1,
     "Mpt": 165,
-    "MutableTable": 407,
+    "MutableTable": 422,
     "NopBound": 1,
     "NopCost": 1,
     "NopCostTight": 1,
@@ -164,7 +164,7 @@
       },
       {
         "module": "MutableTable.DeleteModelBudget",
-        "solver_dependency_count": 296,
+        "solver_dependency_count": 308,
         "imports_replacement_ast": false
       },
       {
@@ -179,7 +179,7 @@
       },
       {
         "module": "MutableTable.TruncateBudget",
-        "solver_dependency_count": 379,
+        "solver_dependency_count": 391,
         "imports_replacement_ast": false
       },
       {

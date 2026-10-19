@@ -1,20 +1,8 @@
-import InitECandidate.Solver.GasBudget.JournalRecordsNormal
+import InitECandidate.Solver.GasBudget.JournalStepValues
 
 namespace InitECandidate.Solver.GasBudget.Journal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch MutableTable
-
-def OtherGlobals (source target : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop :=
-  ∀ key : MlS, key ≠ ofString "heap_ptr" → key ≠ ofString "journal_n" → target.globals.lookup key = source.globals.lookup key
-
-theorem OtherGlobals.refl (source : PanSemStateFiniteExact 64 Guest.HostMemory) : OtherGlobals source source := by
-  intro key heap counter
-  rfl
-
-theorem OtherGlobals.trans {source middle target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    (first : OtherGlobals source middle) (second : OtherGlobals middle target) : OtherGlobals source target := by
-  intro key heap counter
-  exact (second key heap counter).trans (first key heap counter)
 
 /-- One complete actual original rollback body. The executed decrement and
 record loads choose the writer; the helper preserves the new counter and all
@@ -37,30 +25,9 @@ theorem body_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + 1) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count - 1)))) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
-  obtain ⟨middle, decrementRun, recordRun⟩ := Input.sequence_none source target decrement records normal
-  have decrementActual := decrement_execute source (BitVec.ofNat 64 count) counter
-  have middleEq := congrArg Prod.snd (decrementRun.symm.trans decrementActual)
-  change middle = Input.putGlobal source "journal_n" (BitVec.ofNat 64 count - 1#64) at middleEq
-  subst middle
-  let entry := Input.putGlobal source "journal_n" (BitVec.ofNat 64 count - 1#64)
-  have wordSub : BitVec.ofNat 64 count - 1#64 = BitVec.ofNat 64 (count - 1) :=
-    BitVec.ofNat_sub_ofNat_of_le count 1 (by decide) (by omega)
-  have entryFamily : TableFamily.Model entry cursor objects := decrement_family source cursor objects family (BitVec.ofNat 64 count)
-  have entryImage : Image entry objects base count entries :=
-    image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
-  have entryEnvironment : WarmKeys.Environment entry := environment.of_fields rfl rfl rfl
-  have entryJournal : entry.globals.lookup (ofString "journal") = some (.val (.word (BitVec.ofNat 64 base))) :=
-    (Input.putGlobal.lookup_other source "journal_n" _ (ofString "journal") (by decide)).trans journal
-  have entryCounter : entry.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count - 1)))) := by
-    change (Input.putGlobal source "journal_n" (BitVec.ofNat 64 count - 1#64)).globals.lookup _ = _
-    rw [Input.putGlobal.lookup_same, wordSub]
-  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, nextZone, bounded, nextPopulations, codes, nextEnvironment, globals, floorFrame⟩ :=
-    records_normal entry target cursor objects base cap count (count - 1) population entries entryFamily entryImage zone countBound (by omega) populations
-      entryEnvironment deleteCode entryJournal entryCounter recordRun
-  refine ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage.restrict (Nat.sub_le count 1), nextZone, bounded, nextPopulations,
-    (globals (ofString "journal_n") (by decide)).trans entryCounter, codes, nextEnvironment, ?_, ⟨floorFrame.floors, floorFrame.words⟩⟩
-  intro key heap different
-  exact (globals key heap).trans (Input.putGlobal.lookup_other source "journal_n" _ key different)
+  obtain ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved⟩ :=
+    body_normal_values source target cursor objects base cap count population entries family image zone countBound positive populations environment (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) deleteCode journal counter normal
+  exact ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,codes,nextEnvironment,globals,floorFrame⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

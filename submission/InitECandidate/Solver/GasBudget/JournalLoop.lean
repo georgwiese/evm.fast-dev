@@ -1,16 +1,8 @@
-import InitECandidate.Solver.GasBudget.JournalStep
+import InitECandidate.Solver.GasBudget.JournalLoopValues
 
 namespace InitECandidate.Solver.GasBudget.Journal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch MutableTable
-
-def price (population remaining : Nat) : Nat :=
-  (38 * population + 40) * remaining + 38 * WitnessBuild.triangle remaining
-
-theorem price_step (population remaining : Nat) :
-    price population (remaining + 1) = 38 * population + 40 + price (population + 1) remaining := by
-  simp only [price, WitnessBuild.triangle, Nat.mul_add, Nat.add_mul, Nat.mul_one, Nat.one_mul]
-  omega
 
 /-- Whole original rollback loop. The actual unsigned journal counter derives
 the iteration count. Every iteration retains all remaining physical records
@@ -35,60 +27,9 @@ theorem loop_normal {ι : Type} [Fintype ι] [DecidableEq ι] (remaining : Nat)
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.locals.lookup (ofString "snap") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
-  induction remaining generalizing source cursor objects count population with
-  | zero =>
-    have finished : count = snap := by omega
-    have test := condition_read source (BitVec.ofNat 64 snap) (BitVec.ofNat 64 count) snapshot counter
-    rw [finished, if_neg (by omega)] at test
-    have actual : evaluateHOLFiniteState source loop = (none, source) := by
-      simp only [eval, evalHOLFinite] at test
-      rw [loop, evaluateHOLFiniteState_while_total]
-      simp only [evalHOLFinite, test]
-      simp
-    have same := congrArg Prod.snd (normal.symm.trans actual)
-    change target = source at same
-    subst target
-    refine ⟨0, cursor, objects, by omega, by simp, Nat.le_refl _, family, ?_, zone, by simp [price, WitnessBuild.triangle], ?_, ?_, snapshot, rfl,
-      environment, OtherGlobals.refl source, TableFamily.FloorFrame.refl objects source⟩
-    · simpa only [finished] using image
-    · simpa only [Nat.add_zero] using populations
-    · simpa only [finished] using counter
-  | succ remaining ih =>
-    have active : snap < count := by omega
-    have snapSmall : snap < 2 ^ 64 := by omega
-    have test := condition_read source (BitVec.ofNat 64 snap) (BitVec.ofNat 64 count) snapshot counter
-    rw [BitVec.toNat_ofNat, BitVec.toNat_ofNat, Nat.mod_eq_of_lt snapSmall, Nat.mod_eq_of_lt small, if_pos active] at test
-    obtain ⟨positive, middle, bodyRun, tailRun, clockBound⟩ :=
-      Input.while_none_step source target (ofString "snap") condition loopBody body_safe test normal
-    let entry := decClockHOLFinite source
-    have entryFamily : TableFamily.Model entry cursor objects :=
-      ⟨fun table => (family.tables table).of_fields rfl rfl rfl rfl, family.apart⟩
-    have entryImage : Image entry objects base count entries :=
-      image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
-    have entryEnvironment : WarmKeys.Environment entry := environment.of_fields rfl rfl rfl
-    obtain ⟨paid, middleCursor, middleObjects, fits, clock, forward, middleFamily, middleImage, middleZone, bounded, middlePopulations,
-      middleCounter, codes, middleEnvironment, globals, bodyFrame⟩ :=
-      body_normal entry middle cursor objects base cap count population entries entryFamily entryImage zone countBound (by omega) populations entryEnvironment deleteCode journal counter bodyRun
-    have info := body_safe.summary entry
-    rw [bodyRun] at info
-    have middleSnapshot : middle.locals.lookup (ofString "snap") = some (.val (.word (BitVec.ofNat 64 snap))) := (info.1 rfl).trans snapshot
-    have middleJournal : middle.globals.lookup (ofString "journal") = some (.val (.word (BitVec.ofNat 64 base))) :=
-      (globals (ofString "journal") (by decide) (by decide)).trans journal
-    have middleDelete : middle.code.lookup (ofString "htab_del") = some (Find.formals, Delete.body, .one) := by rw [codes]; exact deleteCode
-    obtain ⟨restPaid, nextCursor, next, restFits, restClock, restForward, nextFamily, nextImage, nextZone, restBound, nextPopulations,
-      nextCounter, nextSnapshot, finalCodes, nextEnvironment, finalGlobals, restFrame⟩ :=
-      ih (source := middle) (cursor := middleCursor) (objects := middleObjects) (count := count - 1) (population := population + 1)
-        (by omega) (by omega) middleFamily middleImage middleZone (by omega) middlePopulations middleEnvironment middleDelete middleJournal middleCounter middleSnapshot tailRun
-    change paid ≤ source.clock - 1 at fits
-    change middle.clock = source.clock - 1 - paid at clock
-    have headFrame : TableFamily.FloorFrame objects middleObjects source middle := ⟨bodyFrame.floors, bodyFrame.words⟩
-    refine ⟨1 + paid + restPaid, nextCursor, next, by omega, by omega, by omega, nextFamily, nextImage, nextZone, ?_, ?_, nextCounter, nextSnapshot,
-      finalCodes.trans codes, nextEnvironment, globals.trans finalGlobals, headFrame.trans restFrame⟩
-    · rw [price_step]
-      omega
-    · intro table
-      have bound := nextPopulations table
-      omega
+  obtain ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,nextSnapshot,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved⟩ :=
+    loop_normal_values remaining source target cursor objects base cap count snap population entries countEq small family image zone countBound populations environment (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) deleteCode journal counter snapshot normal
+  exact ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,nextSnapshot,codes,nextEnvironment,globals,floorFrame⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

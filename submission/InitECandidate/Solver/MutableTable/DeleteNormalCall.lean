@@ -1,7 +1,4 @@
-import InitECandidate.Solver.MutableTable.DeleteModelOwnership
-import InitECandidate.Solver.MutableTable.DeleteModelCall
-import InitECandidate.Solver.GasBudget.WarmKeysInvariant
-import InitECandidate.Solver.ClockPaddingFull
+import InitECandidate.Solver.MutableTable.DeleteNormalCallValues
 
 namespace InitECandidate.Solver.MutableTable.Delete
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
@@ -20,29 +17,9 @@ theorem model_call_normal (source target : PanSemStateFiniteExact 64 Guest.HostM
     (normal : evaluateHOLFiniteState source (.call (some (none, none)) (ofString "htab_del") arguments) = (none, target)) :
     ∃ paid memory next flag, paid ≤ modelPrice kind slots.length + 1 ∧ paid ≤ source.clock ∧
       target = modelCallState source paid memory ∧ ModelPost source kind plan slots paid memory target next flag ∧ 2 * next.length ≤ plan.capacity := by
-  classical
-  obtain ⟨bits, power, minimum⟩ := table.power
-  obtain ⟨newSmall, _, _⟩ := MemoryModel.growth_shape kind plan table.valid bits power minimum
-  have small : bits < 64 := by omega
-  have room : slots.length < plan.capacity := by have positive := table.valid.positive; have half := table.half; omega
-  let extra := modelPrice kind slots.length + 1
-  let padded := {source with clock := source.clock + extra}
-  have paddedModel : MemoryModel.Occupied padded kind plan slots := MemoryModel.Occupied.of_fields source padded kind plan slots table.occupied rfl rfl rfl
-  have paddedArgs : evalListHOLFinite padded (h := fun address => Classical.propDecidable (padded.memaddrs address)) arguments = some [.val (.word (cell plan .header 0)), .val (.word query)] := by
-    change evalListHOLExact (stateAddClock source.toExact extra) arguments = _
-    rw [evalListHOLExact_stateAddClock]
-    exact args
-  obtain ⟨paid, memory, next, flag, bounded, actual, post, half⟩ := model_call padded kind plan table.valid environment.domain environment.little slots room paddedModel bits small power table.header query queryFits queryMapped
-    environment.hashCode environment.copyCode environment.memeqCode environment.findCode deleteCode arguments paddedArgs (by change extra ≤ source.clock + extra; omega)
-  have lifted := panPropsEvaluateAddClockEq (.call (some (none, none)) (ofString "htab_del") arguments) source none target extra ⟨normal, by intro impossible; cases impossible⟩
-  have same := congrArg Prod.snd (lifted.symm.trans actual)
-  change {target with clock := target.clock + extra} = modelCallState padded paid memory at same
-  have stripped := InitECandidate.Solver.strip_full_clock_padding source target {source with memory := memory} paid extra (by change paid ≤ source.clock + extra; change paid ≤ extra at bounded; omega) same
-  have occupied : MemoryModel.Occupied target kind plan next := by
-    have paddedOccupied : MemoryModel.Occupied {target with clock := target.clock + extra} kind plan next := by rw [same]; exact post.occupied
-    exact MemoryModel.Occupied.of_fields {target with clock := target.clock + extra} target kind plan next paddedOccupied rfl rfl rfl
-  refine ⟨paid, memory, next, flag, bounded, stripped.1, stripped.2, ?_, half table.half⟩
-  exact ⟨congrArg emptyLocalsHOLFinite stripped.2, post.shape, post.header, occupied, post.footprint⟩
+  obtain ⟨paid,memory,next,flag,bounded,fits,frame,post,half,nextValues⟩ :=
+    model_call_normal_values source target kind plan slots cursor floor table environment query queryFits queryMapped deleteCode arguments args (fun _=>True) (fun _ _ _ _ _=>True.intro) normal
+  exact ⟨paid,memory,next,flag,bounded,fits,frame,post,half⟩
 
 end InitECandidate.Solver.MutableTable.Delete
 

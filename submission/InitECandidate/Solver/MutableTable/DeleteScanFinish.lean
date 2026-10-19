@@ -1,5 +1,4 @@
-import InitECandidate.Solver.MutableTable.DeleteFinishExecution
-import InitECandidate.Solver.MutableTable.DeleteScanModel
+import InitECandidate.Solver.MutableTable.DeleteScanFinishValues
 
 namespace InitECandidate.Solver.MutableTable.Delete
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
@@ -24,34 +23,9 @@ theorem scan_finish (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind 
       emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with memory := memory, clock := source.clock - paid} ∧
       next.length = slots.length - 1 ∧ MemoryModel.Header memory kind plan (BitVec.ofNat 64 next.length) ∧
       MemoryModel.Occupied target kind plan next ∧ TableFootprint.Frame source.memory memory kind plan := by
-  obtain ⟨stop, paid, scanMemory, scanned, entries, hole, stopPositive, stopBound, bounded, scanRun, scanFrame, scanLocals, pending, scanHeader, stable, other, scanFootprint⟩ :=
-    scan_from_occupied source kind plan valid domain little slots room occupied deleted bits small power locals header hashCode copyCode enough
-  have memoryEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.memory) scanFrame
-  have domainEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.memaddrs) scanFrame
-  have endianEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.be) scanFrame
-  have clockEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.clock) scanFrame
-  change scanned.memory = scanMemory at memoryEq
-  change scanned.memaddrs = source.memaddrs at domainEq
-  change scanned.be = source.be at endianEq
-  change scanned.clock = source.clock - paid at clockEq
-  have actualHeader : MemoryModel.Header scanned.memory kind plan (BitVec.ofNat 64 slots.length) := by rw [memoryEq]; exact scanHeader
-  obtain ⟨target, finishRun, finishFrame, finishHeader, finishOccupied⟩ := Finish.execute scanned kind plan valid (domainEq.trans domain) (endianEq.trans little)
-    slots.length deleted entries hole _ pending scanLocals ((other "t" (by decide) (by decide)).trans tableLocal)
-    ((other "deleted_pos" (by decide) (by decide)).trans deletedLocal) actualHeader
-  let finalMemory := Finish.memory scanned.memory plan deleted entries hole
-  have replaceMemory := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => {state with memory := finalMemory}) scanFrame
-  change emptyLocalsHOLFinite {scanned with memory := finalMemory} = emptyLocalsHOLFinite {source with memory := finalMemory, clock := source.clock - paid} at replaceMemory
-  have finishedFrame : emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with memory := finalMemory, clock := source.clock - paid} := finishFrame.trans replaceMemory
-  have finalMemoryEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.memory) finishedFrame
-  change target.memory = finalMemory at finalMemoryEq
-  refine ⟨paid, finalMemory, target, finalSlots entries deleted, bounded, ?_, finishedFrame, final_length _ _, ?_, finishOccupied, ?_⟩
-  · rw [StateSteps.next_sequence source scanned loop afterLoop scanRun (by omega), finishRun]
-  · rw [final_length, ← finalMemoryEq]
-    exact finishHeader
-  · apply TableFootprint.Frame.trans source.memory scanned.memory finalMemory kind plan
-    · rw [memoryEq]
-      exact scanFootprint
-    · exact Finish.footprint scanned.memory kind plan valid slots.length deleted entries hole pending.room pending.holeInside pending.inside
+  obtain ⟨paid,memory,target,next,bounded,run,frame,length,nextHeader,nextOccupied,footprint,nextValues⟩ :=
+    scan_finish_values source kind plan valid domain little slots room occupied deleted bits small power locals header tableLocal deletedLocal hashCode copyCode (fun _=>True) (fun _ _ _ _ _=>True.intro) enough
+  exact ⟨paid,memory,target,next,bounded,run,frame,length,nextHeader,nextOccupied,footprint⟩
 
 end InitECandidate.Solver.MutableTable.Delete
 

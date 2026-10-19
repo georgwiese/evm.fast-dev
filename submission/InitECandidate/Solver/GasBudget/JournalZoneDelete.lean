@@ -1,6 +1,4 @@
-import InitECandidate.Solver.GasBudget.JournalZone
-import InitECandidate.Solver.MutableTable.FamilyDelete
-import InitECandidate.Solver.MutableTable.FamilyFloorFrame
+import InitECandidate.Solver.GasBudget.JournalZoneDeleteValues
 
 namespace InitECandidate.Solver.GasBudget.Journal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -25,28 +23,9 @@ theorem delete_zone_normal {ι : Type} [DecidableEq ι] (source target : PanSemS
       Image target (Function.update objects writer next) base count entries ∧ Zone (Function.update objects writer next) base cap cursor ∧
       next.slots.length ≤ (objects writer).slots.length ∧ target.locals = source.locals ∧ target.globals = source.globals ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ TableFamily.FloorFrame objects (Function.update objects writer next) source target := by
-  obtain ⟨paid, next, bounded, fits, clock, kind, plan, floor, models, pointers, lower, upper, locals, globals, codes, nextEnvironment, protectedWords⟩ :=
-    TableFamily.delete_normal source target cursor objects writer family environment query queryFits queryMapped deleteCode arguments args normal
-  have kinds (table : ι) : (Function.update objects writer next table).kind = (objects table).kind := by
-    by_cases same : table = writer
-    · subst table; simpa only [Function.update_self] using kind
-    · rw [Function.update_of_ne same]
-  have plans (table : ι) : (Function.update objects writer next table).plan = (objects table).plan := by
-    by_cases same : table = writer
-    · subst table; simpa only [Function.update_self] using plan
-    · rw [Function.update_of_ne same]
-  have nextZone : Zone (Function.update objects writer next) base cap cursor := by
-    refine ⟨zone.valid, zone.earlier, ?_⟩
-    intro index inside field table
-    rw [kinds, plans]
-    exact zone.separate index inside field table
-  have nextImage : Image target (Function.update objects writer next) base count entries :=
-    image.transfer (nextEnvironment.domain.trans environment.domain.symm) pointers kinds
-      (fun index inside field => protectedWords _ (image.separate index inside field writer))
-      (fun index inside field table => by rw [kinds, plans]; exact image.separate index inside field table)
-  exact ⟨paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, upper, locals, globals, codes, nextEnvironment,
-    TableFamily.FloorFrame.of_update objects writer next source target floor (fun address before => protectedWords address
-      (TableFamily.outside_floor source _ _ _ _ _ (family.tables writer) address before))⟩
+  obtain ⟨paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,locals,globals,codes,nextEnvironment,floorFrame,persistent,nextValues⟩ :=
+    delete_zone_normal_values source target cursor objects writer base cap count entries family image zone environment query (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) queryFits queryMapped deleteCode arguments args normal
+  exact ⟨paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,locals,globals,codes,nextEnvironment,floorFrame⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

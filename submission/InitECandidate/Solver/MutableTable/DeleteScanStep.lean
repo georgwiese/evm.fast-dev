@@ -1,5 +1,4 @@
-import InitECandidate.Solver.MutableTable.DeleteScanLocals
-import InitECandidate.Solver.MutableTable.DeleteScanFrontier
+import InitECandidate.Solver.MutableTable.DeleteScanStepValues
 
 namespace InitECandidate.Solver.MutableTable.Delete
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
@@ -33,36 +32,9 @@ theorem scan_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind : 
       (∀ query < plan.capacity, Find.usedByte {source with memory := memory} (parameters kind plan 0#64) (BitVec.ofNat 64 query) =
         Find.usedByte source (parameters kind plan 0#64) (BitVec.ofNat 64 query)) ∧
       TableFootprint.Frame source.memory memory kind plan := by
-  classical
-  let next := Probe.slot plan.capacity start (cursor + 1)
-  let advanced := WitnessRadix.QueryBranch.bind source "j" (BitVec.ofNat 64 next)
-  have advancedLocals := ScanLocals.advance source kind plan hole _ next locals
-  have nextBound : next < plan.capacity := Nat.mod_lt _ valid.positive
-  have different := frontier_next_different plan.capacity start cursor hole valid.positive startInside nextInside frontier
-  obtain ⟨moved, active, selectedSlot, position⟩ := Pending.active source kind plan count deleted entries hole next pending nextBound used different
-  have advancedPending := Pending.of_fields source advanced kind plan count deleted entries hole pending rfl rfl rfl
-  have incrementRun : evaluateHOLFiniteState source incrementJ = (none, advanced) := by
-    simpa only [Find.pathIndex, ← power] using increment_j_execute source bits start cursor small (by simpa only [power] using locals.cap) (by simpa only [Find.pathIndex, ← power] using locals.slot)
-  have advancedUsed : Find.usedByte advanced (parameters kind plan 0#64) (BitVec.ofNat 64 next) = some 1 := used
-  have test := empty_test_read advanced kind plan _ 1 advancedLocals.used advancedLocals.slot advancedUsed
-  have skipRun : evaluateHOLFiniteState advanced (.ite emptyTest .break .skip) = (none, advanced) := by
-    rw [evaluateHOLFiniteState_ite]
-    change evalHOLExact advanced.toExact emptyTest = _ at test
-    rw [test]
-    simp
-  obtain ⟨value, valueCell⟩ : ∃ value, source.memory (cell plan .values (8 * entries moved)) = .word value := by
-    cases stored : source.memory (cell plan .values (8 * entries moved)) with
-    | word value => exact ⟨value, rfl⟩
-  have moveLocals : Move.Locals advanced kind plan hole (entries moved) := by
-    rw [selectedSlot]
-    exact advancedLocals.toLocals
-  obtain ⟨paid, memory, nextEntries, nextHole, bounded, hashRun, choice, finalPending, finalHeader, stable, footprint⟩ :=
-    hash_execute advanced kind plan valid domain little count deleted entries hole advancedPending moved active moveLocals value valueCell header advancedLocals.cap hashCode copyCode enough
-  refine ⟨paid, memory, nextEntries, nextHole, bounded, ?_, finalPending, ?_, finalHeader, stable, footprint⟩
-  · rw [loopBody, StateSteps.next_sequence source advanced incrementJ _ incrementRun (Nat.le_refl _),
-      StateSteps.next_sequence advanced advanced (.ite emptyTest .break .skip) hashCall skipRun (Nat.le_refl _)]
-    exact hashRun
-  · exact frontier_after_choice plan.capacity start cursor hole nextHole frontier (by simpa only [selectedSlot] using choice)
+  obtain ⟨paid,memory,nextEntries,nextHole,bounded,run,nextPending,nextFrontier,nextHeader,stable,footprint,nextValues⟩ :=
+    scan_step_values source kind plan valid domain little count deleted entries hole pending bits start cursor small power startInside nextInside frontier locals used header hashCode copyCode (fun _=>True) (fun _ _ _ _=>True.intro) enough
+  exact ⟨paid,memory,nextEntries,nextHole,bounded,run,nextPending,nextFrontier,nextHeader,stable,footprint⟩
 
 end InitECandidate.Solver.MutableTable.Delete
 

@@ -1,26 +1,8 @@
-import InitECandidate.Solver.GasBudget.JournalAppendDeleteNormal
-import InitECandidate.Solver.GasBudget.JournalCounterLedger
+import InitECandidate.Solver.GasBudget.JournalAppendDeleteCallValues
 
 namespace InitECandidate.Solver.GasBudget.Journal.Append
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch MutableTable
-
-private theorem delete_environment (codeFn : MlS → Option (List (MlS × ShapeHOL) × ProgHOL 64 × ShapeHOL)) (table key : BitVec 64)
-    (code : codeFn (ofString "jdel") = some (Find.formals, deleteBody, .one)) :
-    ∃ callee : HolFiniteMapExact MlS (ValueHOL 64), lookupCodeHOLFinite codeFn (ofString "jdel") [.val (.word table), .val (.word key)] = some (deleteBody, callee, .one) ∧
-      callee.lookup (ofString "t") = some (.val (.word table)) ∧ callee.lookup (ofString "key") = some (.val (.word key)) := by
-  have valid : (Find.formals.map Prod.fst).Nodup ∧ Find.formals.length = ([.val (.word table), .val (.word key)] : List (ValueHOL 64)).length ∧
-      ((Find.formals.zip [.val (.word table), .val (.word key)]).all (fun pair => shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2))) = true := by
-    refine ⟨by decide, rfl, ?_⟩
-    simp [Find.formals, shapeOfHOLExact, shapeEqHOL]
-  have raw : lookupCodeHOLExact codeFn (ofString "jdel") [.val (.word table), .val (.word key)] = some (deleteBody, Find.rawLocals table key, .one) := by
-    simp only [lookupCodeHOLExact, code, valid, ↓reduceIte]
-    rfl
-  obtain ⟨callee, called, locals⟩ := CodeEnvironment.finite_lookup codeFn _ _ _ _ _ raw
-  refine ⟨callee, called, ?_, ?_⟩
-  all_goals rw [locals]
-  · simp [Find.rawLocals, show ofString "t" ≠ ofString "key" from by decide]
-  · simp [Find.rawLocals]
 
 /-- The actual original jdel caller either changes only its paid clock, or
 appends one real record and returns the complete family/image/reservation.
@@ -52,46 +34,12 @@ theorem delete_call_normal {ι : Type} [DecidableEq ι]
       next.slots.length ≤ (objects writer).slots.length ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ CounterEffect source target 1 0 0) := by
-  obtain ⟨callee, called, t, key⟩ := delete_environment source.code.lookup (objects writer).pointer query code
-  obtain ⟨positive, post, returned, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "jdel") arguments _ deleteBody callee .one args called normal
-  let entry := callEntryStateHOLFinite source callee
-  have entryFamily : TableFamily.Model entry cursor objects :=
-    ⟨fun index => (family.tables index).of_fields rfl rfl rfl rfl, family.apart⟩
-  have entryImage : Image entry objects base count entries :=
-    image.transfer (target := entry) rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
-  obtain ⟨returnedEq, branches⟩ := delete_body_normal entry post cursor objects writer base cap count entries entryFamily entryImage zone countBound
-    (environment.of_fields rfl rfl rfl) query queryFits queryMapped t key getCode deleteCode journal capacity counter returned bodyRun
-  rw [returnedEq] at bodyRun
-  have actual := evaluateHOLFiniteState_call_return_caller_locals source none (ofString "jdel") arguments _ deleteBody callee .one
-    (.val (.word 0#64)) post args called (by omega) bodyRun (by simp [shapeOfHOLExact, shapeEqHOL])
-  have same := congrArg Prod.snd (normal.symm.trans actual)
-  change target = {post with locals := source.locals} at same
-  subst target
+  have branches := delete_call_normal_values source target cursor objects writer base cap count entries family image zone countBound environment query
+    (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) queryFits queryMapped getCode deleteCode code journal capacity counter arguments args normal
   rcases branches with absent | present
-  · obtain ⟨paid, bodyPositive, bounded, fits, frame⟩ := absent
-    have restored := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => {state with locals := source.locals}) frame
-    change {post with locals := source.locals} = {source with clock := source.clock - 1 - paid} at restored
-    change paid ≤ source.clock - 1 at fits
-    have subtract : source.clock - 1 - paid = source.clock - (paid + 1) := by omega
-    left
-    exact ⟨paid + 1, by omega, by omega, by omega, by simpa only [subtract] using restored,
-      CounterEffect.unchanged source _ (by rw [restored])⟩
-  · obtain ⟨room, paid, next, oldValue, bodyPositive, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population,
-      nextCounter, codes, nextEnvironment, globals⟩ := present
-    have finalFamily : TableFamily.Model {post with locals := source.locals} (cursor + NaturalLayout.stride (objects writer).kind) (Function.update objects writer next) :=
-      ⟨fun index => (models.tables index).of_fields rfl rfl rfl rfl, models.apart⟩
-    have finalImage : Image {post with locals := source.locals} (Function.update objects writer next) base (count + 1) (Function.update entries count ⟨writer, BitVec.ofNat 64 cursor, 1#64, oldValue⟩) :=
-      nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
-    change paid ≤ source.clock - 1 at fits
-    change post.clock = source.clock - 1 - paid at clock
-    have countSmall : count + 1 < 2 ^ 64 := by
-      have upper := zone.valid.upper
-      change base + 32 * cap ≤ 33806089496 at upper
-      omega
-    have effect := CounterEffect.append source {post with locals := source.locals} count countSmall counter nextCounter
-    right
-    exact ⟨room, paid + 1, next, oldValue, by omega, by omega, by omega, by change post.clock = _; omega, kind, plan,
-      finalFamily, finalImage, nextZone, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, effect⟩
+  · exact Or.inl absent
+  · obtain ⟨room,paid,next,oldValue,positive,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved⟩ := present
+    exact Or.inr ⟨room,paid,next,oldValue,positive,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,locals,codes,nextEnvironment,globals,effect⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

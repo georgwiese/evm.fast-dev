@@ -1,5 +1,4 @@
-import InitECandidate.Solver.MutableTable.TableFamily
-import InitECandidate.Solver.MutableTable.DeleteNormalCall
+import InitECandidate.Solver.MutableTable.FamilyDeleteValues
 
 namespace InitECandidate.Solver.MutableTable.TableFamily
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -27,59 +26,9 @@ theorem delete_normal {ι : Type} [DecidableEq ι] (source target : PanSemStateF
       target.locals = source.locals ∧ target.globals = source.globals ∧ target.code = source.code ∧
       GasBudget.WarmKeys.Environment target ∧
       (∀ address, TableFootprint.Outside (objects writer).kind (objects writer).plan address → target.memory address = source.memory address) := by
-  let old := objects writer
-  have table := family.tables writer
-  obtain ⟨paid, memory, slots, flag, bounded, fits, frame, post, half⟩ :=
-    Delete.model_call_normal source target old.kind old.plan old.slots cursor old.floor table environment query queryFits queryMapped deleteCode arguments args normal
-  let next : Object := {old with slots := slots}
-  have memoryEq : target.memory = memory := congrArg PanSemStateFiniteExact.memory frame
-  have globals := congrArg PanSemStateFiniteExact.globals frame
-  change target.globals = source.globals at globals
-  have codes := congrArg PanSemStateFiniteExact.code frame
-  change target.code = source.code at codes
-  have domain := congrArg PanSemStateFiniteExact.memaddrs frame
-  change target.memaddrs = source.memaddrs at domain
-  have endian := congrArg PanSemStateFiniteExact.be frame
-  change target.be = source.be at endian
-  have locals := congrArg PanSemStateFiniteExact.locals frame
-  change target.locals = source.locals at locals
-  have clock := congrArg PanSemStateFiniteExact.clock frame
-  change target.clock = source.clock - paid at clock
-  have heap := congrArg (fun g => g.lookup (ofString "heap_ptr")) globals
-  have writerTable : TableState target next.kind next.plan next.slots cursor next.floor :=
-    ⟨table.valid, half, by rw [memoryEq]; exact post.header, post.occupied, table.power,
-      heap.trans table.heap, table.bounded, table.aligned, table.earlier, table.lower⟩
-  have readerTable (reader : ι) (different : reader ≠ writer) :
-      TableState target (objects reader).kind (objects reader).plan (objects reader).slots cursor (objects reader).floor := by
-    have readerTable := family.tables reader
-    obtain ⟨header, occupied⟩ := post.other_model table.valid (objects reader).kind (objects reader).plan readerTable.valid
-      (family.apart writer reader (Ne.symm different)) (objects reader).slots readerTable.header readerTable.occupied
-    exact ⟨readerTable.valid, readerTable.half, header, occupied, readerTable.power,
-      heap.trans readerTable.heap, readerTable.bounded, readerTable.aligned, readerTable.earlier, readerTable.lower⟩
-  have nextFamily : Model target cursor (Function.update objects writer next) := by
-    constructor
-    · intro index
-      by_cases same : index = writer
-      · subst index
-        simpa only [Function.update_self] using writerTable
-      · simpa only [Function.update_of_ne same] using readerTable index same
-    · intro first second different
-      have plans (index : ι) : (Function.update objects writer next index).plan = (objects index).plan := by
-        by_cases same : index = writer
-        · subst index; rw [Function.update_self]
-        · rw [Function.update_of_ne same]
-      have kinds (index : ι) : (Function.update objects writer next index).kind = (objects index).kind := by
-        by_cases same : index = writer
-        · subst index; rw [Function.update_self]
-        · rw [Function.update_of_ne same]
-      simpa only [Apart, plans, kinds] using family.apart first second different
-  refine ⟨paid, next, bounded, fits, clock, rfl, rfl, rfl, nextFamily, ?_,
-    post.count_bound.1, post.count_bound.2, locals, globals, codes,
-    environment.of_fields codes domain endian, fun address outside => post.protected_word address outside⟩
-  intro index
-  by_cases same : index = writer
-  · subst index; rw [Function.update_self]; rfl
-  · rw [Function.update_of_ne same]
+  obtain ⟨paid,next,bounded,fits,clock,kind,plan,floor,models,pointers,lower,upper,locals,globals,codes,nextEnvironment,protectedWords,nextValues⟩ :=
+    delete_normal_values source target cursor objects writer family environment query (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) queryFits queryMapped deleteCode arguments args normal
+  exact ⟨paid,next,bounded,fits,clock,kind,plan,floor,models,pointers,lower,upper,locals,globals,codes,nextEnvironment,protectedWords⟩
 
 end InitECandidate.Solver.MutableTable.TableFamily
 

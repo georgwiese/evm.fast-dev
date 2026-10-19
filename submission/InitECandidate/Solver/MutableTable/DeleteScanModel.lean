@@ -1,4 +1,4 @@
-import InitECandidate.Solver.MutableTable.DeleteScanLoop
+import InitECandidate.Solver.MutableTable.DeleteScanModelValues
 
 namespace InitECandidate.Solver.MutableTable.Delete
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
@@ -28,20 +28,9 @@ theorem scan_from_occupied (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       (∀ name : String, ofString "i" ≠ ofString name → ofString "j" ≠ ofString name →
         target.locals.lookup (ofString name) = source.locals.lookup (ofString name)) ∧
       TableFootprint.Frame source.memory memory kind plan := by
-  obtain ⟨stop, positive, bounded, empty, prefixUsed⟩ := deletion_first_empty source kind plan slots room occupied deleted
-  have startInside := occupied.inside _ (List.get_mem slots deleted)
-  have endIndex : 0 + (stop - 1) + 1 = stop := by omega
-  have budget : scanPrice kind * (stop - 1) + 1 ≤ scanPrice kind * (slots.length - 1) + 1 :=
-    Nat.add_le_add_right (Nat.mul_le_mul_left _ (by omega)) 1
-  have scanLocals : ScanLocals source kind plan (slots.get deleted) (Probe.slot plan.capacity (slots.get deleted) 0) := by
-    simpa only [Probe.slot, Nat.add_zero, Nat.mod_eq_of_lt startInside] using locals
-  obtain ⟨paid, memory, target, nextEntries, nextHole, paidBound, actual, frame, finalLocals, finalPending, frontier, finalHeader, stable, other, footprint⟩ :=
-    scan_loop kind plan valid bits (slots.get deleted) small power startInside slots.length deleted (stop - 1) source domain little 0 _ _
-      (by omega) (initial_pending source kind plan slots room occupied deleted) (frontier_initial _ _ startInside) scanLocals
-      (by intro rank lower upper; exact prefixUsed rank (by omega)) (by simpa only [endIndex] using empty)
-      header hashCode copyCode (Nat.le_trans budget enough)
-  exact ⟨stop, paid, memory, target, nextEntries, nextHole, positive, bounded, Nat.le_trans paidBound budget, actual, frame,
-    by simpa only [endIndex] using finalLocals, finalPending, finalHeader, stable, other, footprint⟩
+  obtain ⟨stop,paid,memory,target,nextEntries,nextHole,positive,stopBound,bounded,run,frame,nextLocals,nextPending,nextHeader,stable,other,footprint,nextValues⟩ :=
+    scan_from_occupied_values source kind plan valid domain little slots room occupied deleted bits small power locals header hashCode copyCode (fun _=>True) (fun _ _ _ _ _=>True.intro) enough
+  exact ⟨stop,paid,memory,target,nextEntries,nextHole,positive,stopBound,bounded,run,frame,nextLocals,nextPending,nextHeader,stable,other,footprint⟩
 
 end InitECandidate.Solver.MutableTable.Delete
 

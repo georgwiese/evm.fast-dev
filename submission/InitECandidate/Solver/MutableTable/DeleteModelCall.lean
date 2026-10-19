@@ -1,11 +1,8 @@
-import InitECandidate.Solver.MutableTable.DeleteEnvironment
+import InitECandidate.Solver.MutableTable.DeleteModelCallValues
 
 namespace InitECandidate.Solver.MutableTable.Delete
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
 open Flapjack.Basis.Pure.MlString
-
-def modelCallState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (paid : Nat) (memory : WordWrites.Memory) :=
-  {source with memory := memory, clock := source.clock - paid}
 
 /-- Real ignored-result deletion caller, as used by the unchanged guest.
 The original physical table survives with zero or one fewer entries and no
@@ -29,26 +26,9 @@ theorem model_call (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind :
       evaluateHOLFiniteState source (.call (some (none, none)) (ofString "htab_del") arguments) = (none, modelCallState source paid memory) ∧
       ModelPost source kind plan slots paid memory (modelCallState source paid memory) next flag ∧
       (2 * slots.length ≤ plan.capacity → 2 * next.length ≤ plan.capacity) := by
-  obtain ⟨callee, called, tableLocal, keyLocal⟩ := environment source.code.lookup (cell plan .header 0) query deleteCode
-  let entry := callEntryStateHOLFinite source callee
-  have entryModel := MemoryModel.Occupied.of_fields source entry kind plan slots occupied rfl rfl rfl
-  obtain ⟨paid, memory, target, next, flag, bounded, actual, post⟩ := model_execute entry kind plan valid domain little slots room entryModel bits small power header query queryFits queryMapped tableLocal keyLocal
-    hashCode copyCode memeqCode findCode (by change modelPrice kind slots.length ≤ source.clock - 1; omega)
-  have callRun := ignored_memory_call source target (ofString "htab_del") .one arguments _ body callee (.val (.word flag)) paid memory
-    args called (by omega) actual (by simp [shapeOfHOLExact, shapeEqHOL]) post.frame
-  have subtract : source.clock - 1 - paid = source.clock - (paid + 1) := by omega
-  have replaced : {target with locals := source.locals} = modelCallState source (paid + 1) memory := by
-    have restored := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => {state with locals := source.locals}) post.frame
-    simpa only [emptyLocalsHOLFinite, entry, callEntryStateHOLFinite, modelCallState, subtract] using restored
-  have memoryEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.memory) replaced
-  have domainEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.memaddrs) replaced
-  have endianEq := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.be) replaced
-  refine ⟨paid + 1, memory, next, flag, by omega, ?_, ?_, ?_⟩
-  · simpa only [modelCallState, subtract] using callRun
-  · exact ⟨rfl, post.shape, post.header, MemoryModel.Occupied.of_fields target _ kind plan next post.occupied memoryEq domainEq endianEq, post.footprint⟩
-  · intro half
-    have high := (ModelPost.count_bound entry kind plan slots paid memory target next flag post).2
-    omega
+  obtain ⟨paid,memory,next,flag,bounded,run,post,half,nextValues⟩ :=
+    model_call_values source kind plan valid domain little slots room occupied bits small power header query queryFits queryMapped hashCode copyCode memeqCode findCode deleteCode arguments args (fun _=>True) (fun _ _ _ _ _=>True.intro) enough
+  exact ⟨paid,memory,next,flag,bounded,run,post,half⟩
 
 end InitECandidate.Solver.MutableTable.Delete
 

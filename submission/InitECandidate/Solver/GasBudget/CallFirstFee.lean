@@ -36,7 +36,7 @@ theorem normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame
       ChargeEvent source ready frame paid (amount warm memoryCost words).toNat ∧
       memoryCost.toNat + (CallGas.stipend words).toNat + 100 ≤ (amount warm memoryCost words).toNat ∧
       evaluateHOLFiniteState ready continuation = (some (.returned returned), inner) ∧
-      emptyLocalsHOLFinite post = emptyLocalsHOLFinite inner := by
+      emptyLocalsHOLFinite post = emptyLocalsHOLFinite inner ∧ post.clock = inner.clock := by
   obtain ⟨warmPaid, warm, warmPost, positive, warmBound, warmFits, binary, warmRun, warmScope⟩ :=
     WarmAddress.call_normal source post frame query plan slots cursor floor table environment installed ev tableMapped tableCell queryFits queryMapped
       "warm" arguments (CallAccessFee.program (CallValueFee.withTransfer continuation)) args returned run
@@ -84,9 +84,11 @@ theorem normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (frame
       rfl
     · intro address notSP notGas notUsed
       exact (outside address notGas notUsed).trans (congrFun beforeMemory address)
-  refine ⟨warm, warmPaid + 2, ready, inner, by omega, event, surplus, tailRun, ?_⟩
-  rw [warmScope, accessScope, transferScope, feeScope]
-  rfl
+  refine ⟨warm, warmPaid + 2, ready, inner, by omega, event, surplus, tailRun, ?_, ?_⟩
+  · rw [warmScope, accessScope, transferScope, feeScope]
+    rfl
+  · rw [warmScope, accessScope, transferScope, feeScope]
+    rfl
 
 end InitECandidate.Solver.GasBudget.CallFirstFee
 

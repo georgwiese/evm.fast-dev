@@ -18,7 +18,7 @@ theorem scoped_normal_items (source post : PanSemStateFiniteExact 64 Guest.HostM
     1≤source.clock ∧ ∃ calleePost items count inner,
       ListItems calleePost pointer length.toNat items ∧ count.toNat=items.length ∧
       Validation.Arena calleePost cursor limit ∧ Validation.Above source calleePost cursor.toNat ∧
-      calleePost.globals.lookup (ofString "heap_ptr")=source.globals.lookup (ofString "heap_ptr") ∧
+      calleePost.code=source.code ∧ calleePost.globals.lookup (ofString "heap_ptr")=source.globals.lookup (ofString "heap_ptr") ∧
       source.clock-calleePost.clock≤60*length.toNat+32 ∧
       evaluateHOLFiniteState (bind {calleePost with locals:=source.locals} name count) continuation=(some (.returned returned),inner) ∧
       post=restore source name inner := by
@@ -42,7 +42,7 @@ theorem scoped_normal_items (source post : PanSemStateFiniteExact 64 Guest.HostM
   rw [bodyRun] at price
   change source.clock-1-calleePost.clock≤60*length.toNat+31 at price
   rw [valueEq] at continuationRun
-  exact ⟨positive,calleePost,items,count,inner,reachedItems,countNumber,nextArena,above,heapEq,by omega,continuationRun,restored⟩
+  exact ⟨positive,calleePost,items,count,inner,reachedItems,countNumber,nextArena,above,fields.2.2.2,heapEq,by omega,continuationRun,restored⟩
 
 end InitECandidate.Solver.Rlp.ListCount
 

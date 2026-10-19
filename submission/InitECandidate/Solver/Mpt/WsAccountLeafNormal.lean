@@ -5,12 +5,14 @@ namespace InitECandidate.Solver.Mpt.WsAccountLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
+variable {property : BitVec 64 → BitVec 64 → Prop}
+
 set_option maxRecDepth 100000 in
 /-- Complete original normal account-leaf lookup derives its allocation
 room and actual binary/payload answer. The only cursor premise is its current
 heap-end bound; no future allocation or helper outcome is supplied. -/
 theorem body_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws root addr h nibs stp pad : BitVec 64)
-    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit)
+    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit property)
     (protectedValues : TrieWalk.ValueProtected data.graph nibs)
     (hashData : Keccak256.EntryData source stp addr pad h 20)
     (graphProtection : ∀ query,data.graph.Footprint query → Keccak256.Protected stp pad h query)
@@ -21,7 +23,7 @@ theorem body_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMem
     (heapBound : h.toNat≤33806089496)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    h.toNat+32≤33806089496 ∧ TrieWalk.Answer post.memaddrs valueLimit returned := by
+    h.toNat+32≤33806089496 ∧ TrieWalk.Answer post.memaddrs valueLimit (property:=property) returned := by
   rw [body_shape] at normal
   have positive := Input.CallNormal.normal_clock source post (ofString "mark") .one (ofString "heap_mark") [] afterMark returned normal
   let ready := bind {source with clock := source.clock-1} "mark" h
@@ -34,7 +36,7 @@ theorem body_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMem
   have postEq := (congrArg Prod.snd joined).symm
   change post=restore source "mark" inner at postEq
   let readyData := Data.of_fields source ready ws root h nibs data rfl rfl rfl rfl rfl
-  let readyValues : TrieWalk.Values readyData.graph valueLimit := TrieWalk.Values.rebase source.memory ready.memory source.memaddrs ready.memaddrs data.graph valueLimit values rfl rfl
+  let readyValues : TrieWalk.Values readyData.graph valueLimit property := TrieWalk.Values.rebase source.memory ready.memory source.memaddrs ready.memaddrs data.graph valueLimit values rfl rfl
   have readyValueProtection : TrieWalk.ValueProtected readyData.graph nibs := protectedValues
   have readyHashData := Keccak256.EntryData.of_fields source ready stp addr pad h 20 rfl rfl rfl rfl rfl hashData
   have readyGraphProtection : ∀ query,readyData.graph.Footprint query → Keccak256.Protected stp pad h query := graphProtection
@@ -47,7 +49,7 @@ theorem body_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMem
 
 set_option maxRecDepth 100000 in
 theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws root addr h nibs stp pad : BitVec 64)
-    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit)
+    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit property)
     (protectedValues : TrieWalk.ValueProtected data.graph nibs)
     (hashData : Keccak256.EntryData source stp addr pad h 20)
     (graphProtection : ∀ query,data.graph.Footprint query → Keccak256.Protected stp pad h query)
@@ -58,7 +60,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (heapBound : h.toNat≤33806089496)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    h.toNat+32≤33806089496 ∧ TrieWalk.Answer post.memaddrs valueLimit returned ∧
+    h.toNat+32≤33806089496 ∧ TrieWalk.Answer post.memaddrs valueLimit (property:=property) returned ∧
       post.clock≤source.clock ∧ source.clock-2297≤post.clock := by
   obtain ⟨room,answer⟩ := body_normal_value source post ws root addr h nibs stp pad data valueLimit values protectedValues hashData
     graphProtection valueProtection rootProtection addressCell heap heapBound installed returned normal

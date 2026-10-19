@@ -2,6 +2,13 @@
 
 > **AUTHORITATIVE SCOPE CORRECTION — 2026-10-17:** The user requires a reasonably tight finite runtime bound for the current, unchanged Pancake implementation on main. There is NO numerical ceiling. Stop replacement/radix refinement/candidate compilation work. The current plan at the top of bound.md supersedes historical below-Yukon-limit objectives and checklists here. Keep reusable original-program proofs; remove the authorized replacement code after dependency review, retaining history in Git. The previous 45% estimate does not measure this corrected goal.
 
+## 2026-10-19: complete original memory-expansion cost helper
+
+- Checked exact saturated-rounding arithmetic, aligned fixed points and alignment except at the max-word sentinel. Added actual sat_word value; reused existing U256Zero and removed the duplicate new proof before saving.
+- Value-aware real unary-call prefixes derive exact helper values, paid clocks, current nonlocal preservation and actual continuations. Complete original extend_memory_cost1 normal execution now yields its exact pair through all real calls, frame-length read, guards and returns.
+- Successful memory-expansion-cost-value-v1.log1314jobs, exit0, permitted axioms. Current typed locals/code/frame-length ownership remain explicit; no supplied helper run, future model or source-clock allowance.
+- Actual charged expansion invariant, expansion writes/loops, cost2, whole-opcode/global accounting and weighted target K remain open. No whole-program finite bound/full verification.
+
 ## 2026-10-19: actual memory-gas value and conditional byte accounting
 
 - Original memory_gas_cost normal execution now derives its exact source-defined scalar through real word count, carry multiplication, overflow guard and saturated addition. Exact value0and lower bound3*floor(bytes/32) checked.

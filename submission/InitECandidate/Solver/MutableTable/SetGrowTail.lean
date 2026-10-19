@@ -1,12 +1,10 @@
+import InitECandidate.Solver.MutableTable.SetGrowValues
 import InitECandidate.Solver.MutableTable.SetGrowGuard
 import InitECandidate.Solver.MutableTable.GrowRuntime.Call
 
 namespace InitECandidate.Solver.MutableTable.Set
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix NaturalLayout
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
-
-def afterGrowPrice (kind : KeyHash.Kind) (capacity count : Nat) :=
-  GrowRuntime.price kind (2 * capacity) count + 1 + count + KeyHash.hashPrice kind + MemeqByteRuntime.price (KeyHash.keySize kind) + 2
 
 /-- Actual absent-key growing setter suffix: derive the original guard,
 execute growth, insert into its returned physical table, then return. Entry
@@ -39,46 +37,11 @@ theorem after_grow (source : PanSemStateFiniteExact 64 Guest.HostMemory) (kind :
       MemoryModel.Header memory kind (relocated kind (old.base .header) start (2 * old.capacity)) (BitVec.ofNat 64 next.length) ∧
       MemoryModel.Occupied target kind (relocated kind (old.base .header) start (2 * old.capacity)) next ∧
       TableFootprint.Frame source.memory memory kind (relocated kind (old.base .header) start (2 * old.capacity)) := by
-  have countBound := MemoryModel.Occupied.length_le source kind old slots occupied
-  have guard := growth_read source kind old oldValid domain slots.length countBound header tableLocal threshold
-  have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) [localVar "t"] = some (Grow.values (cell old .header 0)) := by
-    simp [Grow.values, evalListHOLFinite, evalListHOLExact, evalHOLExact, toExact, localVar, tableLocal]
-  obtain ⟨growPaid, growMemory, grownSlots, growBound, grown, grownLength, grownHeader, grownModel, _, growFootprint⟩ := GrowRuntime.call_execute source kind old oldValid start newValid earlier domain little slots header occupied heap bits power minimum
-    allocCode zeroCode hashCode copyCode insertCode growCode [localVar "t"] args (by dsimp only [afterGrowPrice] at enough; omega)
-  let grownState := GrowRuntime.callState source kind old start growMemory growPaid
-  have growing : evaluateHOLFiniteState source (.ite growthTest growCall .skip) = (none, grownState) := by
-    simp only [eval] at guard
-    simp only [evaluateHOLFiniteState_ite, guard, show (1#64 : BitVec 64) ≠ 0#64 from by decide, ↓reduceIte]
-    exact grown
-  have insertArgs : evalListHOLFinite grownState (h := fun address => Classical.propDecidable (grownState.memaddrs address))
-      [localVar "t", localVar "key", localVar "value"] = some (TableCall.values (cell old .header 0) query value) := by
-    simp [TableCall.values, evalListHOLFinite, evalListHOLExact, evalHOLExact, toExact, localVar, tableLocal, keyLocal, valueLocal, grownState, GrowRuntime.callState]
-  obtain ⟨newSmall, newPower, _⟩ := MemoryModel.growth_shape kind old oldValid bits power minimum
-  have room : grownSlots.length < 2 * old.capacity := by have positive := oldValid.positive; omega
-  obtain ⟨insertPaid, index, insertBound, inside, fresh, inserted, nextHeader, nextModel⟩ := MemoryModel.insertion_call grownState kind _ newValid domain little grownSlots room grownHeader grownModel query value
-    (bits + 1) newSmall newPower queryFits queryMapped hashCode copyCode insertCode [localVar "t", localVar "key", localVar "value"] insertArgs
-    (by change grownSlots.length + KeyHash.hashPrice kind + MemeqByteRuntime.price (KeyHash.keySize kind) + 2 ≤ source.clock - growPaid; dsimp only [afterGrowPrice] at enough; omega)
-  let memory := MemoryModel.insertedMemory growMemory source.be kind (relocated kind (old.base .header) start (2 * old.capacity)) query index (BitVec.ofNat 64 grownSlots.length) value
-  let post := {grownState with memory := memory, clock := grownState.clock - insertPaid}
-  have returned : evaluateHOLFiniteState post Insert.returnZero = (some (.returned (.val (.word 0#64))), emptyLocalsHOLFinite post) := by
-    simp [Insert.returnZero, evaluateHOLFiniteState_return, evalHOLExact, shapeOfHOLExact, sizeOfShapeWithContextHOL]
-  refine ⟨growPaid + insertPaid, memory, emptyLocalsHOLFinite post, grownSlots ++ [index.toNat], ?_, ?_, ?_, ?_, nextHeader, ?_, ?_⟩
-  · dsimp only [afterGrowPrice]
-    omega
-  · rw [afterPresent, StateSteps.next_sequence source grownState _ _ growing (by change source.clock - growPaid ≤ source.clock; omega),
-      StateSteps.next_sequence grownState post insertCall Insert.returnZero inserted (Nat.sub_le _ _)]
-    exact returned
-  · change emptyLocalsHOLFinite {source with globals := _, memory := memory, clock := source.clock - growPaid - insertPaid} = _
-    have subtract : source.clock - growPaid - insertPaid = source.clock - (growPaid + insertPaid) := by omega
-    rw [subtract]
-    rfl
-  · simp only [List.length_append, List.length_singleton, grownLength]
-  · exact MemoryModel.Occupied.of_fields _ _ kind _ _ nextModel rfl rfl rfl
-  · have countInside : (BitVec.ofNat 64 grownSlots.length).toNat < 2 * old.capacity := by
-      rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (Nat.lt_trans room (capacity_small kind _ newValid))]
-      exact room
-    exact TableFootprint.Frame.trans source.memory growMemory memory kind _ growFootprint
-      (TableFootprint.inserted growMemory source.be kind _ newValid query index _ value inside countInside)
+  obtain ⟨paid, memory, target, next, bounded, run, fields, length, nextHeader, nextOccupied, footprint, _⟩ :=
+    after_grow_values source kind old oldValid start newValid earlier domain little slots header occupied
+      (fun _=>True) (fun _ _ _ _ _=>True.intro) tableLocal query value keyLocal valueLocal queryFits queryMapped
+      True.intro threshold heap bits power minimum allocCode zeroCode hashCode copyCode insertCode growCode enough
+  exact ⟨paid, memory, target, next, bounded, run, fields, length, nextHeader, nextOccupied, footprint⟩
 
 end InitECandidate.Solver.MutableTable.Set
 

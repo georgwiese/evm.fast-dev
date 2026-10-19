@@ -29,7 +29,7 @@ theorem general_get_origin (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       ∃ value, source.memaddrs (vals + slot * 8#64) ∧ source.memory (vals + slot * 8#64) = .word value)
     (little : source.be = false)
     (enough : Find.generalProbePrice kind * order.length + (KeyHash.hashPrice kind + 1) ≤ source.clock) :
-    ∃ paid flag value target, paid ≤ Find.generalProbePrice kind * order.length + (KeyHash.hashPrice kind + 1) ∧ (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source vals p.capacity flag value ∧
+    ∃ paid flag value target, paid ≤ Find.generalProbePrice kind * order.length + (KeyHash.hashPrice kind + 1) ∧ (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source vals p.capacity flag value (fun slot=>slot.toNat∈order) ∧
       evaluateHOLFiniteState source body = (some (.returned (pair flag value)), target) ∧
       emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
   have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address))
@@ -40,8 +40,20 @@ theorem general_get_origin (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   let entered := bind {source with clock := source.clock - paid} "i" index
   have tEntered : entered.locals.lookup (ofString "t") = some (.val (.word table)) :=
     (bind_lookup_other _ "i" "t" _ (by decide)).trans cells.tableLocal
+  have selectedMember (inside : index.toNat<p.capacity.toNat) : index.toNat∈order := by
+    have capNumber : p.capacity.toNat=2^bits := by
+      rw [capacity,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (Nat.pow_lt_pow_right (by decide) small)]
+    have natInside : index.toNat<2^bits := by omega
+    rcases selected with absent | ⟨selectedInside,byte,nonzero,loaded⟩
+    · rw [absent] at inside; omega
+    · have flags := binary index.toNat natInside
+      simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq] at flags
+      rcases flags with empty | occupied
+      · exact (nonzero (Option.some.inj (loaded.symm.trans empty))).elim
+      · apply covered index.toNat natInside
+        simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using occupied
   obtain ⟨flag, value, binaryFlag, origin, tailRun⟩ := sized_tail_origin entered table vals index p.capacity tEntered
-    (bind_lookup_same _ _ _) (cells.mapped 16 (by simp)) cells.capacity valsMapped valsCell values indexBound
+    (bind_lookup_same _ _ _) (cells.mapped 16 (by simp)) cells.capacity valsMapped valsCell values indexBound (fun slot=>slot.toNat∈order) selectedMember
   change evaluateHOLFiniteState source (.decCall (ofString "i") .one (ofString "htab_find_slot") [localVar "t", localVar "key"] afterIndex) =
     (let result := evaluateHOLFiniteState entered afterIndex; (result.1, restore source "i" result.2)) at callRun
   rw [tailRun] at callRun

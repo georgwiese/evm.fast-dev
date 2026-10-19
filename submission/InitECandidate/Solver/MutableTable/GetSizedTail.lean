@@ -18,7 +18,7 @@ theorem sized_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table 
     (bounded : index.toNat ≤ capacity.toNat) :
     ∃ flag value, (flag = 0#64 ∨ flag = 1#64) ∧
       evaluateHOLFiniteState source afterIndex = (some (.returned (pair flag value)), emptyLocalsHOLFinite source) := by
-  obtain ⟨flag,value,binary,origin,run⟩ := sized_tail_origin source table vals index capacity tLocal iLocal capMapped capCell valsMapped valsCell values bounded
+  obtain ⟨flag,value,binary,origin,run⟩ := sized_tail_origin source table vals index capacity tLocal iLocal capMapped capCell valsMapped valsCell values bounded (fun _=>True) (by intro; trivial)
   exact ⟨flag,value,binary,run⟩
 
 end InitECandidate.Solver.MutableTable.Get

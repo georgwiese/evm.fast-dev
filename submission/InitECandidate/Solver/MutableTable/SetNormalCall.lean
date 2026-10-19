@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.SetNormalCallValues
 import InitECandidate.Solver.MutableTable.SetNormalBound
 
 namespace InitECandidate.Solver.MutableTable.Set
@@ -35,38 +36,11 @@ theorem model_call_bound (source target : PanSemStateFiniteExact 64 Guest.HostMe
       (plan = old → paid ≤ noGrowthPrice kind slots.length + 1) ∧ paid ≤ source.clock ∧
       ModelPost source kind old start slots.length paid globals memory target plan next ∧
       Valid kind plan ∧ 2 * next.length ≤ plan.capacity ∧ target.locals = source.locals := by
-  obtain ⟨newSmall, _, _⟩ := MemoryModel.growth_shape kind old oldValid bits power minimum
-  have small : bits < 64 := by omega
-  have room : slots.length < old.capacity := by have positive := oldValid.positive; omega
-  obtain ⟨callee, called, tableLocal, keyLocal, valueLocal⟩ := TableCall.environment source.code.lookup (ofString "htab_set") body (cell old .header 0) query value setCode
-  obtain ⟨positive, bodyTarget, returned, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "htab_set") arguments (TableCall.values (cell old .header 0) query value) body callee .one args called normal
-  let entry := callEntryStateHOLFinite source callee
-  have entryModel := MemoryModel.Occupied.of_fields source entry kind old slots occupied rfl rfl rfl
-  obtain ⟨paid, globals, memory, plan, next, bounded, oldBound, fits, resultEq, post, nextValid⟩ :=
-    model_body_bound entry bodyTarget kind old oldValid start startBound startAligned earlier domain little slots room header entryModel query value bits small power minimum
-      queryFits queryMapped tableLocal keyLocal valueLocal heap allocCode trapCode zeroCode hashCode copyCode memeqCode findCode insertCode growCode returned bodyRun
-  subst returned
-  have actual := evaluateHOLFiniteState_call_return_caller_locals source none (ofString "htab_set") arguments (TableCall.values (cell old .header 0) query value) body callee .one (.val (.word 0#64)) bodyTarget
-    args called (by omega) bodyRun (by simp [shapeEqHOL, shapeOfHOLExact])
-  have targetEq := congrArg Prod.snd (normal.symm.trans actual)
-  change target = {bodyTarget with locals := source.locals} at targetEq
-  have frame : emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with globals := globals, memory := memory, clock := source.clock - (paid + 1)} := by
-    rw [targetEq]
-    change emptyLocalsHOLFinite bodyTarget = _
-    rw [post.frame]
-    change emptyLocalsHOLFinite {source with globals := globals, memory := memory, clock := source.clock - 1 - paid} = _
-    have subtract : source.clock - 1 - paid = source.clock - (paid + 1) := by omega
-    rw [subtract]
-  have model : MemoryModel.Occupied target kind plan next := by
-    rw [targetEq]
-    exact MemoryModel.Occupied.of_fields bodyTarget _ kind plan next post.occupied rfl rfl rfl
-  refine ⟨paid + 1, globals, memory, plan, next, by omega, ?_, ?_, ?_, nextValid, post.half half, by rw [targetEq]⟩
-  · intro same
-    have old := oldBound same
-    omega
-  · change paid ≤ source.clock - 1 at fits
-    omega
-  · exact ⟨frame, post.shape, post.countBound, post.grew, post.half, post.header, model, post.footprint⟩
+  obtain ⟨paid, globals, memory, plan, next, bounded, oldBound, fits, post, valid, nextHalf, locals, _⟩ :=
+    model_call_bound_values source target kind old oldValid start startBound startAligned earlier domain little slots half header occupied
+      query value (fun _=>True) (fun _ _ _ _ _=>True.intro) True.intro bits power minimum queryFits queryMapped heap
+      allocCode trapCode zeroCode hashCode copyCode memeqCode findCode insertCode growCode setCode arguments args normal
+  exact ⟨paid, globals, memory, plan, next, bounded, oldBound, fits, post, valid, nextHalf, locals⟩
 
 end InitECandidate.Solver.MutableTable.Set
 

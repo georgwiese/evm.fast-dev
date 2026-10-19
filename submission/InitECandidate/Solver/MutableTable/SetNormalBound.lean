@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.SetNormalBoundValues
 import InitECandidate.Solver.MutableTable.SetNormalExecution
 import InitECandidate.Solver.ClockPadding
 
@@ -33,20 +34,11 @@ theorem model_body_bound (source actualTarget : PanSemStateFiniteExact 64 Guest.
     ∃ paid globals memory plan next, paid ≤ modelPrice kind old.capacity slots.length ∧
       (plan = old → paid ≤ noGrowthPrice kind slots.length) ∧ paid ≤ source.clock ∧ actualValue = .val (.word 0#64) ∧
       ModelPost source kind old start slots.length paid globals memory actualTarget plan next ∧ Valid kind plan := by
-  let extra := modelPrice kind old.capacity slots.length
-  let paddedSource := {source with clock := source.clock + extra}
-  let paddedTarget := {actualTarget with clock := actualTarget.clock + extra}
-  have lifted := panPropsEvaluateAddClockEq body source (some (.returned actualValue)) actualTarget extra
-    ⟨normal, by intro impossible; cases impossible⟩
-  have paddedModel := MemoryModel.Occupied.of_fields source paddedSource kind old slots occupied rfl rfl rfl
-  obtain ⟨paid, globals, memory, plan, next, bounded, oldBound, resultEq, post, nextValid⟩ :=
-    model_execute_normal paddedSource paddedTarget kind old oldValid start startBound startAligned earlier domain little slots room header paddedModel
-      query value bits small power minimum queryFits queryMapped tableLocal keyLocal valueLocal heap allocCode trapCode zeroCode hashCode copyCode memeqCode findCode insertCode growCode
-      actualValue lifted (by change modelPrice kind old.capacity slots.length ≤ source.clock + extra; omega)
-  have stripped := InitECandidate.Solver.strip_clock_padding source actualTarget {source with globals := globals, memory := memory} paid extra (by omega) post.frame
-  refine ⟨paid, globals, memory, plan, next, bounded, oldBound, stripped.1, resultEq, ?_, nextValid⟩
-  exact ⟨stripped.2, post.shape, post.countBound, post.grew, post.half, post.header,
-    MemoryModel.Occupied.of_fields paddedTarget actualTarget kind plan next post.occupied rfl rfl rfl, post.footprint⟩
+  obtain ⟨paid, globals, memory, plan, next, bounded, oldBound, fits, resultEq, post, valid, _⟩ :=
+    model_body_bound_values source actualTarget kind old oldValid start startBound startAligned earlier domain little slots room header occupied
+      query value (fun _=>True) (fun _ _ _ _ _=>True.intro) True.intro bits small power minimum queryFits queryMapped tableLocal keyLocal valueLocal heap
+      allocCode trapCode zeroCode hashCode copyCode memeqCode findCode insertCode growCode actualValue normal
+  exact ⟨paid, globals, memory, plan, next, bounded, oldBound, fits, resultEq, post, valid⟩
 
 end InitECandidate.Solver.MutableTable.Set
 

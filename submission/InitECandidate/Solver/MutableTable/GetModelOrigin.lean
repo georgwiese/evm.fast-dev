@@ -17,7 +17,7 @@ theorem model_execute_origin (source : PanSemStateFiniteExact 64 Guest.HostMemor
     (tableLocal : source.locals.lookup (ofString "t") = some (.val (.word (cell plan .header 0))))
     (keyLocal : source.locals.lookup (ofString "key") = some (.val (.word query)))
     (enough : (Find.generalProbePrice kind * slots.length + (KeyHash.hashPrice kind + 1)) ≤ source.clock) :
-    ∃ paid flag value target, paid ≤ (Find.generalProbePrice kind * slots.length + (KeyHash.hashPrice kind + 1)) ∧ (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source (cell plan .values 0) (BitVec.ofNat 64 plan.capacity) flag value ∧
+    ∃ paid flag value target, paid ≤ (Find.generalProbePrice kind * slots.length + (KeyHash.hashPrice kind + 1)) ∧ (flag = 0#64 ∨ flag = 1#64) ∧ ValueOrigin source (cell plan .values 0) (BitVec.ofNat 64 plan.capacity) flag value (fun slot=>slot.toNat∈slots) ∧
       evaluateHOLFiniteState source body = (some (.returned (pair flag value)), target) ∧
       emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
   obtain ⟨bits, power, minimum⟩ := table.power

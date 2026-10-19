@@ -13,7 +13,7 @@ def ValuesHave (source : PanSemStateFiniteExact 64 Guest.HostMemory) (vals capac
 theorem ValueOrigin.value_property (source : PanSemStateFiniteExact 64 Guest.HostMemory) (vals capacity flag value : BitVec 64)
     (property : BitVec 64 → Prop) (origin : ValueOrigin source vals capacity flag value) (values : ValuesHave source vals capacity property) :
     flag=0#64 ∨ property value := by
-  rcases origin with absent | ⟨slot,inside,stored⟩
+  rcases origin with absent | ⟨slot,inside,eligible,stored⟩
   · exact Or.inl absent
   · exact Or.inr (values slot inside value stored)
 

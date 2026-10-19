@@ -77,7 +77,7 @@ theorem present_normal {ι : Type} [DecidableEq ι]
     intro offset inside
     exact AllocatedBytes.byte_mapped middle address 20 offset middleEnvironment.domain addressArena inside
   obtain ⟨deletePaid,nextCursor,next,nextEntries,added,deletePriceBound,deleteFunded,deleteClock,deleteForward,addedBound,capacityBound,models,
-    nextRegistry,nextImage,nextZone,nextValues,nextSaved,deleteEffect,deleteFrame,deleteCodes,nextEnvironment,deleteGlobals,deleteMetadata,deleteOthers,deleteCounter⟩ :=
+    nextRegistry,nextImage,nextZone,nextValues,nextSaved,deleteEffect,deleteFrame,deleteCodes,nextEnvironment,deleteGlobals,deleteMetadata,deleteOthers,deleteCounter,_deletePlans,_deletePopulations⟩ :=
     Journal.Append.delete_call_registered_values middle deleted middleCursor middleObjects outer base cap count entries middleFamily middleImage middleZone countBound
       middleEnvironment cutoff accounts middleRegistry accountApart address property middleValues savedValues queryFits queryMapped
       (Get.original_code middle.code middleInstalled) (table_delete_code middle.code middleInstalled) (journal_delete_code middle.code middleInstalled)

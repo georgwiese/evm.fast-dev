@@ -34,7 +34,9 @@ theorem delete_call_registered_values {ι : Type} [DecidableEq ι]
       TableFamily.ValuesHave target nextObjects property ∧ EntryValues nextEntries (count+added) property ∧
       CounterEffect source target added 0 0 ∧ ProtectedFrame base cap cursor objects nextObjects source target ∧
       target.code=source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.Metadata objects nextObjects ∧ (∀ reader,reader≠writer → nextObjects reader=objects reader) ∧
-      target.globals.lookup (ofString "journal_n")=some (.val (.word (BitVec.ofNat 64 (count+added)))) := by
+      target.globals.lookup (ofString "journal_n")=some (.val (.word (BitVec.ofNat 64 (count+added)))) ∧
+      (∀ reader,(nextObjects reader).plan=(objects reader).plan) ∧
+      (∀ reader,(nextObjects reader).slots.length≤(objects reader).slots.length) := by
   have branches := delete_call_normal_values source target cursor objects writer base cap count entries family image zone countBound environment query
     property values savedValues queryFits queryMapped getCode deleteCode code journal capacity counter arguments args normal
   rcases branches with absent | present
@@ -43,7 +45,7 @@ theorem delete_call_registered_values {ι : Type} [DecidableEq ι]
     have frame : ProtectedFrame base cap cursor objects objects source {source with clock:=source.clock-paid} :=
       ⟨fun query earlier outside away=>⟨outside,rfl⟩⟩
     refine ⟨paid,cursor,objects,entries,0,?_,funded,rfl,Nat.le_refl _,by decide,by simpa using countBound,
-      family.of_control rfl rfl rfl rfl,?_,?_,zone,values,?_,effect,frame,rfl,environment.of_fields rfl rfl rfl,?_,TableFamily.Metadata.refl objects,(fun _ _=>rfl),counter⟩
+      family.of_control rfl rfl rfl rfl,?_,?_,zone,values,?_,effect,frame,rfl,environment.of_fields rfl rfl rfl,?_,TableFamily.Metadata.refl objects,(fun _ _=>rfl),counter,(fun _=>rfl),(fun _=>Nat.le_refl _)⟩
     · dsimp only [deletePrice]; omega
     · exact registry.framed source _ cutoff cursor cursor objects objects accounts
         (TableFamily.PersistentFrame.of_memory cutoff cursor objects source _ rfl) (Nat.le_refl _) rfl
@@ -53,9 +55,19 @@ theorem delete_call_registered_values {ι : Type} [DecidableEq ι]
   · obtain ⟨room,paid,next,oldValue,positive,bounded,funded,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved,pointers⟩ := present
     have nextRegistry := frame.registry source target base cap cutoff cursor (cursor+NaturalLayout.stride (objects writer).kind)
       objects (Function.update objects writer next) accounts registry accountApart (by omega) (nextEnvironment.domain.trans environment.domain.symm)
+    have plans (reader : ι) : (Function.update objects writer next reader).plan=(objects reader).plan := by
+      by_cases same : reader=writer
+      · subst reader
+        simpa only [Function.update_self] using plan
+      · rw [Function.update_of_ne same]
+    have populations (reader : ι) : (Function.update objects writer next reader).slots.length≤(objects reader).slots.length := by
+      by_cases same : reader=writer
+      · subst reader
+        simpa only [Function.update_self] using population
+      · simpa only [Function.update_of_ne same] using (Nat.le_refl (objects reader).slots.length)
     exact ⟨paid,cursor+NaturalLayout.stride (objects writer).kind,Function.update objects writer next,
       Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,1#64,oldValue⟩,1,bounded,funded,clock,by omega,Nat.le_refl _,by omega,
-      models,nextRegistry,nextImage,nextZone,nextValues,nextSaved,effect,frame,codes,nextEnvironment,globals,pointers,(fun reader other=>Function.update_of_ne other next objects),nextCounter⟩
+      models,nextRegistry,nextImage,nextZone,nextValues,nextSaved,effect,frame,codes,nextEnvironment,globals,pointers,(fun reader other=>Function.update_of_ne other next objects),nextCounter,plans,populations⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

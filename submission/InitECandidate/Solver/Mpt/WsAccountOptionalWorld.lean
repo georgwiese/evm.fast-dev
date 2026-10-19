@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.WsAccountOptionalFamilyFrame
 import InitECandidate.Solver.Mpt.WsAccountOptionalRoom
 import InitECandidate.Solver.Mpt.WsAccountWorldAgreement
 import InitECandidate.Solver.WitnessRadix.Keccak256EnvironmentFields
+import InitECandidate.Solver.MutableTable.FamilyPersistentFrame
 
 namespace InitECandidate.Solver.Mpt.WsAccountOptional
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -32,7 +33,8 @@ theorem body_world_family {ι : Type} (source post : PanSemStateFiniteExact 64 G
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
     ∃ nextCursor,(nextCursor=heap.toNat ∨ nextCursor=heap.toNat+120) ∧ TableFamily.Model post nextCursor objects ∧
       Nonempty (WsAccountLeaf.World post ws root nibs cutoff frozenEnd valueLimit) ∧ Keccak256.Environment post stp pad ∧
-      Result post heap cursor limit returned ∧ HeapGlobals source post ∧ source.clock-post.clock≤31051 ∧
+      Result post heap cursor limit returned ∧ HeapGlobals source post ∧ TableFamily.PersistentFrame cutoff heap.toNat objects objects source post ∧
+      (∀ query : BitVec 64,cutoff≤query.toNat → query.toNat<heap.toNat → post.memory query=source.memory query) ∧ source.clock-post.clock≤31051 ∧
       (returned=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image post heap)) := by
   have room := body_room source post addr heap addressCell heapGlobal heapBound installed returned normal
   have outputArena : AllocatedBytes.Arena heap 32 := ⟨by have := world.nibsArena.lower; have := world.nibsBelow; have := world.ordered; omega,room⟩
@@ -53,6 +55,13 @@ theorem body_world_family {ι : Type} (source post : PanSemStateFiniteExact 64 G
     exact ⟨by omega,by omega,by omega,by omega⟩
   obtain ⟨nextCursor,choice,nextFamily⟩ := result.family source post heap cursor limit stp pad nibs cutoff objects family separation heapBound heapAligned scratchBelow fields.1 fields.2.1 returned memory
   have small : cutoff<2^64 := by have := world.ordered; have := world.bounded; omega
+  have beforeMemory (query : BitVec 64) (above : cutoff≤query.toNat) (before : query.toNat<heap.toNat) : post.memory query=source.memory query := by
+    have stateAway := CopyGeneral.Away.before stp query 200 cutoff stateBelow small above
+    have padAway := CopyGeneral.Away.before pad query 136 cutoff padBelow small above
+    have nibbleAway := CopyGeneral.Away.before nibs query 64 cutoff world.nibsBelow small above
+    have outputAway := CopyGeneral.Away.after heap query 32 heapAligned (by omega) before
+    exact memory query (by omega) before ⟨stateAway,padAway,outputAway⟩ (by intro offset active; exact (nibbleAway offset active).2)
+  have persistent : TableFamily.PersistentFrame cutoff heap.toNat objects objects source post := ⟨fun query above before outside=>⟨outside,beforeMemory query above before⟩⟩
   have agree (query : BitVec 64) (needed : world.graph.Footprint query ∨ Mpt.TrieWalk.ValueFootprint world.graph query ∨ query=ws+24#64) : post.memory query=source.memory query := by
     have span := world.footprint query needed
     have guarded : Keccak256.Protected stp pad heap query := by
@@ -65,7 +74,7 @@ theorem body_world_family {ι : Type} (source post : PanSemStateFiniteExact 64 G
   let nextWorld := world.of_agreement source post ws root nibs cutoff frozenEnd valueLimit fields.1 fields.2.1
     (nonheap _ (by decide)) (nonheap _ (by decide)) agree
   have nextEnvironment := environment.after_execution source post stp pad body _ normal nonheap
-  exact ⟨nextCursor,choice,nextFamily,⟨nextWorld⟩,nextEnvironment,result,nonheap,price,image⟩
+  exact ⟨nextCursor,choice,nextFamily,⟨nextWorld⟩,nextEnvironment,result,nonheap,persistent,beforeMemory,price,image⟩
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

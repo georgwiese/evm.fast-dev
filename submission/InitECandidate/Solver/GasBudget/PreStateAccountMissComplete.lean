@@ -61,7 +61,7 @@ theorem pre_state_miss_complete {ι : Type} [DecidableEq ι]
   have currentInstalled : Input.OriginalCode.Installed recordReady.code := by rw [codeEq]; exact installed
   have args : evalListHOLFinite recordReady (h:=fun address=>Classical.propDecidable (recordReady.memaddrs address)) [localVar "addr"]=some [.val (.word query)] := by
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,queryCell]
-  obtain ⟨positive,ready,answer,inner,nextCursor,answerCell,choice,nextFamily,⟨nextWorld⟩,nextHashEnvironment,result,providerGlobals,providerCode,price,image,returnRun,restored⟩ :=
+  obtain ⟨positive,ready,answer,inner,nextCursor,answerCell,choice,nextFamily,⟨nextWorld⟩,nextHashEnvironment,result,providerGlobals,providerFrame,providerMemory,providerCode,price,image,returnRun,restored⟩ :=
     WsAccountOptional.scoped_world_family recordReady post ws root query heap nibs stp pad scratchPtr limit emptyRoot emptyHash cutoff frozenEnd valueLimit currentWorld currentEnvironment
       stateArena stateAligned padArena padAligned queryArena stateBelow padBelow (Function.update objects writer next) currentFamily currentFloors currentArena currentTable.heap
       (by rw [heapNumber]; exact currentTable.bounded) (by rw [heapNumber]; exact currentTable.aligned) (by rw [heapNumber]; omega)

@@ -1194,6 +1194,9 @@
     "submission/InitECandidate/Solver/GasBudget/MemoryCostEffects.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryCostNoException.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryCostNormalValues.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryCostValueResume.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryGasArithmetic.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryGasCostValue.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryOpcodePrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryOpcodeProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/MergeBudget.lean",
@@ -5181,8 +5184,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62046,
-  "package_bytes": 2256287916,
+  "package_entries": 62049,
+  "package_bytes": 2256305744,
   "claim": {
     "K": "infinity"
   },

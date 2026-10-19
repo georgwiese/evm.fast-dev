@@ -1,0 +1,118 @@
+import InitECandidate.Solver.GasBudget.MemoryExpansionCostCharged
+import InitECandidate.Solver.GasBudget.RegularChargeExceptionPayload
+import InitECandidate.Solver.GasBudget.MemoryExtendNoEvmErr
+import InitECandidate.Solver.Input.ExceptionAfterPrefix
+import InitECandidate.Solver.GasBudget.MemoryExpansionFiniteRange
+import InitECandidate.Solver.GasBudget.MemoryExpansionCostAffordable
+import InitECandidate.Solver.GasBudget.ChargeWithMemoryExpansion
+import InitECandidate.Solver.GasBudget.MemoryExtendGlobals
+
+namespace InitECandidate.Solver.GasBudget.MemoryExpansionCost
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch WitnessRadix Input.RlpWrite
+
+set_option maxHeartbeats 1500000 in
+set_option maxRecDepth 10000 in
+/-- Reached normal charge and expansion for the actual one-range result.
+Affordability, allocator funding and the final physical buffer are derived
+from these real calls, while their actual continuation is retained. -/
+theorem charged_exception (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frame base current capacity pointer scratch amount : BitVec 64) (start size : U256Value.Words)
+    (view : MemoryExtend.View source frame base current capacity pointer scratch)
+    (xLocal : source.locals.lookup (ofString "x") = some (MemoryExpansionCost.pairValue (resultPair start size current)))
+    (cap : regularBudget source.memory frame ≤ 16777216)
+    (covered : (MemoryGasCost.resultWord current).toNat ≤ (wordAt source.memory (frame + 184#64)).toNat)
+    (covers : (resultPair start size current).1.toNat ≤ amount.toNat)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) arguments = some [.val (.word amount)])
+    (continuation : ProgHOL 64) (payload : ValueHOL 64) (other : payload ≠ .val (.word 4#64))
+    (normal : evaluateHOLFiniteState source (chargedProgram arguments continuation) = (some (.exception (ofString "EvmErr") payload), post)) :
+    ∃ ready : PanSemStateFiniteExact 64 Guest.HostMemory,
+      MemoryExtend.price current capacity (resultPair start size current).2 + 2 ≤ source.clock ∧
+      ready.clock = source.clock - (MemoryExtend.price current capacity (resultPair start size current).2 + 2) ∧
+      ready.locals = source.locals ∧
+      MemoryExtend.View ready frame base (MemoryExtend.newLength current (resultPair start size current).2)
+        (MemoryExtend.nextCapacity current capacity (resultPair start size current).2)
+        (base + MemoryExtend.nextCapacity current capacity (resultPair start size current).2) scratch ∧
+      regularBudget ready.memory frame = regularBudget source.memory frame ∧
+      (wordAt ready.memory (frame + 184#64)).toNat = (wordAt source.memory (frame + 184#64)).toNat + amount.toNat ∧
+      (MemoryGasCost.resultWord (MemoryExtend.newLength current (resultPair start size current).2)).toNat ≤
+        (wordAt ready.memory (frame + 184#64)).toNat ∧
+      ChargeWithMemory.OutsideEffect source ready frame base scratch ∧
+      (U256Zero.resultWord size = 0#64 → (SatWord.resultWord start).toNat + (SatWord.resultWord size).toNat ≤
+        (MemoryExtend.newLength current (resultPair start size current).2).toNat) ∧
+      (∀ key, key ≠ ofString "frame_mem_ptr" → ready.globals.lookup key = source.globals.lookup key) ∧
+      ready.memaddrs = source.memaddrs ∧ ready.eshapes = source.eshapes ∧
+      evaluateHOLFiniteState ready continuation = (some (.exception (ofString "EvmErr") payload), post) := by
+  let expand := (resultPair start size current).2
+  have chargeSafe : Input.LocalPrefix (ofString "x") (.call (some (none, none)) (ofString "charge_gas") arguments) := .call none _ _ (by simp)
+  have chargeExcluded := Input.NoExceptionEvent.call_body source.code (ofString "EvmErr") (ofString "charge_gas") payload arguments
+    RegularCharge.formals RegularCharge.body .one (OriginalCodeEnvironment.charge_gas source.code view.installed)
+    (RegularCharge.excludes_other_payload source.code payload other)
+  obtain ⟨charged, chargeRun, suffixRun⟩ := Input.sequence_exception_after source post _ _ (ofString "EvmErr") payload (chargeExcluded source rfl) normal
+  have xRetained : charged.locals.lookup (ofString "x") = source.locals.lookup (ofString "x") := by
+    have info := (chargeSafe.summary source).1
+    rw [chargeRun] at info
+    exact info rfl
+  obtain ⟨gas, used, chargeFits, chargeClock, gasMapped, usedMapped, gasCell, usedCell, affordable, chargeFrame, chargeBudget, debit, credit⟩ :=
+    RegularCharge.call_normal source charged frame amount arguments args
+      (OriginalCodeEnvironment.charge_gas source.code view.installed) view.ev cap chargeRun
+  have chargedView := view.after_charge source charged frame base current capacity pointer scratch amount arguments args cap chargeRun
+  have oldUsed : (wordAt source.memory (frame + 184#64)).toNat = used.toNat := by simp [wordAt, usedCell, MemoryBytes.wordBits]
+  have pool : used.toNat + gas.toNat ≤ 16777216 := by
+    simp only [regularBudget, wordAt, gasCell, usedCell, MemoryBytes.wordBits] at cap
+    omega
+  have advance := MemoryExpansionCost.affordable start size current amount used.toNat gas.toNat view.lengthAligned
+    (by rw [oldUsed] at covered; exact covered) pool (BitVec.le_def.mp affordable) covers
+  have finite : (resultPair start size current).1 ≠ 18446744073709551615#64 := by
+    intro equal
+    have number := congrArg BitVec.toNat equal
+    change (resultPair start size current).1.toNat = 18446744073709551615 at number
+    have available := BitVec.le_def.mp affordable
+    omega
+  have range := fun nonempty => range_of_finite start size current view.lengthAligned nonempty finite
+  have extendSafe : Input.LocalPrefix (ofString "x") (.call (some (none, none)) (ofString "extend_memory") [.rfield 1 (localVar "x")]) := .call none _ _ (by simp)
+  have extendExcluded := Input.NoNamedException.call_body charged.code (ofString "EvmErr") (ofString "extend_memory") [.rfield 1 (localVar "x")]
+    MemoryExtend.formals MemoryExtend.body .one (MemoryExtend.original_code charged.code chargedView.installed)
+    (MemoryExtend.no_evm_error charged.code chargedView.installed)
+  obtain ⟨ready, extendRun, tailRun⟩ := Input.sequence_exception_after charged post _ continuation (ofString "EvmErr") payload (extendExcluded charged rfl payload) suffixRun
+  have extendArgs : evalListHOLFinite charged (h := fun address => Classical.propDecidable (charged.memaddrs address)) [.rfield 1 (localVar "x")] = some [.val (.word expand)] := by
+    have cell := xRetained.trans xLocal
+    simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, toExact, localVar, cell, MemoryExpansionCost.pairValue, expand]
+  obtain ⟨extendFits, extendClock, readyView, budgetSum, usedSum⟩ :=
+    MemoryExtend.call_sums charged ready frame base current capacity pointer scratch expand amount used.toNat [.rfield 1 (localVar "x")]
+      chargedView advance extendArgs [] (by simp) (by simp) extendRun
+  obtain ⟨_, _, _, locals, extendAway⟩ := MemoryExtend.call_normal charged ready frame base current capacity pointer scratch expand amount used.toNat
+    [.rfield 1 (localVar "x")] chargedView advance extendArgs extendRun
+  have readyBudget : regularBudget ready.memory frame = regularBudget charged.memory frame := by simpa [FrameSums.budget] using budgetSum
+  have readyUsed : (wordAt ready.memory (frame + 184#64)).toNat = (wordAt charged.memory (frame + 184#64)).toNat := by simpa [FrameSums.used] using usedSum
+  refine ⟨ready, ?_, ?_, ?_, readyView, readyBudget.trans chargeBudget, ?_, ?_, ?_, range, ?_, ?_, ?_, tailRun⟩
+  · rw [chargeClock] at extendFits
+    change MemoryExtend.price current capacity expand + 2 ≤ source.clock
+    omega
+  · rw [extendClock, chargeClock]
+    change source.clock - 1 - (MemoryExtend.price current capacity expand + 1) = source.clock - (MemoryExtend.price current capacity expand + 2)
+    omega
+  · rw [locals, chargeFrame]
+  · rw [readyUsed, credit, oldUsed]
+  · change (MemoryGasCost.resultWord (current + expand)).toNat ≤ _
+    rw [readyUsed, credit]
+    exact advance.covered
+  · intro query outside notLength notCapacity notGas notUsed
+    rw [extendAway query outside notLength notCapacity]
+    exact RegularCharge.call_other_word source charged frame amount query arguments args
+      (OriginalCodeEnvironment.charge_gas source.code view.installed) view.ev cap chargeRun notGas notUsed
+  · intro key different
+    have global := MemoryExtend.call_global_other charged ready frame base current capacity pointer scratch expand amount used.toNat
+      [.rfield 1 (localVar "x")] chargedView advance extendArgs extendRun key different
+    rw [global, chargeFrame]
+  · have extendFields := Input.evaluation_fields charged ready _ none extendRun
+    have chargeFields := Input.evaluation_fields source charged _ none chargeRun
+    exact extendFields.1.trans chargeFields.1
+  · have extendFields := Input.evaluation_fields charged ready _ none extendRun
+    have chargeFields := Input.evaluation_fields source charged _ none chargeRun
+    exact extendFields.2.2.1.trans chargeFields.2.2.1
+
+end InitECandidate.Solver.GasBudget.MemoryExpansionCost
+
+#print axioms InitECandidate.Solver.GasBudget.MemoryExpansionCost.charged_exception

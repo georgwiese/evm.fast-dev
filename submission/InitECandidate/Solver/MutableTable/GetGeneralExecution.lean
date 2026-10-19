@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.GetGeneralOrigin
 import InitECandidate.Solver.MutableTable.FindGeneralCall
 import InitECandidate.Solver.MutableTable.GetSizedTail
 
@@ -32,22 +33,9 @@ theorem general_get (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table
     ∃ paid flag value target, paid ≤ Find.generalProbePrice kind * order.length + (KeyHash.hashPrice kind + 1) ∧ (flag = 0#64 ∨ flag = 1#64) ∧
       evaluateHOLFiniteState source body = (some (.returned (pair flag value)), target) ∧
       emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
-  have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address))
-      [localVar "t", localVar "key"] = some [.val (.word table), .val (.word p.key)] := by
-    simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, toExact, localVar, cells.tableLocal, cells.keyLocal]
-  obtain ⟨paid, index, bound, indexBound, callRun, selected⟩ := Find.general_call source table p kind ⟨cells.mapped, cells.capacity, cells.keyLength, cells.stride, cells.keys, cells.used⟩ keyLength bits small capacity order room
-    binary covered fits mapped queryFits queryMapped hashCode memeqCode findCode "i" [localVar "t", localVar "key"] afterIndex args little enough
-  let entered := bind {source with clock := source.clock - paid} "i" index
-  have tEntered : entered.locals.lookup (ofString "t") = some (.val (.word table)) :=
-    (bind_lookup_other _ "i" "t" _ (by decide)).trans cells.tableLocal
-  obtain ⟨flag, value, binaryFlag, tailRun⟩ := sized_tail entered table vals index p.capacity tEntered
-    (bind_lookup_same _ _ _) (cells.mapped 16 (by simp)) cells.capacity valsMapped valsCell values indexBound
-  change evaluateHOLFiniteState source (.decCall (ofString "i") .one (ofString "htab_find_slot") [localVar "t", localVar "key"] afterIndex) =
-    (let result := evaluateHOLFiniteState entered afterIndex; (result.1, restore source "i" result.2)) at callRun
-  rw [tailRun] at callRun
-  refine ⟨paid, flag, value, restore source "i" (emptyLocalsHOLFinite entered), bound, binaryFlag, ?_, rfl⟩
-  rw [body_shape]
-  exact callRun
+  obtain ⟨paid,flag,value,target,price,binaryFlag,origin,run,frame⟩ := general_get_origin source table p kind cells keyLength bits small capacity order room binary covered fits mapped
+    queryFits queryMapped hashCode memeqCode findCode vals valsMapped valsCell values little enough
+  exact ⟨paid,flag,value,target,price,binaryFlag,run,frame⟩
 
 end InitECandidate.Solver.MutableTable.Get
 

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.GetNormalOrigin
 import InitECandidate.Solver.MutableTable.GetModelExecution
 import InitECandidate.Solver.ClockPadding
 
@@ -17,23 +18,8 @@ theorem model_body_normal (source target : PanSemStateFiniteExact 64 Guest.HostM
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body = (some (.returned returned), target)) :
     ∃ paid flag value, paid ≤ bodyPrice kind slots.length ∧ paid ≤ source.clock ∧ (flag = 0#64 ∨ flag = 1#64) ∧
       returned = pair flag value ∧ emptyLocalsHOLFinite target = emptyLocalsHOLFinite {source with clock := source.clock - paid} := by
-  let extra := bodyPrice kind slots.length
-  let padded := {source with clock := source.clock + extra}
-  have paddedTable : TableState padded kind plan slots cursor floor := table.of_fields rfl rfl rfl rfl
-  obtain ⟨paid, flag, value, post, bounded, flagBound, actual, modelFrame⟩ :=
-    model_execute padded kind plan slots cursor floor paddedTable (environment.of_fields rfl rfl rfl) query queryFits queryMapped tableLocal keyLocal (by change extra ≤ source.clock + extra; omega)
-  have lifted := panPropsEvaluateAddClockEq body source (some (.returned returned)) target extra
-    ⟨normal, by intro impossible; cases impossible⟩
-  have resultEq := congrArg Prod.fst (lifted.symm.trans actual)
-  have postEq := congrArg Prod.snd (lifted.symm.trans actual)
-  change {target with clock := target.clock + extra} = post at postEq
-  have frame : emptyLocalsHOLFinite {target with clock := target.clock + extra} =
-      emptyLocalsHOLFinite {source with clock := source.clock + extra - paid} := by
-    rw [postEq]
-    exact modelFrame
-  have stripped := InitECandidate.Solver.strip_clock_padding source target source paid extra (by change paid ≤ extra at bounded; omega) frame
-  refine ⟨paid, flag, value, bounded, stripped.1, flagBound, ?_, stripped.2⟩
-  simpa only [Option.some.injEq, PanSemResultExact.returned.injEq] using resultEq
+  obtain ⟨paid,flag,value,price,funded,binary,origin,returnedEq,frame⟩ := model_body_normal_origin source target kind plan slots cursor floor table environment query queryFits queryMapped tableLocal keyLocal returned normal
+  exact ⟨paid,flag,value,price,funded,binary,returnedEq,frame⟩
 
 end InitECandidate.Solver.MutableTable.Get
 

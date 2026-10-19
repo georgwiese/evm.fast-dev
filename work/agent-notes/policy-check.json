@@ -1075,6 +1075,7 @@
     "submission/InitECandidate/Solver/GasBudget/DispatchExpNormal.lean",
     "submission/InitECandidate/Solver/GasBudget/DispatchExpPrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/DispatchJumpdest.lean",
+    "submission/InitECandidate/Solver/GasBudget/DispatchMemoryLoad.lean",
     "submission/InitECandidate/Solver/GasBudget/DispatchMemoryPrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/DispatchMemoryStore8.lean",
     "submission/InitECandidate/Solver/GasBudget/DispatchNormal.lean",
@@ -1236,6 +1237,10 @@
     "submission/InitECandidate/Solver/GasBudget/MemoryExtendTailView.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryGasArithmetic.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryGasCostValue.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryLoadBody.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryLoadCall.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryLoadRank.lean",
+    "submission/InitECandidate/Solver/GasBudget/MemoryLoadSuffix.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryOpcodePrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryOpcodeProgram.lean",
     "submission/InitECandidate/Solver/GasBudget/MemoryStore8Body.lean",
@@ -1367,6 +1372,7 @@
     "submission/InitECandidate/Solver/GasBudget/StackPopNormal.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPopOutcomes.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPopPrefixEffect.lean",
+    "submission/InitECandidate/Solver/GasBudget/StackPopValue.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPopsException.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPopsPrefix.lean",
     "submission/InitECandidate/Solver/GasBudget/StackPopsValues.lean",
@@ -5238,8 +5244,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62103,
-  "package_bytes": 2256550515,
+  "package_entries": 62109,
+  "package_bytes": 2256587806,
   "claim": {
     "K": "infinity"
   },

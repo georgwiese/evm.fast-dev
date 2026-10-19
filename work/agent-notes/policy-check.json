@@ -3502,6 +3502,7 @@
     "submission/InitECandidate/Solver/PanState.lean",
     "submission/InitECandidate/Solver/PanTraversal.lean",
     "submission/InitECandidate/Solver/RiscVEvaluatorCosts.lean",
+    "submission/InitECandidate/Solver/Rlp/DecodeCost.lean",
     "submission/InitECandidate/Solver/Rlp/Environment.lean",
     "submission/InitECandidate/Solver/Rlp/Fail.lean",
     "submission/InitECandidate/Solver/Rlp/FailGuard.lean",
@@ -3517,7 +3518,11 @@
     "submission/InitECandidate/Solver/Rlp/HeaderShortValues.lean",
     "submission/InitECandidate/Solver/Rlp/HeaderValidCost.lean",
     "submission/InitECandidate/Solver/Rlp/HeaderValue.lean",
+    "submission/InitECandidate/Solver/Rlp/ItemCasePrices.lean",
+    "submission/InitECandidate/Solver/Rlp/ItemControl.lean",
+    "submission/InitECandidate/Solver/Rlp/ItemCost.lean",
     "submission/InitECandidate/Solver/Rlp/ItemEntry.lean",
+    "submission/InitECandidate/Solver/Rlp/ItemPayloadCost.lean",
     "submission/InitECandidate/Solver/Rlp/ItemProgram.lean",
     "submission/InitECandidate/Solver/Rlp/ItemTotal.lean",
     "submission/InitECandidate/Solver/Rlp/ItemTotalCall.lean",
@@ -3526,6 +3531,7 @@
     "submission/InitECandidate/Solver/Rlp/ListCountBody.lean",
     "submission/InitECandidate/Solver/Rlp/ListCountCall.lean",
     "submission/InitECandidate/Solver/Rlp/ListCountCost.lean",
+    "submission/InitECandidate/Solver/Rlp/ListCountIgnored.lean",
     "submission/InitECandidate/Solver/Rlp/ListCountLoop.lean",
     "submission/InitECandidate/Solver/Rlp/ListCountNormal.lean",
     "submission/InitECandidate/Solver/Rlp/ListCountProgram.lean",
@@ -5627,8 +5633,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62494,
-  "package_bytes": 2258229528,
+  "package_entries": 62500,
+  "package_bytes": 2258263137,
   "claim": {
     "K": "infinity"
   },

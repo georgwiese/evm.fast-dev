@@ -1,5 +1,4 @@
-import InitECandidate.Solver.GasBudget.JournalAppendSetNormal
-import InitECandidate.Solver.GasBudget.JournalCounterLedger
+import InitECandidate.Solver.GasBudget.JournalAppendSetCallValues
 
 namespace InitECandidate.Solver.GasBudget.Journal.Append
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -35,36 +34,10 @@ theorem set_call_normal {ι : Type} [DecidableEq ι]
       next.slots.length ≤ (objects writer).slots.length + 1 ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ CounterEffect source target 1 0 0 := by
-  obtain ⟨callee, called, t, key, v⟩ := TableCall.environment source.code.lookup (ofString "jset") setBody (objects writer).pointer query value code
-  obtain ⟨positive, post, returned, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "jset") arguments _ setBody callee .one args called normal
-  let entry := callEntryStateHOLFinite source callee
-  have entryFamily : TableFamily.Model entry cursor objects :=
-    ⟨fun index => (family.tables index).of_fields rfl rfl rfl rfl, family.apart⟩
-  have entryImage : Image entry objects base count entries :=
-    image.transfer (target := entry) rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
-  obtain ⟨room, returnedEq, paid, nextCursor, next, flag, oldValue, fits, clock, forward, kind, binary, models, nextImage, nextZone, bounded, population,
-    nextCounter, codes, nextEnvironment, globals⟩ :=
-    set_body_normal entry post cursor objects writer base cap count entries entryFamily entryImage zone countBound (environment.of_fields rfl rfl rfl)
-      query value queryFits queryMapped t key v getCode journal capacity counter returned bodyRun
-  rw [returnedEq] at bodyRun
-  have actual := evaluateHOLFiniteState_call_return_caller_locals source none (ofString "jset") arguments _ setBody callee .one
-    (.val (.word 0#64)) post args called (by omega) bodyRun (by simp [shapeOfHOLExact, shapeEqHOL])
-  have same := congrArg Prod.snd (normal.symm.trans actual)
-  change target = {post with locals := source.locals} at same
-  subst target
-  have finalFamily : TableFamily.Model {post with locals := source.locals} nextCursor (Function.update objects writer next) :=
-    ⟨fun index => (models.tables index).of_fields rfl rfl rfl rfl, models.apart⟩
-  have finalImage : Image {post with locals := source.locals} (Function.update objects writer next) base (count + 1) (Function.update entries count ⟨writer, BitVec.ofNat 64 cursor, flag, oldValue⟩) :=
-    nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
-  change paid ≤ source.clock - 1 at fits
-  change post.clock = source.clock - 1 - paid at clock
-  have countSmall : count + 1 < 2 ^ 64 := by
-    have upper := zone.valid.upper
-    change base + 32 * cap ≤ 33806089496 at upper
-    omega
-  have effect := CounterEffect.append source {post with locals := source.locals} count countSmall counter nextCounter
-  exact ⟨room, 1 + paid, nextCursor, next, flag, oldValue, by omega, by omega, by change post.clock = _; omega, forward, kind, binary,
-    finalFamily, finalImage, nextZone, by omega, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, effect⟩
+  obtain ⟨room,paid,nextCursor,next,flag,oldValue,positive,fits,clock,forward,kind,binary,models,nextImage,nextZone,bounded,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,savedValues⟩ :=
+    set_call_normal_values source target cursor objects writer base cap count entries family image zone countBound environment query value
+      (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro (fun _ _ _=>True.intro) queryFits queryMapped getCode code journal capacity counter arguments args normal
+  exact ⟨room,paid,nextCursor,next,flag,oldValue,positive,fits,clock,forward,kind,binary,models,nextImage,nextZone,bounded,population,nextCounter,locals,codes,nextEnvironment,globals,effect⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

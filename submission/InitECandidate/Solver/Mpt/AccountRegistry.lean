@@ -5,7 +5,7 @@ namespace InitECandidate.Solver.Mpt.AccountDecode
 open Flapjack PanSemStateFiniteExact WitnessRadix MutableTable
 
 /-- Current real account objects, before the heap and separated from each
-other. Their reference words lie outside every live table pool, including
+other. Every byte position lies outside every live table pool, including
 when records occur between older and newer pools. -/
 structure Registry {ι : Type} (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff cursor : Nat)
     (objects : ι → TableFamily.Object) (accounts : List (BitVec 64)) : Prop where
@@ -15,7 +15,12 @@ structure Registry {ι : Type} (source : PanSemStateFiniteExact 64 Guest.HostMem
   before : ∀ account,account∈accounts → account.toNat+56≤cursor
   separated : ∀ first,first∈accounts → ∀ second,second∈accounts → first≠second →
     first.toNat+56≤second.toNat ∨ second.toNat+56≤first.toNat
-  referencesOutside : ∀ account,account∈accounts → ∀ offset : Nat,offset=40 ∨ offset=48 → TableFamily.Outside objects (account+BitVec.ofNat 64 offset)
+  objectOutside : ∀ account,account∈accounts → ∀ offset : Nat,offset<56 → TableFamily.Outside objects (account+BitVec.ofNat 64 offset)
+
+theorem Registry.referencesOutside {ι : Type} {source : PanSemStateFiniteExact 64 Guest.HostMemory} {cutoff cursor : Nat}
+    {objects : ι → TableFamily.Object} {accounts : List (BitVec 64)} (registry : Registry source cutoff cursor objects accounts)
+    (account : BitVec 64) (member : account∈accounts) (offset : Nat) (selected : offset=40 ∨ offset=48) :
+    TableFamily.Outside objects (account+BitVec.ofNat 64 offset) := registry.objectOutside account member offset (by omega)
 
 /-- An occupied cache value is the actual absent sentinel or a registered
 account pointer. Uninitialized unused value cells impose no obligation. -/
@@ -50,19 +55,18 @@ theorem Registry.framed {ι : Type} (source target : PanSemStateFiniteExact 64 G
     (objects next : ι → TableFamily.Object) (accounts : List (BitVec 64)) (registry : Registry source cutoff cursor objects accounts)
     (frame : TableFamily.PersistentFrame cutoff cursor objects next source target) (forward : cursor≤nextCursor)
     (domain : target.memaddrs=source.memaddrs) : Registry target cutoff nextCursor next accounts := by
-  have refs (account : BitVec 64) (member : account∈accounts) (offset : Nat) (selected : offset=40 ∨ offset=48) :
+  have refs (account : BitVec 64) (member : account∈accounts) (offset : Nat) (inside : offset<56) :
       TableFamily.Outside next (account+BitVec.ofNat 64 offset) ∧ target.memory (account+BitVec.ofNat 64 offset)=source.memory (account+BitVec.ofNat 64 offset) := by
     obtain ⟨image⟩ := registry.images account member
-    have inside : offset<56 := by omega
     have number := image.output.slot_number account offset inside
     apply frame.words _
     · rw [number]; have := registry.above account member; omega
     · rw [number]; have := registry.before account member; omega
-    · exact registry.referencesOutside account member offset selected
-  refine ⟨registry.distinct,?_,registry.above,?_,registry.separated,fun account member offset selected=>(refs account member offset selected).1⟩
+    · exact registry.objectOutside account member offset inside
+  refine ⟨registry.distinct,?_,registry.above,?_,registry.separated,fun account member offset inside=>(refs account member offset inside).1⟩
   · intro account member
     obtain ⟨image⟩ := registry.images account member
-    exact ⟨Image.of_agreement source target account image domain (refs account member 40 (Or.inl rfl)).2 (refs account member 48 (Or.inr rfl)).2⟩
+    exact ⟨Image.of_agreement source target account image domain (refs account member 40 (by decide)).2 (refs account member 48 (by decide)).2⟩
   · intro account member
     have := registry.before account member
     omega
@@ -74,3 +78,5 @@ end InitECandidate.Solver.Mpt.AccountDecode
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.Registry.empty
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.Output.slot_number
 #print axioms InitECandidate.Solver.Mpt.AccountDecode.Registry.framed
+
+#print axioms InitECandidate.Solver.Mpt.AccountDecode.Registry.referencesOutside

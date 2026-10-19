@@ -1,5 +1,4 @@
-import InitECandidate.Solver.GasBudget.JournalAppendCounter
-import InitECandidate.Solver.GasBudget.JournalZoneSet
+import InitECandidate.Solver.GasBudget.JournalAppendSetTailValues
 
 namespace InitECandidate.Solver.GasBudget.Journal.Append
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -31,43 +30,10 @@ theorem set_tail_normal {ι : Type} [DecidableEq ι]
       next.slots.length ≤ (objects writer).slots.length + 1 ∧
       post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       post.code = source.code ∧ WarmKeys.Environment post ∧ OtherGlobals source post := by
-  let entry := Input.putGlobal source "journal_n" (BitVec.ofNat 64 count + 1#64)
-  have incrementRun := increment_execute source (BitVec.ofNat 64 count) counter
-  rw [set_tail_shape, StateSteps.next_sequence source entry _ _ incrementRun (Nat.le_refl _)] at normal
-  have safe : Input.LocalPrefix (ofString "value") mutateSet := .call none _ _ (by intro name impossible; cases impossible)
-  obtain ⟨called, mutationRun, returnRun, saved⟩ := safe.normal_continue entry post (.return (.const 0#64)) returned normal
-  have actualReturn : evaluateHOLFiniteState called (.return (.const 0#64)) =
-      (some (.returned (.val (.word 0#64))), emptyLocalsHOLFinite called) := by
-    simp [evaluateHOLFiniteState_return, evalHOLExact, shapeOfHOLExact]
-  have returnedEq : returned = .val (.word 0#64) := by
-    simpa only [Option.some.injEq, PanSemResultExact.returned.injEq] using congrArg Prod.fst (returnRun.symm.trans actualReturn)
-  have postEq := congrArg Prod.snd (returnRun.symm.trans actualReturn)
-  change post = emptyLocalsHOLFinite called at postEq
-  have entryFamily := increment_models source cursor objects family (BitVec.ofNat 64 count)
-  have entryImage := increment_image source objects base (count + 1) entries image (BitVec.ofNat 64 count)
-  have args : evalListHOLFinite entry (h := fun address => Classical.propDecidable (entry.memaddrs address)) [localVar "t", localVar "key", localVar "value"] =
-      some (TableCall.values (objects writer).pointer query value) := by
-    have t : entry.locals.lookup (ofString "t") = some (.val (.word (objects writer).pointer)) := tableLocal
-    have key : entry.locals.lookup (ofString "key") = some (.val (.word query)) := keyLocal
-    have v : entry.locals.lookup (ofString "value") = some (.val (.word value)) := valueLocal
-    simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, localVar, toExact, t, key, v, TableCall.values]
-  obtain ⟨paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, population, locals, codes, nextEnvironment, globals, _floorFrame⟩ :=
-    set_zone_normal entry called cursor objects writer base cap (count + 1) entries entryFamily entryImage zone (by omega)
-      (environment.of_fields rfl rfl rfl) query value queryFits queryMapped _ args mutationRun
-  have entryCounter : entry.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) := by
-    change (Input.putGlobal source "journal_n" (BitVec.ofNat 64 count + 1#64)).globals.lookup _ = _
-    rw [Input.putGlobal.lookup_same]
-    simp only [BitVec.ofNat_add]
-  have calledCounter := (globals (ofString "journal_n") (by decide)).trans entryCounter
-  subst post
-  have finalFamily : TableFamily.Model (emptyLocalsHOLFinite called) nextCursor (Function.update objects writer next) :=
-    ⟨fun table => (models.tables table).of_fields rfl rfl rfl rfl, models.apart⟩
-  have finalImage : Image (emptyLocalsHOLFinite called) (Function.update objects writer next) base (count + 1) entries :=
-    nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
-  refine ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, kind, finalFamily, finalImage, nextZone, bounded, population, calledCounter,
-    codes, nextEnvironment.of_fields rfl rfl rfl, ?_⟩
-  intro key heap different
-  exact (globals key heap).trans (Input.putGlobal.lookup_other source "journal_n" _ key different)
+  obtain ⟨returnedEq,paid,nextCursor,next,fits,clock,forward,kind,models,nextImage,nextZone,bounded,population,nextCounter,codes,nextEnvironment,globals,persistent,nextValues⟩ :=
+    set_tail_normal_values source post cursor objects writer base cap count entries family image zone room environment query value
+      (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro queryFits queryMapped tableLocal keyLocal valueLocal counter returned normal
+  exact ⟨returnedEq,paid,nextCursor,next,fits,clock,forward,kind,models,nextImage,nextZone,bounded,population,nextCounter,codes,nextEnvironment,globals⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

@@ -1,4 +1,4 @@
-import InitECandidate.Solver.GasBudget.JournalAppendProgram
+import InitECandidate.Solver.GasBudget.JournalAppendEntryValues
 
 namespace InitECandidate.Solver.GasBudget.Journal.Append
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -22,15 +22,10 @@ theorem set_guard_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       1 ≤ paid ∧ paid ≤ Get.bodyPrice kind slots.length + 1 ∧ paid ≤ source.clock ∧ (flag = 0#64 ∨ flag = 1#64) ∧
       evaluateHOLFiniteState (setVarHOLFinite (ofString "old") (Get.pair flag value) {source with clock := source.clock - paid}) setAfterGuard = (some (.returned returned), finish) ∧
       post = restore source "old" finish := by
-  rw [set_shape] at normal
-  have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) [localVar "t", localVar "key"] =
-      some [.val (.word (NaturalLayout.cell plan .header 0)), .val (.word query)] := by
-    simp [evalListHOLFinite, evalListHOLExact, localVar, evalHOLExact, toExact, tableLocal, keyLocal]
-  obtain ⟨paid, flag, value, finish, positive, bounded, fits, binary, suffixRun, frame⟩ :=
-    Get.model_normal_entry source post kind plan slots cursor floor table environment query queryFits queryMapped getCode "old" _ _ args returned normal
-  let ready := setVarHOLFinite (ofString "old") (Get.pair flag value) {source with clock := source.clock - paid}
-  obtain ⟨room, afterGuard⟩ := guard_normal ready finish count cap 4#64 counter capacity environment.trapCode setAfterGuard returned suffixRun
-  exact ⟨room, paid, flag, value, finish, positive, bounded, fits, binary, afterGuard, frame⟩
+  obtain ⟨room,paid,flag,value,finish,positive,bounded,funded,binary,owned,run,restored⟩ :=
+    set_guard_normal_values source post kind plan slots cursor floor table environment query count cap
+      (fun _=>True) (fun _ _ _ _ _=>True.intro) queryFits queryMapped tableLocal keyLocal getCode counter capacity returned normal
+  exact ⟨room,paid,flag,value,finish,positive,bounded,funded,binary,run,restored⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

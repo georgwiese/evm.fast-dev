@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 5496,
+  "solver_modules": 5508,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 11,
@@ -51,7 +51,7 @@
     "LabCostTight": 1,
     "LocCost": 1,
     "MemoryCost": 1,
-    "Mpt": 24,
+    "Mpt": 35,
     "MutableTable": 379,
     "NopBound": 1,
     "NopCost": 1,
@@ -78,7 +78,7 @@
     "TargetClock": 1,
     "WeightedTrace": 1,
     "WitnessAllocationPlan": 1,
-    "WitnessRadix": 172,
+    "WitnessRadix": 173,
     "WordStatic": 878,
     "WordToStackBound": 48,
     "WordToWordBound": 1

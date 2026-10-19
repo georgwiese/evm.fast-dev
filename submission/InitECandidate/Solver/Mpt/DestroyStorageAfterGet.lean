@@ -46,7 +46,8 @@ theorem after_get_normal {ι : Type} [DecidableEq ι]
         TableFamily.Outside next query ∧ post.memory query = source.memory query) ∧
       (∀ table, table ≠ writer → table ≠ outer → next table = objects table) ∧
       ((found = false ∧ iterations = 0 ∧ added = 0 ∧ next = objects ∧ nextEntries = entries) ∨
-        (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) := by
+        (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) := by
   have dispatch := after_get_dispatch source flag value pairLocal
   by_cases absent : flag = 0#64
   · rw [if_pos absent] at dispatch
@@ -65,7 +66,7 @@ theorem after_get_normal {ι : Type} [DecidableEq ι]
     exact ⟨answerEq,false,0,0,cursor,objects,entries,0,by omega,by simp [emptyLocalsHOLFinite],Nat.le_refl _,by decide,by simpa using countBound,
       models,nextImage,zone,by simp,rfl,environment.of_fields rfl rfl rfl,(by intro key notHeap notCounter; rfl),values,savedValues,nextRegistry,
       Journal.CounterEffect.unchanged source target rfl,TableFamily.Metadata.refl objects,(fun query above earlier outside away => ⟨outside,rfl⟩),
-      (fun table notWriter notOuter => rfl),Or.inl ⟨rfl,rfl,rfl,rfl,rfl⟩⟩
+      (fun table notWriter notOuter => rfl),Or.inl ⟨rfl,rfl,rfl,rfl,rfl⟩,counter⟩
   · rw [if_neg absent] at dispatch
     rw [dispatch] at normal
     have presentFlag := binary.resolve_left absent
@@ -74,12 +75,12 @@ theorem after_get_normal {ι : Type} [DecidableEq ι]
       rw [presentFlag,← pointer] at pairLocal
       exact pairLocal
     obtain ⟨answerEq,paid,nextCursor,next,nextEntries,added,funded,clock,forward,addedBound,capacityBound,models,nextImage,nextZone,price,codes,nextEnvironment,globals,
-      nextValues,nextSaved,nextRegistry,effect,metadata,frame,others⟩ := present_normal source post address scratch transaction cursor cutoff objects writer reader outer base cap count entries
+      nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,nextCounter⟩ := present_normal source post address scratch transaction cursor cutoff objects writer reader outer base cap count entries
         family image zone countBound environment installed accounts registry property values owned savedValues writerKind readerKind outerKind addressArena scratchArena
         floors scratchBelow small journalAbove addressLocal presentPair scratchGlobal transactionGlobal tableMapped tableStored tableAbove tableBefore tableOutside
         outerLocal accountApart journal capacity counter returned normal
     exact ⟨answerEq,true,(objects reader).slots.length,paid,nextCursor,next,nextEntries,added,funded,clock,forward,addedBound,capacityBound,models,nextImage,nextZone,
-      by simpa using price,codes,nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,Or.inr ⟨rfl,reader,readerKind,rfl⟩⟩
+      by simpa using price,codes,nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,Or.inr ⟨rfl,reader,readerKind,rfl⟩,nextCounter⟩
 
 end InitECandidate.Solver.Mpt.DestroyStorage
 

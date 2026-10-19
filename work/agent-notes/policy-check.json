@@ -3150,6 +3150,8 @@
     "submission/InitECandidate/Solver/Mpt/AccountDecodeProgram.lean",
     "submission/InitECandidate/Solver/Mpt/AccountDecodeTailCost.lean",
     "submission/InitECandidate/Solver/Mpt/AccountDecodeTailGlobals.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountDestroyCall.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountDestroyNormal.lean",
     "submission/InitECandidate/Solver/Mpt/AccountEmptyAssigned.lean",
     "submission/InitECandidate/Solver/Mpt/AccountEmptyAssignedRegistered.lean",
     "submission/InitECandidate/Solver/Mpt/AccountEmptyCallNormal.lean",
@@ -5970,8 +5972,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62837,
-  "package_bytes": 2259769715,
+  "package_entries": 62839,
+  "package_bytes": 2259795657,
   "claim": {
     "K": "infinity"
   },

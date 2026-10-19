@@ -1,5 +1,7 @@
 import InitECandidate.Solver.Mpt.WsAccountOptionalResult
 import InitECandidate.Solver.Mpt.WsAccountOptionalCost
+import InitECandidate.Solver.Mpt.WsAccountOptionalGlobals
+import InitECandidate.Solver.Mpt.WsAccountOptionalLeafNormal
 
 namespace InitECandidate.Solver.Mpt.WsAccountOptional
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -24,31 +26,12 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (sizeBound : 16*valueLimit<2^64) (aligned : cutoff%8=0) (scratchBelow : cursor.toNat≤cutoff)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    Result post heap cursor limit returned ∧ heap.toNat+32≤33806089496 ∧ source.clock-post.clock≤191*valueLimit+2593 := by
+    Result post heap cursor limit returned ∧ heap.toNat+32≤33806089496 ∧ source.clock-post.clock≤191*valueLimit+2593 ∧ HeapGlobals source post := by
   have originalRun := normal
-  rw [body_shape] at normal
-  obtain ⟨callee,called,addrCell⟩ := WsAccountLeaf.environment source.code.lookup addr (WsAccountLeaf.original_code source.code installed)
-  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "addr"]=some (WsAccountLeaf.values addr) := by
-    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressCell,WsAccountLeaf.values]
-  obtain ⟨positive,target,answer,inner,bodyRun,checked,tailRun,restored⟩ := Input.CallNormal.scoped_normal source post "leaf" TrieWalk.resultShape
-    (ofString "ws_account_leaf") [localVar "addr"] _ WsAccountLeaf.body afterLeaf callee TrieWalk.resultShape args called returned normal
-  let entry := callEntryStateHOLFinite source callee
-  let entryData := WsAccountLeaf.Data.of_fields source entry ws root heap nibs data rfl rfl rfl rfl rfl
-  let entryValues := TrieWalk.Values.rebase source.memory entry.memory source.memaddrs entry.memaddrs data.graph valueLimit values rfl rfl
-  have entryProtected : TrieWalk.ValueProtected entryData.graph nibs := protectedValues
-  have entryHash := Keccak256.EntryData.of_fields source entry stp addr pad heap 20 rfl rfl rfl rfl rfl hashData
-  have entryGraphProtection : ∀ query,entryData.graph.Footprint query → Keccak256.Protected stp pad heap query := graphProtection
-  have entryValueProtection : ∀ query,TrieWalk.ValueFootprint entryData.graph query → Keccak256.Protected stp pad heap query := valueProtection
-  have entryArena := Rlp.Validation.Arena.of_fields source entry cursor limit arena rfl rfl
-  obtain ⟨allocated,result⟩ := WsAccountLeaf.body_normal_value entry target ws root addr heap nibs stp pad entryData valueLimit entryValues entryProtected
-    entryHash entryGraphProtection entryValueProtection rootProtection addrCell heapGlobal heapBound installed answer bodyRun
-  have nextHeap := WsAccountLeaf.body_heap entry target heap heapGlobal heapBound installed answer bodyRun
-  have nextArena := WsAccountLeaf.body_arena entry target cursor limit entryArena installed _ bodyRun
-  have codeEq := (Input.evaluation_fields entry target WsAccountLeaf.body _ bodyRun).2.2.2
-  let ready := Input.CallNormal.continuationEntry source target "leaf" answer
-  have readyCell : ready.locals.lookup (ofString "leaf")=some answer := Input.CallNormal.continuation_lookup_same _ _ _ _
-  have readyArena := Rlp.Validation.Arena.of_fields target ready cursor limit nextArena rfl rfl
-  have readyInstalled : Input.OriginalCode.Installed ready.code := by change Input.OriginalCode.Installed target.code; rw [codeEq]; exact installed
+  obtain ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,leafGlobals,codeEq,tailRun,restored⟩ :=
+    body_leaf source post ws root addr heap nibs stp pad cursor limit cutoff valueLimit data values protectedValues hashData graphProtection valueProtection rootProtection
+      addressCell arena heapGlobal heapBound installed returned normal
+  have readyInstalled : Input.OriginalCode.Installed ready.code := by rw [codeEq]; exact installed
   have tailResult := after_leaf_normal ready inner heap cursor limit cutoff valueLimit answer readyCell result readyArena nextHeap heapBound heapLower heapAligned
     sizeBound aligned scratchBelow readyInstalled returned tailRun
   have finalResult : Result post heap cursor limit returned := by
@@ -57,7 +40,15 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
   have price := body_cost source ws root addr heap nibs stp pad cursor limit cutoff valueLimit data values protectedValues hashData graphProtection valueProtection rootProtection
     addressCell arena heapGlobal allocated heapLower heapAligned sizeBound aligned scratchBelow installed
   rw [originalRun] at price
-  exact ⟨finalResult,allocated,price⟩
+  have nonheap : HeapGlobals source post := by
+    intro key notHeap
+    by_cases scratch : key=ofString "scratch_ptr"
+    · subst key
+      exact finalResult.1.cursorGlobal.trans arena.cursorGlobal.symm
+    · have preserved := globals key source.code installed notHeap scratch source rfl
+      rw [originalRun] at preserved
+      exact congrArg Prod.snd preserved
+  exact ⟨finalResult,allocated,price,nonheap⟩
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

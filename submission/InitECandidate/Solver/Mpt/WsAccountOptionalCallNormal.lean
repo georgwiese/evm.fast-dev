@@ -24,7 +24,7 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word addr)])
     (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "ws_get_account_optional") arguments continuation)=(some (.returned returned),post)) :
-    1≤source.clock ∧ ∃ target answer inner,Result target heap cursor limit answer ∧ target.code=source.code ∧
+    1≤source.clock ∧ ∃ target answer inner,Result target heap cursor limit answer ∧ HeapGlobals source target ∧ target.code=source.code ∧
       source.clock-target.clock≤191*valueLimit+2594 ∧
       evaluateHOLFiniteState (Input.CallNormal.continuationEntry source target name answer) continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by
   obtain ⟨callee,called,addressCell⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "ws_get_account_optional") "addr" body addr
@@ -35,7 +35,7 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   let entryData := WsAccountLeaf.Data.of_fields source entry ws root heap nibs data rfl rfl rfl rfl rfl
   let entryValues := TrieWalk.Values.rebase source.memory entry.memory source.memaddrs entry.memaddrs data.graph valueLimit values rfl rfl
   have entryHash := Keccak256.EntryData.of_fields source entry stp addr pad heap 20 rfl rfl rfl rfl rfl hashData
-  obtain ⟨result,room,price⟩ := body_normal entry target ws root addr heap nibs stp pad cursor limit cutoff valueLimit entryData entryValues protectedValues entryHash
+  obtain ⟨result,room,price,nonheap⟩ := body_normal entry target ws root addr heap nibs stp pad cursor limit cutoff valueLimit entryData entryValues protectedValues entryHash
     graphProtection valueProtection rootProtection addressCell (Rlp.Validation.Arena.of_fields source entry cursor limit arena rfl rfl)
     heapGlobal heapBound heapLower heapAligned sizeBound aligned scratchBelow installed answer bodyRun
   have clock := evaluateHOLFiniteState_clock_le entry body
@@ -43,7 +43,7 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   change target.clock≤source.clock-1 at clock
   change source.clock-1-target.clock≤191*valueLimit+2593 at price
   have codeEq := (Input.evaluation_fields entry target body _ bodyRun).2.2.2
-  exact ⟨positive,target,answer,inner,result,codeEq,by omega,tailRun,restored⟩
+  exact ⟨positive,target,answer,inner,result,nonheap,codeEq,by omega,tailRun,restored⟩
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

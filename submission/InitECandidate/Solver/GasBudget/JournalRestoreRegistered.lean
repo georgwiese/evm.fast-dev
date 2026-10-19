@@ -29,14 +29,14 @@ theorem restore_call_registered_values {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + (count - snap)) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target ∧
-      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries snap property ∧ Mpt.AccountDecode.Registry target cutoff nextCursor next accounts := by
-  obtain ⟨paid,nextCursor,next,positive,funded,clock,forward,models,nextImage,nextZone,priceBound,populationsAfter,nextCounter,locals,codeEq,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved⟩ :=
+      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries snap property ∧ Mpt.AccountDecode.Registry target cutoff nextCursor next accounts ∧ TableFamily.Metadata objects next := by
+  obtain ⟨paid,nextCursor,next,positive,funded,clock,forward,models,nextImage,nextZone,priceBound,populationsAfter,nextCounter,locals,codeEq,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved,pointers⟩ :=
     restore_call_normal_values source target cursor objects base cap count snap population entries ordered small family image zone countBound populations environment
       property values savedValues deleteCode code journal counter arguments args normal
   have frame : TableFamily.PersistentFrame cutoff cursor objects next source target :=
     ⟨fun query lower earlier outside=>persistent.words query (Nat.zero_le _) earlier outside⟩
   have nextRegistry := registry.framed source target cutoff cursor nextCursor objects next accounts frame forward (nextEnvironment.domain.trans environment.domain.symm)
-  exact ⟨paid,nextCursor,next,positive,funded,clock,forward,models,nextImage,nextZone,priceBound,populationsAfter,nextCounter,locals,codeEq,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved,nextRegistry⟩
+  exact ⟨paid,nextCursor,next,positive,funded,clock,forward,models,nextImage,nextZone,priceBound,populationsAfter,nextCounter,locals,codeEq,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved,nextRegistry,pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

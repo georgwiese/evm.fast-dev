@@ -27,7 +27,7 @@ theorem loop_normal {ι : Type} [Fintype ι] [DecidableEq ι] (remaining : Nat)
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.locals.lookup (ofString "snap") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
-  obtain ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,nextSnapshot,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved⟩ :=
+  obtain ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,nextSnapshot,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved,_pointers⟩ :=
     loop_normal_values remaining source target cursor objects base cap count snap population entries countEq small family image zone countBound populations environment (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) deleteCode journal counter snapshot normal
   exact ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,nextSnapshot,codes,nextEnvironment,globals,floorFrame⟩
 

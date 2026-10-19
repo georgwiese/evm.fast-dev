@@ -33,7 +33,7 @@ theorem delete_call_registered_values {ι : Type} [DecidableEq ι]
       Image target nextObjects base (count+added) nextEntries ∧ Zone nextObjects base cap nextCursor ∧
       TableFamily.ValuesHave target nextObjects property ∧ EntryValues nextEntries (count+added) property ∧
       CounterEffect source target added 0 0 ∧ ProtectedFrame base cap cursor objects nextObjects source target ∧
-      target.code=source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target := by
+      target.code=source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.Metadata objects nextObjects := by
   have branches := delete_call_normal_values source target cursor objects writer base cap count entries family image zone countBound environment query
     property values savedValues queryFits queryMapped getCode deleteCode code journal capacity counter arguments args normal
   rcases branches with absent | present
@@ -42,19 +42,19 @@ theorem delete_call_registered_values {ι : Type} [DecidableEq ι]
     have frame : ProtectedFrame base cap cursor objects objects source {source with clock:=source.clock-paid} :=
       ⟨fun query earlier outside away=>⟨outside,rfl⟩⟩
     refine ⟨paid,cursor,objects,entries,0,?_,funded,rfl,Nat.le_refl _,by decide,by simpa using countBound,
-      family.of_control rfl rfl rfl rfl,?_,?_,zone,values,?_,effect,frame,rfl,environment.of_fields rfl rfl rfl,?_⟩
+      family.of_control rfl rfl rfl rfl,?_,?_,zone,values,?_,effect,frame,rfl,environment.of_fields rfl rfl rfl,?_,TableFamily.Metadata.refl objects⟩
     · dsimp only [deletePrice]; omega
     · exact registry.framed source _ cutoff cursor cursor objects objects accounts
         (TableFamily.PersistentFrame.of_memory cutoff cursor objects source _ rfl) (Nat.le_refl _) rfl
     · exact image.transfer rfl (fun _=>rfl) (fun _=>rfl) (fun _ _ _=>rfl) image.separate
     · simpa only [Nat.add_zero] using savedValues
     · intro key heap different; rfl
-  · obtain ⟨room,paid,next,oldValue,positive,bounded,funded,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved⟩ := present
+  · obtain ⟨room,paid,next,oldValue,positive,bounded,funded,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved,pointers⟩ := present
     have nextRegistry := frame.registry source target base cap cutoff cursor (cursor+NaturalLayout.stride (objects writer).kind)
       objects (Function.update objects writer next) accounts registry accountApart (by omega) (nextEnvironment.domain.trans environment.domain.symm)
     exact ⟨paid,cursor+NaturalLayout.stride (objects writer).kind,Function.update objects writer next,
       Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,1#64,oldValue⟩,1,bounded,funded,clock,by omega,Nat.le_refl _,by omega,
-      models,nextRegistry,nextImage,nextZone,nextValues,nextSaved,effect,frame,codes,nextEnvironment,globals⟩
+      models,nextRegistry,nextImage,nextZone,nextValues,nextSaved,effect,frame,codes,nextEnvironment,globals,pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

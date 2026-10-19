@@ -42,7 +42,7 @@ theorem set_body_normal_values {ι : Type} [DecidableEq ι]
       post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       post.code = source.code ∧ WarmKeys.Environment post ∧ OtherGlobals source post ∧ ProtectedFrame base cap cursor objects (Function.update objects writer next) source post ∧
       TableFamily.ValuesHave post (Function.update objects writer next) property ∧
-      EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,oldFlag,oldValue⟩) (count+1) property := by
+      EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,oldFlag,oldValue⟩) (count+1) property ∧ TableFamily.Metadata objects (Function.update objects writer next) := by
   have table := family.tables writer
   have capSmall : cap < 2 ^ 64 := by
     have upper := zone.valid.upper
@@ -106,7 +106,7 @@ theorem set_body_normal_values {ι : Type} [DecidableEq ι]
     (key_globals ready (objects writer).kind cursor query (ofString "journal_n") (by decide)).trans counter
   obtain ⟨copiedFits, copiedMapped⟩ := copied_key_geometry ready (objects writer).kind cursor query region environment.domain
   obtain ⟨returnedEq, setPaid, nextCursor, next, setFits, finalClock, forward, kind, nextFamily, nextImage, nextZone, bounded, population,
-    nextCounter, codes, nextEnvironment, globals, recordFrame, finalValues⟩ :=
+    nextCounter, codes, nextEnvironment, globals, recordFrame, finalValues, pointers⟩ :=
     set_record_normal_values copied keyPost (cursor + NaturalLayout.stride (objects writer).kind) objects writer base cap count entries copiedFamily copiedImage copiedZone room copiedEnvironment
       query value (BitVec.ofNat 64 cursor) flag oldValue property copiedValues owned queryFits queryMapped copiedFits copiedMapped copiedT copiedKey copiedValue copiedPointer copiedOld copiedJournal copiedCounter returned keyRun
   have protectedFrame := copiedFrame.trans recordFrame (by have := key_rounding (objects writer).kind; omega)
@@ -128,7 +128,7 @@ theorem set_body_normal_values {ι : Type} [DecidableEq ι]
   change keyPrice (objects writer).kind cursor query ≤ source.clock - getPaid at keyFits
   rw [copiedClock] at setFits finalClock
   refine ⟨room, returnedEq, getPaid + keyPrice (objects writer).kind cursor query + setPaid, nextCursor, next, flag, oldValue,
-    by omega, ?_, by omega, kind, binary, finalFamily, finalImage, nextZone, ?_, population, finalCounter, finalCodes, finalEnvironment, ?_,?_,?_,savedValues.append entries count property ⟨writer,BitVec.ofNat 64 cursor,flag,oldValue⟩ oldOwned⟩
+    by omega, ?_, by omega, kind, binary, finalFamily, finalImage, nextZone, ?_, population, finalCounter, finalCodes, finalEnvironment, ?_,?_,?_,savedValues.append entries count property ⟨writer,BitVec.ofNat 64 cursor,flag,oldValue⟩ oldOwned,pointers⟩
   · rw [postClock, finalClock]
     omega
   · dsimp only [setPrice]

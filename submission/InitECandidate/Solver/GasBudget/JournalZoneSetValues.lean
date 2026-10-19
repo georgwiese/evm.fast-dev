@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.FamilyMetadata
 import InitECandidate.Solver.GasBudget.JournalZone
 import InitECandidate.Solver.MutableTable.FamilySetValues
 import InitECandidate.Solver.MutableTable.FamilyPersistentFrame
@@ -30,7 +31,8 @@ theorem set_zone_normal_values {ι : Type} [DecidableEq ι] (source target : Pan
         Set.noGrowthPrice (objects writer).kind (objects writer).slots.length + 1 + GrowRuntime.growthPotential (objects writer).kind next.plan.capacity ∧
       next.slots.length ≤ (objects writer).slots.length + 1 ∧ target.locals = source.locals ∧ target.code = source.code ∧
       WarmKeys.Environment target ∧ HeapGlobals source target ∧ TableFamily.FloorFrame objects (Function.update objects writer next) source target ∧
-      TableFamily.PersistentFrame 0 cursor objects (Function.update objects writer next) source target ∧ TableFamily.ValuesHave target (Function.update objects writer next) property := by
+      TableFamily.PersistentFrame 0 cursor objects (Function.update objects writer next) source target ∧ TableFamily.ValuesHave target (Function.update objects writer next) property ∧
+      TableFamily.Metadata objects (Function.update objects writer next) := by
   obtain ⟨paid, nextCursor, next, fits, clock, forward, kind, floor, models, pointers, bounded, lower, upper, capacity, locals, codes, nextEnvironment, globals, beforeFloor, earlier, nextValues⟩ :=
     TableFamily.set_normal_values source target cursor objects writer family environment query value arguments property values owned queryFits queryMapped args normal
   have cursorSmall : cursor < 2 ^ 64 := by have bounded := (family.tables writer).bounded; omega
@@ -52,7 +54,7 @@ theorem set_zone_normal_values {ι : Type} [DecidableEq ι] (source target : Pan
       (fun index inside field => nextZone.separate index (by omega) field)
   exact ⟨paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, upper, locals, codes, nextEnvironment, globals,
     TableFamily.FloorFrame.of_update objects writer next source target floor beforeFloor,
-    TableFamily.PersistentFrame.of_set 0 cursor objects writer next source target earlier,nextValues⟩
+    TableFamily.PersistentFrame.of_set 0 cursor objects writer next source target earlier,nextValues,TableFamily.Metadata.of_update objects writer next kind floor pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

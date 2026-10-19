@@ -29,7 +29,7 @@ theorem restore_call_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + (count - snap)) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target ∧
-      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries snap property := by
+      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries snap property ∧ TableFamily.Metadata objects next := by
   obtain ⟨callee, called, snapshot⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "state_restore") "snap" body (BitVec.ofNat 64 snap) code
   obtain ⟨positive, post, returned, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "state_restore") arguments _ body callee .one args called normal
   let entry := callEntryStateHOLFinite source callee
@@ -38,7 +38,7 @@ theorem restore_call_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
   have entryImage : Image entry objects base count entries :=
     image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
   obtain ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, models, nextImage, nextZone, bounded, nextPopulations, nextCounter,
-    codes, nextEnvironment, globals, floorFrame, persistent, nextValues, nextSaved⟩ :=
+    codes, nextEnvironment, globals, floorFrame, persistent, nextValues, nextSaved, pointers⟩ :=
     restore_body_normal_values entry post cursor objects base cap count snap population entries ordered small entryFamily entryImage zone countBound populations
       (environment.of_fields rfl rfl rfl) property values savedValues deleteCode journal counter snapshot returned bodyRun
   rw [returnedEq] at bodyRun
@@ -54,7 +54,7 @@ theorem restore_call_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
   change paid ≤ source.clock - 1 at fits
   change post.clock = source.clock - 1 - paid at clock
   exact ⟨1 + paid, nextCursor, next, by omega, by omega, by change post.clock = _; omega, forward, finalFamily, finalImage, nextZone,
-    by omega, nextPopulations, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, ⟨floorFrame.floors, floorFrame.words⟩,⟨persistent.words⟩,nextValues,nextSaved⟩
+    by omega, nextPopulations, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, ⟨floorFrame.floors, floorFrame.words⟩,⟨persistent.words⟩,nextValues,nextSaved,pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

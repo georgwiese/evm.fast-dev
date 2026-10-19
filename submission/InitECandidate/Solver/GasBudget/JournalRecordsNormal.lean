@@ -23,7 +23,7 @@ theorem records_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       paid + TableFamily.potential objects ≤ 38 * population + 39 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + 1) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ HeapGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
-  obtain ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,codes,nextEnvironment,globals,floorFrame,persistent,nextValues⟩ :=
+  obtain ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,_pointers⟩ :=
     records_normal_values source target cursor objects base cap count index population entries family image zone countBound inside populations environment (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) deleteCode journal counter normal
   exact ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,codes,nextEnvironment,globals,floorFrame⟩
 

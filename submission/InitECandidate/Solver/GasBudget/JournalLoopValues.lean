@@ -29,7 +29,7 @@ theorem loop_normal_values {ι : Type} [Fintype ι] [DecidableEq ι] (remaining 
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.locals.lookup (ofString "snap") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target ∧
-      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries snap property := by
+      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries snap property ∧ TableFamily.Metadata objects next := by
   induction remaining generalizing source cursor objects count population with
   | zero =>
     have finished : count = snap := by omega
@@ -44,7 +44,7 @@ theorem loop_normal_values {ι : Type} [Fintype ι] [DecidableEq ι] (remaining 
     change target = source at same
     subst target
     refine ⟨0, cursor, objects, by omega, by simp, Nat.le_refl _, family, ?_, zone, by simp [price, WitnessBuild.triangle], ?_, ?_, snapshot, rfl,
-      environment, OtherGlobals.refl source, TableFamily.FloorFrame.refl objects source,TableFamily.PersistentFrame.refl 0 cursor objects source,values,?_⟩
+      environment, OtherGlobals.refl source, TableFamily.FloorFrame.refl objects source,TableFamily.PersistentFrame.refl 0 cursor objects source,values,?_,TableFamily.Metadata.refl objects⟩
     · simpa only [finished] using image
     · simpa only [Nat.add_zero] using populations
     · simpa only [finished] using counter
@@ -63,7 +63,7 @@ theorem loop_normal_values {ι : Type} [Fintype ι] [DecidableEq ι] (remaining 
       image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
     have entryEnvironment : WarmKeys.Environment entry := environment.of_fields rfl rfl rfl
     obtain ⟨paid, middleCursor, middleObjects, fits, clock, forward, middleFamily, middleImage, middleZone, bounded, middlePopulations,
-      middleCounter, codes, middleEnvironment, globals, bodyFrame, bodyPersistent, middleValues, middleSaved⟩ :=
+      middleCounter, codes, middleEnvironment, globals, bodyFrame, bodyPersistent, middleValues, middleSaved, bodyPointers⟩ :=
       body_normal_values entry middle cursor objects base cap count population entries entryFamily entryImage zone countBound (by omega) populations entryEnvironment property values savedValues deleteCode journal counter bodyRun
     have info := body_safe.summary entry
     rw [bodyRun] at info
@@ -72,7 +72,7 @@ theorem loop_normal_values {ι : Type} [Fintype ι] [DecidableEq ι] (remaining 
       (globals (ofString "journal") (by decide) (by decide)).trans journal
     have middleDelete : middle.code.lookup (ofString "htab_del") = some (Find.formals, Delete.body, .one) := by rw [codes]; exact deleteCode
     obtain ⟨restPaid, nextCursor, next, restFits, restClock, restForward, nextFamily, nextImage, nextZone, restBound, nextPopulations,
-      nextCounter, nextSnapshot, finalCodes, nextEnvironment, finalGlobals, restFrame, restPersistent, finalValues, finalSaved⟩ :=
+      nextCounter, nextSnapshot, finalCodes, nextEnvironment, finalGlobals, restFrame, restPersistent, finalValues, finalSaved, restPointers⟩ :=
       ih (source := middle) (cursor := middleCursor) (objects := middleObjects) (count := count - 1) (population := population + 1)
         (by omega) (by omega) middleFamily middleImage middleZone (by omega) middlePopulations middleEnvironment middleValues middleSaved middleDelete middleJournal middleCounter middleSnapshot tailRun
     change paid ≤ source.clock - 1 at fits
@@ -80,7 +80,7 @@ theorem loop_normal_values {ι : Type} [Fintype ι] [DecidableEq ι] (remaining 
     have headFrame : TableFamily.FloorFrame objects middleObjects source middle := ⟨bodyFrame.floors, bodyFrame.words⟩
     have headPersistent : TableFamily.PersistentFrame 0 cursor objects middleObjects source middle := ⟨bodyPersistent.words⟩
     refine ⟨1 + paid + restPaid, nextCursor, next, by omega, by omega, by omega, nextFamily, nextImage, nextZone, ?_, ?_, nextCounter, nextSnapshot,
-      finalCodes.trans codes, nextEnvironment, globals.trans finalGlobals, headFrame.trans restFrame,headPersistent.trans restPersistent forward,finalValues,finalSaved⟩
+      finalCodes.trans codes, nextEnvironment, globals.trans finalGlobals, headFrame.trans restFrame,headPersistent.trans restPersistent forward,finalValues,finalSaved,bodyPointers.trans restPointers⟩
     · rw [price_step]
       omega
     · intro table

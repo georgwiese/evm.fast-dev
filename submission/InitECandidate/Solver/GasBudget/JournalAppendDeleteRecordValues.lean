@@ -35,7 +35,7 @@ theorem delete_record_normal_values {ι : Type} [DecidableEq ι]
       Zone (Function.update objects writer next) base cap cursor ∧ next.slots.length ≤ (objects writer).slots.length ∧
       post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       post.code = source.code ∧ WarmKeys.Environment post ∧ OtherGlobals source post ∧ ProtectedFrame base cap cursor objects (Function.update objects writer next) source post ∧
-      TableFamily.ValuesHave post (Function.update objects writer next) property := by
+      TableFamily.ValuesHave post (Function.update objects writer next) property ∧ TableFamily.Metadata objects (Function.update objects writer next) := by
   let newRecord : Entry ι := ⟨writer, copiedKey, 1#64, oldValue⟩
   have execute := record_execute source objects base cap count cursor newRecord 1#64 true zone room environment.domain journal counter tableLocal copyLocal old rfl
   change evaluateHOLFiniteState source deleteAfterCopy = _ at execute
@@ -54,7 +54,7 @@ theorem delete_record_normal_values {ι : Type} [DecidableEq ι]
     (bind_lookup_other _ "r" "t" _ (by decide)).trans tableLocal
   have key : entry.locals.lookup (ofString "key") = some (.val (.word query)) :=
     (bind_lookup_other _ "r" "key" _ (by decide)).trans keyLocal
-  obtain ⟨returnedEq, paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population, nextCounter, codes, nextEnvironment, globals, persistent, nextValues⟩ :=
+  obtain ⟨returnedEq, paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population, nextCounter, codes, nextEnvironment, globals, persistent, nextValues, pointers⟩ :=
     delete_tail_normal_values entry finish cursor objects writer base cap count (Function.update entries count newRecord) entryFamily entryImage zone
       (environment.of_fields rfl rfl rfl) query property entryEffects.2 queryFits queryMapped t key counter deleteCode returned tailRun
   have frame := entryEffects.1.trans (ProtectedFrame.of_persistent base cap cursor objects (Function.update objects writer next) entry finish persistent) (Nat.le_refl _)
@@ -64,7 +64,7 @@ theorem delete_record_normal_values {ι : Type} [DecidableEq ι]
   have finalImage : Image (restore source "r" finish) (Function.update objects writer next) base (count + 1) (Function.update entries count newRecord) :=
     nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
   exact ⟨returnedEq, paid, next, bounded, fits, clock, kind, plan, finalFamily, finalImage, nextZone, population, nextCounter,
-    codes, nextEnvironment.of_fields rfl rfl rfl, globals,⟨frame.words⟩,nextValues⟩
+    codes, nextEnvironment.of_fields rfl rfl rfl, globals,⟨frame.words⟩,nextValues,pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

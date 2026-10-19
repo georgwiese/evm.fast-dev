@@ -27,7 +27,7 @@ theorem restore_body_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + (count - snap)) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target ∧
-      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries snap property := by
+      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries snap property ∧ TableFamily.Metadata objects next := by
   rw [body_shape] at normal
   obtain ⟨middle, loopRun, returnRun, saved⟩ :=
     (Input.LocalPrefix.loop condition body_safe).normal_continue source target (.return (.const 0#64)) returned normal
@@ -38,7 +38,7 @@ theorem restore_body_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
   have targetEq := congrArg Prod.snd (returnRun.symm.trans actual)
   change target = emptyLocalsHOLFinite middle at targetEq
   obtain ⟨paid, nextCursor, next, fits, clock, forward, models, nextImage, nextZone, bounded, nextPopulations, nextCounter, nextSnapshot,
-    codes, nextEnvironment, globals, floorFrame, persistent, nextValues, nextSaved⟩ :=
+    codes, nextEnvironment, globals, floorFrame, persistent, nextValues, nextSaved, pointers⟩ :=
     loop_normal_values (count - snap) source middle cursor objects base cap count snap population entries (by omega) small family image zone countBound populations environment property values savedValues deleteCode journal counter snapshot loopRun
   subst target
   have finalFamily : TableFamily.Model (emptyLocalsHOLFinite middle) nextCursor next :=
@@ -46,7 +46,7 @@ theorem restore_body_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
   have finalImage : Image (emptyLocalsHOLFinite middle) next base snap entries :=
     nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
   exact ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, finalFamily, finalImage, nextZone, bounded, nextPopulations, nextCounter,
-    codes, nextEnvironment.of_fields rfl rfl rfl, globals, ⟨floorFrame.floors, floorFrame.words⟩,⟨persistent.words⟩,nextValues,nextSaved⟩
+    codes, nextEnvironment.of_fields rfl rfl rfl, globals, ⟨floorFrame.floors, floorFrame.words⟩,⟨persistent.words⟩,nextValues,nextSaved,pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

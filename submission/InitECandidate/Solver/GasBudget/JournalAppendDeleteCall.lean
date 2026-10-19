@@ -38,7 +38,7 @@ theorem delete_call_normal {ι : Type} [DecidableEq ι]
     (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) queryFits queryMapped getCode deleteCode code journal capacity counter arguments args normal
   rcases branches with absent | present
   · exact Or.inl absent
-  · obtain ⟨room,paid,next,oldValue,positive,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved⟩ := present
+  · obtain ⟨room,paid,next,oldValue,positive,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved,_pointers⟩ := present
     exact Or.inr ⟨room,paid,next,oldValue,positive,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,locals,codes,nextEnvironment,globals,effect⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append

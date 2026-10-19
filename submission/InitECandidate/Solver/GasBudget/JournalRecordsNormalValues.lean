@@ -24,7 +24,7 @@ theorem records_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
       paid + TableFamily.potential objects ≤ 38 * population + 39 + TableFamily.potential next ∧
       (∀ table, (next table).slots.length ≤ population + 1) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ HeapGlobals source target ∧ TableFamily.FloorFrame objects next source target ∧
-      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property := by
+      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ TableFamily.Metadata objects next := by
   have actual := records_execute source objects base count index entries inside image journal counter
   rw [actual] at normal
   let entry := entered source objects base index (entries index)
@@ -39,7 +39,7 @@ theorem records_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
   have entryImage : Image entry objects base count entries :=
     image.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
   have entryEnvironment : WarmKeys.Environment entry := environment.of_fields rfl rfl rfl
-  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, nextZone, bounded, nextPopulations, localEq, codes, nextEnvironment, globals, floorFrame, persistent, nextValues⟩ :=
+  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, nextZone, bounded, nextPopulations, localEq, codes, nextEnvironment, globals, floorFrame, persistent, nextValues, pointers⟩ :=
     selected_normal_values entry called cursor objects base cap count index population entries entryFamily entryImage zone countBound inside populations entryEnvironment property values savedValues deleteCode
       (CallLocals.entered source objects base index (entries index)) selected
   subst target
@@ -48,7 +48,7 @@ theorem records_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
   have finalImage : Image (restored source called) next base count entries :=
     nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
   exact ⟨paid, nextCursor, next, fits, clock, forward, finalFamily, finalImage, nextZone, bounded, nextPopulations, codes,
-    nextEnvironment.of_fields rfl rfl rfl, globals, ⟨floorFrame.floors, floorFrame.words⟩,⟨persistent.words⟩,nextValues⟩
+    nextEnvironment.of_fields rfl rfl rfl, globals, ⟨floorFrame.floors, floorFrame.words⟩,⟨persistent.words⟩,nextValues,pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

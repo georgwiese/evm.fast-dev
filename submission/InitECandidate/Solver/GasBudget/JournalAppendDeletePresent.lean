@@ -31,7 +31,7 @@ theorem delete_present_normal {ι : Type} [DecidableEq ι]
       next.slots.length ≤ (objects writer).slots.length ∧
       post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       post.code = source.code ∧ WarmKeys.Environment post ∧ OtherGlobals source post := by
-  obtain ⟨returnedEq,paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,codes,nextEnvironment,globals,frame,nextValues⟩ :=
+  obtain ⟨returnedEq,paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,codes,nextEnvironment,globals,frame,nextValues,_pointers⟩ :=
     delete_present_normal_values source post cursor objects writer base cap count entries family image zone room environment query oldValue (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro)
       queryFits queryMapped tableLocal keyLocal old deleteCode journal counter returned normal
   exact ⟨returnedEq,paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,codes,nextEnvironment,globals⟩

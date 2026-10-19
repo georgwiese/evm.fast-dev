@@ -31,6 +31,8 @@ theorem pre_state_miss_complete {ι : Type} [DecidableEq ι]
     ∃ paid recordCursor next nextCursor,
       paid≤source.clock ∧ post.clock=source.clock-paid ∧ cursor≤recordCursor ∧ next.kind=.account ∧
       (nextCursor=recordCursor ∨ nextCursor=recordCursor+120) ∧ TableFamily.Model post nextCursor (Function.update objects writer next) ∧
+      (∀ index,(Function.update objects writer next index).pointer=(objects index).pointer) ∧
+      (∀ index,(Function.update objects writer next index).floor=(objects index).floor) ∧
       paid+GrowRuntime.growthPotential .account (objects writer).plan.capacity≤9*(objects writer).slots.length+31065+GrowRuntime.growthPotential .account next.plan.capacity ∧
       (objects writer).slots.length≤next.slots.length ∧ next.slots.length≤(objects writer).slots.length+1 ∧
       next.plan.capacity≤max (objects writer).plan.capacity (4*(next.slots.length+1)) ∧
@@ -93,7 +95,7 @@ theorem pre_state_miss_complete {ι : Type} [DecidableEq ι]
   rw [run] at overall
   change post.clock≤source.clock at overall
   let paid := source.clock-post.clock
-  refine ⟨paid,recordCursor,next,nextCursor,Nat.sub_le _ _,by dsimp [paid]; omega,forward,nextKind,?_,finalFamily,?_,countLower,countUpper,capacity,
+  refine ⟨paid,recordCursor,next,nextCursor,Nat.sub_le _ _,by dsimp [paid]; omega,forward,nextKind,?_,finalFamily,pointers,floorFrame.floors,?_,countLower,countUpper,capacity,
     ⟨finalWorld⟩,finalHashEnvironment,finalResult,finalGlobals,?_,finalImage⟩
   · simpa only [heapNumber] using choice
   · dsimp [paid]

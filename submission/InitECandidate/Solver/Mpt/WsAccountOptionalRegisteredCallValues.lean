@@ -39,7 +39,7 @@ theorem scoped_registered_values {ι : Type} (source post : PanSemStateFiniteExa
       (∀ query : BitVec 64,cutoff≤query.toNat → query.toNat<heap.toNat → ready.memory query=source.memory query) ∧ ready.code=source.code ∧ source.clock-ready.clock≤31052 ∧
       (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
       (∃ value : BitVec 64,answer=.val (.word value) ∧ AccountDecode.Registry.Known nextAccounts value) ∧
-      evaluateHOLFiniteState ready continuation=(some (.returned returned),inner) ∧ post=WitnessRadix.QueryBranch.restore source name inner := by
+      evaluateHOLFiniteState ready continuation=(some (.returned returned),inner) ∧ post=WitnessRadix.QueryBranch.restore source name inner ∧ (nextCursor=heap.toNat ∨ nextCursor=heap.toNat+120) := by
   obtain ⟨callee,called,addressCell⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "ws_get_account_optional") "addr" body addr
     (original_code source.code installed)
   obtain ⟨positive,target,answer,inner,bodyRun,checked,tailRun,restored⟩ := Input.CallNormal.scoped_normal source post name .one (ofString "ws_get_account_optional")
@@ -51,7 +51,7 @@ theorem scoped_registered_values {ι : Type} (source post : PanSemStateFiniteExa
   have entryRegistry := registry.framed source entry cutoff heap.toNat heap.toNat objects objects accounts
     (TableFamily.PersistentFrame.of_memory cutoff heap.toNat objects source entry rfl) (Nat.le_refl _) rfl
   have entryValues := tableValues.of_memory source entry objects property rfl
-  obtain ⟨nextCursor,nextAccounts,shape,nextFamily,nextRegistry,⟨targetWorld⟩,targetEnvironment,result,nonheap,price,weakening,beforeMemory,nextValues,returnedOwned⟩ :=
+  obtain ⟨nextCursor,nextAccounts,shape,nextFamily,nextRegistry,⟨targetWorld⟩,targetEnvironment,result,nonheap,price,weakening,beforeMemory,nextValues,returnedOwned,choice⟩ :=
     body_registered_values entry target ws root addr heap nibs stp pad cursor limit emptyRoot emptyHash cutoff frozenEnd valueLimit entryWorld entryEnvironment
       stateArena stateAligned padArena padAligned queryArena stateBelow padBelow objects anchor accounts entryRegistry property entryValues entryFamily floors addressCell
       (Rlp.Validation.Arena.of_fields source entry cursor limit arena rfl rfl) heapGlobal heapBound heapAligned afterWorld sizeBound aligned scratchBelow
@@ -72,7 +72,7 @@ theorem scoped_registered_values {ι : Type} (source post : PanSemStateFiniteExa
   have readyValues := nextValues.of_memory target ready objects property rfl
   exact ⟨positive,ready,answer,inner,nextCursor,nextAccounts,Input.CallNormal.continuation_lookup_same source target name answer,
     shape,readyFamily,readyRegistry,readyValues,⟨readyWorld⟩,readyEnvironment,readyResult,nonheap,readyFrame,beforeMemory,codeEq,
-    by change source.clock-target.clock≤31052; omega,weakening,returnedOwned,tailRun,restored⟩
+    by change source.clock-target.clock≤31052; omega,weakening,returnedOwned,tailRun,restored,choice⟩
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

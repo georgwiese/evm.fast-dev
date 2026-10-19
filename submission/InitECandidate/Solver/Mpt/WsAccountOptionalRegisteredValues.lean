@@ -36,8 +36,8 @@ theorem body_registered_values {ι : Type} (source post : PanSemStateFiniteExact
       (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
       (∀ query : BitVec 64,cutoff≤query.toNat → query.toNat<heap.toNat → post.memory query=source.memory query) ∧
       TableFamily.ValuesHave post objects property ∧
-      (∃ value : BitVec 64,returned=.val (.word value) ∧ AccountDecode.Registry.Known nextAccounts value) := by
-  obtain ⟨nextCursor,nextAccounts,shape,nextFamily,nextRegistry,nextWorld,nextEnvironment,result,globals,price,weakening,beforeMemory⟩ :=
+      (∃ value : BitVec 64,returned=.val (.word value) ∧ AccountDecode.Registry.Known nextAccounts value) ∧ (nextCursor=heap.toNat ∨ nextCursor=heap.toNat+120) := by
+  obtain ⟨nextCursor,nextAccounts,shape,nextFamily,nextRegistry,nextWorld,nextEnvironment,result,globals,price,weakening,beforeMemory,choice⟩ :=
     body_registered source post ws root addr heap nibs stp pad cursor limit emptyRoot emptyHash cutoff frozenEnd valueLimit world environment
       stateArena stateAligned padArena padAligned queryArena stateBelow padBelow objects anchor accounts registry family floors addressCell arena heapGlobal heapBound heapAligned afterWorld
       sizeBound aligned scratchBelow rootGlobal hashGlobal rootArena hashArena installed returned normal
@@ -49,7 +49,7 @@ theorem body_registered_values {ι : Type} (source post : PanSemStateFiniteExact
     · refine ⟨heap,present,Or.inr ?_⟩
       rw [added]
       simp
-  exact ⟨nextCursor,nextAccounts,shape,nextFamily,nextRegistry,nextWorld,nextEnvironment,result,globals,price,weakening,beforeMemory,nextValues,returnedOwned⟩
+  exact ⟨nextCursor,nextAccounts,shape,nextFamily,nextRegistry,nextWorld,nextEnvironment,result,globals,price,weakening,beforeMemory,nextValues,returnedOwned,choice⟩
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

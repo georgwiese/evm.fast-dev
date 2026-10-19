@@ -1,3 +1,4 @@
+import InitECandidate.Solver.GasBudget.AccountOptionalNormalValues
 import InitECandidate.Solver.GasBudget.AccountCacheWorldPrefix
 import InitECandidate.Solver.GasBudget.AccountCacheDispatch
 import InitECandidate.Solver.GasBudget.PreStateAccountCallNormal
@@ -39,107 +40,12 @@ theorem transaction_body_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ index,(nextObjects index).pointer=(objects index).pointer) ∧ Nonempty (WsAccountLeaf.World post ws root nibs cutoff frozenEnd valueLimit) ∧
       Keccak256.Environment post stp pad ∧ Rlp.Validation.Arena post scratchPtr limit ∧ HeapGlobals source post ∧ post.code=source.code ∧
       paid+TableFamily.potential objects≤43*count+31147+TableFamily.potential nextObjects ∧ ∃ value : BitVec 64,returned=.val (.word value) := by
-  obtain ⟨prefixPaid,prefixCursor,next,flag,value,ready,inner,funded,prefixClock,forward,nextKind,countLower,countUpper,capacity,prefixFamily,prefixPopulation,pointers,prefixPrice,⟨currentWorld⟩,currentHash,currentArena,currentEnvironment,codeEq,prefixGlobals,floorFrame,beforeWords,queryCell,resultCell,tailRun,frame,postClock⟩ :=
-    world_cache_prefix .transaction source post transaction transaction query ws root nibs stp pad scratchPtr limit cursor cutoff frozenEnd valueLimit count objects writer reader
-      family population writerKind readerKind environment installed world floors hashEnvironment arena queryArena transactionGlobal transactionGlobal
-      (by omega) setMapped setCell getMapped getCell queryLocal returned run
-  let current := Function.update objects writer next
-  change ∀ index,(current index).slots.length≤count+1 at prefixPopulation
-  change prefixPaid+TableFamily.potential objects≤17*count+23+TableFamily.potential current at prefixPrice
-  have currentFloors : ∀ index,frozenEnd≤(current index).floor := by intro index; rw [floorFrame.floors index]; exact floors index
-  have currentKind (index : ι) (oldKind : (objects index).kind=.account) : (current index).kind=.account := by
-    by_cases same : index=writer
-    · subst index; simpa only [current,Function.update_self] using nextKind
-    · simpa only [current,Function.update_of_ne same] using oldKind
-  have tail : ∃ finalCursor finalObjects,prefixCursor≤finalCursor ∧ TableFamily.Model inner finalCursor finalObjects ∧
-      (∀ index,(finalObjects index).slots.length≤count+3) ∧ (∀ index,frozenEnd≤(finalObjects index).floor) ∧
-      (∀ index,(finalObjects index).pointer=(current index).pointer) ∧ Nonempty (WsAccountLeaf.World inner ws root nibs cutoff frozenEnd valueLimit) ∧
-      Keccak256.Environment inner stp pad ∧ Rlp.Validation.Arena inner scratchPtr limit ∧ HeapGlobals ready inner ∧
-      ready.clock-inner.clock+TableFamily.potential current≤26*count+31124+TableFamily.potential finalObjects ∧ ∃ word : BitVec 64,returned=.val (.word word) := by
-    rw [cache_dispatch .transaction ready flag value resultCell] at tailRun
-    by_cases zero : flag=0#64
-    · rw [if_pos zero] at tailRun
-      change evaluateHOLFiniteState ready AccountOptional.afterMiss=(some (.returned returned),inner) at tailRun
-      rw [AccountOptional.miss_shape] at tailRun
-      have domain : ready.memaddrs=source.memaddrs := currentEnvironment.domain.trans environment.domain.symm
-      have keptTransaction (offset : Nat) (inside : offset<72) : ready.memory (transaction+BitVec.ofNat 64 offset)=source.memory (transaction+BitVec.ofNat 64 offset) := by
-        have number := byteAddress_toNat transaction offset (by have := transactionArena.upper; omega)
-        apply beforeWords
-        change (byteAddress transaction offset).toNat<(objects writer).floor
-        rw [number]
-        omega
-      have keptBlock (offset : Nat) (inside : offset<80) : ready.memory (block+BitVec.ofNat 64 offset)=source.memory (block+BitVec.ofNat 64 offset) := by
-        have number := byteAddress_toNat block offset (by have := blockArena.upper; omega)
-        apply beforeWords
-        change (byteAddress block offset).toNat<(objects writer).floor
-        rw [number]
-        omega
-      have setPointer : (current writer).pointer=(objects writer).pointer := pointers writer
-      have getPointer : (current blockReader).pointer=(objects blockReader).pointer := pointers blockReader
-      have recordPointer : (current recorder).pointer=(objects recorder).pointer := pointers recorder
-      have currentSet : ready.memory (transaction+8#64)=.word (current writer).pointer := by rw [keptTransaction 8 (by decide),setCell,setPointer]
-      have currentGet : ready.memory (block+16#64)=.word (current blockReader).pointer := by rw [keptBlock 16 (by decide),blockGetCell,getPointer]
-      have currentRecord : ready.memory (block+72#64)=.word (current recorder).pointer := by rw [keptBlock 72 (by decide),recordCell,recordPointer]
-      have args : evalListHOLFinite ready (h:=fun address=>Classical.propDecidable (ready.memaddrs address)) [localVar "addr"]=some [.val (.word query)] := by
-        simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,queryCell]
-      obtain ⟨paid,finalCursor,finalObjects,answerReady,word,returnedInner,paidFits,answerClock,more,finalFamily,finalPopulation,finalFloors,stable,⟨finalWorld⟩,finalHash,finalArena,calleeGlobals,calleeCode,price,answerCell,returnRun,restored⟩ :=
-        scoped_pre_state_normal ready inner transaction block query ws root nibs stp pad scratchPtr limit emptyRoot emptyHash prefixCursor cutoff frozenEnd valueLimit (count+1)
-          current writer blockReader recorder prefixFamily prefixPopulation (currentKind writer writerKind) (currentKind blockReader blockReaderKind) (currentKind recorder recorderKind)
-          currentEnvironment (by rw [codeEq]; exact installed) currentWorld (by omega) currentFloors currentHash
-          stateArena stateAligned padArena padAligned queryArena stateBelow padBelow currentArena scratchBelow aligned sizeBound
-          ((prefixGlobals _ (by decide)).trans rootGlobal) ((prefixGlobals _ (by decide)).trans hashGlobal) rootArena hashArena
-          ((prefixGlobals _ (by decide)).trans transactionGlobal) ((prefixGlobals _ (by decide)).trans blockGlobal) blockArena
-          (by rw [floorFrame.floors writer]; exact blockBefore) (by rw [domain]; exact setMapped) currentSet (by rw [domain]; exact blockGetMapped) currentGet
-          (by rw [domain]; exact recordMapped) currentRecord "a" [localVar "addr"] (.return (localVar "a")) args returned tailRun
-      have actual := Input.return_normal answerReady returnedInner (localVar "a") returned returnRun
-      have read : eval answerReady (localVar "a")=some (.val (.word word)) := by simp [eval,evalHOLExact,localVar,toExact,answerCell]
-      have returnedEq : returned=.val (.word word) := Option.some.inj (actual.1.symm.trans read)
-      have innerEq : inner=restore ready "a" (emptyLocalsHOLFinite answerReady) := by rw [restored,actual.2]
-      have models : TableFamily.Model inner finalCursor finalObjects := by rw [innerEq]; exact finalFamily.of_control rfl rfl rfl rfl
-      let innerWorld := finalWorld.of_agreement answerReady inner ws root nibs cutoff frozenEnd valueLimit
-        (by rw [innerEq]; rfl) (by rw [innerEq]; rfl) (by rw [innerEq]; rfl) (by rw [innerEq]; rfl) (by intros; rw [innerEq]; rfl)
-      have innerHash := finalHash.of_fields answerReady inner stp pad (by rw [innerEq]; rfl) (by rw [innerEq]; rfl) (by rw [innerEq]; rfl) (by rw [innerEq]; exact HeapGlobals.refl answerReady)
-      have innerArena := finalArena.of_fields answerReady inner scratchPtr limit (by rw [innerEq]; rfl) (by rw [innerEq]; rfl)
-      have globals : HeapGlobals ready inner := by rw [innerEq]; exact calleeGlobals
-      have paidEq : ready.clock-inner.clock=paid := by rw [innerEq]; change ready.clock-answerReady.clock=paid; omega
-      exact ⟨finalCursor,finalObjects,more,models,finalPopulation,finalFloors,stable,⟨innerWorld⟩,innerHash,innerArena,globals,
-        by rw [paidEq]; omega,word,returnedEq⟩
-    · rw [if_neg zero] at tailRun
-      have returnedEq : returned=.val (.word value) := by
-        simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using (congrArg Prod.fst tailRun).symm
-      have innerEq : inner=emptyLocalsHOLFinite ready := (congrArg Prod.snd tailRun).symm
-      rw [innerEq]
-      refine ⟨prefixCursor,current,by omega,prefixFamily.of_control rfl rfl rfl rfl,?_,currentFloors,by intro index; rfl,
-        ⟨currentWorld.of_agreement ready _ ws root nibs cutoff frozenEnd valueLimit rfl rfl rfl rfl (by intros; rfl)⟩,
-        currentHash.of_fields ready _ stp pad rfl rfl rfl (HeapGlobals.refl ready),currentArena.of_fields ready _ scratchPtr limit rfl rfl,
-        HeapGlobals.refl ready,?_,value,returnedEq⟩
-      · intro index; have := prefixPopulation index; omega
-      · change ready.clock-ready.clock+TableFamily.potential current≤_; omega
-  obtain ⟨finalCursor,finalObjects,finalForward,innerFamily,finalPopulation,finalFloors,finalPointers,⟨innerWorld⟩,innerHash,innerArena,tailGlobals,tailPrice,scalar⟩ := tail
-  have domain := congrArg PanSemStateFiniteExact.memaddrs frame
-  have endian := congrArg PanSemStateFiniteExact.be frame
-  have globalsEq := congrArg PanSemStateFiniteExact.globals frame
-  have code := congrArg PanSemStateFiniteExact.code frame
-  have oracle := congrArg (fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>current.ffi.oracle) frame
-  change post.memaddrs=inner.memaddrs at domain
-  change post.be=inner.be at endian
-  change post.globals=inner.globals at globalsEq
-  change post.code=inner.code at code
-  change post.ffi.oracle=inner.ffi.oracle at oracle
-  have memory := Input.LocalEffects.memory_of_erase inner post frame
-  have finalFamily : TableFamily.Model post finalCursor finalObjects := innerFamily.of_control (by rw [globalsEq]) memory domain endian
-  let finalWorld := innerWorld.of_agreement inner post ws root nibs cutoff frozenEnd valueLimit domain endian (by rw [globalsEq]) (by rw [globalsEq]) (by intros; rw [memory])
-  have finalHash := innerHash.of_fields inner post stp pad domain code oracle (by intro key different; rw [globalsEq])
-  have finalArena := innerArena.of_fields inner post scratchPtr limit domain globalsEq
-  have finalGlobals : HeapGlobals source post := by intro key different; rw [globalsEq]; exact (tailGlobals key different).trans (prefixGlobals key different)
-  have overall := evaluateHOLFiniteState_clock_le source Kind.transaction.body
-  rw [run] at overall
-  change post.clock≤source.clock at overall
-  let paid := source.clock-post.clock
-  refine ⟨paid,finalCursor,finalObjects,Nat.sub_le _ _,by dsimp [paid]; omega,by omega,finalFamily,finalPopulation,finalFloors,?_,⟨finalWorld⟩,
-    finalHash,finalArena,finalGlobals,(Input.evaluation_fields source post Kind.transaction.body _ run).2.2.2,?_,scalar⟩
-  · intro index; exact (finalPointers index).trans (pointers index)
-  · dsimp [paid]; omega
+  obtain ⟨paid,nextCursor,nextObjects,nextAccounts,funded,clock,forward,nextFamily,nextPopulation,nextFloors,pointers,nextWorld,nextHash,nextArena,globals,codeEq,price,_,_,_,word,scalar,_⟩ :=
+    transaction_body_normal_values source post transaction block query ws root nibs stp pad scratchPtr limit emptyRoot emptyHash cursor cutoff frozenEnd valueLimit count objects writer reader blockReader recorder
+      family population writerKind readerKind blockReaderKind recorderKind environment installed [] (AccountDecode.Registry.empty source cutoff cursor objects)
+      (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro True.intro world afterWorld floors hashEnvironment stateArena stateAligned padArena padAligned queryArena stateBelow padBelow
+      arena scratchBelow aligned sizeBound rootGlobal hashGlobal rootArena hashArena transactionGlobal blockGlobal blockArena blockBefore transactionArena transactionBefore setMapped setCell getMapped getCell blockGetMapped blockGetCell recordMapped recordCell queryLocal returned run
+  exact ⟨paid,nextCursor,nextObjects,funded,clock,forward,nextFamily,nextPopulation,nextFloors,pointers,nextWorld,nextHash,nextArena,globals,codeEq,price,word,scalar⟩
 
 end InitECandidate.Solver.GasBudget.AccountCache
 

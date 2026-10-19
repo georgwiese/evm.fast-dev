@@ -1,3 +1,4 @@
+import InitECandidate.Solver.GasBudget.PreStateAccountMissCompleteValues
 import InitECandidate.Solver.GasBudget.PreStateAccountMiss
 import InitECandidate.Solver.Mpt.WsAccountOptionalWorldCall
 import InitECandidate.Solver.Rlp.ValidationHeapGlobals
@@ -39,69 +40,12 @@ theorem pre_state_miss_complete {ι : Type} [DecidableEq ι]
       Nonempty (WsAccountLeaf.World post ws root nibs cutoff frozenEnd valueLimit) ∧ Keccak256.Environment post stp pad ∧
       WsAccountOptional.Result post (BitVec.ofNat 64 recordCursor) scratchPtr limit returned ∧ HeapGlobals source post ∧ post.code=source.code ∧
       (returned=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image post (BitVec.ofNat 64 recordCursor))) := by
-  obtain ⟨recordPaid,recordCursor,next,recordReady,funded,recordClock,forward,nextKind,amortized,recordFamily,pointers,countLower,countUpper,capacity,codeEq,oracleEq,nextTableEnvironment,recordGlobals,floorFrame,queryCell,providerRun⟩ :=
-    pre_state_miss_normal source post block query cursor objects writer family kind tableEnvironment installed blockGlobal mapped stored queryLocal
-      (by have := queryArena.upper; omega)
-      (fun offset active=>AllocatedBytes.byte_mapped source query 20 offset world.domain queryArena active) returned run
-  have domain : recordReady.memaddrs=source.memaddrs := nextTableEnvironment.domain.trans tableEnvironment.domain.symm
-  have endian : recordReady.be=source.be := nextTableEnvironment.little.trans tableEnvironment.little.symm
-  let currentWorld := world.after_family source recordReady ws root nibs cutoff frozenEnd valueLimit objects (Function.update objects writer next) floorFrame floors domain endian recordGlobals
-  have currentEnvironment := hashEnvironment.of_fields source recordReady stp pad domain codeEq oracleEq recordGlobals
-  have currentArena := arena.of_heap_globals source recordReady scratchPtr limit domain recordGlobals
-  have currentTable := recordFamily.tables writer
-  let heap := BitVec.ofNat 64 recordCursor
-  have heapNumber : heap.toNat=recordCursor := by
-    change (BitVec.ofNat 64 recordCursor).toNat=recordCursor
-    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have := currentTable.bounded; omega)]
-  have currentFamily : TableFamily.Model recordReady heap.toNat (Function.update objects writer next) := by rw [heapNumber]; exact recordFamily
-  have currentFloors : ∀ index,frozenEnd≤(Function.update objects writer next index).floor := by
-    intro index
-    rw [floorFrame.floors index]
-    exact floors index
-  have currentInstalled : Input.OriginalCode.Installed recordReady.code := by rw [codeEq]; exact installed
-  have args : evalListHOLFinite recordReady (h:=fun address=>Classical.propDecidable (recordReady.memaddrs address)) [localVar "addr"]=some [.val (.word query)] := by
-    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,queryCell]
-  obtain ⟨positive,ready,answer,inner,nextCursor,answerCell,choice,nextFamily,⟨nextWorld⟩,nextHashEnvironment,result,providerGlobals,providerFrame,providerMemory,providerCode,price,image,returnRun,restored⟩ :=
-    WsAccountOptional.scoped_world_family recordReady post ws root query heap nibs stp pad scratchPtr limit emptyRoot emptyHash cutoff frozenEnd valueLimit currentWorld currentEnvironment
-      stateArena stateAligned padArena padAligned queryArena stateBelow padBelow (Function.update objects writer next) currentFamily currentFloors currentArena currentTable.heap
-      (by rw [heapNumber]; exact currentTable.bounded) (by rw [heapNumber]; exact currentTable.aligned) (by rw [heapNumber]; omega)
-      sizeBound aligned scratchBelow ((recordGlobals _ (by decide)).trans rootGlobal) ((recordGlobals _ (by decide)).trans hashGlobal) rootArena hashArena currentInstalled
-      "a" [localVar "addr"] (.return (localVar "a")) args returned providerRun
-  have actual := Input.return_normal ready inner (localVar "a") returned returnRun
-  have read : eval ready (localVar "a")=some answer := by simp [eval,evalHOLExact,localVar,toExact,answerCell]
-  have returnedEq : returned=answer := Option.some.inj (actual.1.symm.trans read)
-  have postEq : post=restore recordReady "a" (emptyLocalsHOLFinite ready) := by rw [restored,actual.2]
-  have finalFamily : TableFamily.Model post nextCursor (Function.update objects writer next) := by
-    rw [postEq]
-    exact nextFamily.of_control rfl rfl rfl rfl
-  have finalWorld : WsAccountLeaf.World post ws root nibs cutoff frozenEnd valueLimit := nextWorld.of_agreement ready post ws root nibs cutoff frozenEnd valueLimit
-    (by rw [postEq]; rfl) (by rw [postEq]; rfl) (by rw [postEq]; rfl) (by rw [postEq]; rfl) (by intro query needed; rw [postEq]; rfl)
-  have finalGlobals : HeapGlobals source post := by
-    rw [postEq]
-    exact recordGlobals.trans providerGlobals
-  have finalHashEnvironment := nextHashEnvironment.of_fields ready post stp pad (by rw [postEq]; rfl) (by rw [postEq]; rfl)
-    (by rw [postEq]; rfl) (by rw [postEq]; exact HeapGlobals.refl ready)
-  have finalResult : WsAccountOptional.Result post heap scratchPtr limit returned := by
-    rw [returnedEq,postEq]
-    exact WsAccountOptional.Result.of_fields ready _ heap scratchPtr limit answer result rfl rfl
-  have finalImage : returned=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image post heap) := by
-    rw [returnedEq]
-    rcases image with absent | image
-    · exact Or.inl absent
-    · obtain ⟨current⟩ := image
-      exact Or.inr ⟨AccountDecode.Image.of_agreement ready post heap current (by rw [postEq]; rfl) (by rw [postEq]; rfl) (by rw [postEq]; rfl)⟩
-  have postClock : post.clock=ready.clock := by rw [postEq]; rfl
-  have overall := evaluateHOLFiniteState_clock_le source Kind.preState.afterMiss
-  rw [run] at overall
-  change post.clock≤source.clock at overall
-  let paid := source.clock-post.clock
-  refine ⟨paid,recordCursor,next,nextCursor,Nat.sub_le _ _,by dsimp [paid]; omega,forward,nextKind,?_,finalFamily,pointers,floorFrame.floors,?_,countLower,countUpper,capacity,
-    ⟨finalWorld⟩,finalHashEnvironment,finalResult,finalGlobals,?_,finalImage⟩
-  · simpa only [heapNumber] using choice
-  · dsimp [paid]
-    omega
-  · rw [postEq]
-    exact providerCode.trans codeEq
+  obtain ⟨paid,recordCursor,next,nextCursor,nextAccounts,funded,clock,forward,nextKind,choice,nextFamily,pointers,floors,price,countLower,countUpper,capacity,nextWorld,nextHash,result,globals,codes,image,_,_,_,_⟩ :=
+    pre_state_miss_complete_values source post block query ws root nibs stp pad scratchPtr limit emptyRoot emptyHash cursor cutoff frozenEnd valueLimit objects writer
+      family kind tableEnvironment installed [] (AccountDecode.Registry.empty source cutoff cursor objects)
+      (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro world afterWorld floors hashEnvironment stateArena stateAligned padArena padAligned queryArena stateBelow padBelow
+      arena scratchBelow aligned sizeBound rootGlobal hashGlobal rootArena hashArena blockGlobal mapped stored queryLocal returned run
+  exact ⟨paid,recordCursor,next,nextCursor,funded,clock,forward,nextKind,choice,nextFamily,pointers,floors,price,countLower,countUpper,capacity,nextWorld,nextHash,result,globals,codes,image⟩
 
 end InitECandidate.Solver.GasBudget.AccountCache
 

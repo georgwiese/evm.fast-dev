@@ -3,9 +3,9 @@ import InitECandidate.Solver.Input.NoReturnScoped
 namespace InitECandidate.Solver.Input.NoReturn
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
-theorem caught_call (function : MlS) (arguments : List (ExpHOL 64)) (identifier parameter : MlS)
+theorem caught_destination (destination : Option (VarKind × MlS)) (function : MlS) (arguments : List (ExpHOL 64)) (identifier parameter : MlS)
     (handler : ProgHOL 64) (tail : Never handler) :
-    Never (.call (some (none,some (identifier,parameter,handler))) function arguments) := by
+    Never (.call (some (destination,some (identifier,parameter,handler))) function arguments) := by
   intro F source value
   rw [evaluateHOLFiniteState_call]
   cases args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments with
@@ -26,7 +26,13 @@ theorem caught_call (function : MlS) (arguments : List (ExpHOL 64)) (identifier 
         | none => simp
         | some result =>
           cases result with
-          | returned answer => simp only; split <;> simp
+          | returned answer =>
+            simp only
+            split
+            · cases destination with
+              | none => simp
+              | some target => simp only; split <;> simp
+            · simp
           | exception exceptionId payload =>
             simp only
             split
@@ -42,6 +48,14 @@ theorem caught_call (function : MlS) (arguments : List (ExpHOL 64)) (identifier 
           | «continue» => simp
           | finalFfi event => simp
 
+/-- Ignored-result specialization of the common caught-call rule. -/
+theorem caught_call (function : MlS) (arguments : List (ExpHOL 64)) (identifier parameter : MlS)
+    (handler : ProgHOL 64) (tail : Never handler) :
+    Never (.call (some (none,some (identifier,parameter,handler))) function arguments) :=
+  caught_destination none function arguments identifier parameter handler tail
+
 end InitECandidate.Solver.Input.NoReturn
 
 #print axioms InitECandidate.Solver.Input.NoReturn.caught_call
+
+#print axioms InitECandidate.Solver.Input.NoReturn.caught_destination

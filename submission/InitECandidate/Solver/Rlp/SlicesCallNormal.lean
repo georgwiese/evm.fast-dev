@@ -19,6 +19,7 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       ListItems calleePost pointer length.toNat items ∧ count.toNat=items.length ∧ count.toNat≤length.toNat ∧
       Records calleePost.memory heap pointer items ∧ heap.toNat+16*count.toNat≤33806089496 ∧
       Validation.Arena calleePost cursor limit ∧ calleePost.code=source.code ∧
+      calleePost.memaddrs=source.memaddrs ∧ calleePost.be=source.be ∧
       calleePost.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap (count*16#64)))) ∧
       (∀ query : BitVec 64,cursor.toNat≤query.toNat → query.toNat<heap.toNat ∨ heap.toNat+16*count.toNat≤query.toNat →
         calleePost.memory query=source.memory query) ∧ source.clock-calleePost.clock≤71*length.toNat+35 ∧
@@ -36,7 +37,7 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   rw [bodyRun] at clock
   change calleePost.clock≤source.clock-1 at clock
   change source.clock-1-calleePost.clock≤71*length.toNat+34 at price
-  exact ⟨positive,calleePost,items,count,inner,itemModel,countEq,countBound,records,room,nextArena,fields.2.2.2,nextHeap,frame,by omega,continuationRun,restored⟩
+  exact ⟨positive,calleePost,items,count,inner,itemModel,countEq,countBound,records,room,nextArena,fields.2.2.2,fields.1,fields.2.1,nextHeap,frame,by omega,continuationRun,restored⟩
 
 end InitECandidate.Solver.Rlp.Slices
 

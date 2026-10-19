@@ -1014,6 +1014,11 @@
     "submission/InitECandidate/Solver/FlattenWeighted/WholeCall.lean",
     "submission/InitECandidate/Solver/FlattenWeighted/Work.lean",
     "submission/InitECandidate/Solver/GasBudget/AddExact.lean",
+    "submission/InitECandidate/Solver/GasBudget/AddressMaskedBody.lean",
+    "submission/InitECandidate/Solver/GasBudget/AddressMaskedCall.lean",
+    "submission/InitECandidate/Solver/GasBudget/AddressMaskedFooter.lean",
+    "submission/InitECandidate/Solver/GasBudget/AddressMaskedProgram.lean",
+    "submission/InitECandidate/Solver/GasBudget/AddressMaskedStores.lean",
     "submission/InitECandidate/Solver/GasBudget/ArithmeticCalls.lean",
     "submission/InitECandidate/Solver/GasBudget/ArithmeticClockPrice.lean",
     "submission/InitECandidate/Solver/GasBudget/ArithmeticEffects.lean",
@@ -5392,8 +5397,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62257,
-  "package_bytes": 2257225387,
+  "package_entries": 62262,
+  "package_bytes": 2257244608,
   "claim": {
     "K": "infinity"
   },

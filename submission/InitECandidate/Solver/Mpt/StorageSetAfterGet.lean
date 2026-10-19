@@ -50,7 +50,7 @@ theorem after_get_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       rw [outerKind] at balance
       omega
     refine ⟨answerEq,Option ι,inferInstance,Option.some,next,newProperty property outer cursor,paid,nextCursor,2,true,nextEntries,
-      Option.some_injective ι,by simp,funded,clock,forward,rfl,room,models,nextImage,nextZone,amortized,?_,codes,nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,frame,?_,nextCounter,?_,?_,?_⟩
+      Option.some_injective ι,by simp,funded,clock,forward,rfl,room,models,nextImage,nextZone,amortized,?_,codes,nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,(fun query above earlier outside away => frame query earlier outside away),?_,nextCounter,?_,?_,?_⟩
     · intro reader
       cases reader with
       | none => omega
@@ -89,7 +89,7 @@ theorem after_get_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       omega
     refine ⟨answerEq,ι,inferInstance,id,nextObjects,property,paid,nextCursor,1,false,nextEntries,fun _ _ same => same,by omega,funded,clock,by omega,rfl,by omega,
       models,nextImage,nextZone,amortized,TableFamily.population_update objects writer next population populations populationBound,codes,nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,
-      (fun query earlier outside away => frame.words query earlier outside away),?_,nextCounter,fun _ _ prior => prior,fun _ _ _ => Iff.rfl,?_⟩
+      (fun query above earlier outside away => frame.words query earlier outside away),?_,nextCounter,fun _ _ prior => prior,fun _ _ _ => Iff.rfl,?_⟩
     · intro reader
       exact ⟨metadata.kinds reader,metadata.floors reader,metadata.pointers reader⟩
     · intro item prior

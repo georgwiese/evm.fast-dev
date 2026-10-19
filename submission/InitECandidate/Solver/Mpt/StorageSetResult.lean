@@ -37,7 +37,7 @@ def Result {ι : Type} [Fintype ι]
     post.code = source.code ∧ WarmKeys.Environment post ∧ Journal.OtherGlobals source post ∧
     TableFamily.ValuesHave post next nextProperty ∧ Journal.EntryValues nextEntries (count + added) nextProperty ∧
     AccountDecode.Registry post cutoff nextCursor next accounts ∧ Journal.CounterEffect source post added 0 0 ∧
-    (∀ query : BitVec 64,query.toNat < cursor → TableFamily.Outside objects query → Journal.Away base cap query → TableFamily.Outside next query ∧ post.memory query = source.memory query) ∧
+    (∀ query : BitVec 64,cutoff ≤ query.toNat → query.toNat < cursor → TableFamily.Outside objects query → Journal.Away base cap query → TableFamily.Outside next query ∧ post.memory query = source.memory query) ∧
     (∀ reader,(next (embed reader)).kind = (objects reader).kind ∧ (next (embed reader)).floor = (objects reader).floor ∧ (next (embed reader)).pointer = (objects reader).pointer) ∧
     post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧
     (∀ reader value,property reader value → nextProperty (embed reader) value) ∧

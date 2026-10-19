@@ -34,7 +34,7 @@ theorem delete_present_normal_values {ι : Type} [DecidableEq ι]
       next.slots.length ≤ (objects writer).slots.length ∧
       post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       post.code = source.code ∧ WarmKeys.Environment post ∧ OtherGlobals source post ∧ ProtectedFrame base cap cursor objects (Function.update objects writer next) source post ∧
-      TableFamily.ValuesHave post (Function.update objects writer next) property := by
+      TableFamily.ValuesHave post (Function.update objects writer next) property ∧ TableFamily.Metadata objects (Function.update objects writer next) := by
   rw [delete_key_shape] at normal
   obtain ⟨nextBound, keyFits, keyBound, region, keyPost, keyRun, keyFrame⟩ :=
     key_normal source post (objects writer).kind (objects writer).plan (objects writer).slots cursor (objects writer).floor (family.tables writer)
@@ -68,7 +68,7 @@ theorem delete_present_normal_values {ι : Type} [DecidableEq ι]
     (key_globals source (objects writer).kind cursor query (ofString "journal_n") (by decide)).trans counter
   obtain ⟨copiedFits, copiedMapped⟩ := copied_key_geometry source (objects writer).kind cursor query region environment.domain
   obtain ⟨returnedEq, deletePaid, next, bounded, fits, finalClock, kind, plan, models, nextImage, nextZone, population,
-    nextCounter, codes, nextEnvironment, globals, recordFrame, finalValues⟩ :=
+    nextCounter, codes, nextEnvironment, globals, recordFrame, finalValues, pointers⟩ :=
     delete_record_normal_values copied keyPost (cursor + NaturalLayout.stride (objects writer).kind) objects writer base cap count entries copiedFamily copiedImage copiedZone room copiedEnvironment
       query (BitVec.ofNat 64 cursor) oldValue property copiedValues queryFits queryMapped copiedFits copiedMapped copiedT copiedKey copiedPointer copiedOld copiedJournal copiedCounter deleteCode returned keyRun
   have protectedFrame := copiedFrame.trans recordFrame (by have := key_rounding (objects writer).kind; omega)
@@ -85,7 +85,7 @@ theorem delete_present_normal_values {ι : Type} [DecidableEq ι]
   have copiedClock : copied.clock = source.clock - keyPrice (objects writer).kind cursor query := key_clock source _ cursor query
   rw [copiedClock] at fits finalClock
   refine ⟨returnedEq, keyPrice (objects writer).kind cursor query + deletePaid, next, ?_, by omega, ?_, kind, plan, finalFamily, finalImage,
-    nextZone, population, finalCounter, finalCodes, finalEnvironment, ?_,?_,?_⟩
+    nextZone, population, finalCounter, finalCodes, finalEnvironment, ?_,?_,?_,pointers⟩
   · dsimp only [deleteSuffixPrice]
     omega
   · rw [postClock, finalClock]

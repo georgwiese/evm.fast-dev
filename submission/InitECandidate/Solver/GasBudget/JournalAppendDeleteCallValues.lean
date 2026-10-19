@@ -54,7 +54,7 @@ theorem delete_call_normal_values {ι : Type} [DecidableEq ι]
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ CounterEffect source target 1 0 0 ∧ ProtectedFrame base cap cursor objects (Function.update objects writer next) source target ∧
       TableFamily.ValuesHave target (Function.update objects writer next) property ∧
-      EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,1#64,oldValue⟩) (count+1) property) := by
+      EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,1#64,oldValue⟩) (count+1) property ∧ TableFamily.Metadata objects (Function.update objects writer next)) := by
   obtain ⟨callee, called, t, key⟩ := delete_environment source.code.lookup (objects writer).pointer query code
   obtain ⟨positive, post, returned, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "jdel") arguments _ deleteBody callee .one args called normal
   let entry := callEntryStateHOLFinite source callee
@@ -80,7 +80,7 @@ theorem delete_call_normal_values {ι : Type} [DecidableEq ι]
     exact ⟨paid + 1, by omega, by omega, by omega, by simpa only [subtract] using restored,
       CounterEffect.unchanged source _ (by rw [restored])⟩
   · obtain ⟨room, paid, next, oldValue, bodyPositive, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population,
-      nextCounter, codes, nextEnvironment, globals, frame, nextValues, nextSaved⟩ := present
+      nextCounter, codes, nextEnvironment, globals, frame, nextValues, nextSaved, pointers⟩ := present
     have finalFamily : TableFamily.Model {post with locals := source.locals} (cursor + NaturalLayout.stride (objects writer).kind) (Function.update objects writer next) :=
       ⟨fun index => (models.tables index).of_fields rfl rfl rfl rfl, models.apart⟩
     have finalImage : Image {post with locals := source.locals} (Function.update objects writer next) base (count + 1) (Function.update entries count ⟨writer, BitVec.ofNat 64 cursor, 1#64, oldValue⟩) :=
@@ -94,7 +94,7 @@ theorem delete_call_normal_values {ι : Type} [DecidableEq ι]
     have effect := CounterEffect.append source {post with locals := source.locals} count countSmall counter nextCounter
     right
     exact ⟨room, paid + 1, next, oldValue, by omega, by omega, by omega, by change post.clock = _; omega, kind, plan,
-      finalFamily, finalImage, nextZone, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, effect,⟨frame.words⟩,nextValues,nextSaved⟩
+      finalFamily, finalImage, nextZone, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, effect,⟨frame.words⟩,nextValues,nextSaved,pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

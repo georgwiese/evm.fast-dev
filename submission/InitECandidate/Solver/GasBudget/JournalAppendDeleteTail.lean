@@ -27,7 +27,7 @@ theorem delete_tail_normal {ι : Type} [DecidableEq ι]
       next.slots.length ≤ (objects writer).slots.length ∧
       post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       post.code = source.code ∧ WarmKeys.Environment post ∧ OtherGlobals source post := by
-  obtain ⟨returnedEq,paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,codes,nextEnvironment,globals,persistent,nextValues⟩ :=
+  obtain ⟨returnedEq,paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,codes,nextEnvironment,globals,persistent,nextValues,_pointers⟩ :=
     delete_tail_normal_values source post cursor objects writer base cap count entries family image zone environment query (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) queryFits queryMapped tableLocal keyLocal counter deleteCode returned normal
   exact ⟨returnedEq,paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,codes,nextEnvironment,globals⟩
 

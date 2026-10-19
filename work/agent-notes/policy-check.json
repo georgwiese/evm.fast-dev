@@ -3177,6 +3177,10 @@
     "submission/InitECandidate/Solver/Mpt/AccountRegistrySetValues.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistryValueResult.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistryWrites.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountSetCallRegistered.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountSetEnvironment.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountSetNormalRegistered.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountSetProgram.lean",
     "submission/InitECandidate/Solver/Mpt/AccountStoreRegistered.lean",
     "submission/InitECandidate/Solver/Mpt/Fail.lean",
     "submission/InitECandidate/Solver/Mpt/FailGuard.lean",
@@ -3365,6 +3369,7 @@
     "submission/InitECandidate/Solver/MutableTable/FamilyExtend.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilyFloorFrame.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilyMemoryFrame.lean",
+    "submission/InitECandidate/Solver/MutableTable/FamilyMetadata.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilyPacking.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilyPersistentFrame.lean",
     "submission/InitECandidate/Solver/MutableTable/FamilyPotential.lean",
@@ -5933,8 +5938,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62800,
-  "package_bytes": 2259581541,
+  "package_entries": 62805,
+  "package_bytes": 2259605790,
   "claim": {
     "K": "infinity"
   },

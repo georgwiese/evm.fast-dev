@@ -34,7 +34,7 @@ theorem set_call_normal {ι : Type} [DecidableEq ι]
       next.slots.length ≤ (objects writer).slots.length + 1 ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ CounterEffect source target 1 0 0 := by
-  obtain ⟨room,paid,nextCursor,next,flag,oldValue,positive,fits,clock,forward,kind,binary,models,nextImage,nextZone,bounded,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,savedValues⟩ :=
+  obtain ⟨room,paid,nextCursor,next,flag,oldValue,positive,fits,clock,forward,kind,binary,models,nextImage,nextZone,bounded,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,savedValues,_pointers⟩ :=
     set_call_normal_values source target cursor objects writer base cap count entries family image zone countBound environment query value
       (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro (fun _ _ _=>True.intro) queryFits queryMapped getCode code journal capacity counter arguments args normal
   exact ⟨room,paid,nextCursor,next,flag,oldValue,positive,fits,clock,forward,kind,binary,models,nextImage,nextZone,bounded,population,nextCounter,locals,codes,nextEnvironment,globals,effect⟩

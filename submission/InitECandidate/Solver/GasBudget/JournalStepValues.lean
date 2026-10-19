@@ -27,7 +27,7 @@ theorem body_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + 1) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count - 1)))) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target ∧
-      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries (count-1) property := by
+      TableFamily.PersistentFrame 0 cursor objects next source target ∧ TableFamily.ValuesHave target next property ∧ EntryValues entries (count-1) property ∧ TableFamily.Metadata objects next := by
   obtain ⟨middle, decrementRun, recordRun⟩ := Input.sequence_none source target decrement records normal
   have decrementActual := decrement_execute source (BitVec.ofNat 64 count) counter
   have middleEq := congrArg Prod.snd (decrementRun.symm.trans decrementActual)
@@ -45,11 +45,11 @@ theorem body_normal_values {ι : Type} [Fintype ι] [DecidableEq ι]
   have entryCounter : entry.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count - 1)))) := by
     change (Input.putGlobal source "journal_n" (BitVec.ofNat 64 count - 1#64)).globals.lookup _ = _
     rw [Input.putGlobal.lookup_same, wordSub]
-  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, nextZone, bounded, nextPopulations, codes, nextEnvironment, globals, floorFrame, persistent, nextValues⟩ :=
+  obtain ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage, nextZone, bounded, nextPopulations, codes, nextEnvironment, globals, floorFrame, persistent, nextValues, pointers⟩ :=
     records_normal_values entry target cursor objects base cap count (count - 1) population entries entryFamily entryImage zone countBound (by omega) populations
       entryEnvironment property values savedValues deleteCode entryJournal entryCounter recordRun
   refine ⟨paid, nextCursor, next, fits, clock, forward, nextFamily, nextImage.restrict (Nat.sub_le count 1), nextZone, bounded, nextPopulations,
-    (globals (ofString "journal_n") (by decide)).trans entryCounter, codes, nextEnvironment, ?_, ⟨floorFrame.floors, floorFrame.words⟩,⟨persistent.words⟩,nextValues,savedValues.restrict entries count (count-1) property (Nat.sub_le _ _)⟩
+    (globals (ofString "journal_n") (by decide)).trans entryCounter, codes, nextEnvironment, ?_, ⟨floorFrame.floors, floorFrame.words⟩,⟨persistent.words⟩,nextValues,savedValues.restrict entries count (count-1) property (Nat.sub_le _ _),pointers⟩
   intro key heap different
   exact (globals key heap).trans (Input.putGlobal.lookup_other source "journal_n" _ key different)
 

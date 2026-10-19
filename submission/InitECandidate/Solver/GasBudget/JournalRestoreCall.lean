@@ -26,7 +26,7 @@ theorem restore_call_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + (count - snap)) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
-  obtain ⟨paid,nextCursor,next,positive,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,locals,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved⟩ :=
+  obtain ⟨paid,nextCursor,next,positive,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,locals,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved,_pointers⟩ :=
     restore_call_normal_values source target cursor objects base cap count snap population entries ordered small family image zone countBound populations environment (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) deleteCode code journal counter arguments args normal
   exact ⟨paid,nextCursor,next,positive,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,locals,codes,nextEnvironment,globals,floorFrame⟩
 

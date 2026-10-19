@@ -40,7 +40,7 @@ theorem delete_body_normal {ι : Type} [DecidableEq ι]
   refine ⟨returnedEq,?_⟩
   rcases branches with absent | present
   · exact Or.inl absent
-  · obtain ⟨room,paid,next,oldValue,positive,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,codes,nextEnvironment,globals,frame,nextValues,nextSaved⟩ := present
+  · obtain ⟨room,paid,next,oldValue,positive,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,codes,nextEnvironment,globals,frame,nextValues,nextSaved,_pointers⟩ := present
     exact Or.inr ⟨room,paid,next,oldValue,positive,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,nextCounter,codes,nextEnvironment,globals⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append

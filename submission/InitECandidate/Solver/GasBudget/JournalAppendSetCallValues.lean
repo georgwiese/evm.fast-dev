@@ -38,7 +38,7 @@ theorem set_call_normal_values {ι : Type} [DecidableEq ι]
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ CounterEffect source target 1 0 0 ∧ ProtectedFrame base cap cursor objects (Function.update objects writer next) source target ∧
       TableFamily.ValuesHave target (Function.update objects writer next) property ∧
-      EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,oldFlag,oldValue⟩) (count+1) property := by
+      EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,oldFlag,oldValue⟩) (count+1) property ∧ TableFamily.Metadata objects (Function.update objects writer next) := by
   obtain ⟨callee, called, t, key, v⟩ := TableCall.environment source.code.lookup (ofString "jset") setBody (objects writer).pointer query value code
   obtain ⟨positive, post, returned, bodyRun⟩ := Input.CallNormal.ignored_callee_return source target (ofString "jset") arguments _ setBody callee .one args called normal
   let entry := callEntryStateHOLFinite source callee
@@ -47,7 +47,7 @@ theorem set_call_normal_values {ι : Type} [DecidableEq ι]
   have entryImage : Image entry objects base count entries :=
     image.transfer (target := entry) rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) image.separate
   obtain ⟨room, returnedEq, paid, nextCursor, next, flag, oldValue, fits, clock, forward, kind, binary, models, nextImage, nextZone, bounded, population,
-    nextCounter, codes, nextEnvironment, globals, frame, finalValues, finalSaved⟩ :=
+    nextCounter, codes, nextEnvironment, globals, frame, finalValues, finalSaved, pointers⟩ :=
     set_body_normal_values entry post cursor objects writer base cap count entries entryFamily entryImage zone countBound (environment.of_fields rfl rfl rfl)
       query value property values owned savedValues queryFits queryMapped t key v getCode journal capacity counter returned bodyRun
   rw [returnedEq] at bodyRun
@@ -68,7 +68,7 @@ theorem set_call_normal_values {ι : Type} [DecidableEq ι]
     omega
   have effect := CounterEffect.append source {post with locals := source.locals} count countSmall counter nextCounter
   exact ⟨room, 1 + paid, nextCursor, next, flag, oldValue, by omega, by omega, by change post.clock = _; omega, forward, kind, binary,
-    finalFamily, finalImage, nextZone, by omega, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, effect,⟨frame.words⟩,finalValues,finalSaved⟩
+    finalFamily, finalImage, nextZone, by omega, population, nextCounter, rfl, codes, nextEnvironment.of_fields rfl rfl rfl, globals, effect,⟨frame.words⟩,finalValues,finalSaved,pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

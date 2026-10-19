@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.FamilyMetadata
 import InitECandidate.Solver.GasBudget.JournalZone
 import InitECandidate.Solver.MutableTable.FamilyDeleteValues
 import InitECandidate.Solver.MutableTable.FamilyPersistentFrame
@@ -27,7 +28,8 @@ theorem delete_zone_normal_values {ι : Type} [DecidableEq ι] (source target : 
       Image target (Function.update objects writer next) base count entries ∧ Zone (Function.update objects writer next) base cap cursor ∧
       next.slots.length ≤ (objects writer).slots.length ∧ target.locals = source.locals ∧ target.globals = source.globals ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ TableFamily.FloorFrame objects (Function.update objects writer next) source target ∧
-      TableFamily.PersistentFrame 0 cursor objects (Function.update objects writer next) source target ∧ TableFamily.ValuesHave target (Function.update objects writer next) property := by
+      TableFamily.PersistentFrame 0 cursor objects (Function.update objects writer next) source target ∧ TableFamily.ValuesHave target (Function.update objects writer next) property ∧
+      TableFamily.Metadata objects (Function.update objects writer next) := by
   obtain ⟨paid, next, bounded, fits, clock, kind, plan, floor, models, pointers, lower, upper, locals, globals, codes, nextEnvironment, protectedWords, nextValues⟩ :=
     TableFamily.delete_normal_values source target cursor objects writer family environment query property values queryFits queryMapped deleteCode arguments args normal
   have kinds (table : ι) : (Function.update objects writer next table).kind = (objects table).kind := by
@@ -51,7 +53,7 @@ theorem delete_zone_normal_values {ι : Type} [DecidableEq ι] (source target : 
     TableFamily.FloorFrame.of_update objects writer next source target floor (fun address before => protectedWords address
       (TableFamily.outside_floor source _ _ _ _ _ (family.tables writer) address before)),
     TableFamily.PersistentFrame.of_set 0 cursor objects writer next source target (fun address earlier outside=>
-      ⟨by rw [kind,plan]; exact outside,protectedWords address outside⟩),nextValues⟩
+      ⟨by rw [kind,plan]; exact outside,protectedWords address outside⟩),nextValues,TableFamily.Metadata.of_update objects writer next kind floor pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

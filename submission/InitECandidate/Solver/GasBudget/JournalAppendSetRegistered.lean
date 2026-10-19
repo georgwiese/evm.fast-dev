@@ -38,13 +38,13 @@ theorem set_call_registered_values {ι : Type} [DecidableEq ι]
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       target.locals = source.locals ∧ target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ CounterEffect source target 1 0 0 ∧ ProtectedFrame base cap cursor objects (Function.update objects writer next) source target ∧
       TableFamily.ValuesHave target (Function.update objects writer next) property ∧
-      EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,oldFlag,oldValue⟩) (count+1) property ∧ Mpt.AccountDecode.Registry target cutoff nextCursor (Function.update objects writer next) accounts := by
-  obtain ⟨room,paid,nextCursor,next,flag,oldValue,positive,fits,clock,forward,kind,binary,models,nextImage,nextZone,bounded,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved⟩ :=
+      EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,oldFlag,oldValue⟩) (count+1) property ∧ Mpt.AccountDecode.Registry target cutoff nextCursor (Function.update objects writer next) accounts ∧ TableFamily.Metadata objects (Function.update objects writer next) := by
+  obtain ⟨room,paid,nextCursor,next,flag,oldValue,positive,fits,clock,forward,kind,binary,models,nextImage,nextZone,bounded,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved,pointers⟩ :=
     set_call_normal_values source target cursor objects writer base cap count entries family image zone countBound environment query value
       property values owned savedValues queryFits queryMapped getCode code journal capacity counter arguments args normal
   have domain := nextEnvironment.domain.trans environment.domain.symm
   have nextRegistry := frame.registry source target base cap cutoff cursor nextCursor objects (Function.update objects writer next) accounts registry accountApart forward domain
-  exact ⟨room,paid,nextCursor,next,flag,oldValue,positive,fits,clock,forward,kind,binary,models,nextImage,nextZone,bounded,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved,nextRegistry⟩
+  exact ⟨room,paid,nextCursor,next,flag,oldValue,positive,fits,clock,forward,kind,binary,models,nextImage,nextZone,bounded,population,nextCounter,locals,codes,nextEnvironment,globals,effect,frame,nextValues,nextSaved,nextRegistry,pointers⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

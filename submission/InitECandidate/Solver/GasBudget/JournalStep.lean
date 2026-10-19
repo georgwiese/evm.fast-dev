@@ -25,7 +25,7 @@ theorem body_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + 1) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count - 1)))) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
-  obtain ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved⟩ :=
+  obtain ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved,_pointers⟩ :=
     body_normal_values source target cursor objects base cap count population entries family image zone countBound positive populations environment (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) deleteCode journal counter normal
   exact ⟨paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,codes,nextEnvironment,globals,floorFrame⟩
 

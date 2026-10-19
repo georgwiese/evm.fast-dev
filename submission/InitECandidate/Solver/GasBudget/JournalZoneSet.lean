@@ -26,7 +26,7 @@ theorem set_zone_normal {ι : Type} [DecidableEq ι] (source target : PanSemStat
         Set.noGrowthPrice (objects writer).kind (objects writer).slots.length + 1 + GrowRuntime.growthPotential (objects writer).kind next.plan.capacity ∧
       next.slots.length ≤ (objects writer).slots.length + 1 ∧ target.locals = source.locals ∧ target.code = source.code ∧
       WarmKeys.Environment target ∧ HeapGlobals source target ∧ TableFamily.FloorFrame objects (Function.update objects writer next) source target := by
-  obtain ⟨paid,nextCursor,next,fits,clock,forward,kind,models,nextImage,nextZone,bounded,population,locals,codes,nextEnvironment,globals,floorFrame,persistent,nextValues⟩ :=
+  obtain ⟨paid,nextCursor,next,fits,clock,forward,kind,models,nextImage,nextZone,bounded,population,locals,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,_pointers⟩ :=
     set_zone_normal_values source target cursor objects writer base cap count entries family image zone countBound environment query value
       (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro queryFits queryMapped arguments args normal
   exact ⟨paid,nextCursor,next,fits,clock,forward,kind,models,nextImage,nextZone,bounded,population,locals,codes,nextEnvironment,globals,floorFrame⟩

@@ -26,7 +26,7 @@ theorem restore_body_normal {ι : Type} [Fintype ι] [DecidableEq ι]
       (∀ table, (next table).slots.length ≤ population + (count - snap)) ∧
       target.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 snap))) ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ OtherGlobals source target ∧ TableFamily.FloorFrame objects next source target := by
-  obtain ⟨returnedEq,paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved⟩ :=
+  obtain ⟨returnedEq,paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,codes,nextEnvironment,globals,floorFrame,persistent,nextValues,nextSaved,_pointers⟩ :=
     restore_body_normal_values source target cursor objects base cap count snap population entries ordered small family image zone countBound populations environment (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) (fun _ _ _=>True.intro) deleteCode journal counter snapshot returned normal
   exact ⟨returnedEq,paid,nextCursor,next,fits,clock,forward,models,nextImage,nextZone,bounded,populationsAfter,nextCounter,codes,nextEnvironment,globals,floorFrame⟩
 

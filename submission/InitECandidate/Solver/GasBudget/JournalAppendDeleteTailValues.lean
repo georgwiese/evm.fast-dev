@@ -29,7 +29,7 @@ theorem delete_tail_normal_values {ι : Type} [DecidableEq ι]
       next.slots.length ≤ (objects writer).slots.length ∧
       post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       post.code = source.code ∧ WarmKeys.Environment post ∧ OtherGlobals source post ∧
-      TableFamily.PersistentFrame 0 cursor objects (Function.update objects writer next) source post ∧ TableFamily.ValuesHave post (Function.update objects writer next) property := by
+      TableFamily.PersistentFrame 0 cursor objects (Function.update objects writer next) source post ∧ TableFamily.ValuesHave post (Function.update objects writer next) property ∧ TableFamily.Metadata objects (Function.update objects writer next) := by
   let entry := Input.putGlobal source "journal_n" (BitVec.ofNat 64 count + 1#64)
   have incrementRun := increment_execute source (BitVec.ofNat 64 count) counter
   rw [delete_tail_shape, StateSteps.next_sequence source entry _ _ incrementRun (Nat.le_refl _)] at normal
@@ -49,7 +49,7 @@ theorem delete_tail_normal_values {ι : Type} [DecidableEq ι]
     have t : entry.locals.lookup (ofString "t") = some (.val (.word (objects writer).pointer)) := tableLocal
     have key : entry.locals.lookup (ofString "key") = some (.val (.word query)) := keyLocal
     simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, localVar, toExact, t, key]
-  obtain ⟨paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population, locals, globalEq, codes, nextEnvironment, _floorFrame, persistent, nextValues⟩ :=
+  obtain ⟨paid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population, locals, globalEq, codes, nextEnvironment, _floorFrame, persistent, nextValues, pointers⟩ :=
     delete_zone_normal_values entry called cursor objects writer base cap (count + 1) entries entryFamily entryImage zone
       (environment.of_fields rfl rfl rfl) query property values queryFits queryMapped deleteCode _ args mutationRun
   have entryCounter : entry.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) := by
@@ -63,7 +63,7 @@ theorem delete_tail_normal_values {ι : Type} [DecidableEq ι]
   have finalImage : Image (emptyLocalsHOLFinite called) (Function.update objects writer next) base (count + 1) entries :=
     nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
   refine ⟨returnedEq, paid, next, bounded, fits, clock, kind, plan, finalFamily, finalImage, nextZone, population, calledCounter,
-    codes, nextEnvironment.of_fields rfl rfl rfl, ?_,⟨persistent.words⟩,nextValues⟩
+    codes, nextEnvironment.of_fields rfl rfl rfl, ?_,⟨persistent.words⟩,nextValues,pointers⟩
   intro key heap different
   change called.globals.lookup key = source.globals.lookup key
   rw [globalEq]

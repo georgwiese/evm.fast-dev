@@ -23,7 +23,7 @@ theorem delete_zone_normal {ι : Type} [DecidableEq ι] (source target : PanSemS
       Image target (Function.update objects writer next) base count entries ∧ Zone (Function.update objects writer next) base cap cursor ∧
       next.slots.length ≤ (objects writer).slots.length ∧ target.locals = source.locals ∧ target.globals = source.globals ∧
       target.code = source.code ∧ WarmKeys.Environment target ∧ TableFamily.FloorFrame objects (Function.update objects writer next) source target := by
-  obtain ⟨paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,locals,globals,codes,nextEnvironment,floorFrame,persistent,nextValues⟩ :=
+  obtain ⟨paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,locals,globals,codes,nextEnvironment,floorFrame,persistent,nextValues,_pointers⟩ :=
     delete_zone_normal_values source target cursor objects writer base cap count entries family image zone environment query (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) queryFits queryMapped deleteCode arguments args normal
   exact ⟨paid,next,bounded,fits,clock,kind,plan,models,nextImage,nextZone,population,locals,globals,codes,nextEnvironment,floorFrame⟩
 

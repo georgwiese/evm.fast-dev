@@ -40,7 +40,7 @@ theorem delete_body_normal_values {ι : Type} [DecidableEq ι]
         post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
         post.code = source.code ∧ WarmKeys.Environment post ∧ OtherGlobals source post ∧ ProtectedFrame base cap cursor objects (Function.update objects writer next) source post ∧
         TableFamily.ValuesHave post (Function.update objects writer next) property ∧
-        EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,1#64,oldValue⟩) (count+1) property)) := by
+        EntryValues (Function.update entries count ⟨writer,BitVec.ofNat 64 cursor,1#64,oldValue⟩) (count+1) property ∧ TableFamily.Metadata objects (Function.update objects writer next))) := by
   have table := family.tables writer
   have capSmall : cap < 2 ^ 64 := by
     have upper := zone.valid.upper
@@ -69,7 +69,7 @@ theorem delete_body_normal_values {ι : Type} [DecidableEq ι]
     have readyOld : ready.locals.lookup (ofString "old") = some (Get.pair 1#64 oldValue) := by
       simp [ready, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE]
     obtain ⟨returnedEq, suffixPaid, next, bounded, fits, clock, kind, plan, models, nextImage, nextZone, population,
-      nextCounter, codes, nextEnvironment, globals, recordFrame, finalValues⟩ :=
+      nextCounter, codes, nextEnvironment, globals, recordFrame, finalValues, pointers⟩ :=
       delete_present_normal_values ready guardedPost cursor objects writer base cap count entries readyFamily readyImage zone room readyEnvironment
         query oldValue property values queryFits queryMapped readyT readyKey readyOld deleteCode journal counter returned afterGuard
     have finalFamily : TableFamily.Model post (cursor + NaturalLayout.stride (objects writer).kind) (Function.update objects writer next) := by
@@ -85,7 +85,7 @@ theorem delete_body_normal_values {ι : Type} [DecidableEq ι]
     change suffixPaid ≤ source.clock - getPaid at fits
     change guardedPost.clock = source.clock - getPaid - suffixPaid at clock
     refine ⟨returnedEq, Or.inr ⟨room, getPaid + suffixPaid, next, oldValue, by omega, ?_, by omega, ?_, kind, plan, finalFamily, finalImage,
-      nextZone, population, finalCounter, finalCodes, finalEnvironment, ?_,?_,?_,savedValues.append entries count property ⟨writer,BitVec.ofNat 64 cursor,1#64,oldValue⟩ (Or.inr oldOwned)⟩⟩
+      nextZone, population, finalCounter, finalCodes, finalEnvironment, ?_,?_,?_,savedValues.append entries count property ⟨writer,BitVec.ofNat 64 cursor,1#64,oldValue⟩ (Or.inr oldOwned),pointers⟩⟩
     · dsimp only [deletePrice]
       omega
     · rw [postClock, clock]

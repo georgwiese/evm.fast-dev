@@ -70,7 +70,7 @@ theorem body_registered {ι : Type} (source post : PanSemStateFiniteExact 64 Gue
         omega
       · exact image
     obtain ⟨accountImage⟩ := actualImage
-    have outside := AccountDecode.Registry.fresh_references source heap.toNat objects family heap (Nat.le_refl _) accountImage.output
+    have outside := AccountDecode.Registry.fresh_outside source heap.toNat objects family heap (Nat.le_refl _) accountImage.output
     have registered := retained.append post cutoff heap.toNat nextCursor objects accounts heap accountImage (Nat.le_refl _)
       (by have := world.ordered; omega) (by rw [cursorEq]; omega) outside
     exact ⟨nextCursor,accounts++[heap],Or.inr ⟨rfl,present.1⟩,nextFamily,registered,nextWorld,nextEnvironment,result,globals,price,

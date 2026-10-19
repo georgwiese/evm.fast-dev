@@ -1,4 +1,4 @@
-import InitECandidate.Solver.GasBudget.JournalAppendRecordEntry
+import InitECandidate.Solver.GasBudget.JournalAppendSetRecordValues
 
 namespace InitECandidate.Solver.GasBudget.Journal.Append
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -36,35 +36,10 @@ theorem set_record_normal {ι : Type} [DecidableEq ι]
       next.slots.length ≤ (objects writer).slots.length + 1 ∧
       post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + 1)))) ∧
       post.code = source.code ∧ WarmKeys.Environment post ∧ OtherGlobals source post := by
-  let newRecord : Entry ι := ⟨writer, copiedKey, oldFlag, oldValue⟩
-  have execute := record_execute source objects base cap count cursor newRecord oldFlag false zone room environment.domain journal counter tableLocal copyLocal old rfl
-  change evaluateHOLFiniteState source setAfterCopy = _ at execute
-  rw [execute] at normal
-  let entry := recorded source objects base count newRecord
-  let finish := (evaluateHOLFiniteState entry (afterStores setAfterCopy)).2
-  have result := congrArg Prod.fst normal
-  change (evaluateHOLFiniteState entry (afterStores setAfterCopy)).1 = some (.returned returned) at result
-  have tailRun : evaluateHOLFiniteState entry (afterStores setAfterCopy) = (some (.returned returned), finish) := Prod.ext result rfl
-  have postEq := congrArg Prod.snd normal
-  change restore source "r" finish = post at postEq
-  have entryFamily := recorded_models source objects base cap count cursor newRecord family zone room
-  have entryImage := recorded_image source objects base cap count cursor newRecord entries image zone room environment.domain copiedFits copiedMapped
-  have t : entry.locals.lookup (ofString "t") = some (.val (.word (objects writer).pointer)) :=
-    (bind_lookup_other _ "r" "t" _ (by decide)).trans tableLocal
-  have key : entry.locals.lookup (ofString "key") = some (.val (.word query)) :=
-    (bind_lookup_other _ "r" "key" _ (by decide)).trans keyLocal
-  have v : entry.locals.lookup (ofString "value") = some (.val (.word value)) :=
-    (bind_lookup_other _ "r" "value" _ (by decide)).trans valueLocal
-  obtain ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, population, nextCounter, codes, nextEnvironment, globals⟩ :=
-    set_tail_normal entry finish cursor objects writer base cap count (Function.update entries count newRecord) entryFamily entryImage zone room
-      (environment.of_fields rfl rfl rfl) query value queryFits queryMapped t key v counter returned tailRun
-  subst post
-  have finalFamily : TableFamily.Model (restore source "r" finish) nextCursor (Function.update objects writer next) :=
-    ⟨fun table => (models.tables table).of_fields rfl rfl rfl rfl, models.apart⟩
-  have finalImage : Image (restore source "r" finish) (Function.update objects writer next) base (count + 1) (Function.update entries count newRecord) :=
-    nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
-  exact ⟨returnedEq, paid, nextCursor, next, fits, clock, forward, kind, finalFamily, finalImage, nextZone, bounded, population, nextCounter,
-    codes, nextEnvironment.of_fields rfl rfl rfl, globals⟩
+  obtain ⟨returnedEq,paid,nextCursor,next,fits,clock,forward,kind,models,nextImage,nextZone,bounded,population,nextCounter,codes,nextEnvironment,globals,frame,nextValues⟩ :=
+    set_record_normal_values source post cursor objects writer base cap count entries family image zone room environment query value copiedKey oldFlag oldValue
+      (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro queryFits queryMapped copiedFits copiedMapped tableLocal keyLocal valueLocal copyLocal old journal counter returned normal
+  exact ⟨returnedEq,paid,nextCursor,next,fits,clock,forward,kind,models,nextImage,nextZone,bounded,population,nextCounter,codes,nextEnvironment,globals⟩
 
 end InitECandidate.Solver.GasBudget.Journal.Append
 

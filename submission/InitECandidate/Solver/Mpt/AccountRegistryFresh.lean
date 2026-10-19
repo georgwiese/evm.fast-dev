@@ -32,7 +32,7 @@ theorem Registry.after_fresh_account {ι : Type} (source target : PanSemStateFin
   have frame : TableFamily.PersistentFrame cutoff cursor objects objects source target :=
     ⟨fun query lower earlier outside=>⟨outside,before query earlier⟩⟩
   have retained := registry.framed source target cutoff cursor cursor objects objects accounts frame (Nat.le_refl _) domain
-  have outside := Registry.fresh_references source cursor objects family fresh after image.output
+  have outside := Registry.fresh_outside source cursor objects family fresh after image.output
   have nextRegistry := retained.append target cutoff cursor nextCursor objects accounts fresh image after above room outside
   have nextValues : TableFamily.ValuesHave target objects property := by
     apply values.of_agreement source target objects property

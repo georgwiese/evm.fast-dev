@@ -1,6 +1,4 @@
-import InitECandidate.Solver.GasBudget.JournalZone
-import InitECandidate.Solver.MutableTable.FamilySet
-import InitECandidate.Solver.MutableTable.FamilyFloorFrame
+import InitECandidate.Solver.GasBudget.JournalZoneSetValues
 
 namespace InitECandidate.Solver.GasBudget.Journal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -28,27 +26,10 @@ theorem set_zone_normal {ι : Type} [DecidableEq ι] (source target : PanSemStat
         Set.noGrowthPrice (objects writer).kind (objects writer).slots.length + 1 + GrowRuntime.growthPotential (objects writer).kind next.plan.capacity ∧
       next.slots.length ≤ (objects writer).slots.length + 1 ∧ target.locals = source.locals ∧ target.code = source.code ∧
       WarmKeys.Environment target ∧ HeapGlobals source target ∧ TableFamily.FloorFrame objects (Function.update objects writer next) source target := by
-  obtain ⟨paid, nextCursor, next, fits, clock, forward, kind, floor, models, pointers, bounded, lower, upper, capacity, locals, codes, nextEnvironment, globals, beforeFloor, earlier⟩ :=
-    TableFamily.set_normal source target cursor objects writer family environment query value arguments queryFits queryMapped args normal
-  have cursorSmall : cursor < 2 ^ 64 := by have bounded := (family.tables writer).bounded; omega
-  have words (index : Nat) (inside : index < cap) (field : Fin 4) :=
-    earlier (entryAddress base index field) (entry_before base cap cursor index field zone.earlier cursorSmall inside) (zone.separate index inside field writer)
-  have kinds (table : ι) : (Function.update objects writer next table).kind = (objects table).kind := by
-    by_cases same : table = writer
-    · subst table; simpa only [Function.update_self] using kind
-    · rw [Function.update_of_ne same]
-  have nextZone : Zone (Function.update objects writer next) base cap nextCursor := by
-    refine ⟨zone.valid, by have before := zone.earlier; omega, ?_⟩
-    intro index inside field table
-    by_cases same : table = writer
-    · subst table; simpa only [Function.update_self] using (words index inside field).1
-    · simpa only [Function.update_of_ne same] using zone.separate index inside field table
-  have nextImage : Image target (Function.update objects writer next) base count entries :=
-    image.transfer (nextEnvironment.domain.trans environment.domain.symm) pointers kinds
-      (fun index inside field => (words index (by omega) field).2)
-      (fun index inside field => nextZone.separate index (by omega) field)
-  exact ⟨paid, nextCursor, next, fits, clock, forward, kind, models, nextImage, nextZone, bounded, upper, locals, codes, nextEnvironment, globals,
-    TableFamily.FloorFrame.of_update objects writer next source target floor beforeFloor⟩
+  obtain ⟨paid,nextCursor,next,fits,clock,forward,kind,models,nextImage,nextZone,bounded,population,locals,codes,nextEnvironment,globals,floorFrame,persistent,nextValues⟩ :=
+    set_zone_normal_values source target cursor objects writer base cap count entries family image zone countBound environment query value
+      (fun _ _=>True) (fun _ _ _ _ _ _=>True.intro) True.intro queryFits queryMapped arguments args normal
+  exact ⟨paid,nextCursor,next,fits,clock,forward,kind,models,nextImage,nextZone,bounded,population,locals,codes,nextEnvironment,globals,floorFrame⟩
 
 end InitECandidate.Solver.GasBudget.Journal
 

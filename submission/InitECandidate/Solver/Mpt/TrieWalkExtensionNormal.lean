@@ -19,9 +19,10 @@ theorem extension_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (pathMapped : source.memaddrs (node + 32#64)) (pathStored : source.memory (node + 32#64) = .word path)
     (childMapped : source.memaddrs (node + 48#64)) (childStored : source.memory (node + 48#64) = .word child)
     (aFits : path.toNat + min size.toNat 64 < 2^64)
-    (bFits : (nibs + position).toNat + min size.toNat 64 < 2^64)
+    (bFits : size.toNat ≤ limit - position.toNat → (nibs + position).toNat + size.toNat < 2^64)
     (leftMapped : ∀ offset < min size.toNat 64, source.memaddrs (panByteAlignHOL (width := 64) (byteAddress path offset)))
-    (rightMapped : ∀ offset < min size.toNat 64, source.memaddrs (panByteAlignHOL (width := 64) (byteAddress (nibs + position) offset)))
+    (rightMapped : size.toNat ≤ limit - position.toNat →
+      ∀ offset < size.toNat, source.memaddrs (panByteAlignHOL (width := 64) (byteAddress (nibs + position) offset)))
     (code : source.code.lookup (ofString "memeq") = some (Memeq32.formals, Memeq32.body, .one))
     (normal : evaluateHOLFiniteState source extension = (none, post)) :
     ∃ paid, 1 ≤ paid ∧ paid ≤ MemeqByteRuntime.price size.toNat + 1 ∧ paid ≤ source.clock ∧
@@ -47,7 +48,9 @@ theorem extension_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     extent_guard_numeral entered passed position size limit small bounded currentPos currentLimit currentSize guardRun
   subst passed
   have clipped : min size.toNat 64 = size.toNat := min_eq_left sizeSmall
-  rw [clipped] at aFits bFits leftMapped rightMapped
+  rw [clipped] at aFits leftMapped
+  have bFits := bFits within
+  have rightMapped := rightMapped within
   have args := compare_arguments_read entered node nibs position size path currentNode currentNibs currentPos currentSize pathMapped pathStored
   obtain ⟨paid, nextNode, positive, cost, funded, childRead, innerEq⟩ :=
     extension_compare_normal entered inner node position size path (nibs + position) currentNode currentPos currentSize

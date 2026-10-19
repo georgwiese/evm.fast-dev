@@ -4,6 +4,8 @@
 
 ## 2026-10-19: affordable next length and actual arena room
 
+- Full original MLOAD normal body/caller/dispatcher now composes real pop/charge/expansion/scalar/read/push/PC/return. Pop derives free stack room; final depth equals incoming depth. Buffer/cost<=used and precise buffer/header/reused-slot footprint retained. Current ownership/live cap yields conserved live budget, >=3used credit and strict physical rank descent; observed dispatcher caller clocks+old potential<=new potential+67. Successful memory-load-rank-v1.log1439jobs,4.96s/1874124KiBMaxRSS, permitted axioms. Remaining MSTORE/other suffixes/child/global reachability/counts/weighted K still open.
+
 - Original u256_from_be full all-outcome body price<=max(4,n), from real counter advance/limit preservation and non-fallthrough aligned branch; actual scoped caller derives tuple/readonly continuation and price<=max(4,n)+1. For actual MLOAD n32this is<=33caller clocks. Successful u256-from-be-call-v2.log1277jobs, permitted axioms. MLOAD's remaining stack/PC/ownership and global composition still open.
 
 - Full original MSTORE8 normal body/caller/dispatcher checked: typed actual pops, real charged expansion, scalar conversion, byte backing-store ownership, PC update and return. Actual stack decrements2; current buffer/cost invariant restored; precise buffer+header0/16/32/40/64/184footprint. Current ancestor ownership/live cap derives conserved live budget, live used credit>=3and strict physical FrameRank descent. Observed dispatcher caller clocks+old memory potential<=new potential+34. Successful memory-store8-rank-v2.log1432jobs, permitted axioms. Reachability/remaining suffixes/child/global counts/weighted K remain open.

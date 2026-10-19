@@ -2,6 +2,13 @@
 
 > **AUTHORITATIVE SCOPE CORRECTION — 2026-10-17:** The user requires a reasonably tight finite runtime bound for the current, unchanged Pancake implementation on main. There is NO numerical ceiling. Stop replacement/radix refinement/candidate compilation work. The current plan at the top of bound.md supersedes historical below-Yukon-limit objectives and checklists here. Keep reusable original-program proofs; remove the authorized replacement code after dependency review, retaining history in Git. The previous 45% estimate does not measure this corrected goal.
 
+## 2026-10-19: dynamic copy/hash charge prefixes
+
+- Original words_of actual return derives scalar<=2^59-1; normal and exceptional scoped continuations derive1..3clocks and exact nonlocal preservation. Fixed-base copy/hash fee additions/multiplications are proved nonwrapping for this range.
+- Original KECCAK and RETURNDATACOPY exact ASTs, lookup indices459/505, real pops and four setup calls now compose through actual charge and dispatch to the full active body. Charge>=30/3 reached within<=32source clocks, or real pre-charge terminal handler completes within<=35; actual suffix/handler traces retained.
+- Successful run-frames-copy-cost-v1.log1740jobs, exit0, only permitted axioms. Preliminary failures on shift operand typing, Boolean map-key equality, namespace/import spelling were corrected; failed logs not indexed.
+- Planning coverage68of87helper families; remaining19 and all post-charge physical models/prices, reachable global accounting and weighted target K remain open. Source-clock ceilings are not target runtime bounds or a completion percentage.
+
 ## 2026-10-19: actual original stack growth
 
 - Follow-up ownership/live-sum composition checked in stack-push-growth-frame-sums-v1.log1140jobs. Real allocator bounds discharge copy/backing-word/new-slot separation for older owned objects. Actual caller preserves the complete physical live budget and used sums; paid+oldCapacity=3+newCapacity follows from its actual clock/header outputs. Current ownership and reachable-capacity obligations remain explicit.

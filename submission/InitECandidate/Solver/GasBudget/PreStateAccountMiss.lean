@@ -1,6 +1,7 @@
 import InitECandidate.Solver.GasBudget.AccountCacheCases
 import InitECandidate.Solver.GasBudget.PreStateReadRecordCall
 import InitECandidate.Solver.GasBudget.PreStateReadRecordSafe
+import InitECandidate.Solver.Input.EvaluationOracle
 
 namespace InitECandidate.Solver.GasBudget.AccountCache
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -30,7 +31,7 @@ theorem pre_state_miss_for_outcome (outcome : Outcome) {ι : Type} [DecidableEq 
       (∀ index, (Function.update objects writer next index).pointer = (objects index).pointer) ∧
       (objects writer).slots.length ≤ next.slots.length ∧ next.slots.length ≤ (objects writer).slots.length + 1 ∧
       next.plan.capacity ≤ max (objects writer).plan.capacity (4 * (next.slots.length + 1)) ∧
-      ready.code = source.code ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
+      ready.code = source.code ∧ ready.ffi.oracle=source.ffi.oracle ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
       TableFamily.FloorFrame objects (Function.update objects writer next) source ready ∧
       ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
       evaluateHOLFiniteState ready witnessAccountCall = (outcome.result, post) := by
@@ -61,7 +62,7 @@ theorem pre_state_miss_for_outcome (outcome : Outcome) {ι : Type} [DecidableEq 
     PreStateReadRecord.call_normal source ready block query cursor objects writer family kind environment installed blockGlobal mapped stored
       queryFits queryMapped [localVar "addr"] args recordRun
   refine ⟨paid, nextCursor, next, ready, funded, clock, forward, nextKind, amortized, nextFamily, pointers,
-    countLower, countUpper, capacity, codes, nextEnvironment, globals, floorFrame, ?_, tailRun⟩
+    countLower, countUpper, capacity, codes, Input.evaluation_oracle source ready _ none recordRun, nextEnvironment, globals, floorFrame, ?_, tailRun⟩
   rw [locals]
   exact queryLocal
 
@@ -84,7 +85,7 @@ theorem pre_state_miss_normal {ι : Type} [DecidableEq ι]
       (∀ index, (Function.update objects writer next index).pointer = (objects index).pointer) ∧
       (objects writer).slots.length ≤ next.slots.length ∧ next.slots.length ≤ (objects writer).slots.length + 1 ∧
       next.plan.capacity ≤ max (objects writer).plan.capacity (4 * (next.slots.length + 1)) ∧
-      ready.code = source.code ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
+      ready.code = source.code ∧ ready.ffi.oracle=source.ffi.oracle ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
       TableFamily.FloorFrame objects (Function.update objects writer next) source ready ∧
       ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
       evaluateHOLFiniteState ready witnessAccountCall = (some (.returned returned), post) := by
@@ -111,7 +112,7 @@ theorem pre_state_miss_exception {ι : Type} [DecidableEq ι]
       (∀ index, (Function.update objects writer next index).pointer = (objects index).pointer) ∧
       (objects writer).slots.length ≤ next.slots.length ∧ next.slots.length ≤ (objects writer).slots.length + 1 ∧
       next.plan.capacity ≤ max (objects writer).plan.capacity (4 * (next.slots.length + 1)) ∧
-      ready.code = source.code ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
+      ready.code = source.code ∧ ready.ffi.oracle=source.ffi.oracle ∧ WarmKeys.Environment ready ∧ HeapGlobals source ready ∧
       TableFamily.FloorFrame objects (Function.update objects writer next) source ready ∧
       ready.locals.lookup (ofString "addr") = some (.val (.word query)) ∧
       evaluateHOLFiniteState ready witnessAccountCall = (some (.exception identifier payload), post) := by

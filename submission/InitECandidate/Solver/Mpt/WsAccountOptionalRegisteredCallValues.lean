@@ -37,7 +37,7 @@ theorem scoped_registered_values {ι : Type} (source post : PanSemStateFiniteExa
       Nonempty (WsAccountLeaf.World ready ws root nibs cutoff frozenEnd valueLimit) ∧ Keccak256.Environment ready stp pad ∧
       Result ready heap cursor limit answer ∧ HeapGlobals source ready ∧ TableFamily.PersistentFrame cutoff heap.toNat objects objects source ready ∧
       (∀ query : BitVec 64,cutoff≤query.toNat → query.toNat<heap.toNat → ready.memory query=source.memory query) ∧ ready.code=source.code ∧ source.clock-ready.clock≤31052 ∧
-      (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
+      AccountDecode.Registry.Extension accounts nextAccounts heap.toNat ∧
       (∃ value : BitVec 64,answer=.val (.word value) ∧ AccountDecode.Registry.Known nextAccounts value) ∧
       evaluateHOLFiniteState ready continuation=(some (.returned returned),inner) ∧ post=WitnessRadix.QueryBranch.restore source name inner ∧ (nextCursor=heap.toNat ∨ nextCursor=heap.toNat+120) := by
   obtain ⟨callee,called,addressCell⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "ws_get_account_optional") "addr" body addr

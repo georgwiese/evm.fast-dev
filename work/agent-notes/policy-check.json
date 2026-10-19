@@ -3171,6 +3171,7 @@
     "submission/InitECandidate/Solver/Mpt/AccountReferenceChoice.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistry.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistryAppend.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountRegistryExtension.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistryFresh.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistrySet.lean",
     "submission/InitECandidate/Solver/Mpt/AccountRegistrySetValues.lean",
@@ -5932,8 +5933,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62799,
-  "package_bytes": 2259578150,
+  "package_entries": 62800,
+  "package_bytes": 2259581541,
   "claim": {
     "K": "infinity"
   },

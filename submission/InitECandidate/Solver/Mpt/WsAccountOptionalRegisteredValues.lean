@@ -33,7 +33,7 @@ theorem body_registered_values {ι : Type} (source post : PanSemStateFiniteExact
       TableFamily.Model post nextCursor objects ∧ AccountDecode.Registry post cutoff nextCursor objects nextAccounts ∧
       Nonempty (WsAccountLeaf.World post ws root nibs cutoff frozenEnd valueLimit) ∧ Keccak256.Environment post stp pad ∧
       Result post heap cursor limit returned ∧ HeapGlobals source post ∧ source.clock-post.clock≤31051 ∧
-      (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
+      AccountDecode.Registry.Extension accounts nextAccounts heap.toNat ∧
       (∀ query : BitVec 64,cutoff≤query.toNat → query.toNat<heap.toNat → post.memory query=source.memory query) ∧
       TableFamily.ValuesHave post objects property ∧
       (∃ value : BitVec 64,returned=.val (.word value) ∧ AccountDecode.Registry.Known nextAccounts value) ∧ (nextCursor=heap.toNat ∨ nextCursor=heap.toNat+120) := by

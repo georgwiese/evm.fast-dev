@@ -43,7 +43,7 @@ theorem pre_state_miss_complete_values {ι : Type} [DecidableEq ι]
       (returned=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image post (BitVec.ofNat 64 recordCursor))) ∧
       AccountDecode.Registry post cutoff nextCursor (Function.update objects writer next) nextAccounts ∧
       TableFamily.ValuesHave post (Function.update objects writer next) property ∧
-      (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
+      AccountDecode.Registry.Extension accounts nextAccounts cursor ∧
       (∃ value : BitVec 64,returned=.val (.word value) ∧ AccountDecode.Registry.Known nextAccounts value) := by
   obtain ⟨recordPaid,recordCursor,next,recordReady,funded,recordClock,forward,nextKind,amortized,recordFamily,pointers,countLower,countUpper,capacity,codeEq,oracleEq,nextTableEnvironment,recordGlobals,floorFrame,queryCell,providerRun,recordValues,persistent⟩ :=
     pre_state_miss_normal_values source post block query cursor objects writer family kind tableEnvironment installed property tableValues owned blockGlobal mapped stored queryLocal
@@ -121,7 +121,7 @@ theorem pre_state_miss_complete_values {ι : Type} [DecidableEq ι]
   change post.clock≤source.clock at overall
   let paid := source.clock-post.clock
   refine ⟨paid,recordCursor,next,nextCursor,nextAccounts,Nat.sub_le _ _,by dsimp [paid]; omega,forward,nextKind,?_,finalFamily,pointers,floorFrame.floors,?_,countLower,countUpper,capacity,
-    ⟨finalWorld⟩,finalHashEnvironment,finalResult,finalGlobals,?_,finalImage,finalRegistry,finalValues,weakening,finalOwned⟩
+    ⟨finalWorld⟩,finalHashEnvironment,finalResult,finalGlobals,?_,finalImage,finalRegistry,finalValues,weakening.lower (by rw [heapNumber]; exact forward),finalOwned⟩
   · simpa only [heapNumber] using choice
   · dsimp [paid]
     omega

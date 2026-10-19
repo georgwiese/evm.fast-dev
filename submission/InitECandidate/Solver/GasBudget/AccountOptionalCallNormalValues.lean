@@ -43,7 +43,7 @@ theorem scoped_transaction_normal_values {ι : Type} [Fintype ι] [DecidableEq �
       Keccak256.Environment ready stp pad ∧ Rlp.Validation.Arena ready scratchPtr limit ∧ HeapGlobals source ready ∧ ready.code=source.code ∧
       paid+TableFamily.potential objects≤43*count+31148+TableFamily.potential nextObjects ∧
       AccountDecode.Registry ready cutoff nextCursor nextObjects nextAccounts ∧ TableFamily.ValuesHave ready nextObjects property ∧
-      (∀ value : BitVec 64,AccountDecode.Registry.Known accounts value → AccountDecode.Registry.Known nextAccounts value) ∧
+      AccountDecode.Registry.Extension accounts nextAccounts cursor ∧
       (property reader word ∨ property blockReader word ∨ AccountDecode.Registry.Known nextAccounts word) ∧
       ready.locals.lookup (ofString name)=some (.val (.word word)) ∧
       evaluateHOLFiniteState ready continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by

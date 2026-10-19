@@ -42,6 +42,11 @@ theorem loop_price_step (population remaining : Nat) :
   simp only [loopPrice,WitnessBuild.triangle,Nat.mul_add,Nat.add_mul,Nat.mul_one,Nat.one_mul]
   omega
 
+theorem loop_price_mono (first second remaining : Nat) (ordered : first ≤ second) :
+    loopPrice first remaining ≤ loopPrice second remaining := by
+  unfold loopPrice
+  exact Nat.add_le_add_right (Nat.mul_le_mul_right remaining (by omega)) _
+
 theorem mark_price (population : Nat) : Set.noGrowthPrice .storage population + 1 = 13 * population + 16 := by
   simp [Set.noGrowthPrice,Insert.findPrice,Insert.rawPrice,Find.generalProbePrice,KeyHash.keySize,KeyHash.hashPrice,MemeqByteRuntime.price]
   omega
@@ -51,4 +56,5 @@ end InitECandidate.Solver.Mpt.DestroyStorage
 #print axioms InitECandidate.Solver.Mpt.DestroyStorage.body_shape
 #print axioms InitECandidate.Solver.Mpt.DestroyStorage.original_code
 #print axioms InitECandidate.Solver.Mpt.DestroyStorage.loop_price_step
+#print axioms InitECandidate.Solver.Mpt.DestroyStorage.loop_price_mono
 #print axioms InitECandidate.Solver.Mpt.DestroyStorage.mark_price

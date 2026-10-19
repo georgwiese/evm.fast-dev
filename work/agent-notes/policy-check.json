@@ -3127,6 +3127,12 @@
     "submission/InitECandidate/Solver/Mpt/AccountBalancePhaseNormal.lean",
     "submission/InitECandidate/Solver/Mpt/AccountBalanceStoreFrame.lean",
     "submission/InitECandidate/Solver/Mpt/AccountClearFrame.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountCommitAfterEmpty.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountCommitCall.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountCommitEmptyPrefix.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountCommitEnvironment.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountCommitNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/AccountCommitPrice.lean",
     "submission/InitECandidate/Solver/Mpt/AccountCommitProgram.lean",
     "submission/InitECandidate/Solver/Mpt/AccountCopyCallNormal.lean",
     "submission/InitECandidate/Solver/Mpt/AccountCopyImage.lean",
@@ -5972,8 +5978,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 62839,
-  "package_bytes": 2259795657,
+  "package_entries": 62845,
+  "package_bytes": 2259846602,
   "claim": {
     "K": "infinity"
   },

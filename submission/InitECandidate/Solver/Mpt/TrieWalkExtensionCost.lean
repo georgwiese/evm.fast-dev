@@ -17,9 +17,10 @@ theorem extension_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (sizeMapped : source.memaddrs (node + 40#64)) (sizeStored : source.memory (node + 40#64) = .word size)
     (pathMapped : source.memaddrs (node + 32#64)) (pathStored : source.memory (node + 32#64) = .word path)
     (aFits : path.toNat + min size.toNat 64 < 2^64)
-    (bFits : (nibs + position).toNat + min size.toNat 64 < 2^64)
+    (bFits : size.toNat ≤ limit - position.toNat → (nibs + position).toNat + size.toNat < 2^64)
     (leftMapped : ∀ offset < min size.toNat 64, source.memaddrs (panByteAlignHOL (width := 64) (byteAddress path offset)))
-    (rightMapped : ∀ offset < min size.toNat 64, source.memaddrs (panByteAlignHOL (width := 64) (byteAddress (nibs + position) offset)))
+    (rightMapped : size.toNat ≤ limit - position.toNat →
+      ∀ offset < size.toNat, source.memaddrs (panByteAlignHOL (width := 64) (byteAddress (nibs + position) offset)))
     (code : source.code.lookup (ofString "memeq") = some (Memeq32.formals, Memeq32.body, .one)) :
     source.clock - (evaluateHOLFiniteState source extension).2.clock ≤ 15 := by
   have sizeRead := node_field_read source node 40#64 size nodeCell sizeMapped sizeStored
@@ -62,7 +63,9 @@ theorem extension_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     obtain ⟨within, sizeSmall, addition, nextBounded, same⟩ :=
       extent_guard_numeral entered entered position size limit small bounded currentPos currentLimit currentSize guardRun
     have clipped : min size.toNat 64 = size.toNat := min_eq_left sizeSmall
-    rw [clipped] at aFits bFits leftMapped rightMapped
+    rw [clipped] at aFits leftMapped
+    have bFits := bFits within
+    have rightMapped := rightMapped within
     have args := compare_arguments_read entered node nibs position size path currentNode currentNibs currentPos currentSize pathMapped pathStored
     have cost := extension_compare_cost entered path (nibs + position) size.toNat sizeSmall aFits bFits leftMapped rightMapped code args
     have price := MemeqSmall.price_le_fourteen size.toNat sizeSmall

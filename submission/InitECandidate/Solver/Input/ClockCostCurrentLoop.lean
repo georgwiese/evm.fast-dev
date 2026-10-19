@@ -12,7 +12,9 @@ theorem ranked_loop_current (code) (test : ExpHOL 64) (body : ProgHOL 64) (price
     (invariant : PanSemStateFiniteExact 64 Guest.HostMemory → Prop)
     (rank : PanSemStateFiniteExact 64 Guest.HostMemory → Nat)
     (priced : ∀ source : PanSemStateFiniteExact 64 Guest.HostMemory,
-      source.code = code → invariant source → source.clock ≠ 0 →
+      source.code = code → invariant source → ∀ word : BitVec 64,
+      evalHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) test = some (.val (.word word)) →
+      word ≠ 0 → source.clock ≠ 0 →
       source.clock - 1 - (evaluateHOLFiniteState (decClockHOLFinite source) body).2.clock ≤ price)
     (progress : ∀ source : PanSemStateFiniteExact 64 Guest.HostMemory,
       source.code = code → invariant source →
@@ -52,7 +54,7 @@ theorem ranked_loop_current (code) (test : ExpHOL 64) (body : ProgHOL 64) (price
               · rw [if_pos zero]
                 simp [zero]
               · rw [if_neg zero]
-                have bodyCost := priced source installed valid zero
+                have bodyCost := priced source installed valid word observed nonzero zero
                 have bodyClock := evaluateHOLFiniteState_clock_le (decClockHOLFinite source) body
                 have transition := transition zero
                 generalize computed : evaluateHOLFiniteState (decClockHOLFinite source) body = output at bodyCost bodyClock transition ⊢

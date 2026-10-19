@@ -7,6 +7,8 @@ namespace InitECandidate.Solver.Mpt.WsAccountLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
+variable {property : BitVec 64 → BitVec 64 → Prop}
+
 set_option maxRecDepth 100000 in
 theorem trap_original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "trap_with")=some (Input.Trap.formals,Input.Trap.body,.one) := by
@@ -18,7 +20,7 @@ set_option maxRecDepth 100000 in
 /-- Normal allocation derives room for the actual fixed request. The real
 continuation receives its allocated pointer and preserved entry value model. -/
 theorem after_mark_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws root addr h nibs stp pad : BitVec 64)
-    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit)
+    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit property)
     (protectedValues : TrieWalk.ValueProtected data.graph nibs)
     (hashData : Keccak256.EntryData source stp addr pad h 20)
     (graphProtection : ∀ query,data.graph.Footprint query → Keccak256.Protected stp pad h query)
@@ -29,7 +31,7 @@ theorem after_mark_normal_value (source post : PanSemStateFiniteExact 64 Guest.H
     (heapBound : h.toNat≤33806089496)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterMark=(some (.returned returned),post)) :
-    h.toNat+32≤33806089496 ∧ TrieWalk.Answer post.memaddrs valueLimit returned := by
+    h.toNat+32≤33806089496 ∧ TrieWalk.Answer post.memaddrs valueLimit (property:=property) returned := by
   classical
   have args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) [.const 32#64]=some (PersistentAlloc.values 32#64) := by
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,PersistentAlloc.values]
@@ -44,7 +46,7 @@ theorem after_mark_normal_value (source post : PanSemStateFiniteExact 64 Guest.H
   let readyData := Data.of_fields source ready ws root h nibs data rfl rfl rfl (otherGlobal "ws" (by decide)) (otherGlobal "mpt_nib_scratch" (by decide))
   have readyHashData := Keccak256.EntryData.of_fields source ready stp addr pad h 20 rfl rfl rfl
     (otherGlobal "keccak_st" (by decide)) (otherGlobal "keccak_pad" (by decide)) hashData
-  let readyValues : TrieWalk.Values readyData.graph valueLimit := TrieWalk.Values.rebase source.memory ready.memory source.memaddrs ready.memaddrs data.graph valueLimit values rfl rfl
+  let readyValues : TrieWalk.Values readyData.graph valueLimit property := TrieWalk.Values.rebase source.memory ready.memory source.memaddrs ready.memaddrs data.graph valueLimit values rfl rfl
   have readyValueProtection : TrieWalk.ValueProtected readyData.graph nibs := protectedValues
   have readyGraphProtection : ∀ query,readyData.graph.Footprint query → Keccak256.Protected stp pad h query := graphProtection
   have readyHashValueProtection : ∀ query,TrieWalk.ValueFootprint readyData.graph query → Keccak256.Protected stp pad h query := valueProtection

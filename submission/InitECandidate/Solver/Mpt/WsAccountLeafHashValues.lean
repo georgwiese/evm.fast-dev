@@ -5,6 +5,8 @@ namespace InitECandidate.Solver.Mpt.WsAccountLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
+variable {property : BitVec 64 → BitVec 64 → Prop}
+
 theorem finish_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (answer returned : ValueHOL 64)
     (cell : source.locals.lookup (ofString "r")=some answer)
     (normal : evaluateHOLFiniteState source finish=(some (.returned returned),post)) : returned=answer := by
@@ -18,12 +20,12 @@ theorem finish_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostM
 
 set_option maxRecDepth 100000 in
 theorem lookup_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws root h nibs : BitVec 64)
-    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit)
+    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit property)
     (protectedValues : TrieWalk.ValueProtected data.graph nibs)
     (outputCell : source.locals.lookup (ofString "h")=some (.val (.word h)))
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source lookup=(some (.returned returned),post)) :
-    TrieWalk.Answer post.memaddrs valueLimit returned := by
+    TrieWalk.Answer post.memaddrs valueLimit (property:=property) returned := by
   have args := lookup_arguments source ws root h data.worldState data.rootMapped data.rootStored outputCell
   obtain ⟨funded,target,answer,inner,result,upper,lower,frame,finishRun,restored⟩ :=
     TrieLookup.scoped_normal source post root h nibs data.graph valueLimit values data.member data.protectedGraph protectedValues
@@ -42,7 +44,7 @@ set_option maxRecDepth 100000 in
 /-- The actual address hash feeds an actual lookup value through the real
 release/return continuation, retaining its mapped bounded payload. -/
 theorem after_alloc_normal_value (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws root addr h nibs stp pad : BitVec 64)
-    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit)
+    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit property)
     (protectedValues : TrieWalk.ValueProtected data.graph nibs)
     (hashData : Keccak256.EntryData source stp addr pad h 20)
     (graphProtection : ∀ query,data.graph.Footprint query → Keccak256.Protected stp pad h query)
@@ -52,7 +54,7 @@ theorem after_alloc_normal_value (source post : PanSemStateFiniteExact 64 Guest.
     (outputCell : source.locals.lookup (ofString "h")=some (.val (.word h)))
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterAlloc=(some (.returned returned),post)) :
-    TrieWalk.Answer post.memaddrs valueLimit returned := by
+    TrieWalk.Answer post.memaddrs valueLimit (property:=property) returned := by
   have safe : Input.LocalPrefix (ofString "h") hash := .call none _ _ (by intro name impossible; cases impossible)
   obtain ⟨reached,hashRun,lookupRun,localEq⟩ := safe.normal_continue source post lookup returned normal
   have args := hash_arguments source addr h addressCell outputCell

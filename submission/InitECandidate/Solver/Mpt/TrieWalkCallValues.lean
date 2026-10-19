@@ -6,17 +6,19 @@ namespace InitECandidate.Solver.Mpt.TrieWalk
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
+variable {property : BitVec 64 → BitVec 64 → Prop}
+
 set_option maxRecDepth 100000 in
 /-- The real original trie_walk tail call exposes its actual binary/payload
 answer and read-only frame, with at most2081source clocks. -/
 theorem Graph.tail_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (graph : Graph source.memory source.memaddrs) (valueLimit : Nat) (nodeValues : Values graph valueLimit)
+    (graph : Graph source.memory source.memaddrs) (valueLimit : Nat) (nodeValues : Values graph valueLimit property)
     (node nibs : BitVec 64) (length : Nat) (key : KeyView source.memory source.memaddrs source.be nibs length)
     (member : graph.valid node) (arguments : List (ExpHOL 64))
     (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) arguments=some (values node nibs length))
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.call none (ofString "trie_walk") arguments)=(some (.returned returned),post)) :
-    1≤source.clock ∧ Answer post.memaddrs valueLimit returned ∧ post.clock≤source.clock-1 ∧
+    1≤source.clock ∧ Answer post.memaddrs valueLimit (property:=property) returned ∧ post.clock≤source.clock-1 ∧
       source.clock-2081≤post.clock ∧ Input.LocalEffects.erase post=Input.LocalEffects.erase source := by
   obtain ⟨callee,called,nodeLocal,nibsLocal,lengthLocal⟩ := environment source.code.lookup node nibs length (original_code source.code installed)
   obtain ⟨positive,target,bodyRun,checked,postEq⟩ := Input.CallNormal.tail_callee_return source post (ofString "trie_walk") arguments _ body callee resultShape args called returned normal

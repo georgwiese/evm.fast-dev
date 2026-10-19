@@ -6,12 +6,14 @@ namespace InitECandidate.Solver.Mpt.TrieLookup
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix
 
+variable {property : BitVec 64 → BitVec 64 → Prop}
+
 set_option maxRecDepth 100000 in
 /-- The actual scoped lookup supplies its genuine binary/payload result to
 the real caller continuation. Current entry values/scratch are the premises;
 funding, callee result and continuation execution are conclusions. -/
 theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root key out : BitVec 64)
-    (graph : TrieWalk.Graph source.memory source.memaddrs) (valueLimit : Nat) (nodeValues : TrieWalk.Values graph valueLimit)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (valueLimit : Nat) (nodeValues : TrieWalk.Values graph valueLimit property)
     (member : graph.valid root) (protectedGraph : graph.Protected out) (protectedValues : TrieWalk.ValueProtected graph out)
     (scratch : source.globals.lookup (ofString "mpt_nib_scratch")=some (.val (.word out)))
     (little : source.be=false) (fits : out.toNat+64<2^64)
@@ -23,7 +25,7 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) TrieWalk.resultShape (ofString "trie_lookup") arguments continuation)=(some (.returned returned),post)) :
     11≤source.clock ∧ ∃ target answer inner,
-      TrieWalk.Answer target.memaddrs valueLimit answer ∧ target.clock≤source.clock-11 ∧ source.clock-2091≤target.clock ∧
+      TrieWalk.Answer target.memaddrs valueLimit (property:=property) answer ∧ target.clock≤source.clock-11 ∧ source.clock-2091≤target.clock ∧
       KeyToNibbles.OutputFrame source target out ∧
       evaluateHOLFiniteState (Input.CallNormal.continuationEntry source target name answer) continuation=(some (.returned returned),inner) ∧
       post=WitnessRadix.QueryBranch.restore source name inner := by

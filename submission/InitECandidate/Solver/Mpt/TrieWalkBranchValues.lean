@@ -7,6 +7,8 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 open Input.ReturnFacts
 
+variable {property : BitVec 64 → BitVec 64 → Prop}
+
 def branchValueGuard : ProgHOL 64 := .ite (.cmp .equal (localVar "vl") (.const 0#64)) absent .skip
 def branchFound : ProgHOL 64 := .return (.rstruct [.const 1#64,nodeField 160#64,localVar "vl"])
 
@@ -16,13 +18,14 @@ theorem branch_terminal_shape : branchTerminal=.dec (ofString "vl") .one (nodeFi
     Guest.guestFn_trie_walk,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,branchValueGuard,branchFound,absent,nodeField,addConst,localVar]
 
 theorem branch_found_returns (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64) (limit : Nat)
-    (view : ValueView source.memory source.memaddrs node 160#64 168#64 limit)
+    (view : ValueView source.memory source.memaddrs node 160#64 168#64 limit property)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (lengthCell : source.locals.lookup (ofString "vl")=some (.val (.word view.length))) :
-    Returns source branchFound (Answer source.memaddrs limit) := by
+    Returns source branchFound (Answer source.memaddrs limit (property:=property)) := by
   classical
   have pointerRead := node_field_read source node 160#64 view.pointer nodeCell view.pointerMapped view.pointerStored
-  apply Input.ReturnFacts.returned source _ (triple 1#64 view.pointer view.length) _ _ (view.answer _ _ _ _ _ _)
+  apply Input.ReturnFacts.returned source _ (triple 1#64 view.pointer view.length)
+    (Answer source.memaddrs limit (property:=property)) _ (view.answer _ _ _ _ _ _)
   simp only [eval] at pointerRead ⊢
   change evalHOLExact source.toExact (.rstruct [.const 1#64,nodeField 160#64,localVar "vl"])=_
   simp only [evalHOLExact,evalListHOLExact]
@@ -30,13 +33,13 @@ theorem branch_found_returns (source : PanSemStateFiniteExact 64 Guest.HostMemor
   simp [localVar,evalHOLExact,toExact,lengthCell,triple]
 
 theorem branch_terminal_returns (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64) (limit : Nat)
-    (view : ValueView source.memory source.memaddrs node 160#64 168#64 limit)
+    (view : ValueView source.memory source.memaddrs node 160#64 168#64 limit property)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node))) :
-    Returns source branchTerminal (Answer source.memaddrs limit) := by
+    Returns source branchTerminal (Answer source.memaddrs limit (property:=property)) := by
   have lengthRead := node_field_read source node 168#64 view.length nodeCell view.lengthMapped view.lengthStored
   rw [branch_terminal_shape]
   refine Input.ReturnFacts.declared_word source "vl" (nodeField 168#64) view.length (.seq branchValueGuard branchFound)
-    (Answer source.memaddrs limit) lengthRead ?_
+    (Answer source.memaddrs limit (property:=property)) lengthRead ?_
   let entered := bind source "vl" view.length
   have currentNode : entered.locals.lookup (ofString "node")=some (.val (.word node)) :=
     (bind_lookup_other source "vl" "node" view.length (by decide)).trans nodeCell
@@ -67,9 +70,9 @@ theorem branch_advance_prefix : Input.LocalPrefix (ofString "nibs") branchAdvanc
   exact .seq nodeSafe (.assign _ _ (by decide))
 
 theorem branch_returns (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64) (limit : Nat)
-    (view : ValueView source.memory source.memaddrs node 160#64 168#64 limit)
+    (view : ValueView source.memory source.memaddrs node 160#64 168#64 limit property)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node))) :
-    Returns source branch (Answer source.memaddrs limit) := by
+    Returns source branch (Answer source.memaddrs limit (property:=property)) := by
   rw [branch_shape]
   apply Input.ReturnFacts.sequence
   · rw [branch_guard_shape]

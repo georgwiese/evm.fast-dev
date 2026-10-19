@@ -6,18 +6,20 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 open Input.ReturnFacts
 
+variable {property : BitVec 64 → BitVec 64 → Prop}
+
 theorem Graph.body_returns (source : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (graph : Graph source.memory source.memaddrs) (valueLimit : Nat) (values : Values graph valueLimit)
+    (graph : Graph source.memory source.memaddrs) (valueLimit : Nat) (values : Values graph valueLimit property)
     (node nibs : BitVec 64) (limit : Nat)
     (key : KeyView source.memory source.memaddrs source.be nibs limit) (member : graph.valid node)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (nibsCell : source.locals.lookup (ofString "nibs")=some (.val (.word nibs)))
     (limitCell : source.locals.lookup (ofString "nlen")=some (.val (.word (BitVec.ofNat 64 limit))))
     (installed : Input.OriginalCode.Installed source.code) :
-    Returns source body (Answer source.memaddrs valueLimit) := by
+    Returns source body (Answer source.memaddrs valueLimit (property:=property)) := by
   rw [body_shape]
   refine Input.ReturnFacts.declared_word source "pos" (.const 0#64) 0#64 (.seq loop afterLoop)
-    (Answer source.memaddrs valueLimit) rfl ?_
+    (Answer source.memaddrs valueLimit (property:=property)) rfl ?_
   let entered := bind source "pos" 0#64
   have currentNode : entered.locals.lookup (ofString "node")=some (.val (.word node)) :=
     (bind_lookup_other _ _ _ _ (by decide)).trans nodeCell
@@ -36,7 +38,7 @@ theorem Graph.body_returns (source : PanSemStateFiniteExact 64 Guest.HostMemory)
 payload on hits, nonlocal read-only frame and its consumed source clocks.
 There is no supplied helper execution or funding premise. -/
 theorem Graph.body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (graph : Graph source.memory source.memaddrs) (valueLimit : Nat) (values : Values graph valueLimit)
+    (graph : Graph source.memory source.memaddrs) (valueLimit : Nat) (values : Values graph valueLimit property)
     (node nibs : BitVec 64) (limit : Nat)
     (key : KeyView source.memory source.memaddrs source.be nibs limit) (member : graph.valid node)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
@@ -44,7 +46,7 @@ theorem Graph.body_normal (source target : PanSemStateFiniteExact 64 Guest.HostM
     (limitCell : source.locals.lookup (ofString "nlen")=some (.val (.word (BitVec.ofNat 64 limit))))
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),target)) :
-    Answer target.memaddrs valueLimit returned ∧ target.clock≤source.clock ∧ source.clock-2080≤target.clock ∧
+    Answer target.memaddrs valueLimit (property:=property) returned ∧ target.clock≤source.clock ∧ source.clock-2080≤target.clock ∧
       Input.LocalEffects.erase target=Input.LocalEffects.erase source := by
   have answer := Graph.body_returns source graph valueLimit values node nibs limit key member nodeCell nibsCell limitCell installed target returned normal
   have cost := Graph.body_cost source graph node nibs limit key member nodeCell nibsCell limitCell installed

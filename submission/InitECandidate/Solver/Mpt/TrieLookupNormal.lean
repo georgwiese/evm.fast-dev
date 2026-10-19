@@ -7,12 +7,14 @@ namespace InitECandidate.Solver.Mpt.TrieLookup
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix
 
+variable {property : BitVec 64 → BitVec 64 → Prop}
+
 set_option maxRecDepth 100000 in
 /-- Actual normal unchanged trie_lookup: the real key conversion preserves
 the current structural and value words before the genuine trie tail call.
 Its result is a binary triple with an actual bounded mapped payload on hits. -/
 theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root key out : BitVec 64)
-    (graph : TrieWalk.Graph source.memory source.memaddrs) (valueLimit : Nat) (nodeValues : TrieWalk.Values graph valueLimit)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (valueLimit : Nat) (nodeValues : TrieWalk.Values graph valueLimit property)
     (member : graph.valid root) (protectedGraph : graph.Protected out) (protectedValues : TrieWalk.ValueProtected graph out)
     (rootCell : source.locals.lookup (ofString "root")=some (.val (.word root)))
     (keyCell : source.locals.lookup (ofString "key_hash32")=some (.val (.word key)))
@@ -23,7 +25,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (separate : ∀ left<32,∀ right<64,byteAddress key left≠byteAddress out right)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    10≤source.clock ∧ TrieWalk.Answer post.memaddrs valueLimit returned ∧ post.clock≤source.clock-10 ∧
+    10≤source.clock ∧ TrieWalk.Answer post.memaddrs valueLimit (property:=property) returned ∧ post.clock≤source.clock-10 ∧
       source.clock-2090≤post.clock ∧ KeyToNibbles.OutputFrame source post out := by
   have safe : Input.LocalPrefix (ofString "root") prepare := .call none _ _ (by intro name impossible; cases impossible)
   rw [body_shape] at normal

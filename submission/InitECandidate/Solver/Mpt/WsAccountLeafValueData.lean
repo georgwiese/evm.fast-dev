@@ -5,15 +5,17 @@ namespace InitECandidate.Solver.Mpt.WsAccountLeaf
 open Flapjack PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix
 
+variable {property : BitVec 64 → BitVec 64 → Prop}
+
 theorem Data.values_after_hash (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws root h nibs stp pad : BitVec 64)
-    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit)
+    (data : Data source ws root h nibs) (valueLimit : Nat) (values : TrieWalk.Values data.graph valueLimit property)
     (protectedValues : TrieWalk.ValueProtected data.graph nibs)
     (graphProtection : ∀ query,data.graph.Footprint query → Keccak256.Protected stp pad h query)
     (valueProtection : ∀ query,TrieWalk.ValueFootprint data.graph query → Keccak256.Protected stp pad h query)
     (rootProtection : Keccak256.Protected stp pad h (ws+24#64))
     (control : KeccakAbsorb.hashControl post=KeccakAbsorb.hashControl source)
     (memory : ∀ query,Keccak256.Protected stp pad h query → post.memory query=source.memory query) :
-    ∃ next : Data post ws root h nibs,TrieWalk.ValueProtected next.graph nibs ∧ Nonempty (TrieWalk.Values next.graph valueLimit) := by
+    ∃ next : Data post ws root h nibs,TrieWalk.ValueProtected next.graph nibs ∧ Nonempty (TrieWalk.Values next.graph valueLimit property) := by
   obtain ⟨next,validEq,nextProtection,nextValueProtection,⟨nextValues⟩⟩ := TrieWalk.Values.after_hash source post data.graph valueLimit values stp pad h nibs
     data.protectedGraph protectedValues graphProtection valueProtection control memory
   have globals := congrArg PanSemStateFiniteExact.globals control

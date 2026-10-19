@@ -22,7 +22,7 @@ theorem body_fields (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (output : Output out) (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
     ∃ (header payload : BitVec 64) (a b c d : Rlp.ListItem) (ready inner : PanSemStateFiniteExact 64 Guest.HostMemory),
-      header.toNat+payload.toNat=length.toNat ∧ heap.toNat+64≤33806089496 ∧ Nonempty (FieldResults ready (pointer+header) a b c d) ∧
+      header.toNat+payload.toNat=length.toNat ∧ header.toNat≤9 ∧ heap.toNat+64≤33806089496 ∧ Nonempty (FieldResults ready (pointer+header) a b c d) ∧
       FieldsView ready heap (pointer+header) payload cursor limit out cutoff [a,b,c,d] ∧
       ready.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 64#64))) ∧
       ready.memaddrs=source.memaddrs ∧ ready.be=source.be ∧ ready.code=source.code ∧
@@ -33,7 +33,7 @@ theorem body_fields (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   obtain ⟨answer,decoded,decodedPost,complete,decodedArena,decodedAbove,decodedDomain,decodedEndian,decodedCode,decodedHeap,itemCell,decodedOutput,decodedRun,decodedFrame⟩ :=
     body_decode_prefix source post pointer length cursor limit out pointerCell lengthCell outputCell arena fits installed returned normal
   have decodedInstalled : Input.OriginalCode.Installed decoded.code := by rw [decodedCode]; exact installed
-  obtain ⟨header,payload,items,fieldsEntry,fieldsPost,extent,itemEq,lengthFour,recordRoom,fieldsView,fieldsHeap,fieldsDomain,fieldsEndian,fieldsCode,fieldsMemory,fieldsRun,fieldsFrame⟩ :=
+  obtain ⟨header,payload,items,fieldsEntry,fieldsPost,extent,head,itemEq,lengthFour,recordRoom,fieldsView,fieldsHeap,fieldsDomain,fieldsEndian,fieldsCode,fieldsMemory,fieldsRun,fieldsFrame⟩ :=
     after_decode_fields decoded decodedPost pointer length heap cursor limit out cutoff answer itemCell complete decodedOutput decodedArena
       (decodedHeap.trans heapGlobal) heapBound before sizeBound aligned scratchBelow inputAbove output decodedInstalled returned decodedRun
   obtain ⟨a,b,c,d,itemsEq⟩ := List.length_eq_four.mp lengthFour
@@ -41,7 +41,7 @@ theorem body_fields (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have fieldsInstalled : Input.OriginalCode.Installed fieldsEntry.code := by rw [fieldsCode]; exact decodedInstalled
   obtain ⟨ready,inner,results,view,above,domain,endian,codeEq,heapEq,tailRun,tailFrame⟩ :=
     fields_normal fieldsEntry fieldsPost heap (pointer+header) payload cursor limit out cutoff a b c d fieldsView fieldsInstalled returned fieldsRun
-  refine ⟨header,payload,a,b,c,d,ready,inner,extent,recordRoom,results,view,heapEq.trans fieldsHeap,
+  refine ⟨header,payload,a,b,c,d,ready,inner,extent,head,recordRoom,results,view,heapEq.trans fieldsHeap,
     domain.trans (fieldsDomain.trans decodedDomain),endian.trans (fieldsEndian.trans decodedEndian),codeEq.trans (fieldsCode.trans decodedCode),?_,tailRun,
     decodedFrame.trans (fieldsFrame.trans tailFrame)⟩
   intro query beyond outside

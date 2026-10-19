@@ -22,7 +22,7 @@ theorem body_cursors (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     Rlp.Validation.Arena post cursor limit ∧
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 64#64))) ∧
       heap.toNat+64≤33806089496 ∧ (PersistentAlloc.rounded heap 64#64).toNat≤33806089496 := by
-  obtain ⟨header,payload,a,b,c,d,ready,inner,extent,room,results,view,heapEntry,domain,endian,codeEq,memory,tailRun,frame⟩ :=
+  obtain ⟨header,payload,a,b,c,d,ready,inner,extent,head,room,results,view,heapEntry,domain,endian,codeEq,memory,tailRun,frame⟩ :=
     body_fields source post pointer length heap cursor limit out cutoff pointerCell lengthCell outputCell arena heapGlobal heapBound before sizeBound
       aligned scratchBelow inputAbove output installed returned normal
   have readyInstalled : Input.OriginalCode.Installed ready.code := by rw [codeEq]; exact installed

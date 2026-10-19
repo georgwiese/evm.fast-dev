@@ -34,7 +34,7 @@ theorem scoped_family {ι : Type} (source post : PanSemStateFiniteExact 64 Guest
       Result target heap cursor limit answer ∧ HeapGlobals source target ∧
       (answer=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image target heap)) ∧
       target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.code=source.code ∧
-      source.clock-target.clock≤191*valueLimit+2594 ∧
+      source.clock-target.clock≤31052 ∧
       evaluateHOLFiniteState (Input.CallNormal.continuationEntry source target name answer) continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by
   obtain ⟨positive,target,answer,inner,result,nonheap,image,memory,domain,endian,codeEq,price,tailRun,restored⟩ :=
     scoped_image source post ws root addr heap nibs stp pad cursor limit emptyRoot emptyHash cutoff valueLimit data values protectedValues hashData

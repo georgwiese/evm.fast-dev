@@ -31,7 +31,8 @@ theorem scoped_world_family {ι : Type} (source post : PanSemStateFiniteExact 64
       ready.locals.lookup (ofString name)=some answer ∧
       (nextCursor=heap.toNat ∨ nextCursor=heap.toNat+120) ∧ TableFamily.Model ready nextCursor objects ∧
       Nonempty (WsAccountLeaf.World ready ws root nibs cutoff frozenEnd valueLimit) ∧ Keccak256.Environment ready stp pad ∧
-      Result ready heap cursor limit answer ∧ HeapGlobals source ready ∧ ready.code=source.code ∧ source.clock-ready.clock≤31052 ∧
+      Result ready heap cursor limit answer ∧ HeapGlobals source ready ∧ TableFamily.PersistentFrame cutoff heap.toNat objects objects source ready ∧
+      (∀ query : BitVec 64,cutoff≤query.toNat → query.toNat<heap.toNat → ready.memory query=source.memory query) ∧ ready.code=source.code ∧ source.clock-ready.clock≤31052 ∧
       (answer=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image ready heap)) ∧
       evaluateHOLFiniteState ready continuation=(some (.returned returned),inner) ∧ post=WitnessRadix.QueryBranch.restore source name inner := by
   obtain ⟨callee,called,addressCell⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "ws_get_account_optional") "addr" body addr
@@ -42,7 +43,7 @@ theorem scoped_world_family {ι : Type} (source post : PanSemStateFiniteExact 64
   let entryWorld := world.of_agreement source entry ws root nibs cutoff frozenEnd valueLimit rfl rfl rfl rfl (by intros; rfl)
   have entryEnvironment := environment.of_fields source entry stp pad rfl rfl rfl (HeapGlobals.refl source)
   have entryFamily : TableFamily.Model entry heap.toNat objects := family.of_control rfl rfl rfl rfl
-  obtain ⟨nextCursor,choice,nextFamily,⟨targetWorld⟩,targetEnvironment,result,nonheap,price,image⟩ :=
+  obtain ⟨nextCursor,choice,nextFamily,⟨targetWorld⟩,targetEnvironment,result,nonheap,persistent,beforeMemory,price,image⟩ :=
     body_world_family entry target ws root addr heap nibs stp pad cursor limit emptyRoot emptyHash cutoff frozenEnd valueLimit entryWorld entryEnvironment
       stateArena stateAligned padArena padAligned queryArena stateBelow padBelow objects entryFamily floors addressCell
       (Rlp.Validation.Arena.of_fields source entry cursor limit arena rfl rfl) heapGlobal heapBound heapAligned afterWorld sizeBound aligned scratchBelow
@@ -52,6 +53,7 @@ theorem scoped_world_family {ι : Type} (source post : PanSemStateFiniteExact 64
   have readyEnvironment := targetEnvironment.of_fields target ready stp pad rfl rfl rfl (HeapGlobals.refl target)
   have readyFamily : TableFamily.Model ready nextCursor objects := nextFamily.of_control rfl rfl rfl rfl
   have readyResult := Result.of_fields target ready heap cursor limit answer result rfl rfl
+  have readyFrame : TableFamily.PersistentFrame cutoff heap.toNat objects objects source ready := ⟨persistent.words⟩
   have codeEq := (Input.evaluation_fields entry target body _ bodyRun).2.2.2
   have clock := evaluateHOLFiniteState_clock_le entry body
   rw [bodyRun] at clock
@@ -63,7 +65,7 @@ theorem scoped_world_family {ι : Type} (source post : PanSemStateFiniteExact 64
     · obtain ⟨current⟩ := image
       exact Or.inr ⟨AccountDecode.Image.of_agreement target ready heap current rfl (by rfl) (by rfl)⟩
   exact ⟨positive,ready,answer,inner,nextCursor,Input.CallNormal.continuation_lookup_same source target name answer,
-    choice,readyFamily,⟨readyWorld⟩,readyEnvironment,readyResult,nonheap,codeEq,by change source.clock-target.clock≤31052; omega,readyImage,tailRun,restored⟩
+    choice,readyFamily,⟨readyWorld⟩,readyEnvironment,readyResult,nonheap,readyFrame,beforeMemory,codeEq,by change source.clock-target.clock≤31052; omega,readyImage,tailRun,restored⟩
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

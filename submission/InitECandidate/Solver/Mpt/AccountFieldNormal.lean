@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.AccountFieldView
+import InitECandidate.Solver.Rlp.ItemCallEncoding
 
 namespace InitECandidate.Solver.Mpt.AccountDecode
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -19,6 +20,7 @@ theorem field_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     ∃ calleePost header payload flag inner,
       Rlp.Item.Valid (Rlp.Slices.itemPointer pointer items index) item.total.toNat
         (Rlp.Item.result (Rlp.Slices.itemPointer pointer items index) header payload flag) ∧
+      (header=item.header ∧ payload=item.payload ∧ flag=item.flag) ∧
       FieldsView (Input.CallNormal.continuationEntry source calleePost name (Rlp.Item.result (Rlp.Slices.itemPointer pointer items index) header payload flag))
         array pointer length cursor limit out cutoff items ∧
       Rlp.Validation.Above source calleePost cursor.toNat ∧ calleePost.memaddrs=source.memaddrs ∧ calleePost.be=source.be ∧ calleePost.code=source.code ∧
@@ -28,16 +30,21 @@ theorem field_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
         continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by
   have args := field_arguments_cases source array pointer items index item view.arrayCell view.records selected
   obtain ⟨number,positive,bounded,fits⟩ := Rlp.ListItems.at_span source pointer length.toNat items view.itemsModel index item selected view.inputFits
+  obtain ⟨offset,path,inside,itemValid,itemEncoding⟩ := Rlp.ListItems.at source pointer length.toNat items view.itemsModel index item selected
+  have prior : Rlp.Header.Encoded source (Rlp.Slices.itemPointer pointer items index) item.header item.payload item.flag := by
+    rw [path]
+    exact itemEncoding
   by_cases firstMapped : source.memaddrs (array+BitVec.ofNat 64 (16*index))
   · by_cases secondMapped : source.memaddrs (array+BitVec.ofNat 64 (16*index)+8#64)
     · rw [if_pos firstMapped,if_pos secondMapped] at args
-      obtain ⟨positive,calleePost,header,payload,flag,inner,valid,nextArena,above,domain,endian,codeEq,heapEq,price,tailRun,restored⟩ :=
-        Rlp.Item.scoped_normal_above source post (Rlp.Slices.itemPointer pointer items index) item.total cursor limit name (fieldArguments index) continuation
+      obtain ⟨positive,calleePost,header,payload,flag,inner,valid,encoded,nextArena,above,domain,endian,codeEq,heapEq,price,tailRun,restored⟩ :=
+        Rlp.Item.scoped_normal_encoded source post (Rlp.Slices.itemPointer pointer items index) item.total cursor limit name (fieldArguments index) continuation
           args view.arena fits installed returned normal
       have nextView := FieldsView.resumed source calleePost array pointer length cursor limit out cutoff items name
         (Rlp.Item.result (Rlp.Slices.itemPointer pointer items index) header payload flag) view arrayOther outputOther nextArena above domain endian
       rw [number] at price
-      exact ⟨calleePost,header,payload,flag,inner,valid,nextView,above,domain,endian,codeEq,heapEq,price,tailRun,restored⟩
+      have matching := Rlp.Header.Encoded.unique source (Rlp.Slices.itemPointer pointer items index) header payload flag item.header item.payload item.flag encoded prior
+      exact ⟨calleePost,header,payload,flag,inner,valid,matching,nextView,above,domain,endian,codeEq,heapEq,price,tailRun,restored⟩
     · rw [if_pos firstMapped,if_neg secondMapped] at args
       rw [evaluateHOLFiniteState_decCall_fixClockRewrite] at normal
       simp only [args] at normal

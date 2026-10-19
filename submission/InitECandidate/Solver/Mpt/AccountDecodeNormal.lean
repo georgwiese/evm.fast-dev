@@ -33,7 +33,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       (∀ query : BitVec 64,cursor.toNat≤query.toNat → query.toNat<heap.toNat ∨ heap.toNat+64≤query.toNat →
         query.toNat<out.toNat ∨ out.toNat+56≤query.toNat → post.memory query=source.memory query) ∧
       source.clock-post.clock≤191*length.toNat+292 := by
-  obtain ⟨header,payload,a,b,c,d,ready,inner,extent,recordRoom,⟨results⟩,view,heapEntry,domain,endian,codeEq,prefixMemory,tailRun,frame⟩ :=
+  obtain ⟨header,payload,a,b,c,d,ready,inner,extent,head,recordRoom,⟨results⟩,view,heapEntry,domain,endian,codeEq,prefixMemory,tailRun,frame⟩ :=
     body_fields source post pointer length heap cursor limit out cutoff pointerCell lengthCell outputCell arena heapGlobal heapBound before sizeBound
       aligned scratchBelow inputAbove output installed returned normal
   have readyInstalled : Input.OriginalCode.Installed ready.code := by rw [codeEq]; exact installed

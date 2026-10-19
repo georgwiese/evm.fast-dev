@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.WsAccountOptionalNormal
 import InitECandidate.Solver.Mpt.WsAccountOptionalLeafImage
+import InitECandidate.Solver.Mpt.WsAccountOptionalFixedPrice
 
 namespace InitECandidate.Solver.Mpt.WsAccountOptional
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -26,13 +27,15 @@ theorem body_image (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (w
     (rootArena : AllocatedBytes.Arena emptyRoot 32) (hashArena : AllocatedBytes.Arena emptyHash 32)
     (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    Result post heap cursor limit returned ∧ HeapGlobals source post ∧ source.clock-post.clock≤191*valueLimit+2593 ∧
+    Result post heap cursor limit returned ∧ HeapGlobals source post ∧ source.clock-post.clock≤31051 ∧
       (returned=.val (.word 1#64) ∨ Nonempty (AccountDecode.Image post heap)) ∧
       (∀ query : BitVec 64,cursor.toNat≤query.toNat → query.toNat<heap.toNat → Keccak256.Protected stp pad heap query →
         (∀ offset<64,query≠panByteAlignHOL (width:=64) (byteAddress nibs offset)) → post.memory query=source.memory query) := by
-  obtain ⟨basic,room,price,nonheap⟩ := body_normal source post ws root addr heap nibs stp pad cursor limit cutoff valueLimit data values protectedValues hashData
+  obtain ⟨basic,room,_,nonheap⟩ := body_normal source post ws root addr heap nibs stp pad cursor limit cutoff valueLimit data values protectedValues hashData
     graphProtection valueProtection rootProtection addressCell arena heapGlobal heapBound heapLower heapAligned sizeBound aligned scratchBelow installed returned normal
-  obtain ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,leafGlobals,leafMemory,codeEq,tailRun,restored⟩ :=
+  have price := body_fixed_price source post ws root addr heap nibs stp pad cursor limit emptyRoot emptyHash cutoff valueLimit data values protectedValues hashData
+    graphProtection valueProtection rootProtection addressCell arena heapGlobal heapBound heapLower heapAligned sizeBound aligned scratchBelow rootGlobal hashGlobal installed returned normal
+  obtain ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,leafGlobals,leafMemory,leafPrice,codeEq,tailRun,restored⟩ :=
     body_leaf source post ws root addr heap nibs stp pad cursor limit cutoff valueLimit data values protectedValues hashData graphProtection valueProtection rootProtection
       addressCell arena heapGlobal heapBound installed returned normal
   have readyInstalled : Input.OriginalCode.Installed ready.code := by rw [codeEq]; exact installed

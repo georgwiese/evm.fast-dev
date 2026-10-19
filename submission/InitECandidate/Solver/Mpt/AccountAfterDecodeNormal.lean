@@ -21,7 +21,7 @@ theorem after_decode_fields (source post : PanSemStateFiniteExact 64 Guest.HostM
     (output : Output out) (installed : Input.OriginalCode.Installed source.code) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source afterDecode=(some (.returned returned),post)) :
     ∃ header payload items ready inner,
-      header.toNat+payload.toNat=length.toNat ∧ value=Rlp.Item.result pointer header payload 1#64 ∧ items.length=4 ∧ heap.toNat+64≤33806089496 ∧
+      header.toNat+payload.toNat=length.toNat ∧ header.toNat≤9 ∧ value=Rlp.Item.result pointer header payload 1#64 ∧ items.length=4 ∧ heap.toNat+64≤33806089496 ∧
       FieldsView ready heap (pointer+header) payload cursor limit out cutoff items ∧
       ready.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 64#64))) ∧
       ready.memaddrs=source.memaddrs ∧ ready.be=source.be ∧ ready.code=source.code ∧
@@ -64,7 +64,7 @@ theorem after_decode_fields (source post : PanSemStateFiniteExact 64 Guest.HostM
   have fixedAmount : count*16#64=64#64 := by rw [countFour]; decide
   have countNumber : count.toNat=4 := by rw [countFour]; rfl
   have recordRoom : heap.toNat+64≤33806089496 := by rw [countNumber] at room; omega
-  refine ⟨header,payload,items,ready,inner,extent,valueEq,lengthFour,recordRoom,view,?_,domain,endian,codeEq,?_,fieldsRun,?_⟩
+  refine ⟨header,payload,items,ready,inner,extent,head,valueEq,lengthFour,recordRoom,view,?_,domain,endian,codeEq,?_,fieldsRun,?_⟩
   · change calleePost.globals.lookup (ofString "heap_ptr")=_
     simpa only [fixedAmount] using nextHeap
   · intro query beyond outside

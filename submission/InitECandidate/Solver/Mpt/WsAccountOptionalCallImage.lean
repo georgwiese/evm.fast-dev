@@ -32,7 +32,7 @@ theorem scoped_image (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
       (∀ query : BitVec 64,cursor.toNat≤query.toNat → query.toNat<heap.toNat → Keccak256.Protected stp pad heap query →
         (∀ offset<64,query≠panByteAlignHOL (width:=64) (byteAddress nibs offset)) → target.memory query=source.memory query) ∧
       target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.code=source.code ∧
-      source.clock-target.clock≤191*valueLimit+2594 ∧
+      source.clock-target.clock≤31052 ∧
       evaluateHOLFiniteState (Input.CallNormal.continuationEntry source target name answer) continuation=(some (.returned returned),inner) ∧ post=restore source name inner := by
   obtain ⟨callee,called,addressCell⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "ws_get_account_optional") "addr" body addr
     (original_code source.code installed)
@@ -48,7 +48,7 @@ theorem scoped_image (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
   have clock := evaluateHOLFiniteState_clock_le entry body
   rw [bodyRun] at clock
   change target.clock≤source.clock-1 at clock
-  change source.clock-1-target.clock≤191*valueLimit+2593 at price
+  change source.clock-1-target.clock≤31051 at price
   have codeEq := (Input.evaluation_fields entry target body _ bodyRun).2.2.2
   have fields := Input.evaluation_fields entry target body _ bodyRun
   exact ⟨positive,target,answer,inner,result,nonheap,image,memory,fields.1,fields.2.1,codeEq,by omega,tailRun,restored⟩

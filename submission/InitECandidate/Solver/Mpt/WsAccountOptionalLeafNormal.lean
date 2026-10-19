@@ -33,7 +33,7 @@ theorem body_leaf (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws
       TrieWalk.Answer ready.memaddrs valueLimit answer (fun p n=>cutoff≤p.toNat ∧ p.toNat+n.toNat≤heap.toNat) ∧
       Rlp.Validation.Arena ready cursor limit ∧
       ready.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
-      HeapGlobals source ready ∧ WsAccountLeaf.MemoryFrame source ready stp pad heap nibs ∧ ready.code=source.code ∧
+      HeapGlobals source ready ∧ WsAccountLeaf.MemoryFrame source ready stp pad heap nibs ∧ source.clock-ready.clock≤2298 ∧ ready.code=source.code ∧
       evaluateHOLFiniteState ready afterLeaf=(some (.returned returned),inner) ∧ post=restore source "leaf" inner := by
   rw [body_shape] at normal
   obtain ⟨callee,called,addrCell⟩ := WsAccountLeaf.environment source.code.lookup addr (WsAccountLeaf.original_code source.code installed)
@@ -49,7 +49,7 @@ theorem body_leaf (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws
   have entryGraphProtection : ∀ query,entryData.graph.Footprint query → Keccak256.Protected stp pad heap query := graphProtection
   have entryValueProtection : ∀ query,TrieWalk.ValueFootprint entryData.graph query → Keccak256.Protected stp pad heap query := valueProtection
   have entryArena := Rlp.Validation.Arena.of_fields source entry cursor limit arena rfl rfl
-  obtain ⟨allocated,result⟩ := WsAccountLeaf.body_normal_value entry target ws root addr heap nibs stp pad entryData valueLimit entryValues entryProtected
+  obtain ⟨allocated,result,upper,lower⟩ := WsAccountLeaf.body_normal entry target ws root addr heap nibs stp pad entryData valueLimit entryValues entryProtected
     entryHash entryGraphProtection entryValueProtection rootProtection addrCell heapGlobal heapBound installed answer bodyRun
   have nextHeap := WsAccountLeaf.body_heap entry target heap heapGlobal heapBound installed answer bodyRun
   have nextArena := WsAccountLeaf.body_arena entry target cursor limit entryArena installed _ bodyRun
@@ -64,7 +64,9 @@ theorem body_leaf (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ws
     exact congrArg Prod.snd preserved
   have memory := WsAccountLeaf.body_memory entry target ws root addr heap nibs stp pad entryData entryHash entryGraphProtection rootProtection
     addrCell heapGlobal heapBound installed answer bodyRun
-  exact ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,nonheap,memory,codeEq,tailRun,restored⟩
+  change source.clock-1-2297≤target.clock at lower
+  have paid : source.clock-ready.clock≤2298 := by change source.clock-target.clock≤2298; omega
+  exact ⟨allocated,ready,inner,answer,readyCell,result,readyArena,nextHeap,nonheap,memory,paid,codeEq,tailRun,restored⟩
 
 end InitECandidate.Solver.Mpt.WsAccountOptional
 

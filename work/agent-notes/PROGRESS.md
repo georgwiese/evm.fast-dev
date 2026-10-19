@@ -4,6 +4,8 @@
 
 ## 2026-10-19: affordable next length and actual arena room
 
+- Follow-up memory-extend-tail-view-v1.log1384jobs passed: exact original capacity selection/real allocation/clear/store and final expansion clear/length store compose through both branches, deriving funding and restoring the actual buffer View. Exact paid tail clocks are growthPrice+expand/32+1, with growthPrice=deltaCapacity/32+2when growing, otherwise0. Outside-buffer words survive except actual header32/40stores.5.48s/1863132KiBMaxRSS; permitted axioms only. Full entry/caller and global reachability/counts/weighted K remain open.
+
 - Actual normal cost1 output plus current aligned length/cost coverage, capped used+available gas and an affordable covering charge imply nonwrapping next length, alignment, memoryCost<=used+charged and nextLength<=178956960. Actual expansion stores/loops remain to be composed.
 - Both original arena allocators now derive room from actual normal execution and current cursor order by ruling out the real trap. Ignored allocation caller derives1clock and exact full cursor update; no future allocation room/execution is assumed.
 - Successful memory-expansion-cost-affordable-v1.log1316jobs and arena-normal-ignored-v1.log1087jobs, permitted axioms; current-source evidence indexed. Global ownership/charge reachability and totals/weighted target K remain open.

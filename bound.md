@@ -1,5 +1,7 @@
 # Status — update this section frequently
 
+**2026-10-19 checked original memory-growth tail:** actual capacity selection, reached allocator room, capacity clear/store and expansion clear/length store now compose through both capacity branches. Paid source clocks are `growthPrice + expand/32 + 1`, with growthPrice `deltaCapacity/32 + 2` when growing and0otherwise. The actual post-state restores the current buffer View at the new length/capacity, and words outside the buffer plus header32/40 footprint survive. Successful memory-extend-tail-view-v1.log1384jobs, permitted axioms,5.48s/1863132KiBMaxRSS. Full function entry/caller, charged-opcode composition, reachable ownership, global totals and weighted target K remain open. This is no whole-program bound or verification claim.
+
 **Objective corrected by the user on 2026-10-17:** obtain a reasonably tight finite runtime bound for the **CURRENT, UNCHANGED Pancake implementation on `main`**. There is **no required numerical ceiling**. In particular, exceeding Yukon's score limit is not a failure and does not authorize replacing an algorithm.
 
 **Pinned reference:** local `main` is `7d656e5b6878aa420de793d9d6f689fa26ec0842`. `Guest/Ast.lean`, `Guest/guest.pp.pnk`, `submission/Solution.lean` and `submission/claim.json` currently have no changes relative to `main`. Do not change the program, its data structures, compiled ROM or semantics to improve the bound.

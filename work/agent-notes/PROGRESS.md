@@ -4,6 +4,8 @@
 
 ## 2026-10-19: affordable next length and actual arena room
 
+- Original u256_from_be full all-outcome body price<=max(4,n), from real counter advance/limit preservation and non-fallthrough aligned branch; actual scoped caller derives tuple/readonly continuation and price<=max(4,n)+1. For actual MLOAD n32this is<=33caller clocks. Successful u256-from-be-call-v2.log1277jobs, permitted axioms. MLOAD's remaining stack/PC/ownership and global composition still open.
+
 - Full original MSTORE8 normal body/caller/dispatcher checked: typed actual pops, real charged expansion, scalar conversion, byte backing-store ownership, PC update and return. Actual stack decrements2; current buffer/cost invariant restored; precise buffer+header0/16/32/40/64/184footprint. Current ancestor ownership/live cap derives conserved live budget, live used credit>=3and strict physical FrameRank descent. Observed dispatcher caller clocks+old memory potential<=new potential+34. Successful memory-store8-rank-v2.log1432jobs, permitted axioms. Reachability/remaining suffixes/child/global counts/weighted K remain open.
 
 - Complete original charge_with_memory normal body/caller now derives actual pair, covering saturated fee, real affordable charge, actual expansion and return. New buffer View/cost<=updated-used, exact current/live ledger effects and ancestor preservation compose. Observed caller clocks+old memory potential<=new potential+28. Affordable nonempty access extent fits selected next length. Successful charge-with-memory-frame-sums-v1.log1407jobs (4.57s/1846860KiBMaxRSS), charge-with-memory-amortized-v1.log1408jobs, memory-expansion-cost-range-v1.log1317jobs, permitted axioms. Whole-opcode/global reachability/counts and weighted K remain open; no full verification.

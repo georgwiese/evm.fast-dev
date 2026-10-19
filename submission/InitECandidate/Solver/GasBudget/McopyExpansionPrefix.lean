@@ -39,6 +39,8 @@ theorem expansion_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemo
       (U256Zero.resultWord len = 0#64 →
         (SatWord.resultWord src).toNat + (SatWord.resultWord len).toNat ≤ (MemoryExtend.newLength current (MemoryExpansionCost2.resultPair src len dst len current).2).toNat ∧
         (SatWord.resultWord dst).toNat + (SatWord.resultWord len).toNat ≤ (MemoryExtend.newLength current (MemoryExpansionCost2.resultPair src len dst len current).2).toNat) ∧
+      (∀ key, key ≠ ofString "frame_mem_ptr" → ready.globals.lookup key = source.globals.lookup key) ∧
+      ready.memaddrs = source.memaddrs ∧
       evaluateHOLFiniteState ready afterExpansion = (some (.returned returned), inner) ∧
       Input.LocalEffects.erase post = Input.LocalEffects.erase inner ∧ post.clock = inner.clock := by
   have costView : MemoryExpansionCost.View source frame current := ⟨view.installed, view.ev, view.mapped 32 (by simp), view.lengthCell⟩
@@ -55,13 +57,13 @@ theorem expansion_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     have bound := (MemoryExpansionCost2.resultPair src len dst len current).1.isLt
     omega
   rw [afterFee_shape] at run
-  obtain ⟨ready, tailFits, tailClock, locals, readyView, budget, credit, nextCovered, away, firstRange, secondRange, tailRun⟩ :=
+  obtain ⟨ready, tailFits, tailClock, locals, readyView, budget, credit, nextCovered, away, firstRange, secondRange, globals, domain, tailRun⟩ :=
     MemoryExpansionCost2.charged_normal checkpoint inner frame base current capacity pointer scratch (chargeWord src dst len current) src len dst len
       checkpointView xCell checkpointCap checkpointCovered covers [localVar "cost"] args afterExpansion returned run
   let tailPaid := MemoryExtend.price current capacity (MemoryExpansionCost2.resultPair src len dst len current).2 + 2
   refine ⟨setupPaid + tailPaid, ready, inner, by dsimp only [tailPaid]; omega, ?_, ?_, readyView,
     by rw [locals]; exact srcCell, by rw [locals]; exact dstCell, by rw [locals]; exact nCell, ?_, ?_, nextCovered, ?_,
-    fun nonempty => ⟨firstRange nonempty, secondRange nonempty⟩, tailRun, scopeFields, scopeClock⟩
+    fun nonempty => ⟨firstRange nonempty, secondRange nonempty⟩, ?_, ?_, tailRun, scopeFields, scopeClock⟩
   · rw [setupClock] at tailFits
     dsimp only [tailPaid]
     omega
@@ -72,6 +74,13 @@ theorem expansion_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemo
   · rw [credit, memory]
   · intro query outside notLength notCapacity notGas notUsed
     rw [away query outside notLength notCapacity notGas notUsed, memory]
+  · intro key different
+    rw [globals key different]
+    have preserved := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.globals.lookup key) setupFields
+    exact preserved
+  · rw [domain]
+    have preserved := congrArg PanSemStateFiniteExact.memaddrs setupFields
+    exact preserved
 
 end InitECandidate.Solver.GasBudget.Mcopy
 

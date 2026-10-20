@@ -37,6 +37,11 @@ theorem startup_context (source mptMiddle bnMiddle evmMiddle middle : PanSemStat
 private theorem globals_of_hash (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (same : KeccakAbsorb.hashControl target = KeccakAbsorb.hashControl source) : target.globals = source.globals := congrArg (fun state => state.globals) same
 
+/-- Global initialization provenance retained for downstream buffer facts. -/
+def StartupHistory (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop :=
+  ∃ source mptMiddle bnMiddle evmMiddle,Entry input source ∧ MptReached source mptMiddle ∧ BnReached source mptMiddle bnMiddle ∧
+    EvmReached source bnMiddle evmMiddle ∧ ForkReached source evmMiddle current
+
 structure InputReady (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
   code : OriginalCode.Installed source.code
   shapes : OriginalExceptions.Installed source.eshapes
@@ -47,6 +52,7 @@ structure InputReady (input : Guest.InputBlob) (source : PanSemStateFiniteExact 
   little : source.be = false
   oracle : source.ffi.oracle = InitE.sourceOracle
   host : source.ffi.ffiState = Guest.guestHostMemory input
+  history : StartupHistory input source
 
 theorem input_ready (input : Guest.InputBlob) (source mptMiddle bnMiddle evmMiddle middle : PanSemStateFiniteExact 64 Guest.HostMemory)
     (entry : Entry input source) (mpt : MptReached source mptMiddle) (bn : BnReached source mptMiddle bnMiddle)
@@ -66,7 +72,7 @@ theorem input_ready (input : Guest.InputBlob) (source mptMiddle bnMiddle evmMidd
   have heap : middle.globals.lookup (ofString "heap_ptr") = some (.val (.word 2713731432#64)) := by
     rw [globals]
     exact ForkInitialization.template_heap evmMiddle 2713730840 (evm.heap source mptMiddle bnMiddle evmMiddle bn)
-  exact ⟨code.symm ▸ entry.code,shapes.symm ▸ entry.shapes,scalars,heap,domain.trans entry.domain,shared.trans entry.shared,endian.trans entry.little,oracle.trans entry.oracle,host.trans entry.host⟩
+  exact ⟨code.symm ▸ entry.code,shapes.symm ▸ entry.shapes,scalars,heap,domain.trans entry.domain,shared.trans entry.shared,endian.trans entry.little,oracle.trans entry.oracle,host.trans entry.host,⟨source,mptMiddle,bnMiddle,evmMiddle,entry,mpt,bn,evm,fork⟩⟩
 
 end InitECandidate.Solver.Input.Main
 

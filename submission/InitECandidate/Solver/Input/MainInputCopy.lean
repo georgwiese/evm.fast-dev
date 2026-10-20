@@ -23,6 +23,7 @@ structure InputCopied (input : Guest.InputBlob) (source current : PanSemStateFin
   little : current.be = false
   oracle : current.ffi.oracle = InitE.sourceOracle
   host : current.ffi.ffiState = Guest.guestHostMemory input
+  history : StartupHistory input source
 
 private theorem shared_after (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (program : ProgHOL 64)
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source program = (result,target)) : target.shMemaddrs = source.shMemaddrs := by
@@ -84,7 +85,7 @@ theorem input_copy_prefix (input : Guest.InputBlob) (source target : PanSemState
   have shapes : current.eshapes = source.eshapes := fields.2.2.1
   have currentReady : InputCopied input source current := ⟨currentClock,currentBytes,currentBinding,currentGlobals,currentScalars,currentHeap,
     code.symm ▸ ready.code,shapes.symm ▸ ready.shapes,bodyDomain.trans ready.domain,bodyShared.trans ready.shared,
-    bodyEndian.trans ready.little,bodyOracle.trans ready.oracle,bodyHost.trans ready.host⟩
+    bodyEndian.trans ready.little,bodyOracle.trans ready.oracle,bodyHost.trans ready.host,ready.history⟩
   exact ⟨by rw [copiedClock] at funded; exact funded,current,final,currentReady,remaining,restore⟩
 
 end InitECandidate.Solver.Input.Main

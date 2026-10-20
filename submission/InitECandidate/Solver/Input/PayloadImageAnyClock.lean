@@ -31,13 +31,13 @@ theorem allocated_image_any_clock (source post : PanSemStateFiniteExact 64 Guest
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source afterGuard=(some (.returned value),post)) :
     Image post input pointer cursor length (PersistentAlloc.rounded cursor 136#64) ∧
       VarList.Records post input pointer (PersistentAlloc.rounded cursor 136#64) (62+Guest.GasLimit.le32 input 566) (transactionBytes input) ∧
-      InitializerAllocations.context post=InitializerAllocations.context source := by
+      InitializerAllocations.context post=InitializerAllocations.context source ∧ Layout input length := by
   have paddedRun := panPropsEvaluateAddClockEq afterGuard source (some (.returned value)) post 8 ⟨run,by intro impossible; cases impossible⟩
-  obtain ⟨image,records,context⟩ := allocated_image {source with clock:=source.clock+8} {post with clock:=post.clock+8}
+  obtain ⟨image,records,context,layout⟩ := allocated_image {source with clock:=source.clock+8} {post with clock:=post.clock+8}
     input pointer cursor length heap extent p n inside domain pointerAligned cursorAligned pointerLower cursorAfter cursorRoom heapGlobal allocCode
     array arrayGlobal arrayAligned arrayLower arrayBefore offsetCode divisionCode failCode exceptionShape varCode fixedCode (by change 8≤source.clock+8; omega) value paddedRun
   exact ⟨Image.of_memory _ post input pointer cursor length (PersistentAlloc.rounded cursor 136#64) rfl image,
-    VarList.Records.of_memory _ post input pointer (PersistentAlloc.rounded cursor 136#64) _ _ rfl records,context⟩
+    VarList.Records.of_memory _ post input pointer (PersistentAlloc.rounded cursor 136#64) _ _ rfl records,context,layout⟩
 
 end InitECandidate.Solver.Input.Payload
 

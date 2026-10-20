@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.MainParsedHeap
+import InitECandidate.Solver.Input.MainParsedByteBudget
 import InitECandidate.Solver.Input.TerminatingProgramPrefix
 
 namespace InitECandidate.Solver.Input.Main.RequestHash
@@ -25,9 +25,9 @@ theorem root_prefix (input : Guest.InputBlob) (before copiedSource current post 
     (bounded : input.length%2^64≤Guest.maxInputBytes) (result : Option (PanSemResultExact 64))
     (run : evaluateHOLFiniteState current DecoderCall.continuation=(result,post)) (notTimeout : result≠some .timeOut) :
     ∃ root : BitVec 64,current.globals.lookup (ofString "heap_ptr")=some (.val (.word root)) ∧ root.toNat%8=0 ∧
-      root.toNat≤DecoderSetup.cursor input+600+8*(input.length%2^64) ∧ AllocatedBytes.Arena root 32 ∧ 1≤current.clock ∧
+      root.toNat≤DecoderSetup.cursor input+600+4*(input.length%2^64) ∧ AllocatedBytes.Arena root 32 ∧ 1≤current.clock ∧
       ∃ final,evaluateHOLFiniteState (entered current root) afterRoot=(result,final) ∧ post=restore current "root" final := by
-  obtain ⟨root,heap,aligned,after,bound,arena⟩ := parsed_heap input _ current actual bounded
+  obtain ⟨root,heap,aligned,after,bound,arena⟩ := parsed_heap_shared input _ current actual bounded
   have context := DecoderSetup.entered_context copiedSource input
   have callerCode : (DecoderSetup.entered copiedSource input).code=copiedSource.code := by have h := congrArg PanSemStateFiniteExact.code context; exact h
   have code : current.code=copiedSource.code := actual.code.trans callerCode

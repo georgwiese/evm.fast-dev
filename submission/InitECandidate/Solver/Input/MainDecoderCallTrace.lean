@@ -24,6 +24,8 @@ structure DecoderReady (input : Guest.InputBlob) (caller current : PanSemStateFi
   endian : current.be=caller.be
   forward : current.clock≤caller.clock
   cost : caller.clock-current.clock≤(input.length%2^64)/4+witnessLength input/2+523
+  payloadLayout : Payload.Layout input (PayloadPrefix.length input)
+  layout : RequestLayout input
 
 /-- The original main decoder call/catch either terminates in its actual
 parser-error handler or reaches the literal success continuation with actual
@@ -74,7 +76,7 @@ theorem decoder_call_trace (input : Guest.InputBlob) (before source target : Pan
     change caller.clock-1-bodyPost.clock≤(input.length%2^64)/4+witnessLength input/2+522 at cost
     change (evaluateHOLFiniteState handlerEntry handler).2.clock≤bodyPost.clock at handlerForward
     exact Or.inl (by change caller.clock-target.clock≤_; rw [endpoint]; omega)
-  · obtain ⟨same,data,image,records,hashes,requests,ffi⟩ := normal
+  · obtain ⟨same,data,image,records,hashes,requests,ffi,payloadLayout,layout⟩ := normal
     have actualBody : evaluateHOLFiniteState entry Header.body=(some (.returned (.val (.word (RequestPrefix.cursor input)))),bodyPost) := by rw [bodyRun,same]
     have validFinite : isValidValueHOLFinite caller .local (ofString "si") (.val (.word (RequestPrefix.cursor input)))=true := by
       simp [isValidValueHOLFinite,lookupKvarHOLFinite,callerSi,shapeOfHOLExact,shapeEqHOL]
@@ -92,7 +94,7 @@ theorem decoder_call_trace (input : Guest.InputBlob) (before source target : Pan
       Payload.Image.of_memory bodyPost current input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) rfl image,
       VarList.Records.of_memory bodyPost current input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) _ _ rfl records,RequestHashImage.of_memory input bodyPost current rfl hashes,RequestsDecoded.of_memory input bodyPost current rfl requests,ffi,otherGlobals,fields.2.2.2,fields.1,fields.2.2.1,fields.2.1,forward,by
         change caller.clock-1-bodyPost.clock≤(input.length%2^64)/4+witnessLength input/2+522 at cost
-        change caller.clock-bodyPost.clock≤_; omega⟩
+        change caller.clock-bodyPost.clock≤_; omega,payloadLayout,layout⟩
     rw [original_shape,StateSteps.next_sequence caller current _ _ returned forward] at run
     exact Or.inr ⟨current,ready,run⟩
 

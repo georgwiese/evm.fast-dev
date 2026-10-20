@@ -82,7 +82,7 @@ theorem store_pointer (input : Guest.InputBlob) (source caller current : PanSemS
   have nextReturned : Returned input caller {current with memory := StoreWord.put current.memory (RequestPrefix.cursor input) (cursor input)} :=
     ⟨returned.locals,bytes,by simpa [StoreWord.put,away 88#64 (by decide)] using returned.gasCell,returned.gasBound,
       by simpa [StoreWord.put,away 56#64 (by decide)] using returned.countCell,
-      returned.code,returned.domain,returned.endian,returned.exceptions,returned.heap,returned.transactions,returned.globals,returned.forward,returned.cost,image,records,returned.context⟩
+      returned.code,returned.domain,returned.endian,returned.exceptions,returned.heap,returned.transactions,returned.globals,returned.forward,returned.cost,image,records,returned.context,returned.layout⟩
   exact ⟨run,nextReturned,by simp [StoreWord.put],fun _ => rfl⟩
 
 /-- Resume the literal next decoding call after that exact store; the later

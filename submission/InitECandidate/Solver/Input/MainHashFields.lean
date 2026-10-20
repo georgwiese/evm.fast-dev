@@ -37,6 +37,7 @@ structure RequestCaller (input : Guest.InputBlob) (source current : PanSemStateF
   records : VarList.Records current input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input)
   ffi : current.ffi=source.ffi
   hashes : RequestHashImage input current
+  payloadLayout : Payload.Layout input (PayloadPrefix.length input)
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 
@@ -168,7 +169,7 @@ theorem hash_fields_trace (input : Guest.InputBlob) (source caller current post 
       targetGas,targetCount,returned.transactions,by change next.clock ≤ source.clock; omega,by change source.clock - next.clock ≤ _; omega,
       ⟨(other "p" (by decide) (by decide)).trans actualCaller.roots.1,
         (other "len" (by decide) (by decide)).trans actualCaller.roots.2.1,
-        (other "o_wit" (by decide) (by decide)).trans actualCaller.roots.2.2⟩,otherGlobals,targetImage,targetRecords,targetFfi,hashImage⟩
+        (other "o_wit" (by decide) (by decide)).trans actualCaller.roots.2.2⟩,otherGlobals,targetImage,targetRecords,targetFfi,hashImage,returned.layout⟩
     exact Or.inr ⟨target,innerPost,metadata,targetRun,restored⟩
 
 end InitECandidate.Solver.Input.Main.PayloadPrefix

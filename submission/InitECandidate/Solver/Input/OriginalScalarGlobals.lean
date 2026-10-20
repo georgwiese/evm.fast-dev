@@ -44,6 +44,10 @@ set_option maxRecDepth 100000 in
 open scoped InitE.MetadataComputation InitE.NameComputation in
 theorem keccak_names : ofString "keccak_st" ∈ names ∧ ofString "keccak_pad" ∈ names := by decide_cbv
 
+set_option maxRecDepth 100000 in
+open scoped InitE.MetadataComputation InitE.NameComputation in
+theorem ssz_names : ofString "ssz_len_chunk" ∈ names ∧ ofString "ssz_offs" ∈ names ∧ ofString "zero_hashes" ∈ names := by decide_cbv
+
 end InitECandidate.Solver.Input.OriginalScalarGlobals
 
 #print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.checked
@@ -54,3 +58,5 @@ end InitECandidate.Solver.Input.OriginalScalarGlobals
 #print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.sha_names
 
 #print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.keccak_names
+
+#print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.ssz_names

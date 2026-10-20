@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.MainWitnessTrace
+import InitECandidate.Solver.Input.VarList.RecordsIntervalFrame
 
 namespace InitECandidate.Solver.Input.Main.DecoderCall
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -30,8 +31,10 @@ theorem requests_witness_trace_frame (input : Guest.InputBlob) (source caller po
     source.clock-post.clock≤(input.length%2^64)/4+witnessLength input/2+522 ∧
       ((∃ error : BitVec 64,result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨
        (result=some (.returned (.val (.word (RequestPrefix.cursor input)))) ∧ WitnessDecoded input post ∧
-         ∀ query,inputPointer.toNat≤query.toNat → query.toNat<(PayloadPrefix.finalCursor input).toNat →
-           query≠byteAddress (RequestPrefix.cursor input) 32 → query≠byteAddress (RequestPrefix.cursor input) 40 → query≠byteAddress (RequestPrefix.cursor input) 48 → query≠byteAddress (RequestPrefix.cursor input) 56 → query≠byteAddress (RequestPrefix.cursor input) 64 → query≠byteAddress (RequestPrefix.cursor input) 72 → query≠byteAddress (RequestPrefix.cursor input) 80 → post.memory query=caller.memory query)) := by
+         (∀ query,inputPointer.toNat≤query.toNat → query.toNat<(PayloadPrefix.finalCursor input).toNat →
+           query≠byteAddress (RequestPrefix.cursor input) 32 → query≠byteAddress (RequestPrefix.cursor input) 40 → query≠byteAddress (RequestPrefix.cursor input) 48 → query≠byteAddress (RequestPrefix.cursor input) 56 → query≠byteAddress (RequestPrefix.cursor input) 64 → query≠byteAddress (RequestPrefix.cursor input) 72 → query≠byteAddress (RequestPrefix.cursor input) 80 → post.memory query=caller.memory query) ∧
+         Payload.Image post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) ∧
+         VarList.Records post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input))) := by
   rcases requests_return_trace input source caller post environment actual layout bounded result run notTimeout with rejected | normal
   · obtain ⟨error,allowed,same,cost,aggregate⟩ := rejected
     exact ⟨by omega,Or.inl ⟨error,same⟩⟩
@@ -49,10 +52,52 @@ theorem requests_witness_trace_frame (input : Guest.InputBlob) (source caller po
     have previous := PayloadPrefix.final_cursor_geometry input bounded actual.transactions
     have arrayAfter : (PayloadPrefix.finalCursor input).toNat<(witnessArray input).toNat := by rw [previous.1,geometry.1]; omega
     have postMemory : post.memory=final.memory := by have h := congrArg PanSemStateFiniteExact.memory frame; exact h
-    refine Or.inr ⟨same,WitnessDecoded.of_frame input final post frame data,?_⟩
-    intro query queryLower before requestPtr nodePtr nodeCount codePtr codeCount headerPtr headerCount
-    rw [postMemory]
-    exact (memory query queryLower (by omega) requestPtr nodePtr nodeCount codePtr codeCount headerPtr headerCount).trans (returned.earlier query queryLower before requestPtr)
+    have earlier (query : BitVec 64) (queryLower : inputPointer.toNat≤query.toNat) (before : query.toNat<(PayloadPrefix.finalCursor input).toNat)
+        (requestPtr : query≠byteAddress (RequestPrefix.cursor input) 32) (nodePtr : query≠byteAddress (RequestPrefix.cursor input) 40)
+        (nodeCount : query≠byteAddress (RequestPrefix.cursor input) 48) (codePtr : query≠byteAddress (RequestPrefix.cursor input) 56)
+        (codeCount : query≠byteAddress (RequestPrefix.cursor input) 64) (headerPtr : query≠byteAddress (RequestPrefix.cursor input) 72) (headerCount : query≠byteAddress (RequestPrefix.cursor input) 80) : post.memory query=caller.memory query := by
+      rw [postMemory]
+      exact (memory query queryLower (by omega) requestPtr nodePtr nodeCount codePtr codeCount headerPtr headerCount).trans (returned.earlier query queryLower before requestPtr)
+    have bounds := input_cursor_bounds input bounded
+    have inputLower : 2713731432+input.length%2^64+8≤DecoderSetup.cursor input := bounds.1
+    have cursorUpper : DecoderSetup.cursor input≤2847949152 := bounds.2.1
+    have aligned : DecoderSetup.cursor input%8=0 := bounds.2.2
+    have plNat := (PayloadPrefix.cursor_number input bounded).1
+    have siNat : (RequestPrefix.cursor input).toNat=DecoderSetup.cursor input+288 := by rw [RequestPrefix.cursor,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+    have rounded := PersistentAlloc.rounded_nat (PayloadPrefix.cursor input) 136#64 (by change (PayloadPrefix.cursor input).toNat+136+7<2^64; rw [plNat]; omega)
+    have arrayNat : (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64).toNat=DecoderSetup.cursor input+520 := by
+      change (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64).toNat=((PayloadPrefix.cursor input).toNat+136+7)/8*8 at rounded
+      rw [plNat] at rounded
+      omega
+    have usable (query : BitVec 64) (after : (PayloadPrefix.cursor input).toNat≤query.toNat) (before : query.toNat<(PayloadPrefix.finalCursor input).toNat) : post.memory query=caller.memory query := by
+      have away (offset : Nat) (small : offset≤80) : query≠byteAddress (RequestPrefix.cursor input) offset := by
+        have address : (byteAddress (RequestPrefix.cursor input) offset).toNat=(RequestPrefix.cursor input).toNat+offset := byteAddress_toNat _ offset (by rw [siNat]; omega)
+        intro same
+        have equal := congrArg BitVec.toNat same
+        rw [address,siNat] at equal
+        rw [plNat] at after
+        omega
+      apply earlier query _ before (away 32 (by decide)) (away 40 (by decide)) (away 48 (by decide)) (away 56 (by decide)) (away 64 (by decide)) (away 72 (by decide)) (away 80 (by decide))
+      change 2713731432≤query.toNat
+      rw [plNat] at after
+      omega
+    have payloadImage : Payload.Image post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) := by
+      apply Payload.Image.of_region caller post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (by rw [plNat]; omega) actual.image
+      intro query after before
+      apply usable query after
+      rw [plNat] at before
+      have bottom := previous.2.2.1
+      omega
+    have transactionRecords : VarList.Records post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input) := by
+      apply VarList.Records.of_interval caller post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) _ _ (PayloadPrefix.finalCursor input).toNat actual.records
+      · change (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64).toNat+16*Payload.transactionCount input≤_
+        rw [arrayNat,previous.1]
+      · intro query after before
+        apply usable query _ before
+        rw [arrayNat] at after
+        rw [plNat]
+        omega
+    exact Or.inr ⟨same,WitnessDecoded.of_frame input final post frame data,earlier,payloadImage,transactionRecords⟩
 
 
 

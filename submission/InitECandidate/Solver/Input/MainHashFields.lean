@@ -24,6 +24,9 @@ structure RequestCaller (input : Guest.InputBlob) (source current : PanSemStateF
     current.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 (input.length % 2^64 - 2)))) ∧
     current.locals.lookup (ofString "o_wit") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6))))
   globals : ∀ key,key ≠ ofString "heap_ptr" → current.globals.lookup key = source.globals.lookup key
+  image : Payload.Image current input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64)
+  records : VarList.Records current input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input)
+  ffi : current.ffi=source.ffi
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 
@@ -32,7 +35,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix Witne
 open Flapjack.Basis.Pure.MlString QueryBranch
 
 private theorem payload_field_away (input : Guest.InputBlob) (bounded : input.length % 2^64 ≤ Guest.maxInputBytes)
-    (offset : BitVec 64) (small : offset.toNat ≤ 88) (field : Nat) (fieldSmall : field ≤ 88) :
+    (offset : BitVec 64) (small : offset.toNat ≤ 128) (field : Nat) (fieldSmall : field ≤ 88) :
     cursor input + offset ≠ byteAddress (RequestPrefix.cursor input) field := by
   have upper : DecoderSetup.cursor input ≤ 2847949152 := (input_cursor_bounds input bounded).2.1
   have payloadNat := (cursor_number input bounded).1
@@ -107,12 +110,42 @@ theorem hash_fields_trace (input : Guest.InputBlob) (source caller current post 
       change next.globals.lookup key = _
       rw [globals,returned.globals key different,actualCaller.frame.globals]
       simp [HolFiniteMapExact.lookup_update,FUPDATE,Ne.symm different]
+    have nextMemory : next.memory=current.memory := by have h := congrArg PanSemStateFiniteExact.memory frame; exact h
+    have image := Payload.Image.of_memory current next input inputPointer (cursor input) (length input) (PersistentAlloc.rounded (cursor input) 136#64) nextMemory returned.image
+    have records := VarList.Records.of_memory current next input inputPointer (PersistentAlloc.rounded (cursor input) 136#64) _ _ nextMemory returned.records
+    have targetImage : Payload.Image target input inputPointer (cursor input) (length input) (PersistentAlloc.rounded (cursor input) 136#64) := by
+      apply Payload.Image.of_cells next target input inputPointer (cursor input) (length input) (PersistentAlloc.rounded (cursor input) 136#64) image
+      intro field member
+      have bound := (Payload.image_fields_valid input inputPointer (length input) (PersistentAlloc.rounded (cursor input) 136#64) field member).1
+      have encoded : (BitVec.ofNat 64 field.1).toNat=field.1 := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+      exact stores.2.2 _ (payload_field_away input bounded _ (by rw [encoded]; omega) 8 (by decide))
+        (payload_field_away input bounded _ (by rw [encoded]; omega) 16 (by decide)) (payload_field_away input bounded _ (by rw [encoded]; omega) 24 (by decide))
+    have plNat := (cursor_number input bounded).1
+    have rounded := PersistentAlloc.rounded_nat (cursor input) 136#64 (by change (cursor input).toNat+136+7<2^64; rw [plNat]; omega)
+    have arrayNat : (PersistentAlloc.rounded (cursor input) 136#64).toNat=DecoderSetup.cursor input+520 := by
+      change (PersistentAlloc.rounded (cursor input) 136#64).toNat=((cursor input).toNat+136+7)/8*8 at rounded
+      rw [plNat] at rounded
+      omega
+    have targetRecords : VarList.Records target input inputPointer (PersistentAlloc.rounded (cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input) := by
+      apply VarList.Records.of_after next target input inputPointer (PersistentAlloc.rounded (cursor input) 136#64) _ _ ((RequestPrefix.cursor input).toNat+32) records (by rw [siNat,arrayNat]; omega)
+      intro query after
+      have different (offset : Nat) (small : offset<32) : query≠byteAddress (RequestPrefix.cursor input) offset := by
+        have address : (byteAddress (RequestPrefix.cursor input) offset).toNat=(RequestPrefix.cursor input).toNat+offset := byteAddress_toNat _ offset (by rw [siNat]; omega)
+        intro same
+        have equal := congrArg BitVec.toNat same
+        rw [address] at equal
+        omega
+      exact stores.2.2 query (different 8 (by decide)) (different 16 (by decide)) (different 24 (by decide))
+    have nextContext : InitializerAllocations.context next=InitializerAllocations.context current := by have h := congrArg InitializerAllocations.context frame; exact h
+    have nextFfi : next.ffi=current.ffi := by have h := congrArg PanSemStateFiniteExact.ffi nextContext; exact h
+    have returnedFfi : current.ffi=caller.ffi := by have h := congrArg PanSemStateFiniteExact.ffi returned.context; exact h
+    have targetFfi : target.ffi=source.ffi := nextFfi.trans (returnedFfi.trans actualCaller.frame.ffi)
     have metadata : DecoderCall.RequestCaller input source target := ⟨stores.2.1,code,exceptions,domain,heap,offsets,np,
       (other "nlen" (by decide) (by decide)).trans actualCaller.length,si,(other "o_rq" (by decide) (by decide)).trans actualCaller.requestsOffset,
       targetGas,targetCount,returned.transactions,by change next.clock ≤ source.clock; omega,by change source.clock - next.clock ≤ _; omega,
       ⟨(other "p" (by decide) (by decide)).trans actualCaller.roots.1,
         (other "len" (by decide) (by decide)).trans actualCaller.roots.2.1,
-        (other "o_wit" (by decide) (by decide)).trans actualCaller.roots.2.2⟩,otherGlobals⟩
+        (other "o_wit" (by decide) (by decide)).trans actualCaller.roots.2.2⟩,otherGlobals,targetImage,targetRecords,targetFfi⟩
     exact Or.inr ⟨target,innerPost,metadata,targetRun,restored⟩
 
 end InitECandidate.Solver.Input.Main.PayloadPrefix

@@ -15,7 +15,7 @@ theorem normal_payload_image (input : Guest.InputBlob) (source entry post : PanS
     (value : ValueHOL 64) (run : evaluateHOLFiniteState entry Payload.afterGuard=(some (.returned value),post)) :
     Payload.Image post input inputPointer (cursor input) (length input) (PersistentAlloc.rounded (cursor input) 136#64) ∧
       VarList.Records post input inputPointer (PersistentAlloc.rounded (cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input) ∧
-      InitializerAllocations.context post=InitializerAllocations.context entry := by
+      InitializerAllocations.context post=InitializerAllocations.context entry ∧ Payload.Layout input (length input) := by
   have geometry := input_cursor_bounds input bounded
   have lower : 2713731432+input.length%2^64+8≤DecoderSetup.cursor input := geometry.1
   have upper : DecoderSetup.cursor input≤2847949152 := geometry.2.1

@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.PayloadAllocatedNormal
+import InitECandidate.Solver.Input.PayloadLayout
 import InitECandidate.Solver.Input.PayloadAfterExtraImage
 import InitECandidate.Solver.Input.PayloadPreparedImage
 import InitECandidate.Solver.Input.PayloadImageCells
@@ -35,7 +36,7 @@ theorem allocated_image (source post : PanSemStateFiniteExact 64 Guest.HostMemor
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source afterGuard=(some (.returned value),post)) :
     Image post input pointer cursor length (PersistentAlloc.rounded cursor 136#64) ∧
       VarList.Records post input pointer (PersistentAlloc.rounded cursor 136#64) (62+Guest.GasLimit.le32 input 566) (transactionBytes input) ∧
-      InitializerAllocations.context post=InitializerAllocations.context source := by
+      InitializerAllocations.context post=InitializerAllocations.context source ∧ Layout input length := by
   classical
   obtain ⟨first,extraBound,valid,next,innerPost,paid,bound,nextEq,nextHeap,clockLower,nextRun,postEq⟩:=prefix_through_extra source post input pointer cursor length
     heap extent p n domain pointerAligned cursorAligned pointerLower cursorAfter (by omega) heapGlobal allocCode array arrayGlobal
@@ -84,7 +85,7 @@ theorem allocated_image (source post : PanSemStateFiniteExact 64 Guest.HostMemor
   refine ⟨Image.of_memory innerPost post input pointer cursor length (PersistentAlloc.rounded cursor 136#64) finalMemory image,
     VarList.Records.of_memory innerPost post input pointer (PersistentAlloc.rounded cursor 136#64) _ _ finalMemory records,?_⟩
   rw [postEq]
-  exact innerContext.trans nextContext
+  exact ⟨innerContext.trans nextContext,⟨first,extraBound,valid⟩⟩
 
 end InitECandidate.Solver.Input.Payload
 

@@ -48,7 +48,7 @@ theorem requests_witness_trace_frame (input : Guest.InputBlob) (source caller po
          (∀ query,inputPointer.toNat≤query.toNat → query.toNat<(PayloadPrefix.finalCursor input).toNat →
            query≠byteAddress (RequestPrefix.cursor input) 32 → query≠byteAddress (RequestPrefix.cursor input) 40 → query≠byteAddress (RequestPrefix.cursor input) 48 → query≠byteAddress (RequestPrefix.cursor input) 56 → query≠byteAddress (RequestPrefix.cursor input) 64 → query≠byteAddress (RequestPrefix.cursor input) 72 → query≠byteAddress (RequestPrefix.cursor input) 80 → post.memory query=caller.memory query) ∧
          Payload.Image post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) ∧
-         VarList.Records post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input) ∧ RequestHashImage input post ∧ RequestsDecoded input post ∧ post.ffi=source.ffi)) := by
+         VarList.Records post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input) ∧ RequestHashImage input post ∧ RequestsDecoded input post ∧ post.ffi=source.ffi ∧ Payload.Layout input (PayloadPrefix.length input))) := by
   rcases requests_return_trace input source caller post environment actual layout bounded result run notTimeout with rejected | normal
   · obtain ⟨error,allowed,same,cost,aggregate⟩ := rejected
     exact ⟨by omega,Or.inl ⟨error,same⟩⟩
@@ -155,7 +155,7 @@ theorem requests_witness_trace_frame (input : Guest.InputBlob) (source caller po
     have postFfi : post.ffi=source.ffi := by
       have sameFfi : post.ffi=final.ffi := by rw [endpoint]; rfl
       exact sameFfi.trans (finalFfi.trans actual.ffi)
-    exact Or.inr ⟨same,WitnessDecoded.of_frame input final post frame data,earlier,payloadImage,transactionRecords,hashImage,requestData,postFfi⟩
+    exact Or.inr ⟨same,WitnessDecoded.of_frame input final post frame data,earlier,payloadImage,transactionRecords,hashImage,requestData,postFfi,actual.payloadLayout⟩
 
 
 

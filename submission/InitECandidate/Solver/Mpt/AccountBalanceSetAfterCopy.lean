@@ -1,7 +1,4 @@
-import InitECandidate.Solver.Mpt.AccountBalanceSetProgram
-import InitECandidate.Solver.Mpt.AccountCommitCall
-import InitECandidate.Solver.Mpt.AccountMutationWrites
-import InitECandidate.Solver.Mpt.AccountStoreRegistered
+import InitECandidate.Solver.Mpt.AccountBalanceStoreCommit
 
 namespace InitECandidate.Solver.Mpt.AccountBalanceSet
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -67,55 +64,13 @@ theorem after_copy_normal {ι : Type} [DecidableEq ι]
         (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
       post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (empty = 0#64 ∨ empty = 1#64) ∧ (if destroyed then 2 ≤ added else added = 1 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan ∧
       (next writer).slots.length ≤ (objects writer).slots.length + iterations ∧ (next outer).slots.length ≤ (objects outer).slots.length ∧ (next accountWriter).slots.length ≤ (objects accountWriter).slots.length + 2 := by
-  obtain ⟨accountImage⟩ := registry.images account accountMember
-  have objectBefore := registry.before account accountMember
-  have destinationRead : eval source (.op .add [localVar "a",.const 8#64]) = some (.val (.word (account + 8#64))) := by
-    simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,accountLocal,valueIsWord,valueWord,wordOpHOL,wordOp]
   have valueRead : eval source (localVar "amount") = some (Input.RlpWrite.U256Value.tuple words) := by
     simp [eval,evalHOLExact,localVar,toExact,amountLocal]
-  obtain ⟨storeActual,writtenFamily,writtenRegistry,writtenValues⟩ := registry.balance_store source cutoff cursor objects accounts family property values account accountMember _ _ words destinationRead valueRead
-  let writes := Input.RlpWrite.U256Value.wordWrites (account + 8#64) words
-  let written := {source with memory := WordWrites.write source.memory writes}
-  have contained : ∀ entry ∈ writes,∃ offset : Nat,offset < 56 ∧ entry.1 = account + BitVec.ofNat 64 offset := by
-    intro entry member
-    simp only [writes,Input.RlpWrite.U256Value.wordWrites,List.mem_cons,List.not_mem_nil,or_false] at member
-    rcases member with rfl | rfl | rfl | rfl
-    · exact ⟨8,by decide,rfl⟩
-    · exact ⟨16,by decide,by simp [BitVec.add_assoc]⟩
-    · exact ⟨24,by decide,by simp [BitVec.add_assoc]⟩
-    · exact ⟨32,by decide,by simp [BitVec.add_assoc]⟩
-  have window := AccountDecode.object_writes_window source account accountImage writes contained
-  have writtenImage := AccountDecode.journal_after_object_writes source objects base cap count cursor entries image zone countBound account accountImage (accountApart account accountMember) writes contained
-  have storeRun : evaluateHOLFiniteState source balanceStore = (none,written) := storeActual
-  have tailRun : evaluateHOLFiniteState written (.seq commitCall (.return (.const 0#64))) = (some (.returned returned),post) := by
-    have execute := StateSteps.next_sequence source written balanceStore (.seq commitCall (.return (.const 0#64))) storeRun (Nat.le_refl _)
-    exact execute.symm.trans normal
-  have safe : Input.LocalPrefix (ofString "addr") commitCall := .call none _ _ (by intro name impossible; cases impossible)
-  obtain ⟨mutated,commitRun,returnRun,keepAddress⟩ := safe.normal_continue written post (.return (.const 0#64)) returned tailRun
-  have args : evalListHOLFinite written (h := fun query => Classical.propDecidable (written.memaddrs query)) [localVar "addr",localVar "a"] = some (AccountSet.values address account) := by
-    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,show written.locals = source.locals from rfl,addressLocal,accountLocal,AccountSet.values]
-  have earlier (query : BitVec 64) (before : query.toNat < protectedCursor) : written.memory query = source.memory query := window query (Or.inl (by omega))
-  have writtenTable : written.memory (transaction + 24#64) = .word (objects writer).pointer := (earlier _ tableBefore).trans tableStored
-  have writtenOuter : written.memory (transaction + 32#64) = .word (objects outer).pointer := (earlier _ outerBefore).trans outerStored
-  have writtenAccount : written.memory (transaction + 16#64) = .word (objects accountWriter).pointer := (earlier _ accountBefore).trans accountStored
-  obtain ⟨empty,destroyed,found,iterations,paid,nextCursor,next,nextEntries,added,positive,funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,price,locals,codes,nextEnvironment,globals,
-    nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,decision,binary,appends,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩ := AccountCommit.call_normal written mutated address account emptyHash scratch transaction cursor cutoff objects writer outer accountWriter base cap count entries
-      writtenFamily writtenImage zone countBound (environment.of_fields rfl rfl rfl) installed accounts writtenRegistry property writtenValues owned accountOwned publishOwned savedValues writerKind outerKind accountKind differentOuter
-      addressArena scratchArena floors scratchBelow small journalAbove accountMember emptyGlobal emptyArena innerReferences scratchGlobal transactionGlobal tableMapped writtenTable tableAbove tableAway (by omega) tableOutside
-      outerMapped writtenOuter (by omega) outerOutside outerAway accountMapped writtenAccount accountAbove (by omega) accountOutside accountAway accountApart journal capacity counter _ args commitRun
-  have returnedInfo := Input.return_normal mutated post (.const 0#64) returned returnRun
-  have answerEq : returned = .val (.word 0#64) := Option.some.inj (returnedInfo.1.symm.trans rfl)
-  rw [returnedInfo.2]
-  let finish := emptyLocalsHOLFinite mutated
-  have finalFamily : TableFamily.Model finish nextCursor next := models.of_control rfl rfl rfl rfl
-  have finalImage : Journal.Image finish next base (count + added) nextEntries := nextImage.transfer rfl (fun _ => rfl) (fun _ => rfl) (fun _ _ _ => rfl) nextImage.separate
-  have finalRegistry := nextRegistry.framed mutated finish cutoff nextCursor nextCursor next next accounts
-    (TableFamily.PersistentFrame.of_memory cutoff nextCursor next mutated finish rfl) (Nat.le_refl _) rfl
-  refine ⟨answerEq,empty,destroyed,found,iterations,paid,nextCursor,next,nextEntries,added,positive,funded,clock,forward,addedPositive,addedBound,capacityBound,finalFamily,finalImage,nextZone,price,
-    codes,nextEnvironment.of_fields rfl rfl rfl,globals,nextValues,nextSaved,finalRegistry,effect,metadata,?_,others,branch,nextCounter,decision,binary,appends,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩
-  intro query above before outside away
-  obtain ⟨nextOutside,same⟩ := frame query above (by omega) outside away
-  exact ⟨nextOutside,same.trans (earlier query before)⟩
+  exact after_balance_normal source post address account emptyHash scratch transaction cursor cutoff protectedCursor objects writer outer accountWriter
+    base cap count entries family image zone countBound environment installed accounts registry property values owned accountOwned publishOwned savedValues writerKind outerKind accountKind differentOuter
+    addressArena scratchArena floors scratchBelow small journalAbove accountMember protectedBefore words (localVar "amount") addressLocal accountLocal valueRead emptyGlobal emptyArena innerReferences scratchGlobal transactionGlobal
+    tableMapped tableStored tableAbove tableAway tableBefore tableOutside outerMapped outerStored outerBefore outerOutside outerAway accountMapped accountStored accountAbove accountBefore accountOutside accountAway accountApart
+    journal capacity counter returned normal
 
 end InitECandidate.Solver.Mpt.AccountBalanceSet
 

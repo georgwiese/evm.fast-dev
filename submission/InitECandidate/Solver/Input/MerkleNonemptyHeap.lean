@@ -1,0 +1,73 @@
+import InitECandidate.Solver.Input.MerkleReturnHeap
+import InitECandidate.Solver.Input.MerkleBufferFill
+
+namespace InitECandidate.Solver.Input.Merkle
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The actual nonempty Merkle execution restores its saved heap cursor
+on every real normal return. All allocated/copy operands are current facts. -/
+theorem nonempty_tail_return_heap (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (p cursor stp accel : BitVec 64) (n dn : Nat)
+    (positive : 0<n) (small : dn<64) (countBound : n≤2^dn)
+    (workspace : ShaPair.Workspace source stp accel)
+    (pointer : source.locals.lookup (ofString "p")=some (.val (.word p)))
+    (count : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 n))))
+    (depth : source.locals.lookup (ofString "dn")=some (.val (.word (BitVec.ofNat 64 dn))))
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word cursor)))
+    (inputArena : AllocatedBytes.Arena p (32*n)) (bufferArena : AllocatedBytes.Arena cursor (32*2^dn))
+    (aligned : cursor.toNat%8=0)
+    (value : ValueHOL 64) (run : evaluateHOLFiniteState source afterDepth=(some (.returned value),post)) :
+    post.globals.lookup (ofString "heap_ptr")=some (.val (.word cursor)) := by
+  have notTimeout : some (.returned value)≠some (.timeOut : PanSemResultExact 64) := by simp
+  have nSmall : n<2^64 := by have upper:=inputArena.upper; omega
+  have nNumber : (BitVec.ofNat 64 n).toNat=n := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt nSmall]
+  have nNonzero : BitVec.ofNat 64 n≠0#64 := by intro zero; have h:=congrArg BitVec.toNat zero; simp only [nNumber,BitVec.toNat_ofNat] at h; omega
+  rw [after_depth_nonzero source (BitVec.ofNat 64 n) count nNonzero,allocation_shape.1] at run
+  obtain ⟨markPaid,markedFinal,markedRun,markEndpoint⟩ := HeapScope.mark_call_trace source post cursor "mark" afterMark heap
+    (HeapScope.mark_original_code source.code workspace.installed) (some (.returned value)) run notTimeout
+  let marked := bind {source with clock:=source.clock-1} "mark" cursor
+  have markedOther (name : String) (different : ofString "mark"≠ofString name) : marked.locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
+    bind_lookup_other {source with clock:=source.clock-1} "mark" name cursor different
+  have markedDepth := (markedOther "dn" (by decide)).trans depth
+  obtain ⟨allocPaid,bufferFinal,bufferRun,bufferEndpoint⟩ := allocation_prefix marked markedFinal cursor dn (by omega) markedDepth workspace.installed heap bufferArena (some (.returned value)) markedRun notTimeout
+  let buffered := bufferEntry marked cursor dn
+  have bufferedOther (name : String) (notBuf : ofString "buf"≠ofString name) (notSize : ofString "size"≠ofString name) :
+      buffered.locals.lookup (ofString name)=marked.locals.lookup (ofString name) := by
+    change (bind (PersistentAlloc.post {sized marked dn with clock:=marked.clock-1} cursor (BitVec.ofNat 64 (32*2^dn))) "buf" cursor).locals.lookup _=_
+    rw [bind_lookup_other _ "buf" name cursor notBuf]
+    exact bind_lookup_other marked "size" name (BitVec.ofNat 64 (2^dn)) notSize
+  have bufferedGlobals (name : String) (different : ofString "heap_ptr"≠ofString name) : buffered.globals.lookup (ofString name)=source.globals.lookup (ofString name) := by
+    change (source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded cursor (BitVec.ofNat 64 (32*2^dn)))))).lookup _=_
+    simp [HolFiniteMapExact.lookup_update,FUPDATE,different]
+  have bufferedWorkspace := ShaPair.Workspace.of_fields source buffered stp accel workspace rfl rfl (bufferedGlobals "sha_st" (by decide)) (bufferedGlobals "sha_accel" (by decide))
+  have bufferFacts := buffer_fields marked cursor dn
+  have bufferedPointer := (bufferedOther "p" (by decide) (by decide)).trans ((markedOther "p" (by decide)).trans pointer)
+  have bufferedCount := (bufferedOther "n" (by decide) (by decide)).trans ((markedOther "n" (by decide)).trans count)
+  obtain ⟨fillPaid,fillCost,denseFinal,denseRun,fillEndpoint⟩ := fill_prefix buffered bufferFinal p cursor n (2^dn) countBound bufferedWorkspace.installed bufferedWorkspace.domain
+    bufferedPointer bufferFacts.1 bufferedCount bufferFacts.2.1 inputArena bufferArena aligned (some (.returned value)) bufferRun notTimeout
+  let dense := denseEntry buffered p cursor n (2^dn)
+  have denseFacts := fill_fields buffered p cursor n (2^dn)
+  have denseOther (name : String) (notCur : ofString "cur"≠ofString name) (notBuf : ofString "buf"≠ofString name)
+      (notSize : ofString "size"≠ofString name) (notMark : ofString "mark"≠ofString name) :
+      dense.locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
+    change (denseEntry buffered p cursor n (2^dn)).locals.lookup _=_
+    rw [denseFacts.1]
+    simp only [HolFiniteMapExact.lookup_update,FUPDATE,beq_iff_eq,if_neg notCur]
+    exact (bufferedOther name notBuf notSize).trans (markedOther name notMark)
+  have denseDepth := (denseOther "dn" (by decide) (by decide) (by decide) (by decide)).trans depth
+  have denseMark : dense.locals.lookup (ofString "mark")=some (.val (.word cursor)) := by
+    rw [show dense.locals=(denseEntry buffered p cursor n (2^dn)).locals from rfl,denseFacts.1]
+    simp only [HolFiniteMapExact.lookup_update,FUPDATE,beq_iff_eq,if_neg (show ofString "cur"≠ofString "mark" from by decide)]
+    exact (bufferedOther "mark" (by decide) (by decide)).trans (bind_lookup_same _ _ _)
+  have denseHeap : dense.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded cursor (BitVec.ofNat 64 (32*2^dn))))) := by
+    change (source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded cursor (BitVec.ofNat 64 (32*2^dn)))))).lookup _=_
+    simp [HolFiniteMapExact.lookup_update,FUPDATE]
+  have returned := dense_return_heap dense denseFinal dn cursor (PersistentAlloc.rounded cursor (BitVec.ofNat 64 (32*2^dn)))
+    bufferedWorkspace.installed denseDepth denseMark denseHeap value denseRun
+  rw [markEndpoint,bufferEndpoint,fillEndpoint]
+  exact returned
+
+end InitECandidate.Solver.Input.Merkle
+
+#print axioms InitECandidate.Solver.Input.Merkle.nonempty_tail_return_heap

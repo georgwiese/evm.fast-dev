@@ -32,17 +32,18 @@ theorem body_normal_any_clock (source post : PanSemStateFiniteExact 64 Guest.Hos
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source body = (some (.returned value),post)) :
     value = .val (.word cursor) ∧ post.memory (cursor + 88#64) = .word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
       Blob.HeapInput post input pointer ∧ source.clock - post.clock ≤ (input.length % 2^64) / 4 + 75 ∧ post.clock ≤ source.clock ∧
-      post.memory (cursor + 56#64) = .word (BitVec.ofNat 64 (withdrawalCount input)) := by
+      post.memory (cursor + 56#64) = .word (BitVec.ofNat 64 (withdrawalCount input)) ∧
+      post.globals.lookup (ofString "heap_ptr") = some (.val (.word (nextHeap input (PersistentAlloc.rounded cursor 136#64)))) ∧ transactionCount input ≤ (input.length % 2^64) / 4 := by
   let padding := (input.length % 2^64) / 4 + 76
   have paddedRun := panPropsEvaluateAddClockEq body source (some (.returned value)) post padding ⟨run,by intro impossible; cases impossible⟩
-  obtain ⟨returned,gasCell,paddedHeap,lower,upper,countCell⟩ := body_normal {source with clock := source.clock + padding} {post with clock := post.clock + padding}
+  obtain ⟨returned,gasCell,paddedHeap,lower,upper,countCell,heapCursor,countBound⟩ := body_normal {source with clock := source.clock + padding} {post with clock := post.clock + padding}
     input pointer cursor length heap p n inside domain pointerAligned cursorAligned pointerLower cursorAfter cursorRoom heapGlobal allocCode array arrayGlobal arrayAligned arrayLower arrayBefore
     offsetCode divisionCode failCode exceptionShape varCode fixedCode (by change (input.length % 2^64) / 4 + 76 ≤ source.clock + padding; dsimp only [padding]; omega) value paddedRun
   have actualHeap := Blob.HeapInput.of_fields {post with clock := post.clock + padding} post input pointer rfl rfl rfl paddedHeap
   change source.clock + padding - ((input.length % 2^64) / 4 + 75) ≤ post.clock + padding at lower
   change post.clock + padding ≤ source.clock + padding at upper
   dsimp only [padding] at lower upper
-  exact ⟨returned,gasCell,actualHeap,by omega,by omega,countCell⟩
+  exact ⟨returned,gasCell,actualHeap,by omega,by omega,countCell,heapCursor,countBound⟩
 
 end InitECandidate.Solver.Input.Payload
 

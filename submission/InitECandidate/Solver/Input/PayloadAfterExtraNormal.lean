@@ -2,10 +2,15 @@ import InitECandidate.Solver.Input.PayloadTailNormal
 import InitECandidate.Solver.Input.PayloadTransactionsNormal
 import InitECandidate.Solver.Input.AllocationControl
 import InitECandidate.Solver.Input.PayloadWithdrawalNumbers
+import InitECandidate.Solver.Input.VarList.Cursor
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+def transactionBytes (input : Guest.InputBlob) := Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566
+def transactionCount (input : Guest.InputBlob) := VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (transactionBytes input)
+def nextHeap (input : Guest.InputBlob) (array : BitVec 64) := VarList.nextCursor array (transactionCount input)
 
 /-- All real payload work after the extra-data guard, including both list
 calls and the actual gas-field store, on every normal return. -/
@@ -38,9 +43,10 @@ theorem after_extra_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source afterExtra=(some (.returned value),post)) :
     value=.val (.word cursor) ∧ post.memory (cursor+88#64)=.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
       Blob.HeapInput post input pointer ∧
-      source.clock-((Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)/4+68)≤post.clock ∧ post.clock≤source.clock ∧ post.memory (cursor+56#64)=.word (BitVec.ofNat 64 (withdrawalCount input)) := by
+      source.clock-((Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)/4+68)≤post.clock ∧ post.clock≤source.clock ∧ post.memory (cursor+56#64)=.word (BitVec.ofNat 64 (withdrawalCount input)) ∧
+      post.globals.lookup (ofString "heap_ptr")=some (.val (.word (nextHeap input array))) ∧ transactionCount input ≤ transactionBytes input / 4 := by
   classical
-  obtain ⟨next,innerPost,returned,valueEq,localsEq,nextHeap,oldMemory,clockLower,clockUpper,controlEq,nextRun,postEq⟩:=
+  obtain ⟨next,innerPost,returned,valueEq,localsEq,nextHeap,oldMemory,clockLower,clockUpper,controlEq,nextRun,postEq,countBound⟩:=
     transactions_normal source post input pointer cursor array length heap p pl e t w valid inside domain pointerAligned cursorAligned arrayAligned
       pointerLower cursorAfter cursorRoom arrayAfter room heapGlobal allocCode failCode exceptionShape varCode (by omega) value run
   let empty:=Guest.GasLimit.le32 input 570=Guest.GasLimit.le32 input 566
@@ -60,13 +66,17 @@ theorem after_extra_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
     simp [HolFiniteMapExact.lookup_update,FUPDATE,different]
   obtain ⟨domainEq,codeEq,shapeEq⟩:=allocation_control_fields source next array
     (BitVec.ofNat 64 (16*(Guest.GasLimit.le32 input (62+Guest.GasLimit.le32 input 566)/4))) empty controlEq
-  obtain ⟨finalValue,gasCell,finalHeap,finalLower,finalUpper,countCell⟩:=after_transactions_normal next innerPost input pointer cursor length records count
+  obtain ⟨finalValue,gasCell,finalHeap,finalLower,finalUpper,countCell,finalGlobals⟩:=after_transactions_normal next innerPost input pointer cursor length records count
     (offsetWords input 2) (offsetWords input 3) nextHeap extent ((localOther "p" (by decide)).trans p) ((localOther "pl" (by decide)).trans pl)
     ((localOther "len" (by decide)).trans n) txs ((localOther "o_wd" (by decide)).trans w) ((localOther "o_bal" (by decide)).trans b)
     (domainEq.trans domain) pointerAligned cursorAligned pointerLower cursorAfter cursorRoom
     (by rw [codeEq]; exact divisionCode) (by rw [codeEq]; exact failCode) (by rw [shapeEq]; exact exceptionShape)
     (by rw [codeEq]; exact fixedCode) (by omega) value nextRun
-  refine ⟨finalValue,?_,?_,?_,?_,?_⟩
+  have ordered := (transaction_range input length valid inside).2.1
+  have emptyEq : (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566=0) ↔ Guest.GasLimit.le32 input 570=Guest.GasLimit.le32 input 566 := by omega
+  have heapCursor := VarList.cursor_of_control source next input array (62+Guest.GasLimit.le32 input 566) (transactionBytes input)
+    countBound arrayAligned room heapGlobal (by simpa only [transactionBytes,emptyEq] using controlEq)
+  refine ⟨finalValue,?_,?_,?_,?_,?_,?_,countBound⟩
   · rw [postEq]; exact gasCell
   · rw [postEq]; exact Blob.HeapInput.restore source innerPost input pointer "txs" finalHeap
   · have postClock : post.clock=innerPost.clock := by rw [postEq]; rfl
@@ -76,6 +86,11 @@ theorem after_extra_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   · rw [postEq]
     rw [(withdrawal_difference input length valid).2.1] at countCell
     exact countCell
+
+  · rw [postEq]
+    change innerPost.globals.lookup (ofString "heap_ptr") = _
+    rw [finalGlobals]
+    exact heapCursor.1
 
 end InitECandidate.Solver.Input.Payload
 

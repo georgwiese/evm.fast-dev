@@ -53,7 +53,7 @@ theorem stored_gas_from_header (source post : PanSemStateFiniteExact 64 Guest.Ho
   have entryHeapGlobal : entry.globals.lookup (ofString "heap_ptr")=some (.val (.word payloadCursor)) := by
     rw [entryGlobals]
     simp [HolFiniteMapExact.lookup_update,FUPDATE,payloadCursor]
-  obtain ⟨returnedEq,gasCell,finalHeap,clockLower,clockUpper,countCell⟩:=Payload.allocated_normal entry payloadPost input pointer payloadCursor
+  obtain ⟨returnedEq,gasCell,finalHeap,clockLower,clockUpper,countCell,heapCursor,countBound⟩:=Payload.allocated_normal entry payloadPost input pointer payloadCursor
     (BitVec.ofNat 64 (Guest.GasLimit.le32 input 22-44)) entryHeap extent p n (by rw [lengthNumber]; omega)
     (entryDomain.trans domain) pointerAligned (by omega) pointerLower (by omega) (by omega) entryHeapGlobal
     (by rw [entryCode]; exact allocCode) array entryArray arrayAligned arrayLower arrayBefore

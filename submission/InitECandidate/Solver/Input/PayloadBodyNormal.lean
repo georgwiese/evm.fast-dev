@@ -29,7 +29,8 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (enough : (input.length%2^64)/4+76≤source.clock)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     value=.val (.word cursor) ∧ post.memory (cursor+88#64)=.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
-      Blob.HeapInput post input pointer ∧ source.clock-((input.length%2^64)/4+75)≤post.clock ∧ post.clock≤source.clock ∧ post.memory (cursor+56#64)=.word (BitVec.ofNat 64 (withdrawalCount input)) := by
+      Blob.HeapInput post input pointer ∧ source.clock-((input.length%2^64)/4+75)≤post.clock ∧ post.clock≤source.clock ∧ post.memory (cursor+56#64)=.word (BitVec.ofNat 64 (withdrawalCount input)) ∧
+      post.globals.lookup (ofString "heap_ptr")=some (.val (.word (nextHeap input (WitnessRadix.PersistentAlloc.rounded cursor 136#64)))) ∧ transactionCount input ≤ (input.length%2^64)/4 := by
   have entry:=entry_execute source length n failCode exceptionShape (by omega)
   by_cases short : length.toNat<540
   · rw [if_pos short] at entry

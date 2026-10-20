@@ -1767,6 +1767,7 @@
     "submission/InitECandidate/Solver/Input/BnModmulMemory.lean",
     "submission/InitECandidate/Solver/Input/BnModmulProgram.lean",
     "submission/InitECandidate/Solver/Input/BswapExecution.lean",
+    "submission/InitECandidate/Solver/Input/BufferCallTrace.lean",
     "submission/InitECandidate/Solver/Input/BufferGlobals.lean",
     "submission/InitECandidate/Solver/Input/ByteDecode.lean",
     "submission/InitECandidate/Solver/Input/ByteExpressionBound.lean",
@@ -1905,6 +1906,7 @@
     "submission/InitECandidate/Solver/Input/HeapFlatScalar.lean",
     "submission/InitECandidate/Solver/Input/HeapFrame.lean",
     "submission/InitECandidate/Solver/Input/HeapMarkContinuing.lean",
+    "submission/InitECandidate/Solver/Input/HeapMarkTrace.lean",
     "submission/InitECandidate/Solver/Input/HeapScalar.lean",
     "submission/InitECandidate/Solver/Input/HeapScope.lean",
     "submission/InitECandidate/Solver/Input/HeapScopeCost.lean",
@@ -2110,6 +2112,9 @@
     "submission/InitECandidate/Solver/Input/MainWitnessTrace.lean",
     "submission/InitECandidate/Solver/Input/MemoryReturn.lean",
     "submission/InitECandidate/Solver/Input/MemoryWordCalls.lean",
+    "submission/InitECandidate/Solver/Input/MerkleAllocation.lean",
+    "submission/InitECandidate/Solver/Input/MerkleBufferFill.lean",
+    "submission/InitECandidate/Solver/Input/MerkleBufferedProgram.lean",
     "submission/InitECandidate/Solver/Input/MerkleDepthPrefix.lean",
     "submission/InitECandidate/Solver/Input/MerkleProgram.lean",
     "submission/InitECandidate/Solver/Input/MerkleZero.lean",
@@ -6434,8 +6439,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63302,
-  "package_bytes": 2262542134,
+  "package_entries": 63307,
+  "package_bytes": 2262566360,
   "claim": {
     "K": "infinity"
   },

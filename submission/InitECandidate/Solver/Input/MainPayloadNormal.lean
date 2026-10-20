@@ -1,19 +1,10 @@
 import InitECandidate.Solver.Input.MainPayloadSetup
 import InitECandidate.Solver.Input.DecoderRuntimeCode
+import InitECandidate.Solver.Input.PayloadPassingEntry
 
 namespace InitECandidate.Solver.Input.Main.PayloadPrefix
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString
-
-private theorem passing_entry (entry : PanSemStateFiniteExact 64 Guest.HostMemory) (word : BitVec 64)
-    (binding : entry.locals.lookup (ofString "len") = some (.val (.word word))) (minimum : 540 ≤ word.toNat) :
-    evaluateHOLFiniteState entry Payload.body = evaluateHOLFiniteState entry Payload.afterGuard := by
-  have test := Payload.length_test_read entry word binding
-  simp only [QueryBranch.eval,if_neg (show ¬ word.toNat < 540 by omega)] at test
-  have guard : evaluateHOLFiniteState entry Payload.lengthGuard = (none,entry) := by
-    rw [Payload.lengthGuard,evaluateHOLFiniteState_ite,test]
-    simp
-  rw [Payload.body_shape,StateSteps.next_sequence entry entry _ _ guard (Nat.le_refl _)]
 
 /-- Complete actual original payload normal return at any clock budget,
 with all entry/runtime/room facts derived from main's reached callee. This
@@ -52,7 +43,7 @@ theorem normal_payload (input : Guest.InputBlob) (source entry post : PanSemStat
     rw [number.1]
     omega
   have whole : evaluateHOLFiniteState entry Payload.body = (some (.returned value),post) :=
-    (passing_entry entry (length input) actual.length (by rw [lengthNumber]; exact minimum)).trans run
+    (Payload.passing_entry entry (length input) actual.length (by rw [lengthNumber]; exact minimum)).trans run
   obtain ⟨returned,gasCell,bytes,cost,forward,countCell⟩ := Payload.body_normal_any_clock entry post input inputPointer (cursor input) (length input) actual.bytes actual.pointer actual.length inside
     (actual.frame.domain.trans environment.domain) (by decide) number.2 (by decide)
     (by rw [number.1]; change 2713731432 + input.length % 2^64 + 8 ≤ DecoderSetup.cursor input + 384; omega) room heapGlobal

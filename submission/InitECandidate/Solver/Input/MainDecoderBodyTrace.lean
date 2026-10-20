@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.MainPayloadBodyTrace
 import InitECandidate.Solver.Input.MainHashFields
 import InitECandidate.Solver.Input.MainRequestsWitnessTrace
+import InitECandidate.Solver.Input.MainHashImageFrame
 
 namespace InitECandidate.Solver.Input.Main.DecoderCall
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -16,7 +17,7 @@ theorem decoder_body_trace (input : Guest.InputBlob) (source post : PanSemStateF
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source Header.body=(result,post)) (notTimeout : result≠some .timeOut) :
     source.clock-post.clock≤(input.length%2^64)/4+witnessLength input/2+522 ∧
       ((∃ error : BitVec 64,result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨
-       (result=some (.returned (.val (.word (RequestPrefix.cursor input)))) ∧ WitnessDecoded input post ∧ Payload.Image post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) ∧ VarList.Records post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input))) := by
+       (result=some (.returned (.val (.word (RequestPrefix.cursor input)))) ∧ WitnessDecoded input post ∧ Payload.Image post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) ∧ VarList.Records post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input) ∧ RequestHashImage input post ∧ RequestsDecoded input post ∧ post.ffi=source.ffi)) := by
   rcases payload_call_trace input source post environment bounded passes result run notTimeout with rejected | normal
   · obtain ⟨error,allowed,same,cost⟩ := rejected
     exact ⟨by omega,Or.inl ⟨error,same⟩⟩
@@ -43,7 +44,7 @@ theorem decoder_body_trace (input : Guest.InputBlob) (source post : PanSemStateF
   have returnedRun : evaluateHOLFiniteState (callEntryStateHOLFinite caller callee) Payload.afterGuard=(some (.returned (.val (.word (PayloadPrefix.cursor input)))),bodyPost) := by rw [bodyRun,normal]
   obtain ⟨payloadNext,payloadPost,returned,payloadCost,payloadRun,payloadRestored⟩ := PayloadPrefix.resume_return input source caller bodyPost callerPost callee environment entry layout bounded extent minimum sliceUpper gas args called funded _ returnedRun result callerRun
   obtain ⟨stored,storedData,siCell,storedClock,hashRun⟩ := PayloadPrefix.after_pointer input source caller payloadNext payloadPost environment callerData returned bounded result payloadRun
-  rcases PayloadPrefix.hash_fields_trace input source caller stored payloadPost environment callerData storedData layout bounded result hashRun notTimeout with rejected | normal
+  rcases PayloadPrefix.hash_fields_trace input source caller stored payloadPost environment callerData storedData layout bounded siCell result hashRun notTimeout with rejected | normal
   · obtain ⟨error,allowed,same,cost⟩ := rejected
     have forward := evaluateHOLFiniteState_clock_le stored Request.hashesCall
     rw [hashRun] at forward
@@ -61,11 +62,11 @@ theorem decoder_body_trace (input : Guest.InputBlob) (source post : PanSemStateF
   refine ⟨by rw [clock]; exact cost,?_⟩
   rcases outcome with rejected | normal
   · exact Or.inl rejected
-  · obtain ⟨same,data,earlier,image,records⟩ := normal
+  · obtain ⟨same,data,earlier,image,records,hashes,requests,ffi⟩ := normal
     have memory : post.memory=requestPost.memory := by have h := congrArg PanSemStateFiniteExact.memory frame; exact h
     exact Or.inr ⟨same,WitnessDecoded.of_frame input requestPost post frame data,
       Payload.Image.of_memory requestPost post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) memory image,
-      VarList.Records.of_memory requestPost post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) _ _ memory records⟩
+      VarList.Records.of_memory requestPost post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) _ _ memory records,RequestHashImage.of_memory input requestPost post memory hashes,RequestsDecoded.of_memory input requestPost post memory requests,(by have h := congrArg PanSemStateFiniteExact.ffi frame; exact h.trans ffi)⟩
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 

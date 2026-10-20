@@ -42,7 +42,7 @@ theorem witness_prefix_trace_frame (input : Guest.InputBlob) (source caller curr
       ∃ (next innerPost : PanSemStateFiniteExact 64 Guest.HostMemory) (restoreStack : PanSemStateFiniteExact 64 Guest.HostMemory → PanSemStateFiniteExact 64 Guest.HostMemory),
         WitnessEntry input source next counts ∧ evaluateHOLFiniteState next Witness.offsetBody = (result,innerPost) ∧ post = restoreStack innerPost ∧
         (∀ target,emptyLocalsHOLFinite (restoreStack target) = emptyLocalsHOLFinite target) ∧
-        (∀ query,query≠byteAddress (RequestPrefix.cursor input) 32 → next.memory query=current.memory query)) := by
+        (∀ query,query≠byteAddress (RequestPrefix.cursor input) 32 → next.memory query=current.memory query) ∧ InitializerAllocations.context next=InitializerAllocations.context current) := by
   obtain ⟨storedRun,metadata,requestCell⟩ := store_request_pointer input source caller current counts environment actual returned bounded
   let stored := StructureStore.stored current (RequestPrefix.cursor input) 32 (PayloadPrefix.finalCursor input)
   have storedClock : stored.clock=current.clock := rfl
@@ -73,10 +73,10 @@ theorem witness_prefix_trace_frame (input : Guest.InputBlob) (source caller curr
     have image : Requests.Image ready (inputPointer + BitVec.ofNat 64 (requestStart input)) (PayloadPrefix.finalCursor input) (BitVec.ofNat 64 (requestLength input)) (Requests.offsetWord input (requestStart input)) counts := ⟨metadata.image.cells,metadata.image.arithmetic⟩
     have entry : WitnessEntry input source ready counts := ⟨bytes,wp,wlen,si,code,metadata.domain.trans actual.domain,metadata.exceptions.trans actual.exceptions,
       metadata.heap,metadata.globals,metadata.gasCell,metadata.countCell,requestCell,metadata.layout,image,metadata.transactions,metadata.forward.trans actual.forward,metadata.aggregate⟩
-    exact Or.inr ⟨minimum,by dsimp only [witnessStart,witnessLength]; have := layout.extent; omega,ready,innerPost,Witness.restorePrefix stored inputPointer (Guest.GasLimit.le32 input 6),entry,remaining,endpoint,(by intro target; exact Witness.restore_prefix_frame _ target _ _),by
+    exact Or.inr ⟨minimum,by dsimp only [witnessStart,witnessLength]; have := layout.extent; omega,ready,innerPost,Witness.restorePrefix stored inputPointer (Guest.GasLimit.le32 input 6),entry,remaining,endpoint,(by intro target; exact Witness.restore_prefix_frame _ target _ _),(by
       intro query different
       change StoreWord.put current.memory (byteAddress (RequestPrefix.cursor input) 32) (PayloadPrefix.finalCursor input) query=current.memory query
-      simp only [StoreWord.put,if_neg different]⟩
+      simp only [StoreWord.put,if_neg different]),rfl⟩
 
 
 /-- Entry/outcome projection of the stronger actual prefix memory frame. -/

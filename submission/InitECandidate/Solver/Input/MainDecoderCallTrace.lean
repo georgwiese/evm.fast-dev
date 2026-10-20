@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.MainDecoderTrace
+import InitECandidate.Solver.Input.ParserGlobalsFull
 import InitECandidate.Solver.Input.MainDecoderActual
 import InitECandidate.Solver.Input.MainErrorEntry
 import InitECandidate.Solver.Input.MainErrorStopped
@@ -13,6 +14,10 @@ structure DecoderReady (input : Guest.InputBlob) (caller current : PanSemStateFi
   decoded : WitnessDecoded input current
   image : Payload.Image current input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64)
   records : VarList.Records current input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input)
+  hashes : RequestHashImage input current
+  requests : RequestsDecoded input current
+  ffi : current.ffi=caller.ffi
+  globals : ∀ key,key≠ofString "heap_ptr" → current.globals.lookup key=caller.globals.lookup key
   code : current.code=caller.code
   domain : current.memaddrs=caller.memaddrs
   exceptions : current.eshapes=caller.eshapes
@@ -69,7 +74,7 @@ theorem decoder_call_trace (input : Guest.InputBlob) (before source target : Pan
     change caller.clock-1-bodyPost.clock≤(input.length%2^64)/4+witnessLength input/2+522 at cost
     change (evaluateHOLFiniteState handlerEntry handler).2.clock≤bodyPost.clock at handlerForward
     exact Or.inl (by change caller.clock-target.clock≤_; rw [endpoint]; omega)
-  · obtain ⟨same,data,image,records⟩ := normal
+  · obtain ⟨same,data,image,records,hashes,requests,ffi⟩ := normal
     have actualBody : evaluateHOLFiniteState entry Header.body=(some (.returned (.val (.word (RequestPrefix.cursor input)))),bodyPost) := by rw [bodyRun,same]
     have validFinite : isValidValueHOLFinite caller .local (ofString "si") (.val (.word (RequestPrefix.cursor input)))=true := by
       simp [isValidValueHOLFinite,lookupKvarHOLFinite,callerSi,shapeOfHOLExact,shapeEqHOL]
@@ -78,10 +83,14 @@ theorem decoder_call_trace (input : Guest.InputBlob) (before source target : Pan
       (ofString "decode_stateless_input") arguments (values inputPointer (input.length%2^64)) Header.body callee .one (.val (.word (RequestPrefix.cursor input))) bodyPost args called (by omega) actualBody (by simp [shapeOfHOLExact,shapeEqHOL]) valid
     let current := setKvarHOLFinite .local (ofString "si") (.val (.word (RequestPrefix.cursor input))) {bodyPost with locals:=caller.locals}
     have forward : current.clock≤caller.clock := by change bodyPost.clock≤caller.clock; omega
+    have otherGlobals (key : MlS) (different : key≠ofString "heap_ptr") : current.globals.lookup key=caller.globals.lookup key := by
+      have preserved := ParserGlobals.decoder key entry.code environment.code different entry rfl
+      rw [bodyRun] at preserved
+      exact congrArg Prod.snd preserved
     have ready : DecoderReady input caller current := ⟨rfl,by simp [current,setKvarHOLFinite,setVarHOLFinite,HolFiniteMapExact.lookup_update,FUPDATE],
       WitnessDecoded.of_frame input bodyPost current rfl data,
       Payload.Image.of_memory bodyPost current input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) rfl image,
-      VarList.Records.of_memory bodyPost current input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) _ _ rfl records,fields.2.2.2,fields.1,fields.2.2.1,fields.2.1,forward,by
+      VarList.Records.of_memory bodyPost current input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) _ _ rfl records,RequestHashImage.of_memory input bodyPost current rfl hashes,RequestsDecoded.of_memory input bodyPost current rfl requests,ffi,otherGlobals,fields.2.2.2,fields.1,fields.2.2.1,fields.2.1,forward,by
         change caller.clock-1-bodyPost.clock≤(input.length%2^64)/4+witnessLength input/2+522 at cost
         change caller.clock-bodyPost.clock≤_; omega⟩
     rw [original_shape,StateSteps.next_sequence caller current _ _ returned forward] at run

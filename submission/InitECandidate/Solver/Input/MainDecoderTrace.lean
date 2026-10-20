@@ -14,7 +14,7 @@ theorem decoder_trace (input : Guest.InputBlob) (source post : PanSemStateFinite
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source Header.body=(result,post)) (notTimeout : result≠some .timeOut) :
     source.clock-post.clock≤(input.length%2^64)/4+witnessLength input/2+522 ∧
       ((∃ error : BitVec 64,result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨
-       (result=some (.returned (.val (.word (RequestPrefix.cursor input)))) ∧ WitnessDecoded input post ∧ Payload.Image post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) ∧ VarList.Records post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input))) := by
+       (result=some (.returned (.val (.word (RequestPrefix.cursor input)))) ∧ WitnessDecoded input post ∧ Payload.Image post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) ∧ VarList.Records post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input) ∧ RequestHashImage input post ∧ RequestsDecoded input post ∧ post.ffi=source.ffi)) := by
   by_cases rejects : Rejects input
   · let padded := {source with clock:=source.clock+1}
     have ready : Environment input padded := ⟨environment.pointer,environment.length,environment.bytes,environment.offsets,environment.heap,environment.scalars,

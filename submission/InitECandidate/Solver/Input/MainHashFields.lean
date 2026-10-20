@@ -1,8 +1,17 @@
 import InitECandidate.Solver.Input.HashFields
+import InitECandidate.Solver.Input.HashFieldCells
 
 namespace InitECandidate.Solver.Input.Main.DecoderCall
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString
+
+/-- Four actual SI words used by the original request hashing routine. -/
+structure RequestHashImage (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
+  payload : current.memory (RequestPrefix.cursor input)=.word (PayloadPrefix.cursor input)
+  hashes : current.memory (RequestPrefix.cursor input+8#64)=.word (inputPointer+18#64+Request.requestWords input 1)
+  count : current.memory (RequestPrefix.cursor input+16#64)=.word (BitVec.ofNat 64 ((Guest.GasLimit.le32 input 58-Guest.GasLimit.le32 input 22)/32))
+  parent : current.memory (RequestPrefix.cursor input+24#64)=.word (inputPointer+26#64)
+  partition : (Guest.GasLimit.le32 input 58-Guest.GasLimit.le32 input 22)%32=0
 
 structure RequestCaller (input : Guest.InputBlob) (source current : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
   bytes : Blob.HeapInput current input inputPointer
@@ -27,6 +36,7 @@ structure RequestCaller (input : Guest.InputBlob) (source current : PanSemStateF
   image : Payload.Image current input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64)
   records : VarList.Records current input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input)
   ffi : current.ffi=source.ffi
+  hashes : RequestHashImage input current
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 
@@ -53,6 +63,7 @@ and real gas/count cells all belong to this same execution. -/
 theorem hash_fields_trace (input : Guest.InputBlob) (source caller current post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (environment : DecoderCall.Environment input source) (actualCaller : DecoderCall.PayloadCaller input source caller)
     (returned : Returned input caller current) (layout : DecoderCall.RequestLayout input) (bounded : input.length % 2^64 ≤ Guest.maxInputBytes)
+    (siPayload : current.memory (RequestPrefix.cursor input)=.word (cursor input))
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState current Request.hashesCall = (result,post)) (notTimeout : result ≠ some .timeOut) :
     (∃ error : BitVec 64,(error = 30#64 ∨ error = 31#64) ∧ result = some (.exception (ofString "SszErr") (.val (.word error))) ∧ current.clock - post.clock ≤ 67) ∨
     (∃ next innerPost,DecoderCall.RequestCaller input source next ∧ evaluateHOLFiniteState next Request.requestsCall = (result,innerPost) ∧ post = restore current "nvh" innerPost) := by
@@ -140,12 +151,24 @@ theorem hash_fields_trace (input : Guest.InputBlob) (source caller current post 
     have nextFfi : next.ffi=current.ffi := by have h := congrArg PanSemStateFiniteExact.ffi nextContext; exact h
     have returnedFfi : current.ffi=caller.ffi := by have h := congrArg PanSemStateFiniteExact.ffi returned.context; exact h
     have targetFfi : target.ffi=source.ffi := nextFfi.trans (returnedFfi.trans actualCaller.frame.ffi)
+    have countWord : count=BitVec.ofNat 64 ((Guest.GasLimit.le32 input 58-Guest.GasLimit.le32 input 22)/32) := by rw [←countNat]; simp
+    have exactCells := Request.hash_fields_cells next (RequestPrefix.cursor input) (inputPointer+18#64) (Request.requestWords input 1) count (by rw [siNat]; omega)
+    have zeroAway (offset : Nat) (positive : 0<offset) (small : offset≤24) : RequestPrefix.cursor input≠byteAddress (RequestPrefix.cursor input) offset := by
+      have address : (byteAddress (RequestPrefix.cursor input) offset).toNat=(RequestPrefix.cursor input).toNat+offset := byteAddress_toNat _ offset (by rw [siNat]; omega)
+      intro same
+      have equal := congrArg BitVec.toNat same
+      rw [address] at equal
+      omega
+    have parentAdd : (18#64:BitVec 64)+8#64=26#64 := by decide
+    have hashImage : DecoderCall.RequestHashImage input target := ⟨
+      (stores.2.2 _ (zeroAway 8 (by decide) (by decide)) (zeroAway 16 (by decide) (by decide)) (zeroAway 24 (by decide) (by decide))).trans (by rw [nextMemory]; exact siPayload),
+      exactCells.1,by rw [←countWord]; exact exactCells.2.1,by simpa only [BitVec.add_assoc,parentAdd] using exactCells.2.2,remainder⟩
     have metadata : DecoderCall.RequestCaller input source target := ⟨stores.2.1,code,exceptions,domain,heap,offsets,np,
       (other "nlen" (by decide) (by decide)).trans actualCaller.length,si,(other "o_rq" (by decide) (by decide)).trans actualCaller.requestsOffset,
       targetGas,targetCount,returned.transactions,by change next.clock ≤ source.clock; omega,by change source.clock - next.clock ≤ _; omega,
       ⟨(other "p" (by decide) (by decide)).trans actualCaller.roots.1,
         (other "len" (by decide) (by decide)).trans actualCaller.roots.2.1,
-        (other "o_wit" (by decide) (by decide)).trans actualCaller.roots.2.2⟩,otherGlobals,targetImage,targetRecords,targetFfi⟩
+        (other "o_wit" (by decide) (by decide)).trans actualCaller.roots.2.2⟩,otherGlobals,targetImage,targetRecords,targetFfi,hashImage⟩
     exact Or.inr ⟨target,innerPost,metadata,targetRun,restored⟩
 
 end InitECandidate.Solver.Input.Main.PayloadPrefix

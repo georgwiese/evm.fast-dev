@@ -2097,6 +2097,7 @@
     "submission/InitECandidate/Solver/Input/MainSecpProgram.lean",
     "submission/InitECandidate/Solver/Input/MainShaInitialization.lean",
     "submission/InitECandidate/Solver/Input/MainShaPrefix.lean",
+    "submission/InitECandidate/Solver/Input/MainShaWorkspace.lean",
     "submission/InitECandidate/Solver/Input/MainSszInitialization.lean",
     "submission/InitECandidate/Solver/Input/MainSszPrefix.lean",
     "submission/InitECandidate/Solver/Input/MainSszProgram.lean",
@@ -2116,6 +2117,8 @@
     "submission/InitECandidate/Solver/Input/MerkleBufferFill.lean",
     "submission/InitECandidate/Solver/Input/MerkleBufferedProgram.lean",
     "submission/InitECandidate/Solver/Input/MerkleDepthPrefix.lean",
+    "submission/InitECandidate/Solver/Input/MerkleInnerLoop.lean",
+    "submission/InitECandidate/Solver/Input/MerkleInnerProgram.lean",
     "submission/InitECandidate/Solver/Input/MerkleProgram.lean",
     "submission/InitECandidate/Solver/Input/MerkleZero.lean",
     "submission/InitECandidate/Solver/Input/MerkleZeroBound.lean",
@@ -2391,6 +2394,7 @@
     "submission/InitECandidate/Solver/Input/ShaPairCallCost.lean",
     "submission/InitECandidate/Solver/Input/ShaPairCost.lean",
     "submission/InitECandidate/Solver/Input/ShaPairProgram.lean",
+    "submission/InitECandidate/Solver/Input/ShaWorkspace.lean",
     "submission/InitECandidate/Solver/Input/SharedRead.lean",
     "submission/InitECandidate/Solver/Input/SharedReadExecution.lean",
     "submission/InitECandidate/Solver/Input/SharedStoreLocal.lean",
@@ -6439,8 +6443,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63307,
-  "package_bytes": 2262566360,
+  "package_entries": 63311,
+  "package_bytes": 2262586494,
   "claim": {
     "K": "infinity"
   },

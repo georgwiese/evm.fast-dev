@@ -2116,9 +2116,15 @@
     "submission/InitECandidate/Solver/Input/MerkleAllocation.lean",
     "submission/InitECandidate/Solver/Input/MerkleBufferFill.lean",
     "submission/InitECandidate/Solver/Input/MerkleBufferedProgram.lean",
+    "submission/InitECandidate/Solver/Input/MerkleDenseCost.lean",
     "submission/InitECandidate/Solver/Input/MerkleDepthPrefix.lean",
+    "submission/InitECandidate/Solver/Input/MerkleExtensionLoop.lean",
+    "submission/InitECandidate/Solver/Input/MerkleExtensionProgram.lean",
     "submission/InitECandidate/Solver/Input/MerkleInnerLoop.lean",
     "submission/InitECandidate/Solver/Input/MerkleInnerProgram.lean",
+    "submission/InitECandidate/Solver/Input/MerkleOuterLoop.lean",
+    "submission/InitECandidate/Solver/Input/MerkleOuterProgram.lean",
+    "submission/InitECandidate/Solver/Input/MerkleOuterStep.lean",
     "submission/InitECandidate/Solver/Input/MerkleProgram.lean",
     "submission/InitECandidate/Solver/Input/MerkleZero.lean",
     "submission/InitECandidate/Solver/Input/MerkleZeroBound.lean",
@@ -6443,8 +6449,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63311,
-  "package_bytes": 2262586494,
+  "package_entries": 63317,
+  "package_bytes": 2262627698,
   "claim": {
     "K": "infinity"
   },

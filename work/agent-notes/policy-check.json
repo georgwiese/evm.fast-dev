@@ -1995,8 +1995,11 @@
     "submission/InitECandidate/Solver/Input/MainHeaderInitialization.lean",
     "submission/InitECandidate/Solver/Input/MainHeaderPrefix.lean",
     "submission/InitECandidate/Solver/Input/MainInitializationGlobals.lean",
+    "submission/InitECandidate/Solver/Input/MainInputCopy.lean",
     "submission/InitECandidate/Solver/Input/MainInputEntry.lean",
+    "submission/InitECandidate/Solver/Input/MainInputHeap.lean",
     "submission/InitECandidate/Solver/Input/MainInputOversize.lean",
+    "submission/InitECandidate/Solver/Input/MainInputPrefix.lean",
     "submission/InitECandidate/Solver/Input/MainInputProgram.lean",
     "submission/InitECandidate/Solver/Input/MainKeccakInitialization.lean",
     "submission/InitECandidate/Solver/Input/MainKeccakPrefix.lean",
@@ -2247,6 +2250,7 @@
     "submission/InitECandidate/Solver/Input/TailCallNormal.lean",
     "submission/InitECandidate/Solver/Input/TailCallTerminating.lean",
     "submission/InitECandidate/Solver/Input/TerminatingPaddedPrefix.lean",
+    "submission/InitECandidate/Solver/Input/TerminatingPaddedScope.lean",
     "submission/InitECandidate/Solver/Input/TerminatingPrefixFunding.lean",
     "submission/InitECandidate/Solver/Input/TrapCost.lean",
     "submission/InitECandidate/Solver/Input/TrapNoReturn.lean",
@@ -6253,8 +6257,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63120,
-  "package_bytes": 2261671386,
+  "package_entries": 63124,
+  "package_bytes": 2261690401,
   "claim": {
     "K": "infinity"
   },

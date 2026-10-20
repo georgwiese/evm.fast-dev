@@ -9,7 +9,7 @@ set_option maxHeartbeats 800000
 /-- The three original witness byte-list calls and all SI stores/return on
 every non-timeout outcome. All branches share the same encoded byte budget;
 no malformed-record or oversize-record path assumes a future normal return. -/
-theorem arrays_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+theorem arrays_trace_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
     (pointer array si : BitVec 64) (start first middle last total : Nat)
     (environment : Environment source) (heap : Blob.HeapInput source input pointer)
     (ordered : first≤middle ∧ middle≤last ∧ last≤total) (inside : start+total≤input.length%2^64)
@@ -27,7 +27,8 @@ theorem arrays_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
     (siBefore : si.toNat+96≤array.toNat)
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source nodeCall=(result,post)) (notTimeout : result≠some .timeOut) :
     source.clock-post.clock≤(total-first)/2+12 ∧
-      ((∃ error : BitVec 64,(error=20#64 ∨ error=21#64 ∨ error=22#64 ∨ error=23#64 ∨ error=70#64) ∧ result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨ result=some (.returned (.val (.word si)))) := by
+      ((∃ error : BitVec 64,(error=20#64 ∨ error=21#64 ∨ error=22#64 ∨ error=23#64 ∨ error=70#64) ∧ result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨ (result=some (.returned (.val (.word si))) ∧
+        ∀ query,query.toNat<array.toNat → query≠byteAddress si 40 → query≠byteAddress si 48 → query≠byteAddress si 56 → query≠byteAddress si 64 → query≠byteAddress si 72 → query≠byteAddress si 80 → post.memory query=source.memory query)) := by
   classical
   have bytesSmall : input.length%2^64<2^64 := Nat.mod_lt _ (by decide)
   have firstArgs := list_arguments source pointer start first middle 9223372036854775807 1024 "w0" "w1" ordered.1 (by omega) wp firstLocal middleLocal
@@ -71,14 +72,49 @@ theorem arrays_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
   have codeWp := local_after_tuple nodeNext codeNext "cd" "wp" _ _ (by decide) codeLocals nodeWp
   have codeLast := local_after_tuple nodeNext codeNext "cd" "w2" _ _ (by decide) codeLocals nodeLast
   have codeTotal := local_after_tuple nodeNext codeNext "cd" "wlen" _ _ (by decide) codeLocals nodeTotal
-  obtain ⟨headerCost,outcome⟩ := headers_trace codeNext codeInner input pointer headerArray si start last total codeEnvironment codeHeap ordered.2.2 inside lower aligned headerGeometry.2.1
+  obtain ⟨headerCost,outcome⟩ := headers_trace_frame codeNext codeInner input pointer headerArray si start last total codeEnvironment codeHeap ordered.2.2 inside lower aligned headerGeometry.2.1
     (by rw [headerNumber,codeNumber]; omega) (by rw [headerNumber,codeNumber]; omega) codeCursor codeWp codeLast codeTotal codeSi siArena siAligned siAfter (by rw [headerNumber,codeNumber]; omega) result codeRest notTimeout
   have headerForward := evaluateHOLFiniteState_clock_le codeNext headerCall
   rw [codeRest] at headerForward
   change codeInner.clock≤codeNext.clock at headerForward
   have endpoint : post.clock=codeInner.clock := by rw [nodePost,codePost]; rfl
-  exact ⟨by rw [endpoint]; omega,outcome⟩
+  refine ⟨by rw [endpoint]; omega,?_⟩
+  rcases outcome with rejected | normal
+  · exact Or.inl rejected
+  · have postMemory : post.memory=codeInner.memory := by rw [nodePost,codePost]; rfl
+    refine Or.inr ⟨normal.1,?_⟩
+    intro query before nodePtr nodeCount codePtr codeCount headerPtr headerCount
+    rw [postMemory]
+    exact ((normal.2 query (by rw [headerNumber,codeNumber]; omega) headerPtr headerCount).trans
+      (codeFrame query (by rw [codeNumber]; omega) codePtr codeCount)).trans (nodeFrame query before nodePtr nodeCount)
+
+
+
+/-- Bound/outcome projection of the complete earlier-word memory frame. -/
+theorem arrays_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer array si : BitVec 64) (start first middle last total : Nat)
+    (environment : Environment source) (heap : Blob.HeapInput source input pointer)
+    (ordered : first≤middle ∧ middle≤last ∧ last≤total) (inside : start+total≤input.length%2^64)
+    (lower : 2701131776≤pointer.toNat) (aligned : pointer.toNat%8=0) (arrayAligned : array.toNat%8=0)
+    (arrayAfter : pointer.toNat+input.length%2^64+8≤array.toNat)
+    (room : array.toNat+4*total≤33806089496)
+    (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word array)))
+    (wp : source.locals.lookup (ofString "wp")=some (.val (.word (pointer+BitVec.ofNat 64 start))))
+    (firstLocal : source.locals.lookup (ofString "w0")=some (.val (.word (BitVec.ofNat 64 first))))
+    (middleLocal : source.locals.lookup (ofString "w1")=some (.val (.word (BitVec.ofNat 64 middle))))
+    (lastLocal : source.locals.lookup (ofString "w2")=some (.val (.word (BitVec.ofNat 64 last))))
+    (totalLocal : source.locals.lookup (ofString "wlen")=some (.val (.word (BitVec.ofNat 64 total))))
+    (siLocal : source.locals.lookup (ofString "si")=some (.val (.word si)))
+    (siArena : Arena si 96) (siAligned : si.toNat%8=0) (siAfter : pointer.toNat+input.length%2^64+8≤si.toNat)
+    (siBefore : si.toNat+96≤array.toNat)
+    (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source nodeCall=(result,post)) (notTimeout : result≠some .timeOut) :
+    source.clock-post.clock≤(total-first)/2+12 ∧
+      ((∃ error : BitVec 64,(error=20#64 ∨ error=21#64 ∨ error=22#64 ∨ error=23#64 ∨ error=70#64) ∧ result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨ result=some (.returned (.val (.word si)))) := by
+  obtain ⟨cost,outcome⟩ := arrays_trace_frame source post input pointer array si start first middle last total environment heap ordered inside lower aligned arrayAligned arrayAfter room heapGlobal wp firstLocal middleLocal lastLocal totalLocal siLocal siArena siAligned siAfter siBefore result run notTimeout
+  exact ⟨cost,outcome.imp id (fun normal => normal.1)⟩
 
 end InitECandidate.Solver.Input.Witness
 
 #print axioms InitECandidate.Solver.Input.Witness.arrays_trace
+
+#print axioms InitECandidate.Solver.Input.Witness.arrays_trace_frame

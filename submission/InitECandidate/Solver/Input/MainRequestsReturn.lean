@@ -27,6 +27,7 @@ structure RequestsReturned (input : Guest.InputBlob) (source caller current : Pa
   forward : current.clock ≤ caller.clock
   cost : caller.clock - current.clock ≤ 349
   aggregate : source.clock - current.clock ≤ (input.length % 2^64) / 4 + 502
+  earlier : ∀ query,inputPointer.toNat≤query.toNat → query.toNat<(PayloadPrefix.finalCursor input).toNat → query≠byteAddress (RequestPrefix.cursor input) 32 → current.memory query=caller.memory query
 
 /-- Complete actual original request call: every parser rejection stops the
 same execution, or the real request pointer enters the unchanged witness
@@ -97,7 +98,7 @@ theorem requests_return_trace (input : Guest.InputBlob) (source caller post : Pa
       have metadata : RequestsReturned input source caller current counts := ⟨locals,bytes,control,fields.2.2.2,fields.1,fields.2.2.1,decoded.heap,
         (decoded.payload 88 (by decide)).trans actual.gasCell,(decoded.payload 56 (by decide)).trans actual.countCell,
         ⟨(saved "p" (by decide)).trans actual.roots.1,(saved "len" (by decide)).trans actual.roots.2.1,(saved "o_wit" (by decide)).trans actual.roots.2.2⟩,
-        (saved "si" (by decide)).trans actual.si,otherGlobals,decoded.layout,image,actual.transactions,by omega,by omega,decoded.cost⟩
+        (saved "si" (by decide)).trans actual.si,otherGlobals,decoded.layout,image,actual.transactions,by omega,by omega,decoded.cost,by intro query lower before different; exact decoded.earlier query lower before⟩
       exact Or.inr ⟨current,final,counts,metadata,Prod.ext observed rfl,endpoint⟩
 
 end InitECandidate.Solver.Input.Main.DecoderCall

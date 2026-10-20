@@ -73,7 +73,9 @@ theorem store_request_pointer (input : Guest.InputBlob) (source caller current :
     · exact returned.image.arithmetic
   have metadata : RequestsReturned input source caller next counts := ⟨returned.locals,bytes,returned.control,returned.code,returned.domain,returned.exceptions,returned.heap,
     (frame _ (payloadAway 88 (by decide))).trans returned.gasCell,(frame _ (payloadAway 56 (by decide))).trans returned.countCell,
-    returned.roots,returned.si,returned.globals,returned.layout,image,returned.transactions,returned.forward,returned.cost,returned.aggregate⟩
+    returned.roots,returned.si,returned.globals,returned.layout,image,returned.transactions,returned.forward,returned.cost,returned.aggregate,by
+      intro query lower before different
+      exact (frame query different).trans (returned.earlier query lower before different)⟩
   exact ⟨run,metadata,cell⟩
 
 /-- The same actual request continuation reaches the literal original witness

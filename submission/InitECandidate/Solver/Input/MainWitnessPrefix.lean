@@ -32,7 +32,7 @@ structure WitnessEntry (input : Guest.InputBlob) (source current : PanSemStateFi
 
 /-- The real witness length guard either raises SszErr82 or reaches its
 literal offset body. Neither branch assumes a future helper return or clock. -/
-theorem witness_prefix_trace (input : Guest.InputBlob) (source caller current post : PanSemStateFiniteExact 64 Guest.HostMemory) (counts : Nat → BitVec 64)
+theorem witness_prefix_trace_frame (input : Guest.InputBlob) (source caller current post : PanSemStateFiniteExact 64 Guest.HostMemory) (counts : Nat → BitVec 64)
     (environment : Environment input source) (actual : RequestCaller input source caller)
     (returned : RequestsReturned input source caller current counts) (layout : RequestLayout input)
     (bounded : input.length % 2^64 ≤ Guest.maxInputBytes)
@@ -41,8 +41,14 @@ theorem witness_prefix_trace (input : Guest.InputBlob) (source caller current po
     (12 ≤ witnessLength input ∧ witnessStart input + witnessLength input = input.length % 2^64 ∧
       ∃ (next innerPost : PanSemStateFiniteExact 64 Guest.HostMemory) (restoreStack : PanSemStateFiniteExact 64 Guest.HostMemory → PanSemStateFiniteExact 64 Guest.HostMemory),
         WitnessEntry input source next counts ∧ evaluateHOLFiniteState next Witness.offsetBody = (result,innerPost) ∧ post = restoreStack innerPost ∧
-        (∀ target,emptyLocalsHOLFinite (restoreStack target) = emptyLocalsHOLFinite target)) := by
-  obtain ⟨stored,metadata,clock,requestCell,witnessRun⟩ := witness_after_request input source caller current post counts environment actual returned bounded result run
+        (∀ target,emptyLocalsHOLFinite (restoreStack target) = emptyLocalsHOLFinite target) ∧
+        (∀ query,query≠byteAddress (RequestPrefix.cursor input) 32 → next.memory query=current.memory query)) := by
+  obtain ⟨storedRun,metadata,requestCell⟩ := store_request_pointer input source caller current counts environment actual returned bounded
+  let stored := StructureStore.stored current (RequestPrefix.cursor input) 32 (PayloadPrefix.finalCursor input)
+  have storedClock : stored.clock=current.clock := rfl
+  have witnessRun : evaluateHOLFiniteState stored Witness.prefixBody=(result,post) := by
+    rw [Request.after_requests_shape,StateSteps.next_sequence current stored _ _ storedRun (Nat.le_refl _)] at run
+    exact run
   have upper : Guest.GasLimit.le32 input 6 ≤ input.length % 2^64 - 2 := by
     have := layout.requestLower
     have := layout.requestUpper
@@ -56,6 +62,9 @@ theorem witness_prefix_trace (input : Guest.InputBlob) (source caller current po
   · obtain ⟨short,same,cost⟩ := rejected
     have prefixCost := metadata.aggregate
     have forward := metadata.forward.trans actual.forward
+    rw [storedClock] at cost
+    change source.clock-current.clock≤(input.length%2^64)/4+502 at prefixCost
+    change current.clock≤source.clock at forward
     exact Or.inl ⟨same,by omega⟩
   · obtain ⟨minimum,bytes,wp,wlen,innerPost,remaining,endpoint⟩ := normal
     let ready := Witness.prefixPrepared stored input inputPointer (Guest.GasLimit.le32 input 6)
@@ -64,8 +73,30 @@ theorem witness_prefix_trace (input : Guest.InputBlob) (source caller current po
     have image : Requests.Image ready (inputPointer + BitVec.ofNat 64 (requestStart input)) (PayloadPrefix.finalCursor input) (BitVec.ofNat 64 (requestLength input)) (Requests.offsetWord input (requestStart input)) counts := ⟨metadata.image.cells,metadata.image.arithmetic⟩
     have entry : WitnessEntry input source ready counts := ⟨bytes,wp,wlen,si,code,metadata.domain.trans actual.domain,metadata.exceptions.trans actual.exceptions,
       metadata.heap,metadata.globals,metadata.gasCell,metadata.countCell,requestCell,metadata.layout,image,metadata.transactions,metadata.forward.trans actual.forward,metadata.aggregate⟩
-    exact Or.inr ⟨minimum,by dsimp only [witnessStart,witnessLength]; have := layout.extent; omega,ready,innerPost,Witness.restorePrefix stored inputPointer (Guest.GasLimit.le32 input 6),entry,remaining,endpoint,by intro target; exact Witness.restore_prefix_frame _ target _ _⟩
+    exact Or.inr ⟨minimum,by dsimp only [witnessStart,witnessLength]; have := layout.extent; omega,ready,innerPost,Witness.restorePrefix stored inputPointer (Guest.GasLimit.le32 input 6),entry,remaining,endpoint,(by intro target; exact Witness.restore_prefix_frame _ target _ _),by
+      intro query different
+      change StoreWord.put current.memory (byteAddress (RequestPrefix.cursor input) 32) (PayloadPrefix.finalCursor input) query=current.memory query
+      simp only [StoreWord.put,if_neg different]⟩
+
+
+/-- Entry/outcome projection of the stronger actual prefix memory frame. -/
+theorem witness_prefix_trace (input : Guest.InputBlob) (source caller current post : PanSemStateFiniteExact 64 Guest.HostMemory) (counts : Nat → BitVec 64)
+    (environment : Environment input source) (actual : RequestCaller input source caller)
+    (returned : RequestsReturned input source caller current counts) (layout : RequestLayout input)
+    (bounded : input.length % 2^64 ≤ Guest.maxInputBytes)
+    (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState current Request.afterRequests = (result,post)) (notTimeout : result ≠ some .timeOut) :
+    (result = some (.exception (ofString "SszErr") (.val (.word 82#64))) ∧ source.clock - post.clock ≤ (input.length % 2^64) / 4 + 503) ∨
+    (12 ≤ witnessLength input ∧ witnessStart input + witnessLength input = input.length % 2^64 ∧
+      ∃ (next innerPost : PanSemStateFiniteExact 64 Guest.HostMemory) (restoreStack : PanSemStateFiniteExact 64 Guest.HostMemory → PanSemStateFiniteExact 64 Guest.HostMemory),
+        WitnessEntry input source next counts ∧ evaluateHOLFiniteState next Witness.offsetBody = (result,innerPost) ∧ post = restoreStack innerPost ∧
+        (∀ target,emptyLocalsHOLFinite (restoreStack target) = emptyLocalsHOLFinite target)) := by
+  rcases witness_prefix_trace_frame input source caller current post counts environment actual returned layout bounded result run notTimeout with rejected | normal
+  · exact Or.inl rejected
+  · obtain ⟨minimum,inside,next,innerPost,restoreStack,entry,remaining,endpoint,preserved,memory⟩ := normal
+    exact Or.inr ⟨minimum,inside,next,innerPost,restoreStack,entry,remaining,endpoint,preserved⟩
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 
 #print axioms InitECandidate.Solver.Input.Main.DecoderCall.witness_prefix_trace
+
+#print axioms InitECandidate.Solver.Input.Main.DecoderCall.witness_prefix_trace_frame

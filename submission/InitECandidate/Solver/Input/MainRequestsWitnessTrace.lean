@@ -23,6 +23,40 @@ theorem WitnessDecoded.of_frame (input : Guest.InputBlob) (source target : PanSe
 /-- Both complete original request/witness decoders, from the actual request
 caller to the original decoder return. Rejections include all real helper
 failures and the final physical records survive the request's rq scope. -/
+theorem requests_witness_trace_frame (input : Guest.InputBlob) (source caller post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (environment : Environment input source) (actual : RequestCaller input source caller) (layout : RequestLayout input)
+    (bounded : input.length%2^64≤Guest.maxInputBytes)
+    (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState caller Request.requestsCall=(result,post)) (notTimeout : result≠some .timeOut) :
+    source.clock-post.clock≤(input.length%2^64)/4+witnessLength input/2+522 ∧
+      ((∃ error : BitVec 64,result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨
+       (result=some (.returned (.val (.word (RequestPrefix.cursor input)))) ∧ WitnessDecoded input post ∧
+         ∀ query,inputPointer.toNat≤query.toNat → query.toNat<(PayloadPrefix.finalCursor input).toNat →
+           query≠byteAddress (RequestPrefix.cursor input) 32 → query≠byteAddress (RequestPrefix.cursor input) 40 → query≠byteAddress (RequestPrefix.cursor input) 48 → query≠byteAddress (RequestPrefix.cursor input) 56 → query≠byteAddress (RequestPrefix.cursor input) 64 → query≠byteAddress (RequestPrefix.cursor input) 72 → query≠byteAddress (RequestPrefix.cursor input) 80 → post.memory query=caller.memory query)) := by
+  rcases requests_return_trace input source caller post environment actual layout bounded result run notTimeout with rejected | normal
+  · obtain ⟨error,allowed,same,cost,aggregate⟩ := rejected
+    exact ⟨by omega,Or.inl ⟨error,same⟩⟩
+  obtain ⟨current,final,counts,returned,remaining,endpoint⟩ := normal
+  obtain ⟨cost,outcome⟩ := witness_suffix_frame input source caller current final counts environment actual returned layout bounded result remaining notTimeout
+  have frame : emptyLocalsHOLFinite post=emptyLocalsHOLFinite final := by rw [endpoint]; rfl
+  have clock : post.clock=final.clock := by have h := congrArg PanSemStateFiniteExact.clock frame; exact h
+  refine ⟨by rw [clock]; exact cost,?_⟩
+  rcases outcome with rejected | normal
+  · obtain ⟨error,allowed,same⟩ := rejected
+    exact Or.inl ⟨error,same⟩
+  · obtain ⟨same,first,lower,ordered,upper,decoded,memory⟩ := normal
+    have data : WitnessDecoded input final := ⟨first,lower,ordered,upper,decoded⟩
+    have geometry := witness_geometry input bounded actual.transactions
+    have previous := PayloadPrefix.final_cursor_geometry input bounded actual.transactions
+    have arrayAfter : (PayloadPrefix.finalCursor input).toNat<(witnessArray input).toNat := by rw [previous.1,geometry.1]; omega
+    have postMemory : post.memory=final.memory := by have h := congrArg PanSemStateFiniteExact.memory frame; exact h
+    refine Or.inr ⟨same,WitnessDecoded.of_frame input final post frame data,?_⟩
+    intro query queryLower before requestPtr nodePtr nodeCount codePtr codeCount headerPtr headerCount
+    rw [postMemory]
+    exact (memory query queryLower (by omega) requestPtr nodePtr nodeCount codePtr codeCount headerPtr headerCount).trans (returned.earlier query queryLower before requestPtr)
+
+
+
+/-- Bound and actual witness-data projection retaining the original API. -/
 theorem requests_witness_trace (input : Guest.InputBlob) (source caller post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (environment : Environment input source) (actual : RequestCaller input source caller) (layout : RequestLayout input)
     (bounded : input.length%2^64≤Guest.maxInputBytes)
@@ -30,20 +64,15 @@ theorem requests_witness_trace (input : Guest.InputBlob) (source caller post : P
     source.clock-post.clock≤(input.length%2^64)/4+witnessLength input/2+522 ∧
       ((∃ error : BitVec 64,result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨
        (result=some (.returned (.val (.word (RequestPrefix.cursor input)))) ∧ WitnessDecoded input post)) := by
-  rcases requests_return_trace input source caller post environment actual layout bounded result run notTimeout with rejected | normal
-  · obtain ⟨error,allowed,same,cost,aggregate⟩ := rejected
-    exact ⟨by omega,Or.inl ⟨error,same⟩⟩
-  obtain ⟨current,final,counts,returned,remaining,endpoint⟩ := normal
-  obtain ⟨cost,outcome⟩ := witness_suffix input source caller current final counts environment actual returned layout bounded result remaining notTimeout
-  have frame : emptyLocalsHOLFinite post=emptyLocalsHOLFinite final := by rw [endpoint]; rfl
-  have clock : post.clock=final.clock := by have h := congrArg PanSemStateFiniteExact.clock frame; exact h
-  refine ⟨by rw [clock]; exact cost,?_⟩
+  obtain ⟨cost,outcome⟩ := requests_witness_trace_frame input source caller post environment actual layout bounded result run notTimeout
+  refine ⟨cost,?_⟩
   rcases outcome with rejected | normal
-  · obtain ⟨error,allowed,same⟩ := rejected
-    exact Or.inl ⟨error,same⟩
-  · exact Or.inr ⟨normal.1,WitnessDecoded.of_frame input final post frame normal.2⟩
+  · exact Or.inl rejected
+  · exact Or.inr ⟨normal.1,normal.2.1⟩
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 
 #print axioms InitECandidate.Solver.Input.Main.DecoderCall.WitnessDecoded.of_frame
 #print axioms InitECandidate.Solver.Input.Main.DecoderCall.requests_witness_trace
+
+#print axioms InitECandidate.Solver.Input.Main.DecoderCall.requests_witness_trace_frame

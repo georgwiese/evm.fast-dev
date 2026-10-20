@@ -15,6 +15,7 @@ structure RequestDecoded (input : Guest.InputBlob) (source entry post : PanSemSt
   payload : ∀ offset < 136,post.memory (PayloadPrefix.cursor input + BitVec.ofNat 64 offset) = entry.memory (PayloadPrefix.cursor input + BitVec.ofNat 64 offset)
   layout : Requests.Layout (Requests.offsetWord input (requestStart input)) (BitVec.ofNat 64 (requestLength input))
   image : Requests.Image post (inputPointer + BitVec.ofNat 64 (requestStart input)) (PayloadPrefix.finalCursor input) (BitVec.ofNat 64 (requestLength input)) (Requests.offsetWord input (requestStart input)) counts
+  earlier : ∀ query,inputPointer.toNat≤query.toNat → query.toNat<(PayloadPrefix.finalCursor input).toNat → post.memory query=entry.memory query
 
 /-- All real request decoding at main's actual reached callee, including every
 original offset/list rejection. No clock allowance, parser validity or future
@@ -65,7 +66,14 @@ theorem requests_body (input : Guest.InputBlob) (source entry post : PanSemState
       apply outside
       · exact Or.inr (by change 2713715344 + 40 ≤ _; rw [number]; omega)
       · exact Or.inl (by rw [number]; have h := cursor.2.2.1; omega)
-    exact Or.inr ⟨same,counts,⟨postBytes,cost,forward,by omega,control,heap,payload,layout,image⟩⟩
+    have earlier (query : BitVec 64) (lower : inputPointer.toNat≤query.toNat) (before : query.toNat<(PayloadPrefix.finalCursor input).toNat) : post.memory query=entry.memory query := by
+      apply outside
+      · right
+        change 2713731432≤query.toNat at lower
+        change 2713715344+40≤query.toNat
+        omega
+      · exact Or.inl before
+    exact Or.inr ⟨same,counts,⟨postBytes,cost,forward,by omega,control,heap,payload,layout,image,earlier⟩⟩
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 

@@ -2242,7 +2242,12 @@
     "submission/InitECandidate/Solver/Input/PricedScalarPrefix.lean",
     "submission/InitECandidate/Solver/Input/ProgressiveBudget.lean",
     "submission/InitECandidate/Solver/Input/ProgressiveCap.lean",
+    "submission/InitECandidate/Solver/Input/ProgressiveLoop.lean",
     "submission/InitECandidate/Solver/Input/ProgressiveProgram.lean",
+    "submission/InitECandidate/Solver/Input/ProgressiveRound.lean",
+    "submission/InitECandidate/Solver/Input/ProgressiveStepCost.lean",
+    "submission/InitECandidate/Solver/Input/ProgressiveStepNormal.lean",
+    "submission/InitECandidate/Solver/Input/ProgressiveUpdates.lean",
     "submission/InitECandidate/Solver/Input/PureAssignReturn.lean",
     "submission/InitECandidate/Solver/Input/PureGuard.lean",
     "submission/InitECandidate/Solver/Input/PureGuardNormal.lean",
@@ -6463,8 +6468,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63331,
-  "package_bytes": 2262696161,
+  "package_entries": 63336,
+  "package_bytes": 2262732827,
   "claim": {
     "K": "infinity"
   },

@@ -75,7 +75,7 @@ theorem after_get_family {ι : Type} [Fintype ι] [DecidableEq ι]
     · rw [visited]
       exact population index
   exact ⟨answerEq,cursor,paid,nextCursor,next,nextEntries,accounts ++ [BitVec.ofNat 64 cursor],added,destroyed,found,iterations,Nat.le_refl _,extension,
-    funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,familyPrice,codes,nextEnvironment,globals,finalValues,finalSaved,finalRegistry,effect,metadata,frame,nextCounter,appends,visits⟩
+    funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,familyPrice,codes,nextEnvironment,globals,finalValues,finalSaved,finalRegistry,effect,metadata,frame,nextCounter,appends,visits,by simp⟩
 
 end InitECandidate.Solver.Mpt.AccountBalanceSet
 

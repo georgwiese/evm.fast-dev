@@ -15,6 +15,11 @@ theorem ready_bindings (source : PanSemStateFiniteExact 64 Guest.HostMemory) (in
   · exact (bind_lookup_other (Request.positioned (current source input clock) input inputPointer (cursor input) (Guest.GasLimit.le32 input 6)) "nlen" "np" _ (by decide)).trans (bind_lookup_same _ _ _)
   · exact bind_lookup_same _ _ _
 
+theorem ready_si (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (clock : Nat) :
+    (ready source input clock).locals.lookup (ofString "si") = some (.val (.word (cursor input))) := by
+  exact (bind_lookup_other (Request.positioned (current source input clock) input inputPointer (cursor input) (Guest.GasLimit.le32 input 6)) "nlen" "si" _ (by decide)).trans
+    ((bind_lookup_other (Request.chained (current source input clock) input (cursor input) (Guest.GasLimit.le32 input 6)) "np" "si" _ (by decide)).trans (bind_lookup_same _ _ _))
+
 /-- Exact original request-prefix fields relative to the actual decoder
 callee entry; outer guards/stores cost <=4 and the SI allocation costs1. -/
 theorem ready_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (paid : Nat) (bound : paid ≤ 4) :
@@ -36,3 +41,5 @@ end InitECandidate.Solver.Input.Main.RequestPrefix
 #print axioms InitECandidate.Solver.Input.Main.RequestPrefix.ready_clock
 #print axioms InitECandidate.Solver.Input.Main.RequestPrefix.ready_bindings
 #print axioms InitECandidate.Solver.Input.Main.RequestPrefix.ready_frame
+
+#print axioms InitECandidate.Solver.Input.Main.RequestPrefix.ready_si

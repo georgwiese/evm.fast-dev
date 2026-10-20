@@ -48,6 +48,10 @@ set_option maxRecDepth 100000 in
 open scoped InitE.MetadataComputation InitE.NameComputation in
 theorem ssz_names : ofString "ssz_len_chunk" ∈ names ∧ ofString "ssz_offs" ∈ names ∧ ofString "zero_hashes" ∈ names := by decide_cbv
 
+set_option maxRecDepth 100000 in
+open scoped InitE.MetadataComputation InitE.NameComputation in
+theorem mpt_names : ofString "empty_trie_root" ∈ names ∧ ofString "empty_code_hash" ∈ names ∧ ofString "mpt_nib_scratch" ∈ names ∧ ofString "mpt_hash_scratch" ∈ names ∧ ofString "mpt_key_scratch" ∈ names := by decide_cbv
+
 end InitECandidate.Solver.Input.OriginalScalarGlobals
 
 #print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.checked
@@ -60,3 +64,5 @@ end InitECandidate.Solver.Input.OriginalScalarGlobals
 #print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.keccak_names
 
 #print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.ssz_names
+
+#print axioms InitECandidate.Solver.Input.OriginalScalarGlobals.mpt_names

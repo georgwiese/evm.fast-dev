@@ -1786,6 +1786,12 @@
     "submission/InitECandidate/Solver/Input/BytesList/Step.lean",
     "submission/InitECandidate/Solver/Input/BytesList/Tail.lean",
     "submission/InitECandidate/Solver/Input/BytesList/TailTrace.lean",
+    "submission/InitECandidate/Solver/Input/BytesVectorBodyCost.lean",
+    "submission/InitECandidate/Solver/Input/BytesVectorCallCost.lean",
+    "submission/InitECandidate/Solver/Input/BytesVectorHeap.lean",
+    "submission/InitECandidate/Solver/Input/BytesVectorPackedCost.lean",
+    "submission/InitECandidate/Solver/Input/BytesVectorProgram.lean",
+    "submission/InitECandidate/Solver/Input/BytesVectorShortCost.lean",
     "submission/InitECandidate/Solver/Input/CallNormal.lean",
     "submission/InitECandidate/Solver/Input/CallResume.lean",
     "submission/InitECandidate/Solver/Input/CallResumeLookup.lean",
@@ -2484,6 +2490,8 @@
     "submission/InitECandidate/Solver/Input/TrapCost.lean",
     "submission/InitECandidate/Solver/Input/TrapNoReturn.lean",
     "submission/InitECandidate/Solver/Input/TrapStopped.lean",
+    "submission/InitECandidate/Solver/Input/U64Hash.lean",
+    "submission/InitECandidate/Solver/Input/U64HashCallCost.lean",
     "submission/InitECandidate/Solver/Input/UDivMod/ArithmeticBits.lean",
     "submission/InitECandidate/Solver/Input/UDivMod/ArithmeticInvariant.lean",
     "submission/InitECandidate/Solver/Input/UDivMod/Built.lean",
@@ -6508,8 +6516,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63376,
-  "package_bytes": 2262928373,
+  "package_entries": 63384,
+  "package_bytes": 2262979656,
   "claim": {
     "K": "infinity"
   },

@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 6399,
+  "solver_modules": 6407,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 16,
@@ -41,7 +41,7 @@
     "GasBudget": 677,
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
-    "Input": 743,
+    "Input": 751,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,

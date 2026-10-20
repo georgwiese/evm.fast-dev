@@ -56,7 +56,7 @@ theorem empty_prefix_normal {ι : Type} [DecidableEq ι]
       (∀ table, table ≠ writer → table ≠ outer → table ≠ accountWriter → next table = objects table) ∧
       ((found = false ∧ iterations = 0) ∨
         (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
-      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (empty = 0#64 ∨ empty = 1#64) ∧ (if destroyed then 1 ≤ added else added = 0 ∧ found = false ∧ iterations = 0) := by
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (empty = 0#64 ∨ empty = 1#64) ∧ (if destroyed then 1 ≤ added else added = 0 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan := by
   obtain ⟨accountImage⟩ := registry.images account accountMember
   have read : eval source (localVar "a") = some (.val (.word account)) := by simp [eval,localVar,evalHOLExact,toExact,accountLocal]
   obtain ⟨emptyPaid,empty,inner,emptyPositive,emptyBound,emptyFunded,binary,tailRun,scope⟩ := AccountIsEmpty.success_prefix source post account emptyHash accountImage
@@ -70,7 +70,7 @@ theorem empty_prefix_normal {ι : Type} [DecidableEq ι]
     (bind_lookup_other _ "e" "addr" empty (by decide)).trans addressLocal
   have emptyLocal : ready.locals.lookup (ofString "e") = some (.val (.word empty)) := bind_lookup_same _ _ _
   obtain ⟨answerEq,destroyed,found,iterations,paid,nextCursor,next,nextEntries,added,funded,clock,forward,addedBound,capacityBound,models,nextImage,nextZone,price,codes,
-    nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,decision,appends⟩ := after_empty_normal ready inner address scratch transaction empty cursor cutoff objects writer outer accountWriter base cap count entries
+    nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,decision,appends,outerPlan⟩ := after_empty_normal ready inner address scratch transaction empty cursor cutoff objects writer outer accountWriter base cap count entries
       readyFamily readyImage zone countBound (environment.of_fields rfl rfl rfl) installed accounts readyRegistry property values owned accountOwned savedValues writerKind outerKind accountKind differentOuter
       addressArena scratchArena floors scratchBelow small journalAbove readyAddress emptyLocal innerReferences scratchGlobal transactionGlobal tableMapped tableStored tableAbove tableBefore tableOutside
       outerMapped outerStored accountMapped accountStored accountAbove accountBefore accountOutside accountAway accountApart journal capacity counter returned tailRun
@@ -88,7 +88,7 @@ theorem empty_prefix_normal {ι : Type} [DecidableEq ι]
       emptyPaid + paid ≤ emptyPaid + (source.clock - emptyPaid) := Nat.add_le_add_left funded emptyPaid
       _ = source.clock := Nat.add_sub_of_le emptyFunded
   refine ⟨answerEq,empty,destroyed,found,iterations,emptyPaid + paid,nextCursor,next,nextEntries,added,totalFunded,totalClock,forward,addedBound,capacityBound,finalFamily,finalImage,nextZone,by omega,
-    codes,nextEnvironment.of_fields rfl rfl rfl,globals,nextValues,nextSaved,finalRegistry,effect,metadata,?_,others,branch,nextCounter,decision,binary,appends⟩
+    codes,nextEnvironment.of_fields rfl rfl rfl,globals,nextValues,nextSaved,finalRegistry,effect,metadata,?_,others,branch,nextCounter,decision,binary,appends,outerPlan⟩
   intro query above earlier outside away
   exact frame query above earlier outside away
 

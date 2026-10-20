@@ -46,7 +46,7 @@ theorem whole_normal {ι : Type} [DecidableEq ι]
       (∀ table, table ≠ writer → table ≠ outer → next table = objects table) ∧
       ((found = false ∧ iterations = 0 ∧ added = 0 ∧ next = objects ∧ nextEntries = entries) ∨
         (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
-      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) := by
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ (next outer).plan = (objects outer).plan := by
   obtain ⟨getPaid,flag,value,finish,getPositive,getBound,getFunded,binary,valueOwned,tailRun,postFrame⟩ := lookup_normal source post address transaction cursor objects outer
     family environment installed outerKind property values addressArena addressLocal transactionGlobal outerMapped outerStored returned normal
   let ready := lookupEntry source (objects outer).pointer getPaid flag value
@@ -62,7 +62,7 @@ theorem whole_normal {ι : Type} [DecidableEq ι]
   have readyOuter : ready.locals.lookup (ofString "outer") = some (.val (.word (objects outer).pointer)) := by
     simp [ready,lookupEntry,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,show ofString "m" ≠ ofString "outer" from by decide]
   obtain ⟨answerEq,found,iterations,paid,nextCursor,next,nextEntries,added,funded,clock,forward,addedBound,capacityBound,models,nextImage,nextZone,price,codes,
-    nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter⟩ := after_get_normal ready finish address scratch transaction flag value cursor cutoff objects writer outer base cap count entries
+    nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,outerPlan⟩ := after_get_normal ready finish address scratch transaction flag value cursor cutoff objects writer outer base cap count entries
       readyFamily readyImage zone countBound (environment.of_fields rfl rfl rfl) installed accounts readyRegistry property values owned savedValues writerKind outerKind addressArena scratchArena
       floors scratchBelow small journalAbove readyAddress readyPair binary valueOwned innerReferences scratchGlobal transactionGlobal tableMapped tableStored tableAbove tableBefore tableOutside
       readyOuter accountApart journal capacity counter returned tailRun
@@ -90,7 +90,7 @@ theorem whole_normal {ι : Type} [DecidableEq ι]
   change paid ≤ source.clock - getPaid at funded
   change finish.clock = source.clock - getPaid - paid at clock
   refine ⟨answerEq,found,iterations,getPaid + paid,nextCursor,next,nextEntries,added,by omega,by omega,forward,addedBound,capacityBound,finalFamily,finalImage,nextZone,by omega,
-    codeEq.trans codes,nextEnvironment.of_fields codeEq domain endian,?_,finalValues,nextSaved,finalRegistry,finalEffect,metadata,?_,others,branch,(by rw [globalEq]; exact nextCounter)⟩
+    codeEq.trans codes,nextEnvironment.of_fields codeEq domain endian,?_,finalValues,nextSaved,finalRegistry,finalEffect,metadata,?_,others,branch,(by rw [globalEq]; exact nextCounter),outerPlan⟩
   · intro key notHeap notCounter
     rw [globalEq]
     exact globals key notHeap notCounter

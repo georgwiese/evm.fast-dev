@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.Witness.Environment
+import InitECandidate.Solver.Input.AllocationContext
 import InitECandidate.Solver.Input.Witness.StoredListTrace
 
 namespace InitECandidate.Solver.Input.Witness
@@ -25,7 +26,7 @@ theorem headers_trace_frame (source post : PanSemStateFiniteExact 64 Guest.HostM
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source headerCall=(result,post)) (notTimeout : result≠some .timeOut) :
     source.clock-post.clock≤2*((total-last)/4)+4 ∧
       ((∃ error : BitVec 64,(error=20#64 ∨ error=21#64 ∨ error=22#64 ∨ error=23#64 ∨ error=70#64) ∧ result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨ (result=some (.returned (.val (.word si))) ∧
-        ∀ query,query.toNat<array.toNat → query≠byteAddress si 72 → query≠byteAddress si 80 → post.memory query=source.memory query)) := by
+        (∀ query,query.toNat<array.toNat → query≠byteAddress si 72 → query≠byteAddress si 80 → post.memory query=source.memory query) ∧ InitializerAllocations.context post=InitializerAllocations.context source)) := by
   classical
   have args := list_arguments source pointer start last total 256 1024 "w2" "wlen" ordered
     (by have := Nat.mod_lt input.length (by decide : 0<2^64); omega) wp lastLocal totalLocal
@@ -45,10 +46,13 @@ theorem headers_trace_frame (source post : PanSemStateFiniteExact 64 Guest.HostM
     have clock : post.clock=next.clock := by rw [endpoint]; exact clocks.symm
     have innerEq : innerPost=emptyLocalsHOLFinite next := (congrArg Prod.snd equality).symm
     have memory : post.memory=next.memory := by rw [endpoint,innerEq]; rfl
-    exact ⟨by rw [clock]; exact cost,Or.inr ⟨same.symm,by
+    have readonly : InitializerAllocations.context post=InitializerAllocations.context source := by
+      rw [endpoint,innerEq]
+      exact allocation_context source next array _ (total-last=0) control
+    exact ⟨by rw [clock]; exact cost,Or.inr ⟨same.symm,(by
       intro query before firstAway secondAway
       rw [memory]
-      exact frame query before firstAway secondAway⟩⟩
+      exact frame query before firstAway secondAway),readonly⟩⟩
 
 
 /-- The bound/outcome projection of the stronger actual-memory contract. -/

@@ -1742,6 +1742,7 @@
     "submission/InitECandidate/Solver/GuestWork/ZeroStoreProgram.lean",
     "submission/InitECandidate/Solver/HashEnvironmentFrame.lean",
     "submission/InitECandidate/Solver/Input/AddressFromWords.lean",
+    "submission/InitECandidate/Solver/Input/AllocationContext.lean",
     "submission/InitECandidate/Solver/Input/AllocationControl.lean",
     "submission/InitECandidate/Solver/Input/ArgumentValues.lean",
     "submission/InitECandidate/Solver/Input/AssignNormal.lean",
@@ -1867,6 +1868,7 @@
     "submission/InitECandidate/Solver/Input/GlobalFieldStore.lean",
     "submission/InitECandidate/Solver/Input/GuardNormal.lean",
     "submission/InitECandidate/Solver/Input/HandledPrefix.lean",
+    "submission/InitECandidate/Solver/Input/HashFieldCells.lean",
     "submission/InitECandidate/Solver/Input/HashFields.lean",
     "submission/InitECandidate/Solver/Input/HeaderAfterNormal.lean",
     "submission/InitECandidate/Solver/Input/HeaderEncoding/Call.lean",
@@ -2027,6 +2029,7 @@
     "submission/InitECandidate/Solver/Input/MainForkSignature.lean",
     "submission/InitECandidate/Solver/Input/MainForkTail.lean",
     "submission/InitECandidate/Solver/Input/MainHashFields.lean",
+    "submission/InitECandidate/Solver/Input/MainHashImageFrame.lean",
     "submission/InitECandidate/Solver/Input/MainHashesTrace.lean",
     "submission/InitECandidate/Solver/Input/MainHeaderEntry.lean",
     "submission/InitECandidate/Solver/Input/MainHeaderInitialization.lean",
@@ -2143,6 +2146,7 @@
     "submission/InitECandidate/Solver/Input/PairedScalar.lean",
     "submission/InitECandidate/Solver/Input/ParserFrame.lean",
     "submission/InitECandidate/Solver/Input/ParserGlobals.lean",
+    "submission/InitECandidate/Solver/Input/ParserGlobalsFull.lean",
     "submission/InitECandidate/Solver/Input/PayloadAfterExtraImage.lean",
     "submission/InitECandidate/Solver/Input/PayloadAfterExtraNormal.lean",
     "submission/InitECandidate/Solver/Input/PayloadAfterExtraTrace.lean",
@@ -6399,8 +6403,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63267,
-  "package_bytes": 2262385200,
+  "package_entries": 63271,
+  "package_bytes": 2262406215,
   "claim": {
     "K": "infinity"
   },

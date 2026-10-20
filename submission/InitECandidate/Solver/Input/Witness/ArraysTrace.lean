@@ -28,7 +28,7 @@ theorem arrays_trace_frame (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source nodeCall=(result,post)) (notTimeout : result≠some .timeOut) :
     source.clock-post.clock≤(total-first)/2+12 ∧
       ((∃ error : BitVec 64,(error=20#64 ∨ error=21#64 ∨ error=22#64 ∨ error=23#64 ∨ error=70#64) ∧ result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨ (result=some (.returned (.val (.word si))) ∧
-        ∀ query,query.toNat<array.toNat → query≠byteAddress si 40 → query≠byteAddress si 48 → query≠byteAddress si 56 → query≠byteAddress si 64 → query≠byteAddress si 72 → query≠byteAddress si 80 → post.memory query=source.memory query)) := by
+        (∀ query,query.toNat<array.toNat → query≠byteAddress si 40 → query≠byteAddress si 48 → query≠byteAddress si 56 → query≠byteAddress si 64 → query≠byteAddress si 72 → query≠byteAddress si 80 → post.memory query=source.memory query) ∧ InitializerAllocations.context post=InitializerAllocations.context source)) := by
   classical
   have bytesSmall : input.length%2^64<2^64 := Nat.mod_lt _ (by decide)
   have firstArgs := list_arguments source pointer start first middle 9223372036854775807 1024 "w0" "w1" ordered.1 (by omega) wp firstLocal middleLocal
@@ -82,10 +82,14 @@ theorem arrays_trace_frame (source post : PanSemStateFiniteExact 64 Guest.HostMe
   rcases outcome with rejected | normal
   · exact Or.inl rejected
   · have postMemory : post.memory=codeInner.memory := by rw [nodePost,codePost]; rfl
-    refine Or.inr ⟨normal.1,?_⟩
+    have nodeContext := allocation_context source nodeNext array _ (middle-first=0) nodeControl
+    have codeContext := allocation_context nodeNext codeNext codeArray _ (last-middle=0) codeControl
+    have postContext : InitializerAllocations.context post=InitializerAllocations.context codeInner := by rw [nodePost,codePost]; rfl
+    have readonly := postContext.trans (normal.2.2.trans (codeContext.trans nodeContext))
+    refine Or.inr ⟨normal.1,?_,readonly⟩
     intro query before nodePtr nodeCount codePtr codeCount headerPtr headerCount
     rw [postMemory]
-    exact ((normal.2 query (by rw [headerNumber,codeNumber]; omega) headerPtr headerCount).trans
+    exact ((normal.2.1 query (by rw [headerNumber,codeNumber]; omega) headerPtr headerCount).trans
       (codeFrame query (by rw [codeNumber]; omega) codePtr codeCount)).trans (nodeFrame query before nodePtr nodeCount)
 
 

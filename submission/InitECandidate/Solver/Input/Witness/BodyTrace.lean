@@ -32,8 +32,8 @@ theorem body_trace_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source offsetBody=(result,post)) (notTimeout : result≠some .timeOut) :
     source.clock-post.clock≤total/2+20 ∧
       ((∃ error : BitVec 64,(error=10#64 ∨ error=11#64 ∨ error=12#64 ∨ error=20#64 ∨ error=21#64 ∨ error=22#64 ∨ error=23#64 ∨ error=70#64) ∧ result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨ (result=some (.returned (.val (.word si))) ∧
-        ∀ query,query.toNat<array.toNat → (query.toNat<offsetArray.toNat ∨ offsetArray.toNat+24≤query.toNat) →
-          query≠byteAddress si 40 → query≠byteAddress si 48 → query≠byteAddress si 56 → query≠byteAddress si 64 → query≠byteAddress si 72 → query≠byteAddress si 80 → post.memory query=source.memory query)) := by
+        (∀ query,query.toNat<array.toNat → (query.toNat<offsetArray.toNat ∨ offsetArray.toNat+24≤query.toNat) →
+          query≠byteAddress si 40 → query≠byteAddress si 48 → query≠byteAddress si 56 → query≠byteAddress si 64 → query≠byteAddress si 72 → query≠byteAddress si 80 → post.memory query=source.memory query) ∧ InitializerAllocations.context post=InitializerAllocations.context source)) := by
   have prefixExtent : start+12≤input.length%2^64 := by omega
   have upper : pointer.toNat+input.length%2^64+8≤33806089496 := by omega
   rcases offsets_trace source post input pointer offsetArray (BitVec.ofNat 64 total) start heap prefixExtent wp wlen offsets environment.domain pointerAligned offsetAligned offsetLower offsetBefore upper
@@ -77,10 +77,13 @@ theorem body_trace_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemo
   · obtain ⟨error,allowed,same⟩ := rejected
     exact Or.inl ⟨error,Or.inr (Or.inr (Or.inr allowed)),same⟩
   · have postMemory : post.memory=final.memory := by rw [endpoint,restored]; rfl
-    refine Or.inr ⟨normal.1,?_⟩
+    have readyContext : InitializerAllocations.context ready=InitializerAllocations.context source := by have h := congrArg InitializerAllocations.context readyControl; exact h
+    have postContext : InitializerAllocations.context post=InitializerAllocations.context final := by rw [endpoint,restored]; rfl
+    have readonly := postContext.trans (normal.2.2.trans readyContext)
+    refine Or.inr ⟨normal.1,?_,readonly⟩
     intro query before outside nodePtr nodeCount codePtr codeCount headerPtr headerCount
     rw [postMemory]
-    exact (normal.2 query before nodePtr nodeCount codePtr codeCount headerPtr headerCount).trans (memory query outside)
+    exact (normal.2.1 query before nodePtr nodeCount codePtr codeCount headerPtr headerCount).trans (memory query outside)
 
 
 

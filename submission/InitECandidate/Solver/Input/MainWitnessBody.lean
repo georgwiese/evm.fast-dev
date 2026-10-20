@@ -20,8 +20,8 @@ theorem witness_body_frame (input : Guest.InputBlob) (source entry post : PanSem
         Witness.offsetNat input (witnessStart input) 1≤Witness.offsetNat input (witnessStart input) 2 ∧ Witness.offsetNat input (witnessStart input) 2≤witnessLength input ∧
         Witness.Decoded post input inputPointer (witnessArray input) (RequestPrefix.cursor input) (witnessStart input)
           (Witness.offsetNat input (witnessStart input) 0) (Witness.offsetNat input (witnessStart input) 1) (Witness.offsetNat input (witnessStart input) 2) (witnessLength input) (.val (.word (RequestPrefix.cursor input))) ∧
-        ∀ query,inputPointer.toNat≤query.toNat → query.toNat<(witnessArray input).toNat →
-          query≠byteAddress (RequestPrefix.cursor input) 40 → query≠byteAddress (RequestPrefix.cursor input) 48 → query≠byteAddress (RequestPrefix.cursor input) 56 → query≠byteAddress (RequestPrefix.cursor input) 64 → query≠byteAddress (RequestPrefix.cursor input) 72 → query≠byteAddress (RequestPrefix.cursor input) 80 → post.memory query=entry.memory query)) := by
+        (∀ query,inputPointer.toNat≤query.toNat → query.toNat<(witnessArray input).toNat →
+          query≠byteAddress (RequestPrefix.cursor input) 40 → query≠byteAddress (RequestPrefix.cursor input) 48 → query≠byteAddress (RequestPrefix.cursor input) 56 → query≠byteAddress (RequestPrefix.cursor input) 64 → query≠byteAddress (RequestPrefix.cursor input) 72 → query≠byteAddress (RequestPrefix.cursor input) 80 → post.memory query=entry.memory query) ∧ InitializerAllocations.context post=InitializerAllocations.context entry)) := by
   have geometry := witness_geometry input bounded actual.transactions
   have installed : OriginalCode.Installed entry.code := actual.code.symm ▸ environment.code
   have offsets : entry.globals.lookup (ofString "ssz_offs")=some (.val (.word 2713715344#64)) := (actual.globals _ (by decide)).trans environment.offsets
@@ -39,9 +39,9 @@ theorem witness_body_frame (input : Guest.InputBlob) (source entry post : PanSem
   · exact Or.inl rejected
   · have actualRun : evaluateHOLFiniteState entry Witness.offsetBody=(some (.returned (.val (.word (RequestPrefix.cursor input)))),post) := by rw [run,normal.1]
     obtain ⟨first,middleLower,ordered,lastUpper,decoded,bodyCost,aggregate,forward⟩ := normal_witness input source entry post counts environment actual bounded minimum inside _ actualRun
-    refine Or.inr ⟨normal.1,first,middleLower,ordered,lastUpper,decoded,?_⟩
+    refine Or.inr ⟨normal.1,first,middleLower,ordered,lastUpper,decoded,?_,normal.2.2⟩
     intro query lower before nodePtr nodeCount codePtr codeCount headerPtr headerCount
-    apply normal.2 query before _ nodePtr nodeCount codePtr codeCount headerPtr headerCount
+    apply normal.2.1 query before _ nodePtr nodeCount codePtr codeCount headerPtr headerCount
     right
     change 2713731432≤query.toNat at lower
     change 2713715344+24≤query.toNat

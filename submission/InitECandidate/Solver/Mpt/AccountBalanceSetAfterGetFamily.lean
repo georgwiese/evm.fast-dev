@@ -49,7 +49,7 @@ theorem after_get_family {ι : Type} [Fintype ι] [DecidableEq ι]
     returned = .val (.word 0#64) ∧ Result source post cursor cutoff populationBound objects accountWriter base cap count accounts property
       (suffixPrice (objects writer).slots.length (objects outer).slots.length (objects accountWriter).slots.length) := by
   obtain ⟨answerEq,empty,destroyed,found,iterations,paid,nextCursor,next,nextEntries,added,positive,funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,price,codes,nextEnvironment,globals,
-    finalValues,finalSaved,finalRegistry,extension,effect,metadata,frame,others,branch,nextCounter,decision,binary,appends,outerPlan⟩ := after_get_normal source post address account emptyHash scratch transaction cursor cutoff objects writer outer accountWriter
+    finalValues,finalSaved,finalRegistry,extension,effect,metadata,frame,others,branch,nextCounter,decision,binary,appends,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩ := after_get_normal source post address account emptyHash scratch transaction cursor cutoff objects writer outer accountWriter
       base cap count entries family image zone countBound environment installed accounts registry property values owned accountOwned savedValues
       writerKind outerKind accountKind differentOuter addressArena scratchArena floors scratchBelow small journalAbove accountMember words addressLocal accountLocal amountLocal
       emptyGlobal emptyArena innerReferences scratchGlobal transactionGlobal tableMapped tableStored tableAbove tableAway tableBefore tableOutside
@@ -74,8 +74,21 @@ theorem after_get_family {ι : Type} [Fintype ι] [DecidableEq ι]
     · omega
     · rw [visited]
       exact population index
+  have populations (index : ι) : (next index).slots.length ≤ populationBound + iterations + 2 := by
+    have old := population index
+    by_cases atMarker : index = writer
+    · subst index
+      omega
+    · by_cases atAccount : index = accountWriter
+      · subst index
+        omega
+      · by_cases atOuter : index = outer
+        · subst index
+          omega
+        · rw [others index atMarker atOuter atAccount]
+          omega
   exact ⟨answerEq,cursor,paid,nextCursor,next,nextEntries,accounts ++ [BitVec.ofNat 64 cursor],added,destroyed,found,iterations,Nat.le_refl _,extension,
-    funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,familyPrice,codes,nextEnvironment,globals,finalValues,finalSaved,finalRegistry,effect,metadata,frame,nextCounter,appends,visits,by simp⟩
+    funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,familyPrice,codes,nextEnvironment,globals,finalValues,finalSaved,finalRegistry,effect,metadata,frame,nextCounter,appends,visits,by simp,populations⟩
 
 end InitECandidate.Solver.Mpt.AccountBalanceSet
 

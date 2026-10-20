@@ -53,7 +53,8 @@ theorem after_empty_normal {ι : Type} [DecidableEq ι]
       (∀ table, table ≠ writer → table ≠ outer → table ≠ accountWriter → next table = objects table) ∧
       ((found = false ∧ iterations = 0) ∨
         (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
-      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (if destroyed then 1 ≤ added else added = 0 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan := by
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (if destroyed then 1 ≤ added else added = 0 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan ∧
+      (next writer).slots.length ≤ (objects writer).slots.length + iterations ∧ (next outer).slots.length ≤ (objects outer).slots.length ∧ (next accountWriter).slots.length ≤ (objects accountWriter).slots.length + 1 := by
   have dispatch := empty_dispatch source empty emptyLocal
   by_cases zero : empty = 0#64
   · rw [if_pos zero] at dispatch
@@ -72,7 +73,7 @@ theorem after_empty_normal {ι : Type} [DecidableEq ι]
     exact ⟨answerEq,false,false,0,0,cursor,objects,entries,0,by omega,by simp [emptyLocalsHOLFinite],Nat.le_refl _,by decide,by simpa using countBound,
       models,nextImage,zone,by simp,rfl,environment.of_fields rfl rfl rfl,(by intro key notHeap notCounter; rfl),values,savedValues,nextRegistry,
       Journal.CounterEffect.unchanged source target rfl,TableFamily.Metadata.refl objects,(fun query above earlier outside away => ⟨outside,rfl⟩),
-      (fun table notWriter notOuter notAccount => rfl),Or.inl ⟨rfl,rfl⟩,counter,by simp [zero],by simp,rfl⟩
+      (fun table notWriter notOuter notAccount => rfl),Or.inl ⟨rfl,rfl⟩,counter,by simp [zero],by simp,rfl,by omega,by omega,by omega⟩
   · rw [if_neg zero] at dispatch
     rw [dispatch] at normal
     have safe : Input.LocalPrefix (ofString "addr") destroyCall := .call none _ _ (by intro name impossible; cases impossible)
@@ -80,7 +81,7 @@ theorem after_empty_normal {ι : Type} [DecidableEq ι]
     have args : evalListHOLFinite source (h := fun query => Classical.propDecidable (source.memaddrs query)) [localVar "addr"] = some [.val (.word address)] := by
       simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressLocal]
     obtain ⟨found,iterations,paid,nextCursor,next,nextEntries,added,positive,funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,price,locals,codes,
-      nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,outerPlan⟩ := destroy_call_normal source mutated address scratch transaction cursor cutoff objects writer outer accountWriter base cap count entries
+      nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩ := destroy_call_normal source mutated address scratch transaction cursor cutoff objects writer outer accountWriter base cap count entries
         family image zone countBound environment installed accounts registry property values owned accountOwned savedValues writerKind outerKind accountKind differentOuter
         addressArena scratchArena floors scratchBelow small journalAbove innerReferences scratchGlobal transactionGlobal tableMapped tableStored tableAbove tableBefore tableOutside outerMapped outerStored
         accountMapped accountStored accountAbove accountBefore accountOutside accountAway accountApart journal capacity counter _ args destroyRun
@@ -93,7 +94,7 @@ theorem after_empty_normal {ι : Type} [DecidableEq ι]
     have finalRegistry := nextRegistry.framed mutated finish cutoff nextCursor nextCursor next next accounts
       (TableFamily.PersistentFrame.of_memory cutoff nextCursor next mutated finish rfl) (Nat.le_refl _) rfl
     refine ⟨answerEq,true,found,iterations,paid,nextCursor,next,nextEntries,added,funded,clock,forward,addedBound,capacityBound,finalFamily,finalImage,nextZone,?_,codes,
-      nextEnvironment.of_fields rfl rfl rfl,globals,nextValues,nextSaved,finalRegistry,effect,metadata,?_,others,branch,nextCounter,by simp [zero],addedPositive,outerPlan⟩
+      nextEnvironment.of_fields rfl rfl rfl,globals,nextValues,nextSaved,finalRegistry,effect,metadata,?_,others,branch,nextCounter,by simp [zero],addedPositive,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩
     · simp only [Bool.true_eq,↓reduceIte]
       omega
     · intro query above earlier outside away

@@ -64,7 +64,8 @@ theorem after_get_normal {ι : Type} [DecidableEq ι]
       (∀ table, table ≠ writer → table ≠ outer → table ≠ accountWriter → next table = objects table) ∧
       ((found = false ∧ iterations = 0) ∨
         (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
-      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (empty = 0#64 ∨ empty = 1#64) ∧ (if destroyed then 2 ≤ added else added = 1 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan := by
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (empty = 0#64 ∨ empty = 1#64) ∧ (if destroyed then 2 ≤ added else added = 1 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan ∧
+      (next writer).slots.length ≤ (objects writer).slots.length + iterations ∧ (next outer).slots.length ≤ (objects outer).slots.length ∧ (next accountWriter).slots.length ≤ (objects accountWriter).slots.length + 2 := by
   let heap := BitVec.ofNat 64 cursor
   have table := family.tables writer
   have heapNumber : heap.toNat = cursor := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have := table.bounded; omega)]
@@ -97,7 +98,7 @@ theorem after_get_normal {ι : Type} [DecidableEq ι]
   have copyWord (query : BitVec 64) (before : query.toNat < cursor) : copied.memory query = source.memory query := copyWindow query (Or.inl (by rw [heapNumber]; exact before))
   have mapped (query : BitVec 64) (mapping : source.memaddrs query) : copied.memaddrs query := by rw [copyDomain]; exact mapping
   obtain ⟨answerEq,empty,destroyed,found,iterations,paid,nextCursor,next,nextEntries,added,positive,funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,price,codes,nextEnvironment,globals,
-    finalValues,finalSaved,finalRegistry,effect,metadata,frame,others,branch,nextCounter,decision,binary,appends,outerPlan⟩ := after_copy_normal copied post address heap emptyHash scratch transaction (cursor + 56) cutoff cursor objects writer outer accountWriter
+    finalValues,finalSaved,finalRegistry,effect,metadata,frame,others,branch,nextCounter,decision,binary,appends,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩ := after_copy_normal copied post address heap emptyHash scratch transaction (cursor + 56) cutoff cursor objects writer outer accountWriter
       base cap count entries copyFamily copyJournal copyZone countBound copyEnvironment copyInstalled (accounts ++ [heap]) copyRegistry nextProperty nextValues (Or.inl owned) (Or.inl accountOwned) (Or.inr ⟨rfl,rfl⟩) nextSaved
       writerKind outerKind accountKind differentOuter addressArena scratchArena floors scratchBelow small journalAbove (by simp) (by rw [heapNumber]) copyAddress copyAccount
       ((copyGlobals (ofString "empty_code_hash") (by decide)).trans emptyGlobal) emptyArena copyReferences ((copyGlobals (ofString "sk_buf") (by decide)).trans scratchGlobal)
@@ -116,7 +117,7 @@ theorem after_get_normal {ι : Type} [DecidableEq ι]
   have copyEffect := Journal.CounterEffect.unchanged source copied (copyGlobals (ofString "journal_n") (by decide))
   have totalEffect : Journal.CounterEffect source post added 0 0 := by simpa only [Nat.zero_add,Nat.add_zero] using copyEffect.trans effect
   refine ⟨answerEq,empty,destroyed,found,iterations,7 + paid,nextCursor,next,nextEntries,added,by omega,totalFunded,totalClock,by omega,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,by omega,
-    codes.trans copyCode,nextEnvironment,totalGlobals,finalValues,finalSaved,finalRegistry,extension,totalEffect,metadata,?_,others,branch,nextCounter,decision,binary,appends,outerPlan⟩
+    codes.trans copyCode,nextEnvironment,totalGlobals,finalValues,finalSaved,finalRegistry,extension,totalEffect,metadata,?_,others,branch,nextCounter,decision,binary,appends,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩
   intro query above before outside away
   obtain ⟨nextOutside,same⟩ := frame query above before outside away
   exact ⟨nextOutside,same.trans (copyWord query before)⟩

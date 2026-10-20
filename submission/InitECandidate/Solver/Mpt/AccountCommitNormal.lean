@@ -60,7 +60,8 @@ theorem whole_normal {ι : Type} [DecidableEq ι]
       (∀ table, table ≠ writer → table ≠ outer → table ≠ accountWriter → next table = objects table) ∧
       ((found = false ∧ iterations = 0) ∨
         (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
-      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (empty = 0#64 ∨ empty = 1#64) ∧ (if destroyed then 2 ≤ added else added = 1 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan := by
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (empty = 0#64 ∨ empty = 1#64) ∧ (if destroyed then 2 ≤ added else added = 1 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan ∧
+      (next writer).slots.length ≤ (objects writer).slots.length + iterations ∧ (next outer).slots.length ≤ (objects outer).slots.length ∧ (next accountWriter).slots.length ≤ (objects accountWriter).slots.length + 2 := by
   have safe : Input.LocalPrefix (ofString "a") publishCall := .call none _ _ (by intro name impossible; cases impossible)
   rw [body_shape] at normal
   obtain ⟨middle,publishRun,tailRun,keepAccount⟩ := safe.normal_continue source post
@@ -109,7 +110,7 @@ theorem whole_normal {ι : Type} [DecidableEq ι]
   have middleAddress : middle.locals.lookup (ofString "addr") = some (.val (.word address)) := by rw [middleLocals]; exact addressLocal
   have middleAccount : middle.locals.lookup (ofString "a") = some (.val (.word account)) := keepAccount.trans accountLocal
   obtain ⟨answerEq,empty,destroyed,found,iterations,paid,nextCursor,next,nextEntries,added,funded,clock,forward,addedBound,capacityBound,models,nextImage,nextZone,price,codes,
-    nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,decision,binary,appends,outerPlan⟩ := empty_prefix_normal middle post address account emptyHash scratch transaction
+    nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,decision,binary,appends,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩ := empty_prefix_normal middle post address account emptyHash scratch transaction
       middleCursor cutoff middleObjects writer outer accountWriter base cap (count + 1) middleEntries middleFamily middleImage middleZone (by omega) middleEnvironment middleInstalled
       accounts middleRegistry property middleValues owned accountOwned middleSaved middleWriterKind middleOuterKind middleAccountKind differentOuter addressArena scratchArena
       middleFloors scratchBelow small journalAbove middleAddress middleAccount accountMember
@@ -161,13 +162,16 @@ theorem whole_normal {ι : Type} [DecidableEq ι]
       omega
   refine ⟨answerEq,empty,destroyed,found,iterations,publishPaid + paid,nextCursor,next,nextEntries,1 + added,by omega,totalFunded,totalClock,by omega,by omega,by omega,by omega,
     models,finalImage,nextZone,by omega,codes.trans middleCodes,nextEnvironment,middleGlobals.trans globals,nextValues,finalSaved,nextRegistry,finalEffect,publishMetadata.trans metadata,?_,?_,
-    status,finalCounter,decision,binary,finalAppends,outerPlan.trans (congrArg TableFamily.Object.plan outerSame)⟩
+    status,finalCounter,decision,binary,finalAppends,outerPlan.trans (congrArg TableFamily.Object.plan outerSame),(by simpa only [markerSame] using markerPopulation),(by simpa only [outerSame] using outerPopulation),?_⟩
   · intro query above earlier outside away
     have first := publishFrame.words query earlier outside away
     have second := frame query above (by omega) first.1 away
     exact ⟨second.1,second.2.trans first.2⟩
   · intro table notWriter notOuter notAccount
     exact (others table notWriter notOuter notAccount).trans (Function.update_of_ne notAccount published objects)
+
+  · rw [accountSelf] at accountPopulation
+    omega
 
 end InitECandidate.Solver.Mpt.AccountCommit
 

@@ -23,21 +23,24 @@ theorem Result.reader_context {ι : Type} [Fintype ι]
       AccountDecode.Registry.Extension accounts nextAccounts cursor ∧ TableFamily.ValuesHave post next nextProperty ∧
       Nonempty (WsAccountLeaf.World post ws root nibs cutoff frozenEnd valueLimit) ∧
       Keccak256.Environment post stp pad ∧ Rlp.Validation.Arena post scratchPtr limit ∧
-      (∀ index,frozenEnd ≤ (next index).floor) ∧
+      (∀ index,frozenEnd ≤ (next index).floor) ∧ (∀ index,(next index).slots.length ≤ 2 * population + 2) ∧
       (∀ index,(∀ value,property index value → AccountDecode.Registry.Known accounts value) →
         ∀ value,nextProperty index value → AccountDecode.Registry.Known nextAccounts value) := by
   obtain ⟨freshCursor,paid,nextCursor,next,nextEntries,nextAccounts,added,destroyed,found,iterations,freshForward,extension,funded,clock,forward,addedPositive,addedBound,capacityBound,models,image,zone,price,codes,
-    environment,globals,values,saved,registry,effect,metadata,frame,counter,appends,visits,freshMember⟩ := result
+    environment,globals,values,saved,registry,effect,metadata,frame,counter,appends,visits,freshMember,populations⟩ := result
   have domain : post.memaddrs = source.memaddrs := environment.domain.trans world.domain.symm
   have endian : post.be = source.be := environment.little.trans world.little.symm
   have oracle := Input.evaluation_oracle source post program answer run
   have nextWorld := StateWorldFrame.witness_world source post ws root nibs cutoff frozenEnd valueLimit cursor base cap objects next world family afterWorld floors journalAfter domain endian globals frame
   have nextHash := StateWorldFrame.hash_environment source post stp pad hash domain codes oracle globals
   have nextArena := StateWorldFrame.scratch_arena source post scratchPtr limit arena domain globals
-  refine ⟨nextCursor,next,nextAccounts,AccountValueExtension.added property accountWriter (BitVec.ofNat 64 freshCursor),forward,models,registry,extension,values,nextWorld,nextHash,nextArena,?_,?_⟩
+  refine ⟨nextCursor,next,nextAccounts,AccountValueExtension.added property accountWriter (BitVec.ofNat 64 freshCursor),forward,models,registry,extension,values,nextWorld,nextHash,nextArena,?_,?_,?_⟩
   · intro index
     rw [metadata.floors index]
     exact floors index
+  · intro index
+    have current := populations index
+    omega
   · intro index known value owned
     rcases owned with old | ⟨_,rfl⟩
     · exact extension.known value (known value old)

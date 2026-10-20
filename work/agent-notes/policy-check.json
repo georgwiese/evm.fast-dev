@@ -2110,6 +2110,10 @@
     "submission/InitECandidate/Solver/Input/MainWitnessTrace.lean",
     "submission/InitECandidate/Solver/Input/MemoryReturn.lean",
     "submission/InitECandidate/Solver/Input/MemoryWordCalls.lean",
+    "submission/InitECandidate/Solver/Input/MerkleDepthPrefix.lean",
+    "submission/InitECandidate/Solver/Input/MerkleProgram.lean",
+    "submission/InitECandidate/Solver/Input/MerkleZero.lean",
+    "submission/InitECandidate/Solver/Input/MerkleZeroBound.lean",
     "submission/InitECandidate/Solver/Input/NoException.lean",
     "submission/InitECandidate/Solver/Input/NoExceptionCall.lean",
     "submission/InitECandidate/Solver/Input/NoExceptionEvent.lean",
@@ -6430,8 +6434,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63298,
-  "package_bytes": 2262523594,
+  "package_entries": 63302,
+  "package_bytes": 2262542134,
   "claim": {
     "K": "infinity"
   },

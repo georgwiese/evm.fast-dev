@@ -17,6 +17,15 @@ def call (action : Action) : ProgHOL 64 :=
 def program : List Action → ProgHOL 64
   | [] => .return (.const 0#64)
   | action :: rest => .seq (call action) (program rest)
+def withTail : List Action → ProgHOL 64 → ProgHOL 64
+  | [],tail => tail
+  | action :: rest,tail => .seq (call action) (withTail rest tail)
+
+theorem program_tail (actions : List Action) : program actions = withTail actions (.return (.const 0#64)) := by
+  induction actions with
+  | nil => rfl
+  | cons action rest ih => simp only [program,withTail,ih]
+
 def totalBytes : List Action → Nat
   | [] => 0
   | action :: rest => action.bytes + totalBytes rest
@@ -75,15 +84,15 @@ theorem template_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cu
 
 /-- Execute a literal initializer allocation segment, charging each genuine
 allocator caller once. Current typed globals and aggregate room suffice. -/
-theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (actions : List Action)
+theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (actions : List Action) (continuation : ProgHOL 64)
     (installed : OriginalCode.Installed source.code) (scalars : OriginalScalarGlobals.Scalars source.globals)
     (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 cursor))))
     (valid : ∀ action,action ∈ actions → Valid action) (room : cursor + totalBytes actions ≤ 33806089496)
     (aligned : cursor % 8 = 0) (enough : actions.length ≤ source.clock) :
-    evaluateHOLFiniteState source (program actions) =
-      (some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite {template source cursor actions with clock := source.clock - actions.length}) := by
+    evaluateHOLFiniteState source (withTail actions continuation) =
+      evaluateHOLFiniteState {template source cursor actions with clock := source.clock - actions.length} continuation := by
   induction actions generalizing source cursor with
-  | nil => simpa only [program,template,List.length_nil,Nat.sub_zero,BuildEntry.returnZero] using BuildEntry.zero_return source
+  | nil => simp only [withTail,template,List.length_nil,Nat.sub_zero]
   | cons action rest ih =>
     have current := valid action (by simp)
     have tailValid : ∀ item,item ∈ rest → Valid item := fun item member => valid item (List.mem_cons_of_mem _ member)
@@ -102,11 +111,21 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : 
       simp [next,reserve,putGlobal,HolFiniteMapExact.update,FUPDATE,current.different]
     have back := ih next (cursor + action.bytes) installed nextScalars nextHeap tailValid totalRoom (by have := current.aligned; omega)
       (by change rest.length ≤ source.clock - 1; simp only [List.length_cons] at enough; omega)
-    rw [program]
+    rw [withTail]
     simp only [call]
     rw [StateSteps.next_sequence source next _ _ firstRun (by change source.clock - 1 ≤ source.clock; omega)]
     have subtract : source.clock - 1 - rest.length = source.clock - (action :: rest).length := by simp only [List.length_cons]; omega
     simpa only [next,template_clock,subtract,template] using back
+
+theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (actions : List Action)
+    (installed : OriginalCode.Installed source.code) (scalars : OriginalScalarGlobals.Scalars source.globals)
+    (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 cursor))))
+    (valid : ∀ action,action ∈ actions → Valid action) (room : cursor + totalBytes actions ≤ 33806089496)
+    (aligned : cursor % 8 = 0) (enough : actions.length ≤ source.clock) :
+    evaluateHOLFiniteState source (program actions) =
+      (some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite {template source cursor actions with clock := source.clock - actions.length}) := by
+  rw [program_tail,execute_prefix source cursor actions (.return (.const 0#64)) installed scalars heap valid room aligned enough]
+  simpa only [BuildEntry.returnZero] using BuildEntry.zero_return {template source cursor actions with clock := source.clock - actions.length}
 
 end InitECandidate.Solver.Input.InitializerAllocations
 
@@ -116,3 +135,7 @@ end InitECandidate.Solver.Input.InitializerAllocations
 #print axioms InitECandidate.Solver.Input.InitializerAllocations.valid_constant
 #print axioms InitECandidate.Solver.Input.InitializerAllocations.template_heap
 #print axioms InitECandidate.Solver.Input.InitializerAllocations.template_other
+
+#print axioms InitECandidate.Solver.Input.InitializerAllocations.withTail
+#print axioms InitECandidate.Solver.Input.InitializerAllocations.program_tail
+#print axioms InitECandidate.Solver.Input.InitializerAllocations.execute_prefix

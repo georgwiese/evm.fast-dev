@@ -45,7 +45,7 @@ theorem present_normal {ι : Type} [DecidableEq ι]
       (∀ query : BitVec 64, cutoff ≤ query.toNat → query.toNat < cursor → TableFamily.Outside objects query → Journal.Away base cap query →
         TableFamily.Outside next query ∧ post.memory query = source.memory query) ∧
       (∀ table, table ≠ writer → table ≠ outer → next table = objects table) ∧
-      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) := by
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ (next outer).plan = (objects outer).plan := by
   classical
   obtain ⟨loopPaid,middleCursor,middleObjects,middle,finish,loopFunded,loopClock,loopForward,middleFamily,middleImage,middleZone,loopPriceBound,population,
     readerSame,codes,middleEnvironment,globals,middleValues,middleRegistry,loopFrame,metadata,others,middleOuter,middleAddress,tailRun,postFrame⟩ :=
@@ -77,7 +77,7 @@ theorem present_normal {ι : Type} [DecidableEq ι]
     intro offset inside
     exact AllocatedBytes.byte_mapped middle address 20 offset middleEnvironment.domain addressArena inside
   obtain ⟨deletePaid,nextCursor,next,nextEntries,added,deletePriceBound,deleteFunded,deleteClock,deleteForward,addedBound,capacityBound,models,
-    nextRegistry,nextImage,nextZone,nextValues,nextSaved,deleteEffect,deleteFrame,deleteCodes,nextEnvironment,deleteGlobals,deleteMetadata,deleteOthers,deleteCounter,_deletePlans,_deletePopulations⟩ :=
+    nextRegistry,nextImage,nextZone,nextValues,nextSaved,deleteEffect,deleteFrame,deleteCodes,nextEnvironment,deleteGlobals,deleteMetadata,deleteOthers,deleteCounter,deletePlans,_deletePopulations⟩ :=
     Journal.Append.delete_call_registered_values middle deleted middleCursor middleObjects outer base cap count entries middleFamily middleImage middleZone countBound
       middleEnvironment cutoff accounts middleRegistry accountApart address property middleValues savedValues queryFits queryMapped
       (Get.original_code middle.code middleInstalled) (table_delete_code middle.code middleInstalled) (journal_delete_code middle.code middleInstalled)
@@ -118,7 +118,7 @@ theorem present_normal {ι : Type} [DecidableEq ι]
     rw [writerSame]
     omega
   refine ⟨answerEq,loopPaid + deletePaid,nextCursor,next,nextEntries,added,by omega,by omega,by omega,addedBound,capacityBound,finalFamily,finalImage,nextZone,price,
-    codeEq.trans (deleteCodes.trans codes),nextEnvironment.of_fields codeEq domain endian,?_,finalValues,nextSaved,finalRegistry,effect,metadata.trans deleteMetadata,?_,?_,(by rw [globalEq]; exact deleteCounter)⟩
+    codeEq.trans (deleteCodes.trans codes),nextEnvironment.of_fields codeEq domain endian,?_,finalValues,nextSaved,finalRegistry,effect,metadata.trans deleteMetadata,?_,?_,(by rw [globalEq]; exact deleteCounter),((deletePlans outer).trans (congrArg TableFamily.Object.plan outerSame))⟩
   · intro key notHeap notCounter
     rw [globalEq]
     exact (deleteGlobals key notHeap notCounter).trans (globals key notHeap)

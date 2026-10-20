@@ -52,7 +52,7 @@ theorem destroy_call_normal {ι : Type} [DecidableEq ι]
       (∀ table, table ≠ writer → table ≠ outer → table ≠ accountWriter → next table = objects table) ∧
       ((found = false ∧ iterations = 0) ∨
         (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
-      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) := by
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ (next outer).plan = (objects outer).plan := by
   obtain ⟨callee,called,addressLocal⟩ := Input.CallNormal.unary_environment source.code.lookup (ofString "destroy_account") "addr" destroyBody address
     (destroy_code source.code installed)
   obtain ⟨positive,target,answer,bodyRun⟩ := Input.CallNormal.ignored_callee_return source post (ofString "destroy_account") expressions _ destroyBody callee .one args called normal
@@ -62,7 +62,7 @@ theorem destroy_call_normal {ι : Type} [DecidableEq ι]
   have entryRegistry := registry.framed source entry cutoff cursor cursor objects objects accounts
     (TableFamily.PersistentFrame.of_memory cutoff cursor objects source entry rfl) (Nat.le_refl _) rfl
   obtain ⟨answerEq,found,iterations,paid,nextCursor,next,nextEntries,added,bodyPositive,funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,price,codes,
-    nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter⟩ := destroy_normal entry target address scratch transaction cursor cutoff objects writer outer accountWriter base cap count entries
+    nextEnvironment,globals,nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,outerPlan⟩ := destroy_normal entry target address scratch transaction cursor cutoff objects writer outer accountWriter base cap count entries
       entryFamily entryImage zone countBound (environment.of_fields rfl rfl rfl) installed accounts entryRegistry property values owned accountOwned savedValues writerKind outerKind accountKind differentOuter
       addressArena scratchArena floors scratchBelow small journalAbove addressLocal innerReferences scratchGlobal transactionGlobal tableMapped tableStored tableAbove tableBefore tableOutside
       outerMapped outerStored accountMapped accountStored accountAbove accountBefore accountOutside accountAway accountApart journal capacity counter answer bodyRun
@@ -80,7 +80,7 @@ theorem destroy_call_normal {ι : Type} [DecidableEq ι]
   change paid ≤ source.clock - 1 at funded
   change target.clock = source.clock - 1 - paid at clock
   refine ⟨found,iterations,1 + paid,nextCursor,next,nextEntries,added,by omega,by omega,by change target.clock = _; omega,forward,addedPositive,addedBound,capacityBound,
-    finalFamily,finalImage,nextZone,by omega,rfl,codes,nextEnvironment.of_fields rfl rfl rfl,globals,nextValues,nextSaved,finalRegistry,effect,metadata,?_,others,branch,nextCounter⟩
+    finalFamily,finalImage,nextZone,by omega,rfl,codes,nextEnvironment.of_fields rfl rfl rfl,globals,nextValues,nextSaved,finalRegistry,effect,metadata,?_,others,branch,nextCounter,outerPlan⟩
   intro query above earlier outside away
   exact frame query above earlier outside away
 

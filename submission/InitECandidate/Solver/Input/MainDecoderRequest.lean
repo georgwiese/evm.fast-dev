@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.MainRequestLength
+import InitECandidate.Solver.Input.MainRequestRoots
 
 namespace InitECandidate.Solver.Input.Main.DecoderCall
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -19,6 +20,9 @@ theorem request_trace (input : Guest.InputBlob) (source post : PanSemStateFinite
         ready.locals.lookup (ofString "np") = some (.val (.word (inputPointer + 18#64))) ∧
         ready.locals.lookup (ofString "nlen") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16)))) ∧
         ready.locals.lookup (ofString "si") = some (.val (.word (RequestPrefix.cursor input))) ∧
+        (ready.locals.lookup (ofString "p") = some (.val (.word (inputPointer + 2#64))) ∧
+          ready.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 (input.length % 2^64 - 2)))) ∧
+          ready.locals.lookup (ofString "o_wit") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6))))) ∧
         evaluateHOLFiniteState ready Request.requestBody = (result,innerPost) ∧ post = restoreStack innerPost ∧
         (∀ target,emptyLocalsHOLFinite (restoreStack target) = emptyLocalsHOLFinite target)) := by
   have validEntry : 18 ≤ input.length % 2^64 ∧ Guest.GasLimit.byte input 0 = 21 ∧ Guest.GasLimit.byte input 1 = 1 := by
@@ -52,7 +56,7 @@ theorem request_trace (input : Guest.InputBlob) (source post : PanSemStateFinite
       have bindings := RequestPrefix.ready_bindings source input (source.clock - paid)
       have clock : (RequestPrefix.ready source input (source.clock - paid)).clock ≤ source.clock := by rw [RequestPrefix.ready_clock]; omega
       exact Or.inr ⟨first,by omega,minimum,by omega,RequestPrefix.ready source input (source.clock - paid),innerPost,restoreStack,metadata,clock,readyBytes,
-        bindings.1,bindings.2,RequestPrefix.ready_si source input (source.clock - paid),requestRun,restored,ProgramPrefix.restoration_frame setup⟩
+        bindings.1,bindings.2,RequestPrefix.ready_si source input (source.clock - paid),RequestPrefix.ready_roots source input (source.clock - paid),requestRun,restored,ProgramPrefix.restoration_frame setup⟩
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 

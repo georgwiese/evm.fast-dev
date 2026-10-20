@@ -25,7 +25,8 @@ theorem loop_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (i
       Blob.HeapInput next input pointer ∧
       (∀ name,name ≠ ofString "i" → next.locals.lookup name = source.locals.lookup name) ∧
       (∀ position < 5,next.memory (byteAddress array (8*position)) = .word (offsetWord input start position)) ∧
-      evaluateHOLFiniteState next offsetTail = (result,innerPost) ∧ post = restore source "i" innerPost := by
+      evaluateHOLFiniteState next offsetTail = (result,innerPost) ∧ post = restore source "i" innerPost ∧
+      (∀ query,query.toNat < array.toNat ∨ array.toNat + 40 ≤ query.toNat → next.memory query = source.memory query) := by
   let entry := bind source "i" 0#64
   let innerPost := (evaluateHOLFiniteState entry (.seq offsetLoop offsetTail)).2
   have declared := ScalarScope.declare_execute source innerPost "i" (.const 0#64) 0#64 (.seq offsetLoop offsetTail)
@@ -54,7 +55,7 @@ theorem loop_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (i
       change (source.locals.update (ofString "i",.val (.word 0#64))).lookup name = _
       simp [HolFiniteMapExact.lookup_update,FUPDATE,Ne.symm different]
     exact (other name different).trans initial
-  exact ⟨enough,next,innerPost,nextClock,control,nextHeap,otherLocal,cells,restRun,postEq⟩
+  exact ⟨enough,next,innerPost,nextClock,control,nextHeap,otherLocal,cells,restRun,postEq,memoryFrame⟩
 
 end InitECandidate.Solver.Input.Requests
 

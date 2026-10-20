@@ -27,6 +27,9 @@ structure PayloadCaller (input : Guest.InputBlob) (source current : PanSemStateF
   payloadOffset : current.locals.lookup (ofString "o_pl") = some (.val (.word (Request.requestWords input 0)))
   hashesOffset : current.locals.lookup (ofString "o_vh") = some (.val (.word (Request.requestWords input 1)))
   requestsOffset : current.locals.lookup (ofString "o_rq") = some (.val (.word (Request.requestWords input 2)))
+  roots : current.locals.lookup (ofString "p") = some (.val (.word (inputPointer + 2#64))) ∧
+    current.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 (input.length % 2^64 - 2)))) ∧
+    current.locals.lookup (ofString "o_wit") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6))))
 
 /-- The actual original decoder either rejects in its outer/request parsing
 within10 source ticks, or reaches the genuine payload caller with validated
@@ -43,7 +46,7 @@ theorem request_offsets_trace (input : Guest.InputBlob) (source post : PanSemSta
   rcases request_trace input source post environment bounded passes result run notTimeout with fault | normal
   · obtain ⟨error,allowed,same,cost⟩ := fault
     exact Or.inl ⟨error,allowed,same,by omega⟩
-  · obtain ⟨first,extent,minimum,totalUpper,ready,requestPost,restoreStack,metadata,forward,bytes,np,nlen,si,remaining,restored,preserved⟩ := normal
+  · obtain ⟨first,extent,minimum,totalUpper,ready,requestPost,restoreStack,metadata,forward,bytes,np,nlen,si,roots,remaining,restored,preserved⟩ := normal
     let total := BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16)
     have offsets : ready.globals.lookup (ofString "ssz_offs") = some (.val (.word 2713715344#64)) := by
       rw [metadata.globals]
@@ -97,7 +100,10 @@ theorem request_offsets_trace (input : Guest.InputBlob) (source post : PanSemSta
       have vh := (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.locals.lookup (ofString "o_vh")) nextEq).trans bindings.2.1
       have rq := (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.locals.lookup (ofString "o_rq")) nextEq).trans bindings.2.2
       have caller : PayloadCaller input source next := ⟨frame,nextBytes,(other "np" (by decide) (by decide) (by decide)).trans np,
-        (other "nlen" (by decide) (by decide) (by decide)).trans nlen,(other "si" (by decide) (by decide) (by decide)).trans si,pl,vh,rq⟩
+        (other "nlen" (by decide) (by decide) (by decide)).trans nlen,(other "si" (by decide) (by decide) (by decide)).trans si,pl,vh,rq,
+        ⟨(other "p" (by decide) (by decide) (by decide)).trans roots.1,
+          (other "len" (by decide) (by decide) (by decide)).trans roots.2.1,
+          (other "o_wit" (by decide) (by decide) (by decide)).trans roots.2.2⟩⟩
       let finalRestore := fun target => restoreStack (Request.restoreOffsets ready input target)
       have finalEndpoint : post = finalRestore innerPost := by rw [restored,requestRestored]
       have finalFrame (target : PanSemStateFiniteExact 64 Guest.HostMemory) : emptyLocalsHOLFinite (finalRestore target) = emptyLocalsHOLFinite target :=

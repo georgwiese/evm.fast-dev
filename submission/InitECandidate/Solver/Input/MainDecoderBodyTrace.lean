@@ -16,7 +16,7 @@ theorem decoder_body_trace (input : Guest.InputBlob) (source post : PanSemStateF
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source Header.body=(result,post)) (notTimeout : result≠some .timeOut) :
     source.clock-post.clock≤(input.length%2^64)/4+witnessLength input/2+522 ∧
       ((∃ error : BitVec 64,result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨
-       (result=some (.returned (.val (.word (RequestPrefix.cursor input)))) ∧ WitnessDecoded input post)) := by
+       (result=some (.returned (.val (.word (RequestPrefix.cursor input)))) ∧ WitnessDecoded input post ∧ Payload.Image post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) ∧ VarList.Records post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input))) := by
   rcases payload_call_trace input source post environment bounded passes result run notTimeout with rejected | normal
   · obtain ⟨error,allowed,same,cost⟩ := rejected
     exact ⟨by omega,Or.inl ⟨error,same⟩⟩
@@ -51,7 +51,7 @@ theorem decoder_body_trace (input : Guest.InputBlob) (source post : PanSemStateF
     have endpoint : post.clock=payloadPost.clock := by rw [headerClock,payloadRestored]; rfl
     exact ⟨by rw [endpoint]; omega,Or.inl ⟨error,same⟩⟩
   obtain ⟨requestCaller,requestPost,requestData,requestRun,hashRestored⟩ := normal
-  obtain ⟨cost,outcome⟩ := requests_witness_trace input source requestCaller requestPost environment requestData layout bounded result requestRun notTimeout
+  obtain ⟨cost,outcome⟩ := requests_witness_trace_frame input source requestCaller requestPost environment requestData layout bounded result requestRun notTimeout
   have frame : emptyLocalsHOLFinite post=emptyLocalsHOLFinite requestPost := by
     rw [headerRestored]
     calc
@@ -61,7 +61,11 @@ theorem decoder_body_trace (input : Guest.InputBlob) (source post : PanSemStateF
   refine ⟨by rw [clock]; exact cost,?_⟩
   rcases outcome with rejected | normal
   · exact Or.inl rejected
-  · exact Or.inr ⟨normal.1,WitnessDecoded.of_frame input requestPost post frame normal.2⟩
+  · obtain ⟨same,data,earlier,image,records⟩ := normal
+    have memory : post.memory=requestPost.memory := by have h := congrArg PanSemStateFiniteExact.memory frame; exact h
+    exact Or.inr ⟨same,WitnessDecoded.of_frame input requestPost post frame data,
+      Payload.Image.of_memory requestPost post input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) memory image,
+      VarList.Records.of_memory requestPost post input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) _ _ memory records⟩
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 

@@ -11,6 +11,8 @@ structure DecoderReady (input : Guest.InputBlob) (caller current : PanSemStateFi
   locals : current.locals=caller.locals.update (ofString "si",.val (.word (RequestPrefix.cursor input)))
   si : current.locals.lookup (ofString "si")=some (.val (.word (RequestPrefix.cursor input)))
   decoded : WitnessDecoded input current
+  image : Payload.Image current input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64)
+  records : VarList.Records current input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input)
   code : current.code=caller.code
   domain : current.memaddrs=caller.memaddrs
   exceptions : current.eshapes=caller.eshapes
@@ -67,7 +69,7 @@ theorem decoder_call_trace (input : Guest.InputBlob) (before source target : Pan
     change caller.clock-1-bodyPost.clock≤(input.length%2^64)/4+witnessLength input/2+522 at cost
     change (evaluateHOLFiniteState handlerEntry handler).2.clock≤bodyPost.clock at handlerForward
     exact Or.inl (by change caller.clock-target.clock≤_; rw [endpoint]; omega)
-  · obtain ⟨same,data⟩ := normal
+  · obtain ⟨same,data,image,records⟩ := normal
     have actualBody : evaluateHOLFiniteState entry Header.body=(some (.returned (.val (.word (RequestPrefix.cursor input)))),bodyPost) := by rw [bodyRun,same]
     have validFinite : isValidValueHOLFinite caller .local (ofString "si") (.val (.word (RequestPrefix.cursor input)))=true := by
       simp [isValidValueHOLFinite,lookupKvarHOLFinite,callerSi,shapeOfHOLExact,shapeEqHOL]
@@ -77,7 +79,9 @@ theorem decoder_call_trace (input : Guest.InputBlob) (before source target : Pan
     let current := setKvarHOLFinite .local (ofString "si") (.val (.word (RequestPrefix.cursor input))) {bodyPost with locals:=caller.locals}
     have forward : current.clock≤caller.clock := by change bodyPost.clock≤caller.clock; omega
     have ready : DecoderReady input caller current := ⟨rfl,by simp [current,setKvarHOLFinite,setVarHOLFinite,HolFiniteMapExact.lookup_update,FUPDATE],
-      WitnessDecoded.of_frame input bodyPost current rfl data,fields.2.2.2,fields.1,fields.2.2.1,fields.2.1,forward,by
+      WitnessDecoded.of_frame input bodyPost current rfl data,
+      Payload.Image.of_memory bodyPost current input inputPointer (PayloadPrefix.cursor input) (PayloadPrefix.length input) (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) rfl image,
+      VarList.Records.of_memory bodyPost current input inputPointer (PersistentAlloc.rounded (PayloadPrefix.cursor input) 136#64) _ _ rfl records,fields.2.2.2,fields.1,fields.2.2.1,fields.2.1,forward,by
         change caller.clock-1-bodyPost.clock≤(input.length%2^64)/4+witnessLength input/2+522 at cost
         change caller.clock-bodyPost.clock≤_; omega⟩
     rw [original_shape,StateSteps.next_sequence caller current _ _ returned forward] at run

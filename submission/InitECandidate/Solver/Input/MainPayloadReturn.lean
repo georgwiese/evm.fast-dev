@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.MainPayloadNormal
+import InitECandidate.Solver.Input.MainPayloadImage
 import InitECandidate.Solver.Input.EvaluationFields
 import InitECandidate.Solver.Input.CallResume
 import InitECandidate.Solver.Input.ParserGlobals
@@ -22,6 +23,9 @@ structure Returned (input : Guest.InputBlob) (caller current : PanSemStateFinite
   globals : ∀ key,key ≠ ofString "heap_ptr" → current.globals.lookup key = caller.globals.lookup key
   forward : current.clock ≤ caller.clock
   cost : caller.clock - current.clock ≤ (input.length % 2^64) / 4 + 76
+  image : Payload.Image current input inputPointer (cursor input) (length input) (PersistentAlloc.rounded (cursor input) 136#64)
+  records : VarList.Records current input inputPointer (PersistentAlloc.rounded (cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input)
+  context : InitializerAllocations.context current=InitializerAllocations.context caller
 
 /-- Resume the real original payload caller after its observed normal callee
 return, retaining an arbitrary actual enclosing result. The later request/
@@ -46,6 +50,8 @@ theorem resume_return (input : Guest.InputBlob) (source caller bodyPost post : P
   have lengthNumber : (length input).toNat = Guest.GasLimit.le32 input 22 - 44 := by
     have small : input.length % 2^64 < 2^64 := Nat.mod_lt _ (by decide)
     rw [length,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have inside : 62+(length input).toNat≤input.length%2^64 := by rw [lengthNumber]; omega
+  obtain ⟨image,records,context⟩ := normal_payload_image input source (callEntryStateHOLFinite caller callee) bodyPost environment entry bounded extent inside returned bodyRun
   have fullBody := (Payload.passing_entry (callEntryStateHOLFinite caller callee) (length input) entry.length (by rw [lengthNumber]; exact minimum)).trans bodyRun
   have shapePass : (shapeEqHOL (shapeOfHOLExact returned) .one && shapeEqHOL (shapeOfHOLExact returned) .one) = true := by
     rw [valueEq]
@@ -74,7 +80,9 @@ theorem resume_return (input : Guest.InputBlob) (source caller bodyPost post : P
     have frame := ParserGlobals.payload key (callEntryStateHOLFinite caller callee).code installed other (callEntryStateHOLFinite caller callee) rfl
     rw [fullBody] at frame
     exact congrArg Prod.snd frame
-  have reached : Returned input caller current := ⟨locals,currentBytes,gasCell,gasBound,countCell,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,heapCursor,countBound,globals,currentForward,currentCost⟩
+  have reached : Returned input caller current := ⟨locals,currentBytes,gasCell,gasBound,countCell,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,heapCursor,countBound,globals,currentForward,currentCost,
+    Payload.Image.of_memory bodyPost current input inputPointer (cursor input) (length input) (PersistentAlloc.rounded (cursor input) 136#64) rfl image,
+    VarList.Records.of_memory bodyPost current input inputPointer (PersistentAlloc.rounded (cursor input) 136#64) _ _ rfl records,context⟩
   exact ⟨current,final,reached,aggregate,Prod.ext observed rfl,endpoint⟩
 
 end InitECandidate.Solver.Input.Main.PayloadPrefix

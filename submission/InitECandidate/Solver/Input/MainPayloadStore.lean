@@ -1,4 +1,6 @@
 import InitECandidate.Solver.Input.MainPayloadReturn
+import InitECandidate.Solver.Input.PayloadImageFrame
+import InitECandidate.Solver.Input.VarList.RecordsAfterFrame
 import InitECandidate.Solver.WitnessRadix.StoreWord
 
 namespace InitECandidate.Solver.Input.Request
@@ -54,15 +56,33 @@ theorem store_pointer (input : Guest.InputBlob) (source caller current : PanSemS
   have run := StoreWord.execute current _ _ (RequestPrefix.cursor input) (cursor input) address value mapped
   have bytes := Blob.HeapInput.store_separate current input inputPointer (RequestPrefix.cursor input) (cursor input) returned.bytes (by decide)
     (by change 2713731432 + input.length % 2^64 < 2^64; omega) (Or.inr (by change 2713731432 + input.length % 2^64 ≤ _; rw [siNat]; omega))
-  have away (offset : BitVec 64) (small : offset.toNat ≤ 88) : cursor input + offset ≠ RequestPrefix.cursor input := by
+  have away (offset : BitVec 64) (small : offset.toNat ≤ 128) : cursor input + offset ≠ RequestPrefix.cursor input := by
     intro same
     have number := congrArg BitVec.toNat same
     rw [BitVec.toNat_add_of_lt (by rw [payloadNat]; omega),payloadNat,siNat] at number
     omega
+  let next := {current with memory:=StoreWord.put current.memory (RequestPrefix.cursor input) (cursor input)}
+  have image : Payload.Image next input inputPointer (cursor input) (length input) (PersistentAlloc.rounded (cursor input) 136#64) := by
+    apply Payload.Image.of_cells current next input inputPointer (cursor input) (length input) (PersistentAlloc.rounded (cursor input) 136#64) returned.image
+    intro field member
+    have bound := (Payload.image_fields_valid input inputPointer (length input) (PersistentAlloc.rounded (cursor input) 136#64) field member).1
+    have encoded : (BitVec.ofNat 64 field.1).toNat=field.1 := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+    simp only [next,StoreWord.put,if_neg (away _ (by rw [encoded]; omega))]
+  have rounded := PersistentAlloc.rounded_nat (cursor input) 136#64 (by change (cursor input).toNat+136+7<2^64; rw [payloadNat]; omega)
+  have arrayNat : (PersistentAlloc.rounded (cursor input) 136#64).toNat=DecoderSetup.cursor input+520 := by
+    change (PersistentAlloc.rounded (cursor input) 136#64).toNat=((cursor input).toNat+136+7)/8*8 at rounded
+    rw [payloadNat] at rounded
+    have aligned : DecoderSetup.cursor input%8=0 := geometry.2.2
+    omega
+  have records : VarList.Records next input inputPointer (PersistentAlloc.rounded (cursor input) 136#64) (62+Guest.GasLimit.le32 input 566) (Payload.transactionBytes input) := by
+    apply VarList.Records.of_after current next input inputPointer (PersistentAlloc.rounded (cursor input) 136#64) _ _ ((RequestPrefix.cursor input).toNat+1) returned.records (by rw [siNat,arrayNat]; omega)
+    intro query after
+    have different : query≠RequestPrefix.cursor input := by intro same; rw [same] at after; omega
+    simp only [next,StoreWord.put,if_neg different]
   have nextReturned : Returned input caller {current with memory := StoreWord.put current.memory (RequestPrefix.cursor input) (cursor input)} :=
     ⟨returned.locals,bytes,by simpa [StoreWord.put,away 88#64 (by decide)] using returned.gasCell,returned.gasBound,
       by simpa [StoreWord.put,away 56#64 (by decide)] using returned.countCell,
-      returned.code,returned.domain,returned.endian,returned.exceptions,returned.heap,returned.transactions,returned.globals,returned.forward,returned.cost⟩
+      returned.code,returned.domain,returned.endian,returned.exceptions,returned.heap,returned.transactions,returned.globals,returned.forward,returned.cost,image,records,returned.context⟩
   exact ⟨run,nextReturned,by simp [StoreWord.put],fun _ => rfl⟩
 
 /-- Resume the literal next decoding call after that exact store; the later

@@ -8,6 +8,12 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 theorem prepared_context (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (cursor : BitVec 64) (start : Nat) :
     InitializerAllocations.context (prepared source input cursor start) = InitializerAllocations.context source := rfl
 
+theorem prepared_control (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (cursor : BitVec 64) (start : Nat) :
+    BackingLayout.control (prepared source input cursor start) = BackingLayout.control (PersistentAlloc.post source cursor 80#64) := rfl
+
+theorem prepared_memory (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (cursor : BitVec 64) (start : Nat) :
+    (prepared source input cursor start).memory = source.memory := rfl
+
 theorem prepared_globals (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (cursor : BitVec 64) (start : Nat) :
     (prepared source input cursor start).globals = source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded cursor 80#64))) := rfl
 
@@ -51,3 +57,6 @@ end InitECandidate.Solver.Input.Requests
 #print axioms InitECandidate.Solver.Input.Requests.prepared_request
 #print axioms InitECandidate.Solver.Input.Requests.prepared_offsets
 #print axioms InitECandidate.Solver.Input.Requests.restore_setup_frame
+
+#print axioms InitECandidate.Solver.Input.Requests.prepared_control
+#print axioms InitECandidate.Solver.Input.Requests.prepared_memory

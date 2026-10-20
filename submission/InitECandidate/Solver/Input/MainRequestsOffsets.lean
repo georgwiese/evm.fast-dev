@@ -40,7 +40,7 @@ theorem requests_offsets_trace (input : Guest.InputBlob) (source entry post : Pa
     have before := actual.forward
     have prefixCost := actual.cost
     exact Or.inl ⟨error,allowed,same,cost,by omega⟩
-  · obtain ⟨first,valid,next,innerPost,forward,cost,control,bytes,other,cells,remaining,restored⟩ := normal
+  · obtain ⟨first,valid,next,innerPost,forward,cost,control,bytes,other,cells,remaining,restored,memoryFrame⟩ := normal
     have globals : next.globals = entry.globals := by have projected := congrArg PanSemStateFiniteExact.globals control; exact projected
     have heap : next.globals.lookup (ofString "heap_ptr") = some (.val (.word (PayloadPrefix.finalCursor input))) := by rw [globals]; exact actual.heap
     have before := actual.forward

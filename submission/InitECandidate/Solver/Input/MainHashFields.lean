@@ -20,6 +20,10 @@ structure RequestCaller (input : Guest.InputBlob) (source current : PanSemStateF
   transactions : Payload.transactionCount input ≤ (input.length % 2^64) / 4
   forward : current.clock ≤ source.clock
   cost : source.clock - current.clock ≤ (input.length % 2^64) / 4 + 153
+  roots : current.locals.lookup (ofString "p") = some (.val (.word (inputPointer + 2#64))) ∧
+    current.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 (input.length % 2^64 - 2)))) ∧
+    current.locals.lookup (ofString "o_wit") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6))))
+  globals : ∀ key,key ≠ ofString "heap_ptr" → current.globals.lookup key = source.globals.lookup key
 
 end InitECandidate.Solver.Input.Main.DecoderCall
 
@@ -99,9 +103,16 @@ theorem hash_fields_trace (input : Guest.InputBlob) (source caller current post 
     have nextForward := actualCaller.frame.forward
     have clockLower := actualCaller.frame.clockLower
     have returnedForward := returned.forward
+    have otherGlobals (key : MlS) (different : key ≠ ofString "heap_ptr") : target.globals.lookup key = source.globals.lookup key := by
+      change next.globals.lookup key = _
+      rw [globals,returned.globals key different,actualCaller.frame.globals]
+      simp [HolFiniteMapExact.lookup_update,FUPDATE,Ne.symm different]
     have metadata : DecoderCall.RequestCaller input source target := ⟨stores.2.1,code,exceptions,domain,heap,offsets,np,
       (other "nlen" (by decide) (by decide)).trans actualCaller.length,si,(other "o_rq" (by decide) (by decide)).trans actualCaller.requestsOffset,
-      targetGas,targetCount,returned.transactions,by change next.clock ≤ source.clock; omega,by change source.clock - next.clock ≤ _; omega⟩
+      targetGas,targetCount,returned.transactions,by change next.clock ≤ source.clock; omega,by change source.clock - next.clock ≤ _; omega,
+      ⟨(other "p" (by decide) (by decide)).trans actualCaller.roots.1,
+        (other "len" (by decide) (by decide)).trans actualCaller.roots.2.1,
+        (other "o_wit" (by decide) (by decide)).trans actualCaller.roots.2.2⟩,otherGlobals⟩
     exact Or.inr ⟨target,innerPost,metadata,targetRun,restored⟩
 
 end InitECandidate.Solver.Input.Main.PayloadPrefix

@@ -32,8 +32,9 @@ theorem offsets_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       ∃ next innerPost,next.clock ≤ source.clock ∧ source.clock - next.clock ≤ 12 ∧ BackingLayout.control next = BackingLayout.control source ∧
         Blob.HeapInput next input pointer ∧ (∀ name,name ≠ ofString "i" → next.locals.lookup name = source.locals.lookup name) ∧
         (∀ position < 5,next.memory (byteAddress array (8*position)) = .word (offsetWord input start position)) ∧
-        evaluateHOLFiniteState next afterOffsets = (result,innerPost) ∧ post = restore source "i" innerPost) := by
-  obtain ⟨funded,loopTarget,innerPost,loopClock,control,loopHeap,other,cells,remaining,restored⟩ := loop_trace source post input pointer array start heap extent p offsets domain pointerAligned arrayAligned arrayLower before upper result run notTimeout
+        evaluateHOLFiniteState next afterOffsets = (result,innerPost) ∧ post = restore source "i" innerPost ∧
+        (∀ query,query.toNat < array.toNat ∨ array.toNat + 40 ≤ query.toNat → next.memory query = source.memory query)) := by
+  obtain ⟨funded,loopTarget,innerPost,loopClock,control,loopHeap,other,cells,remaining,restored,loopMemory⟩ := loop_trace source post input pointer array start heap extent p offsets domain pointerAligned arrayAligned arrayLower before upper result run notTimeout
   have globals : loopTarget.globals = source.globals := by have h := congrArg PanSemStateFiniteExact.globals control; exact h
   have codes : loopTarget.code = source.code := by have h := congrArg PanSemStateFiniteExact.code control; exact h
   have shapes : loopTarget.eshapes = source.eshapes := by have h := congrArg PanSemStateFiniteExact.eshapes control; exact h
@@ -53,7 +54,7 @@ theorem offsets_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     have targetControl : BackingLayout.control target = BackingLayout.control source := by rw [targetEq]; exact control
     have targetLocals (name : MlS) (different : name ≠ ofString "i") : target.locals.lookup name = source.locals.lookup name := by rw [targetEq]; exact other name different
     have targetCells (position : Nat) (small : position < 5) : target.memory (byteAddress array (8*position)) = .word (offsetWord input start position) := by rw [targetEq]; exact cells position small
-    exact Or.inr ⟨first,valid,target,innerPost,by omega,by omega,targetControl,targetHeap,targetLocals,targetCells,targetRun,restored⟩
+    exact Or.inr ⟨first,valid,target,innerPost,by omega,by omega,targetControl,targetHeap,targetLocals,targetCells,targetRun,restored,by intro query outside; rw [targetEq]; exact loopMemory query outside⟩
   · obtain ⟨error,allowed,called,same,endpoint⟩ := fault
     have postClock : post.clock = target.clock := by rw [restored,endpoint]; rfl
     exact Or.inl ⟨error,allowed,same,by rw [postClock]; omega⟩

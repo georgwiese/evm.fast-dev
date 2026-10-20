@@ -65,7 +65,8 @@ theorem after_copy_normal {ι : Type} [DecidableEq ι]
       (∀ table, table ≠ writer → table ≠ outer → table ≠ accountWriter → next table = objects table) ∧
       ((found = false ∧ iterations = 0) ∨
         (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
-      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (empty = 0#64 ∨ empty = 1#64) ∧ (if destroyed then 2 ≤ added else added = 1 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan := by
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ destroyed = decide (empty ≠ 0#64) ∧ (empty = 0#64 ∨ empty = 1#64) ∧ (if destroyed then 2 ≤ added else added = 1 ∧ found = false ∧ iterations = 0) ∧ (next outer).plan = (objects outer).plan ∧
+      (next writer).slots.length ≤ (objects writer).slots.length + iterations ∧ (next outer).slots.length ≤ (objects outer).slots.length ∧ (next accountWriter).slots.length ≤ (objects accountWriter).slots.length + 2 := by
   obtain ⟨accountImage⟩ := registry.images account accountMember
   have objectBefore := registry.before account accountMember
   have destinationRead : eval source (.op .add [localVar "a",.const 8#64]) = some (.val (.word (account + 8#64))) := by
@@ -98,7 +99,7 @@ theorem after_copy_normal {ι : Type} [DecidableEq ι]
   have writtenOuter : written.memory (transaction + 32#64) = .word (objects outer).pointer := (earlier _ outerBefore).trans outerStored
   have writtenAccount : written.memory (transaction + 16#64) = .word (objects accountWriter).pointer := (earlier _ accountBefore).trans accountStored
   obtain ⟨empty,destroyed,found,iterations,paid,nextCursor,next,nextEntries,added,positive,funded,clock,forward,addedPositive,addedBound,capacityBound,models,nextImage,nextZone,price,locals,codes,nextEnvironment,globals,
-    nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,decision,binary,appends,outerPlan⟩ := AccountCommit.call_normal written mutated address account emptyHash scratch transaction cursor cutoff objects writer outer accountWriter base cap count entries
+    nextValues,nextSaved,nextRegistry,effect,metadata,frame,others,branch,nextCounter,decision,binary,appends,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩ := AccountCommit.call_normal written mutated address account emptyHash scratch transaction cursor cutoff objects writer outer accountWriter base cap count entries
       writtenFamily writtenImage zone countBound (environment.of_fields rfl rfl rfl) installed accounts writtenRegistry property writtenValues owned accountOwned publishOwned savedValues writerKind outerKind accountKind differentOuter
       addressArena scratchArena floors scratchBelow small journalAbove accountMember emptyGlobal emptyArena innerReferences scratchGlobal transactionGlobal tableMapped writtenTable tableAbove tableAway (by omega) tableOutside
       outerMapped writtenOuter (by omega) outerOutside outerAway accountMapped writtenAccount accountAbove (by omega) accountOutside accountAway accountApart journal capacity counter _ args commitRun
@@ -111,7 +112,7 @@ theorem after_copy_normal {ι : Type} [DecidableEq ι]
   have finalRegistry := nextRegistry.framed mutated finish cutoff nextCursor nextCursor next next accounts
     (TableFamily.PersistentFrame.of_memory cutoff nextCursor next mutated finish rfl) (Nat.le_refl _) rfl
   refine ⟨answerEq,empty,destroyed,found,iterations,paid,nextCursor,next,nextEntries,added,positive,funded,clock,forward,addedPositive,addedBound,capacityBound,finalFamily,finalImage,nextZone,price,
-    codes,nextEnvironment.of_fields rfl rfl rfl,globals,nextValues,nextSaved,finalRegistry,effect,metadata,?_,others,branch,nextCounter,decision,binary,appends,outerPlan⟩
+    codes,nextEnvironment.of_fields rfl rfl rfl,globals,nextValues,nextSaved,finalRegistry,effect,metadata,?_,others,branch,nextCounter,decision,binary,appends,outerPlan,markerPopulation,outerPopulation,accountPopulation⟩
   intro query above before outside away
   obtain ⟨nextOutside,same⟩ := frame query above (by omega) outside away
   exact ⟨nextOutside,same.trans (earlier query before)⟩

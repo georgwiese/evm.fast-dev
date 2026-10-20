@@ -31,6 +31,7 @@ def Result {ι : Type} [Fintype ι]
     (∀ query : BitVec 64,cutoff ≤ query.toNat → query.toNat < cursor → TableFamily.Outside objects query → Journal.Away base cap query →
       TableFamily.Outside next query ∧ post.memory query = source.memory query) ∧
     post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧
-    (if destroyed then 2 ≤ added else added = 1 ∧ found = false ∧ iterations = 0) ∧ iterations ≤ population ∧ BitVec.ofNat 64 freshCursor ∈ nextAccounts
+    (if destroyed then 2 ≤ added else added = 1 ∧ found = false ∧ iterations = 0) ∧ iterations ≤ population ∧ BitVec.ofNat 64 freshCursor ∈ nextAccounts ∧
+    (∀ index,(next index).slots.length ≤ population + iterations + 2)
 
 end InitECandidate.Solver.Mpt.AccountBalanceSet

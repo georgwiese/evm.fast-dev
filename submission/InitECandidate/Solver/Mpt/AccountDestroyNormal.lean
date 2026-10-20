@@ -53,7 +53,8 @@ theorem destroy_normal {ι : Type} [DecidableEq ι]
       (∀ table, table ≠ writer → table ≠ outer → table ≠ accountWriter → next table = objects table) ∧
       ((found = false ∧ iterations = 0) ∨
         (found = true ∧ ∃ reader, (objects reader).kind = .word ∧ iterations = (objects reader).slots.length)) ∧
-      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ (next outer).plan = (objects outer).plan := by
+      post.globals.lookup (ofString "journal_n") = some (.val (.word (BitVec.ofNat 64 (count + added)))) ∧ (next outer).plan = (objects outer).plan ∧
+      (next writer).slots.length ≤ (objects writer).slots.length + iterations ∧ (next outer).slots.length ≤ (objects outer).slots.length ∧ (next accountWriter).slots.length ≤ (objects accountWriter).slots.length + 1 := by
   have firstSafe : Input.LocalPrefix (ofString "addr") destroyStorageCall := .call none _ _ (by intro name impossible; cases impossible)
   rw [destroy_shape] at normal
   obtain ⟨middle,storageRun,tailRun,keepAddress⟩ := firstSafe.normal_continue source post (.seq eraseAccountCall (.return (.const 0#64))) returned normal
@@ -61,7 +62,7 @@ theorem destroy_normal {ι : Type} [DecidableEq ι]
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,addressLocal]
   obtain ⟨found,iterations,storagePaid,middleCursor,middleObjects,middleEntries,storageAdded,storagePositive,storageFunded,storageClock,storageForward,storageAddedBound,storageCapacity,
     middleFamily,middleImage,middleZone,storagePrice,middleLocals,middleCodes,middleEnvironment,middleGlobals,middleValues,middleSaved,middleRegistry,storageEffect,middleMetadata,
-    storageFrame,storageOthers,branch,middleCounter,outerPlan⟩ := DestroyStorage.call_normal source middle address scratch transaction cursor cutoff objects writer outer base cap count entries
+    storageFrame,storageOthers,branch,middleCounter,outerPlan,markerPopulation,outerPopulation⟩ := DestroyStorage.call_normal source middle address scratch transaction cursor cutoff objects writer outer base cap count entries
       family image zone countBound environment installed accounts registry property values owned savedValues writerKind outerKind addressArena scratchArena floors scratchBelow small journalAbove
       innerReferences scratchGlobal transactionGlobal tableMapped tableStored tableAbove tableBefore tableOutside outerMapped outerStored accountApart journal capacity counter _ storageArgs storageRun
   have secondSafe : Input.LocalPrefix (ofString "addr") eraseAccountCall := .call none _ _ (by intro name impossible; cases impossible)
@@ -132,7 +133,7 @@ theorem destroy_normal {ι : Type} [DecidableEq ι]
   have totalCapacity : count + (storageAdded + 1) ≤ cap := by omega
   refine ⟨answerEq,found,iterations,storagePaid + setPaid,nextCursor,next,nextEntries,storageAdded + 1,by omega,totalFunded,totalClock,totalForward,by omega,by omega,totalCapacity,
     finalFamily,finalImage,nextZone,price,setCodes.trans middleCodes,nextEnvironment.of_fields rfl rfl rfl,middleGlobals.trans setGlobals,nextValues,finalSaved,finalRegistry,finalEffect,
-    middleMetadata.trans setMetadata,?_,?_,status,finalCounter,?_⟩
+    middleMetadata.trans setMetadata,?_,?_,status,finalCounter,?_,?_,?_,?_⟩
   · intro query above earlier outside away
     have first := storageFrame query above earlier outside away
     have second := setFrame.words query (by omega) first.1 away
@@ -141,6 +142,15 @@ theorem destroy_normal {ι : Type} [DecidableEq ι]
     exact (Function.update_of_ne notAccount nextAccount middleObjects).trans (storageOthers table notWriter notOuter)
 
   · exact (congrArg TableFamily.Object.plan (Function.update_of_ne differentOuter.symm nextAccount middleObjects)).trans outerPlan
+
+  · rw [finalMarker]
+    exact markerPopulation
+  · change (Function.update middleObjects accountWriter nextAccount outer).slots.length ≤ _
+    rw [Function.update_of_ne differentOuter.symm]
+    exact outerPopulation
+  · rw [finalAccount]
+    rw [accountSame] at population
+    exact population
 
 end InitECandidate.Solver.Mpt.AccountCommit
 

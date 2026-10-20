@@ -189,4 +189,3 @@ end InitECandidate.Solver.GasBudget.U256Sub
 #print axioms InitECandidate.Solver.GasBudget.U256Sub.execute
 #print axioms InitECandidate.Solver.GasBudget.U256Sub.original_code
 #print axioms InitECandidate.Solver.GasBudget.U256Sub.environment
-

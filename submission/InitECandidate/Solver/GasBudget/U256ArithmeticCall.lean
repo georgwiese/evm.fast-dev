@@ -66,4 +66,3 @@ theorem success_prefix (source post : PanSemStateFiniteExact 64 Guest.HostMemory
 end InitECandidate.Solver.GasBudget.U256Sub
 
 #print axioms InitECandidate.Solver.GasBudget.U256Sub.success_prefix
-

@@ -8,7 +8,7 @@ set_option maxRecDepth 10000
 
 /-- Actual final witness header-list call, SI stores and SI return, including
 all parser/size exits and arbitrary real runtime funding. -/
-theorem headers_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+theorem headers_trace_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
     (pointer array si : BitVec 64) (start last total : Nat)
     (environment : Environment source) (heap : Blob.HeapInput source input pointer)
     (ordered : last≤total) (inside : start+total≤input.length%2^64)
@@ -24,7 +24,8 @@ theorem headers_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (siBefore : si.toNat+96≤array.toNat)
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source headerCall=(result,post)) (notTimeout : result≠some .timeOut) :
     source.clock-post.clock≤2*((total-last)/4)+4 ∧
-      ((∃ error : BitVec 64,(error=20#64 ∨ error=21#64 ∨ error=22#64 ∨ error=23#64 ∨ error=70#64) ∧ result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨ result=some (.returned (.val (.word si)))) := by
+      ((∃ error : BitVec 64,(error=20#64 ∨ error=21#64 ∨ error=22#64 ∨ error=23#64 ∨ error=70#64) ∧ result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨ (result=some (.returned (.val (.word si))) ∧
+        ∀ query,query.toNat<array.toNat → query≠byteAddress si 72 → query≠byteAddress si 80 → post.memory query=source.memory query)) := by
   classical
   have args := list_arguments source pointer start last total 256 1024 "w2" "wlen" ordered
     (by have := Nat.mod_lt input.length (by decide : 0<2^64); omega) wp lastLocal totalLocal
@@ -42,8 +43,37 @@ theorem headers_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     have same := congrArg Prod.fst equality
     have clocks := congrArg (fun output => output.2.clock) equality
     have clock : post.clock=next.clock := by rw [endpoint]; exact clocks.symm
-    exact ⟨by rw [clock]; exact cost,Or.inr same.symm⟩
+    have innerEq : innerPost=emptyLocalsHOLFinite next := (congrArg Prod.snd equality).symm
+    have memory : post.memory=next.memory := by rw [endpoint,innerEq]; rfl
+    exact ⟨by rw [clock]; exact cost,Or.inr ⟨same.symm,by
+      intro query before firstAway secondAway
+      rw [memory]
+      exact frame query before firstAway secondAway⟩⟩
+
+
+/-- The bound/outcome projection of the stronger actual-memory contract. -/
+theorem headers_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer array si : BitVec 64) (start last total : Nat)
+    (environment : Environment source) (heap : Blob.HeapInput source input pointer)
+    (ordered : last≤total) (inside : start+total≤input.length%2^64)
+    (lower : 2701131776≤pointer.toNat) (aligned : pointer.toNat%8=0) (arrayAligned : array.toNat%8=0)
+    (arrayAfter : pointer.toNat+input.length%2^64+8≤array.toNat)
+    (room : array.toNat+4*(total-last)≤33806089496)
+    (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word array)))
+    (wp : source.locals.lookup (ofString "wp")=some (.val (.word (pointer+BitVec.ofNat 64 start))))
+    (lastLocal : source.locals.lookup (ofString "w2")=some (.val (.word (BitVec.ofNat 64 last))))
+    (totalLocal : source.locals.lookup (ofString "wlen")=some (.val (.word (BitVec.ofNat 64 total))))
+    (siLocal : source.locals.lookup (ofString "si")=some (.val (.word si)))
+    (siArena : Arena si 96) (siAligned : si.toNat%8=0) (siAfter : pointer.toNat+input.length%2^64+8≤si.toNat)
+    (siBefore : si.toNat+96≤array.toNat)
+    (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source headerCall=(result,post)) (notTimeout : result≠some .timeOut) :
+    source.clock-post.clock≤2*((total-last)/4)+4 ∧
+      ((∃ error : BitVec 64,(error=20#64 ∨ error=21#64 ∨ error=22#64 ∨ error=23#64 ∨ error=70#64) ∧ result=some (.exception (ofString "SszErr") (.val (.word error)))) ∨ result=some (.returned (.val (.word si)))) := by
+  obtain ⟨cost,outcome⟩ := headers_trace_frame source post input pointer array si start last total environment heap ordered inside lower aligned arrayAligned arrayAfter room heapGlobal wp lastLocal totalLocal siLocal siArena siAligned siAfter siBefore result run notTimeout
+  exact ⟨cost,outcome.imp id (fun normal => normal.1)⟩
 
 end InitECandidate.Solver.Input.Witness
 
 #print axioms InitECandidate.Solver.Input.Witness.headers_trace
+
+#print axioms InitECandidate.Solver.Input.Witness.headers_trace_frame

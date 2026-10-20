@@ -31,7 +31,8 @@ theorem allocated_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (enough : (input.length%2^64)/4+76≤source.clock)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source afterGuard=(some (.returned value),post)) :
     value=.val (.word cursor) ∧ post.memory (cursor+88#64)=.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
-      Blob.HeapInput post input pointer ∧ source.clock-((input.length%2^64)/4+75)≤post.clock ∧ post.clock≤source.clock ∧ post.memory (cursor+56#64)=.word (BitVec.ofNat 64 (withdrawalCount input)) := by
+      Blob.HeapInput post input pointer ∧ source.clock-((input.length%2^64)/4+75)≤post.clock ∧ post.clock≤source.clock ∧ post.memory (cursor+56#64)=.word (BitVec.ofNat 64 (withdrawalCount input)) ∧
+      post.globals.lookup (ofString "heap_ptr")=some (.val (.word (nextHeap input (WitnessRadix.PersistentAlloc.rounded cursor 136#64)))) ∧ transactionCount input ≤ (input.length%2^64)/4 := by
   classical
   obtain ⟨first,extraBound,valid,next,innerPost,paid,bound,nextEq,nextHeap,clockLower,nextRun,postEq⟩:=prefix_through_extra source post input pointer cursor length
     heap extent p n domain pointerAligned cursorAligned pointerLower cursorAfter (by omega) heapGlobal allocCode array arrayGlobal
@@ -50,7 +51,7 @@ theorem allocated_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
   have nextHeapGlobal : next.globals.lookup (ofString "heap_ptr")=some (.val (.word (WitnessRadix.PersistentAlloc.rounded cursor 136#64))) := by
     rw [nextEq]
     exact prepared_heap source input pointer cursor length
-  obtain ⟨valueEq,gasCell,finalHeap,finalLower,finalUpper,countCell⟩:=after_extra_normal next innerPost input pointer cursor
+  obtain ⟨valueEq,gasCell,finalHeap,finalLower,finalUpper,countCell,heapCursor,countBound⟩:=after_extra_normal next innerPost input pointer cursor
     (WitnessRadix.PersistentAlloc.rounded cursor 136#64) length nextHeap extent
     (by rw [localsEq]; exact fields.1) (by rw [localsEq]; exact fields.2.1) (by rw [localsEq]; exact fields.2.2)
     (by rw [localsEq,←extraEq]; exact offsets.1) (by rw [localsEq]; exact offsets.2.1)
@@ -59,7 +60,7 @@ theorem allocated_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     nextHeapGlobal (by rw [codeEq]; exact allocCode) (by rw [codeEq]; exact divisionCode) (by rw [codeEq]; exact failCode)
     (by rw [shapesEq]; exact exceptionShape) (by rw [codeEq]; exact varCode) (by rw [codeEq]; exact fixedCode) (by omega) value nextRun
   have postClock : post.clock=innerPost.clock := by rw [postEq]; rfl
-  refine ⟨valueEq,?_,?_,?_,?_,?_⟩
+  refine ⟨valueEq,?_,?_,?_,?_,?_,?_,?_⟩
   · rw [postEq]; exact gasCell
   · rw [postEq]
     exact Blob.HeapInput.of_fields innerPost (restorePrefix source input pointer cursor length innerPost) input pointer rfl rfl rfl finalHeap
@@ -67,6 +68,12 @@ theorem allocated_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
   · omega
   · rw [postEq]
     exact countCell
+
+  · rw [postEq]
+    exact heapCursor
+  · change transactionCount input ≤ (transactionBytes input)/4 at countBound
+    have totalBound : transactionBytes input ≤ input.length%2^64 := transactionLength
+    omega
 
 end InitECandidate.Solver.Input.Payload
 

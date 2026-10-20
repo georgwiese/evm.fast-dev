@@ -54,7 +54,9 @@ theorem transactions_normal (source post : PanSemStateFiniteExact 64 Guest.HostM
         (if Guest.GasLimit.le32 input 570=Guest.GasLimit.le32 input 566 then source
          else WitnessRadix.PersistentAlloc.post source array (BitVec.ofNat 64 (16*(Guest.GasLimit.le32 input (62+Guest.GasLimit.le32 input 566)/4)))) ∧
       evaluateHOLFiniteState next afterTransactions=(some (.returned value),innerPost) ∧
-      post=restore source "txs" innerPost := by
+      post=restore source "txs" innerPost ∧
+      VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566) ≤
+        (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)/4 := by
   classical
   obtain ⟨lower,ordered,contained⟩:=transaction_range input length valid inside
   obtain ⟨prefixRun,prefixHeap⟩:=extra_stores source input pointer cursor heap p pl e t lower domain pointerAligned cursorAligned
@@ -70,13 +72,21 @@ theorem transactions_normal (source post : PanSemStateFiniteExact 64 Guest.HostM
       "txs" transactionArguments afterTransactions args.1 code enough value tailRun
   have emptyEq : (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566=0)↔
       Guest.GasLimit.le32 input 570=Guest.GasLimit.le32 input 566 := by omega
-  refine ⟨next,innerPost,returned,?_,localsEq,nextHeap,oldMemory,clockLower,clockUpper,?_,nextRun,postEq⟩
+  refine ⟨next,innerPost,returned,?_,localsEq,nextHeap,oldMemory,clockLower,clockUpper,?_,nextRun,postEq,?_⟩
   · simpa only [emptyEq] using valueEq
   · by_cases empty : Guest.GasLimit.le32 input 570=Guest.GasLimit.le32 input 566
     · simp only [emptyEq,if_pos empty] at controlEq ⊢
       exact controlEq.trans ((field_control _ _ _ _).trans (field_control _ _ _ _))
     · simp only [emptyEq,if_neg empty] at controlEq ⊢
       exact controlEq.trans ((allocated_field_control _ _ _ _ _ _).trans (allocated_field_control _ _ _ _ _ _))
+
+  · by_cases empty : Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566=0
+    · simp [VarList.decodedCount,empty]
+    · simp only [VarList.decodedCount,if_neg empty]
+      simp only [if_neg empty] at clockEq
+      change next.clock=source.clock-1-(Guest.GasLimit.le32 input (62+Guest.GasLimit.le32 input 566)/4+1) at clockEq
+      have low : source.clock-((Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)/4+2)≤next.clock := clockLower
+      omega
 
 end InitECandidate.Solver.Input.Payload
 

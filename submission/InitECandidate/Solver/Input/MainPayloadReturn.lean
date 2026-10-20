@@ -17,6 +17,8 @@ structure Returned (input : Guest.InputBlob) (caller current : PanSemStateFinite
   domain : current.memaddrs = caller.memaddrs
   endian : current.be = caller.be
   exceptions : current.eshapes = caller.eshapes
+  heap : current.globals.lookup (ofString "heap_ptr") = some (.val (.word (finalCursor input)))
+  transactions : Payload.transactionCount input ≤ (input.length % 2^64) / 4
   globals : ∀ key,key ≠ ofString "heap_ptr" → current.globals.lookup key = caller.globals.lookup key
   forward : current.clock ≤ caller.clock
   cost : caller.clock - current.clock ≤ (input.length % 2^64) / 4 + 76
@@ -40,7 +42,7 @@ theorem resume_return (input : Guest.InputBlob) (source caller bodyPost post : P
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState caller Request.continuation = (result,post)) :
     ∃ current final,Returned input caller current ∧ source.clock - current.clock ≤ (input.length % 2^64) / 4 + 86 ∧
       evaluateHOLFiniteState current Request.afterPayload = (result,final) ∧ post = QueryBranch.restore caller "pl" final := by
-  obtain ⟨valueEq,gasCell,gasBound,countCell,bytes,cost,_,aggregate,forward⟩ := normal_payload input source (callEntryStateHOLFinite caller callee) bodyPost environment entry layout bounded extent minimum sliceUpper gas returned bodyRun
+  obtain ⟨valueEq,gasCell,gasBound,countCell,bytes,cost,_,aggregate,forward,heapCursor,countBound⟩ := normal_payload input source (callEntryStateHOLFinite caller callee) bodyPost environment entry layout bounded extent minimum sliceUpper gas returned bodyRun
   have lengthNumber : (length input).toNat = Guest.GasLimit.le32 input 22 - 44 := by
     have small : input.length % 2^64 < 2^64 := Nat.mod_lt _ (by decide)
     rw [length,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
@@ -72,7 +74,7 @@ theorem resume_return (input : Guest.InputBlob) (source caller bodyPost post : P
     have frame := ParserGlobals.payload key (callEntryStateHOLFinite caller callee).code installed other (callEntryStateHOLFinite caller callee) rfl
     rw [fullBody] at frame
     exact congrArg Prod.snd frame
-  have reached : Returned input caller current := ⟨locals,currentBytes,gasCell,gasBound,countCell,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,globals,currentForward,currentCost⟩
+  have reached : Returned input caller current := ⟨locals,currentBytes,gasCell,gasBound,countCell,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,heapCursor,countBound,globals,currentForward,currentCost⟩
   exact ⟨current,final,reached,aggregate,Prod.ext observed rfl,endpoint⟩
 
 end InitECandidate.Solver.Input.Main.PayloadPrefix

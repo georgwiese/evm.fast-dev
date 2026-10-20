@@ -1,0 +1,109 @@
+import InitECandidate.Solver.Input.HashFields
+
+namespace InitECandidate.Solver.Input.Main.DecoderCall
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+structure RequestCaller (input : Guest.InputBlob) (source current : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
+  bytes : Blob.HeapInput current input inputPointer
+  code : current.code = source.code
+  exceptions : current.eshapes = source.eshapes
+  domain : current.memaddrs = source.memaddrs
+  heap : current.globals.lookup (ofString "heap_ptr") = some (.val (.word (PayloadPrefix.finalCursor input)))
+  offsets : current.globals.lookup (ofString "ssz_offs") = some (.val (.word 2713715344#64))
+  np : current.locals.lookup (ofString "np") = some (.val (.word (inputPointer + 18#64)))
+  length : current.locals.lookup (ofString "nlen") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16))))
+  si : current.locals.lookup (ofString "si") = some (.val (.word (RequestPrefix.cursor input)))
+  requestsOffset : current.locals.lookup (ofString "o_rq") = some (.val (.word (Request.requestWords input 2)))
+  gasCell : current.memory (PayloadPrefix.cursor input + 88#64) = .word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474))
+  countCell : current.memory (PayloadPrefix.cursor input + 56#64) = .word (BitVec.ofNat 64 (Payload.withdrawalCount input))
+  transactions : Payload.transactionCount input ≤ (input.length % 2^64) / 4
+  forward : current.clock ≤ source.clock
+  cost : source.clock - current.clock ≤ (input.length % 2^64) / 4 + 153
+
+end InitECandidate.Solver.Input.Main.DecoderCall
+
+namespace InitECandidate.Solver.Input.Main.PayloadPrefix
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix WitnessRadix.AllocatedBytes
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+private theorem payload_field_away (input : Guest.InputBlob) (bounded : input.length % 2^64 ≤ Guest.maxInputBytes)
+    (offset : BitVec 64) (small : offset.toNat ≤ 88) (field : Nat) (fieldSmall : field ≤ 88) :
+    cursor input + offset ≠ byteAddress (RequestPrefix.cursor input) field := by
+  have upper : DecoderSetup.cursor input ≤ 2847949152 := (input_cursor_bounds input bounded).2.1
+  have payloadNat := (cursor_number input bounded).1
+  have siNat : (RequestPrefix.cursor input).toNat = DecoderSetup.cursor input + 288 := by
+    rw [RequestPrefix.cursor,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have destinationNat := byteAddress_toNat (RequestPrefix.cursor input) field (by rw [siNat]; omega)
+  intro same
+  have numbers := congrArg BitVec.toNat same
+  rw [BitVec.toNat_add_of_lt (by rw [payloadNat]; omega),payloadNat,destinationNat,siNat] at numbers
+  omega
+
+/-- Real blob-hash count plus all three actual SI stores, reaching the
+original request decoder caller. Passing count arithmetic, heap, input bytes
+and real gas/count cells all belong to this same execution. -/
+theorem hash_fields_trace (input : Guest.InputBlob) (source caller current post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (environment : DecoderCall.Environment input source) (actualCaller : DecoderCall.PayloadCaller input source caller)
+    (returned : Returned input caller current) (layout : DecoderCall.RequestLayout input) (bounded : input.length % 2^64 ≤ Guest.maxInputBytes)
+    (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState current Request.hashesCall = (result,post)) (notTimeout : result ≠ some .timeOut) :
+    (∃ error : BitVec 64,(error = 30#64 ∨ error = 31#64) ∧ result = some (.exception (ofString "SszErr") (.val (.word error))) ∧ current.clock - post.clock ≤ 67) ∨
+    (∃ next innerPost,DecoderCall.RequestCaller input source next ∧ evaluateHOLFiniteState next Request.requestsCall = (result,innerPost) ∧ post = restore current "nvh" innerPost) := by
+  rcases hashes_trace input source caller current post environment actualCaller returned layout result run notTimeout with rejected | normal
+  · exact Or.inl rejected
+  · obtain ⟨next,innerPost,count,locals,countNat,remainder,forward,cost,aggregate,frame,bytes,gasCell,countCell,remaining,restored⟩ := normal
+    have other (key : String) (nvh : ofString "nvh" ≠ ofString key) (pl : ofString "pl" ≠ ofString key) : next.locals.lookup (ofString key) = caller.locals.lookup (ofString key) := by
+      rw [locals,returned.locals]
+      simp [HolFiniteMapExact.lookup_update,FUPDATE,nvh,pl]
+    have si := (other "si" (by decide) (by decide)).trans actualCaller.si
+    have np := (other "np" (by decide) (by decide)).trans actualCaller.np
+    have vh := (other "o_vh" (by decide) (by decide)).trans actualCaller.hashesOffset
+    have nvh : next.locals.lookup (ofString "nvh") = some (.val (.word count)) := by
+      rw [locals]; simp [HolFiniteMapExact.lookup_update,FUPDATE]
+    have domain : next.memaddrs = source.memaddrs := by
+      have projected := congrArg PanSemStateFiniteExact.memaddrs frame
+      exact projected.trans (returned.domain.trans actualCaller.frame.domain)
+    have code : next.code = source.code := by
+      have projected := congrArg PanSemStateFiniteExact.code frame
+      exact projected.trans (returned.code.trans actualCaller.frame.code)
+    have exceptions : next.eshapes = source.eshapes := by
+      have projected := congrArg PanSemStateFiniteExact.eshapes frame
+      exact projected.trans (returned.exceptions.trans actualCaller.frame.exceptions)
+    have globals : next.globals = current.globals := by
+      have projected := congrArg PanSemStateFiniteExact.globals frame
+      exact projected
+    have geometry := input_cursor_bounds input bounded
+    have upper : DecoderSetup.cursor input ≤ 2847949152 := geometry.2.1
+    have lower : 2713731432 + input.length % 2^64 + 8 ≤ DecoderSetup.cursor input := geometry.1
+    have aligned : DecoderSetup.cursor input % 8 = 0 := geometry.2.2
+    have siNat : (RequestPrefix.cursor input).toNat = DecoderSetup.cursor input + 288 := by
+      rw [RequestPrefix.cursor,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+    have stores := Request.hash_fields_execute next input inputPointer (RequestPrefix.cursor input) (inputPointer + 18#64) (Request.requestWords input 1) count bytes si np vh nvh
+      (domain.trans environment.domain) ⟨by rw [siNat]; omega,by rw [siNat]; omega⟩ (by decide) (by rw [siNat]; omega)
+      (by change 2713731432 + input.length % 2^64 + 8 ≤ _; rw [siNat]; omega)
+    let target := Request.hashFieldsStored next (RequestPrefix.cursor input) (inputPointer + 18#64) (Request.requestWords input 1) count
+    have targetRun := stores.1.symm.trans remaining
+    have targetGas : target.memory (cursor input + 88#64) = .word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) :=
+      (stores.2.2 _ (payload_field_away input bounded 88#64 (by decide) 8 (by decide))
+        (payload_field_away input bounded 88#64 (by decide) 16 (by decide)) (payload_field_away input bounded 88#64 (by decide) 24 (by decide))).trans gasCell
+    have targetCount : target.memory (cursor input + 56#64) = .word (BitVec.ofNat 64 (Payload.withdrawalCount input)) :=
+      (stores.2.2 _ (payload_field_away input bounded 56#64 (by decide) 8 (by decide))
+        (payload_field_away input bounded 56#64 (by decide) 16 (by decide)) (payload_field_away input bounded 56#64 (by decide) 24 (by decide))).trans countCell
+    have heap : target.globals.lookup (ofString "heap_ptr") = some (.val (.word (finalCursor input))) := by
+      change next.globals.lookup _ = _
+      rw [globals]; exact returned.heap
+    have offsets : target.globals.lookup (ofString "ssz_offs") = some (.val (.word 2713715344#64)) := by
+      change next.globals.lookup _ = _
+      rw [globals,returned.globals (ofString "ssz_offs") (by decide),actualCaller.frame.globals]
+      simpa [HolFiniteMapExact.lookup_update,FUPDATE,show (ofString "heap_ptr" == ofString "ssz_offs") = false from by decide] using environment.offsets
+    have nextForward := actualCaller.frame.forward
+    have clockLower := actualCaller.frame.clockLower
+    have returnedForward := returned.forward
+    have metadata : DecoderCall.RequestCaller input source target := ⟨stores.2.1,code,exceptions,domain,heap,offsets,np,
+      (other "nlen" (by decide) (by decide)).trans actualCaller.length,si,(other "o_rq" (by decide) (by decide)).trans actualCaller.requestsOffset,
+      targetGas,targetCount,returned.transactions,by change next.clock ≤ source.clock; omega,by change source.clock - next.clock ≤ _; omega⟩
+    exact Or.inr ⟨target,innerPost,metadata,targetRun,restored⟩
+
+end InitECandidate.Solver.Input.Main.PayloadPrefix
+
+#print axioms InitECandidate.Solver.Input.Main.PayloadPrefix.hash_fields_trace

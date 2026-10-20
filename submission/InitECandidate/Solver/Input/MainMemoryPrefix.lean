@@ -44,6 +44,10 @@ theorem memory_globals (source : PanSemStateFiniteExact 64 Guest.HostMemory) :
     show ofString "frame_mem_ptr" ≠ ofString "heap_ptr" by decide,show ofString "scratch_ptr" ≠ ofString "heap_ptr" by decide,
     show ofString "frame_mem_ptr" ≠ ofString "scratch_ptr" by decide]
 
+theorem memory_scalars (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (entry : Entry input source) :
+    OriginalScalarGlobals.Scalars (memoryState source).globals :=
+  ((entry.scalars.update (ofString "heap_ptr") 2713714688#64).update (ofString "scratch_ptr") 2713714688#64).update (ofString "frame_mem_ptr") 2701135872#64
+
 /-- A whole terminating source behavior, including any covered rejection,
 has this actual initialized prefix and a remaining literal main execution.
 The arbitrary input list is retained exactly. -/
@@ -79,3 +83,5 @@ end InitECandidate.Solver.Input.Main
 #print axioms InitECandidate.Solver.Input.Main.memory_prefix
 #print axioms InitECandidate.Solver.Input.Main.memory_globals
 #print axioms InitECandidate.Solver.Input.Main.reached_memory
+
+#print axioms InitECandidate.Solver.Input.Main.memory_scalars

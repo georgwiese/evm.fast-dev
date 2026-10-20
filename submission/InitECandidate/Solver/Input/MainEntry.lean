@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.SourceEntry
 import InitECandidate.Solver.Input.MainProgram
 import InitECandidate.Solver.Input.OriginalArenaGlobals
+import InitECandidate.Solver.Input.OriginalScalarGlobals
 import InitECandidate.Solver.Input.TailCallTerminating
 import InitECandidate.Solver.WitnessRadix.CodeEnvironment
 
@@ -20,6 +21,8 @@ any guest initialization call. The input list has no length premise. -/
 structure Entry (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
   code : OriginalCode.Installed source.code
   shapes : OriginalExceptions.Installed source.eshapes
+  scalars : OriginalScalarGlobals.Scalars source.globals
+  zeros : ∀ key,key ∈ OriginalScalarGlobals.names → source.globals.lookup key = some (.val (.word 0#64))
   memory : source.memory = InitE.sourceMemory
   domain : source.memaddrs = InitE.ordinaryDomain
   shared : source.shMemaddrs = InitE.sharedDomain
@@ -57,6 +60,8 @@ theorem reached (input : Guest.InputBlob) (outcome : HolOutcome) (events : List 
   have entry : Entry input source := {
     code := code
     shapes := shapes
+    scalars := OriginalScalarGlobals.declaration_scalars _ declared declarations
+    zeros := OriginalScalarGlobals.declaration_pass _ declared declarations
     memory := congrArg (fun s => s.memory) metadata
     domain := congrArg (fun s => s.memaddrs) metadata
     shared := congrArg (fun s => s.shMemaddrs) metadata

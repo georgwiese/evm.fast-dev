@@ -6,7 +6,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString
 
 def call (action : InitializerAllocations.Action) : ProgHOL 64 :=
-  .call (some (none,none)) (ofString "memzero") [.var .global (ofString action.name),.const (BitVec.ofNat 64 action.bytes)]
+  .call (some (none,none)) (ofString "memzero") [.var .global (ofString action.name),action.expression]
 def program (action : InitializerAllocations.Action) (tail : ProgHOL 64) := InitializerAllocations.withTail [action] (.seq (call action) tail)
 def cost (action : InitializerAllocations.Action) := Zero.price action.bytes + 2
 def template (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (action : InitializerAllocations.Action) :=
@@ -32,8 +32,10 @@ theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cu
   have currentDomain := (InitializerAllocations.domain_of_context source ready context).trans domain
   have binding : ready.globals.lookup (ofString action.name) = some (.val (.word (BitVec.ofNat 64 cursor))) := WordTableInitialization.allocated_binding source cursor action
   have args : evalListHOLFinite ready (h := fun query => Classical.propDecidable (ready.memaddrs query))
-      [.var .global (ofString action.name),.const (BitVec.ofNat 64 action.bytes)] = some (Zero.values (BitVec.ofNat 64 cursor) action.bytes) := by
-    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,binding,Zero.values]
+      [.var .global (ofString action.name),action.expression] = some (Zero.values (BitVec.ofNat 64 cursor) action.bytes) := by
+    have read := valid.read ready
+    simp only [QueryBranch.eval] at read
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,binding,Zero.values,read]
   have number : (BitVec.ofNat 64 cursor).toNat = cursor := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   have arena : AllocatedBytes.Arena (BitVec.ofNat 64 cursor) action.bytes := ⟨by rw [number]; exact lower,by rw [number]; exact room⟩
   have pointerAligned : (BitVec.ofNat 64 cursor).toNat % 8 = 0 := by rw [number]; exact aligned

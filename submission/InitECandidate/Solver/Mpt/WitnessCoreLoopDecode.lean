@@ -31,7 +31,7 @@ theorem Invariant.decode_normal (input : Guest.InputBlob) (frontier : Nat) (db h
     have returnedOwned:=owned.weaken post node heap.toNat next.toNat (resultLower stack) next.toNat parentLower (Nat.le_refl _)
     exact ⟨⟨next,cursor,stack,.returning,true⟩,
       ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
-        scratch,invariant.below,view,invariant.fresh,words,top,mode,actualGo,⟨waiting,node,result,returnedOwned⟩,installed⟩,rank⟩
+        scratch,invariant.below,view,invariant.fresh,words,top,mode,actualGo,⟨waiting,node,result,returnedOwned⟩,Or.inl rfl,installed⟩,rank⟩
   | pushed data next nextCell nextArena aligned grows scratch view fresh freshRows freshPayload top slot mode rank=>
     let entry : Entry:=⟨WitnessRecord.pointer cursor,data,next.toNat,none⟩
     have freshStack : FreshFrom frontier (entry::stack):=
@@ -42,7 +42,7 @@ theorem Invariant.decode_normal (input : Guest.InputBlob) (frontier : Nat) (db h
       omega
     exact ⟨⟨next,WitnessRecord.pointer cursor,entry::stack,.resolve,true⟩,
       ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
-        scratch,below,view,freshStack,words,top,mode,actualGo,⟨entry,stack,rfl,waiting,slot⟩,installed⟩,rank⟩
+        scratch,below,view,freshStack,words,top,mode,actualGo,⟨entry,stack,rfl,waiting,slot⟩,Or.inl rfl,installed⟩,rank⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 

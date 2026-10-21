@@ -28,7 +28,7 @@ theorem initial_invariant (input : Guest.InputBlob) (source : PanSemStateFiniteE
   have waiting : Waiting []:=by intro entry member; cases member
   exact ⟨frozen,actualDb,heapCell,heapArena,aligned,heapLower,Nat.le_refl _,arena.of_fields source (ready source pointer length) cursor limit rfl rfl,
     below,empty _ db cursor.toNat heap.toNat,(by intro entry member; cases member),words,fields.1,fields.2.2.2.2.1,fields.2.2.2.2.2.2,
-    ⟨waiting,pointer,length,fields.2.2.1,fields.2.2.2.1,small,lower,before⟩,installed⟩
+    ⟨waiting,pointer,length,fields.2.2.1,fields.2.2.2.1,small,lower,before⟩,Or.inl rfl,installed⟩
 
 /-- Full unchanged original238 body, including its actual seven local
 declarations, while loop, footer and lexical restorations, on every

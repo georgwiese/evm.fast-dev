@@ -54,6 +54,7 @@ structure Invariant (input : Guest.InputBlob) (frontier : Nat) (db limit : BitVe
   modeCell : source.locals.lookup (ofString "mode")=some (.val (.word (modeWord configuration.phase)))
   goCell : source.locals.lookup (ofString "go")=some (.val (.word (goWord configuration.running)))
   phase : PhaseInvariant source db configuration.heap configuration.stack configuration.phase
+  stopped : configuration.running=true ∨ configuration.stack=[] ∧ configuration.phase=.returning
   installed : Input.OriginalCode.Installed source.code
 
 theorem Invariant.boundary (input : Guest.InputBlob) (frontier : Nat) (db limit : BitVec 64)
@@ -87,7 +88,7 @@ theorem Invariant.dec_clock (input : Guest.InputBlob) (frontier : Nat) (db limit
       exact ⟨waiting,child,result,owned.of_fields source (decClockHOLFinite source) child (resultLower configuration.stack) configuration.heap.toNat rfl⟩
   exact ⟨frozen,invariant.dbCell,invariant.heapCell,invariant.heapArena,invariant.aligned,invariant.heapLower,invariant.frontierBefore,
     invariant.scratch.of_fields source (decClockHOLFinite source) configuration.cursor limit rfl rfl,invariant.below,view,invariant.fresh,words,
-    invariant.topCell,invariant.modeCell,invariant.goCell,phase,invariant.installed⟩
+    invariant.topCell,invariant.modeCell,invariant.goCell,phase,invariant.stopped,invariant.installed⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 

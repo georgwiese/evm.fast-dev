@@ -36,11 +36,11 @@ theorem Invariant.resolve_normal (input : Guest.InputBlob) (frontier : Nat) (db 
     have returnedOwned:=owned.weaken post node heap.toNat next.toNat (resultLower (nextEntry::rest)) next.toNat parentLower (Nat.le_refl _)
     exact ⟨⟨next,cursor,nextEntry::rest,.returning,true⟩,
       ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
-        scratch,invariant.below,view,fresh,words,top,mode,actualGo,⟨nextWaiting,node,result,returnedOwned⟩,installed⟩,rank⟩
+        scratch,invariant.below,view,fresh,words,top,mode,actualGo,⟨nextWaiting,node,result,returnedOwned⟩,Or.inl rfl,installed⟩,rank⟩
   · exact ⟨⟨next,cursor,nextEntry::rest,.decode,true⟩,
       ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
         scratch,invariant.below,view,fresh,words,top,mode,actualGo,
-        ⟨nextWaiting,pointer,length,actualPointer,actualLength,small,lower,before⟩,installed⟩,rank⟩
+        ⟨nextWaiting,pointer,length,actualPointer,actualLength,small,lower,before⟩,Or.inl rfl,installed⟩,rank⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 

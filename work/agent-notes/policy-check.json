@@ -2941,8 +2941,10 @@
     "submission/InitECandidate/Solver/Input/Witness/StoredListTrace.lean",
     "submission/InitECandidate/Solver/Input/WitnessDecodeArrayEntry.lean",
     "submission/InitECandidate/Solver/Input/WitnessDecodeArrayNormal.lean",
+    "submission/InitECandidate/Solver/Input/WitnessDecodeArrayResultNormal.lean",
     "submission/InitECandidate/Solver/Input/WitnessDecodeArrayTrace.lean",
     "submission/InitECandidate/Solver/Input/WitnessDecodeBodyCost.lean",
+    "submission/InitECandidate/Solver/Input/WitnessDecodeBodyNormal.lean",
     "submission/InitECandidate/Solver/Input/WitnessDecodeSliceEntry.lean",
     "submission/InitECandidate/Solver/Input/WitnessDecodeSliceNormal.lean",
     "submission/InitECandidate/Solver/Input/WitnessDecodeSliceTrace.lean",
@@ -4267,6 +4269,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRecordInputs.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRecordNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRecordProgram.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessDecodeResult.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRootEnvironment.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRootProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRootTrace.lean",
@@ -7078,8 +7081,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63947,
-  "package_bytes": 2265602975,
+  "package_entries": 63950,
+  "package_bytes": 2265619172,
   "claim": {
     "K": "infinity"
   },

@@ -2720,6 +2720,7 @@
     "submission/InitECandidate/Solver/Input/RootAfterLookupOfEntry.lean",
     "submission/InitECandidate/Solver/Input/RootLookupCallTrace.lean",
     "submission/InitECandidate/Solver/Input/RootLookupOfEntry.lean",
+    "submission/InitECandidate/Solver/Input/RootMaterializeEntry.lean",
     "submission/InitECandidate/Solver/Input/RunAttemptConstructorInputs.lean",
     "submission/InitECandidate/Solver/Input/RunAttemptConstructorsTrace.lean",
     "submission/InitECandidate/Solver/Input/RunAttemptHeaderPrefix.lean",
@@ -4158,9 +4159,14 @@
     "submission/InitECandidate/Solver/Mpt/TrieWalkValuesRebase.lean",
     "submission/InitECandidate/Solver/Mpt/Value32Allocation.lean",
     "submission/InitECandidate/Solver/Mpt/Value32Memory.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessDecodeLookupProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRootEnvironment.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRootProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRootTrace.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessLookupGuardTrace.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessMaterializeCallTrace.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessMaterializeEnvironment.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessMaterializeProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WsAccountLeafAllocCost.lean",
     "submission/InitECandidate/Solver/Mpt/WsAccountLeafAllocValues.lean",
     "submission/InitECandidate/Solver/Mpt/WsAccountLeafCall.lean",
@@ -6927,8 +6933,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63796,
-  "package_bytes": 2264937821,
+  "package_entries": 63802,
+  "package_bytes": 2264953925,
   "claim": {
     "K": "infinity"
   },

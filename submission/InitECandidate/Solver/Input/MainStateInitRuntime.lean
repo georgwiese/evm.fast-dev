@@ -55,7 +55,8 @@ theorem Reached.state_init_runtime (input : Guest.InputBlob) (source post : PanS
     (CallNormal.continuation_lookup_other codeSource codeTarget "codedb" "nodedb" (.val (.word codeTable)) (by decide)).trans
       (CallNormal.continuation_lookup_same prepared nodeTarget "nodedb" (.val (.word heap)))
   have codeCell : current.locals.lookup (ofString "codedb")=some (.val (.word codeTable)) := CallNormal.continuation_lookup_same _ _ _ _
-  exact ⟨current,inner,⟨codeArray,heap,codeTable,currentHeap,nodeData,codeData,nodeCell,codeCell,heapCell,nodeBefore,codeBefore⟩,
+  have geometry:=codeReturned.toNormal.heap_arena codeSource codeTarget _ codeTable _ 2713714976#64 2713715176#64 2713717584#64 currentHeap heapCell
+  exact ⟨current,inner,⟨codeArray,heap,codeTable,currentHeap,nodeData,codeData,nodeCell,codeCell,heapCell,geometry.1,geometry.2,nodeBefore,codeBefore⟩,
     frame,currentInstalled,currentScalars,scratch,environment,continued⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors

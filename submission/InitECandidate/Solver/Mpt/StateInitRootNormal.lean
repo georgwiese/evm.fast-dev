@@ -22,6 +22,7 @@ theorem root_call_rich_normal (input : Guest.InputBlob) (source post : PanSemSta
     ∃ current inner node,
       RichOutput input heap.toNat nodes current (.val (.word node)) ∧
       current.locals.lookup (ofString "root")=some (.val (.word node)) ∧ StablePrefix source current heap.toNat ∧
+      current.code=source.code ∧
       (∀ key,key≠ofString "heap_ptr" → key≠ofString "scratch_ptr" → current.globals.lookup key=source.globals.lookup key) ∧
       evaluateHOLFiniteState current afterRoot=(some (.returned returned),inner) ∧ post=restore source "root" inner := by
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) rootArguments=
@@ -44,8 +45,9 @@ theorem root_call_rich_normal (input : Guest.InputBlob) (source post : PanSemSta
     exact output.1.of_erase input heap.toNat nodes target current childReturn rfl
   have currentRoot : current.locals.lookup (ofString "root")=some (.val (.word node)):=
     (Input.CallNormal.continuation_lookup_same source target "root" childReturn).trans (congrArg some valueEq)
-  refine ⟨current,inner,node,currentOutput,currentRoot,?_,?_,continued,endpoint⟩
+  refine ⟨current,inner,node,currentOutput,currentRoot,?_,?_,?_,continued,endpoint⟩
   · exact output.2
+  · exact (Input.evaluation_fields entry target WitnessDecodeRoot.body (some (.returned childReturn)) childRun).2.2.2
   · intro key notHeap notScratch
     have frame:=WitnessDecodeRoot.globals key source.code installed notHeap notScratch entry rfl
     rw [childRun] at frame

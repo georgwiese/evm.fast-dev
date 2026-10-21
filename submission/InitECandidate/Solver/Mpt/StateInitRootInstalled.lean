@@ -15,6 +15,7 @@ so installing the workspace root is allowed to change a word above them. -/
 theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (heap oldWs nodes rootHash codes emptyRoot : BitVec 64) (boundary : StateInitBoundary input source)
     (installed : Input.OriginalCode.Installed source.code)
+    (scalars : Input.OriginalScalarGlobals.Scalars source.globals)
     (wsCell : source.globals.lookup (ofString "ws")=some (.val (.word oldWs)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
     (nodesCell : source.locals.lookup (ofString "nodedb")=some (.val (.word nodes)))
@@ -28,6 +29,8 @@ theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSem
       RichOutput input frontier nodes current (.val (.word root)) ∧
       current.locals.lookup (ofString "root")=some (.val (.word root)) ∧
       current.globals.lookup (ofString "ws")=some (.val (.word heap)) ∧
+      Input.OriginalCode.Installed current.code ∧ Input.OriginalScalarGlobals.Scalars current.globals ∧
+      (∀ key,key≠ofString "heap_ptr" → key≠ofString "scratch_ptr" → current.globals.lookup key=(ready source heap nodes rootHash codes).globals.lookup key) ∧
       StablePrefix (ready source heap nodes rootHash codes) current frontier ∧
       FrozenWitnessDatabases input (QueryBranch.bind (installedRoot current heap root) "db" nodes) heap.toNat ∧
       evaluateHOLFiniteState (installedRoot current heap root) afterRootStore=(some (.returned returned),inner) ∧
@@ -59,10 +62,11 @@ theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSem
   have callerEmpty : caller.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)):=
     (fields.2.2.2 _ (by decide) (by decide)).trans emptyCell
   have callerScratch:=ready_scratch source heap nodes rootHash codes 2713714688#64 2701135872#64 scratch
-  obtain ⟨current,inner,root,output,currentRoot,stableMemory,globals,continued,endpoint⟩:=root_call_rich_normal input caller post nodes next rootHash emptyRoot
+  obtain ⟨current,inner,root,output,currentRoot,stableMemory,currentCode,globals,continued,endpoint⟩:=root_call_rich_normal input caller post nodes next rootHash emptyRoot
     callerBoundary installed nodesCell rootCell callerEmpty fields.2.2.1 (heapLower.trans geometry.2.2) callerScratch rootArena returned rootRun
   have currentWs : current.globals.lookup (ofString "ws")=some (.val (.word heap)):=
     (globals _ (by decide) (by decide)).trans fields.2.1
+  have currentInstalled : Input.OriginalCode.Installed current.code:=by rw [currentCode]; exact installed
   have workspaceBefore : heap.toNat+40≤next.toNat:=(PersistentAlloc.guards heap 40#64 arena.upper).2.2.1
   obtain ⟨tailRun,finalHeap,finalCell,registry,member⟩:=after_root_normal input current inner next.toNat nodes heap root output currentWs currentRoot arena aligned workspaceBefore returned continued
   have oldFrozen : FrozenWitnessDatabases input (QueryBranch.bind caller "db" nodes) heap.toNat:=
@@ -72,6 +76,15 @@ theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSem
       bind_lookup_same _ _ _,nodeKept.2,codeKept.2⟩
   have physical:=output.1
   obtain ⟨physicalHeap,physicalChild,physicalValue,physicalCell,physicalArena,physicalAligned,grows,physicalScratch,frozenFresh,owned⟩:=physical
+  have callerScalars:=ready_scalars source heap nodes rootHash codes scalars
+  have currentScalars : Input.OriginalScalarGlobals.Scalars current.globals:=by
+    intro key member
+    by_cases isHeap : key=ofString "heap_ptr"
+    · subst key; exact ⟨physicalHeap,physicalCell⟩
+    · by_cases isScratch : key=ofString "scratch_ptr"
+      · subst key; exact physicalScratch
+      · obtain ⟨word,cell⟩:=callerScalars key member
+        exact ⟨word,(globals key isHeap isScratch).trans cell⟩
   obtain ⟨freshCodeArray,freshNodes,freshCodes,freshNodeData,freshCodeData,freshDb,freshNodeBefore,freshCodeBefore⟩:=frozenFresh
   have domain : current.memaddrs=caller.memaddrs:=freshNodeData.domain.trans nodeKept.1.domain.symm
   have endian : current.be=caller.be:=freshNodeData.little.trans nodeKept.1.little.symm
@@ -84,7 +97,7 @@ theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSem
       intro query lower upper
       have away : query≠heap+24#64:=by intro equal; have numeric:=congrArg BitVec.toNat equal; rw [addressNumber] at numeric; omega
       exact if_neg away)
-  exact ⟨arena,current,inner,root,output,currentRoot,currentWs,stableMemory,installedFrozen,tailRun,endpoint,finalHeap,finalCell,registry,member⟩
+  exact ⟨arena,current,inner,root,output,currentRoot,currentWs,currentInstalled,currentScalars,globals,stableMemory,installedFrozen,tailRun,endpoint,finalHeap,finalCell,registry,member⟩
 
 end InitECandidate.Solver.Mpt.StateInit
 

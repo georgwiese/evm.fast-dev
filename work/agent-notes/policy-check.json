@@ -1875,8 +1875,10 @@
     "submission/InitECandidate/Solver/Input/FixedHashAllocation.lean",
     "submission/InitECandidate/Solver/Input/FixedHashBody.lean",
     "submission/InitECandidate/Solver/Input/FixedHashCall.lean",
+    "submission/InitECandidate/Solver/Input/FixedHashMemory.lean",
     "submission/InitECandidate/Solver/Input/FixedHashPipeline.lean",
     "submission/InitECandidate/Solver/Input/FixedHashProgram.lean",
+    "submission/InitECandidate/Solver/Input/FixedHashStepMemory.lean",
     "submission/InitECandidate/Solver/Input/FixedHashSteps.lean",
     "submission/InitECandidate/Solver/Input/FixedHashTail.lean",
     "submission/InitECandidate/Solver/Input/FixedList/CallerNormal.lean",
@@ -2370,6 +2372,8 @@
     "submission/InitECandidate/Solver/Input/RequestListHashBranches.lean",
     "submission/InitECandidate/Solver/Input/RequestListHashCall.lean",
     "submission/InitECandidate/Solver/Input/RequestListHashLoop.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashLoopMemory.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashMemory.lean",
     "submission/InitECandidate/Solver/Input/RequestListHashProgram.lean",
     "submission/InitECandidate/Solver/Input/RequestListHashRound.lean",
     "submission/InitECandidate/Solver/Input/RequestListHashStep.lean",
@@ -6602,8 +6606,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63470,
-  "package_bytes": 2263441020,
+  "package_entries": 63474,
+  "package_bytes": 2263474731,
   "claim": {
     "K": "infinity"
   },

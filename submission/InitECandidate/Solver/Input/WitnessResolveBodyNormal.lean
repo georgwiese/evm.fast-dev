@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.WitnessResolveNormalFrame
+import InitECandidate.Solver.Input.WitnessResolveResult
 import InitECandidate.Solver.Input.WitnessStepParsedNormal
 import InitECandidate.Solver.Mpt.WitnessResolveSuffixNormal
 
@@ -21,14 +22,7 @@ theorem resolve_body_normal (input : Guest.InputBlob) (source post : PanSemState
     (normal : evaluateHOLFiniteState source (Mpt.WitnessStep.body .resolve)=(some (.returned value),post)) :
     ∃ heap,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
       AllocatedBytes.Arena heap 0 ∧ heap.toNat%8=0 ∧ ResolveFrame source post heap cursor limit ∧
-      ((value=.rStruct [.val (.word 0#64),.val (.word 0#64),.val (.word 0#64),.val (.word 0#64)]) ∨
-       (value=.rStruct [.val (.word 0#64),.val (.word heap),.val (.word 0#64),.val (.word 0#64)] ∧
-         AllocatedBytes.Arena heap 32 ∧ post.memory heap=.word 0#64 ∧
-         ∃ hash,2713731432≤hash.toNat ∧ hash.toNat+32≤db.toNat ∧ post.memory (heap+24#64)=.word hash) ∨
-       ∃ nextPointer nextLength pending,
-         value=.rStruct [.val (.word 1#64),.val (.word nextPointer),.val (.word nextLength),.val (.word pending)] ∧
-         nextLength.toNat≤1024 ∧ 2713731432≤nextPointer.toNat ∧ nextPointer.toNat+nextLength.toNat≤db.toNat ∧
-         (pending=0#64 ∨ 2713731432≤pending.toNat ∧ pending.toNat+32≤db.toNat)) := by
+      ResolveResult post db heap value := by
   have originalBoundary:=boundary
   obtain ⟨codeArray,nodes,codes,heap,nodeDatabase,codeDatabase,nodeCell,heapCell,heapArena,heapAligned,nodeBefore,codeBefore⟩:=boundary
   have nodeEq : nodes=db:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (nodeCell.symm.trans dbCell)))

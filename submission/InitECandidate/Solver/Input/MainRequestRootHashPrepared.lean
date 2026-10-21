@@ -8,6 +8,7 @@ open Flapjack.Basis.Pure.MlString
 /-- Current main caller facts derived from original startup/copy/decoder
 provenance and its real root allocation. No later hash outcome is included. -/
 structure Prepared (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64 Guest.HostMemory) (root : BitVec 64) (counts : Nat→BitVec 64) : Prop where
+  originHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word root))
   image : (description input counts).Image current
   layout : (description input counts).Layout inputPointer.toNat root.toNat (input.length%2^64)
   geometry : (description input counts).RuntimeGeometry (input.length%2^64) (PersistentAlloc.rounded root 32#64)
@@ -35,6 +36,7 @@ theorem prepared (input : Guest.InputBlob) (before copiedSource current : PanSem
   obtain ⟨mapped,scratch,output,number⟩ := geometry input (DecoderSetup.entered copiedSource input) current counts root actual bounded heap requestLayout requestImage
   have fields := RequestHash.entered_fields input (DecoderSetup.entered copiedSource input) current root actual
   refine ⟨counts,{
+    originHeap := heap
     image := image input (DecoderSetup.entered copiedSource input) current counts actual domain requestImage
     layout := mapped
     geometry := scratch

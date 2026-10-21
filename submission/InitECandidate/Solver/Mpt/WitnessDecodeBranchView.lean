@@ -64,7 +64,7 @@ theorem branch_view_normal (source target : PanSemStateFiniteExact 64 Guest.Host
   have countLength : items.length=17:=by rw [←countExact,countEq]; rfl
   have view : WitnessRecord.View target (WitnessRecord.pointer cursor) db data:=
     ⟨recordArena,recordAligned,by omega,arrayFloor,by change 2713731432≤heap.toNat; omega,actualCells,currentRows,countLength,
-      parentBound,parentLower,parentBeforeDb,payloadLower,payloadUpper,nodeArena,heapAligned,tag⟩
+      parentBound,parentLower,parentBeforeDb,payloadLower,payloadUpper,⟨nodeArena,heapAligned,tag⟩,beforeArray⟩
   have checked:=PersistentAlloc.guards heap 176#64 nodeArena.upper
   have grows : heap.toNat+176≤next.toNat:=checked.2.2.1
   have nextArena : AllocatedBytes.Arena next 0:=⟨by have lower:=heapArena.lower; omega,by have upper:=checked.2.2.2.1; omega⟩

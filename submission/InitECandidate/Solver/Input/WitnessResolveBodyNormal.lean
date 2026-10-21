@@ -61,7 +61,14 @@ theorem resolve_body_normal (input : Guest.InputBlob) (source post : PanSemState
     have hashCell : post.memory (heap+24#64)=.word (pointer+header):=by
       rw [memory]
       exact Mpt.WitnessResolve.hash_allocated_hash ready heap (pointer+header)
-    exact ⟨heap,heapCell,heapArena,heapAligned,lift frame,Or.inr (Or.inl ⟨valueEq,nodeArena,tag,pointer+header,(hash_span thirtyTwo).1,(hash_span thirtyTwo).2,hashCell⟩)⟩
+    have finalGlobals:=congrArg PanSemStateFiniteExact.globals (finalPure.trans pure)
+    change post.globals=(Mpt.WitnessResolve.hashAllocated ready heap (pointer+header)).globals at finalGlobals
+    obtain ⟨finalCell,finalArena,finalAligned,grows⟩:=Mpt.WitnessResolve.hash_allocated_heap ready heap (pointer+header) nodeArena
+    have actualCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 32#64))):=by
+      rw [finalGlobals]
+      exact finalCell
+    exact ⟨heap,heapCell,heapArena,heapAligned,lift frame,
+      Or.inr (Or.inl ⟨valueEq,nodeArena,tag,⟨pointer+header,(hash_span thirtyTwo).1,(hash_span thirtyTwo).2,hashCell⟩,_,actualCell,finalArena,finalAligned,grows⟩)⟩
   · have pendingSpan : pending=0#64 ∨ 2713731432≤pending.toNat ∧ pending.toNat+32≤db.toNat:=by
       rcases pendingEq with zero|⟨same,thirtyTwo⟩
       · exact Or.inl zero

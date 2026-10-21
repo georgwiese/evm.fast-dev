@@ -59,7 +59,7 @@ theorem View.hashed (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       rw [StoreWord.put,if_neg away]
       exact old.2.2
   exact ⟨view.arena,view.aligned,view.ceiling,view.arrayFloor,view.payloadFloor,currentCells,currentRows,view.count,
-    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,owned⟩
+    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,owned,view.separated⟩
 
 theorem View.hash_preserves_previous (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (record db hash : BitVec 64) (data : Description) (view : View source record db data) :

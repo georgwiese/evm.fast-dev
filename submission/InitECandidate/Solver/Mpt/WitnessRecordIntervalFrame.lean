@@ -38,7 +38,7 @@ theorem View.interval_frame (source target : PanSemStateFiniteExact 64 Guest.Hos
         omega
       exact ⟨old.1,old.2.1,(memory node first last).trans old.2.2⟩
   exact ⟨view.arena,view.aligned,view.ceiling,view.arrayFloor,view.payloadFloor,cells,rows,view.count,
-    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,owned⟩
+    view.parentBound,view.parentLower,view.parentBeforeDb,view.payloadLower,view.payloadUpper,owned,view.separated⟩
 
 end InitECandidate.Solver.Mpt.WitnessRecord
 

@@ -42,6 +42,12 @@ def Description.cells (data : Description) : List (Nat×BitVec 64):=
 def Description.BeforeHeap (data : Description) (frontier : Nat) : Prop:=
   data.array.toNat+16*data.items.length≤frontier ∧ data.payload.endAddress≤frontier
 
+/-- A branch's actual node is allocated after its row array. Its child
+stores therefore cannot corrupt the rows used by later resolver calls. -/
+def Description.Separated (data : Description) : Prop:=match data.payload with
+  | .extension ..=>True
+  | .branch node _ _=>data.array.toNat+16*data.items.length≤node.toNat
+
 theorem Description.cells_geometry (data : Description) :
     ∀ entry∈data.cells,0<entry.1 ∧ entry.1+8≤88 ∧ entry.1%8=0 := by
   cases payloadEq : data.payload <;> simp [Description.cells,payloadEq]
@@ -64,6 +70,7 @@ structure View (source : PanSemStateFiniteExact 64 Guest.HostMemory) (record db 
   payloadLower : data.pointer.toNat≤data.listPointer.toNat
   payloadUpper : data.listPointer.toNat+data.bytes≤data.pointer.toNat+data.length.toNat
   owned : data.payload.Owned source
+  separated : data.Separated
 
 theorem Description.BeforeHeap.mono (data : Description) (first second : Nat) (before : data.BeforeHeap first) (grows : first≤second) : data.BeforeHeap second:=
   ⟨before.1.trans grows,before.2.trans grows⟩

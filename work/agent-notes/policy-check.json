@@ -4251,6 +4251,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeExtensionNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeExtensionView.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeGlobals.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessDecodeLeafBodyNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeLeafCells.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeLeafNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeLeafView.lean",
@@ -4258,6 +4259,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeMemory.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeNormalFrame.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodePairCost.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessDecodePairNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodePairPrefixNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodePathNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeProgram.lean",
@@ -4877,6 +4879,7 @@
     "submission/InitECandidate/Solver/Rlp/ItemBodyFrame.lean",
     "submission/InitECandidate/Solver/Rlp/ItemCallEncoding.lean",
     "submission/InitECandidate/Solver/Rlp/ItemCallFrame.lean",
+    "submission/InitECandidate/Solver/Rlp/ItemCallGlobalsNormal.lean",
     "submission/InitECandidate/Solver/Rlp/ItemCasePrices.lean",
     "submission/InitECandidate/Solver/Rlp/ItemControl.lean",
     "submission/InitECandidate/Solver/Rlp/ItemCost.lean",
@@ -7075,8 +7078,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63944,
-  "package_bytes": 2265581192,
+  "package_entries": 63947,
+  "package_bytes": 2265602975,
   "claim": {
     "K": "infinity"
   },

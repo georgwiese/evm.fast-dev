@@ -21,7 +21,7 @@ theorem Inputs.put_global (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   exact ⟨actual.installed,environment,
     (Input.putGlobal.lookup_other source name word _ (Ne.symm different.2.2.2)).trans actual.scratchGlobal,actual.little,
     (Input.putGlobal.lookup_other source name word _ (Ne.symm different.1)).trans actual.heapGlobal,
-    actual.heapLower,actual.heapAligned,actual.room,actual.records,actual.pointers,actual.lengths,actual.buffers,actual.before,actual.scratchAligned,actual.sizes,actual.sourceLower,actual.sourceBefore⟩
+    actual.heapLower,actual.heapAligned,actual.room,actual.records,actual.pointers,actual.lengths,actual.buffers,actual.before,actual.scratchAligned,actual.sizes,actual.sourceLower,actual.sourceBefore,actual.heapAfterScratch⟩
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

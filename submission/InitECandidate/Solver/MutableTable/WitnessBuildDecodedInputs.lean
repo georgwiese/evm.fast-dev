@@ -32,7 +32,7 @@ theorem Inputs.of_decoded (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   have arrayOf (positive : Input.VarList.decodedCount input start length≠0) : Input.VarList.decodedArray array length=array := by
     have nonempty : length≠0 := by intro empty; simp [Input.VarList.decodedCount,empty] at positive
     simp [Input.VarList.decodedArray,nonempty]
-  refine ⟨installed,environment,scratchGlobal,little,heapGlobal,heapLower,heapAligned,room,?_,?_,?_,buffers,?_,scratchAligned,sizes,?_,?_⟩
+  refine ⟨installed,environment,scratchGlobal,little,heapGlobal,heapLower,heapAligned,room,?_,?_,?_,buffers,?_,scratchAligned,sizes,?_,?_,?_⟩
   · intro positive
     have nonempty : length≠0 := by intro empty; simp [Input.VarList.decodedCount,empty] at positive
     obtain ⟨countPositive,lower,aligned,upper,afterInput⟩ := Input.VarList.Records.array_geometry source input pointer array start length records nonempty
@@ -55,6 +55,9 @@ theorem Inputs.of_decoded (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     have before:=geometry.2.2.2
     change (Input.VarList.recordPointer input pointer start index).toNat+
       (Input.VarList.recordLength input start length (Input.VarList.decodedCount input start length) index).toNat≤heap.toNat
+    omega
+
+  · have before:=buffersBefore.2.2
     omega
 
 end InitECandidate.Solver.MutableTable.WitnessBuild

@@ -15,7 +15,7 @@ theorem Database.of_fields (source target : PanSemStateFiniteExact 64 Guest.Host
     ⟨by intro index inside; rw [←memory]; exact rows.pointers index inside,
       by intro index inside; rw [←memory]; exact rows.lengths index inside⟩
   exact ⟨domain.symm.trans actual.domain,endian.symm.trans actual.little,actual.sizes,
-    ⟨bits,stored,input,logical,lower,upper,capacity,ready,finalBuilt,history,length,finalRows⟩,actual.arenas,actual.sourceLower,actual.sourceBefore⟩
+    ⟨bits,stored,input,logical,lower,upper,capacity,ready,finalBuilt,history,length,finalRows⟩,actual.arenas,actual.sourceLower,actual.sourceBefore,actual.footprintFloor⟩
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

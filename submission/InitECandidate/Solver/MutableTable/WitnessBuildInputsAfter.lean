@@ -32,7 +32,7 @@ theorem Inputs.after_build (source target : PanSemStateFiniteExact 64 Guest.Host
   refine ⟨current,heapLower,heapUpper,⟨?_,first.environment source target firstArray heap firstCount stp pad scratch actual.environment,
     (globals _ (by decide)).trans actual.scratchGlobal,endian.trans actual.little,heapCell,by have h:=actual.heapLower; omega,heapAligned,by omega,?_,?_,?_,
     actual.buffers,actual.before,actual.scratchAligned,actual.sizes,actual.sourceLower,
-    fun index inside=>(actual.sourceBefore index inside).trans heapLower⟩⟩
+    (fun index inside=>(actual.sourceBefore index inside).trans heapLower),actual.heapAfterScratch.trans heapLower⟩⟩
   · rw [code]
     exact actual.installed
   · intro positive

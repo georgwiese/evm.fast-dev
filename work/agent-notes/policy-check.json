@@ -2930,6 +2930,8 @@
     "submission/InitECandidate/Solver/Input/Witness/Program.lean",
     "submission/InitECandidate/Solver/Input/Witness/StoredListNormal.lean",
     "submission/InitECandidate/Solver/Input/Witness/StoredListTrace.lean",
+    "submission/InitECandidate/Solver/Input/WitnessDecodeArrayEntry.lean",
+    "submission/InitECandidate/Solver/Input/WitnessDecodeArrayTrace.lean",
     "submission/InitECandidate/Solver/Input/WitnessDecodeSliceEntry.lean",
     "submission/InitECandidate/Solver/Input/WitnessDecodeSliceTrace.lean",
     "submission/InitECandidate/Solver/Input/WitnessResolveBodyCost.lean",
@@ -4214,6 +4216,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessCoreProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeAllocationCost.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeBranchNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessDecodeControl.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeExtensionNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeLeafNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeLookupProgram.lean",
@@ -4226,6 +4229,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRootProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRootTrace.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRowReads.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessDecodeRows.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeStringTrace.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessLookupGuardTrace.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessMaterializeCallTrace.lean",
@@ -4821,6 +4825,7 @@
     "submission/InitECandidate/Solver/Rlp/ItemEncodingNormal.lean",
     "submission/InitECandidate/Solver/Rlp/ItemEncodingReturns.lean",
     "submission/InitECandidate/Solver/Rlp/ItemEntry.lean",
+    "submission/InitECandidate/Solver/Rlp/ItemFrameTrace.lean",
     "submission/InitECandidate/Solver/Rlp/ItemLongEncoding.lean",
     "submission/InitECandidate/Solver/Rlp/ItemLongFrame.lean",
     "submission/InitECandidate/Solver/Rlp/ItemLongNormal.lean",
@@ -7011,8 +7016,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63880,
-  "package_bytes": 2265289755,
+  "package_entries": 63885,
+  "package_bytes": 2265311869,
   "claim": {
     "K": "infinity"
   },

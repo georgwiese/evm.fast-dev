@@ -28,14 +28,15 @@ theorem table_populate_variable (source : PanSemStateFiniteExact 64 Guest.HostMe
         (some (.returned (.val (.word (BitVec.ofNat 64 plan.table)))),target) ∧
       Layout32.Built bits target plan scratch count input logical ∧ History plan input ∧ input.length=plan.count ∧ Records target plan slices ∧
       KeccakAbsorb.hashControl target=KeccakAbsorb.hashControl (prepared source plan) ∧
-      target.clock≤source.clock ∧ source.clock-tableVariablePrice slices plan≤target.clock := by
+      target.clock≤source.clock ∧ source.clock-tableVariablePrice slices plan≤target.clock ∧
+      (∀ query,Keccak256.Protected stp pad scratch query→query.toNat<plan.table→target.memory query=source.memory query) := by
   let initial:=prepared source plan
   have domain:=context.environment.domain
   have setupRun:=prepare_execute source plan ready domain shape capLocal heapGlobal tableCode allocCode context.environment.zeroCode
     (by unfold tableVariablePrice at enough;omega)
   obtain ⟨built,locals,recordsData,initialClock⟩:=prepare_data source plan ready domain shape context.little bits scratch recordsLocal countLocal slices records
   have initialContext:=prepared_context source plan slices stp pad scratch maximum context
-  obtain ⟨count,input,logical,filled,loopRun,finalBuilt,history,length,finalLocals,finalRecords,control,upper,lower,other⟩:=
+  obtain ⟨count,input,logical,filled,loopRun,finalBuilt,history,length,finalLocals,finalRecords,control,upper,lower,other,loopMemory⟩:=
     record_loop_variable initial plan ready bits small power scratch stp pad slices maximum 0 plan.count 0 [] (fun _=>none)
       (by simp) rfl built .empty locals recordsData initialContext (by change _≤initial.clock;rw [initialClock];unfold tableVariablePrice at enough;omega)
   have returned : evaluateHOLFiniteState filled (.return (localVar "t"))=
@@ -48,7 +49,7 @@ theorem table_populate_variable (source : PanSemStateFiniteExact 64 Guest.HostMe
   let target:=finishScope source plan (emptyLocalsHOLFinite filled)
   have nextBuilt:=Layout32.built_fields filled target plan bits scratch count input logical rfl rfl rfl finalBuilt
   have nextRecords:=Records.of_earlier filled target plan ready slices (by intros;rfl) finalRecords
-  refine ⟨count,input,logical,target,?_,nextBuilt,history,length,nextRecords,control,?_,?_⟩
+  refine ⟨count,input,logical,target,?_,nextBuilt,history,length,nextRecords,control,?_,?_,?_⟩
   · rw [setupRun,completed]
   · change filled.clock≤source.clock
     change filled.clock≤initial.clock at upper
@@ -59,6 +60,11 @@ theorem table_populate_variable (source : PanSemStateFiniteExact 64 Guest.HostMe
     rw [initialClock] at lower
     unfold tableVariablePrice
     omega
+
+  · intro query kept earlier
+    change filled.memory query=source.memory query
+    rw [loopMemory query kept earlier]
+    exact TableNew.result_earlier source.memory source.be plan ready query earlier
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

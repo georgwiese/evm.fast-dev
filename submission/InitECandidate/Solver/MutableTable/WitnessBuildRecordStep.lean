@@ -34,7 +34,8 @@ theorem record_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (plan 
       Locals target plan (index+1) ∧ Records target plan slices ∧
       KeccakAbsorb.hashControl target=KeccakAbsorb.hashControl source ∧ target.clock≤source.clock ∧
       source.clock-recordPrice (slices index).2.toNat index≤target.clock ∧
-      (∀ name : MlS,ofString "i"≠name→target.locals.lookup name=source.locals.lookup name) := by
+      (∀ name : MlS,ofString "i"≠name→target.locals.lookup name=source.locals.lookup name) ∧
+      (∀ query,Keccak256.Protected stp pad scratch query→query.toNat<plan.table→target.memory query=source.memory query) := by
   have args:=hash_arguments source plan ready domain slices records index inside locals scratch global
   obtain ⟨hashed,hashRun,hashLocals,hashUpper,hashLower,hashControl,hashMemory⟩:=Keccak256.allocated_call source Constructor.hashArguments stp
     (slices index).1 pad scratch (slices index).2.toNat args keccakCode environment buffers (by unfold recordPrice at enough;omega)
@@ -71,7 +72,7 @@ theorem record_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (plan 
       (by rw [codes];exact memeqCode) (by rw [codes];exact findCode) (by rw [codes];exact setCode)
       (by unfold recordPrice at enough;omega)
   refine ⟨key,slot,nextCount,target,slotInside,countLower,countUpper,?_,next,finalLocals,
-    Records.of_earlier hashed target plan ready slices earlier hashRecords,control.trans hashControl,?_,?_,?_⟩
+    Records.of_earlier hashed target plan ready slices earlier hashRecords,control.trans hashControl,?_,?_,?_,?_⟩
   · rw [recordBody,StateSteps.next_sequence source hashed _ _ hashRun hashUpper]
     exact suffixRun
   · rw [clock];omega
@@ -80,6 +81,9 @@ theorem record_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (plan 
     omega
   · intro name different
     rw [others name different,hashLocals]
+
+  · intro query kept earlierQuery
+    exact (earlier query earlierQuery).trans (hashMemory query kept)
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

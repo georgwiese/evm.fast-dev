@@ -44,7 +44,7 @@ theorem record_loop (source : PanSemStateFiniteExact 64 Guest.HostMemory) (plan 
     have entryLocals : Locals entry plan index:=⟨locals.table,locals.records,locals.count,locals.index⟩
     have entryContext:=Context.of_control source entry plan slices stp pad scratch maximum rfl context
     have currentBound:=recordPrice_mono (slices index).2.toNat maximum index plan.count (context.lengthBound index inside) (Nat.le_of_lt inside)
-    obtain ⟨key,slot,nextCount,next,slotInside,countLower,countUpper,bodyRun,bodyBuilt,bodyLocals,bodyRecords,bodyControl,bodyUpper,bodyLower,bodyOther⟩:=
+    obtain ⟨key,slot,nextCount,next,slotInside,countLower,countUpper,bodyRun,bodyBuilt,bodyLocals,bodyRecords,bodyControl,bodyUpper,bodyLower,bodyOther,bodyMemory⟩:=
       record_step entry plan ready context.environment.domain scratch count index input logical bits small power entryBuilt processed inside entryLocals slices entryRecords stp pad
         entryContext.global entryContext.keccakCode entryContext.environment (context.buffers index inside) context.before context.aligned context.little
         entryContext.hashCode entryContext.copyCode entryContext.insertCode entryContext.memeqCode entryContext.findCode entryContext.setCode

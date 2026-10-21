@@ -1945,6 +1945,8 @@
     "submission/InitECandidate/Solver/Input/ConstructorRuntimeScalars.lean",
     "submission/InitECandidate/Solver/Input/ContinuingDeclarationEntry.lean",
     "submission/InitECandidate/Solver/Input/ControlContinue.lean",
+    "submission/InitECandidate/Solver/Input/Copy32Bound.lean",
+    "submission/InitECandidate/Solver/Input/Copy32Flow.lean",
     "submission/InitECandidate/Solver/Input/CopyAwaySubrange.lean",
     "submission/InitECandidate/Solver/Input/CopyBytes.lean",
     "submission/InitECandidate/Solver/Input/CopyDomain.lean",
@@ -2743,6 +2745,7 @@
     "submission/InitECandidate/Solver/Input/RootBoundaryMemoryFrame.lean",
     "submission/InitECandidate/Solver/Input/RootBoundaryScratchFrame.lean",
     "submission/InitECandidate/Solver/Input/RootBoundarySlicesFrame.lean",
+    "submission/InitECandidate/Solver/Input/RootDecoderCost.lean",
     "submission/InitECandidate/Solver/Input/RootLookupCallTrace.lean",
     "submission/InitECandidate/Solver/Input/RootLookupOfEntry.lean",
     "submission/InitECandidate/Solver/Input/RootMaterializeEntry.lean",
@@ -4334,6 +4337,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeRows.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeSnapshotFrame.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeStringTrace.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessDecodeSuffixCost.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeValueCost.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeValueNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessLookupGuardTrace.lean",
@@ -7145,8 +7149,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64014,
-  "package_bytes": 2266007972,
+  "package_entries": 64018,
+  "package_bytes": 2266029466,
   "claim": {
     "K": "infinity"
   },

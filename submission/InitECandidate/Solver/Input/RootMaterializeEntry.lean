@@ -28,6 +28,7 @@ theorem materialize_entry_of_root (input : Guest.InputBlob) (source post : PanSe
       entry.clock≤source.clock ∧ source.clock-entry.clock≤6*nodeCount input+10 ∧
       evaluateHOLFiniteState entry Mpt.WitnessMaterialize.body=(childResult,target) ∧
       Mpt.WitnessDecodeRoot.MaterializeResumes caller target inner childResult outcome ∧
+      caller.locals.lookup (ofString "root_hash")=some (.val (.word root)) ∧
       post=QueryBranch.restore source "is_empty" (QueryBranch.restore lookupSource "r" inner) := by
   rcases root_after_lookup_of_entry input source post root boundary installed scalars rootCell scratch environment outcome run with stopped|lookup
   · exact Or.inl (by omega)
@@ -55,7 +56,7 @@ theorem materialize_entry_of_root (input : Guest.InputBlob) (source post : PanSe
         have entryScalars : OriginalScalarGlobals.Scalars entry.globals := by rw [globals]; exact scalars
         exact Or.inr ⟨lookupSource,caller,nodes,slice,index,entry,target,childResult,inner,data,wholePure,entryInstalled,entryScalars,dbEntry,pEntry,nEntry,
           indexInside,sliceEq,size,arena,lower,before,frame.scratch source entry _ _ scratch,frame.hash_environment source entry _ _ environment,
-          by omega,by omega,childRun,resumes,endpoint⟩
+          by omega,by omega,childRun,resumes,callerRoot,endpoint⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

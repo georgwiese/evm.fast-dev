@@ -57,7 +57,7 @@ theorem core_resolve_call_normal (input : Guest.InputBlob) (source post : PanSem
   have readyFrame : ResolveFrame source ready heap cursor limit:=
     (bodyFrame.prefix source entry built heap cursor limit rfl rfl rfl (fun _=>rfl) (fun _ _=>rfl)).of_erase source ready built heap cursor limit rfl
   have readyView:=readyFrame.record_view source ready heap cursor limit record db data view before recordAbove below heapLower
-  have readyResult:=result.of_memory built ready db heap returned rfl
+  have readyResult:=result.of_fields built ready db heap returned rfl rfl
   exact ⟨built,returned,inner,readyFrame,readyView,readyResult,CallNormal.continuation_lookup_same _ _ _ _,continued,endpoint⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors

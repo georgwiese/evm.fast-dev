@@ -70,7 +70,7 @@ theorem extension_view_normal (source target : PanSemStateFiniteExact 64 Guest.H
       (WitnessRecord.pointer cursor+BitVec.ofNat 64 field.offset,field.value.word) (RecordKind.fields_distinct .extension words _) (List.mem_map.mpr ⟨field,inFields,rfl⟩)
   have view : WitnessRecord.View target (WitnessRecord.pointer cursor) db data:=
     ⟨recordArena,recordAligned,by omega,arrayFloor,nibbleFloor,actualCells,currentRows,count,parentBound,parentLower,parentBeforeDb,payloadLower,payloadUpper,
-      positive,nibbleBound,nibbleArena⟩
+      ⟨positive,nibbleBound,nibbleArena⟩,trivial⟩
   have before : data.BeforeHeap heap.toNat:=⟨beforeArray,nibbleBefore⟩
   have globals:=congrArg PanSemStateFiniteExact.globals post
   change target.globals=(Arenas.post source .down cursor 88#64).globals at globals

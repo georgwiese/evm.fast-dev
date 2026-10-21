@@ -16,7 +16,9 @@ structure Normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (a
     (stp pad scratch : BitVec 64) : Prop where
   table : ∃ bits nextCount input logical,
     let plan:=Constructor.allocationPlan (effectiveRecords array heap count) heap.toNat count (2^bits)
-    2≤bits ∧ bits≤32 ∧ 2^bits≤4*count+4 ∧ Layout32.Built bits target plan scratch nextCount input logical ∧ History plan input ∧ input.length=count
+    2≤bits ∧ bits≤32 ∧ 2^bits≤4*count+4 ∧ Layout32.Built bits target plan scratch nextCount input logical ∧ History plan input ∧ input.length=count ∧
+    AllocatedLayout.Ready plan ∧ target.globals.lookup (ofString "heap_ptr")=
+      some (.val (.word (BitVec.ofNat 64 (plan.table+72+57*plan.capacity+plan.padding))))
   control : ∃ next,heap.toNat≤next ∧ next≤heap.toNat+72+57*(4*count+4)+7 ∧ next%8=0 ∧
     KeccakAbsorb.hashControl target=KeccakAbsorb.hashControl {source with globals:=source.globals.update (ofString "heap_ptr",.val (.word (BitVec.ofNat 64 next)))}
   memory : ∀ query,Keccak256.Protected stp pad scratch query→query.toNat<heap.toNat→target.memory query=source.memory query
@@ -49,18 +51,27 @@ theorem callee_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
   · obtain ⟨zero,ready⟩ := empty
     obtain ⟨valueEq,built,ffi,globals,memory,forward,cost,control⟩ := empty_normal_any_clock entry target heap.toNat scratch ready value normal
     refine ⟨by simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using valueEq,?_,?_,?_⟩
-    · refine ⟨2,0,[],fun _=>none,by decide,by decide,?_,?_,.empty,?_⟩
+    · refine ⟨2,0,[],fun _=>none,by decide,by decide,?_,?_,.empty,?_,?_,?_⟩
       · rw [zero]; decide
       · simpa [effectiveRecords,zero] using built
       · simp [zero]
+      · simpa only [effectiveRecords,zero,↓reduceIte,show (2:Nat)^2=4 from rfl] using Constructor.allocation_ready heap.toNat heap.toNat 0 4 actual.heapLower (by omega)
+          actual.heapAligned actual.heapAligned (by have h:=actual.room; rw [zero] at h; exact h) (by decide) (by decide) (Or.inl rfl)
+      · rw [globals]
+        simp [effectiveRecords,zero,Constructor.allocationPlan,Constructor.padding,HolFiniteMapExact.lookup_update,FUPDATE]
     · exact ⟨heap.toNat+304,by omega,by rw [zero]; omega,by have h:=actual.heapAligned; omega,control⟩
     · intro query kept earlier
       exact memory query earlier
   · obtain ⟨nonempty,ready⟩ := ready
-    obtain ⟨valueEq,bits,nextCount,input,logical,lower,upper,built,history,length,rows,control,forward,cost,capacity,memory⟩ :=
+    obtain ⟨valueEq,bits,nextCount,input,logical,lower,upper,built,history,length,rows,control,forward,cost,capacity,memory,layoutReady⟩ :=
       normal_any_clock entry target array.toNat heap.toNat count maximum slices stp pad scratch ready value normal
     refine ⟨by simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using valueEq,?_,?_,memory⟩
-    · exact ⟨bits,nextCount,input,logical,lower,upper,capacity,by simpa only [effectiveRecords,if_neg nonempty] using built,by simpa only [effectiveRecords,if_neg nonempty] using history,length⟩
+    · refine ⟨bits,nextCount,input,logical,lower,upper,capacity,by simpa only [effectiveRecords,if_neg nonempty] using built,by simpa only [effectiveRecords,if_neg nonempty] using history,length,?_,?_⟩
+      · simpa only [effectiveRecords,if_neg nonempty] using layoutReady
+      · have globals:=congrArg PanSemStateFiniteExact.globals control
+        change target.globals=source.globals.update (ofString "heap_ptr",.val (.word (BitVec.ofNat 64 (heap.toNat+72+57*(2^bits)+Constructor.padding (2^bits))))) at globals
+        rw [globals]
+        simp [effectiveRecords,nonempty,Constructor.allocationPlan,HolFiniteMapExact.lookup_update,FUPDATE]
     · let next:=heap.toNat+72+57*(2^bits)+Constructor.padding (2^bits)
       have padding:=Constructor.padding_bound (2^bits)
       have aligned : next%8=0 := by

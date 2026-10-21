@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 6850,
+  "solver_modules": 6859,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 16,
@@ -53,7 +53,7 @@
     "LocCost": 1,
     "MemoryCost": 1,
     "Mpt": 326,
-    "MutableTable": 448,
+    "MutableTable": 457,
     "NopBound": 1,
     "NopCost": 1,
     "NopCostTight": 1,

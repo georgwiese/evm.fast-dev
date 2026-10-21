@@ -4234,7 +4234,12 @@
     "submission/InitECandidate/Solver/Mpt/TrieWalkValuesRebase.lean",
     "submission/InitECandidate/Solver/Mpt/Value32Allocation.lean",
     "submission/InitECandidate/Solver/Mpt/Value32Memory.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreBranchAdvance.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreBranchChild.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreBranchCounters.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreBranchNext.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreBranchPrefix.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreBranchValueRows.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreDecodeProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreDecodeResume.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreDecodeScope.lean",
@@ -4296,6 +4301,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessMptWrapperTrace.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessRecordArena.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessRecordChild.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessRecordCounter.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessRecordFrame.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessRecordHash.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessRecordIntervalFrame.lean",
@@ -7090,8 +7096,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63959,
-  "package_bytes": 2265667155,
+  "package_entries": 63965,
+  "package_bytes": 2265703137,
   "claim": {
     "K": "infinity"
   },

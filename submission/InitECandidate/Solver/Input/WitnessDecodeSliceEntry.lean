@@ -15,6 +15,10 @@ structure DecodeSliceEntry (input : Guest.InputBlob)
   extent : header.toNat+payload.toNat=length.toNat
   pointerNumber : (pointer+header).toNat=pointer.toNat+header.toNat
   sourceHeap : origin.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+  inputBeforeHeap : pointer.toNat+length.toNat≤heap.toNat
+  inputBeforeDb : pointer.toNat+length.toNat≤db.toNat
+  inputLower : 2713731432≤pointer.toNat
+  lengthBound : length.toNat≤1024
   snapshot : Rlp.Slices.Snapshot (LocalEffects.erase origin) current (pointer+header) payload heap cursor limit count items
   boundary : RootBoundary input current
   installed : OriginalCode.Installed current.code
@@ -38,7 +42,7 @@ theorem decode_slice_entry_trace (input : Guest.InputBlob)
     (arena : Rlp.Validation.Arena source cursor limit)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (heapBound : heap.toNat≤33806089496) (heapAligned : heap.toNat%8=0)
-    (before : pointer.toNat+length.toNat≤heap.toNat) (small : length.toNat≤1024)
+    (before : pointer.toNat+length.toNat≤heap.toNat) (beforeDb : pointer.toNat+length.toNat≤db.toNat) (small : length.toNat≤1024)
     (inputAbove : 2713731432≤pointer.toNat) (below : cursor.toNat≤2713717616)
     (installed : OriginalCode.Installed source.code) (outcome : Option (PanSemResultExact 64))
     (run : evaluateHOLFiniteState source (Mpt.WitnessStep.afterRlp .decode)=(outcome,post)) :
@@ -81,7 +85,7 @@ theorem decode_slice_entry_trace (input : Guest.InputBlob)
         rw [codeEq]
         exact installed
       have entry : DecodeSliceEntry input source ready db pointer length heap cursor limit header payload count items:=
-        ⟨⟨header,payload,1#64,rfl,headerBound,positive,extent,Or.inr rfl,listHeader⟩,extent,pointerNumber,heapCell,physical,
+        ⟨⟨header,payload,1#64,rfl,headerBound,positive,extent,Or.inr rfl,listHeader⟩,extent,pointerNumber,heapCell,before,beforeDb,inputAbove,small,physical,
           currentBoundary,currentCode,nextDb,(retained "p" (by decide)).trans pointerCell,(retained "n" (by decide)).trans lengthCell,
           (retained "it" (by decide)).trans itemCell,CallNormal.continuation_lookup_same source target "sl" _⟩
       exact Or.inr ⟨header,payload,count,items,ready,inner,entry,forward,by change source.clock-target.clock≤_; omega,continued,endpoint⟩

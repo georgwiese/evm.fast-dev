@@ -46,7 +46,7 @@ theorem decode_slices_trace (input : Guest.InputBlob)
     have nextHeap : origin.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=
       (globalCells _).trans heapCell
     rcases decode_slice_entry_trace input origin middle db pointer length heap cursor limit answer nextBoundary parsed itemCell
-        nextDb nextPointer nextLength nextArena nextHeap heapBound heapAligned beforeHeap small inputAbove below nextInstalled outcome continued with stopped|reached
+        nextDb nextPointer nextLength nextArena nextHeap heapBound heapAligned beforeHeap before small inputAbove below nextInstalled outcome continued with stopped|reached
     · have remainingForward:=evaluateHOLFiniteState_clock_le origin (Mpt.WitnessStep.afterRlp .decode)
       rw [continued] at remainingForward
       change middle.clock≤origin.clock at remainingForward

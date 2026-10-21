@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.EvaluationOracle
 import InitECandidate.Solver.Input.MainRequestRootHashContract
 import InitECandidate.Solver.Input.RequestRootHashBudgetBound
 
@@ -31,6 +32,7 @@ structure Returned (input : Guest.InputBlob) (origin current : PanSemStateFinite
   endian : current.be=origin.be
   globals : ∀ key,key≠ofString "heap_ptr" → current.globals.lookup key=origin.globals.lookup key
   workspace : SszHash.Workspace current 2713714688#64 2713714880#64 2713715312#64 2713715408#64
+  oracle : current.ffi.oracle=origin.ffi.oracle
 
 /-- The literal main hash sequence either stops within its hash allowance,
 or reaches the original constructor continuation with actual heap, data,
@@ -71,7 +73,7 @@ theorem after_root_trace (input : Guest.InputBlob) (origin post : PanSemStateFin
       (fun key different=>call_globals key (entered origin root).code actual.workspace.sha.installed different)
     exact Or.inr ⟨current,⟨forward,price,restored.1,restored.2,
       fun key=>CallNormal.ignored_lookup (entered origin root) current key (ofString "htr_new_payload_request") arguments observed,
-      fields.2.2.2,fields.1,fields.2.2.1,fields.2.1,globals,workspace⟩,run⟩
+      fields.2.2.2,fields.1,fields.2.2.1,fields.2.1,globals,workspace,evaluation_oracle (entered origin root) current call none observed⟩,run⟩
 
 end InitECandidate.Solver.Input.Main.RequestHash
 #print axioms InitECandidate.Solver.Input.Main.RequestHash.call_cost_uniform

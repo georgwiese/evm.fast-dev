@@ -16,7 +16,7 @@ theorem RoundState.transport (data : Data) (origin source target : PanSemStateFi
     Rlp.Validation.Arena.of_fields source target data.cursor data.limit state.arena domain globals,
     Keccak256.Environment.of_fields source target data.stp data.pad state.environment domain code oracle (by intro key other; rw [globals]),
     state.input.trans origin source target data.lower data.upper frame,
-    state.rows.of_frame source target data.array data.pointers data.lengths data.count data.lower data.upper frame,?_,?_,?_,?_,?_,?_⟩
+    state.rows.of_frame source target data.array data.pointers data.lengths data.count data.lower data.upper frame,?_,?_,?_,?_,?_,?_,?_⟩
   · obtain ⟨pointer,cell,bounded,aligned,before⟩ := state.heap
     exact ⟨pointer,by rw [globals]; exact cell,bounded,aligned,before⟩
   · rw [locals]; exact state.arrayCell
@@ -24,6 +24,9 @@ theorem RoundState.transport (data : Data) (origin source target : PanSemStateFi
   · rw [locals]; exact state.hsCell
   · rw [locals]; exact state.hashesCell
   · rw [locals]; exact state.indexCell
+  · intro key other
+    rw [globals]
+    exact state.globals key other
 
 end InitECandidate.Solver.Headers.Validate
 

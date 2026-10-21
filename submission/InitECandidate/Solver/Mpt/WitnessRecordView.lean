@@ -42,6 +42,10 @@ def Description.cells (data : Description) : List (Nat×BitVec 64):=
 def Description.BeforeHeap (data : Description) (frontier : Nat) : Prop:=
   data.array.toNat+16*data.items.length≤frontier ∧ data.payload.endAddress≤frontier
 
+theorem Description.cells_geometry (data : Description) :
+    ∀ entry∈data.cells,0<entry.1 ∧ entry.1+8≤88 ∧ entry.1%8=0 := by
+  cases payloadEq : data.payload <;> simp [Description.cells,payloadEq]
+
 /-- Physical ownership of a real live record, its row array and its stage
 data. Input slices stay bounded before the actual immutable node database;
 the record remains in the scratch band while arrays are persistent. -/
@@ -85,6 +89,7 @@ theorem View.stage (source : PanSemStateFiniteExact 64 Guest.HostMemory) (record
 end InitECandidate.Solver.Mpt.WitnessRecord
 
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.Description.BeforeHeap.mono
+#print axioms InitECandidate.Solver.Mpt.WitnessRecord.Description.cells_geometry
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.nonzero
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.mapped
 #print axioms InitECandidate.Solver.Mpt.WitnessRecord.View.stage

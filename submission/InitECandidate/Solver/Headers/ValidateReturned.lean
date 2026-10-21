@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Headers.ValidateHeapGrowth
+import InitECandidate.Solver.Headers.ValidateEntryHeap
 import InitECandidate.Solver.Headers.ValidateEntryReturned
 import InitECandidate.Solver.Headers.ValidateLoopReturned
 import InitECandidate.Solver.Headers.ValidateInitialRound
@@ -19,6 +21,7 @@ structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   memory : Input.HashInput.Frame source target lower upper
   rows : Rows target array pointers lengths count.toNat lower upper
   globals : HeapGlobals source target
+  heapBound : HeapBound target (heap.toNat+656*count.toNat+40)
 
 /-- The complete original body returns its real pointer pair and preserves
 the input, scratch and initialized hash environment. Actual successful
@@ -45,6 +48,22 @@ theorem body_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   obtain ⟨layout,state⟩ := initial_round source source array heap count cursor limit stp pad pointers lengths lower upper installed shape arena environment
     (Input.HashInput.Frame.refl source lower upper) rows geometry arrayCell countCell before small stateArena stateAligned padArena padAligned stateBefore padBefore aligned inputLower scratchBefore (HeapGlobals.refl source)
   let data:=invocationData array heap count cursor limit stp pad pointers lengths lower upper
+  have initialHeap : HeapBound (loopEntry source heap count) (entryHeap heap count).toNat := by
+    intro current cell
+    have same : current=entryHeap heap count := by
+      have h:=Option.some.inj (cell.symm.trans (loopEntry_heap source heap count))
+      cases h
+      rfl
+    rw [same]
+  have growth:=loops_heap data source (loopEntry source heap count) inner (entryHeap heap count).toNat state layout initialHeap value continued
+  have entryNumber:=entryHeap_number heap count small heapAligned firstRoom secondRoom
+  have heapGrowth : HeapBound post (heap.toNat+656*count.toNat+40) := by
+    intro current cell
+    have innerCell : inner.globals.lookup (ofString "heap_ptr")=some (.val (.word current)) := by rw [endpoint] at cell; exact cell
+    have bound:=growth current innerCell
+    change current.toNat≤(entryHeap heap count).toNat+616*count.toNat at bound
+    rw [entryNumber] at bound
+    omega
   obtain ⟨valueEq,finish,index,bounded,finalState,innerEnd⟩ := loops_returned data source (loopEntry source heap count) inner state layout value continued
   have same : Input.LocalEffects.erase post=Input.LocalEffects.erase finish := by rw [endpoint,innerEnd]; rfl
   have domain:=congrArg PanSemStateFiniteExact.memaddrs same
@@ -57,7 +76,7 @@ theorem body_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   change post.ffi.oracle=finish.ffi.oracle at oracle
   have memory:=Input.LocalEffects.memory_of_erase finish post same
   have frame : Input.HashInput.Frame finish post lower upper := ⟨by intro query low high; rw [memory]⟩
-  refine ⟨valueEq,small,geometry,?_,?_,?_,?_,?_,?_⟩
+  refine ⟨valueEq,small,geometry,?_,?_,?_,?_,?_,?_,heapGrowth⟩
   · obtain ⟨current,cell,bound,alignment,afterHashes⟩ := finalState.heap
     exact ⟨current,by rw [globals]; exact cell,bound,alignment,afterHashes⟩
   · exact Rlp.Validation.Arena.of_fields finish post cursor limit finalState.arena domain globals

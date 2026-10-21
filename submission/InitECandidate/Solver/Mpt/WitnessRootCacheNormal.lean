@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Mpt.WitnessCoreStablePrefix
 import InitECandidate.Solver.Mpt.WitnessDecodeSuffixCost
 import InitECandidate.Solver.Mpt.WitnessMaterializeOutputAdvance
 import InitECandidate.Solver.Mpt.NodeRegistryCopy32
@@ -11,14 +12,14 @@ open WitnessCore WitnessCore.Stack WitnessMaterialize Input.Main.RunAttemptConst
 /-- The genuine root cache allocation/copy/store retains the materialized
 closed graph and frozen databases, deriving actual room and next heap
 from the real allocator. Buffer ownership is current caller data. -/
-theorem cache_allocated_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem cache_allocated_normal_prefix (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (db heap hashPtr node : BitVec 64)
     (output : RichOutput input frontier db source (.val (.word node))) (frontierLower : 2713731432≤frontier)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (nonnull : node≠0#64)
     (hashCell : source.locals.lookup (ofString "root_hash")=some (.val (.word hashPtr)))
     (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) (hashArena : AllocatedBytes.Arena hashPtr 32)
     (installed : Input.OriginalCode.Installed source.code)
-    (normal : evaluateHOLFiniteState source cacheAllocated=(none,post)) : RichOutput input frontier db post (.val (.word node)) := by
+    (normal : evaluateHOLFiniteState source cacheAllocated=(none,post)) : RichOutput input frontier db post (.val (.word node)) ∧ StablePrefix source post frontier := by
   have physical:=output.1
   obtain ⟨actualHeap,child,valueEq,actualCell,heapArena,heapAligned,frontierBefore,sourceScratch,frozen,owned⟩:=physical
   have sameHeap : actualHeap=heap := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
@@ -111,9 +112,21 @@ theorem cache_allocated_normal (input : Guest.InputBlob) (source post : PanSemSt
       have impossible : (0#64 : BitVec 64)=24#64 := (BitVec.add_right_inj node).mp (by simpa only [BitVec.add_zero] using equal)
       exact (by decide : (0#64 : BitVec 64)≠24#64) impossible
     exact (return_cache_memory copied node heap node away).trans (copyMemory node (by have before:=nodeOwned.before; omega))
-  exact output.advance_frame input frontier db heap next node source post (.val (.word node)) rfl heapCell targetHeap nextArena checked.2.2.2.2 grows
-    domain endian scratch memory kind postRegistry postMember
+  refine ⟨output.advance_frame input frontier db heap next node source post (.val (.word node)) rfl heapCell targetHeap nextArena checked.2.2.2.2 grows
+    domain endian scratch memory kind postRegistry postMember,memory⟩
+
+theorem cache_allocated_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frontier : Nat) (db heap hashPtr node : BitVec 64)
+    (output : RichOutput input frontier db source (.val (.word node))) (frontierLower : 2713731432≤frontier)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (nonnull : node≠0#64)
+    (hashCell : source.locals.lookup (ofString "root_hash")=some (.val (.word hashPtr)))
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) (hashArena : AllocatedBytes.Arena hashPtr 32)
+    (installed : Input.OriginalCode.Installed source.code)
+    (normal : evaluateHOLFiniteState source cacheAllocated=(none,post)) : RichOutput input frontier db post (.val (.word node)) :=
+  (cache_allocated_normal_prefix input source post frontier db heap hashPtr node output frontierLower heapCell nonnull hashCell nodeCell hashArena installed normal).1
 
 end InitECandidate.Solver.Mpt.WitnessDecodeRoot
 
 #print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.cache_allocated_normal
+
+#print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.cache_allocated_normal_prefix

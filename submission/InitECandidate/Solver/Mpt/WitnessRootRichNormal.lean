@@ -26,7 +26,7 @@ theorem empty_rich_output (input : Guest.InputBlob) (source : PanSemStateFiniteE
 materialized node in a bounded closed physical graph with bounded values.
 The root buffer arena is actual caller data; no future success or
 input-graph acyclicity assumption is needed. -/
-theorem rich_body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem rich_body_normal_prefix (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (db heap root emptyRoot : BitVec 64) (boundary : RootBoundary input source)
     (installed : Input.OriginalCode.Installed source.code)
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
@@ -35,12 +35,14 @@ theorem rich_body_normal (input : Guest.InputBlob) (source post : PanSemStateFin
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
     (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena root 32)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
-    RichOutput input heap.toNat db post returned := by
+    RichOutput input heap.toNat db post returned ∧ WitnessCore.Stack.StablePrefix source post heap.toNat := by
   rcases prefix_normal source post db root emptyRoot installed dbCell rootCell emptyCell returned normal with empty|lookup
   · obtain ⟨returnedEq,pure⟩:=empty
     rw [returnedEq]
-    exact (empty_rich_output input source db heap 2713714688#64 boundary dbCell heapCell scratch.cursorGlobal).of_erase
-      input heap.toNat db source post (.val (.word 0#64)) pure
+    refine ⟨(empty_rich_output input source db heap 2713714688#64 boundary dbCell heapCell scratch.cursorGlobal).of_erase
+      input heap.toNat db source post (.val (.word 0#64)) pure,?_⟩
+    intro query lower upper
+    exact congrFun (Input.LocalEffects.memory_of_erase source post pure) query
   · obtain ⟨lookupSource,lookupPost,lookupPure,lookupDb,lookupRoot,lookupRun,endpoint⟩:=lookup
     have lookupBoundary:=boundary.erase_frame input source lookupSource lookupPure (lookupDb.trans dbCell.symm)
     have lookupFrame:=runtime_of_entry source lookupSource lookupPure
@@ -55,12 +57,28 @@ theorem rich_body_normal (input : Guest.InputBlob) (source post : PanSemStateFin
     change caller.globals=source.globals at globals
     have callerHeap : caller.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by rw [globals]; exact heapCell
     have callerScratch:=callerFrame.scratch source caller 2713714688#64 2701135872#64 scratch
-    have output:=after_lookup_rich_normal input caller inner db heap root answer callerBoundary callerInstalled callerDb callerRoot callerR callerHeap heapLower callerScratch rootArena
+    have output:=after_lookup_rich_normal_prefix input caller inner db heap root answer callerBoundary callerInstalled callerDb callerRoot callerR callerHeap heapLower callerScratch rootArena
       (by intro slice present; obtain ⟨index,inside,sliceEq,small,arena,lower,before⟩:=hit slice present; exact ⟨small,lower,before⟩) returned continued
-    apply output.of_erase input heap.toNat db inner post returned
-    rw [endpoint,lookupEnd]; rfl
+    refine ⟨output.1.of_erase input heap.toNat db inner post returned (by rw [endpoint,lookupEnd]; rfl),?_⟩
+    intro query lower upper
+    have endMemory : post.memory=inner.memory:=by rw [endpoint,lookupEnd]; rfl
+    exact (congrFun endMemory query).trans ((output.2 query lower upper).trans (congrFun (Input.LocalEffects.memory_of_erase source caller wholePure) query))
+
+theorem rich_body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (db heap root emptyRoot : BitVec 64) (boundary : RootBoundary input source)
+    (installed : Input.OriginalCode.Installed source.code)
+    (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
+    (rootCell : source.locals.lookup (ofString "root_hash")=some (.val (.word root)))
+    (emptyCell : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
+    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena root 32)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    RichOutput input heap.toNat db post returned :=
+  (rich_body_normal_prefix input source post db heap root emptyRoot boundary installed dbCell rootCell emptyCell heapCell heapLower scratch rootArena returned normal).1
 
 end InitECandidate.Solver.Mpt.WitnessDecodeRoot
 
 #print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.empty_rich_output
 #print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.rich_body_normal
+
+#print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.rich_body_normal_prefix

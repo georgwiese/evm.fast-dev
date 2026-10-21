@@ -7,7 +7,7 @@ import InitECandidate.Solver.Input.HeapReleaseReturn
 import InitECandidate.Solver.Input.CallResumeLookup
 import InitECandidate.Solver.Input.ScopedCallNormal
 
-namespace InitECandidate.Solver.Input.BytesList
+namespace InitECandidate.Solver.Input.BytesListHash
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
@@ -144,12 +144,12 @@ theorem call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (fun target value evaluated=>body_memory (callEntryStateHOLFinite source callee) target p cursor out stp accel chunk zeros query n short
       (SszHash.Protected.at_callee source callee stp accel chunk zeros query protection) pLocal nLocal limitCell outLocal heap inputArena arena aligned outArena below outAway value evaluated) run
 
-end InitECandidate.Solver.Input.BytesList
+end InitECandidate.Solver.Input.BytesListHash
 
-#print axioms InitECandidate.Solver.Input.BytesList.after_pack_memory
-#print axioms InitECandidate.Solver.Input.BytesList.after_mark_memory
-#print axioms InitECandidate.Solver.Input.BytesList.body_memory
+#print axioms InitECandidate.Solver.Input.BytesListHash.after_pack_memory
+#print axioms InitECandidate.Solver.Input.BytesListHash.after_mark_memory
+#print axioms InitECandidate.Solver.Input.BytesListHash.body_memory
 
-#print axioms InitECandidate.Solver.Input.BytesList.call_memory
+#print axioms InitECandidate.Solver.Input.BytesListHash.call_memory
 
-#print axioms InitECandidate.Solver.Input.BytesList.after_merkle_memory
+#print axioms InitECandidate.Solver.Input.BytesListHash.after_merkle_memory

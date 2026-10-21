@@ -1,7 +1,7 @@
 import InitECandidate.Solver.Input.BytesListProgram
 import InitECandidate.Solver.Input.IgnoredCallLookup
 
-namespace InitECandidate.Solver.Input.BytesList
+namespace InitECandidate.Solver.Input.BytesListHash
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
@@ -69,8 +69,8 @@ theorem after_pack_cost (source post : PanSemStateFiniteExact 64 Guest.HostMemor
     exact bound) result run notTimeout
   exact price
 
-end InitECandidate.Solver.Input.BytesList
+end InitECandidate.Solver.Input.BytesListHash
 
-#print axioms InitECandidate.Solver.Input.BytesList.after_release_cost
-#print axioms InitECandidate.Solver.Input.BytesList.after_merkle_cost
-#print axioms InitECandidate.Solver.Input.BytesList.after_pack_cost
+#print axioms InitECandidate.Solver.Input.BytesListHash.after_release_cost
+#print axioms InitECandidate.Solver.Input.BytesListHash.after_merkle_cost
+#print axioms InitECandidate.Solver.Input.BytesListHash.after_pack_cost

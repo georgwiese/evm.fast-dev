@@ -1,7 +1,7 @@
 import InitECandidate.Solver.Input.BytesListSuffixCost
 import InitECandidate.Solver.Input.CallResumeLookup
 
-namespace InitECandidate.Solver.Input.BytesList
+namespace InitECandidate.Solver.Input.BytesListHash
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
@@ -53,6 +53,6 @@ theorem after_mark_cost (source post : PanSemStateFiniteExact 64 Guest.HostMemor
   rw [price_sum] at price
   exact price
 
-end InitECandidate.Solver.Input.BytesList
+end InitECandidate.Solver.Input.BytesListHash
 
-#print axioms InitECandidate.Solver.Input.BytesList.after_mark_cost
+#print axioms InitECandidate.Solver.Input.BytesListHash.after_mark_cost

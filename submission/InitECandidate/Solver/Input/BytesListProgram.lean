@@ -1,6 +1,6 @@
 import InitECandidate.Solver.Input.PBytesProgram
 
-namespace InitECandidate.Solver.Input.BytesList
+namespace InitECandidate.Solver.Input.BytesListHash
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
@@ -43,9 +43,9 @@ theorem merkle_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
 
 theorem extra_chunks (n : Nat) (short : n≤32) : PackBytes.chunks n≤1 := by unfold PackBytes.chunks; omega
 
-end InitECandidate.Solver.Input.BytesList
+end InitECandidate.Solver.Input.BytesListHash
 
-#print axioms InitECandidate.Solver.Input.BytesList.body_shape
-#print axioms InitECandidate.Solver.Input.BytesList.original_code
-#print axioms InitECandidate.Solver.Input.BytesList.merkle_arguments
-#print axioms InitECandidate.Solver.Input.BytesList.extra_chunks
+#print axioms InitECandidate.Solver.Input.BytesListHash.body_shape
+#print axioms InitECandidate.Solver.Input.BytesListHash.original_code
+#print axioms InitECandidate.Solver.Input.BytesListHash.merkle_arguments
+#print axioms InitECandidate.Solver.Input.BytesListHash.extra_chunks

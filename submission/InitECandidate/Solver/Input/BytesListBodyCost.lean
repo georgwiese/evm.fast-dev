@@ -1,6 +1,6 @@
 import InitECandidate.Solver.Input.BytesListPackedCost
 
-namespace InitECandidate.Solver.Input.BytesList
+namespace InitECandidate.Solver.Input.BytesListHash
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
@@ -48,7 +48,7 @@ theorem globals (key : MlS) (code) (installed : OriginalCode.Installed code) (di
         (GlobalEffects.call_body key code (some none) (ofString "mix_in_length") mixArguments MixLength.formals MixLength.body .one
           (MixLength.original_code code installed) (MixLength.globals key code installed)) (GlobalEffects.returned key code _)))
 
-end InitECandidate.Solver.Input.BytesList
+end InitECandidate.Solver.Input.BytesListHash
 
-#print axioms InitECandidate.Solver.Input.BytesList.body_cost
-#print axioms InitECandidate.Solver.Input.BytesList.globals
+#print axioms InitECandidate.Solver.Input.BytesListHash.body_cost
+#print axioms InitECandidate.Solver.Input.BytesListHash.globals

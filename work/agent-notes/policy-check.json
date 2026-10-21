@@ -1935,6 +1935,9 @@
     "submission/InitECandidate/Solver/Input/ClockExhaustion.lean",
     "submission/InitECandidate/Solver/Input/CompareZero.lean",
     "submission/InitECandidate/Solver/Input/ConstantCounterCost.lean",
+    "submission/InitECandidate/Solver/Input/ConstructorRuntimeEnvironment.lean",
+    "submission/InitECandidate/Solver/Input/ConstructorRuntimeFrame.lean",
+    "submission/InitECandidate/Solver/Input/ConstructorRuntimeScalars.lean",
     "submission/InitECandidate/Solver/Input/ContinuingDeclarationEntry.lean",
     "submission/InitECandidate/Solver/Input/ControlContinue.lean",
     "submission/InitECandidate/Solver/Input/CopyAwaySubrange.lean",
@@ -2268,6 +2271,7 @@
     "submission/InitECandidate/Solver/Input/MainRunAttemptConstructorReached.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptConstructorTail.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptData.lean",
+    "submission/InitECandidate/Solver/Input/MainRunAttemptStateInitBoundary.lean",
     "submission/InitECandidate/Solver/Input/MainScratchArena.lean",
     "submission/InitECandidate/Solver/Input/MainSecpBlock.lean",
     "submission/InitECandidate/Solver/Input/MainSecpEntry.lean",
@@ -2283,6 +2287,7 @@
     "submission/InitECandidate/Solver/Input/MainSszWorkspace.lean",
     "submission/InitECandidate/Solver/Input/MainStartupTrace.lean",
     "submission/InitECandidate/Solver/Input/MainStateInitBoundary.lean",
+    "submission/InitECandidate/Solver/Input/MainStateInitRuntime.lean",
     "submission/InitECandidate/Solver/Input/MainU256Initialization.lean",
     "submission/InitECandidate/Solver/Input/MainU256Prefix.lean",
     "submission/InitECandidate/Solver/Input/MainVerifyConstructorPrefix.lean",
@@ -6874,8 +6879,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63743,
-  "package_bytes": 2264757957,
+  "package_entries": 63748,
+  "package_bytes": 2264774118,
   "claim": {
     "K": "infinity"
   },

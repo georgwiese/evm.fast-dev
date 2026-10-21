@@ -25,14 +25,20 @@ def tablesPrice (input : Guest.InputBlob) := MutableTable.WitnessBuild.bodyPrice
   MutableTable.WitnessBuild.bodyPrice (codeSlices input) (codeCount input)+1
 def price (input : Guest.InputBlob) := headerPrice input+tablesPrice input
 
+abbrev HeaderReturn (input : Guest.InputBlob) (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (rows root : BitVec 64) :=
+  Headers.Validate.Returned (validatorEntry source input) target rows (initialHeap root) (countWord input)
+    2713714688#64 2701135872#64 2713714976#64 2713715176#64 (HeaderSlices.pointer input) (HeaderSlices.length input)
+    inputPointer.toNat (initialHeap root).toNat (input.length%2^64)
+
 /-- A concrete real continuation after both original database calls. Its
 returned tables retain the actual input-dependent collision histories,
 with the original caller states, clocks and every lexical restoration. -/
 def Reached (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root : BitVec 64)
     (outcome : Option (PanSemResultExact 64)) : Prop :=
-  ∃ headerTarget parent nodeTarget codeTarget codeArray heap codeTable currentHeap inner,
+  ∃ headerTarget headerRows parent nodeTarget codeTarget codeArray heap codeTable currentHeap inner,
     let afterHeader:=parentSource source headerTarget input root
     let ready:=RunAttempt.constructorEntry afterHeader (countWord input) (hashArray input root) parent
+    HeaderReturn input source headerTarget headerRows root ∧
     MutableTable.WitnessBuild.Returned ready nodeTarget (VarList.decodedArray (DecoderCall.witnessArray input) (nodeBytes input)) heap (nodeCount input) (nodeSlices input)
       2713714976#64 2713715176#64 2713717584#64 ∧
     MutableTable.WitnessBuild.Returned (RunAttempt.codeEntry ready nodeTarget heap) codeTarget (VarList.decodedArray codeArray (codeBytes input)) codeTable (codeCount input) (codeSlices input)
@@ -50,8 +56,9 @@ def Reached (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 G
 /-- Assemble the real returned-clock chain independently of main's parser
 provenance. This keeps the final proof term small and shares the state aliases. -/
 theorem reached_of_returns (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root : BitVec 64)
-    (headerTarget : PanSemStateFiniteExact 64 Guest.HostMemory) (parent : ValueHOL 64)
+    (headerTarget : PanSemStateFiniteExact 64 Guest.HostMemory) (headerRows : BitVec 64) (parent : ValueHOL 64)
     (nodeTarget codeTarget : PanSemStateFiniteExact 64 Guest.HostMemory) (codeArray heap codeTable currentHeap : BitVec 64) (inner : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (headerReturned : HeaderReturn input source headerTarget headerRows root)
     (nodeReturned : MutableTable.WitnessBuild.Returned (RunAttempt.constructorEntry (parentSource source headerTarget input root) (countWord input) (hashArray input root) parent)
       nodeTarget (VarList.decodedArray (DecoderCall.witnessArray input) (nodeBytes input)) heap (nodeCount input) (nodeSlices input) 2713714976#64 2713715176#64 2713717584#64)
     (codeReturned : MutableTable.WitnessBuild.Returned (RunAttempt.codeEntry (RunAttempt.constructorEntry (parentSource source headerTarget input root) (countWord input) (hashArray input root) parent) nodeTarget heap)
@@ -84,7 +91,7 @@ theorem reached_of_returns (input : Guest.InputBlob) (source post : PanSemStateF
   have second:=ClockCost.spend_chain source.clock nodeTarget.clock codeTarget.clock
     (headerPrice input+(MutableTable.WitnessBuild.bodyPrice (nodeSlices input) (nodeCount input)+1))
     (MutableTable.WitnessBuild.bodyPrice (codeSlices input) (codeCount input)+1) (nodeForward.trans headerForward) codeForward first codeCost
-  refine ⟨headerTarget,parent,nodeTarget,codeTarget,codeArray,heap,codeTable,currentHeap,inner,nodeReturned,codeReturned,nodeDatabase,codeDatabase,currentHeapCell,nodeBefore,codeBefore,
+  refine ⟨headerTarget,headerRows,parent,nodeTarget,codeTarget,codeArray,heap,codeTable,currentHeap,inner,headerReturned,nodeReturned,codeReturned,nodeDatabase,codeDatabase,currentHeapCell,nodeBefore,codeBefore,
     codeForward.trans (nodeForward.trans headerForward),?_,continued,endpoint⟩
   simpa only [price,tablesPrice,Nat.add_assoc] using second
 

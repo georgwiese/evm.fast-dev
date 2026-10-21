@@ -47,7 +47,8 @@ theorem execute_variable (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
       KeccakAbsorb.hashControl target=KeccakAbsorb.hashControl {source with
         globals:=source.globals.update (ofString "heap_ptr",.val (.word (BitVec.ofNat 64 (table+72+57*(2^bits)+Constructor.padding (2^bits)))))} ∧
       target.clock≤source.clock ∧ source.clock-wholeVariablePrice slices count≤target.clock ∧
-      2^bits≤4*count+4 ∧ (∀ query,Keccak256.Protected stp pad scratch query→query.toNat<table→target.memory query=source.memory query) := by
+      2^bits≤4*count+4 ∧ (∀ query,Keccak256.Protected stp pad scratch query→query.toNat<table→target.memory query=source.memory query) ∧
+      AllocatedLayout.Ready plan := by
   have small:=Capacity.count_small_of_records records table count recordsLower recordsBefore (by omega)
   obtain ⟨capped,paid,bits,capRun,paidBound,lower,upper,sufficient,capBound,capLocal,capFrame,capOther⟩:=
     capacity_entry source count small countLocal (by unfold wholeVariablePrice at enough;omega)
@@ -95,7 +96,7 @@ theorem execute_variable (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
   let target:=restore source "cap" filled
   have nextBuilt:=Layout32.built_fields filled target plan bits scratch nextCount input logical rfl rfl rfl built
   have recordsResult:=Records.of_earlier filled target plan ready slices (by intros;rfl) finalRecords
-  refine ⟨bits,nextCount,input,logical,target,lower,upper,?_,nextBuilt,history,length,recordsResult,?_,?_,?_,capBound,?_⟩
+  refine ⟨bits,nextCount,input,logical,target,lower,upper,?_,nextBuilt,history,length,recordsResult,?_,?_,?_,capBound,?_,ready⟩
   · rw [capRun,tableRun]
   · have initialControl : KeccakAbsorb.hashControl (prepared capped plan)=KeccakAbsorb.hashControl {source with
         globals:=source.globals.update (ofString "heap_ptr",.val (.word (BitVec.ofNat 64 (table+72+57*(2^bits)+Constructor.padding (2^bits)))))} := by

@@ -42,7 +42,8 @@ theorem Ready.execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (rec
       KeccakAbsorb.hashControl target=KeccakAbsorb.hashControl {source with
         globals:=source.globals.update (ofString "heap_ptr",.val (.word (BitVec.ofNat 64 (table+72+57*(2^bits)+Constructor.padding (2^bits)))))} ∧
       target.clock≤source.clock ∧ source.clock-wholeVariablePrice slices count≤target.clock ∧
-      2^bits≤4*count+4 ∧ (∀ query,Keccak256.Protected stp pad scratch query→query.toNat<table→target.memory query=source.memory query) := by
+      2^bits≤4*count+4 ∧ (∀ query,Keccak256.Protected stp pad scratch query→query.toNat<table→target.memory query=source.memory query) ∧
+      AllocatedLayout.Ready plan := by
   exact execute_variable source records table count maximum actual.recordsLower actual.recordsBefore actual.recordsAligned actual.tableAligned actual.room
     actual.recordsLocal actual.countLocal actual.heap actual.tableCode actual.allocCode slices stp pad scratch
     (fun index inside=>by simpa only [recordCell,Constructor.allocationPlan,Nat.add_zero] using actual.rows.pointers index inside)

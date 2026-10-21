@@ -31,7 +31,7 @@ theorem Writes.pair {size : Nat} (name : String) (offset : Nat) (inside : 2*offs
     (tail : Writes size rest) : Writes size (pair name offset rest):=
   .store _ (by omega) _ (.store _ inside _ tail)
 
-theorem output_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (out index : BitVec 64) (offset : Nat)
+theorem output_address_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (out index : BitVec 64) (offset : Nat)
     (outCell : source.locals.lookup (ofString "out")=some (.val (.word out)))
     (indexCell : source.locals.lookup (ofString "i")=some (.val (.word index))) :
     eval source (outputAddress offset)=some (.val (.word (byteAddress out (2*index.toNat+offset)))) := by
@@ -61,7 +61,7 @@ theorem Writes.normal {size : Nat} {program : ProgHOL 64} (writes : Writes size 
     exact ⟨⟨rfl,by intro query away; rfl⟩,(bind_lookup_other source "i" "out" _ (by decide)).trans outCell⟩
   | store offset offsetInside value tail ih=>
     obtain ⟨middle,storeRun,continued⟩:=Input.sequence_none source target _ _ normal
-    obtain ⟨same,away⟩:=Input.byte_store_normal_frame source middle (outputAddress offset) value _ (output_read source out index offset outCell indexCell) storeRun
+    obtain ⟨same,away⟩:=Input.byte_store_normal_frame source middle (outputAddress offset) value _ (output_address_read source out index offset outCell indexCell) storeRun
     have middleOut : middle.locals.lookup (ofString "out")=some (.val (.word out)):=by rw [same]; exact outCell
     have middleIndex : middle.locals.lookup (ofString "i")=some (.val (.word index)):=by rw [same]; exact indexCell
     have first : SpanFrame source middle out length:=⟨by have fields:=congrArg writeMetadata same; exact fields,
@@ -100,6 +100,6 @@ end InitECandidate.Solver.Mpt.KeyToNibbles
 #print axioms InitECandidate.Solver.Mpt.KeyToNibbles.SpanFrame.refl
 #print axioms InitECandidate.Solver.Mpt.KeyToNibbles.SpanFrame.trans
 #print axioms InitECandidate.Solver.Mpt.KeyToNibbles.Writes.pair
-#print axioms InitECandidate.Solver.Mpt.KeyToNibbles.output_read
+#print axioms InitECandidate.Solver.Mpt.KeyToNibbles.output_address_read
 #print axioms InitECandidate.Solver.Mpt.KeyToNibbles.Writes.normal
 #print axioms InitECandidate.Solver.Mpt.KeyToNibbles.bodies_write_span

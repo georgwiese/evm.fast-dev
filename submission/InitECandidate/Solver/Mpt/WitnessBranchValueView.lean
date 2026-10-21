@@ -8,16 +8,6 @@ open Flapjack PanSemStateFiniteExact GasBudget WitnessRadix
 def WitnessValue (db pointer length : BitVec 64) : Prop :=
   length=0#64 ∨ (2713731432≤pointer.toNat ∧ pointer.toNat+length.toNat≤db.toNat)
 
-/-- Before the last row, the branch's original value words remain zero. -/
-def EmptyValue (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64) : Prop :=
-  source.memory (node+160#64)=.word 0#64 ∧ source.memory (node+168#64)=.word 0#64
-
-theorem EmptyValue.frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64)
-    (empty : EmptyValue source node)
-    (pointer : target.memory (node+160#64)=source.memory (node+160#64))
-    (length : target.memory (node+168#64)=source.memory (node+168#64)) : EmptyValue target node :=
-  ⟨pointer.trans empty.1,length.trans empty.2⟩
-
 /-- The real seventeenth row and actual RLP item result locate the value
 inside the same bounded original parent input, before the node database. -/
 theorem branch_value_payload (source : PanSemStateFiniteExact 64 Guest.HostMemory)

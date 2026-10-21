@@ -8,6 +8,16 @@ namespace InitECandidate.Solver.Mpt.WitnessCore
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
+/-- Before the last row, the branch's original value words remain zero. -/
+def EmptyValue (source : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64) : Prop :=
+  source.memory (node+160#64)=.word 0#64 ∧ source.memory (node+168#64)=.word 0#64
+
+theorem EmptyValue.frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (node : BitVec 64)
+    (empty : EmptyValue source node)
+    (pointer : target.memory (node+160#64)=source.memory (node+160#64))
+    (length : target.memory (node+168#64)=source.memory (node+168#64)) : EmptyValue target node :=
+  ⟨pointer.trans empty.1,length.trans empty.2⟩
+
 def branchValueOccupied (bytes flag : BitVec 64) (occupied : Fin 17) : Nat:=
   if flag=0#64 ∧ bytes≠0#64 then occupied.val+1 else occupied.val
 

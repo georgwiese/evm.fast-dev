@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.WitnessDecodeLeafView
 import InitECandidate.Solver.Mpt.WitnessRecordFrame
 import InitECandidate.Solver.Mpt.WitnessRecordArena
+import InitECandidate.Solver.Mpt.WitnessBranchEmptyValue
 
 namespace InitECandidate.Solver.Mpt.WitnessRecord
 
@@ -35,7 +36,7 @@ inductive NormalResult (post : PanSemStateFiniteExact 64 Guest.HostMemory)
       (view : WitnessRecord.View post (WitnessRecord.pointer cursor) db data)
       (parentPointer : data.pointer=pointer) (parentLength : data.length=length)
       (before : data.BeforeHeap next.toNat)
-      (freshRows : heap.toNat≤data.array.toNat) (freshPayload : heap.toNat≤data.payload.startAddress) (fresh : data.payload.Fresh)
+      (freshRows : heap.toNat≤data.array.toNat) (freshPayload : heap.toNat≤data.payload.startAddress) (fresh : data.payload.Fresh) (initial : data.payload.InitialValue post)
       (heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)))
       (heapArena : AllocatedBytes.Arena next 0) (heapAligned : next.toNat%8=0)
       (scratch : Rlp.Validation.Arena post (WitnessRecord.pointer cursor) limit)
@@ -52,8 +53,8 @@ theorem NormalResult.of_fields (source target : PanSemStateFiniteExact 64 Guest.
   | leaf node nibbles nibbleLength valuePointer valueLength finalHeap view freshPath freshNode scratch heapCell heapArena heapAligned nodeBefore=>
     exact .leaf node nibbles nibbleLength valuePointer valueLength finalHeap (view.of_fields target memory domain) freshPath freshNode
       (scratch.of_fields source target cursor limit domain globals) (by rw [globals]; exact heapCell) heapArena heapAligned nodeBefore
-  | record data next view parentPointer parentLength before freshRows freshPayload fresh heapCell heapArena heapAligned scratch drop=>
-    exact .record data next (view.of_fields source target _ db data memory domain) parentPointer parentLength before freshRows freshPayload fresh
+  | record data next view parentPointer parentLength before freshRows freshPayload fresh initial heapCell heapArena heapAligned scratch drop=>
+    exact .record data next (view.of_fields source target _ db data memory domain) parentPointer parentLength before freshRows freshPayload fresh (initial.of_fields source target data.payload memory)
       (by rw [globals]; exact heapCell) heapArena heapAligned (scratch.of_fields source target _ limit domain globals) drop
 
 theorem NormalResult.weaken_heap (source : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -64,8 +65,8 @@ theorem NormalResult.weaken_heap (source : PanSemStateFiniteExact 64 Guest.HostM
   | empty scratch=>exact .empty scratch
   | leaf node nibbles nibbleLength valuePointer valueLength finalHeap view freshPath freshNode scratch heapCell heapArena heapAligned nodeBefore=>
     exact .leaf node nibbles nibbleLength valuePointer valueLength finalHeap view (lower.trans freshPath) (lower.trans freshNode) scratch heapCell heapArena heapAligned nodeBefore
-  | record data next view parentPointer parentLength before freshRows freshPayload fresh heapCell heapArena heapAligned scratch drop=>
-    exact .record data next view parentPointer parentLength before (lower.trans freshRows) (lower.trans freshPayload) fresh heapCell heapArena heapAligned scratch drop
+  | record data next view parentPointer parentLength before freshRows freshPayload fresh initial heapCell heapArena heapAligned scratch drop=>
+    exact .record data next view parentPointer parentLength before (lower.trans freshRows) (lower.trans freshPayload) fresh initial heapCell heapArena heapAligned scratch drop
 
 end InitECandidate.Solver.Mpt.WitnessDecode
 

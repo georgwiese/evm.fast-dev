@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.WitnessBranchChildren
 import InitECandidate.Solver.Mpt.WitnessBranchEmptyValue
 import InitECandidate.Solver.Mpt.WitnessCoreStackView
 import InitECandidate.Solver.Mpt.WitnessDecodeNormalFrame
+import InitECandidate.Solver.Mpt.WitnessDecodeResult
 
 namespace InitECandidate.Solver.Mpt.WitnessCore.Stack
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -22,6 +23,24 @@ theorem ChildViews.empty (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
 theorem ChildViews.tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valid : BitVec 64 → Prop)
     (entry : Entry) (rest : List Entry) (children : ChildViews source valid (entry::rest)) : ChildViews source valid rest :=
   fun current member=>children current (List.mem_cons_of_mem entry member)
+
+theorem ChildView.fresh (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valid : BitVec 64 → Prop)
+    (entry : Entry) (fresh : entry.data.payload.Fresh) (initial : entry.data.payload.InitialValue source) : ChildView source valid entry := by
+  cases payload : entry.data.payload with
+  | extension nibbles length=>simp only [ChildView,payload]
+  | branch node index occupied=>
+    simp only [WitnessRecord.Payload.Fresh,payload] at fresh
+    simp only [WitnessRecord.Payload.InitialValue,payload] at initial
+    simp only [ChildView,payload]
+    exact ⟨by rw [fresh.1]; exact Children.empty source valid node,initial⟩
+
+theorem ChildViews.cons (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valid : BitVec 64 → Prop)
+    (entry : Entry) (rest : List Entry) (head : ChildView source valid entry) (tail : ChildViews source valid rest) :
+    ChildViews source valid (entry::rest) := by
+  intro current member
+  rcases List.mem_cons.mp member with same|older
+  · subst current; exact head
+  · exact tail current older
 
 /-- Frame only a pending branch's own initialized words below its real
 allocation mark, while allowing the completed-node registry to grow. -/

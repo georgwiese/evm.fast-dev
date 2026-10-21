@@ -4274,8 +4274,10 @@
     "submission/InitECandidate/Solver/Mpt/WitnessCoreReturnProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchLast.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchNext.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchScope.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackCache.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackDecode.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreStackExtension.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackFrame.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackHash.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackPush.lean",
@@ -7124,8 +7126,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63993,
-  "package_bytes": 2265881950,
+  "package_entries": 63995,
+  "package_bytes": 2265900479,
   "claim": {
     "K": "infinity"
   },

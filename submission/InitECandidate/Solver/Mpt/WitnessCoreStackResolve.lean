@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.WitnessCoreStackHash
 import InitECandidate.Solver.Mpt.WitnessCoreResolveResultNode
 import InitECandidate.Solver.Input.CoreResolveNormal
 import InitECandidate.Solver.Mpt.WitnessCoreResolveScope
+import InitECandidate.Solver.Mpt.WitnessCoreLoopFields
 
 namespace InitECandidate.Solver.Mpt.WitnessCore.Stack
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -57,7 +58,8 @@ theorem core_resolve_stack_normal (input : Guest.InputBlob) (source post : PanSe
     (normal : evaluateHOLFiniteState source resolveBranch=(none,post)) :
     ResolveStep post db heap cursor limit entry rest ∧
       post.locals.lookup (ofString "db")=source.locals.lookup (ofString "db") ∧
-      post.locals.lookup (ofString "go")=source.locals.lookup (ofString "go") := by
+      post.locals.lookup (ofString "go")=source.locals.lookup (ofString "go") ∧
+      DataWords post ∧ DatabaseFrame source post heap := by
   have headView:=view.records entry List.mem_cons_self
   have headBefore:=(view.before entry List.mem_cons_self).mono entry.data entry.mark heap.toNat (view.marks entry List.mem_cons_self)
   have headAbove:=view.above entry List.mem_cons_self
@@ -74,6 +76,12 @@ theorem core_resolve_stack_normal (input : Guest.InputBlob) (source post : PanSe
       ready.locals.lookup (ofString name)=source.locals.lookup (ofString name):=
     (CallNormal.continuation_lookup_other arrState built "r" name returned notR).trans
       (bind_lookup_other source "arr" name entry.data.array notArr)
+  have databaseMemory (pending query : BitVec 64) (lower : 2713717616≤query.toNat) (upper : query.toNat<heap.toNat) :
+      (hashState ready entry.record pending).memory query=source.memory query:=by
+    have recordUpper:=headView.ceiling
+    have number : (entry.record+80#64).toNat=entry.record.toNat+80:=byteAddress_toNat entry.record 80 (by omega)
+    have away : query≠entry.record+80#64:=by intro same; have numeric:=congrArg BitVec.toNat same; rw [number] at numeric; omega
+    exact (if_neg away).trans (frame.memory query (by omega) upper)
   rcases shape with ⟨node,valueEq,nodeChoice,postEq⟩|⟨pointer,length,pending,valueEq,small,lower,upper,hashSpan,postEq⟩
   · have hashView:=set_pending ready db 0#64 cursor.toNat next.toNat entry rest readyView nextLower (Or.inl rfl)
     have postMemory : post.memory=(hashState ready entry.record 0#64).memory:=by rw [postEq]; rfl
@@ -101,7 +109,11 @@ theorem core_resolve_stack_normal (input : Guest.InputBlob) (source post : PanSe
       lt_trans (Mpt.WitnessStackRank.terminal _ _) (Mpt.WitnessStackRank.resolve_decode _ _)
     exact ⟨⟨next,0#64,actualNext,nextArena,aligned,grows,scratch,postView,actualTop,actualSlot,
       Or.inl ⟨rfl,node,actualResult,actualMode,postOwned,rank⟩⟩,
-      preserved "db" (by decide) (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide) (by decide)⟩
+      preserved "db" (by decide) (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide) (by decide),
+      ⟨⟨oldPointer,(preserved "cur_p" (by decide) (by decide) (by decide) (by decide)).trans pointerCell⟩,
+        ⟨oldLength,(preserved "cur_n" (by decide) (by decide) (by decide) (by decide)).trans lengthCell⟩,⟨node,actualResult⟩,⟨_,actualSlot⟩⟩,
+      ⟨by rw [postEq]; exact frame.domain,by rw [postEq]; exact frame.endian,by rw [postEq]; exact frame.code,
+        fun query lower upper=>by rw [postMemory]; exact databaseMemory 0#64 query lower upper⟩⟩
   · have valid : HashValid db pending:=hashSpan
     have hashView:=set_pending ready db pending cursor.toNat next.toNat entry rest readyView nextLower valid
     have postMemory : post.memory=(hashState ready entry.record pending).memory:=by rw [postEq]; rfl
@@ -122,7 +134,11 @@ theorem core_resolve_stack_normal (input : Guest.InputBlob) (source post : PanSe
     exact ⟨⟨next,pending,actualNext,nextArena,aligned,grows,scratch,postView,actualTop,actualSlot,
       Or.inr ⟨pointer,length,actualPointer,actualLength,actualMode,small,lower,upper,valid,Mpt.WitnessStackRank.resolve_decode _ _⟩⟩,
       preserved "db" (by decide) (by decide) (by decide) (by decide) (by decide),
-      preserved "go" (by decide) (by decide) (by decide) (by decide) (by decide)⟩
+      preserved "go" (by decide) (by decide) (by decide) (by decide) (by decide),
+      ⟨⟨pointer,actualPointer⟩,⟨length,actualLength⟩,
+        ⟨oldResult,(preserved "result" (by decide) (by decide) (by decide) (by decide) (by decide)).trans resultCell⟩,⟨_,actualSlot⟩⟩,
+      ⟨by rw [postEq]; exact frame.domain,by rw [postEq]; exact frame.endian,by rw [postEq]; exact frame.code,
+        fun query lower upper=>by rw [postMemory]; exact databaseMemory pending query lower upper⟩⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

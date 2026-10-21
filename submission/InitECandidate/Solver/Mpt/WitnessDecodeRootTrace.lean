@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.WitnessDecodeRootEnvironment
 import InitECandidate.Solver.MutableTable.MemeqAnyCall
+import InitECandidate.Solver.MutableTable.MemeqAnyFast32
 import InitECandidate.Solver.Input.ScopedCallTrace
 import InitECandidate.Solver.Input.CallResumeFields
 import InitECandidate.Solver.Input.ScopeClock
@@ -18,8 +19,8 @@ theorem lookup_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
     (rootCell : source.locals.lookup (ofString "root_hash")=some (.val (.word root)))
     (emptyCell : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
-    source.clock-post.clock≤129 ∨ ∃ current inner,
-      Input.LocalEffects.erase current=Input.LocalEffects.erase source ∧ current.clock≤source.clock ∧ source.clock-current.clock≤129 ∧
+    source.clock-post.clock≤5 ∨ ∃ current inner,
+      Input.LocalEffects.erase current=Input.LocalEffects.erase source ∧ current.clock≤source.clock ∧ source.clock-current.clock≤5 ∧
       current.locals.lookup (ofString "db")=some (.val (.word db)) ∧ current.locals.lookup (ofString "root_hash")=some (.val (.word root)) ∧
       evaluateHOLFiniteState current lookupCall=(outcome,inner) ∧ post=QueryBranch.restore source "is_empty" inner := by
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) compareArguments=
@@ -29,9 +30,9 @@ theorem lookup_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
   obtain ⟨callee,called,aCell,bCell,nCell⟩ := MutableTable.MemeqByteRuntime.environment source.code.lookup root emptyRoot 32
     (MutableTable.MemeqAny.original_code source.code installed)
   let entry:=callEntryStateHOLFinite source callee
-  have price:=MutableTable.MemeqAny.body_cost entry nCell
+  have price:=MutableTable.MemeqAny.tight_body_cost entry nCell
   rw [shapes.1] at run
-  rcases Input.CallNormal.scoped_trace source post "is_empty" .one (ofString "memeq") compareArguments _ Memeq32.body afterCompare callee .one 128
+  rcases Input.CallNormal.scoped_trace source post "is_empty" .one (ofString "memeq") compareArguments _ Memeq32.body afterCompare callee .one 4
       args called price outcome run with stopped|resumed
   · exact Or.inl stopped
   · obtain ⟨target,returned,inner,funded,bodyRun,checked,forward,spent,continued,endpoint⟩ := resumed

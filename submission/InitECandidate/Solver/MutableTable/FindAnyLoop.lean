@@ -15,7 +15,7 @@ theorem any_chain_cost (snapshot : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (source : PanSemStateFiniteExact 64 Guest.HostMemory) (locals : Locals source p index)
     (same : Input.LocalEffects.erase source=Input.LocalEffects.erase snapshot)
     (code : source.code.lookup (ofString "memeq")=some (Memeq32.formals,Memeq32.body,.one)) :
-    source.clock-(evaluateHOLFiniteState source loop).2.clock≤130*length := by
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤6*length := by
   induction chain generalizing source with
   | empty index inside loaded =>
     have memory:=Input.LocalEffects.memory_of_erase snapshot source same
@@ -55,9 +55,9 @@ theorem any_chain_cost (snapshot : PanSemStateFiniteExact 64 Guest.HostMemory) (
       obtain ⟨result,target⟩ := output
       have fixed:=StateSteps.fixed_clock (decClockHOLFinite source) target result forward
       simp only [fixed]
-      change source.clock-1-target.clock≤129 at cost
+      change source.clock-1-target.clock≤5 at cost
       change target.clock≤source.clock-1 at forward
-      have stopped : source.clock-target.clock≤130*(length+1) := by omega
+      have stopped : source.clock-target.clock≤6*(length+1) := by omega
       cases result with
       | none =>
         have nextLocals:=any_step_normal (decClockHOLFinite source) target p index entryLocals keyLength code computed
@@ -66,7 +66,7 @@ theorem any_chain_cost (snapshot : PanSemStateFiniteExact 64 Guest.HostMemory) (
         have nextInstalled : target.code.lookup (ofString "memeq")=some (Memeq32.formals,Memeq32.body,.one) := by rw [targetCode]; exact code
         have back:=ih target nextLocals nextFrame nextInstalled
         have backForward:=evaluateHOLFiniteState_clock_le target loop
-        change source.clock-(evaluateHOLFiniteState target loop).2.clock≤130*(length+1)
+        change source.clock-(evaluateHOLFiniteState target loop).2.clock≤6*(length+1)
         omega
       | some result =>
         cases result with
@@ -81,8 +81,8 @@ theorem any_chain_suffix_cost (snapshot : PanSemStateFiniteExact 64 Guest.HostMe
     (source : PanSemStateFiniteExact 64 Guest.HostMemory) (locals : Locals source p index)
     (same : Input.LocalEffects.erase source=Input.LocalEffects.erase snapshot)
     (code : source.code.lookup (ofString "memeq")=some (Memeq32.formals,Memeq32.body,.one)) :
-    source.clock-(evaluateHOLFiniteState source afterIndex).2.clock≤130*length := by
-  have cost:=Input.ClockCost.sequence_reached_current source loop (.return (.var .local (ofString "cap"))) (130*length) 0
+    source.clock-(evaluateHOLFiniteState source afterIndex).2.clock≤6*length := by
+  have cost:=Input.ClockCost.sequence_reached_current source loop (.return (.var .local (ofString "cap"))) (6*length) 0
     (any_chain_cost snapshot p index length chain keyLength source locals same code)
     (by intro middle normal; exact Input.ClockCost.returned middle.code _ middle rfl)
   simpa only [afterIndex,Nat.add_zero,QueryBranch.localVar] using cost

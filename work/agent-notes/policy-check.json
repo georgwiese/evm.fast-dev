@@ -1864,6 +1864,13 @@
     "submission/InitECandidate/Solver/Input/ExceptionControl.lean",
     "submission/InitECandidate/Solver/Input/ExceptionWordDeclaration.lean",
     "submission/InitECandidate/Solver/Input/ExecutionTail.lean",
+    "submission/InitECandidate/Solver/Input/FixedHashAllocation.lean",
+    "submission/InitECandidate/Solver/Input/FixedHashBody.lean",
+    "submission/InitECandidate/Solver/Input/FixedHashCall.lean",
+    "submission/InitECandidate/Solver/Input/FixedHashPipeline.lean",
+    "submission/InitECandidate/Solver/Input/FixedHashProgram.lean",
+    "submission/InitECandidate/Solver/Input/FixedHashSteps.lean",
+    "submission/InitECandidate/Solver/Input/FixedHashTail.lean",
     "submission/InitECandidate/Solver/Input/FixedList/CallerNormal.lean",
     "submission/InitECandidate/Solver/Input/FixedList/CallerTrace.lean",
     "submission/InitECandidate/Solver/Input/FixedList/Environment.lean",
@@ -6535,8 +6542,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63403,
-  "package_bytes": 2263074492,
+  "package_entries": 63410,
+  "package_bytes": 2263121632,
   "claim": {
     "K": "infinity"
   },

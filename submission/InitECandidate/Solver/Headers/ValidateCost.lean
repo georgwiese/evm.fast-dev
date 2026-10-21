@@ -36,7 +36,7 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   · obtain ⟨small,funded,firstRoom,secondRoom,inner,continued,endpoint⟩ := reached
     have geometry:=geometry_of_room heap count small heapLower heapAligned firstRoom secondRoom
     obtain ⟨layout,state⟩ := initial_round source source array heap count cursor limit stp pad pointers lengths lower upper installed shape arena environment
-      (Input.HashInput.Frame.refl source lower upper) rows geometry arrayCell countCell before small stateArena stateAligned padArena padAligned stateBefore padBefore aligned inputLower scratchBefore
+      (Input.HashInput.Frame.refl source lower upper) rows geometry arrayCell countCell before small stateArena stateAligned padArena padAligned stateBefore padBefore aligned inputLower scratchBefore (HeapGlobals.refl source)
     let data:=invocationData array heap count cursor limit stp pad pointers lengths lower upper
     let entry:=loopEntry source heap count
     have loopCost:=loops_cost data source entry state layout

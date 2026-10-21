@@ -28,9 +28,12 @@ theorem RoundState.nonlocal (data : Data) (origin source target : PanSemStateFin
   refine ⟨by rw [code]; exact state.installed,by rw [exceptions]; exact state.shape,
     Rlp.Validation.Arena.of_fields source target data.cursor data.limit state.arena domain globals,
     Keccak256.Environment.of_fields source target data.stp data.pad state.environment domain code oracle (by intro key other; rw [globals]),
-    state.input.trans origin source target _ _ frame,state.rows.of_frame source target _ _ _ _ _ _ frame,?_,arrayCell,countCell,hsCell,hashesCell,indexCell⟩
-  obtain ⟨heap,cell,bounded,aligned,before⟩ := state.heap
-  exact ⟨heap,by rw [globals]; exact cell,bounded,aligned,before⟩
+    state.input.trans origin source target _ _ frame,state.rows.of_frame source target _ _ _ _ _ _ frame,?_,arrayCell,countCell,hsCell,hashesCell,indexCell,?_⟩
+  · obtain ⟨heap,cell,bounded,aligned,before⟩ := state.heap
+    exact ⟨heap,by rw [globals]; exact cell,bounded,aligned,before⟩
+  · intro key other
+    rw [globals]
+    exact state.globals key other
 
 end InitECandidate.Solver.Headers.Validate
 

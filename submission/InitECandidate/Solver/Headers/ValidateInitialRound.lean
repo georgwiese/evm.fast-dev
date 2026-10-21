@@ -24,7 +24,7 @@ theorem initial_round (origin source : PanSemStateFiniteExact 64 Guest.HostMemor
     (stateArena : AllocatedBytes.Arena stp 200) (stateAligned : stp.toNat%8=0)
     (padArena : AllocatedBytes.Arena pad 136) (padAligned : pad.toNat%8=0)
     (stateBefore : stp.toNat+200≤lower) (padBefore : pad.toNat+136≤lower)
-    (aligned : lower%8=0) (inputLower : 2701131776≤lower) (scratchBefore : cursor.toNat≤lower) :
+    (aligned : lower%8=0) (inputLower : 2701131776≤lower) (scratchBefore : cursor.toNat≤lower) (globals : HeapGlobals origin source) :
     RoundLayout (invocationData array heap count cursor limit stp pad pointers lengths lower upper) ∧
       RoundState (invocationData array heap count cursor limit stp pad pointers lengths lower upper) origin (loopEntry source heap count) 0 := by
   let data:=invocationData array heap count cursor limit stp pad pointers lengths lower upper
@@ -36,9 +36,11 @@ theorem initial_round (origin source : PanSemStateFiniteExact 64 Guest.HostMemor
   have nextEnvironment:=Keccak256.Environment.of_fields source (loopEntry source heap count) stp pad environment rfl rfl rfl
     (loopEntry_globals source heap count)
   refine ⟨layout,installed,shape,loopEntry_arena source heap count cursor limit arena,nextEnvironment,
-    frame.trans origin source (loopEntry source heap count) lower upper nextFrame,nextRows,?_,cells.1,?_,cells.2.2.1,cells.2.2.2.1,cells.2.2.2.2⟩
+    frame.trans origin source (loopEntry source heap count) lower upper nextFrame,nextRows,?_,cells.1,?_,cells.2.2.1,cells.2.2.2.1,cells.2.2.2.2,?_⟩
   · exact ⟨entryHeap heap count,loopEntry_heap source heap count,geometry.heapBound,geometry.heapAligned,geometry.hashesBefore⟩
   · simpa [data,invocationData] using cells.2.1
+  · intro key other
+    exact (loopEntry_globals source heap count key other).trans (globals key other)
 
 end InitECandidate.Solver.Headers.Validate
 

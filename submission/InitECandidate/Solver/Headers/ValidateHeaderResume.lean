@@ -31,7 +31,7 @@ theorem RoundState.after_header (data : Data) (origin source target : PanSemStat
   refine ⟨?_,?_,nextArena,environment,state.input.trans origin source ready data.lower data.upper frame,
     state.rows.of_frame source ready data.array data.pointers data.lengths data.count data.lower data.upper frame,?_,
     (lookup _ (by decide)).trans state.arrayCell,(lookup _ (by decide)).trans state.countCell,
-    (lookup _ (by decide)).trans state.hsCell,(lookup _ (by decide)).trans state.hashesCell,(lookup _ (by decide)).trans state.indexCell⟩
+    (lookup _ (by decide)).trans state.hsCell,(lookup _ (by decide)).trans state.hashesCell,(lookup _ (by decide)).trans state.indexCell,?_⟩
   · change Input.OriginalCode.Installed target.code
     rw [returned.code]
     exact state.installed
@@ -42,6 +42,8 @@ theorem RoundState.after_header (data : Data) (origin source target : PanSemStat
     have first:=returned.afterHeap
     have next:=guards.2.2.1
     omega
+  · intro key other
+    exact (returned.globals key other).trans (state.globals key other)
 
 end InitECandidate.Solver.Headers.Validate
 

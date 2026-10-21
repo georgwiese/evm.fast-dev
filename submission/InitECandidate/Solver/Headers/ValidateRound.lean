@@ -1,3 +1,4 @@
+import InitECandidate.Solver.PanHeapGlobals
 import InitECandidate.Solver.Headers.ValidateRows
 import InitECandidate.Solver.Headers.DecodeCallNormal
 import InitECandidate.Solver.WitnessRadix.Keccak256EnvironmentFields
@@ -57,12 +58,13 @@ structure RoundState (data : Data) (origin current : PanSemStateFiniteExact 64 G
   hsCell : current.locals.lookup (ofString "hs")=some (.val (.word data.hs))
   hashesCell : current.locals.lookup (ofString "hashes")=some (.val (.word data.hashes))
   indexCell : current.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index)))
+  globals : HeapGlobals origin current
 
 theorem RoundState.dec_clock (data : Data) (origin current : PanSemStateFiniteExact 64 Guest.HostMemory) (index : Nat)
     (state : RoundState data origin current index) : RoundState data origin (decClockHOLFinite current) index := by
   refine ⟨state.installed,state.shape,Rlp.Validation.Arena.of_fields current _ _ _ state.arena rfl rfl,
     Keccak256.Environment.of_fields current _ _ _ state.environment rfl rfl rfl (by intro key other; rfl),
-    ⟨state.input.words⟩,?_,state.heap,state.arrayCell,state.countCell,state.hsCell,state.hashesCell,state.indexCell⟩
+    ⟨state.input.words⟩,?_,state.heap,state.arrayCell,state.countCell,state.hsCell,state.hashesCell,state.indexCell,state.globals⟩
   exact state.rows.of_frame current _ data.array data.pointers data.lengths data.count data.lower data.upper ⟨by intro query low high; rfl⟩
 
 end InitECandidate.Solver.Headers.Validate

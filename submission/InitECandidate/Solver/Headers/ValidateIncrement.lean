@@ -17,7 +17,7 @@ theorem increment_round (data : Data) (origin source : PanSemStateFiniteExact 64
   have nextArena:=Rlp.Validation.Arena.of_fields source (incremented source index) data.cursor data.limit state.arena rfl rfl
   have nextEnvironment:=Keccak256.Environment.of_fields source (incremented source index) data.stp data.pad state.environment rfl rfl rfl (by intro key other; rfl)
   refine ⟨actual,state.installed,state.shape,nextArena,nextEnvironment,state.input.trans origin source _ _ _ frame,
-    state.rows.of_frame source _ _ _ _ _ _ _ frame,state.heap,?_,?_,?_,?_,?_⟩
+    state.rows.of_frame source _ _ _ _ _ _ _ frame,state.heap,?_,?_,?_,?_,?_,state.globals⟩
   · exact (bind_lookup_other source "i" "arr" _ (by decide)).trans state.arrayCell
   · exact (bind_lookup_other source "i" "n" _ (by decide)).trans state.countCell
   · exact (bind_lookup_other source "i" "hs" _ (by decide)).trans state.hsCell
@@ -34,7 +34,7 @@ theorem RoundState.restore_temporary (data : Data) (origin saved source : PanSem
   have nextArena:=Rlp.Validation.Arena.of_fields source target data.cursor data.limit state.arena rfl rfl
   have nextEnvironment:=Keccak256.Environment.of_fields source target data.stp data.pad state.environment rfl rfl rfl (by intro key other; rfl)
   refine ⟨state.installed,state.shape,nextArena,nextEnvironment,state.input.trans origin source target _ _ frame,
-    state.rows.of_frame source target _ _ _ _ _ _ frame,state.heap,?_,?_,?_,?_,?_⟩
+    state.rows.of_frame source target _ _ _ _ _ _ frame,state.heap,?_,?_,?_,?_,?_,state.globals⟩
   · exact (restore_lookup_other saved source name "arr" (by rcases temporary with rfl|rfl <;> decide)).trans state.arrayCell
   · exact (restore_lookup_other saved source name "n" (by rcases temporary with rfl|rfl <;> decide)).trans state.countCell
   · exact (restore_lookup_other saved source name "hs" (by rcases temporary with rfl|rfl <;> decide)).trans state.hsCell

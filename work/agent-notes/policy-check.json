@@ -4275,6 +4275,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchLast.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchNext.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchScope.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchTransport.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackCache.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackDecode.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackExtension.lean",
@@ -4282,6 +4283,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackHash.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackPush.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackResolve.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreStackReturn.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackReturnFrame.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackView.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreTerminal.lean",
@@ -7126,8 +7128,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63995,
-  "package_bytes": 2265900479,
+  "package_entries": 63997,
+  "package_bytes": 2265916907,
   "claim": {
     "K": "infinity"
   },

@@ -88,7 +88,7 @@ theorem callee_returned (source target : PanSemStateFiniteExact 64 Guest.HostMem
     ready.stateBefore ready.padBefore ready.aligned ready.inputLower ready.scratchBefore value normal
   have fields:=Input.evaluation_fields entry target body (some (.returned value)) normal
   have outputFrame : Output source target array heap count cursor limit stp pad pointers lengths lower upper :=
-    ⟨output.smallCount,output.geometry,output.currentHeap,output.arena,output.environment,⟨output.memory.words⟩,output.rows,output.globals⟩
+    ⟨output.smallCount,output.geometry,output.currentHeap,output.arena,output.environment,⟨output.memory.words⟩,output.rows,output.globals,output.heapBound⟩
   exact ⟨valueEq,outputFrame,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,Input.evaluation_oracle entry target body (some (.returned value)) normal,by omega,by omega⟩
 
 /-- Every actual scoped call either stops within its own allowance or

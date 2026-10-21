@@ -24,6 +24,7 @@ structure Returned (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   oracle : target.ffi.oracle=source.ffi.oracle
   forward : target.clock≤source.clock
   cost : source.clock-target.clock≤251*length.toNat+1374
+  growth : (PersistentAlloc.rounded output 248#64).toNat≤heap.toNat+616
 
 /-- Every original scoped decoder outcome either stops within its own
 bound or reaches its real continuation with the actual allocated header
@@ -51,11 +52,11 @@ theorem scoped_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   rcases Input.CallNormal.scoped_trace source post name .one (ofString "decode_header") expressions _ body continuation callee .one (251*length.toNat+1373) args called price result run with stopped|reached
   · exact Or.inl stopped
   · obtain ⟨target,value,inner,funded,bodyRun,checked,forward,cost,continued,endpoint⟩ := reached
-    obtain ⟨output,valueEq,allocation,outputAligned,afterHeap,nextHeap,nextArena,memory,globals⟩ :=
+    obtain ⟨output,valueEq,allocation,outputAligned,afterHeap,nextHeap,nextArena,memory,globals,growth⟩ :=
       body_returned entry target pointer length heap cursor limit cutoff pointerCell lengthCell ready heapGlobal heapBound before sizeBound inputLower heapAligned aligned scratchBelow inputAbove installed value bodyRun
     rw [valueEq] at continued
     have fields:=Input.evaluation_fields entry target body (some (.returned value)) bodyRun
-    exact Or.inr ⟨target,output,inner,⟨allocation,outputAligned,afterHeap,nextHeap,nextArena,⟨memory.words⟩,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,Input.evaluation_oracle entry target body (some (.returned value)) bodyRun,forward,cost⟩,continued,endpoint⟩
+    exact Or.inr ⟨target,output,inner,⟨allocation,outputAligned,afterHeap,nextHeap,nextArena,⟨memory.words⟩,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,Input.evaluation_oracle entry target body (some (.returned value)) bodyRun,forward,cost,growth⟩,continued,endpoint⟩
 
 end InitECandidate.Solver.Headers.Decode
 

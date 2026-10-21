@@ -23,7 +23,8 @@ theorem body_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     ∃ output,value=.val (.word output) ∧ AllocatedBytes.Arena output 248 ∧ output.toNat%8=0 ∧ heap.toNat≤output.toNat ∧
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded output 248#64))) ∧
       Rlp.Validation.Arena post cursor limit ∧ Input.HashInput.Frame source post cutoff heap.toNat ∧
-      (∀ key,key≠ofString "heap_ptr" → post.globals.lookup key=source.globals.lookup key) := by
+      (∀ key,key≠ofString "heap_ptr" → post.globals.lookup key=source.globals.lookup key) ∧
+      (PersistentAlloc.rounded output 248#64).toNat≤heap.toNat+616 := by
   obtain ⟨parsed,header,payload,sliced,items,count,final,topReturned,slicesReturned,countValid,funded,headerRoom,entryForward,entryPrice,continued,postEq⟩ :=
     field_entry_returned source post pointer length heap cursor limit cutoff pointerCell lengthCell arena heapGlobal heapBound before sizeBound aligned scratchBelow inputAbove installed value normal
   have state:=initial_field_state source parsed sliced pointer length header payload heap cursor limit count items cutoff topReturned slicesReturned countValid headerRoom installed inputLower heapAligned before aligned scratchBelow inputAbove
@@ -42,7 +43,7 @@ theorem body_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     have h:=state.recordsBeforeHeader
     change heap.toNat+16*items.length≤output.toNat at h
     omega
-  refine ⟨output,valueEq,finalState.headerArena,finalState.headerAligned,outputAfter,?_,?_,?_,?_⟩
+  refine ⟨output,valueEq,finalState.headerArena,finalState.headerAligned,outputAfter,?_,?_,?_,?_,?_⟩
   · rw [globals]
     exact finalState.heap
   · exact Rlp.Validation.Arena.of_fields finish post cursor limit finalState.slices.arena domain globals
@@ -69,6 +70,18 @@ theorem body_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       rfl
     rw [entryGlobals]
     exact prefix_globals source parsed sliced pointer length header payload heap cursor limit count items topReturned slicesReturned key notHeap
+
+  · have firstSize : (count*16#64).toNat≤368 := by rcases countValid with rfl|rfl <;> decide
+    have firstNumber:=PersistentAlloc.rounded_nat heap (count*16#64) (by omega)
+    have outputBound : output.toNat≤heap.toNat+368 := by
+      change (PersistentAlloc.rounded heap (count*16#64)).toNat≤_
+      rw [firstNumber]
+      omega
+    have finalNumber:=PersistentAlloc.rounded_nat output 248#64 (by have h:=finalState.headerArena.upper; change output.toNat+248+7<2^64; omega)
+    have aligned:=finalState.headerAligned
+    rw [finalNumber]
+    change (output.toNat+248+7)/8*8≤heap.toNat+616
+    omega
 
 end InitECandidate.Solver.Headers.Decode
 

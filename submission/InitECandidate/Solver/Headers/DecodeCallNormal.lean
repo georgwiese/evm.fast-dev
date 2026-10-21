@@ -31,11 +31,11 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   change target.clock≤source.clock-1 at clock
   have forward : target.clock≤source.clock := by omega
   have cost : source.clock-target.clock≤251*length.toNat+1374 := by omega
-  obtain ⟨output,valueEq,allocation,outputAligned,afterHeap,nextHeap,nextArena,memory,globals⟩ :=
+  obtain ⟨output,valueEq,allocation,outputAligned,afterHeap,nextHeap,nextArena,memory,globals,growth⟩ :=
     body_returned entry target pointer length heap cursor limit cutoff pointerCell lengthCell ready heapGlobal heapBound before sizeBound inputLower heapAligned aligned scratchBelow inputAbove installed value bodyRun
   rw [valueEq] at continued
   have fields:=Input.evaluation_fields entry target body (some (.returned value)) bodyRun
-  exact ⟨target,output,inner,⟨allocation,outputAligned,afterHeap,nextHeap,nextArena,⟨memory.words⟩,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,Input.evaluation_oracle entry target body (some (.returned value)) bodyRun,forward,cost⟩,continued,endpoint⟩
+  exact ⟨target,output,inner,⟨allocation,outputAligned,afterHeap,nextHeap,nextArena,⟨memory.words⟩,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,Input.evaluation_oracle entry target body (some (.returned value)) bodyRun,forward,cost,growth⟩,continued,endpoint⟩
 
 end InitECandidate.Solver.Headers.Decode
 

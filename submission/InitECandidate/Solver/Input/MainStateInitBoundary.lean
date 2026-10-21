@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.MainRunAttemptConstructorReached
 import InitECandidate.Solver.MutableTable.WitnessDatabaseFields
+import InitECandidate.Solver.MutableTable.WitnessBuildHeapGeometry
 
 namespace InitECandidate.Solver.Input.Main.RunAttemptConstructors
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -15,6 +16,7 @@ def StateInitBoundary (input : Guest.InputBlob) (current : PanSemStateFiniteExac
     current.locals.lookup (ofString "nodedb")=some (.val (.word nodeTable)) ∧
     current.locals.lookup (ofString "codedb")=some (.val (.word codeTable)) ∧
     current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
+    AllocatedBytes.Arena heap 0 ∧ heap.toNat%8=0 ∧
     MutableTable.WitnessBuild.BeforeHeap current nodeTable heap.toNat ∧ MutableTable.WitnessBuild.BeforeHeap current codeTable heap.toNat
 
 /-- Extract this context at the genuine afterCodes execution already
@@ -33,7 +35,8 @@ theorem Reached.state_init_boundary (input : Guest.InputBlob) (source post : Pan
     (CallNormal.continuation_lookup_other codeSource codeTarget "codedb" "nodedb" (.val (.word codeTable)) (by decide)).trans
       (CallNormal.continuation_lookup_same prepared nodeTarget "nodedb" (.val (.word heap)))
   have codeCell : current.locals.lookup (ofString "codedb")=some (.val (.word codeTable)) := CallNormal.continuation_lookup_same _ _ _ _
-  refine ⟨current,inner,⟨codeArray,heap,codeTable,currentHeap,nodeData,codeData,nodeCell,codeCell,heapCell,nodeBefore,codeBefore⟩,continued⟩
+  have geometry:=codeReturned.toNormal.heap_arena codeSource codeTarget _ codeTable _ 2713714976#64 2713715176#64 2713717584#64 currentHeap heapCell
+  refine ⟨current,inner,⟨codeArray,heap,codeTable,currentHeap,nodeData,codeData,nodeCell,codeCell,heapCell,geometry.1,geometry.2,nodeBefore,codeBefore⟩,continued⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

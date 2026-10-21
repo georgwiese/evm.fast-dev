@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.WitnessCoreStackView
 import InitECandidate.Solver.Mpt.WitnessRecordIntervalFrame
+import InitECandidate.Solver.Mpt.WitnessRecordFrame
 import InitECandidate.Solver.Mpt.WitnessDecodeNormalFrame
 
 namespace InitECandidate.Solver.Mpt.WitnessCore.Stack
@@ -43,6 +44,19 @@ theorem View.frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
   exact ⟨records,view.before,fun entry member=>(view.marks entry member).trans grows,
     fun entry member=>drops.trans (view.above entry member),view.links.frame source target stack recordMemory,pending,view.ordered,view.counters⟩
 
+/-- Local bindings, clocks and lexical restorations preserve the entire
+physical stack when the actual ordinary memory/domain are unchanged. -/
+theorem View.of_fields (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (db : BitVec 64)
+    (cursor heap : Nat) (stack : List Entry) (view : View source db cursor heap stack)
+    (memory : target.memory=source.memory) (domain : target.memaddrs=source.memaddrs) : View target db cursor heap stack := by
+  have records (entry : Entry) (member : entry∈stack) : WitnessRecord.View target entry.record db entry.data:=
+    (view.records entry member).of_fields source target entry.record db entry.data memory domain
+  have pending (entry : Entry) (member : entry∈stack) : Pending target db entry:=by
+    have old:=view.pending entry member
+    cases observed : entry.pending <;> simpa only [Pending,observed,memory] using old
+  exact ⟨records,view.before,view.marks,view.above,
+    view.links.frame source target stack (fun entry member=>congrFun memory entry.record),pending,view.ordered,view.counters⟩
+
 /-- The complete genuine decoder memory frame preserves every older
 activation and its pending hash at the actual next heap/scratch cursors.
 This includes the real core PREV store, which its caller frame already
@@ -64,3 +78,5 @@ end InitECandidate.Solver.Mpt.WitnessCore.Stack
 
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.View.frame
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.of_decode_frame
+
+#print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.View.of_fields

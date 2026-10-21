@@ -2,7 +2,7 @@ import InitECandidate.Solver.Input.BytesListBodyCost
 import InitECandidate.Solver.Input.ClockCostTerminatingCall
 import InitECandidate.Solver.Input.BytesListHeap
 
-namespace InitECandidate.Solver.Input.BytesList
+namespace InitECandidate.Solver.Input.BytesListHash
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix
 
@@ -64,8 +64,8 @@ theorem ignored_return_heap (source post : PanSemStateFiniteExact 64 Guest.HostM
   rw [endpoint]
   exact restored
 
-end InitECandidate.Solver.Input.BytesList
+end InitECandidate.Solver.Input.BytesListHash
 
-#print axioms InitECandidate.Solver.Input.BytesList.environment
-#print axioms InitECandidate.Solver.Input.BytesList.call_cost
-#print axioms InitECandidate.Solver.Input.BytesList.ignored_return_heap
+#print axioms InitECandidate.Solver.Input.BytesListHash.environment
+#print axioms InitECandidate.Solver.Input.BytesListHash.call_cost
+#print axioms InitECandidate.Solver.Input.BytesListHash.ignored_return_heap

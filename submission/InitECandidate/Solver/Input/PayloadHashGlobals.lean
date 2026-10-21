@@ -49,8 +49,8 @@ theorem globals (key : MlS) (code) (installed : OriginalCode.Installed code) (di
     rw [StaticFields.prefix_shape]
     apply StaticFields.program_globals _ _ key code installed different
     exact GlobalEffects.sequence key code _ _
-      (GlobalEffects.call_body key code (some none) (ofString "htr_bytes_list") StaticFields.extraArguments BytesList.formals BytesList.body .one
-        (BytesList.original_code code installed) (BytesList.globals key code installed different))
+      (GlobalEffects.call_body key code (some none) (ofString "htr_bytes_list") StaticFields.extraArguments BytesListHash.formals BytesListHash.body .one
+        (BytesListHash.original_code code installed) (BytesListHash.globals key code installed different))
       (StaticFields.program_globals _ _ key code installed different transactions)
   rw [entry_shapes.1,entry_shapes.2.1,entry_shapes.2.2]
   apply GlobalEffects.declared key code

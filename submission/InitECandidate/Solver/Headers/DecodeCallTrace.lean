@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Headers.DecodeReturned
 import InitECandidate.Solver.Headers.DecodeCallCost
+import InitECandidate.Solver.Input.EvaluationOracle
 
 namespace InitECandidate.Solver.Headers.Decode
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -20,6 +21,7 @@ structure Returned (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   domain : target.memaddrs=source.memaddrs
   endian : target.be=source.be
   exceptions : target.eshapes=source.eshapes
+  oracle : target.ffi.oracle=source.ffi.oracle
   forward : target.clock≤source.clock
   cost : source.clock-target.clock≤251*length.toNat+1374
 
@@ -53,7 +55,7 @@ theorem scoped_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       body_returned entry target pointer length heap cursor limit cutoff pointerCell lengthCell ready heapGlobal heapBound before sizeBound inputLower heapAligned aligned scratchBelow inputAbove installed value bodyRun
     rw [valueEq] at continued
     have fields:=Input.evaluation_fields entry target body (some (.returned value)) bodyRun
-    exact Or.inr ⟨target,output,inner,⟨allocation,outputAligned,afterHeap,nextHeap,nextArena,⟨memory.words⟩,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,forward,cost⟩,continued,endpoint⟩
+    exact Or.inr ⟨target,output,inner,⟨allocation,outputAligned,afterHeap,nextHeap,nextArena,⟨memory.words⟩,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,Input.evaluation_oracle entry target body (some (.returned value)) bodyRun,forward,cost⟩,continued,endpoint⟩
 
 end InitECandidate.Solver.Headers.Decode
 

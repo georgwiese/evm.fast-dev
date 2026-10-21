@@ -35,7 +35,7 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     body_returned entry target pointer length heap cursor limit cutoff pointerCell lengthCell ready heapGlobal heapBound before sizeBound inputLower heapAligned aligned scratchBelow inputAbove installed value bodyRun
   rw [valueEq] at continued
   have fields:=Input.evaluation_fields entry target body (some (.returned value)) bodyRun
-  exact ⟨target,output,inner,⟨allocation,outputAligned,afterHeap,nextHeap,nextArena,⟨memory.words⟩,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,forward,cost⟩,continued,endpoint⟩
+  exact ⟨target,output,inner,⟨allocation,outputAligned,afterHeap,nextHeap,nextArena,⟨memory.words⟩,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,Input.evaluation_oracle entry target body (some (.returned value)) bodyRun,forward,cost⟩,continued,endpoint⟩
 
 end InitECandidate.Solver.Headers.Decode
 

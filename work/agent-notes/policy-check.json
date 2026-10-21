@@ -2331,6 +2331,15 @@
     "submission/InitECandidate/Solver/Input/RequestChain.lean",
     "submission/InitECandidate/Solver/Input/RequestFromHeader.lean",
     "submission/InitECandidate/Solver/Input/RequestGasFromHeader.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashAllocation.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashBody.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashBranches.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashCall.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashLoop.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashProgram.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashRound.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashStep.lean",
+    "submission/InitECandidate/Solver/Input/RequestListHashSuffix.lean",
     "submission/InitECandidate/Solver/Input/RequestLoad.lean",
     "submission/InitECandidate/Solver/Input/RequestOffsetValues.lean",
     "submission/InitECandidate/Solver/Input/RequestOffsetsFields.lean",
@@ -6542,8 +6551,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63410,
-  "package_bytes": 2263121632,
+  "package_entries": 63419,
+  "package_bytes": 2263183297,
   "claim": {
     "K": "infinity"
   },

@@ -55,7 +55,7 @@ theorem core_decode_resume_normal (source ready : PanSemStateFiniteExact 64 Gues
     have nextResult : Mpt.WitnessDecode.NormalResult next db pointer length heap cursor limit (.rStruct [.val (.word 0#64),.val (.word node)]):=
       .leaf node nibbles nibbleLength valuePointer valueLength finalHeap (view.of_fields next rfl rfl) freshPath freshNode (scratch.of_fields ready next cursor limit rfl rfl) heapCell heapArena heapAligned nodeBefore
     exact ⟨next,run,nextFrame,nextResult,Or.inl ⟨node,rfl,rfl⟩⟩
-  | record data finalHeap view parentPointer parentLength before freshRows freshPayload fresh heapCell heapArena heapAligned scratch drop=>
+  | record data finalHeap view parentPointer parentLength before freshRows freshPayload fresh initial heapCell heapArena heapAligned scratch drop=>
     let record:=Mpt.WitnessRecord.pointer cursor
     let next:=Mpt.WitnessCore.pushed ready record previous data.payload
     have run:=Mpt.WitnessCore.after_decode_push ready record db previous oldSlot oldMode data view dCell topCell slotCell modeCell
@@ -70,8 +70,10 @@ theorem core_decode_resume_normal (source ready : PanSemStateFiniteExact 64 Gues
     have linkedFrame:=frame.store_below source ready heap cursor limit record previous recordBelow
     have nextFrame:=linkedFrame.of_erase source next linked heap cursor limit rfl
     have nextView:=Mpt.WitnessCore.pushed_view ready record db previous data view
+    have linkedInitial:=initial.store_record ready record db previous data view
+    have nextInitial:=linkedInitial.of_fields linked next data.payload rfl
     have nextResult : Mpt.WitnessDecode.NormalResult next db pointer length heap cursor limit (.rStruct [.val (.word 1#64),.val (.word record)]):=
-      .record data finalHeap nextView parentPointer parentLength before freshRows freshPayload fresh heapCell heapArena heapAligned (scratch.of_fields ready next record limit rfl rfl) drop
+      .record data finalHeap nextView parentPointer parentLength before freshRows freshPayload fresh nextInitial heapCell heapArena heapAligned (scratch.of_fields ready next record limit rfl rfl) drop
     exact ⟨next,run,nextFrame,nextResult,Or.inr ⟨data,rfl,fresh,nextView,rfl⟩⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors

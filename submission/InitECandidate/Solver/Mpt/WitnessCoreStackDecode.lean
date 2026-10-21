@@ -27,7 +27,7 @@ inductive DecodeStep (post : PanSemStateFiniteExact 64 Guest.HostMemory) (db hea
       (heapArena : AllocatedBytes.Arena next 0) (aligned : next.toNat%8=0) (grows : heap.toNat≤next.toNat)
       (scratch : Rlp.Validation.Arena post (WitnessRecord.pointer cursor) limit)
       (view : View post db (WitnessRecord.pointer cursor).toNat next.toNat (⟨WitnessRecord.pointer cursor,data,next.toNat,none⟩::stack))
-      (fresh : data.payload.Fresh)
+      (fresh : data.payload.Fresh) (initial : data.payload.InitialValue post)
       (freshRows : heap.toNat≤data.array.toNat) (freshPayload : heap.toNat≤data.payload.startAddress)
       (topCell : post.locals.lookup (ofString "top")=some (.val (.word (WitnessRecord.pointer cursor))))
       (slotCell : post.locals.lookup (ofString "slot")=some (.val (.word (BitVec.ofNat 64 data.payload.slotIndex))))
@@ -110,7 +110,7 @@ theorem core_decode_stack_normal (input : Guest.InputBlob) (source post : PanSem
   · rw [valueEq] at result
     have fields:=decode_scoped_push_fields source ready (Mpt.WitnessRecord.pointer cursor) (top stack) shapeData.payload shapeFresh
     have link : post.memory (Mpt.WitnessRecord.pointer cursor)=.word (top stack):=by rw [postEq]; exact fields.2.2.2.1
-    obtain ⟨data,next,postView,fresh,parentPointer,parentLength,nextCell,nextArena,aligned,scratch,grows,freshRows,freshPayload,rank⟩:=
+    obtain ⟨data,next,postView,fresh,initial,parentPointer,parentLength,nextCell,nextArena,aligned,scratch,grows,freshRows,freshPayload,rank⟩:=
       push_record_result source post db pointer length heap cursor limit stack view arena heapLower frame result link
     let entry : Mpt.WitnessCore.Stack.Entry:=⟨Mpt.WitnessRecord.pointer cursor,data,next.toNat,none⟩
     have recordView:=postView.records entry List.mem_cons_self
@@ -125,7 +125,7 @@ theorem core_decode_stack_normal (input : Guest.InputBlob) (source post : PanSem
       rw [postEq]
       exact (decode_scoped_push_other source ready _ (top stack) shapeData.payload name notD notTop notSlot notMode).trans
         (CallNormal.continuation_lookup_other source built "d" name returned notD)
-    exact ⟨frame,.pushed data next nextCell nextArena aligned grows scratch postView fresh freshRows freshPayload postTop postSlot postMode rank,
+    exact ⟨frame,.pushed data next nextCell nextArena aligned grows scratch postView fresh initial freshRows freshPayload postTop postSlot postMode rank,
       preserved "db" (by decide) (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide) (by decide),
       ⟨⟨pointer,(preserved "cur_p" (by decide) (by decide) (by decide) (by decide)).trans pointerCell⟩,
         ⟨length,(preserved "cur_n" (by decide) (by decide) (by decide) (by decide)).trans lengthCell⟩,

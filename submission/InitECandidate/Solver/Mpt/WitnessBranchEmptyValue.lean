@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Mpt.WitnessBranchValueView
+import InitECandidate.Solver.Mpt.WitnessCoreBranchValueStores
 import InitECandidate.Solver.Mpt.WitnessDecodeBranchNormal
 import InitECandidate.Solver.Mpt.WitnessRecordMemory
 
@@ -57,5 +57,45 @@ theorem branch_empty_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
 
 end InitECandidate.Solver.Mpt.WitnessDecode
 
+namespace InitECandidate.Solver.Mpt.WitnessRecord
+open Flapjack PanSemStateFiniteExact WitnessRadix
+
+/-- A freshly returned branch has its genuine original empty value;
+extension records have no branch value words. -/
+def Payload.InitialValue (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Payload → Prop
+  | .extension ..=>True
+  | .branch node _ _=>WitnessCore.EmptyValue source node
+
+theorem Payload.InitialValue.of_fields (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (payload : Payload) (initial : payload.InitialValue source) (memory : target.memory=source.memory) : payload.InitialValue target := by
+  cases payload with
+  | extension nibbles length=>trivial
+  | branch node index occupied=>exact ⟨by rw [memory]; exact initial.1,by rw [memory]; exact initial.2⟩
+
+/-- The core's actual PREV store is below every branch allocation and
+therefore retains the freshly derived initial value fields. -/
+theorem Payload.InitialValue.store_record (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (record db previous : BitVec 64) (data : Description) (view : View source record db data)
+    (initial : data.payload.InitialValue source) :
+    data.payload.InitialValue {source with memory:=StoreWord.put source.memory record previous} := by
+  cases payload : data.payload with
+  | extension nibbles length=>simp only [InitialValue,payload]
+  | branch node index occupied=>
+    simp only [InitialValue,payload] at initial ⊢
+    have owned:=view.owned
+    simp only [payload,Payload.Owned] at owned
+    have lower : 2713731432≤node.toNat := by simpa only [payload,Payload.startAddress] using view.payloadFloor
+    have ceiling:=view.ceiling
+    have away (offset : Nat) (inside : offset<176) : node+BitVec.ofNat 64 offset≠record := by
+      have number : (node+BitVec.ofNat 64 offset).toNat=node.toNat+offset := byteAddress_toNat node offset (by have upper:=owned.1.upper; omega)
+      intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      rw [number] at numeric
+      omega
+    exact initial.frame source _ node (if_neg (away 160 (by decide))) (if_neg (away 168 (by decide)))
+
+end InitECandidate.Solver.Mpt.WitnessRecord
+
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_allocated_empty
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_empty_normal
+#print axioms InitECandidate.Solver.Mpt.WitnessRecord.Payload.InitialValue.store_record

@@ -33,7 +33,7 @@ theorem Invariant.decode_normal (input : Guest.InputBlob) (frontier : Nat) (db h
     exact ⟨⟨next,cursor,stack,.returning,true⟩,
       ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
         scratch,invariant.below,view,invariant.fresh,words,top,mode,actualGo,⟨waiting,node,result,returnedOwned⟩,Or.inl rfl,installed⟩,rank⟩
-  | pushed data next nextCell nextArena aligned grows scratch view fresh freshRows freshPayload top slot mode rank=>
+  | pushed data next nextCell nextArena aligned grows scratch view fresh initial freshRows freshPayload top slot mode rank=>
     let entry : Entry:=⟨WitnessRecord.pointer cursor,data,next.toNat,none⟩
     have freshStack : FreshFrom frontier (entry::stack):=
       invariant.fresh.cons frontier entry stack (invariant.frontierBefore.trans freshRows) (invariant.frontierBefore.trans freshPayload)

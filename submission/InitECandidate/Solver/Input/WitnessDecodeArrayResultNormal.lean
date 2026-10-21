@@ -52,7 +52,7 @@ theorem decode_array_result_normal (input : Guest.InputBlob)
       exact .leaf node next nibbleLength valuePointer valueLength finalHeap view grows (grows.trans freshNode) scratch finalCell finalArena finalAligned nodeBefore
     · rw [valueEq]
       exact .record (Mpt.WitnessDecode.extensionDescription array pointer length (pointer+header) payload.toNat items next nibbleLength) finalHeap view rfl rfl before
-        (Nat.le_refl _) grows trivial finalCell finalArena finalAligned scratch drop
+        (Nat.le_refl _) grows trivial trivial finalCell finalArena finalAligned scratch drop
   · rw [if_neg pair] at normal
     obtain ⟨valueEq,view,before,scratch,finalCell,finalArena,finalAligned,nodeBefore,drop⟩:=Mpt.WitnessDecode.branch_view_normal source post db array pointer length count (pointer+header) next cursor limit payload.toNat items rows entry.snapshot.countExact
       arrayCell entry.pointerCell entry.lengthCell entry.sliceCell entry.snapshot.heapCell entry.snapshot.nextArena entry.snapshot.nextAligned entry.snapshot.arena below arrayFloor beforeArray
@@ -60,10 +60,13 @@ theorem decode_array_result_normal (input : Guest.InputBlob)
     obtain ⟨countEq,nodeArena,room,recordArena,scratch2,drop2,valueEq2,funding,postEq⟩:=Mpt.WitnessDecode.branch_normal source post array pointer length count next cursor limit
       arrayCell entry.pointerCell entry.lengthCell entry.sliceCell entry.snapshot.heapCell entry.snapshot.nextArena entry.snapshot.nextAligned entry.snapshot.arena entry.installed value normal
     have frame:=Mpt.WitnessDecode.branch_frame_of_post source post next cursor limit (Mpt.WitnessDecode.branchWords array pointer length next) nodeArena entry.snapshot.arena room scratch2 postEq
+    have initial:=Mpt.WitnessDecode.branch_empty_normal source post array pointer length count next cursor limit
+      arrayCell entry.pointerCell entry.lengthCell entry.sliceCell entry.snapshot.heapCell entry.snapshot.nextArena entry.snapshot.nextAligned entry.snapshot.arena
+      (by omega) entry.installed value normal
     refine ⟨frame,?_⟩
     rw [valueEq]
     exact .record (Mpt.WitnessDecode.branchDescription array pointer length (pointer+header) payload.toNat items next) (PersistentAlloc.rounded next 176#64)
-      view rfl rfl before (Nat.le_refl _) grows ⟨rfl,rfl⟩ finalCell finalArena finalAligned scratch drop
+      view rfl rfl before (Nat.le_refl _) grows ⟨rfl,rfl⟩ initial finalCell finalArena finalAligned scratch drop
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

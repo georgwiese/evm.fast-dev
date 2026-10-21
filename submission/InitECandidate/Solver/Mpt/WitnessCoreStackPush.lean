@@ -40,7 +40,7 @@ theorem push_record_result (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (link : post.memory (WitnessRecord.pointer cursor)=.word (top stack)) :
     ∃ data : WitnessRecord.Description, ∃ next,
       let entry : Entry:=⟨WitnessRecord.pointer cursor,data,next.toNat,none⟩
-      View post db (WitnessRecord.pointer cursor).toNat next.toNat (entry::stack) ∧ data.payload.Fresh ∧
+      View post db (WitnessRecord.pointer cursor).toNat next.toNat (entry::stack) ∧ data.payload.Fresh ∧ data.payload.InitialValue post ∧
       data.pointer=pointer ∧ data.length=length ∧
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧
       AllocatedBytes.Arena next 0 ∧ next.toNat%8=0 ∧ Rlp.Validation.Arena post (WitnessRecord.pointer cursor) limit ∧
@@ -49,7 +49,7 @@ theorem push_record_result (source post : PanSemStateFiniteExact 64 Guest.HostMe
       WitnessStackRank.rank (WitnessStackRank.recordsLeft (WitnessRecord.pointer cursor).toNat limit.toNat) (frames (entry::stack)) .resolve true<
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames stack) .decode true := by
   cases result with
-  | record data next view parentPointer parentLength before freshRows freshPayload fresh heapCell heapArena heapAligned scratch drop=>
+  | record data next view parentPointer parentLength before freshRows freshPayload fresh initial heapCell heapArena heapAligned scratch drop=>
     have room : Arenas.Room .down cursor limit 88#64:=by
       change limit.toNat+88≤cursor.toNat
       omega
@@ -67,7 +67,7 @@ theorem push_record_result (source post : PanSemStateFiniteExact 64 Guest.HostMe
       exact ⟨by omega,mark.trans freshRows,mark.trans freshPayload⟩
     have pushed:=push post db (WitnessRecord.pointer cursor) (WitnessRecord.pointer cursor).toNat next.toNat data stack oldPost view before
       (Nat.le_refl _) fresh order link
-    exact ⟨data,next,pushed,fresh,parentPointer,parentLength,heapCell,heapArena,heapAligned,scratch,grows,freshRows,freshPayload,
+    exact ⟨data,next,pushed,fresh,initial,parentPointer,parentLength,heapCell,heapArena,heapAligned,scratch,grows,freshRows,freshPayload,
       WitnessRecord.allocation_rank_push source cursor limit arena room (frames stack) data.payload⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack

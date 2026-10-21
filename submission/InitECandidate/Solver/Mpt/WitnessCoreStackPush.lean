@@ -23,32 +23,8 @@ theorem push (post : PanSemStateFiniteExact 64 Guest.HostMemory) (db record : Bi
     (order : ∀ parent∈rest,record.toNat+88≤parent.record.toNat ∧ parent.mark≤data.array.toNat ∧ parent.mark≤data.payload.startAddress)
     (link : post.memory record=.word (top rest)) :
     View post db cursor heap ({record:=record,data:=data,mark:=heap,pending:=none}::rest) := by
-  let entry : Entry:=⟨record,data,heap,none⟩
-  have records (current : Entry) (member : current∈entry::rest) : WitnessRecord.View post current.record db current.data:=by
-    rcases List.mem_cons.mp member with same|older
-    · subst current; exact view
-    · exact old.records current older
-  have beforeAll (current : Entry) (member : current∈entry::rest) : current.data.BeforeHeap current.mark:=by
-    rcases List.mem_cons.mp member with same|older
-    · subst current; exact before
-    · exact old.before current older
-  have marks (current : Entry) (member : current∈entry::rest) : current.mark≤heap:=by
-    rcases List.mem_cons.mp member with same|older
-    · subst current; exact Nat.le_refl _
-    · exact old.marks current older
-  have aboveAll (current : Entry) (member : current∈entry::rest) : cursor≤current.record.toNat:=by
-    rcases List.mem_cons.mp member with same|older
-    · subst current; exact above
-    · exact old.above current older
-  have pending (current : Entry) (member : current∈entry::rest) : Pending post db current:=by
-    rcases List.mem_cons.mp member with same|older
-    · subst current; trivial
-    · exact old.pending current older
-  have counters (current : Entry) (member : current∈entry::rest) : CounterBound current.data:=by
-    rcases List.mem_cons.mp member with same|older
-    · subst current; exact fresh_counters data fresh
-    · exact old.counters current older
-  exact ⟨records,beforeAll,marks,aboveAll,⟨link,old.links⟩,pending,⟨order,old.ordered⟩,counters⟩
+  exact View.cons post db cursor heap ⟨record,data,heap,none⟩ rest old view before (Nat.le_refl _) above link True.intro order
+    (fresh_counters data fresh)
 
 /-- The complete genuine decoder's record result and actual core PREV
 store supply a physical push and strict rank decrease. All fresh extents,

@@ -78,9 +78,44 @@ theorem Links.frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     exact ⟨(memory entry List.mem_cons_self).trans links.1,ih links.2
       (fun older member=>memory older (List.mem_cons_of_mem _ member))⟩
 
+/-- Assemble one actual head and its already preserved physical tail. -/
+theorem View.cons (source : PanSemStateFiniteExact 64 Guest.HostMemory) (db : BitVec 64)
+    (cursor heap : Nat) (entry : Entry) (rest : List Entry) (old : View source db cursor heap rest)
+    (record : WitnessRecord.View source entry.record db entry.data) (before : entry.data.BeforeHeap entry.mark)
+    (mark : entry.mark≤heap) (above : cursor≤entry.record.toNat) (link : source.memory entry.record=.word (top rest))
+    (pending : Pending source db entry)
+    (order : ∀ parent∈rest,entry.record.toNat+88≤parent.record.toNat ∧ parent.mark≤entry.data.array.toNat ∧ parent.mark≤entry.data.payload.startAddress)
+    (counters : CounterBound entry.data) : View source db cursor heap (entry::rest) := by
+  exact ⟨by simpa only [List.forall_mem_cons] using And.intro record old.records,
+    by simpa only [List.forall_mem_cons] using And.intro before old.before,
+    by simpa only [List.forall_mem_cons] using And.intro mark old.marks,
+    by simpa only [List.forall_mem_cons] using And.intro above old.above,
+    ⟨link,old.links⟩,
+    by simpa only [List.forall_mem_cons] using And.intro pending old.pending,
+    ⟨order,old.ordered⟩,
+    by simpa only [List.forall_mem_cons] using And.intro counters old.counters⟩
+
+theorem View.lower_cursor (source : PanSemStateFiniteExact 64 Guest.HostMemory) (db : BitVec 64)
+    (cursor smaller heap : Nat) (stack : List Entry) (view : View source db cursor heap stack) (drops : smaller≤cursor) :
+    View source db smaller heap stack :=
+  ⟨view.records,view.before,view.marks,fun entry member=>drops.trans (view.above entry member),view.links,view.pending,view.ordered,view.counters⟩
+
+/-- Ordered older records all lie above the complete current record.
+This is the actual memory cutoff for framing a head HASH/counter update. -/
+theorem View.tail_after_record (source : PanSemStateFiniteExact 64 Guest.HostMemory) (db : BitVec 64)
+    (cursor heap : Nat) (entry : Entry) (rest : List Entry) (view : View source db cursor heap (entry::rest)) :
+    View source db (entry.record.toNat+88) heap rest := by
+  have tail:=view.tail source db cursor heap entry rest
+  exact ⟨tail.records,tail.before,tail.marks,fun older member=>(view.ordered.1 older member).1,
+    tail.links,tail.pending,tail.ordered,tail.counters⟩
+
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.empty
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.View.tail
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.View.head_nonzero
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.Links.frame
+
+#print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.View.cons
+#print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.View.lower_cursor
+#print axioms InitECandidate.Solver.Mpt.WitnessCore.Stack.View.tail_after_record

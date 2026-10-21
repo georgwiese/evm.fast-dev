@@ -4261,6 +4261,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessCoreProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCorePush.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreResolveProgram.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreResolveResultNode.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreResolveRows.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreResolveScope.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreResolveState.lean",
@@ -4270,9 +4271,13 @@
     "submission/InitECandidate/Solver/Mpt/WitnessCoreReturnDispatch.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreReturnModeCost.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreReturnProgram.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreStackCache.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackDecode.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackFrame.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreStackHash.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackPush.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreStackResolve.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreStackReturnFrame.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackView.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreTerminal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessDecodeAllocationCost.lean",
@@ -7116,8 +7121,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63985,
-  "package_bytes": 2265832082,
+  "package_entries": 63990,
+  "package_bytes": 2265857721,
   "claim": {
     "K": "infinity"
   },

@@ -39,6 +39,28 @@ theorem branch_never : Input.NoFallthrough branchBody := by
   rw [branch_shape,←callShape]
   exact Input.NoFallthrough.sequence _ _ (Input.NoFallthrough.scoped _ _ _ _ _ (RecordKind.never .branch))
 
+theorem leaf_allocation_never : Input.NoFallthrough leafAllocate := by
+  rw [leaf_shape,leaf_tail_shape (fun _=>0#64)]
+  exact Input.NoFallthrough.scoped _ _ _ _ _ (fields_never _ _ _ (Input.NoFallthrough.returned _))
+
+theorem leaf_never : Input.NoFallthrough leafBody := by
+  rw [value_shape]
+  apply Input.NoFallthrough.scoped
+  rw [after_value_shape]
+  exact Input.NoFallthrough.sequence _ _ leaf_allocation_never
+
+theorem compact_choice (source : PanSemStateFiniteExact 64 Guest.HostMemory) (nibbles nibbleLength leaf : BitVec 64)
+    (compactCell : source.locals.lookup (ofString "cn")=some (.rStruct [.val (.word nibbles),.val (.word nibbleLength),.val (.word leaf)])) :
+    evaluateHOLFiniteState source afterCompact=
+      if leaf≠0#64 then evaluateHOLFiniteState source leafBody else evaluateHOLFiniteState source extensionBody := by
+  have selected : evaluateHOLFiniteState source (.ite (.cmp .notEqual (field "cn" 2) (.const 0#64)) leafBody .skip)=
+      if leaf≠0#64 then evaluateHOLFiniteState source leafBody else (none,source):=by
+    by_cases nonzero : leaf≠0#64
+    · simp [evaluateHOLFiniteState_ite,evalHOLExact,field,localVar,toExact,compactCell,nonzero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+    · simp [evaluateHOLFiniteState_ite,evalHOLExact,field,localVar,toExact,compactCell,nonzero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip]
+  rw [after_compact_shape]
+  exact Input.sequence_choice source _ leafBody extensionBody (leaf≠0#64) selected leaf_never
+
 theorem after_array_shape : afterArray=.seq (.ite (.cmp .equal (field "sl" 1) (.const 2#64)) pairBody .skip) branchBody := by
   simp only [afterArray,after_slices_shape,decRest]
 
@@ -62,5 +84,8 @@ end InitECandidate.Solver.Mpt.WitnessDecode
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.extension_never
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.pair_never
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.branch_never
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.leaf_allocation_never
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.leaf_never
+#print axioms InitECandidate.Solver.Mpt.WitnessDecode.compact_choice
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.after_array_shape
 #print axioms InitECandidate.Solver.Mpt.WitnessDecode.array_choice

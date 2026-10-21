@@ -6,7 +6,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- Every actual declaration either fails before spending a source tick or
 exposes its real read/shape check, inner run and lexical restoration. The
-initial value is arbitrary, including word labels permitted by scalar shape. -/
+initial value and its checked shape are derived from the actual evaluation. -/
 theorem declaration_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (name : String) (shape : ShapeHOL) (expression : ExpHOL 64) (continuation : ProgHOL 64)
     (outcome : Option (PanSemResultExact 64))

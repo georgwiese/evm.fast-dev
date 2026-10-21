@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.MainStateInitBoundary
 import InitECandidate.Solver.Input.ConstructorRuntimeEnvironment
 import InitECandidate.Solver.Input.ConstructorRuntimeScalars
+import InitECandidate.Solver.Input.ScopeClock
 
 namespace InitECandidate.Solver.Input.Main.RunAttemptConstructors
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -16,7 +17,9 @@ theorem Reached.state_init_runtime (input : Guest.InputBlob) (source post : PanS
     (outcome : Option (PanSemResultExact 64)) (reached : Reached input source post root outcome) :
     ∃ current inner,StateInitBoundary input current ∧ ConstructorRuntimeFrame source current ∧
       OriginalCode.Installed current.code ∧ OriginalScalarGlobals.Scalars current.globals ∧ Rlp.Validation.Arena current 2713714688#64 2701135872#64 ∧
-      Keccak256.Environment current 2713714976#64 2713715176#64 ∧ evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) := by
+      Keccak256.Environment current 2713714976#64 2713715176#64 ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤price input ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) := by
   obtain ⟨headerTarget,headerRows,parent,nodeTarget,codeTarget,codeArray,heap,codeTable,currentHeap,inner,headerReturned,nodeReturned,codeReturned,nodeDatabase,codeDatabase,heapCell,nodeBefore,codeBefore,forward,spent,continued,endpoint⟩ := reached
   let afterHeader:=parentSource source headerTarget input root
   let prepared:=RunAttempt.constructorEntry afterHeader (countWord input) (hashArray input root) parent
@@ -56,8 +59,11 @@ theorem Reached.state_init_runtime (input : Guest.InputBlob) (source post : PanS
       (CallNormal.continuation_lookup_same prepared nodeTarget "nodedb" (.val (.word heap)))
   have codeCell : current.locals.lookup (ofString "codedb")=some (.val (.word codeTable)) := CallNormal.continuation_lookup_same _ _ _ _
   have geometry:=codeReturned.toNormal.heap_arena codeSource codeTarget _ codeTable _ 2713714976#64 2713715176#64 2713717584#64 currentHeap heapCell
+  have finalClock : post.clock=inner.clock := by
+    have projected:=congrArg PanSemStateFiniteExact.clock endpoint
+    simpa only [RunAttempt.restoreHeader_clock,RunAttempt.restoreConstructor_clock,QueryBranch.restore_clock] using projected
   exact ⟨current,inner,⟨codeArray,heap,codeTable,currentHeap,nodeData,codeData,nodeCell,codeCell,heapCell,geometry.1,geometry.2,nodeBefore,codeBefore⟩,
-    frame,currentInstalled,currentScalars,scratch,environment,continued⟩
+    frame,currentInstalled,currentScalars,scratch,environment,forward,spent,finalClock,continued⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

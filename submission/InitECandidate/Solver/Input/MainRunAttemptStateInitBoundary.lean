@@ -21,7 +21,9 @@ theorem state_init_boundary_of_actual (input : Guest.InputBlob)
       StateInitBoundary input current ∧ ConstructorRuntimeFrame source current ∧
       OriginalCode.Installed current.code ∧ OriginalScalarGlobals.Scalars current.globals ∧
       Rlp.Validation.Arena current 2713714688#64 2701135872#64 ∧
-      Keccak256.Environment current 2713714976#64 2713715176#64 ∧ evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) := by
+      Keccak256.Environment current 2713714976#64 2713715176#64 ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤price input ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) := by
   rcases prefix_of_actual input before copiedSource origin hashed source post root counts copied actual bounded prepared returned entryFrame siCell outcome run with stopped|reached
   · exact Or.inl stopped
   · obtain ⟨headerArray,context,payloadCell,pointerCell,countCell,scalars,siArena,siAligned⟩ :=

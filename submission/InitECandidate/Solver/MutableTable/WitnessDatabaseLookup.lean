@@ -33,7 +33,8 @@ theorem Database.execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     ∃ answer paid target,paid≤6*count+3 ∧
       evaluateHOLFiniteState source NodeDb.body=(some (.returned (NodeDb.output answer)),target) ∧
       emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-paid} ∧
-      (∀ slice,answer=some slice→∃ index<count,slice=slices index ∧ slice.2.toNat≤maximum) := by
+      (∀ slice,answer=some slice→∃ index<count,slice=slices index ∧ slice.2.toNat≤maximum ∧
+        AllocatedBytes.Arena slice.1 slice.2.toNat ∧ 2713731432≤slice.1.toNat ∧ slice.1.toNat+slice.2.toNat≤table.toNat) := by
   obtain ⟨bits,stored,input,logical,lower,upper,capacity,ready,built,history,length,rows⟩ := actual.data
   let plan:=Constructor.allocationPlan (effectiveRecords array table count) table.toNat count (2^bits)
   have helpers:=original_helpers source.code installed
@@ -44,7 +45,9 @@ theorem Database.execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
   · simpa only [lookup_output] using run
   · intro slice found
     obtain ⟨index,inside,equal⟩ := sliceEntries_hit plan ready slices input history query slice found
-    exact ⟨index,inside,equal,by rw [equal]; exact actual.sizes index inside⟩
+    exact ⟨index,inside,equal,by rw [equal]; exact actual.sizes index inside,
+      by rw [equal]; exact actual.arenas index inside,by rw [equal]; exact actual.sourceLower index inside,
+      by rw [equal]; exact actual.sourceBefore index inside⟩
 
 /-- Lookup cost holds at every source clock, including insufficient funding. -/
 theorem Database.body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array table : BitVec 64) (count maximum : Nat)

@@ -19,7 +19,8 @@ theorem Database.body_returned (source post : PanSemStateFiniteExact 64 Guest.Ho
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source NodeDb.body=(some (.returned value),post)) :
     ∃ answer,value=NodeDb.output answer ∧ Input.LocalEffects.erase post=Input.LocalEffects.erase source ∧
       source.clock-post.clock≤6*count+3 ∧
-      (∀ slice,answer=some slice→∃ index<count,slice=slices index ∧ slice.2.toNat≤maximum) := by
+      (∀ slice,answer=some slice→∃ index<count,slice=slices index ∧ slice.2.toNat≤maximum ∧
+        AllocatedBytes.Arena slice.1 slice.2.toNat ∧ 2713731432≤slice.1.toNat ∧ slice.1.toNat+slice.2.toNat≤table.toNat) := by
   let padding:=6*count+3
   let funded:={source with clock:=source.clock+padding}
   have paddedRun:=panPropsEvaluateAddClockEq NodeDb.body source (some (.returned value)) post padding ⟨normal,by intro impossible; cases impossible⟩

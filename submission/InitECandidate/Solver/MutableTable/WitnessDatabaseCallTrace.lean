@@ -19,7 +19,8 @@ theorem Database.scoped_trace (source post : PanSemStateFiniteExact 64 Guest.Hos
     (run : evaluateHOLFiniteState source (.decCall (ofString name) NodeDb.resultShape (ofString "nodedb_lookup") expressions continuation)=(outcome,post)) :
     source.clock-post.clock≤6*count+4 ∨ ∃ target answer inner,
       Input.LocalEffects.erase target=Input.LocalEffects.erase source ∧ target.clock≤source.clock ∧ source.clock-target.clock≤6*count+4 ∧
-      (∀ slice,answer=some slice→∃ index<count,slice=slices index ∧ slice.2.toNat≤maximum) ∧
+      (∀ slice,answer=some slice→∃ index<count,slice=slices index ∧ slice.2.toNat≤maximum ∧
+        AllocatedBytes.Arena slice.1 slice.2.toNat ∧ 2713731432≤slice.1.toNat ∧ slice.1.toNat+slice.2.toNat≤table.toNat) ∧
       evaluateHOLFiniteState (Input.CallNormal.continuationEntry source target name (NodeDb.output answer)) continuation=(outcome,inner) ∧
       post=QueryBranch.restore source name inner := by
   obtain ⟨callee,called,dbCell,hashCell⟩ := NodeDb.environment source.code.lookup table queryPointer (NodeDb.original_code source.code installed)

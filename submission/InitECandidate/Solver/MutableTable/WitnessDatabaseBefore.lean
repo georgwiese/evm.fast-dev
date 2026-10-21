@@ -62,7 +62,7 @@ theorem Database.before_frame (source target : PanSemStateFiniteExact 64 Guest.H
   have finalRows:=Records.of_earlier source target plan ready slices
     (by intro query earlier; apply memory; omega) rows
   refine ⟨⟨domain.symm.trans actual.domain,endian.symm.trans actual.little,actual.sizes,
-    bits,stored,input,logical,lower,upper,capacity,ready,finalBuilt,history,length,finalRows⟩,
+    ⟨bits,stored,input,logical,lower,upper,capacity,ready,finalBuilt,history,length,finalRows⟩,actual.arenas,actual.sourceLower,actual.sourceBefore⟩,
     BitVec.ofNat 64 (2^bits),?_,?_⟩
   · have number:=byteAddress_toNat table 16 (by have h:=ready.fits; change table.toNat+72+57*plan.capacity+plan.padding≤33806089496 at h; omega)
     exact (memory _ (by change (byteAddress table 16).toNat<frontier; rw [number]; omega)).trans actualCell

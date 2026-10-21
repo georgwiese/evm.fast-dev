@@ -22,7 +22,7 @@ reached by main's unchanged verification/header/constructor prefix. -/
 theorem Reached.state_init_boundary (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root : BitVec 64)
     (outcome : Option (PanSemResultExact 64)) (reached : Reached input source post root outcome) :
     ∃ current inner,StateInitBoundary input current ∧ evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) := by
-  obtain ⟨headerTarget,parent,nodeTarget,codeTarget,codeArray,heap,codeTable,currentHeap,inner,nodeReturned,codeReturned,nodeDatabase,codeDatabase,heapCell,nodeBefore,codeBefore,forward,spent,continued,endpoint⟩ := reached
+  obtain ⟨headerTarget,headerRows,parent,nodeTarget,codeTarget,codeArray,heap,codeTable,currentHeap,inner,headerReturned,nodeReturned,codeReturned,nodeDatabase,codeDatabase,heapCell,nodeBefore,codeBefore,forward,spent,continued,endpoint⟩ := reached
   let afterHeader:=parentSource source headerTarget input root
   let prepared:=RunAttempt.constructorEntry afterHeader (countWord input) (hashArray input root) parent
   let codeSource:=RunAttempt.codeEntry prepared nodeTarget heap

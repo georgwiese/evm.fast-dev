@@ -100,7 +100,7 @@ theorem tail_of_inputs (input : Guest.InputBlob) (source post headerTarget first
       change source.clock-headerTarget.clock≤headerPrice input at headerCost
       change headerTarget.clock≤source.clock at headerForward
       apply Or.inr
-      exact reached_of_returns input source post root headerTarget parent nodeTarget codeTarget codeArray heap codeTable currentHeap inner nodeReturned codeReturned
+      exact reached_of_returns input source post root headerTarget headerRows parent nodeTarget codeTarget codeArray heap codeTable currentHeap inner headerReturned nodeReturned codeReturned
         nodeDatabase codeDatabase currentHeapCell nodeBefore codeBefore headerForward headerCost outcome continued (by
           have firstEnd:=congrArg (RunAttempt.restoreHeader source (PayloadPrefix.cursor input)) parentEndpoint
           have secondEnd:=congrArg (fun current=>RunAttempt.restoreHeader source (PayloadPrefix.cursor input)

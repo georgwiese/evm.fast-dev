@@ -40,6 +40,7 @@ structure Returned (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
   exceptions : target.eshapes=source.eshapes
   forward : target.clock≤source.clock
   cost : source.clock-target.clock≤kind.bodyPrice rowBytes+1
+  above : Rlp.Validation.Above source target cursor.toNat
 
 /-- All enclosing outcomes of the actual scoped original helper: stop
 within its own allowance or enter the true continuation with a checked
@@ -67,7 +68,7 @@ theorem scoped_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
     obtain ⟨next,globals⟩ := body_normal_state entry target kind array pointer cursor limit control bytes cutoff index items item ready selected arrayCell indexCell controlCell installed value bodyRun
     have fields:=Input.evaluation_fields entry target kind.body (some (.returned value)) bodyRun
     have shape : shapeOfHOLExact value=kind.resultShape := (shapeEqHOL_eq_true _ _).mp (Bool.and_eq_true_iff.mp checked).1
-    exact Or.inr ⟨target,value,inner,⟨next,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,forward,cost⟩,shape,continued,endpoint⟩
+    exact Or.inr ⟨target,value,inner,⟨next,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,forward,cost,body_normal_frame entry target kind array pointer cursor limit control bytes cutoff index items item ready selected arrayCell indexCell controlCell installed value bodyRun |>.2.1⟩,shape,continued,endpoint⟩
 
 end InitECandidate.Solver.Headers.Helper
 

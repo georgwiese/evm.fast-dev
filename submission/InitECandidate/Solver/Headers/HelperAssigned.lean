@@ -39,7 +39,7 @@ theorem assigned_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemor
   rw [normal] at clock
   have postClock : post.clock=target.clock := by rw [postEq]; rfl
   have shape : shapeOfHOLExact value=kind.resultShape := (shapeEqHOL_eq_true _ _).mp checked
-  refine ⟨target,value,⟨next,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,?_,?_⟩,shape,postEq⟩
+  refine ⟨target,value,⟨next,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,?_,?_,body_normal_frame entry target kind array pointer cursor limit control bytes cutoff index items item ready selected arrayCell indexCell controlCell installed value bodyRun |>.2.1⟩,shape,postEq⟩
   · rwa [postClock] at clock
   · rwa [postClock] at price
 

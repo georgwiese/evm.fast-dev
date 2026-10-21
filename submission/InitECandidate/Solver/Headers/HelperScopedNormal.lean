@@ -38,7 +38,7 @@ theorem scoped_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   rw [bodyRun] at clock price
   have shape : shapeOfHOLExact value=kind.resultShape := (shapeEqHOL_eq_true _ _).mp (Bool.and_eq_true_iff.mp checked).1
   have entryClock : entry.clock=source.clock-1 := rfl
-  refine ⟨target,value,inner,⟨next,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,?_,?_⟩,shape,continued,postEq⟩
+  refine ⟨target,value,inner,⟨next,globals,fields.2.2.2,fields.1,fields.2.1,fields.2.2.1,?_,?_,body_normal_frame entry target kind array pointer cursor limit control bytes cutoff index items item ready selected arrayCell indexCell controlCell installed value bodyRun |>.2.1⟩,shape,continued,postEq⟩
   · change target.clock≤entry.clock at clock
     rw [entryClock] at clock
     omega

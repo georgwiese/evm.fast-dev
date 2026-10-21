@@ -22,7 +22,8 @@ theorem Inputs.of_decoded (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
     (buffersBefore : stp.toNat+200≤array.toNat ∧ pad.toNat+136≤array.toNat ∧ scratch.toNat+32≤array.toNat)
     (scratchAligned : scratch.toNat%8=0)
     (sizes : ∀ index<Input.VarList.decodedCount input start length,
-      (Input.VarList.recordLength input start length (Input.VarList.decodedCount input start length) index).toNat≤maximum) :
+      (Input.VarList.recordLength input start length (Input.VarList.decodedCount input start length) index).toNat≤maximum)
+    (inputFloor : 2713731432≤pointer.toNat) :
     Inputs source (Input.VarList.decodedArray array length) heap (Input.VarList.decodedCount input start length) maximum
       (decodedSlices input pointer start length) stp pad scratch := by
   have pointerCells:=Input.VarList.Records.pointer_cells source input pointer array start length records
@@ -31,7 +32,7 @@ theorem Inputs.of_decoded (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   have arrayOf (positive : Input.VarList.decodedCount input start length≠0) : Input.VarList.decodedArray array length=array := by
     have nonempty : length≠0 := by intro empty; simp [Input.VarList.decodedCount,empty] at positive
     simp [Input.VarList.decodedArray,nonempty]
-  refine ⟨installed,environment,scratchGlobal,little,heapGlobal,heapLower,heapAligned,room,?_,?_,?_,buffers,?_,scratchAligned,sizes⟩
+  refine ⟨installed,environment,scratchGlobal,little,heapGlobal,heapLower,heapAligned,room,?_,?_,?_,buffers,?_,scratchAligned,sizes,?_,?_⟩
   · intro positive
     have nonempty : length≠0 := by intro empty; simp [Input.VarList.decodedCount,empty] at positive
     obtain ⟨countPositive,lower,aligned,upper,afterInput⟩ := Input.VarList.Records.array_geometry source input pointer array start length records nonempty
@@ -44,6 +45,17 @@ theorem Inputs.of_decoded (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   · intro positive
     rw [arrayOf positive]
     exact buffersBefore
+  · intro index inside
+    have geometry:=Input.VarList.Records.slice_geometry source input pointer array start length records index inside
+    change 2713731432≤(Input.VarList.recordPointer input pointer start index).toNat
+    rw [geometry.1]
+    omega
+  · intro index inside
+    have geometry:=Input.VarList.Records.slice_geometry source input pointer array start length records index inside
+    have before:=geometry.2.2.2
+    change (Input.VarList.recordPointer input pointer start index).toNat+
+      (Input.VarList.recordLength input start length (Input.VarList.decodedCount input start length) index).toNat≤heap.toNat
+    omega
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

@@ -24,6 +24,8 @@ structure Inputs (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array he
   before : count≠0 → stp.toNat+200≤array.toNat ∧ pad.toNat+136≤array.toNat ∧ scratch.toNat+32≤array.toNat
   scratchAligned : scratch.toNat%8=0
   sizes : ∀ index<count,(slices index).2.toNat≤maximum
+  sourceLower : ∀ index<count,2713731432≤(slices index).1.toNat
+  sourceBefore : ∀ index<count,(slices index).1.toNat+(slices index).2.toNat≤heap.toNat
 
 /-- Normal argument lookup supplies only the two real local bindings;
 all remaining callee preconditions follow from current caller data. -/

@@ -114,11 +114,11 @@ theorem inputs_after_headers (input : Guest.InputBlob)
   have nodes:=MutableTable.WitnessBuild.Inputs.of_decoded target input inputPointer (DecoderCall.witnessArray input) heap (nodeStart input) (nodeBytes input) 1024
     2713714976#64 2713715176#64 2713717584#64 targetInputs.nodes installed validated.environment scratchCell little heapCell lowerHeap heapAligned (by change heap.toNat+72+57*(4*nodeCount input+4)+7≤33806089496; omega) nodeBefore
     ⟨by decide,by decide⟩ (by decide) ⟨by decide,by decide⟩ (by decide) ⟨by decide,by decide⟩
-    (by change 2713715176≤_ ∧ 2713715312≤_ ∧ 2713717616≤_; change 2713731432≤_ at arrayLower; omega) (by decide) targetInputs.nodeSizes
+    (by change 2713715176≤_ ∧ 2713715312≤_ ∧ 2713717616≤_; change 2713731432≤_ at arrayLower; omega) (by decide) targetInputs.nodeSizes (by decide)
   have codes:=MutableTable.WitnessBuild.Inputs.of_decoded target input inputPointer codeArray heap (codeStart input) (codeBytes input) 65536
     2713714976#64 2713715176#64 2713717584#64 targetInputs.codes installed validated.environment scratchCell little heapCell lowerHeap heapAligned (by change heap.toNat+72+57*(4*codeCount input+4)+7≤33806089496; omega) codeBefore
     ⟨by decide,by decide⟩ (by decide) ⟨by decide,by decide⟩ (by decide) ⟨by decide,by decide⟩
-    (by change 2713715176≤_ ∧ 2713715312≤_ ∧ 2713717616≤_; change 2713731432≤_ at codeLower; omega) (by decide) targetInputs.codeSizes
+    (by change 2713715176≤_ ∧ 2713715312≤_ ∧ 2713717616≤_; change 2713731432≤_ at codeLower; omega) (by decide) targetInputs.codeSizes (by decide)
   exact ⟨codeArray,headerArray,heap,targetInputs,nodes,codes,combinedRoom,siArena,siAligned,by omega,by omega⟩
 
 end InitECandidate.Solver.Input.Main.WitnessConstructors

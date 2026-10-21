@@ -16,6 +16,9 @@ structure Database (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array 
     let plan:=Constructor.allocationPlan (effectiveRecords array table count) table.toNat count (2^bits)
     2≤bits ∧ bits≤32 ∧ 2^bits≤4*count+4 ∧ AllocatedLayout.Ready plan ∧
     Layout32.Built bits source plan scratch stored input logical ∧ History plan input ∧ input.length=count ∧ Records source plan slices
+  arenas : ∀ index<count,AllocatedBytes.Arena (slices index).1 (slices index).2.toNat
+  sourceLower : ∀ index<count,2713731432≤(slices index).1.toNat
+  sourceBefore : ∀ index<count,(slices index).1.toNat+(slices index).2.toNat≤table.toNat
 
 /-- Every genuine constructor return supplies the complete lookup context,
 including real slice records and the original per-record size bound. -/
@@ -26,7 +29,8 @@ theorem Normal.database (source target : PanSemStateFiniteExact 64 Guest.HostMem
   obtain ⟨code,domain,endian,exceptions,oracle,globals⟩ := actual.fields source target array heap count stp pad scratch
   obtain ⟨bits,stored,input,logical,lower,upper,capacity,built,history,length,ready,heapCell⟩ := actual.table
   exact ⟨domain.trans inputs.environment.domain,endian.trans inputs.little,inputs.sizes,
-    bits,stored,input,logical,lower,upper,capacity,ready,built,history,length,inputs.returned_records source target array heap count maximum slices stp pad scratch actual bits ready⟩
+    ⟨bits,stored,input,logical,lower,upper,capacity,ready,built,history,length,inputs.returned_records source target array heap count maximum slices stp pad scratch actual bits ready⟩,
+    fun index inside=>(inputs.buffers index inside).inputArena,inputs.sourceLower,inputs.sourceBefore⟩
 
 /-- Building the second original database retains the complete first
 database at the real current state, with its genuine slice outputs. -/
@@ -64,7 +68,8 @@ theorem Normal.database_after_build
   have entryEndian:=congrArg PanSemStateFiniteExact.be entryFrame
   exact ⟨secondFields.2.1.trans (entryDomain.trans (firstFields.2.1.trans inputs.environment.domain)),
     secondFields.2.2.1.trans (entryEndian.trans (firstFields.2.2.1.trans inputs.little)),inputs.sizes,
-    bits,stored,input,logical,lower,upper,capacity,ready,built,history,length,finalRows⟩
+    ⟨bits,stored,input,logical,lower,upper,capacity,ready,built,history,length,finalRows⟩,
+    fun index inside=>(inputs.buffers index inside).inputArena,inputs.sourceLower,inputs.sourceBefore⟩
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

@@ -13,7 +13,7 @@ theorem Inputs.of_fields (source target : PanSemStateFiniteExact 64 Guest.HostMe
   refine ⟨by rw [code]; exact actual.installed,
     Keccak256.Environment.of_fields source target stp pad actual.environment domain code oracle (by intro key other; rw [globals]),
     by rw [globals]; exact actual.scratchGlobal,endian.trans actual.little,by rw [globals]; exact actual.heapGlobal,
-    actual.heapLower,actual.heapAligned,actual.room,actual.records,?_,?_,actual.buffers,actual.before,actual.scratchAligned,actual.sizes⟩
+    actual.heapLower,actual.heapAligned,actual.room,actual.records,?_,?_,actual.buffers,actual.before,actual.scratchAligned,actual.sizes,actual.sourceLower,actual.sourceBefore⟩
   · intro index inside
     rw [memory]
     exact actual.pointers index inside

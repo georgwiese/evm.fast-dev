@@ -4149,6 +4149,7 @@
     "submission/InitECandidate/Solver/Mpt/NodeConstructorProgram.lean",
     "submission/InitECandidate/Solver/Mpt/NodeRegistryCopy32.lean",
     "submission/InitECandidate/Solver/Mpt/NodeRegistryStoreBelow.lean",
+    "submission/InitECandidate/Solver/Mpt/NodeRegistryTableNew.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitAllocationTrace.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitDatabase.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitEnvironment.lean",
@@ -4162,6 +4163,8 @@
     "submission/InitECandidate/Solver/Mpt/StateInitRootInstalled.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitRootNormal.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitRootStore.lean",
+    "submission/InitECandidate/Solver/Mpt/StateInitStorageNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/StateInitStorageProgram.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitTrace.lean",
     "submission/InitECandidate/Solver/Mpt/StateWorldFrame.lean",
     "submission/InitECandidate/Solver/Mpt/StorageKeyCall.lean",
@@ -4188,6 +4191,7 @@
     "submission/InitECandidate/Solver/Mpt/StorageSetResultControl.lean",
     "submission/InitECandidate/Solver/Mpt/StorageSetResultMutation.lean",
     "submission/InitECandidate/Solver/Mpt/StorageSetValue.lean",
+    "submission/InitECandidate/Solver/Mpt/TableConstructorNormal.lean",
     "submission/InitECandidate/Solver/Mpt/TableNewAssigned.lean",
     "submission/InitECandidate/Solver/Mpt/TableNewOwnership.lean",
     "submission/InitECandidate/Solver/Mpt/TransientSetAfterZero.lean",
@@ -7208,8 +7212,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64077,
-  "package_bytes": 2266368800,
+  "package_entries": 64081,
+  "package_bytes": 2266385095,
   "claim": {
     "K": "infinity"
   },

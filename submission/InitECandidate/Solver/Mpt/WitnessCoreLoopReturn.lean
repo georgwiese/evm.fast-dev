@@ -40,7 +40,7 @@ theorem Invariant.return_normal (input : Guest.InputBlob) (frontier : Nat) (db h
       ⟨frozen,(other "db" (by decide)).trans invariant.dbCell,invariant.heapCell,invariant.heapArena,invariant.aligned,invariant.heapLower,invariant.frontierBefore,
         invariant.scratch.of_fields source stopped cursor limit rfl rfl,invariant.below,empty stopped db cursor.toNat heap.toNat,
         invariant.fresh,words,(other "top" (by decide)).trans invariant.topCell,(other "mode" (by decide)).trans invariant.modeCell,
-        bind_lookup_same _ _ _,phase,invariant.installed⟩,rank⟩
+        bind_lookup_same _ _ _,phase,Or.inr ⟨rfl,rfl⟩,invariant.installed⟩,rank⟩
   | cons entry rest=>
     obtain ⟨slot,slotCell⟩:=invariant.words.slot
     obtain ⟨hash,pendingEq⟩:=waiting entry List.mem_cons_self
@@ -60,11 +60,11 @@ theorem Invariant.return_normal (input : Guest.InputBlob) (frontier : Nat) (db h
     · have fresh:=invariant.fresh.advance frontier entry nextEntry rest sameArray samePayload
       exact ⟨⟨next,cursor,nextEntry::rest,.resolve,true⟩,
         ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
-          scratch,invariant.below,view,fresh,words,top,mode,actualGo,⟨nextEntry,rest,rfl,olderWaiting,actualSlot⟩,installed⟩,rank⟩
+          scratch,invariant.below,view,fresh,words,top,mode,actualGo,⟨nextEntry,rest,rfl,olderWaiting,actualSlot⟩,Or.inl rfl,installed⟩,rank⟩
     · exact ⟨⟨next,cursor,rest,.returning,true⟩,
         ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
           scratch,invariant.below,view,invariant.fresh.tail frontier entry rest,words,top,mode,actualGo,
-          ⟨olderWaiting,node,result,resultOwned⟩,installed⟩,rank⟩
+          ⟨olderWaiting,node,result,resultOwned⟩,Or.inl rfl,installed⟩,rank⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 

@@ -14,12 +14,12 @@ theorem root_lookup_of_entry (input : Guest.InputBlob) (source post : PanSemStat
     (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64)
     (environment : Keccak256.Environment source 2713714976#64 2713715176#64)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source Mpt.WitnessDecodeRoot.body=(outcome,post)) :
-    source.clock-post.clock≤129 ∨ ∃ current inner,
+    source.clock-post.clock≤5 ∨ ∃ current inner,
       RootBoundary input current ∧ LocalEffects.erase current=LocalEffects.erase source ∧
       OriginalCode.Installed current.code ∧ OriginalScalarGlobals.Scalars current.globals ∧
       current.locals.lookup (ofString "root_hash")=some (.val (.word root)) ∧
       Rlp.Validation.Arena current 2713714688#64 2701135872#64 ∧ Keccak256.Environment current 2713714976#64 2713715176#64 ∧
-      current.clock≤source.clock ∧ source.clock-current.clock≤129 ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤5 ∧
       evaluateHOLFiniteState current Mpt.WitnessDecodeRoot.lookupCall=(outcome,inner) ∧ post=QueryBranch.restore source "is_empty" inner := by
   have originalBoundary:=boundary
   obtain ⟨codeArray,nodes,codes,heap,nodeDatabase,codeDatabase,nodeCell,heapCell,heapArena,aligned,nodeBefore,codeBefore⟩ := boundary

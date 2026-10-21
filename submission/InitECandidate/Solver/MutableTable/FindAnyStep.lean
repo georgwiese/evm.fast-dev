@@ -1,5 +1,6 @@
 import InitECandidate.Solver.MutableTable.FindGeneralStep
 import InitECandidate.Solver.MutableTable.MemeqAnyCall
+import InitECandidate.Solver.MutableTable.MemeqAnyFast32
 import InitECandidate.Solver.Input.ScopedCallNone
 import InitECandidate.Solver.Input.ScopedNoLoopControl
 import InitECandidate.Solver.Input.LocalEffectsScoped
@@ -21,11 +22,11 @@ readability premise for either comparison operand. Invalid reads stop early. -/
 theorem any_step_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p : Parameters) (index : BitVec 64)
     (locals : Locals source p index) (keyLength : p.keyLength=32#64)
     (code : source.code.lookup (ofString "memeq")=some (Memeq32.formals,Memeq32.body,.one)) :
-    source.clock-(evaluateHOLFiniteState source loopBody).2.clock≤129 := by
+    source.clock-(evaluateHOLFiniteState source loopBody).2.clock≤5 := by
   obtain ⟨callee,called,aCell,bCell,nCell⟩ := MemeqByteRuntime.environment source.code.lookup (p.keys+index*p.stride) p.key 32 code
   have args:=general_comparison_arguments source p index .word locals keyLength
-  exact Input.ClockCost.scoped_current source (ofString "eq") .one (ofString "memeq") comparisonArguments _ Memeq32.body afterEqual callee .one 128 0 args called
-    (MemeqAny.body_cost (callEntryStateHOLFinite source callee) nCell) (after_equal_quiet source.code)
+  exact Input.ClockCost.scoped_current source (ofString "eq") .one (ofString "memeq") comparisonArguments _ Memeq32.body afterEqual callee .one 4 0 args called
+    (MemeqAny.tight_body_cost (callEntryStateHOLFinite source callee) nCell) (after_equal_quiet source.code)
 
 /-- The actual comparator and the caller's tests/update change only locals
 and clock on every outcome. No successful comparison is supplied. -/

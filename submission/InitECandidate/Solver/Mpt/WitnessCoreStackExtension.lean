@@ -42,6 +42,7 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
       (∀ name : String,ofString "ck"≠ofString name→ ofString "ex"≠ofString name→ ofString "top"≠ofString name→
         ofString "result"≠ofString name→ post.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
       (∀ query : BitVec 64,cursor.toNat≤query.toNat→ query.toNat<heap.toNat→ post.memory query=source.memory query) ∧
+      post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) .returning true<
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true := by
   have head:=view.records entry List.mem_cons_self
@@ -110,7 +111,7 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true:=by
     simpa only [frames,List.map_cons] using WitnessStackRank.pop (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) entry.data.payload.frame
   exact ⟨nextHeap,nextCell,nextArena,nextAligned,grows,scratch,oldStack.tail post db cursor.toNat nextHeap.toNat entry rest,
-    resultOwned,actualTop,actualResult,other,locals,frame.memory,rank⟩
+    resultOwned,actualTop,actualResult,other,locals,frame.memory,frame.domain,frame.endian,frame.code,rank⟩
 
 end Stack
 end InitECandidate.Solver.Mpt.WitnessCore

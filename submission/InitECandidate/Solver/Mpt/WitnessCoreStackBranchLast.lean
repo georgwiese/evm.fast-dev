@@ -29,6 +29,7 @@ theorem branch_children_last_stack_normal (source post : PanSemStateFiniteExact 
         ofString "occ"≠ofString name→ ofString "top"≠ofString name→ ofString "result"≠ofString name→
         post.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
       (∀ query : BitVec 64,entry.record.toNat+88≤query.toNat→ query.toNat<entry.data.payload.startAddress→ post.memory query=source.memory query) ∧
+      post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) .returning true<
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true := by
   have head:=view.records entry List.mem_cons_self
@@ -83,7 +84,7 @@ theorem branch_children_last_stack_normal (source post : PanSemStateFiniteExact 
   have rank : WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) .returning true<
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true:=by
     simpa only [frames,List.map_cons] using WitnessStackRank.pop (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) entry.data.payload.frame
-  exact ⟨tail,postOwned,actualTop,actualResult,globals,scratch,preserved,memory,rank⟩
+  exact ⟨tail,postOwned,actualTop,actualResult,globals,scratch,preserved,memory,domain,endian,code,rank⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 

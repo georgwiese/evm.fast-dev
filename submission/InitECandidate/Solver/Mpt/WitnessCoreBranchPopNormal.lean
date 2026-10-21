@@ -37,7 +37,7 @@ theorem branch_finish_pop_normal (source post : PanSemStateFiniteExact 64 Guest.
       2≤branchValueOccupied bytes flag occupied ∧ branchValueOccupied bytes flag occupied≤17 ∧
       Rlp.Validation.Arena post cursor limit ∧
       (∀ key,post.globals.lookup key=source.globals.lookup key) ∧ post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
-      post=branchFinishedState source built node previous data header bytes flag occupied := by
+      post=branchFinishedState source built node previous data header bytes flag occupied ∧ Rlp.Validation.Above source built cursor.toNat := by
   obtain ⟨item,built,header,bytes,flag,inner,selected,valid,readyView,readyArena,above,domain,endian,code,globals,valueCell,continued,endpoint⟩:=
     branch_finish_normal source post record db node heap cursor limit data index occupied view payload topCell arena before recordAbove below heapLower installed normal
   let arrayReady:=QueryBranch.bind source "arr2" data.array
@@ -87,7 +87,7 @@ theorem branch_finish_pop_normal (source post : PanSemStateFiniteExact 64 Guest.
   have postArena : Rlp.Validation.Arena post cursor limit:=
     ⟨postDomain.trans arena.domain,(postGlobals _).trans arena.cursorGlobal,(postGlobals _).trans arena.limitGlobal,
       arena.ordered,arena.aligned,arena.lower,arena.upper⟩
-  exact ⟨item,built,header,bytes,flag,selected,valid,enough,branch_value_occupied_bound bytes flag occupied,postArena,postGlobals,postDomain,postEndian,postCode,postEq⟩
+  exact ⟨item,built,header,bytes,flag,selected,valid,enough,branch_value_occupied_bound bytes flag occupied,postArena,postGlobals,postDomain,postEndian,postCode,postEq,above⟩
 
 theorem branch_finished_fields (source built : PanSemStateFiniteExact 64 Guest.HostMemory) (node previous : BitVec 64)
     (data : WitnessRecord.Description) (header bytes flag : BitVec 64) (occupied : Fin 17) :

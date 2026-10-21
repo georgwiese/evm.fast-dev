@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.WitnessCoreStackReturnFrame
 import InitECandidate.Solver.Mpt.WitnessCoreExtensionFrame
 import InitECandidate.Solver.Mpt.WitnessCoreResultNode
+import InitECandidate.Solver.Mpt.WitnessCompletedExtension
 
 namespace InitECandidate.Solver.Mpt.WitnessCore
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -44,7 +45,8 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
       (∀ query : BitVec 64,cursor.toNat≤query.toNat→ query.toNat<heap.toNat→ post.memory query=source.memory query) ∧
       post.memaddrs=source.memaddrs ∧ post.be=source.be ∧ post.code=source.code ∧
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) .returning true<
-        WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true := by
+        WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true ∧ ExtensionView post heap nibbles length child ∧
+      WitnessDecode.NormalFrame source post heap cursor limit ∧ heap.toNat+56≤nextHeap.toNat := by
   have head:=view.records entry List.mem_cons_self
   have mark:=view.marks entry List.mem_cons_self
   have before:=(view.before entry List.mem_cons_self).mono entry.data entry.mark heap.toNat mark
@@ -115,7 +117,9 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true:=by
     simpa only [frames,List.map_cons] using WitnessStackRank.pop (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames rest) entry.data.payload.frame
   exact ⟨nextHeap,nextCell,nextArena,nextAligned,grows,scratch,oldStack.tail post db cursor.toNat nextHeap.toNat entry rest,
-    resultOwned,actualTop,actualResult,other,locals,frame.memory,frame.domain,frame.endian,frame.code,rank⟩
+    resultOwned,actualTop,actualResult,other,locals,frame.memory,frame.domain,frame.endian,frame.code,rank,
+    by rw [postEq]; exact extension_finished_view source entry.record db heap nibbles length child (top rest) kind entry.data head payload nodeArena heapAligned heapLower,
+    frame,nodeBefore⟩
 
 end Stack
 end InitECandidate.Solver.Mpt.WitnessCore

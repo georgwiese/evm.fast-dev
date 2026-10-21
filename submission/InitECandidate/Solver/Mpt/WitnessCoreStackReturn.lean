@@ -52,7 +52,7 @@ theorem return_stages_stack_normal (source post : PanSemStateFiniteExact 64 Gues
   cases payload : entry.data.payload with
   | extension nibbles length=>
     rw [payload] at normal
-    obtain ⟨next,nextCell,nextArena,aligned,grows,scratch,tail,resultOwned,actualTop,actualResult,globals,other,memory,domain,endian,code,rank⟩:=
+    obtain ⟨next,nextCell,nextArena,aligned,grows,scratch,tail,resultOwned,actualTop,actualResult,globals,other,memory,domain,endian,code,rank,extensionView,extensionFrame,extensionBefore⟩:=
       return_extension_stack_normal source post db heap cursor limit nibbles length child entry rest view payload owned topCell resultCell heapCell heapArena heapAligned arena installed normal
     have actualMode : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)):=
       (other "mode" (by decide) (by decide) (by decide) (by decide)).trans modeCell

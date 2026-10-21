@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.WitnessDecodeRows
 import InitECandidate.Solver.Mpt.FailGuardReturn
 import InitECandidate.Solver.Rlp.ItemCallEncoding
 import InitECandidate.Solver.Rlp.ItemFrameTrace
+import InitECandidate.Solver.Rlp.ItemCallGlobalsNormal
 import InitECandidate.Solver.Input.CallResumeLookup
 
 namespace InitECandidate.Solver.Mpt.WitnessDecode
@@ -24,14 +25,16 @@ theorem path_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       payload.toNat≤bytes ∧ Rows ready array listPointer bytes items ∧ Rlp.Validation.Arena ready cursor limit ∧
       Rlp.Validation.Above source ready cursor.toNat ∧ ready.code=source.code ∧
       ready.globals.lookup (ofString "heap_ptr")=source.globals.lookup (ofString "heap_ptr") ∧
+      ready.memaddrs=source.memaddrs ∧ ready.be=source.be ∧
+      (∀ key,ready.globals.lookup key=source.globals.lookup key) ∧
       ready.locals.lookup (ofString "arr")=some (.val (.word array)) ∧
       ready.locals.lookup (ofString "pi")=some (Rlp.Item.result (Rlp.Slices.itemPointer listPointer items 0) header payload 0#64) ∧
       evaluateHOLFiniteState ready compactCall=(some (.returned value),inner) ∧ post=restore source "pi" inner := by
   obtain ⟨args,positive,pathBound,lower,upper⟩:=rows.arguments source array listPointer bytes 0 items pathItem selected arrayCell
   have fits : (Rlp.Slices.itemPointer listPointer items 0).toNat+pathItem.total.toNat<2^64:=upper.trans_lt rows.fits
   rw [path_shape] at normal
-  obtain ⟨funded,target,header,payload,flag,inner,valid,nextArena,above,domain,endian,codeEq,heapEq,price,continued,endpoint⟩:=
-    Rlp.Item.scoped_normal_above source post (Rlp.Slices.itemPointer listPointer items 0) pathItem.total cursor limit "pi" (recordArguments 0) afterPath args arena fits installed value normal
+  obtain ⟨funded,target,header,payload,flag,inner,valid,nextArena,above,domain,endian,codeEq,heapEq,globalCells,price,continued,endpoint⟩:=
+    Rlp.Item.scoped_normal_globals source post (Rlp.Slices.itemPointer listPointer items 0) pathItem.total cursor limit "pi" (recordArguments 0) afterPath args arena fits installed value normal
   let ready:=Input.CallNormal.continuationEntry source target "pi" (Rlp.Item.result (Rlp.Slices.itemPointer listPointer items 0) header payload flag)
   have currentInstalled : Input.OriginalCode.Installed ready.code:=by
     change Input.OriginalCode.Installed target.code
@@ -55,7 +58,7 @@ theorem path_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (Input.CallNormal.continuation_lookup_other source target "pi" "arr" _ (by decide)).trans arrayCell
   have actualFields:=Rlp.Item.Valid.result_fields (Rlp.Slices.itemPointer listPointer items 0) header payload flag pathItem.total.toNat valid
   subst flag
-  exact ⟨target,header,payload,inner,valid,by omega,currentRows,currentArena,above,codeEq,heapEq,currentArray,pathCell,compactRun,endpoint⟩
+  exact ⟨target,header,payload,inner,valid,by omega,currentRows,currentArena,above,codeEq,heapEq,domain,endian,globalCells,currentArray,pathCell,compactRun,endpoint⟩
 
 end InitECandidate.Solver.Mpt.WitnessDecode
 

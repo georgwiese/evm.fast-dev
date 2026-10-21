@@ -24,13 +24,15 @@ theorem pair_prefix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
       let ready:=Input.CallNormal.continuationEntry parsed compactTarget "cn" (CompactToNibbles.output heap nibbles leaf)
       payload.toNat≤bytes ∧ Rlp.Validation.Above source parsed cursor.toNat ∧
       parsed.globals.lookup (ofString "heap_ptr")=source.globals.lookup (ofString "heap_ptr") ∧
+      parsed.memaddrs=source.memaddrs ∧ parsed.be=source.be ∧ parsed.code=source.code ∧
+      (∀ key,parsed.globals.lookup key=source.globals.lookup key) ∧
       CompactToNibbles.Snapshot parsed ready payload.toNat heap cursor limit nibbles leaf ∧
       Rows ready array listPointer bytes items ∧ Input.OriginalCode.Installed ready.code ∧
       (∀ name : String,ofString "pi"≠ofString name → ofString "cn"≠ofString name → ready.locals.lookup (ofString name)=source.locals.lookup (ofString name)) ∧
       ready.locals.lookup (ofString "arr")=some (.val (.word array)) ∧
       ready.locals.lookup (ofString "cn")=some (CompactToNibbles.output heap nibbles leaf) ∧
       evaluateHOLFiniteState ready afterCompact=(some (.returned value),inner) ∧ post=restore source "pi" (restore parsed "cn" inner) := by
-  obtain ⟨pathTarget,header,payload,middle,valid,payloadBound,pathRows,pathArena,above,codeEq,heapEq,pathArray,pathCell,compactRun,pathEndpoint⟩:=
+  obtain ⟨pathTarget,header,payload,middle,valid,payloadBound,pathRows,pathArena,above,codeEq,heapEq,pathDomain,pathEndian,pathGlobals,pathArray,pathCell,compactRun,pathEndpoint⟩:=
     path_normal source post array listPointer cursor limit bytes items pathItem rows selected arrayCell scratchBelow arena installed value normal
   let parsed:=Input.CallNormal.continuationEntry source pathTarget "pi" (Rlp.Item.result (Rlp.Slices.itemPointer listPointer items 0) header payload 0#64)
   have parsedInstalled : Input.OriginalCode.Installed parsed.code:=by rw [codeEq]; exact installed
@@ -43,7 +45,7 @@ theorem pair_prefix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
       ready.locals.lookup (ofString name)=source.locals.lookup (ofString name):=
     (Input.CallNormal.continuation_lookup_other parsed compactTarget "cn" name _ notCompact).trans
       (Input.CallNormal.continuation_lookup_other source pathTarget "pi" name _ notPath)
-  exact ⟨pathTarget,header,payload,compactTarget,nibbles,leaf,inner,payloadBound,above,heapEq,snapshot,currentRows,currentInstalled,retained,currentArray,currentCompact,continued,
+  exact ⟨pathTarget,header,payload,compactTarget,nibbles,leaf,inner,payloadBound,above,heapEq,pathDomain,pathEndian,codeEq,pathGlobals,snapshot,currentRows,currentInstalled,retained,currentArray,currentCompact,continued,
     by rw [pathEndpoint,compactEndpoint]⟩
 
 end InitECandidate.Solver.Mpt.WitnessDecode

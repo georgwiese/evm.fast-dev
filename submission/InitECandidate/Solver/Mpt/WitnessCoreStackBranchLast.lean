@@ -21,7 +21,7 @@ theorem branch_children_last_stack_normal (source post : PanSemStateFiniteExact 
     (resultCell : source.locals.lookup (ofString "result")=some (.val (.word child)))
     (arena : Rlp.Validation.Arena source cursor limit) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source branchChildren=(none,post)) :
-    View post db cursor.toNat heap.toNat rest ∧ ResultOwned post (resultLower rest) heap.toNat node ∧
+    View post db cursor.toNat heap.toNat rest ∧ ResultOwned post (max (resultLower rest) entry.data.payload.startAddress) heap.toNat node ∧
       post.locals.lookup (ofString "top")=some (.val (.word (top rest))) ∧
       post.locals.lookup (ofString "result")=some (.val (.word node)) ∧
       (∀ key,post.globals.lookup key=source.globals.lookup key) ∧ Rlp.Validation.Arena post cursor limit ∧
@@ -70,8 +70,9 @@ theorem branch_children_last_stack_normal (source post : PanSemStateFiniteExact 
     exact (above node (by omega)).trans readyOwned.2.2
   have parentLower : resultLower rest≤node.toNat:=by simpa only [payload,WitnessRecord.Payload.startAddress] using view.parent_result_lower source db cursor.toNat heap.toNat entry rest
   have nodeBefore : node.toNat+176≤heap.toNat:=by simpa only [payload,WitnessRecord.Payload.endAddress] using before.2
-  have postOwned : ResultOwned post (resultLower rest) heap.toNat node:=
-    Or.inr (ResultNode.of_region post node 3#64 176 (resultLower rest) heap.toNat owned.1 (by decide) owned.2.1 parentLower nodeBefore postTag (by decide))
+  have fresh : max (resultLower rest) entry.data.payload.startAddress≤node.toNat:=max_le parentLower (by simp only [payload,WitnessRecord.Payload.startAddress]; exact Nat.le_refl _)
+  have postOwned : ResultOwned post (max (resultLower rest) entry.data.payload.startAddress) heap.toNat node:=
+    Or.inr (ResultNode.of_region post node 3#64 176 _ heap.toNat owned.1 (by decide) owned.2.1 fresh nodeBefore postTag (by decide))
   have fields:=branch_finished_fields ready built node (top rest) currentData header bytes flag nextOccupied
   have actualTop : post.locals.lookup (ofString "top")=some (.val (.word (top rest))):=by rw [postEq]; exact fields.1
   have actualResult : post.locals.lookup (ofString "result")=some (.val (.word node)):=by rw [postEq]; exact fields.2

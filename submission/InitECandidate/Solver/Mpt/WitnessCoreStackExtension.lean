@@ -35,7 +35,7 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word nextHeap)) ∧
       AllocatedBytes.Arena nextHeap 0 ∧ nextHeap.toNat%8=0 ∧ heap.toNat≤nextHeap.toNat ∧
       Rlp.Validation.Arena post cursor limit ∧ View post db cursor.toNat nextHeap.toNat rest ∧
-      ResultOwned post (resultLower rest) nextHeap.toNat heap ∧
+      ResultOwned post (max (resultLower rest) entry.data.payload.startAddress) nextHeap.toNat heap ∧
       post.locals.lookup (ofString "top")=some (.val (.word (top rest))) ∧
       post.locals.lookup (ofString "result")=some (.val (.word heap)) ∧
       (∀ key,key≠ofString "heap_ptr"→ post.globals.lookup key=source.globals.lookup key) ∧
@@ -94,8 +94,12 @@ theorem return_extension_stack_normal (source post : PanSemStateFiniteExact 64 G
     rw [same]
     exact checked.2.2.1
   have postTag : post.memory heap=.word 2#64:=by rw [postEq]; exact extension_finished_tag source heap nibbles length child (top rest) kind entry.data
-  have resultOwned : ResultOwned post (resultLower rest) nextHeap.toNat heap:=
-    Or.inr (ResultNode.of_region post heap 2#64 56 (resultLower rest) nextHeap.toNat nodeArena (by decide) heapAligned parentLower nodeBefore postTag (by decide))
+  have payloadBefore : entry.data.payload.startAddress≤heap.toNat:=by
+    have bound:=before.2
+    simp only [payload,WitnessRecord.Payload.startAddress,WitnessRecord.Payload.endAddress] at bound ⊢
+    omega
+  have resultOwned : ResultOwned post (max (resultLower rest) entry.data.payload.startAddress) nextHeap.toNat heap:=
+    Or.inr (ResultNode.of_region post heap 2#64 56 _ nextHeap.toNat nodeArena (by decide) heapAligned (max_le parentLower payloadBefore) nodeBefore postTag (by decide))
   have fields:=extension_finished_fields source heap nibbles length child (top rest) kind entry.data
   have actualTop : post.locals.lookup (ofString "top")=some (.val (.word (top rest))):=by rw [postEq]; exact fields.1
   have actualResult : post.locals.lookup (ofString "result")=some (.val (.word heap)):=by rw [postEq]; exact fields.2

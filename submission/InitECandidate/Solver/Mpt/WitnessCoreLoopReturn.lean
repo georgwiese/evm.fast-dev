@@ -32,8 +32,8 @@ theorem Invariant.return_normal (input : Guest.InputBlob) (frontier : Nat) (db h
       obtain ⟨slot,slotCell⟩:=invariant.words.slot
       exact ⟨⟨pointer,(other "cur_p" (by decide)).trans pointerCell⟩,⟨length,(other "cur_n" (by decide)).trans lengthCell⟩,
         ⟨result,(other "result" (by decide)).trans resultValue⟩,⟨slot,(other "slot" (by decide)).trans slotCell⟩⟩
-    have phase : PhaseInvariant stopped db heap [] .returning:=
-      ⟨waiting,child,(other "result" (by decide)).trans resultCell,owned.of_fields source stopped child (resultLower []) heap.toNat rfl⟩
+    have phase : PhaseInvariant stopped frontier db heap [] .returning:=
+      ⟨waiting,child,(other "result" (by decide)).trans resultCell,owned.of_fields source stopped child (max frontier (resultLower [])) heap.toNat rfl⟩
     have rank : (Configuration.mk heap cursor [] .returning false).rank limit<(Configuration.mk heap cursor [] .returning true).rank limit:=by
       simpa only [Configuration.rank,frames,List.map_nil] using WitnessStackRank.finish (WitnessStackRank.recordsLeft cursor.toNat limit.toNat)
     exact ⟨⟨heap,cursor,[],.returning,false⟩,
@@ -46,7 +46,8 @@ theorem Invariant.return_normal (input : Guest.InputBlob) (frontier : Nat) (db h
     obtain ⟨hash,pendingEq⟩:=waiting entry List.mem_cons_self
     have pending:=invariant.view.pending entry List.mem_cons_self
     simp only [Pending,pendingEq] at pending
-    have step:=core_return_stack_normal source post db heap cursor limit child slot hash entry rest invariant.view owned invariant.topCell resultCell slotCell invariant.modeCell
+    have parentOwned:=owned.weaken source child (max frontier (resultLower (entry::rest))) heap.toNat entry.mark heap.toNat (Nat.le_max_right _ _) (Nat.le_refl _)
+    have step:=core_return_stack_normal source post db heap cursor limit child slot hash entry rest invariant.view parentOwned invariant.topCell resultCell slotCell invariant.modeCell
       pending.1 invariant.heapCell invariant.heapArena invariant.aligned invariant.scratch invariant.installed normal
     have frozen:=invariant.frozen.return_step input source post frontier db heap cursor limit child slot entry rest invariant.fresh invariant.view step
     have words:=step.data_words source post db heap cursor limit child slot entry rest invariant.words
@@ -61,10 +62,13 @@ theorem Invariant.return_normal (input : Guest.InputBlob) (frontier : Nat) (db h
       exact ⟨⟨next,cursor,nextEntry::rest,.resolve,true⟩,
         ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
           scratch,invariant.below,view,fresh,words,top,mode,actualGo,⟨nextEntry,rest,rfl,olderWaiting,actualSlot⟩,Or.inl rfl,installed⟩,rank⟩
-    · exact ⟨⟨next,cursor,rest,.returning,true⟩,
+    · have lower : max frontier (resultLower rest)≤max (resultLower rest) entry.data.payload.startAddress:=
+        max_le ((invariant.fresh entry List.mem_cons_self).2.trans (Nat.le_max_right _ _)) (Nat.le_max_left _ _)
+      have returnedOwned:=resultOwned.weaken post node (max (resultLower rest) entry.data.payload.startAddress) next.toNat (max frontier (resultLower rest)) next.toNat lower (Nat.le_refl _)
+      exact ⟨⟨next,cursor,rest,.returning,true⟩,
         ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
           scratch,invariant.below,view,invariant.fresh.tail frontier entry rest,words,top,mode,actualGo,
-          ⟨olderWaiting,node,result,resultOwned⟩,Or.inl rfl,installed⟩,rank⟩
+          ⟨olderWaiting,node,result,returnedOwned⟩,Or.inl rfl,installed⟩,rank⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 

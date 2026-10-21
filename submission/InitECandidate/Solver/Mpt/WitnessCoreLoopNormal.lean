@@ -15,7 +15,7 @@ theorem Invariant.loop_normal (input : Guest.InputBlob) (frontier : Nat) (db lim
     ∃ heap cursor child,
       Invariant input frontier db limit post ⟨heap,cursor,[],.returning,false⟩ ∧
       post.locals.lookup (Flapjack.Basis.Pure.MlString.ofString "result")=some (.val (.word child)) ∧
-      ResultOwned post (resultLower []) heap.toNat child := by
+      ResultOwned post (max frontier (resultLower [])) heap.toNat child := by
   have step (current : PanSemStateFiniteExact 64 Guest.HostMemory) (codeEq : current.code=source.code)
       (valid : Valid input frontier db limit current) (word : BitVec 64)
       (guard : evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) WitnessCore.condition=some (.val (.word word)))

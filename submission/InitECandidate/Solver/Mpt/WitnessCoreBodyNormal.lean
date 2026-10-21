@@ -15,7 +15,7 @@ def Completed (input : Guest.InputBlob) (frontier : Nat) (db limit : BitVec 64)
     (post : PanSemStateFiniteExact 64 Guest.HostMemory) (returned : ValueHOL 64) : Prop:=
   ∃ heap cursor child finished,
     returned=.val (.word child) ∧ Invariant input frontier db limit finished ⟨heap,cursor,[],.returning,false⟩ ∧
-    Input.LocalEffects.erase post=Input.LocalEffects.erase finished ∧ ResultOwned post (resultLower []) heap.toNat child
+    Input.LocalEffects.erase post=Input.LocalEffects.erase finished ∧ ResultOwned post (max frontier (resultLower [])) heap.toNat child
 
 theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (db pointer length heap cursor limit : BitVec 64) (boundary : RootBoundary input source)
@@ -49,7 +49,7 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
     exact erased.trans (by rw [innerEq]; rfl)
   have memory:=Input.LocalEffects.memory_of_erase finished post pure
   exact ⟨nextHeap,nextCursor,child,finished,returnedEq,finalInvariant,pure,
-    owned.of_fields finished post child (resultLower []) nextHeap.toNat memory⟩
+    owned.of_fields finished post child (max heap.toNat (resultLower [])) nextHeap.toNat memory⟩
 
 /-- Reinstalling the actual caller locals at a genuine call continuation
 recovers the current helper boundary from the completed core's own final
@@ -60,7 +60,7 @@ theorem Completed.resume (input : Guest.InputBlob) (frontier : Nat) (db limit : 
     (pure : Input.LocalEffects.erase target=Input.LocalEffects.erase post)
     (dbCell : target.locals.lookup (ofString "db")=some (.val (.word db))) :
     ∃ heap child,returned=.val (.word child) ∧ RootBoundary input target ∧
-      target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ ResultOwned target (resultLower []) heap.toNat child := by
+      target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ ResultOwned target (max frontier (resultLower [])) heap.toNat child := by
   obtain ⟨heap,cursor,child,finished,returnedEq,invariant,postPure,owned⟩:=completed
   have wholePure:=pure.trans postPure
   have memory:=Input.LocalEffects.memory_of_erase finished target wholePure
@@ -74,7 +74,7 @@ theorem Completed.resume (input : Guest.InputBlob) (frontier : Nat) (db limit : 
   have heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by rw [globals]; exact invariant.heapCell
   have boundary:=frozen.boundary input target frontier heap heapCell invariant.heapArena invariant.aligned invariant.frontierBefore
   exact ⟨heap,child,returnedEq,boundary,heapCell,
-    owned.of_fields post target child (resultLower []) heap.toNat (Input.LocalEffects.memory_of_erase post target pure)⟩
+    owned.of_fields post target child (max frontier (resultLower [])) heap.toNat (Input.LocalEffects.memory_of_erase post target pure)⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack
 

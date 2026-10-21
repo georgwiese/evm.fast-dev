@@ -20,7 +20,7 @@ theorem BranchStep.of_fields (source target : PanSemStateFiniteExact 64 Guest.Ho
       view.of_fields source target db cursor.toNat heap.toNat (next::rest) memory domain,
       topCell.trans top,slotCell.trans slotValue,modeCell.trans mode,resultCell.trans result,rank⟩
   · exact Or.inr ⟨view.of_fields source target db cursor.toNat heap.toNat rest memory domain,node,
-      owned.of_fields source target node (resultLower rest) heap.toNat memory,
+      owned.of_fields source target node (max (resultLower rest) entry.data.payload.startAddress) heap.toNat memory,
       topCell.trans top,resultCell.trans result,modeCell.trans mode,slotCell.trans slotValue,rank⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack

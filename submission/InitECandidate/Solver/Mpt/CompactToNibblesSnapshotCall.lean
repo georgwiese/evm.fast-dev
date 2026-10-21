@@ -8,11 +8,19 @@ namespace InitECandidate.Solver.Mpt.CompactToNibbles
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString
 
-private theorem caller_origin (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem Snapshot.from_call_entry (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (callee : HolFiniteMapExact MlS (ValueHOL 64)) (length : Nat) (heap cursor limit : BitVec 64) (nibbles : Nat) (leaf : BitVec 64)
     (snapshot : Snapshot (callEntryStateHOLFinite source callee) target length heap cursor limit nibbles leaf) :
     Snapshot source target length heap cursor limit nibbles leaf :=
   ⟨snapshot.positive,snapshot.outputArena,snapshot.nibbleBound,snapshot.leafBinary,snapshot.arena,snapshot.heapCell,
+    snapshot.nextArena,snapshot.nextAligned,snapshot.grows,snapshot.metadata,snapshot.memory⟩
+
+theorem Snapshot.resumed (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (length : Nat) (heap cursor limit : BitVec 64) (nibbles : Nat) (leaf : BitVec 64) (name : String)
+    (snapshot : Snapshot source target length heap cursor limit nibbles leaf) :
+    Snapshot source (Input.CallNormal.continuationEntry source target name (output heap nibbles leaf)) length heap cursor limit nibbles leaf :=
+  ⟨snapshot.positive,snapshot.outputArena,snapshot.nibbleBound,snapshot.leafBinary,
+    Rlp.Validation.Arena.of_fields target _ cursor limit snapshot.arena rfl rfl,snapshot.heapCell,
     snapshot.nextArena,snapshot.nextAligned,snapshot.grows,snapshot.metadata,snapshot.memory⟩
 
 /-- Actual original compact conversion either stops within its local
@@ -44,7 +52,7 @@ theorem scoped_snapshot_trace (source post : PanSemStateFiniteExact 64 Guest.Hos
     obtain ⟨nibbles,leaf,valueEq,snapshot⟩:=body_snapshot (callEntryStateHOLFinite source callee) target pointer heap cursor limit length bounded
       pointerLocal lengthLocal heapCell heapArena aligned entryArena installed value bodyRun
     rw [valueEq] at continued
-    exact Or.inr ⟨target,nibbles,leaf,inner,caller_origin source target callee length heap cursor limit nibbles leaf snapshot,forward,spent,continued,endpoint⟩
+    exact Or.inr ⟨target,nibbles,leaf,inner,snapshot.from_call_entry source target callee length heap cursor limit nibbles leaf,forward,spent,continued,endpoint⟩
 
 /-- Price only genuine continuations reached from the real original
 compact return, after deriving every output/heap/frame fact from that run. -/
@@ -70,10 +78,12 @@ theorem scoped_snapshot_cost (source : PanSemStateFiniteExact 64 Guest.HostMemor
       obtain ⟨nibbles,leaf,valueEq,snapshot⟩:=body_snapshot (callEntryStateHOLFinite source callee) target pointer heap cursor limit length bounded
         pointerLocal lengthLocal heapCell heapArena aligned entryArena installed value bodyRun
       rw [valueEq]
-      exact tail target nibbles leaf (caller_origin source target callee length heap cursor limit nibbles leaf snapshot))
+      exact tail target nibbles leaf (snapshot.from_call_entry source target callee length heap cursor limit nibbles leaf))
   exact total.trans (by omega)
 
 end InitECandidate.Solver.Mpt.CompactToNibbles
 
+#print axioms InitECandidate.Solver.Mpt.CompactToNibbles.Snapshot.from_call_entry
+#print axioms InitECandidate.Solver.Mpt.CompactToNibbles.Snapshot.resumed
 #print axioms InitECandidate.Solver.Mpt.CompactToNibbles.scoped_snapshot_trace
 #print axioms InitECandidate.Solver.Mpt.CompactToNibbles.scoped_snapshot_cost

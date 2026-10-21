@@ -27,6 +27,7 @@ theorem decode_array_normal (input : Guest.InputBlob)
         DecodeSliceEntry input origin (bind current "arr" heap) db pointer length heap cursor limit header payload count items ∧
         Rlp.Validation.Above source origin cursor.toNat ∧
         (∀ key,origin.globals.lookup key=source.globals.lookup key) ∧
+        origin.memaddrs=source.memaddrs ∧ origin.be=source.be ∧ origin.code=source.code ∧
         evaluateHOLFiniteState (bind current "arr" heap) Mpt.WitnessDecode.afterArray=(some (.returned value),inner) ∧
         post=restore source "it" (restore (Mpt.WitnessStep.tupleEntry source) "e" (restore origin "sl" (restore current "arr" inner))) := by
   have originalBoundary:=boundary
@@ -54,7 +55,7 @@ theorem decode_array_normal (input : Guest.InputBlob)
   · obtain ⟨header,payload,count,items,current,last,entry,slicesRun,restored⟩:=reached
     obtain ⟨inner,arrayRun,restoredArray⟩:=entry.array_trace input origin current last db pointer length heap cursor limit header payload count items (some (.returned value)) slicesRun
     exact Or.inr ⟨origin,current,header,payload,heap,count,items,inner,entry.bind_array input origin current db pointer length heap cursor limit header payload count items,
-      above,globals,arrayRun,by rw [endpoint,restored,restoredArray]⟩
+      above,globals,domain,endian,codeEq,arrayRun,by rw [endpoint,restored,restoredArray]⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

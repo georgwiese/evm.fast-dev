@@ -20,6 +20,7 @@ inductive DecodeStep (post : PanSemStateFiniteExact 64 Guest.HostMemory) (db hea
       (resultCell : post.locals.lookup (ofString "result")=some (.val (.word node)))
       (modeCell : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)))
       (owned : ResultOwned post heap.toNat next.toNat node)
+      (decoded : ∃ pointer length,WitnessDecode.NormalResult post db pointer length heap cursor limit (.rStruct [.val (.word 0#64),.val (.word node)]))
       (rank : WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames stack) .returning true<
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames stack) .decode true) : DecodeStep post db heap cursor limit stack
   | pushed (data : WitnessRecord.Description) (next : BitVec 64)
@@ -102,7 +103,7 @@ theorem core_decode_stack_normal (input : Guest.InputBlob) (source post : PanSem
         (CallNormal.continuation_lookup_other source built "d" name returned notD)
     have postResult : post.locals.lookup (ofString "result")=some (.val (.word node)):=by rw [postEq]; exact fields.1
     have postMode : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)):=by rw [postEq]; exact fields.2.1
-    exact ⟨frame,.terminal next node nextCell nextArena aligned grows scratch postView postTop postResult postMode owned
+    exact ⟨frame,.terminal next node nextCell nextArena aligned grows scratch postView postTop postResult postMode owned ⟨pointer,length,result⟩
       (Mpt.WitnessStackRank.terminal _ _),preserved "db" (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide),
       ⟨⟨pointer,(preserved "cur_p" (by decide) (by decide) (by decide)).trans pointerCell⟩,
         ⟨length,(preserved "cur_n" (by decide) (by decide) (by decide)).trans lengthCell⟩,

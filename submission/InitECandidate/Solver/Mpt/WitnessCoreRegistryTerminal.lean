@@ -10,6 +10,19 @@ def NodeRegistry.advance_heap (source : PanSemStateFiniteExact 64 Guest.HostMemo
     (grows : heap.toNat≤nextHeap.toNat) : NodeRegistry source frontier nextHeap db :=
   ⟨registry.graph,registry.values,registry.regions.weaken registry.graph frontier heap.toNat frontier nextHeap.toNat (Nat.le_refl _) grows,registry.disjoint⟩
 
+/-- The real whole resolver changes HASH in scratch. Its database-band
+frame, rather than agreement on that changed scratch word, protects every
+completed node above the fixed materializer entry frontier. -/
+theorem NodeRegistry.after_database_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frontier : Nat) (heap db : BitVec 64) (registry : NodeRegistry source frontier heap db)
+    (above : 2713717616≤frontier) (frame : DatabaseFrame source target heap) :
+    ∃ next : NodeRegistry target frontier heap db,next.graph.valid=registry.graph.valid := by
+  obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source target 1024 frontier heap.toNat (WitnessValue db)
+    registry.values registry.regions registry.disjoint frame.domain
+    (by intro query required; have bounds:=registry.graph.footprint_bounds frontier heap.toNat registry.regions query required; exact frame.memory query (above.trans bounds.1) bounds.2)
+    (by intro query required; have bounds:=registry.graph.value_bounds frontier heap.toNat registry.regions query required; exact frame.memory query (above.trans bounds.1) bounds.2)
+  exact ⟨⟨graph,values,regions,disjoint⟩,validEq⟩
+
 theorem NodeRegistry.excludes_fresh (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (heap db node : BitVec 64) (size : Nat) (registry : NodeRegistry source frontier heap db)
     (fresh : heap.toNat≤node.toNat) : registry.graph.Excludes node size := by
@@ -64,18 +77,15 @@ theorem NodeRegistry.decode_terminal (source post : PanSemStateFiniteExact 64 Gu
 fresh hash node, or delivers null. Its HASH scratch write is in the real
 normal frame and does not become a graph-closure assumption. -/
 theorem NodeRegistry.resolve_terminal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (frontier : Nat) (db heap finalHeap cursor limit node : BitVec 64)
-    (registry : NodeRegistry source frontier heap db) (above : cursor.toNat≤frontier) (frontierBefore : frontier≤heap.toNat)
-    (frame : WitnessDecode.NormalFrame source post heap cursor limit)
+    (frontier : Nat) (db heap finalHeap node : BitVec 64)
+    (registry : NodeRegistry source frontier heap db) (above : 2713717616≤frontier) (frontierBefore : frontier≤heap.toNat)
+    (frame : DatabaseFrame source post heap) (grows : heap.toNat≤finalHeap.toNat)
     (result : Input.Main.RunAttemptConstructors.ResolveResult post db heap (resolveAnswer 0#64 node 0#64 0#64))
     (heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word finalHeap)))
     (domain : post.memaddrs=InitE.ordinaryDomain) (aligned : heap.toNat%8=0) :
     ∃ next : NodeRegistry post frontier finalHeap db,next.graph.valid node ∧ (∀ child,registry.graph.valid child → next.graph.valid child) ∧
       (∀ child,next.graph.valid child → registry.graph.valid child ∨ child=node) := by
-  obtain ⟨old,oldValid⟩:=registry.after_normal_frame source post frontier heap heap db cursor limit above (Nat.le_refl _) frame
-  obtain ⟨actualHeap,actualCell,actualArena,actualAligned,grows⟩:=frame.nextHeap
-  have same : actualHeap=finalHeap := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (actualCell.symm.trans heapCell)))
-  subst actualHeap
+  obtain ⟨old,oldValid⟩:=registry.after_database_frame source post frontier heap db above frame
   let extended:=old.advance_heap post frontier heap finalHeap db grows
   rcases result with empty|⟨valueEq,arena,stored,hashData,actualHeap,actualCell,finalArena,finalAligned,before⟩|
       ⟨pointer,length,pending,valueEq,small,lower,upper,hashSpan⟩
@@ -117,3 +127,5 @@ end InitECandidate.Solver.Mpt.WitnessCore
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.NodeRegistry.excludes_fresh
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.NodeRegistry.decode_terminal
 #print axioms InitECandidate.Solver.Mpt.WitnessCore.NodeRegistry.resolve_terminal
+
+#print axioms InitECandidate.Solver.Mpt.WitnessCore.NodeRegistry.after_database_frame

@@ -19,6 +19,7 @@ def ResolveStep (post : PanSemStateFiniteExact 64 Guest.HostMemory) (db heap cur
     ((pending=0#64 ∧ ∃ node,
         post.locals.lookup (ofString "result")=some (.val (.word node)) ∧
         post.locals.lookup (ofString "mode")=some (.val (.word 0#64)) ∧ ResultOwned post heap.toNat next.toNat node ∧
+        Input.Main.RunAttemptConstructors.ResolveResult post db heap (resolveAnswer 0#64 node 0#64 0#64) ∧
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames ({entry with pending:=some pending}::rest)) .returning true<
           WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .resolve true) ∨
       ∃ pointer length,
@@ -93,6 +94,8 @@ theorem core_resolve_stack_normal (input : Guest.InputBlob) (source post : PanSe
     have number : (entry.record+80#64).toNat=entry.record.toNat+80:=byteAddress_toNat entry.record 80 (by omega)
     have hashedOwned:=owned.store_below ready node (entry.record+80#64) 0#64 heap.toNat next.toNat (by omega)
     have postOwned:=hashedOwned.of_fields _ post node heap.toNat next.toNat postMemory
+    have hashedResult:=result.store_below ready db heap (entry.record+80#64) 0#64 _ (by omega)
+    have postResult:=hashedResult.of_fields _ post db heap _ postMemory postGlobals
     have fields:=resolve_scoped_terminal_fields source ready entry.data.array entry.record node
     have actualResult : post.locals.lookup (ofString "result")=some (.val (.word node)):=by rw [postEq]; exact fields.1
     have actualMode : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)):=by rw [postEq]; exact fields.2.1
@@ -108,7 +111,7 @@ theorem core_resolve_stack_normal (input : Guest.InputBlob) (source post : PanSe
         Mpt.WitnessStackRank.rank (Mpt.WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .resolve true:=
       lt_trans (Mpt.WitnessStackRank.terminal _ _) (Mpt.WitnessStackRank.resolve_decode _ _)
     exact ⟨⟨next,0#64,actualNext,nextArena,aligned,grows,scratch,postView,actualTop,actualSlot,
-      Or.inl ⟨rfl,node,actualResult,actualMode,postOwned,rank⟩⟩,
+      Or.inl ⟨rfl,node,actualResult,actualMode,postOwned,postResult,rank⟩⟩,
       preserved "db" (by decide) (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide) (by decide),
       ⟨⟨oldPointer,(preserved "cur_p" (by decide) (by decide) (by decide) (by decide)).trans pointerCell⟩,
         ⟨oldLength,(preserved "cur_n" (by decide) (by decide) (by decide) (by decide)).trans lengthCell⟩,⟨node,actualResult⟩,⟨_,actualSlot⟩⟩,

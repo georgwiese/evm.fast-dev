@@ -4192,6 +4192,7 @@
     "submission/InitECandidate/Solver/Mpt/TransientSetZero.lean",
     "submission/InitECandidate/Solver/Mpt/TransientSetZeroPrefix.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphCacheFrame.lean",
+    "submission/InitECandidate/Solver/Mpt/TrieGraphExclusion.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphRegions.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphRegister.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphRegisteredRegions.lean",
@@ -4287,6 +4288,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessCoreMetadata.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCorePush.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreRegistryFrame.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreRegistryTerminal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreResolveProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreResolveResultNode.lean",
@@ -4299,7 +4301,9 @@
     "submission/InitECandidate/Solver/Mpt/WitnessCoreReturnDispatch.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreReturnModeCost.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreReturnProgram.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreRichDecode.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreRichInvariant.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessCoreRichResolve.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchLast.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchNext.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessCoreStackBranchScope.lean",
@@ -7163,8 +7167,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64032,
-  "package_bytes": 2266117769,
+  "package_entries": 64036,
+  "package_bytes": 2266143396,
   "claim": {
     "K": "infinity"
   },

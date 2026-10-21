@@ -31,7 +31,7 @@ theorem Invariant.resolve_normal (input : Guest.InputBlob) (frontier : Nat) (db 
   let nextEntry : Entry:={entry with pending:=some pending}
   have fresh : FreshFrom frontier (nextEntry::rest):=invariant.fresh.advance frontier entry nextEntry rest rfl rfl
   have nextWaiting : Waiting (nextEntry::rest):=waiting.cons nextEntry rest ⟨pending,rfl⟩
-  rcases shape with ⟨zero,node,result,mode,owned,rank⟩|⟨pointer,length,actualPointer,actualLength,mode,small,lower,before,validHash,rank⟩
+  rcases shape with ⟨zero,node,result,mode,owned,resolved,rank⟩|⟨pointer,length,actualPointer,actualLength,mode,small,lower,before,validHash,rank⟩
   · have parentLower:=invariant.view.marks entry List.mem_cons_self
     have returnedOwned:=owned.weaken post node heap.toNat next.toNat (max frontier (resultLower (nextEntry::rest))) next.toNat
       (max_le invariant.frontierBefore parentLower) (Nat.le_refl _)

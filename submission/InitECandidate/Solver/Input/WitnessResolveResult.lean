@@ -21,6 +21,22 @@ theorem ResolveResult.of_fields (source target : PanSemStateFiniteExact 64 Guest
     (result : ResolveResult source db heap value) (memory : target.memory=source.memory) (globals : target.globals=source.globals) : ResolveResult target db heap value := by
   simpa only [ResolveResult,memory,globals] using result
 
+/-- The actual HASH scratch store below the incoming heap retains every
+field of a real terminal hash allocation and all bounded-input results. -/
+theorem ResolveResult.store_below (source : PanSemStateFiniteExact 64 Guest.HostMemory) (db heap address word : BitVec 64) (value : ValueHOL 64)
+    (result : ResolveResult source db heap value) (below : address.toNat<heap.toNat) :
+    ResolveResult {source with memory:=StoreWord.put source.memory address word} db heap value := by
+  rcases result with empty|⟨valueEq,arena,tag,hashData,finalHeap,heapCell,heapArena,aligned,before⟩|decode
+  · exact Or.inl empty
+  · have away : heap≠address := by intro equal; have numeric:=congrArg BitVec.toNat equal; omega
+    have number : (heap+24#64).toNat=heap.toNat+24 := byteAddress_toNat heap 24 (by have bound:=arena.upper; omega)
+    have cacheAway : heap+24#64≠address := by intro equal; have numeric:=congrArg BitVec.toNat equal; rw [number] at numeric; omega
+    obtain ⟨hash,lower,upper,stored⟩:=hashData
+    exact Or.inr (Or.inl ⟨valueEq,arena,(if_neg away).trans tag,⟨hash,lower,upper,(if_neg cacheAway).trans stored⟩,
+      finalHeap,heapCell,heapArena,aligned,before⟩)
+  · exact Or.inr (Or.inr decode)
+
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 
 #print axioms InitECandidate.Solver.Input.Main.RunAttemptConstructors.ResolveResult.of_fields
+#print axioms InitECandidate.Solver.Input.Main.RunAttemptConstructors.ResolveResult.store_below

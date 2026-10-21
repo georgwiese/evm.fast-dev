@@ -26,7 +26,7 @@ theorem Invariant.decode_normal (input : Guest.InputBlob) (frontier : Nat) (db h
   have actualGo:=goCell.trans invariant.goCell
   have installed : Input.OriginalCode.Installed post.code:=by rw [frame.code]; exact invariant.installed
   cases step with
-  | terminal next node nextCell nextArena aligned grows scratch view top result mode owned rank=>
+  | terminal next node nextCell nextArena aligned grows scratch view top result mode owned decoded rank=>
     have parentLower:=invariant.view.result_lower_le_heap source db cursor.toNat heap.toNat stack invariant.heapLower
     have returnedOwned:=owned.weaken post node heap.toNat next.toNat (max frontier (resultLower stack)) next.toNat
       (max_le invariant.frontierBefore parentLower) (Nat.le_refl _)

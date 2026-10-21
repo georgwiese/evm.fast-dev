@@ -19,6 +19,19 @@ structure Database (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array 
   arenas : ∀ index<count,AllocatedBytes.Arena (slices index).1 (slices index).2.toNat
   sourceLower : ∀ index<count,2713731432≤(slices index).1.toNat
   sourceBefore : ∀ index<count,(slices index).1.toNat+(slices index).2.toNat≤table.toNat
+  footprintFloor : scratch.toNat+32≤effectiveRecords array table count
+
+/-- Even the empty constructor allocates beyond the scratch buffer; the
+nonempty constructor's actual record rows have the same lower separation. -/
+theorem Inputs.footprint_floor (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array heap : BitVec 64) (count maximum : Nat)
+    (slices : Nat→Graph.Slice) (stp pad scratch : BitVec 64) (actual : Inputs source array heap count maximum slices stp pad scratch) :
+    scratch.toNat+32≤effectiveRecords array heap count := by
+  unfold effectiveRecords
+  by_cases empty : count=0
+  · rw [if_pos empty]
+    exact actual.heapAfterScratch
+  · rw [if_neg empty]
+    exact (actual.before empty).2.2
 
 /-- Every genuine constructor return supplies the complete lookup context,
 including real slice records and the original per-record size bound. -/
@@ -30,7 +43,7 @@ theorem Normal.database (source target : PanSemStateFiniteExact 64 Guest.HostMem
   obtain ⟨bits,stored,input,logical,lower,upper,capacity,built,history,length,ready,heapCell⟩ := actual.table
   exact ⟨domain.trans inputs.environment.domain,endian.trans inputs.little,inputs.sizes,
     ⟨bits,stored,input,logical,lower,upper,capacity,ready,built,history,length,inputs.returned_records source target array heap count maximum slices stp pad scratch actual bits ready⟩,
-    fun index inside=>(inputs.buffers index inside).inputArena,inputs.sourceLower,inputs.sourceBefore⟩
+    fun index inside=>(inputs.buffers index inside).inputArena,inputs.sourceLower,inputs.sourceBefore,Inputs.footprint_floor source array heap count maximum slices stp pad scratch inputs⟩
 
 /-- Building the second original database retains the complete first
 database at the real current state, with its genuine slice outputs. -/
@@ -69,9 +82,11 @@ theorem Normal.database_after_build
   exact ⟨secondFields.2.1.trans (entryDomain.trans (firstFields.2.1.trans inputs.environment.domain)),
     secondFields.2.2.1.trans (entryEndian.trans (firstFields.2.2.1.trans inputs.little)),inputs.sizes,
     ⟨bits,stored,input,logical,lower,upper,capacity,ready,built,history,length,finalRows⟩,
-    fun index inside=>(inputs.buffers index inside).inputArena,inputs.sourceLower,inputs.sourceBefore⟩
+    fun index inside=>(inputs.buffers index inside).inputArena,inputs.sourceLower,inputs.sourceBefore,Inputs.footprint_floor source array heap count maximum slices stp pad scratch inputs⟩
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 
 #print axioms InitECandidate.Solver.MutableTable.WitnessBuild.Normal.database
 #print axioms InitECandidate.Solver.MutableTable.WitnessBuild.Normal.database_after_build
+
+#print axioms InitECandidate.Solver.MutableTable.WitnessBuild.Inputs.footprint_floor

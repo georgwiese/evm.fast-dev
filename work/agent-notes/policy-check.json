@@ -2298,6 +2298,11 @@
     "submission/InitECandidate/Solver/Input/PayloadExtraTrace.lean",
     "submission/InitECandidate/Solver/Input/PayloadFields.lean",
     "submission/InitECandidate/Solver/Input/PayloadGas.lean",
+    "submission/InitECandidate/Solver/Input/PayloadHashProgram.lean",
+    "submission/InitECandidate/Solver/Input/PayloadHashTransactionCost.lean",
+    "submission/InitECandidate/Solver/Input/PayloadHashTransactionMemory.lean",
+    "submission/InitECandidate/Solver/Input/PayloadHashTransactionNormal.lean",
+    "submission/InitECandidate/Solver/Input/PayloadHashTransactions.lean",
     "submission/InitECandidate/Solver/Input/PayloadHeaderStores.lean",
     "submission/InitECandidate/Solver/Input/PayloadImage.lean",
     "submission/InitECandidate/Solver/Input/PayloadImageAnyClock.lean",
@@ -6618,8 +6623,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63486,
-  "package_bytes": 2263569681,
+  "package_entries": 63491,
+  "package_bytes": 2263609354,
   "claim": {
     "K": "infinity"
   },

@@ -33,7 +33,8 @@ theorem Invariant.resolve_normal (input : Guest.InputBlob) (frontier : Nat) (db 
   have nextWaiting : Waiting (nextEntry::rest):=waiting.cons nextEntry rest ⟨pending,rfl⟩
   rcases shape with ⟨zero,node,result,mode,owned,rank⟩|⟨pointer,length,actualPointer,actualLength,mode,small,lower,before,validHash,rank⟩
   · have parentLower:=invariant.view.marks entry List.mem_cons_self
-    have returnedOwned:=owned.weaken post node heap.toNat next.toNat (resultLower (nextEntry::rest)) next.toNat parentLower (Nat.le_refl _)
+    have returnedOwned:=owned.weaken post node heap.toNat next.toNat (max frontier (resultLower (nextEntry::rest))) next.toNat
+      (max_le invariant.frontierBefore parentLower) (Nat.le_refl _)
     exact ⟨⟨next,cursor,nextEntry::rest,.returning,true⟩,
       ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
         scratch,invariant.below,view,fresh,words,top,mode,actualGo,⟨nextWaiting,node,result,returnedOwned⟩,Or.inl rfl,installed⟩,rank⟩

@@ -21,7 +21,7 @@ def Configuration.rank (configuration : Configuration) (limit : BitVec 64) : Nat
 def modeWord : WitnessStackRank.Phase→BitVec 64 | .returning=>0#64 | .decode=>1#64 | .resolve=>2#64
 def goWord (running : Bool) : BitVec 64:=if running then 1#64 else 0#64
 
-def PhaseInvariant (source : PanSemStateFiniteExact 64 Guest.HostMemory) (db heap : BitVec 64)
+def PhaseInvariant (source : PanSemStateFiniteExact 64 Guest.HostMemory) (frontier : Nat) (db heap : BitVec 64)
     (stack : List Entry) : WitnessStackRank.Phase→Prop
   | .decode=>Waiting stack ∧ ∃ pointer length,
       source.locals.lookup (ofString "cur_p")=some (.val (.word pointer)) ∧
@@ -31,7 +31,7 @@ def PhaseInvariant (source : PanSemStateFiniteExact 64 Guest.HostMemory) (db hea
       source.locals.lookup (ofString "slot")=some (.val (.word (BitVec.ofNat 64 entry.data.payload.slotIndex)))
   | .returning=>Waiting stack ∧ ∃ child,
       source.locals.lookup (ofString "result")=some (.val (.word child)) ∧
-      ResultOwned source (resultLower stack) heap.toNat child
+      ResultOwned source (max frontier (resultLower stack)) heap.toNat child
 
 /-- Invariant of the unchanged original238 loop. Every physical record,
 pending hash, allocation frontier and control binding comes from the
@@ -53,7 +53,7 @@ structure Invariant (input : Guest.InputBlob) (frontier : Nat) (db limit : BitVe
   topCell : source.locals.lookup (ofString "top")=some (.val (.word (top configuration.stack)))
   modeCell : source.locals.lookup (ofString "mode")=some (.val (.word (modeWord configuration.phase)))
   goCell : source.locals.lookup (ofString "go")=some (.val (.word (goWord configuration.running)))
-  phase : PhaseInvariant source db configuration.heap configuration.stack configuration.phase
+  phase : PhaseInvariant source frontier db configuration.heap configuration.stack configuration.phase
   stopped : configuration.running=true ∨ configuration.stack=[] ∧ configuration.phase=.returning
   installed : Input.OriginalCode.Installed source.code
 
@@ -71,7 +71,7 @@ theorem Invariant.dec_clock (input : Guest.InputBlob) (frontier : Nat) (db limit
   have frozen:=invariant.frozen.frame input source (decClockHOLFinite source) frontier rfl rfl rfl (by intros; rfl)
   have view:=invariant.view.of_fields source (decClockHOLFinite source) db configuration.cursor.toNat configuration.heap.toNat configuration.stack rfl rfl
   have words : DataWords (decClockHOLFinite source):=⟨invariant.words.pointer,invariant.words.length,invariant.words.result,invariant.words.slot⟩
-  have phase : PhaseInvariant (decClockHOLFinite source) db configuration.heap configuration.stack configuration.phase:=by
+  have phase : PhaseInvariant (decClockHOLFinite source) frontier db configuration.heap configuration.stack configuration.phase:=by
     have old:=invariant.phase
     cases phaseEq : configuration.phase with
     | decode=>
@@ -85,7 +85,7 @@ theorem Invariant.dec_clock (input : Guest.InputBlob) (frontier : Nat) (db limit
     | returning=>
       simp only [phaseEq,PhaseInvariant] at old ⊢
       obtain ⟨waiting,child,result,owned⟩:=old
-      exact ⟨waiting,child,result,owned.of_fields source (decClockHOLFinite source) child (resultLower configuration.stack) configuration.heap.toNat rfl⟩
+      exact ⟨waiting,child,result,owned.of_fields source (decClockHOLFinite source) child (max frontier (resultLower configuration.stack)) configuration.heap.toNat rfl⟩
   exact ⟨frozen,invariant.dbCell,invariant.heapCell,invariant.heapArena,invariant.aligned,invariant.heapLower,invariant.frontierBefore,
     invariant.scratch.of_fields source (decClockHOLFinite source) configuration.cursor limit rfl rfl,invariant.below,view,invariant.fresh,words,
     invariant.topCell,invariant.modeCell,invariant.goCell,phase,invariant.stopped,invariant.installed⟩

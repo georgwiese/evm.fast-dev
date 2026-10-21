@@ -55,6 +55,7 @@ theorem Invariant.body_cost (input : Guest.InputBlob) (frontier : Nat) (db limit
       change source.clock-source.clock≤iterationCost input
       omega
     | cons entry rest=>
+      have owned:=owned.weaken source child (max frontier (resultLower (entry::rest))) heap.toNat entry.mark heap.toNat (Nat.le_max_right _ _) (Nat.le_refl _)
       have head:=invariant.view.records entry List.mem_cons_self
       obtain ⟨hash,pendingEq⟩:=waiting entry List.mem_cons_self
       have pending:=invariant.view.pending entry List.mem_cons_self

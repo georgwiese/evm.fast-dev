@@ -23,7 +23,7 @@ def BranchStep (post : PanSemStateFiniteExact 64 Guest.HostMemory) (db heap curs
     WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (nextEntry::rest)) .resolve true<
       WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames (entry::rest)) .returning true) ∨
   (View post db cursor.toNat heap.toNat rest ∧ ∃ node,
-    ResultOwned post (resultLower rest) heap.toNat node ∧
+    ResultOwned post (max (resultLower rest) entry.data.payload.startAddress) heap.toNat node ∧
     post.locals.lookup (ofString "top")=some (.val (.word (top rest))) ∧
     post.locals.lookup (ofString "result")=some (.val (.word node)) ∧
     post.locals.lookup (ofString "mode")=some (.val (.word 0#64)) ∧
@@ -98,7 +98,7 @@ theorem return_branch_stack_normal (source post : PanSemStateFiniteExact 64 Gues
   · obtain ⟨tail,owned,actualTop,actualResult,globals,scratch,other,band,innerDomain,endian,code,rank⟩:=branch_children_last_stack_normal ready inner db heap cursor limit node child entry rest index occupied used inside
       readyView payload fields.1 fields.2.1 fields.2.2.1 fields.2.2.2 readyArena installed continued
     have actualView:=tail.of_fields inner post db cursor.toNat heap.toNat rest memory domain
-    have actualOwned:=ResultOwned.of_fields inner post node (resultLower rest) heap.toNat owned memory
+    have actualOwned:=ResultOwned.of_fields inner post node (max (resultLower rest) entry.data.payload.startAddress) heap.toNat owned memory
     have actualMode : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)):=
       (postOther "mode" (by decide) (by decide)).trans ((other "mode" (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans
         ((readyOther "mode" (by decide) (by decide)).trans modeCell))

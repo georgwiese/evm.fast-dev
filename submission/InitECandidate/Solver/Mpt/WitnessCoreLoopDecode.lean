@@ -28,7 +28,8 @@ theorem Invariant.decode_normal (input : Guest.InputBlob) (frontier : Nat) (db h
   cases step with
   | terminal next node nextCell nextArena aligned grows scratch view top result mode owned rank=>
     have parentLower:=invariant.view.result_lower_le_heap source db cursor.toNat heap.toNat stack invariant.heapLower
-    have returnedOwned:=owned.weaken post node heap.toNat next.toNat (resultLower stack) next.toNat parentLower (Nat.le_refl _)
+    have returnedOwned:=owned.weaken post node heap.toNat next.toNat (max frontier (resultLower stack)) next.toNat
+      (max_le invariant.frontierBefore parentLower) (Nat.le_refl _)
     exact ⟨⟨next,cursor,stack,.returning,true⟩,
       ⟨frozen,actualDb,nextCell,nextArena,aligned,invariant.heapLower.trans grows,invariant.frontierBefore.trans grows,
         scratch,invariant.below,view,invariant.fresh,words,top,mode,actualGo,⟨waiting,node,result,returnedOwned⟩,Or.inl rfl,installed⟩,rank⟩

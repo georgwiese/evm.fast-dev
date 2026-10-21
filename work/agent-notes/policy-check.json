@@ -4147,6 +4147,7 @@
     "submission/InitECandidate/Solver/Mpt/NodeConstructorMemory.lean",
     "submission/InitECandidate/Solver/Mpt/NodeConstructorNormal.lean",
     "submission/InitECandidate/Solver/Mpt/NodeConstructorProgram.lean",
+    "submission/InitECandidate/Solver/Mpt/NodeRegistryCopy32.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitAllocationTrace.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitDatabase.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitEnvironment.lean",
@@ -4381,6 +4382,7 @@
     "submission/InitECandidate/Solver/Mpt/WitnessMaterializeEnvironment.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessMaterializeNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessMaterializeOutput.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessMaterializeOutputAdvance.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessMaterializePrefixTrace.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessMaterializeProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessMaterializeRichNormal.lean",
@@ -4408,6 +4410,11 @@
     "submission/InitECandidate/Solver/Mpt/WitnessResolveLookupNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessResolveProgram.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessResolveSuffixNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessRootCacheNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessRootMaterializeNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessRootPrefixNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessRootRichNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/WitnessRootSuffixNormal.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessStackRank.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessStepCaught.lean",
     "submission/InitECandidate/Solver/Mpt/WitnessStepPrefixNormal.lean",
@@ -7189,8 +7196,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64058,
-  "package_bytes": 2266258606,
+  "package_entries": 64065,
+  "package_bytes": 2266298130,
   "claim": {
     "K": "infinity"
   },

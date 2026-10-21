@@ -28,7 +28,8 @@ theorem record_loop_variable (source : PanSemStateFiniteExact 64 Guest.HostMemor
       Locals target plan plan.count ∧ Records target plan slices ∧
       KeccakAbsorb.hashControl target=KeccakAbsorb.hashControl source ∧ target.clock≤source.clock ∧
       source.clock-recordBudget slices index remaining≤target.clock ∧
-      ∀ name : MlS,ofString "i"≠name→target.locals.lookup name=source.locals.lookup name := by
+      (∀ name : MlS,ofString "i"≠name→target.locals.lookup name=source.locals.lookup name) ∧
+      (∀ query,Keccak256.Protected stp pad scratch query→query.toNat<plan.table→target.memory query=source.memory query) := by
   have countSmall : plan.count<2^64:=by have:=ready.recordsBefore;have:=ready.fits;omega
   induction remaining generalizing source index count input logical with
   | zero=>
@@ -37,8 +38,9 @@ theorem record_loop_variable (source : PanSemStateFiniteExact 64 Guest.HostMemor
     change @evalHOLFinite 64 Guest.HostMemory _ source (fun address=>Classical.propDecidable (source.memaddrs address)) Constructor.condition=
       some (.val (.word (if index<plan.count then 1#64 else 0#64))) at test
     rw [if_neg (by omega)] at test
-    refine ⟨count,input,logical,source,?_,built,history,by omega,by simpa only [same] using locals,records,rfl,Nat.le_refl _,by simp [recordBudget],?_⟩
+    refine ⟨count,input,logical,source,?_,built,history,by omega,by simpa only [same] using locals,records,rfl,Nat.le_refl _,by simp [recordBudget],?_,?_⟩
     · rw [recordLoop,evaluateHOLFiniteState_while_total,test];simp
+    · intros;rfl
     · intros;rfl
   | succ remaining ih=>
     simp only [recordBudget] at enough
@@ -48,7 +50,7 @@ theorem record_loop_variable (source : PanSemStateFiniteExact 64 Guest.HostMemor
     have entryRecords:=Records.of_earlier source entry plan ready slices (by intros;rfl) records
     have entryLocals : Locals entry plan index:=⟨locals.table,locals.records,locals.count,locals.index⟩
     have entryContext:=Context.of_control source entry plan slices stp pad scratch maximum rfl context
-    obtain ⟨key,slot,nextCount,next,slotInside,countLower,countUpper,bodyRun,bodyBuilt,bodyLocals,bodyRecords,bodyControl,bodyUpper,bodyLower,bodyOther⟩:=
+    obtain ⟨key,slot,nextCount,next,slotInside,countLower,countUpper,bodyRun,bodyBuilt,bodyLocals,bodyRecords,bodyControl,bodyUpper,bodyLower,bodyOther,bodyMemory⟩:=
       record_step entry plan ready context.environment.domain scratch count index input logical bits small power entryBuilt processed inside entryLocals slices entryRecords stp pad
         entryContext.global entryContext.keccakCode entryContext.environment (context.buffers index inside) context.before context.aligned context.little
         entryContext.hashCode entryContext.copyCode entryContext.insertCode entryContext.memeqCode entryContext.findCode entryContext.setCode
@@ -57,10 +59,10 @@ theorem record_loop_variable (source : PanSemStateFiniteExact 64 Guest.HostMemor
       simpa only [processed] using History.snoc input history key (by omega)
     have nextContext:=Context.of_control entry next plan slices stp pad scratch maximum bodyControl entryContext
     have bodyBudget : source.clock-1-recordPrice (slices index).2.toNat index≤next.clock:=bodyLower
-    obtain ⟨finalCount,finalInput,finalLogical,target,tailRun,tailBuilt,tailHistory,tailLength,tailLocals,tailRecords,tailControl,tailUpper,tailLower,tailOther⟩:=
+    obtain ⟨finalCount,finalInput,finalLogical,target,tailRun,tailBuilt,tailHistory,tailLength,tailLocals,tailRecords,tailControl,tailUpper,tailLower,tailOther,tailMemory⟩:=
       ih next (index+1) nextCount (input++[(key,recordAddress plan index)]) (Placement.put logical slot key (recordAddress plan index)) (by omega)
         (by simp only [List.length_append,List.length_singleton,processed]) bodyBuilt nextHistory bodyLocals bodyRecords nextContext (by omega)
-    refine ⟨finalCount,finalInput,finalLogical,target,?_,tailBuilt,tailHistory,tailLength,tailLocals,tailRecords,tailControl.trans bodyControl,?_,?_,?_⟩
+    refine ⟨finalCount,finalInput,finalLogical,target,?_,tailBuilt,tailHistory,tailLength,tailLocals,tailRecords,tailControl.trans bodyControl,?_,?_,?_,?_⟩
     · have test:=Zero.tail_condition source index plan.count countSmall (by omega) locals.index locals.count
       change @evalHOLFinite 64 Guest.HostMemory _ source (fun address=>Classical.propDecidable (source.memaddrs address)) Constructor.condition=
         some (.val (.word (if index<plan.count then 1#64 else 0#64))) at test
@@ -77,6 +79,9 @@ theorem record_loop_variable (source : PanSemStateFiniteExact 64 Guest.HostMemor
       omega
     · intro name different
       exact (tailOther name different).trans (bodyOther name different)
+
+    · intro query kept earlier
+      exact (tailMemory query kept earlier).trans (bodyMemory query kept earlier)
 
 end InitECandidate.Solver.MutableTable.WitnessBuild
 

@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.WitnessCoreStackPush
 import InitECandidate.Solver.Mpt.WitnessCoreResultNode
 import InitECandidate.Solver.Input.CoreDecodeNormal
 import InitECandidate.Solver.Mpt.WitnessCoreDecodeScope
+import InitECandidate.Solver.Mpt.WitnessCoreLoopFields
 
 namespace InitECandidate.Solver.Mpt.WitnessCore.Stack
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -27,6 +28,7 @@ inductive DecodeStep (post : PanSemStateFiniteExact 64 Guest.HostMemory) (db hea
       (scratch : Rlp.Validation.Arena post (WitnessRecord.pointer cursor) limit)
       (view : View post db (WitnessRecord.pointer cursor).toNat next.toNat (⟨WitnessRecord.pointer cursor,data,next.toNat,none⟩::stack))
       (fresh : data.payload.Fresh)
+      (freshRows : heap.toNat≤data.array.toNat) (freshPayload : heap.toNat≤data.payload.startAddress)
       (topCell : post.locals.lookup (ofString "top")=some (.val (.word (WitnessRecord.pointer cursor))))
       (slotCell : post.locals.lookup (ofString "slot")=some (.val (.word (BitVec.ofNat 64 data.payload.slotIndex))))
       (modeCell : post.locals.lookup (ofString "mode")=some (.val (.word 2#64)))
@@ -75,7 +77,7 @@ theorem core_decode_stack_normal (input : Guest.InputBlob) (source post : PanSem
     (normal : evaluateHOLFiniteState source decodeBranch=(none,post)) :
     Mpt.WitnessDecode.NormalFrame source post heap cursor limit ∧ DecodeStep post db heap cursor limit stack ∧
       post.locals.lookup (ofString "db")=source.locals.lookup (ofString "db") ∧
-      post.locals.lookup (ofString "go")=source.locals.lookup (ofString "go") := by
+      post.locals.lookup (ofString "go")=source.locals.lookup (ofString "go") ∧ DataWords post := by
   obtain ⟨built,returned,frame,result,shape⟩:=core_decode_normal input source post db pointer length heap cursor limit (top stack) oldResult oldSlot oldMode
     boundary dbCell pointerCell lengthCell topCell resultCell slotCell modeCell heapCell arena before small inputLower below installed normal
   let ready:=CallNormal.continuationEntry source built "d" returned
@@ -101,11 +103,14 @@ theorem core_decode_stack_normal (input : Guest.InputBlob) (source post : PanSem
     have postResult : post.locals.lookup (ofString "result")=some (.val (.word node)):=by rw [postEq]; exact fields.1
     have postMode : post.locals.lookup (ofString "mode")=some (.val (.word 0#64)):=by rw [postEq]; exact fields.2.1
     exact ⟨frame,.terminal next node nextCell nextArena aligned grows scratch postView postTop postResult postMode owned
-      (Mpt.WitnessStackRank.terminal _ _),preserved "db" (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide)⟩
+      (Mpt.WitnessStackRank.terminal _ _),preserved "db" (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide),
+      ⟨⟨pointer,(preserved "cur_p" (by decide) (by decide) (by decide)).trans pointerCell⟩,
+        ⟨length,(preserved "cur_n" (by decide) (by decide) (by decide)).trans lengthCell⟩,
+        ⟨node,postResult⟩,⟨oldSlot,(preserved "slot" (by decide) (by decide) (by decide)).trans slotCell⟩⟩⟩
   · rw [valueEq] at result
     have fields:=decode_scoped_push_fields source ready (Mpt.WitnessRecord.pointer cursor) (top stack) shapeData.payload shapeFresh
     have link : post.memory (Mpt.WitnessRecord.pointer cursor)=.word (top stack):=by rw [postEq]; exact fields.2.2.2.1
-    obtain ⟨data,next,postView,fresh,parentPointer,parentLength,nextCell,nextArena,aligned,scratch,grows,rank⟩:=
+    obtain ⟨data,next,postView,fresh,parentPointer,parentLength,nextCell,nextArena,aligned,scratch,grows,freshRows,freshPayload,rank⟩:=
       push_record_result source post db pointer length heap cursor limit stack view arena heapLower frame result link
     let entry : Mpt.WitnessCore.Stack.Entry:=⟨Mpt.WitnessRecord.pointer cursor,data,next.toNat,none⟩
     have recordView:=postView.records entry List.mem_cons_self
@@ -120,8 +125,11 @@ theorem core_decode_stack_normal (input : Guest.InputBlob) (source post : PanSem
       rw [postEq]
       exact (decode_scoped_push_other source ready _ (top stack) shapeData.payload name notD notTop notSlot notMode).trans
         (CallNormal.continuation_lookup_other source built "d" name returned notD)
-    exact ⟨frame,.pushed data next nextCell nextArena aligned grows scratch postView fresh postTop postSlot postMode rank,
-      preserved "db" (by decide) (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide) (by decide)⟩
+    exact ⟨frame,.pushed data next nextCell nextArena aligned grows scratch postView fresh freshRows freshPayload postTop postSlot postMode rank,
+      preserved "db" (by decide) (by decide) (by decide) (by decide),preserved "go" (by decide) (by decide) (by decide) (by decide),
+      ⟨⟨pointer,(preserved "cur_p" (by decide) (by decide) (by decide) (by decide)).trans pointerCell⟩,
+        ⟨length,(preserved "cur_n" (by decide) (by decide) (by decide) (by decide)).trans lengthCell⟩,
+        ⟨oldResult,(preserved "result" (by decide) (by decide) (by decide) (by decide)).trans resultCell⟩,⟨_,postSlot⟩⟩⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

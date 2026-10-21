@@ -45,6 +45,7 @@ theorem push_record_result (source post : PanSemStateFiniteExact 64 Guest.HostMe
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) ∧
       AllocatedBytes.Arena next 0 ∧ next.toNat%8=0 ∧ Rlp.Validation.Arena post (WitnessRecord.pointer cursor) limit ∧
       heap.toNat≤next.toNat ∧
+      heap.toNat≤data.array.toNat ∧ heap.toNat≤data.payload.startAddress ∧
       WitnessStackRank.rank (WitnessStackRank.recordsLeft (WitnessRecord.pointer cursor).toNat limit.toNat) (frames (entry::stack)) .resolve true<
         WitnessStackRank.rank (WitnessStackRank.recordsLeft cursor.toNat limit.toNat) (frames stack) .decode true := by
   cases result with
@@ -66,7 +67,7 @@ theorem push_record_result (source post : PanSemStateFiniteExact 64 Guest.HostMe
       exact ⟨by omega,mark.trans freshRows,mark.trans freshPayload⟩
     have pushed:=push post db (WitnessRecord.pointer cursor) (WitnessRecord.pointer cursor).toNat next.toNat data stack oldPost view before
       (Nat.le_refl _) fresh order link
-    exact ⟨data,next,pushed,fresh,parentPointer,parentLength,heapCell,heapArena,heapAligned,scratch,grows,
+    exact ⟨data,next,pushed,fresh,parentPointer,parentLength,heapCell,heapArena,heapAligned,scratch,grows,freshRows,freshPayload,
       WitnessRecord.allocation_rank_push source cursor limit arena room (frames stack) data.payload⟩
 
 end InitECandidate.Solver.Mpt.WitnessCore.Stack

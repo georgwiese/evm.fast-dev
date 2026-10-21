@@ -22,6 +22,7 @@ structure Normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (a
   control : ∃ next,heap.toNat≤next ∧ next≤heap.toNat+72+57*(4*count+4)+7 ∧ next%8=0 ∧
     KeccakAbsorb.hashControl target=KeccakAbsorb.hashControl {source with globals:=source.globals.update (ofString "heap_ptr",.val (.word (BitVec.ofNat 64 next)))}
   memory : ∀ query,Keccak256.Protected stp pad scratch query→query.toNat<heap.toNat→target.memory query=source.memory query
+  entryHeap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
 
 theorem callee_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array heap : BitVec 64) (count maximum : Nat)
     (slices : Nat→Graph.Slice) (stp pad scratch : BitVec 64) (actual : Inputs source array heap count maximum slices stp pad scratch)
@@ -50,7 +51,7 @@ theorem callee_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
   rcases actual.callee source array heap count maximum slices stp pad scratch callee arrayCell countCell with empty|ready
   · obtain ⟨zero,ready⟩ := empty
     obtain ⟨valueEq,built,ffi,globals,memory,forward,cost,control⟩ := empty_normal_any_clock entry target heap.toNat scratch ready value normal
-    refine ⟨by simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using valueEq,?_,?_,?_⟩
+    refine ⟨by simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using valueEq,?_,?_,?_,actual.heapGlobal⟩
     · refine ⟨2,0,[],fun _=>none,by decide,by decide,?_,?_,.empty,?_,?_,?_⟩
       · rw [zero]; decide
       · simpa [effectiveRecords,zero] using built
@@ -65,7 +66,7 @@ theorem callee_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
   · obtain ⟨nonempty,ready⟩ := ready
     obtain ⟨valueEq,bits,nextCount,input,logical,lower,upper,built,history,length,rows,control,forward,cost,capacity,memory,layoutReady⟩ :=
       normal_any_clock entry target array.toNat heap.toNat count maximum slices stp pad scratch ready value normal
-    refine ⟨by simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using valueEq,?_,?_,memory⟩
+    refine ⟨by simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using valueEq,?_,?_,memory,actual.heapGlobal⟩
     · refine ⟨bits,nextCount,input,logical,lower,upper,capacity,by simpa only [effectiveRecords,if_neg nonempty] using built,by simpa only [effectiveRecords,if_neg nonempty] using history,length,?_,?_⟩
       · simpa only [effectiveRecords,if_neg nonempty] using layoutReady
       · have globals:=congrArg PanSemStateFiniteExact.globals control

@@ -94,14 +94,14 @@ theorem tail_of_inputs (input : Guest.InputBlob) (source post headerTarget first
       rw [readyClock] at forward
       rw [finalClock]
       exact Or.inl (by unfold price; omega)
-    · obtain ⟨nodeTarget,codeTarget,codeTable,inner,nodeReturned,codeReturned,nodeDatabase,codeDatabase,continued,endpoint⟩ := built
+    · obtain ⟨nodeTarget,codeTarget,codeTable,currentHeap,inner,nodeReturned,codeReturned,nodeDatabase,codeDatabase,currentHeapCell,nodeBefore,codeBefore,continued,endpoint⟩ := built
       have headerCost:=headerReturned.cost
       have headerForward:=headerReturned.forward
       change source.clock-headerTarget.clock≤headerPrice input at headerCost
       change headerTarget.clock≤source.clock at headerForward
       apply Or.inr
-      exact reached_of_returns input source post root headerTarget parent nodeTarget codeTarget codeArray heap codeTable inner nodeReturned codeReturned
-        nodeDatabase codeDatabase headerForward headerCost outcome continued (by
+      exact reached_of_returns input source post root headerTarget parent nodeTarget codeTarget codeArray heap codeTable currentHeap inner nodeReturned codeReturned
+        nodeDatabase codeDatabase currentHeapCell nodeBefore codeBefore headerForward headerCost outcome continued (by
           have firstEnd:=congrArg (RunAttempt.restoreHeader source (PayloadPrefix.cursor input)) parentEndpoint
           have secondEnd:=congrArg (fun current=>RunAttempt.restoreHeader source (PayloadPrefix.cursor input)
             (RunAttempt.restoreConstructor afterHeader (countWord input) current)) endpoint

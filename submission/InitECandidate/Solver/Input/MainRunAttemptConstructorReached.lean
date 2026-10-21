@@ -30,7 +30,7 @@ returned tables retain the actual input-dependent collision histories,
 with the original caller states, clocks and every lexical restoration. -/
 def Reached (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root : BitVec 64)
     (outcome : Option (PanSemResultExact 64)) : Prop :=
-  ∃ headerTarget parent nodeTarget codeTarget codeArray heap codeTable inner,
+  ∃ headerTarget parent nodeTarget codeTarget codeArray heap codeTable currentHeap inner,
     let afterHeader:=parentSource source headerTarget input root
     let ready:=RunAttempt.constructorEntry afterHeader (countWord input) (hashArray input root) parent
     MutableTable.WitnessBuild.Returned ready nodeTarget (VarList.decodedArray (DecoderCall.witnessArray input) (nodeBytes input)) heap (nodeCount input) (nodeSlices input)
@@ -39,6 +39,9 @@ def Reached (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 G
       2713714976#64 2713715176#64 2713717584#64 ∧
     MutableTable.WitnessBuild.Database codeTarget (VarList.decodedArray (DecoderCall.witnessArray input) (nodeBytes input)) heap (nodeCount input) 1024 (nodeSlices input) 2713717584#64 ∧
     MutableTable.WitnessBuild.Database codeTarget (VarList.decodedArray codeArray (codeBytes input)) codeTable (codeCount input) 65536 (codeSlices input) 2713717584#64 ∧
+    codeTarget.globals.lookup (ofString "heap_ptr")=some (.val (.word currentHeap)) ∧
+    MutableTable.WitnessBuild.BeforeHeap codeTarget heap currentHeap.toNat ∧
+    MutableTable.WitnessBuild.BeforeHeap codeTarget codeTable currentHeap.toNat ∧
     codeTarget.clock≤source.clock ∧ source.clock-codeTarget.clock≤price input ∧
     evaluateHOLFiniteState (CallNormal.continuationEntry (RunAttempt.codeEntry ready nodeTarget heap) codeTarget "codedb" (.val (.word codeTable))) RunAttempt.afterCodes=(outcome,inner) ∧
     post=RunAttempt.restoreHeader source (PayloadPrefix.cursor input)
@@ -48,13 +51,16 @@ def Reached (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 G
 provenance. This keeps the final proof term small and shares the state aliases. -/
 theorem reached_of_returns (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root : BitVec 64)
     (headerTarget : PanSemStateFiniteExact 64 Guest.HostMemory) (parent : ValueHOL 64)
-    (nodeTarget codeTarget : PanSemStateFiniteExact 64 Guest.HostMemory) (codeArray heap codeTable : BitVec 64) (inner : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (nodeTarget codeTarget : PanSemStateFiniteExact 64 Guest.HostMemory) (codeArray heap codeTable currentHeap : BitVec 64) (inner : PanSemStateFiniteExact 64 Guest.HostMemory)
     (nodeReturned : MutableTable.WitnessBuild.Returned (RunAttempt.constructorEntry (parentSource source headerTarget input root) (countWord input) (hashArray input root) parent)
       nodeTarget (VarList.decodedArray (DecoderCall.witnessArray input) (nodeBytes input)) heap (nodeCount input) (nodeSlices input) 2713714976#64 2713715176#64 2713717584#64)
     (codeReturned : MutableTable.WitnessBuild.Returned (RunAttempt.codeEntry (RunAttempt.constructorEntry (parentSource source headerTarget input root) (countWord input) (hashArray input root) parent) nodeTarget heap)
       codeTarget (VarList.decodedArray codeArray (codeBytes input)) codeTable (codeCount input) (codeSlices input) 2713714976#64 2713715176#64 2713717584#64)
     (nodeDatabase : MutableTable.WitnessBuild.Database codeTarget (VarList.decodedArray (DecoderCall.witnessArray input) (nodeBytes input)) heap (nodeCount input) 1024 (nodeSlices input) 2713717584#64)
     (codeDatabase : MutableTable.WitnessBuild.Database codeTarget (VarList.decodedArray codeArray (codeBytes input)) codeTable (codeCount input) 65536 (codeSlices input) 2713717584#64)
+    (currentHeapCell : codeTarget.globals.lookup (ofString "heap_ptr")=some (.val (.word currentHeap)))
+    (nodeBefore : MutableTable.WitnessBuild.BeforeHeap codeTarget heap currentHeap.toNat)
+    (codeBefore : MutableTable.WitnessBuild.BeforeHeap codeTarget codeTable currentHeap.toNat)
     (headerForward : headerTarget.clock≤source.clock) (headerCost : source.clock-headerTarget.clock≤headerPrice input)
     (outcome : Option (PanSemResultExact 64))
     (continued : evaluateHOLFiniteState (CallNormal.continuationEntry (RunAttempt.codeEntry (RunAttempt.constructorEntry (parentSource source headerTarget input root) (countWord input) (hashArray input root) parent) nodeTarget heap) codeTarget "codedb" (.val (.word codeTable))) RunAttempt.afterCodes=(outcome,inner))
@@ -78,7 +84,7 @@ theorem reached_of_returns (input : Guest.InputBlob) (source post : PanSemStateF
   have second:=ClockCost.spend_chain source.clock nodeTarget.clock codeTarget.clock
     (headerPrice input+(MutableTable.WitnessBuild.bodyPrice (nodeSlices input) (nodeCount input)+1))
     (MutableTable.WitnessBuild.bodyPrice (codeSlices input) (codeCount input)+1) (nodeForward.trans headerForward) codeForward first codeCost
-  refine ⟨headerTarget,parent,nodeTarget,codeTarget,codeArray,heap,codeTable,inner,nodeReturned,codeReturned,nodeDatabase,codeDatabase,
+  refine ⟨headerTarget,parent,nodeTarget,codeTarget,codeArray,heap,codeTable,currentHeap,inner,nodeReturned,codeReturned,nodeDatabase,codeDatabase,currentHeapCell,nodeBefore,codeBefore,
     codeForward.trans (nodeForward.trans headerForward),?_,continued,endpoint⟩
   simpa only [price,tablesPrice,Nat.add_assoc] using second
 

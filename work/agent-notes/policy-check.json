@@ -2282,6 +2282,7 @@
     "submission/InitECandidate/Solver/Input/MainSszProgram.lean",
     "submission/InitECandidate/Solver/Input/MainSszWorkspace.lean",
     "submission/InitECandidate/Solver/Input/MainStartupTrace.lean",
+    "submission/InitECandidate/Solver/Input/MainStateInitBoundary.lean",
     "submission/InitECandidate/Solver/Input/MainU256Initialization.lean",
     "submission/InitECandidate/Solver/Input/MainU256Prefix.lean",
     "submission/InitECandidate/Solver/Input/MainVerifyConstructorPrefix.lean",
@@ -4043,6 +4044,7 @@
     "submission/InitECandidate/Solver/Mpt/KeyToNibblesReady.lean",
     "submission/InitECandidate/Solver/Mpt/KeyToNibblesScalar.lean",
     "submission/InitECandidate/Solver/Mpt/LookupGlobals.lean",
+    "submission/InitECandidate/Solver/Mpt/StateInitDatabase.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitPrefix.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitPrefixFields.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitProgram.lean",
@@ -4614,6 +4616,8 @@
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildVariableLoop.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessBuildVariablePopulate.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessDatabase.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessDatabaseBefore.lean",
+    "submission/InitECandidate/Solver/MutableTable/WitnessDatabaseBeforeLater.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessDatabaseCallTrace.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessDatabaseFields.lean",
     "submission/InitECandidate/Solver/MutableTable/WitnessDatabaseLookup.lean",
@@ -6870,8 +6874,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 63739,
-  "package_bytes": 2264743602,
+  "package_entries": 63743,
+  "package_bytes": 2264757957,
   "claim": {
     "K": "infinity"
   },

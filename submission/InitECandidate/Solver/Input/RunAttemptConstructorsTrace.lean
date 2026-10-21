@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.RunAttemptWitnessArguments
 import InitECandidate.Solver.MutableTable.WitnessDatabase
+import InitECandidate.Solver.MutableTable.WitnessDatabaseBeforeLater
 
 namespace InitECandidate.Solver.Input.RunAttempt
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -29,11 +30,14 @@ theorem constructors_trace (source post : PanSemStateFiniteExact 64 Guest.HostMe
     (codeCountCell : source.memory (byteAddress si 64)=.word (BitVec.ofNat 64 codeCount))
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source constructors=(outcome,post)) :
     source.clock-post.clock≤MutableTable.WitnessBuild.bodyPrice nodeSlices nodeCount+1+MutableTable.WitnessBuild.bodyPrice codeSlices codeCount+1 ∨
-      ∃ nodeTarget codeTarget codeTable inner,
+      ∃ nodeTarget codeTarget codeTable currentHeap inner,
         MutableTable.WitnessBuild.Returned source nodeTarget nodes heap nodeCount nodeSlices stp pad scratch ∧
         MutableTable.WitnessBuild.Returned (codeEntry source nodeTarget heap) codeTarget codes codeTable codeCount codeSlices stp pad scratch ∧
         MutableTable.WitnessBuild.Database codeTarget nodes heap nodeCount nodeMaximum nodeSlices scratch ∧
         MutableTable.WitnessBuild.Database codeTarget codes codeTable codeCount codeMaximum codeSlices scratch ∧
+        codeTarget.globals.lookup (ofString "heap_ptr")=some (.val (.word currentHeap)) ∧
+        MutableTable.WitnessBuild.BeforeHeap codeTarget heap currentHeap.toNat ∧
+        MutableTable.WitnessBuild.BeforeHeap codeTarget codeTable currentHeap.toNat ∧
         evaluateHOLFiniteState (CallNormal.continuationEntry (codeEntry source nodeTarget heap) codeTarget "codedb" (.val (.word codeTable))) afterCodes=(outcome,inner) ∧
         post=restore source "nodedb" (restore (codeEntry source nodeTarget heap) "codedb" inner) := by
   have nodeArgs:=node_arguments_read source si nodes nodeCount nodeInputs.environment.domain siArena siAligned siCell nodePointer nodeCountCell
@@ -70,7 +74,9 @@ theorem constructors_trace (source post : PanSemStateFiniteExact 64 Guest.HostMe
         rfl actual.heapGlobal codeReturned.toNormal stateArena padArena scratchArena
         (by constructor; omega; constructor <;> omega)
       have codeDatabase:=codeReturned.toNormal.database entry codeTarget codes codeTable codeCount codeMaximum codeSlices stp pad scratch actual
-      exact Or.inr ⟨nodeTarget,codeTarget,codeTable,inner,nodeReturned,codeReturned,nodeDatabase,codeDatabase,remaining,by rw [endpoint,restored]⟩
+      obtain ⟨currentHeap,currentHeapCell,nodeBefore,codeBefore⟩ := nodeReturned.toNormal.before_after_build source nodeTarget entry codeTarget nodes heap nodeCount nodeMaximum nodeSlices codes codeTable codeCount stp pad scratch nodeInputs
+        rfl codeReturned.toNormal stateArena padArena scratchArena (by constructor; omega; constructor <;> omega)
+      exact Or.inr ⟨nodeTarget,codeTarget,codeTable,currentHeap,inner,nodeReturned,codeReturned,nodeDatabase,codeDatabase,currentHeapCell,nodeBefore,codeBefore,remaining,by rw [endpoint,restored]⟩
 
 end InitECandidate.Solver.Input.RunAttempt
 

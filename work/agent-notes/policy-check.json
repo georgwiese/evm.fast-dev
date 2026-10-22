@@ -2303,6 +2303,7 @@
     "submission/InitECandidate/Solver/Input/MainRunAttemptConstructorTail.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptData.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptStateInitBoundary.lean",
+    "submission/InitECandidate/Solver/Input/MainRunAttemptStateInitCost.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptStateInitEntry.lean",
     "submission/InitECandidate/Solver/Input/MainScratchArena.lean",
     "submission/InitECandidate/Solver/Input/MainSecpBlock.lean",
@@ -7249,8 +7250,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64118,
-  "package_bytes": 2266558825,
+  "package_entries": 64119,
+  "package_bytes": 2266562262,
   "claim": {
     "K": "infinity"
   },

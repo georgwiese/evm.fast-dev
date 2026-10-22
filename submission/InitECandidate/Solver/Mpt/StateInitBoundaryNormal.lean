@@ -13,7 +13,7 @@ theorem Output.with_locals (input : Guest.InputBlob) (origin post : PanSemStateF
     (locals : HolFiniteMapExact Flapjack.Pancake.PanLang.MlS (ValueHOL 64)) :
     Output input origin {post with locals:=locals} workspace nodes rootHash codes:=by
   obtain ⟨installed,scalars,scratch,globals,code,domain,endian,oracle,heap,root,storage,heapCell,arena,aligned,view,frozen,table,bs,
-    registry,member,regions,block,older⟩:=output
+    registry,member,regions,block,older,workspaceBefore⟩:=output
   let target:={post with locals:=locals}
   have nextScratch:=scratch.of_fields post target 2713714688#64 2701135872#64 rfl rfl
   have nextView : WorkspaceView target workspace nodes rootHash codes root storage:=
@@ -26,7 +26,7 @@ theorem Output.with_locals (input : Guest.InputBlob) (origin post : PanSemStateF
     (PersistentAlloc.rounded workspace 40#64).toNat storage.toNat same (by intro node known active; rfl)
   have nextTable:=TableState.of_fields table (target:=target) rfl rfl rfl rfl
   have nextBlock:=block.of_fields post target (BitVec.ofNat 64 (NaturalLayout.freshEnd .word storage.toNat 64)) workspace rfl rfl rfl rfl
-  exact ⟨installed,scalars,nextScratch,globals,code,domain,endian,oracle,heap,root,storage,heapCell,arena,aligned,nextView,nextFrozen,nextTable,bs,next,nextMember,nextRegions,nextBlock,older⟩
+  exact ⟨installed,scalars,nextScratch,globals,code,domain,endian,oracle,heap,root,storage,heapCell,arena,aligned,nextView,nextFrozen,nextTable,bs,next,nextMember,nextRegions,nextBlock,older,workspaceBefore⟩
 
 /-- Actual boundary/heap-floor facts supply every original322 argument and
 allocation-frontier premise. The normal return derives the initialized

@@ -19,6 +19,17 @@ theorem Output.hash_environment (input : Guest.InputBlob) (source post : PanSemS
     hashCode:=⟨by rw [code]; exact environment.hashCode.block,
       by rw [code]; exact environment.hashCode.perm,oracle.trans environment.hashCode.oracleEq⟩ }
 
+/-- The actual final heap lies beyond the workspace, decoded trie and all
+initializer allocations. Retain this separation for later fresh headers. -/
+theorem Output.heap_geometry (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (workspace nodes rootHash codes : BitVec 64) (output : Output input source post workspace nodes rootHash codes) :
+    ∃ heap,post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
+      AllocatedBytes.Arena heap 0 ∧ heap.toNat%8=0 ∧ workspace.toNat+40≤heap.toNat := by
+  obtain ⟨installed,scalars,scratch,globals,code,domain,endian,oracle,heap,root,storage,heapCell,arena,aligned,view,frozen,table,bs,
+    registry,member,regions,block,older,workspaceBefore⟩:=output
+  exact ⟨heap,heapCell,arena,aligned,workspaceBefore⟩
+
 end InitECandidate.Solver.Mpt.StateInit
 
 #print axioms InitECandidate.Solver.Mpt.StateInit.Output.hash_environment
+#print axioms InitECandidate.Solver.Mpt.StateInit.Output.heap_geometry

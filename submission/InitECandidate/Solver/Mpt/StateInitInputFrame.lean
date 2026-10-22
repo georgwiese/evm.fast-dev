@@ -22,7 +22,7 @@ theorem Output.input_frame (input : Guest.InputBlob)
   have same : heap=workspace:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (heapCell.symm.trans workspaceCell)))
   rw [same] at heapBefore
   obtain ⟨installed,scalars,scratch,globals,code,domain,endian,oracle,finalHeap,trieRoot,storage,finalCell,arena,aligned,view,frozen,table,bs,
-    registry,member,regions,block,older⟩:=output
+    registry,member,regions,block,older,workspaceBefore⟩:=output
   constructor
   intro query lower upper
   have fromInitializer:=older query (by change 2713731432≤query.toNat at lower; omega) (by omega)

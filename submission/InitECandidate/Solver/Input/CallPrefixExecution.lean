@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CallPrefix
+import InitECandidate.Solver.Input.EvaluationOracle
 
 namespace InitECandidate.Solver.Input.CallPrefix
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -40,6 +41,40 @@ theorem Reaches.project {source target : PanSemStateFiniteExact 64 Guest.HostMem
     rw [program,evaluateHOLFiniteState_seq_line780,run]
     rfl
 
+theorem Reaches.runtime {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {action : Action}
+    (reached : Reaches source action target) :
+    target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.eshapes=source.eshapes ∧
+      target.code=source.code ∧ target.ffi.oracle=source.ffi.oracle := by
+  cases reached with
+  | declare name shape expression value read checked=>exact ⟨rfl,rfl,rfl,rfl,rfl⟩
+  | «scoped» name shape function arguments values body callee returnShape returned target args called funded run checked=>
+    have fields:=evaluation_fields (callEntryStateHOLFinite source callee) target body (some (.returned returned)) run
+    have oracle:=evaluation_oracle (callEntryStateHOLFinite source callee) target body (some (.returned returned)) run
+    exact ⟨fields.1,fields.2.1,fields.2.2.1,fields.2.2.2,oracle⟩
+  | command target command run=>
+    have fields:=evaluation_fields source target command none run
+    exact ⟨fields.1,fields.2.1,fields.2.2.1,fields.2.2.2,evaluation_oracle source target command none run⟩
+
+/-- Lexical restoration changes only caller locals. Its actual memory,
+globals and FFI state agree with the genuine reached continuation. -/
+theorem Reaches.erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {action : Action}
+    (reached : Reaches source action target) (tail : ProgHOL 64) :
+    LocalEffects.erase (evaluateHOLFiniteState source (program [action] tail)).2=
+      LocalEffects.erase (evaluateHOLFiniteState target tail).2 := by
+  cases reached with
+  | declare name shape expression value read checked=>
+    simp only [WitnessRadix.QueryBranch.eval] at read
+    rw [program,evaluateHOLFiniteState_dec_total]
+    simp only [read,if_pos checked,program]
+    rfl
+  | «scoped» name shape function arguments values body callee returnShape returned target args called funded run checked=>
+    rw [program,evaluateHOLFiniteState_decCall_fixClockRewrite]
+    simp only [args,called,if_neg funded,run,if_pos checked,program]
+    rfl
+  | command target command run=>
+    rw [program,evaluateHOLFiniteState_seq_line780,run]
+    rfl
+
 inductive Execution : PanSemStateFiniteExact 64 Guest.HostMemory→List Action→PanSemStateFiniteExact 64 Guest.HostMemory→Prop where
   | done (source) : Execution source [] source
   | step {source middle target action rest} (first : Reaches source action middle) (next : Execution middle rest target) :
@@ -67,9 +102,41 @@ theorem Execution.forward {source target : PanSemStateFiniteExact 64 Guest.HostM
   rw [execution.skip_clock] at clock
   exact clock
 
+/-- Every reached action retains the actual memory domain, byte order,
+exception declarations, original code and oracle function. -/
+theorem Execution.runtime {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List Action}
+    (execution : Execution source actions target) :
+    target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.eshapes=source.eshapes ∧
+      target.code=source.code ∧ target.ffi.oracle=source.ffi.oracle := by
+  induction execution with
+  | done source=>exact ⟨rfl,rfl,rfl,rfl,rfl⟩
+  | step first next ih=>
+    obtain ⟨domain,endian,exceptions,code,oracle⟩:=first.runtime
+    obtain ⟨nextDomain,nextEndian,nextExceptions,nextCode,nextOracle⟩:=ih
+    exact ⟨nextDomain.trans domain,nextEndian.trans endian,nextExceptions.trans exceptions,nextCode.trans code,nextOracle.trans oracle⟩
+
+theorem Execution.erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List Action}
+    (execution : Execution source actions target) (tail : ProgHOL 64) :
+    LocalEffects.erase (evaluateHOLFiniteState source (program actions tail)).2=
+      LocalEffects.erase (evaluateHOLFiniteState target tail).2 := by
+  induction execution with
+  | done source=>rfl
+  | step first next ih=>rw [program_cons]; exact (first.erase _).trans ih
+
+theorem Execution.skip_erase {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List Action}
+    (execution : Execution source actions target) :
+    LocalEffects.erase (evaluateHOLFiniteState source (program actions .skip)).2=LocalEffects.erase target := by
+  have same:=execution.erase .skip
+  simpa only [evaluateHOLFiniteState_skip] using same
+
 end InitECandidate.Solver.Input.CallPrefix
 
 #print axioms InitECandidate.Solver.Input.CallPrefix.Reaches.project
+#print axioms InitECandidate.Solver.Input.CallPrefix.Reaches.runtime
+#print axioms InitECandidate.Solver.Input.CallPrefix.Reaches.erase
 #print axioms InitECandidate.Solver.Input.CallPrefix.Execution.project
 #print axioms InitECandidate.Solver.Input.CallPrefix.Execution.skip_clock
 #print axioms InitECandidate.Solver.Input.CallPrefix.Execution.forward
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.runtime
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.erase
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.skip_erase

@@ -9,7 +9,7 @@
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
   "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 7260,
+  "solver_modules": 7271,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -42,7 +42,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1166,
+    "Input": 1172,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -80,7 +80,7 @@
     "TargetClock": 1,
     "WeightedTrace": 1,
     "WitnessAllocationPlan": 1,
-    "WitnessRadix": 186,
+    "WitnessRadix": 191,
     "WordStatic": 878,
     "WordToStackBound": 48,
     "WordToWordBound": 1

@@ -23,14 +23,22 @@ theorem state_init_boundary_of_actual (input : Guest.InputBlob)
       Rlp.Validation.Arena current 2713714688#64 2701135872#64 ∧
       Keccak256.Environment current 2713714976#64 2713715176#64 ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤price input ∧ post.clock=inner.clock ∧
-      evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) := by
+      evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) ∧
+      ∃ heap,current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ 2713731432≤heap.toNat := by
   rcases prefix_of_actual input before copiedSource origin hashed source post root counts copied actual bounded prepared returned entryFrame siCell outcome run with stopped|reached
   · exact Or.inl stopped
   · obtain ⟨headerArray,context,payloadCell,pointerCell,countCell,scalars,siArena,siAligned⟩ :=
       RunAttemptData.entry_data input before copiedSource origin hashed source root counts copied actual bounded prepared returned entryFrame
     have code:=LocalEffects.code_of_erase hashed source entryFrame
     have installed : OriginalCode.Installed source.code := by rw [code]; exact returned.workspace.sha.installed
-    exact Or.inr (reached.state_init_runtime input source post root installed scalars outcome)
+    have rootLower : 2713731432≤(initialHeap root).toNat:=by
+      have lower:=prepared.layout.siLower
+      have before:=prepared.layout.siBefore
+      change 2713731432≤(RequestRootHashData.description input counts).si.toNat at lower
+      have rounded:=prepared.before
+      change 2713731432≤(PersistentAlloc.rounded root 32#64).toNat
+      omega
+    exact Or.inr (reached.state_init_runtime input source post root rootLower installed scalars outcome)
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

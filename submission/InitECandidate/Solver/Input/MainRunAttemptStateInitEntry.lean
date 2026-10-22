@@ -25,10 +25,11 @@ theorem state_init_entry_of_actual (input : Guest.InputBlob)
       entry.locals.lookup (ofString "state_root")=some (.val (.word stateRoot)) ∧
       Rlp.Validation.Arena entry 2713714688#64 2701135872#64 ∧ Keccak256.Environment entry 2713714976#64 2713715176#64 ∧
       entry.clock≤source.clock ∧ source.clock-entry.clock≤price input+1 ∧ post.clock=inner.clock ∧
-      evaluateHOLFiniteState entry Mpt.StateInit.body=(childResult,target) ∧ RunAttempt.StateInitResumes caller target inner childResult outcome := by
+      evaluateHOLFiniteState entry Mpt.StateInit.body=(childResult,target) ∧ RunAttempt.StateInitResumes caller target inner childResult outcome ∧
+      ∃ heap,entry.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ 2713731432≤heap.toNat := by
   rcases state_init_boundary_of_actual input before copiedSource origin hashed source post root counts copied actual bounded prepared returned entryFrame siCell outcome run with stopped|reached
   · exact Or.inl (stopped.trans (Nat.le_add_right _ _))
-  · obtain ⟨caller,inner,boundary,frame,installed,scalars,arena,environment,forward,spent,endpoint,remaining⟩ := reached
+  · obtain ⟨caller,inner,boundary,frame,installed,scalars,arena,environment,forward,spent,endpoint,remaining,heapFloor⟩ := reached
     have callerBoundary:=boundary
     obtain ⟨codeArray,nodes,codes,heap,nodeDatabase,codeDatabase,nodeCell,codeCell,heapCell,heapArena,aligned,nodeBefore,codeBefore⟩ := boundary
     rcases RunAttempt.state_init_call_trace caller inner nodes codes installed nodeCell codeCell outcome remaining with stopped|observed
@@ -46,8 +47,10 @@ theorem state_init_entry_of_actual (input : Guest.InputBlob)
       have entryScalars : OriginalScalarGlobals.Scalars entry.globals := by rw [globals]; exact scalars
       have entryArena:=entryRuntime.scratch caller entry 2713714688#64 2701135872#64 arena
       have entryEnvironment:=entryRuntime.hash_environment caller entry 2713714976#64 2713715176#64 environment
-      exact Or.inr ⟨caller,inner,stateRoot,entry,target,childResult,entryData,wholeFrame,entryInstalled,entryScalars,rootEntry,entryArena,entryEnvironment,
-        by omega,by omega,endpoint,childRun,resumes⟩
+      refine Or.inr ⟨caller,inner,stateRoot,entry,target,childResult,entryData,wholeFrame,entryInstalled,entryScalars,rootEntry,entryArena,entryEnvironment,
+        by omega,by omega,endpoint,childRun,resumes,?_⟩
+      obtain ⟨heap,cell,lower⟩:=heapFloor
+      exact ⟨heap,by rw [globals]; exact cell,lower⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

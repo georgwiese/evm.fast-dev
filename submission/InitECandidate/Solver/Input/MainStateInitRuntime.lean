@@ -12,6 +12,7 @@ open WitnessConstructors
 metadata and nonheap globals follow from the genuine header return and both
 real constructor returns, rather than fresh entry assumptions. -/
 theorem Reached.state_init_runtime (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root : BitVec 64)
+    (rootLower : 2713731432≤(initialHeap root).toNat)
     (installed : OriginalCode.Installed source.code)
     (originalScalars : OriginalScalarGlobals.Scalars source.globals)
     (outcome : Option (PanSemResultExact 64)) (reached : Reached input source post root outcome) :
@@ -19,12 +20,28 @@ theorem Reached.state_init_runtime (input : Guest.InputBlob) (source post : PanS
       OriginalCode.Installed current.code ∧ OriginalScalarGlobals.Scalars current.globals ∧ Rlp.Validation.Arena current 2713714688#64 2701135872#64 ∧
       Keccak256.Environment current 2713714976#64 2713715176#64 ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤price input ∧ post.clock=inner.clock ∧
-      evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) := by
+      evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) ∧
+      ∃ heap,current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ 2713731432≤heap.toNat := by
   obtain ⟨headerTarget,headerRows,parent,nodeTarget,codeTarget,codeArray,heap,codeTable,currentHeap,inner,headerReturned,nodeReturned,codeReturned,nodeDatabase,codeDatabase,heapCell,nodeBefore,codeBefore,forward,spent,continued,endpoint⟩ := reached
   let afterHeader:=parentSource source headerTarget input root
   let prepared:=RunAttempt.constructorEntry afterHeader (countWord input) (hashArray input root) parent
   let codeSource:=RunAttempt.codeEntry prepared nodeTarget heap
   let current:=CallNormal.continuationEntry codeSource codeTarget "codedb" (.val (.word codeTable))
+  obtain ⟨headerHeap,headerCell,headerBound,headerAligned,afterHashes⟩:=headerReturned.currentHeap
+  have nodeEntry : headerTarget.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by
+    have entry:=nodeReturned.entryHeap
+    have parentGlobals : (parentSource source headerTarget input root).globals=headerTarget.globals:=rfl
+    simpa [prepared,RunAttempt.constructorEntry,putGlobal,RunAttempt.parentEntry,RunAttempt.countEntry,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,
+      show ofString "block_hashes"≠ofString "heap_ptr" from by decide,
+      show ofString "block_hashes_n"≠ofString "heap_ptr" from by decide,parentGlobals] using entry
+  have sameHeap : headerHeap=heap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (headerCell.symm.trans nodeEntry)))
+  rw [sameHeap] at afterHashes
+  have beforeHashes:=headerReturned.geometry.hsBefore
+  change (initialHeap root).toNat+8*(countWord input).toNat+8≤(hashArray input root).toNat at beforeHashes
+  change (hashArray input root).toNat+32*(countWord input).toNat+32≤heap.toNat at afterHashes
+  have nodeGrows:=nodeReturned.toNormal.heap_geometry prepared nodeTarget _ heap _ _ _ _ codeTable codeReturned.entryHeap
+  have codeGrows:=codeReturned.toNormal.heap_geometry codeSource codeTarget _ codeTable _ _ _ _ currentHeap heapCell
+  have currentLower : 2713731432≤currentHeap.toNat:=by omega
   have front : ConstructorRuntimeFrame source headerTarget :=
     ⟨headerReturned.code,headerReturned.domain,headerReturned.endian,headerReturned.exceptions,headerReturned.oracle,
       fun key h b n=>headerReturned.globals key h⟩
@@ -63,7 +80,7 @@ theorem Reached.state_init_runtime (input : Guest.InputBlob) (source post : PanS
     have projected:=congrArg PanSemStateFiniteExact.clock endpoint
     simpa only [RunAttempt.restoreHeader_clock,RunAttempt.restoreConstructor_clock,QueryBranch.restore_clock] using projected
   exact ⟨current,inner,⟨codeArray,heap,codeTable,currentHeap,nodeData,codeData,nodeCell,codeCell,heapCell,geometry.1,geometry.2,nodeBefore,codeBefore⟩,
-    frame,currentInstalled,currentScalars,scratch,environment,forward,spent,finalClock,continued⟩
+    frame,currentInstalled,currentScalars,scratch,environment,forward,spent,finalClock,continued,currentHeap,heapCell,currentLower⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

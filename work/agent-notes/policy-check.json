@@ -2305,6 +2305,7 @@
     "submission/InitECandidate/Solver/Input/MainRunAttemptConstructorReached.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptConstructorTail.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptData.lean",
+    "submission/InitECandidate/Solver/Input/MainRunAttemptInitialized.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptStateInitBoundary.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptStateInitCost.lean",
     "submission/InitECandidate/Solver/Input/MainRunAttemptStateInitEntry.lean",
@@ -4179,6 +4180,7 @@
     "submission/InitECandidate/Solver/Mpt/StateInitBlockStepNormal.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitBlockTable.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitBodyCost.lean",
+    "submission/InitECandidate/Solver/Mpt/StateInitBoundaryNormal.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitCompleteTables.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitDatabase.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitEnvironment.lean",
@@ -7253,8 +7255,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64122,
-  "package_bytes": 2266580841,
+  "package_entries": 64124,
+  "package_bytes": 2266592286,
   "claim": {
     "K": "infinity"
   },

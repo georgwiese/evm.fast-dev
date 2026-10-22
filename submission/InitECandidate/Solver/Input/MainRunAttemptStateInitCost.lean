@@ -25,7 +25,7 @@ theorem after_state_init_of_actual (input : Guest.InputBlob)
       evaluateHOLFiniteState current RunAttempt.afterStateInit=(outcome,inner):=by
   rcases state_init_entry_of_actual input before copiedSource origin hashed source post root counts copied actual bounded prepared returned entryFrame siCell outcome run with stopped|reached
   · exact Or.inl (stopped.trans (Nat.le_add_right _ _))
-  · obtain ⟨caller,inner,stateRoot,entry,target,childResult,boundary,frame,installed,scalars,rootCell,scratch,environment,forward,spent,endpoint,childRun,resumes⟩:=reached
+  · obtain ⟨caller,inner,stateRoot,entry,target,childResult,boundary,frame,installed,scalars,rootCell,scratch,environment,forward,spent,endpoint,childRun,resumes,heapFloor⟩:=reached
     have cost:=Mpt.StateInit.body_cost input entry stateRoot boundary installed scalars rootCell scratch environment
     rw [childRun] at cost
     change entry.clock-target.clock≤Mpt.StateInit.bodyPrice input at cost

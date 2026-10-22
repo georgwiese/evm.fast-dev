@@ -10,7 +10,7 @@ import InitECandidate.Solver.Input.EvaluationOracle
 namespace InitECandidate.Solver.Mpt.StateInit
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
-open Input.Main.RunAttemptConstructors WitnessMaterialize WitnessCore MutableTable MutableTable.NaturalLayout
+open Input.Main.RunAttemptConstructors WitnessMaterialize WitnessCore WitnessCore.Stack MutableTable MutableTable.NaturalLayout
 
 def OtherGlobals (source post : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop:=
   ∀ key : MlS,key≠ofString "heap_ptr" → key≠ofString "ws" → key≠ofString "bs" → key≠ofString "sk_buf" →
@@ -32,7 +32,8 @@ def Output (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Gu
       post.globals.lookup (ofString "bs")=some (.val (.word (BitVec.ofNat 64 (freshEnd .word storageTable.toNat 64)))) ∧
       ∃ registry : NodeRegistry post (PersistentAlloc.rounded workspace 40#64).toNat heap nodes,
         registry.graph.valid root ∧ registry.graph.Regions (PersistentAlloc.rounded workspace 40#64).toNat storageTable.toNat ∧
-          Block.Initialized post (BitVec.ofNat 64 (freshEnd .word storageTable.toNat 64)) workspace
+          Block.Initialized post (BitVec.ofNat 64 (freshEnd .word storageTable.toNat 64)) workspace ∧
+          StablePrefix source post workspace.toNat
 
 set_option maxRecDepth 100000 in
 open scoped InitE.MetadataComputation InitE.NameComputation in
@@ -108,6 +109,20 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
   have memory (query : BitVec 64) (before : query.toNat<storageHeap.toNat) : post.memory query=stored.memory query:=
     (congrFun scopeMemory query).trans (olderMemory query before)
   have view:=storageView.before_frame stored post workspace nodes rootHash codes root rootHeap storageHeap.toNat (by omega) pointer memory
+  have olderPrefix : StablePrefix source post workspace.toNat:=by
+    intro query lower before
+    have away (offset : Nat) (bounded : offset≤32) : query≠workspace+BitVec.ofNat 64 offset:=by
+      intro equal
+      have numeric:=congrArg BitVec.toNat equal
+      have number:=byteAddress_toNat workspace offset (by have upper:=workspaceArena.upper; omega)
+      change query.toNat=(byteAddress workspace offset).toNat at numeric
+      rw [number] at numeric
+      omega
+    have kept:=storage_old_word rooted workspace rootHeap query valid (by omega) (away 32 (by decide))
+    rw [storageEq] at kept
+    have rootWord : rooted.memory query=current.memory query:=if_neg (away 24 (by decide))
+    exact (memory query (by omega)).trans (kept.trans (rootWord.trans ((stableMemory query lower (by omega)).trans
+      (ready_earlier source workspace nodes rootHash codes query workspaceArena before))))
   have codeEq:=(Input.evaluation_fields source post body (some (.returned returned)) normal).2.2.2
   have domain:=(Input.evaluation_fields source post body (some (.returned returned)) normal).1
   have endian:=(Input.evaluation_fields source post body (some (.returned returned)) normal).2.1
@@ -169,7 +184,7 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
   have bsPointer : post.globals.lookup (ofString "bs")=some (.val (.word storageHeap)):=by
     rw [scopeGlobals,blockResult]
     exact Block.result_block_pointer stored storageHeap workspace
-  exact ⟨returnedEq,postInstalled,postScalars,postScratch,otherGlobals,codeEq,domain,endian,oracle,finalHeap,root,rootHeap,postHeap,finalArena,finalAligned,view,frozen,table,bsPointer,registry,member,regions,postInitialized⟩
+  exact ⟨returnedEq,postInstalled,postScalars,postScratch,otherGlobals,codeEq,domain,endian,oracle,finalHeap,root,rootHeap,postHeap,finalArena,finalAligned,view,frozen,table,bsPointer,registry,member,regions,postInitialized,olderPrefix⟩
 
 end InitECandidate.Solver.Mpt.StateInit
 

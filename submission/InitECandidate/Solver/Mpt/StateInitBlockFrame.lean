@@ -55,6 +55,16 @@ theorem walk_heap (specs : List Action) (source : PanSemStateFiniteExact 64 Gues
     rw [cursor_cons]
     exact ih (stepState source block start action) (stepCursor start action) (step_heap source block start action heap)
 
+theorem walk_scalars (specs : List Action) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (block start : Nat)
+    (scalars : Input.OriginalScalarGlobals.Scalars source.globals)
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word (BitVec.ofNat 64 start)))) :
+    Input.OriginalScalarGlobals.Scalars (walk source block start specs).globals:=by
+  intro key member
+  by_cases isHeap : key=ofString "heap_ptr"
+  · subst key; exact ⟨BitVec.ofNat 64 (cursor start specs),walk_heap specs source block start heap⟩
+  · obtain ⟨word,cell⟩:=scalars key member
+    exact ⟨word,(walk_other_global specs source block start key isHeap).trans cell⟩
+
 def runtimeFields (source : PanSemStateFiniteExact 64 Guest.HostMemory):=
   (source.code,source.memaddrs,source.be,source.eshapes,source.ffi)
 
@@ -73,4 +83,5 @@ end InitECandidate.Solver.Mpt.StateInit.Block
 #print axioms InitECandidate.Solver.Mpt.StateInit.Block.step_other_global
 #print axioms InitECandidate.Solver.Mpt.StateInit.Block.walk_other_global
 #print axioms InitECandidate.Solver.Mpt.StateInit.Block.walk_heap
+#print axioms InitECandidate.Solver.Mpt.StateInit.Block.walk_scalars
 #print axioms InitECandidate.Solver.Mpt.StateInit.Block.walk_runtime

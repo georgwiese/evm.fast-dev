@@ -22,7 +22,7 @@ theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSem
     (rootCell : source.locals.lookup (ofString "state_root")=some (.val (.word rootHash)))
     (codesCell : source.locals.lookup (ofString "codedb")=some (.val (.word codes)))
     (emptyCell : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
-    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena rootHash 32)
+    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
     AllocatedBytes.Arena heap 40 ∧ ∃ current inner root,
       let frontier:=(PersistentAlloc.rounded heap 40#64).toNat
@@ -64,7 +64,7 @@ theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSem
     (fields.2.2.2 _ (by decide) (by decide)).trans emptyCell
   have callerScratch:=ready_scratch source heap nodes rootHash codes 2713714688#64 2701135872#64 scratch
   obtain ⟨current,inner,root,output,currentRoot,stableMemory,currentCode,globals,continued,endpoint,currentScratch⟩:=root_call_rich_normal input caller post nodes next rootHash emptyRoot
-    callerBoundary installed nodesCell rootCell callerEmpty fields.2.2.1 (heapLower.trans geometry.2.2) callerScratch rootArena returned rootRun
+    callerBoundary installed nodesCell rootCell callerEmpty fields.2.2.1 (heapLower.trans geometry.2.2) callerScratch returned rootRun
   have currentWs : current.globals.lookup (ofString "ws")=some (.val (.word heap)):=
     (globals _ (by decide) (by decide)).trans fields.2.1
   have currentInstalled : Input.OriginalCode.Installed current.code:=by rw [currentCode]; exact installed

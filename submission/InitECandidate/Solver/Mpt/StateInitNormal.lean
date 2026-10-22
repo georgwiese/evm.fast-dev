@@ -50,7 +50,7 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
     (nodesCell : source.locals.lookup (ofString "nodedb")=some (.val (.word nodes)))
     (rootCell : source.locals.lookup (ofString "state_root")=some (.val (.word rootHash)))
     (codesCell : source.locals.lookup (ofString "codedb")=some (.val (.word codes)))
-    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena rootHash 32)
+    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
     returned=.val (.word 0#64) ∧ Output input source post workspace nodes rootHash codes := by
   obtain ⟨oldWs,wsCell⟩:=scalars _ workspace_name
@@ -60,7 +60,7 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
     have same : h=workspace:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (hc.symm.trans heapCell)))
     rwa [same] at al
   obtain ⟨workspaceArena,current,rootInner,root,rootOutput,currentRoot,currentWs,currentInstalled,currentScalars,currentScratch,currentGlobals,stableMemory,currentFrozen,rootTail,rootEnd,rootHeap,rootHeapCell,rootRegistry,rootMember⟩:=
-    root_installed_of_normal input source post workspace oldWs nodes rootHash codes emptyRoot boundary installed scalars wsCell heapCell heapLower nodesCell rootCell codesCell emptyCell scratch rootArena returned normal
+    root_installed_of_normal input source post workspace oldWs nodes rootHash codes emptyRoot boundary installed scalars wsCell heapCell heapLower nodesCell rootCell codesCell emptyCell scratch returned normal
   let frontier:=(PersistentAlloc.rounded workspace 40#64).toNat
   let rooted:=installedRoot current workspace root
   have physical:=rootOutput.1

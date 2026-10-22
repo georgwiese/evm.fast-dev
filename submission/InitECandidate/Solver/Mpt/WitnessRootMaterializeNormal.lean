@@ -19,7 +19,7 @@ theorem after_lookup_rich_normal_prefix_scratch (input : Guest.InputBlob) (sourc
     (rootCell : source.locals.lookup (ofString "root_hash")=some (.val (.word root)))
     (rCell : source.locals.lookup (ofString "r")=some (MutableTable.NodeDb.output answer))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena root 32)
+    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64)
     (hit : ∀ slice,answer=some slice → slice.2.toNat≤1024 ∧ 2713731432≤slice.1.toNat ∧ slice.1.toNat+slice.2.toNat≤db.toNat)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLookup=(some (.returned returned),post)) :
     RichOutput input heap.toNat db post returned ∧ WitnessCore.Stack.StablePrefix source post heap.toNat ∧
@@ -65,7 +65,7 @@ theorem after_lookup_rich_normal_prefix_scratch (input : Guest.InputBlob) (sourc
       (Input.CallNormal.continuation_lookup_same source target "nd" childReturn).trans (congrArg some childEq)
     have codeEq:=(Input.evaluation_fields entry target WitnessMaterialize.body (some (.returned childReturn)) childRun).2.2.2
     have readyInstalled : Input.OriginalCode.Installed ready.code:=by change Input.OriginalCode.Installed target.code; rw [codeEq]; exact installed
-    have result:=suffix_rich_normal_prefix input ready inner heap.toNat db root node returned readyOutput heapLower readyRoot readyNode rootArena readyInstalled suffixRun
+    have result:=suffix_rich_normal_prefix input ready inner heap.toNat db root node returned readyOutput heapLower readyRoot readyNode readyInstalled suffixRun
     refine ⟨result.2.1.of_erase input heap.toNat db inner post returned (by rw [endpoint]; rfl),?_,?_⟩
     · intro query lowerBound upperBound
       have endMemory : post.memory=inner.memory:=by rw [endpoint]; rfl
@@ -83,11 +83,11 @@ theorem after_lookup_rich_normal_prefix (input : Guest.InputBlob) (source post :
     (rootCell : source.locals.lookup (ofString "root_hash")=some (.val (.word root)))
     (rCell : source.locals.lookup (ofString "r")=some (MutableTable.NodeDb.output answer))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena root 32)
+    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64)
     (hit : ∀ slice,answer=some slice → slice.2.toNat≤1024 ∧ 2713731432≤slice.1.toNat ∧ slice.1.toNat+slice.2.toNat≤db.toNat)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLookup=(some (.returned returned),post)) :
     RichOutput input heap.toNat db post returned ∧ WitnessCore.Stack.StablePrefix source post heap.toNat := by
-  have result:=after_lookup_rich_normal_prefix_scratch input source post db heap root answer boundary installed dbCell rootCell rCell heapCell heapLower scratch rootArena hit returned normal
+  have result:=after_lookup_rich_normal_prefix_scratch input source post db heap root answer boundary installed dbCell rootCell rCell heapCell heapLower scratch hit returned normal
   exact ⟨result.1,result.2.1⟩
 
 theorem after_lookup_rich_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -97,11 +97,11 @@ theorem after_lookup_rich_normal (input : Guest.InputBlob) (source post : PanSem
     (rootCell : source.locals.lookup (ofString "root_hash")=some (.val (.word root)))
     (rCell : source.locals.lookup (ofString "r")=some (MutableTable.NodeDb.output answer))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena root 32)
+    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64)
     (hit : ∀ slice,answer=some slice → slice.2.toNat≤1024 ∧ 2713731432≤slice.1.toNat ∧ slice.1.toNat+slice.2.toNat≤db.toNat)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLookup=(some (.returned returned),post)) :
     RichOutput input heap.toNat db post returned :=
-  (after_lookup_rich_normal_prefix input source post db heap root answer boundary installed dbCell rootCell rCell heapCell heapLower scratch rootArena hit returned normal).1
+  (after_lookup_rich_normal_prefix input source post db heap root answer boundary installed dbCell rootCell rCell heapCell heapLower scratch hit returned normal).1
 
 end InitECandidate.Solver.Mpt.WitnessDecodeRoot
 

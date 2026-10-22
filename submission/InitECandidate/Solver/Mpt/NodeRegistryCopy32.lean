@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Mpt.WitnessCoreRegistryTerminal
-import InitECandidate.Solver.WitnessRadix.CopyNormalCall
+import InitECandidate.Solver.Input.Copy32SpanCall
 import InitECandidate.Solver.WitnessRadix.CopyGeneralCode
 import InitECandidate.Solver.WitnessRadix.CopyAwayIntervals
 
@@ -21,19 +21,17 @@ survives, regardless of source/destination byte overlap. -/
 theorem NodeRegistry.copy32_after (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (heap db src dst : BitVec 64) (arguments : List (ExpHOL 64))
     (registry : NodeRegistry source frontier heap db) (before : heap.toNat≤dst.toNat)
-    (sourceArena : AllocatedBytes.Arena src 32) (targetArena : AllocatedBytes.Arena dst 32) (aligned : dst.toNat%8=0)
-    (domain : source.memaddrs=InitE.ordinaryDomain) (installed : Input.OriginalCode.Installed source.code)
+    (targetArena : AllocatedBytes.Arena dst 32) (aligned : dst.toNat%8=0)
+    (installed : Input.OriginalCode.Installed source.code)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (CopyGeneral.values dst src 32))
     (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "memcpy") arguments)=(none,target)) :
     (∃ next : NodeRegistry target frontier heap db,next.graph.valid=registry.graph.valid) ∧
       (∀ query : BitVec 64,query.toNat<heap.toNat → target.memory query=source.memory query) := by
-  obtain ⟨funded,price,post⟩:=CopyGeneral.call_normal source target arguments src dst 32 args (CopyGeneral.original_code source.code installed)
-    (AllocatedBytes.copy_mapped source src dst 32 domain sourceArena targetArena) (by decide) normal
-  have domainEq : target.memaddrs=source.memaddrs := by rw [post]; rfl
-  have memory : ∀ query : BitVec 64,query.toNat<heap.toNat → target.memory query=source.memory query := by
+  obtain ⟨frame,locals⟩:=Input.Copy32Span.call_normal source target dst src arguments args installed normal
+  have domainEq : target.memaddrs=source.memaddrs:=frame.domain
+  have memory : ∀ query : BitVec 64,query.toNat<heap.toNat → target.memory query=source.memory query:=by
     intro query below
-    rw [post]
-    exact CopyGeneral.call_memory_away source src dst query 32 (CopyGeneral.Away.after dst query 32 aligned
+    exact frame.memory query (CopyGeneral.Away.after dst query 32 aligned
       (by have upper:=targetArena.upper; omega) (below.trans_le before))
   obtain ⟨graph,validEq,regions,disjoint,⟨values⟩⟩:=registry.graph.after_agreement source target 1024 frontier heap.toNat (WitnessValue db)
     registry.values registry.regions registry.disjoint domainEq

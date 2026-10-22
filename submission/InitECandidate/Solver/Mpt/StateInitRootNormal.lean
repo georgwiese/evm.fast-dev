@@ -17,7 +17,7 @@ theorem root_call_rich_normal (input : Guest.InputBlob) (source post : PanSemSta
     (rootCell : source.locals.lookup (ofString "state_root")=some (.val (.word rootHash)))
     (emptyCell : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena rootHash 32)
+    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source rootCall=(some (.returned returned),post)) :
     ∃ current inner node,
       RichOutput input heap.toNat nodes current (.val (.word node)) ∧
@@ -36,7 +36,7 @@ theorem root_call_rich_normal (input : Guest.InputBlob) (source post : PanSemSta
   let entry:=callEntryStateHOLFinite source callee
   have entryBoundary:=RootBoundary.of_state_init input source entry boundary rfl (entryDb.trans nodesCell.symm)
   have entryArena:=scratch.of_fields source entry 2713714688#64 2701135872#64 rfl rfl
-  have output:=WitnessDecodeRoot.rich_body_normal_prefix_scratch input entry target nodes heap rootHash emptyRoot entryBoundary installed entryDb entryRoot emptyCell heapCell heapLower entryArena rootArena childReturn childRun
+  have output:=WitnessDecodeRoot.rich_body_normal_prefix_scratch input entry target nodes heap rootHash emptyRoot entryBoundary installed entryDb entryRoot emptyCell heapCell heapLower entryArena childReturn childRun
   have physical:=output.1.1
   obtain ⟨nextHeap,node,valueEq,childHeap,rest⟩:=physical
   let current:=Input.CallNormal.continuationEntry source target "root" childReturn

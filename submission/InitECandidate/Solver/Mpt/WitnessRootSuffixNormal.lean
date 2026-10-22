@@ -27,7 +27,7 @@ theorem suffix_rich_normal_prefix (input : Guest.InputBlob) (source post : PanSe
     (output : RichOutput input frontier db source (.val (.word node))) (frontierLower : 2713731432≤frontier)
     (hashCell : source.locals.lookup (ofString "root_hash")=some (.val (.word hashPtr)))
     (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
-    (hashArena : AllocatedBytes.Arena hashPtr 32) (installed : Input.OriginalCode.Installed source.code)
+    (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source afterMaterialize=(some (.returned returned),post)) :
     returned=.val (.word node) ∧ RichOutput input frontier db post returned ∧ WitnessCore.Stack.StablePrefix source post frontier := by
   rw [suffix_shape] at normal
@@ -40,7 +40,7 @@ theorem suffix_rich_normal_prefix (input : Guest.InputBlob) (source post : PanSe
       rw [←same]; exact ⟨output,fun _ _ _=>rfl⟩
     · rw [if_neg zero] at guardRun
       obtain ⟨heap,child,valueEq,heapCell,rest⟩:=output.1
-      exact cache_allocated_normal_prefix input source middle frontier db heap hashPtr node output frontierLower heapCell zero hashCell nodeCell hashArena installed guardRun
+      exact cache_allocated_normal_prefix input source middle frontier db heap hashPtr node output frontierLower heapCell zero hashCell nodeCell installed guardRun
   have middleNode : middle.locals.lookup (ofString "nd")=some (.val (.word node)):=nodeFrame.trans nodeCell
   obtain ⟨read,postEq⟩:=Input.return_normal middle post (localVar "nd") returned footerRun
   have actualRead : eval middle (localVar "nd")=some (.val (.word node)):=by simp [eval,localVar,evalHOLExact,toExact,middleNode]
@@ -58,10 +58,10 @@ theorem suffix_rich_normal (input : Guest.InputBlob) (source post : PanSemStateF
     (output : RichOutput input frontier db source (.val (.word node))) (frontierLower : 2713731432≤frontier)
     (hashCell : source.locals.lookup (ofString "root_hash")=some (.val (.word hashPtr)))
     (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node)))
-    (hashArena : AllocatedBytes.Arena hashPtr 32) (installed : Input.OriginalCode.Installed source.code)
+    (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source afterMaterialize=(some (.returned returned),post)) :
     returned=.val (.word node) ∧ RichOutput input frontier db post returned := by
-  have result:=suffix_rich_normal_prefix input source post frontier db hashPtr node returned output frontierLower hashCell nodeCell hashArena installed normal
+  have result:=suffix_rich_normal_prefix input source post frontier db hashPtr node returned output frontierLower hashCell nodeCell installed normal
   exact ⟨result.1,result.2.1⟩
 
 end InitECandidate.Solver.Mpt.WitnessDecodeRoot

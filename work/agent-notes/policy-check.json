@@ -1949,6 +1949,9 @@
     "submission/InitECandidate/Solver/Input/ControlContinue.lean",
     "submission/InitECandidate/Solver/Input/Copy32Bound.lean",
     "submission/InitECandidate/Solver/Input/Copy32Flow.lean",
+    "submission/InitECandidate/Solver/Input/Copy32SpanCall.lean",
+    "submission/InitECandidate/Solver/Input/Copy32SpanLoops.lean",
+    "submission/InitECandidate/Solver/Input/Copy32SpanWrites.lean",
     "submission/InitECandidate/Solver/Input/CopyAwaySubrange.lean",
     "submission/InitECandidate/Solver/Input/CopyBytes.lean",
     "submission/InitECandidate/Solver/Input/CopyDomain.lean",
@@ -7250,8 +7253,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64119,
-  "package_bytes": 2266562262,
+  "package_entries": 64122,
+  "package_bytes": 2266580841,
   "claim": {
     "K": "infinity"
   },

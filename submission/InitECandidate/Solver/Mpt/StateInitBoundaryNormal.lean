@@ -38,14 +38,15 @@ theorem normal_of_boundary (input : Guest.InputBlob) (source post : PanSemStateF
     (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64)
     (heapFloor : ∃ heap,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ 2713731432≤heap.toNat)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ ∃ workspace nodes codes,Output input source post workspace nodes rootHash codes:=by
+    value=.val (.word 0#64) ∧ ∃ workspace nodes codes,Output input source post workspace nodes rootHash codes ∧
+      source.globals.lookup (ofString "heap_ptr")=some (.val (.word workspace)):=by
   have saved:=boundary
   obtain ⟨array,nodes,codes,heap,nodeData,codeData,nodeCell,codeCell,heapCell,heapArena,aligned,nodeBefore,codeBefore⟩:=boundary
   obtain ⟨floorHeap,floorCell,floorLower⟩:=heapFloor
   have same : heap=floorHeap:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (heapCell.symm.trans floorCell)))
   have lower : 2713731432≤heap.toNat:=by rw [same]; exact floorLower
   obtain ⟨zero,output⟩:=body_normal input source post heap nodes rootHash codes saved installed scalars heapCell lower nodeCell rootCell codeCell scratch value normal
-  exact ⟨zero,heap,nodes,codes,output⟩
+  exact ⟨zero,heap,nodes,codes,output,heapCell⟩
 
 end InitECandidate.Solver.Mpt.StateInit
 

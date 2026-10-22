@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.MainStateInitBoundary
+import InitECandidate.Solver.Input.MainStateInitCallerLocals
 import InitECandidate.Solver.Input.ConstructorRuntimeEnvironment
 import InitECandidate.Solver.Input.ConstructorRuntimeScalars
 import InitECandidate.Solver.Input.ScopeClock
@@ -15,18 +16,20 @@ theorem Reached.state_init_runtime (input : Guest.InputBlob) (source post : PanS
     (rootLower : 2713731432≤(initialHeap root).toNat)
     (installed : OriginalCode.Installed source.code)
     (originalScalars : OriginalScalarGlobals.Scalars source.globals)
+    (siCell : source.locals.lookup (ofString "si")=some (.val (.word (RequestPrefix.cursor input))))
     (outcome : Option (PanSemResultExact 64)) (reached : Reached input source post root outcome) :
     ∃ current inner,StateInitBoundary input current ∧ ConstructorRuntimeFrame source current ∧
       OriginalCode.Installed current.code ∧ OriginalScalarGlobals.Scalars current.globals ∧ Rlp.Validation.Arena current 2713714688#64 2701135872#64 ∧
       Keccak256.Environment current 2713714976#64 2713715176#64 ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤price input ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) ∧
-      ∃ heap,current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ 2713731432≤heap.toNat := by
+      (∃ heap,current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ 2713731432≤heap.toNat) ∧ CallerLocals input current := by
   obtain ⟨headerTarget,headerRows,parent,nodeTarget,codeTarget,codeArray,heap,codeTable,currentHeap,inner,headerReturned,nodeReturned,codeReturned,nodeDatabase,codeDatabase,heapCell,nodeBefore,codeBefore,forward,spent,continued,endpoint⟩ := reached
   let afterHeader:=parentSource source headerTarget input root
   let prepared:=RunAttempt.constructorEntry afterHeader (countWord input) (hashArray input root) parent
   let codeSource:=RunAttempt.codeEntry prepared nodeTarget heap
   let current:=CallNormal.continuationEntry codeSource codeTarget "codedb" (.val (.word codeTable))
+  have bindings:=caller_locals input source headerTarget nodeTarget codeTarget root heap codeTable parent siCell
   obtain ⟨headerHeap,headerCell,headerBound,headerAligned,afterHashes⟩:=headerReturned.currentHeap
   have nodeEntry : headerTarget.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by
     have entry:=nodeReturned.entryHeap
@@ -80,7 +83,7 @@ theorem Reached.state_init_runtime (input : Guest.InputBlob) (source post : PanS
     have projected:=congrArg PanSemStateFiniteExact.clock endpoint
     simpa only [RunAttempt.restoreHeader_clock,RunAttempt.restoreConstructor_clock,QueryBranch.restore_clock] using projected
   exact ⟨current,inner,⟨codeArray,heap,codeTable,currentHeap,nodeData,codeData,nodeCell,codeCell,heapCell,geometry.1,geometry.2,nodeBefore,codeBefore⟩,
-    frame,currentInstalled,currentScalars,scratch,environment,forward,spent,finalClock,continued,currentHeap,heapCell,currentLower⟩
+    frame,currentInstalled,currentScalars,scratch,environment,forward,spent,finalClock,continued,⟨currentHeap,heapCell,currentLower⟩,bindings⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

@@ -24,7 +24,7 @@ theorem state_init_boundary_of_actual (input : Guest.InputBlob)
       Keccak256.Environment current 2713714976#64 2713715176#64 ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤price input ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current RunAttempt.afterCodes=(outcome,inner) ∧
-      ∃ heap,current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ 2713731432≤heap.toNat := by
+      (∃ heap,current.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ 2713731432≤heap.toNat) ∧ CallerLocals input current := by
   rcases prefix_of_actual input before copiedSource origin hashed source post root counts copied actual bounded prepared returned entryFrame siCell outcome run with stopped|reached
   · exact Or.inl stopped
   · obtain ⟨headerArray,context,payloadCell,pointerCell,countCell,scalars,siArena,siAligned⟩ :=
@@ -38,7 +38,7 @@ theorem state_init_boundary_of_actual (input : Guest.InputBlob)
       have rounded:=prepared.before
       change 2713731432≤(PersistentAlloc.rounded root 32#64).toNat
       omega
-    exact Or.inr (reached.state_init_runtime input source post root rootLower installed scalars outcome)
+    exact Or.inr (reached.state_init_runtime input source post root rootLower installed scalars siCell outcome)
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

@@ -77,6 +77,9 @@ theorem loop_entry_heap (source : PanSemStateFiniteExact 64 Guest.HostMemory) (h
   refine ⟨?_,⟨by have h:=arena.lower; have g:=growth.2.2.1; omega,by have h:=growth.2.2.2.1; omega⟩,growth.2.2.2.2,growth.2.2.1⟩
   simp [loopEntry,newEntry,NewTrie.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
 
+theorem loop_entry_globals (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) :
+    HeapGlobals source (loopEntry source heap) := HeapGlobals.update source _
+
 end InitECandidate.Solver.Mpt.Indexed
 
 #print axioms InitECandidate.Solver.Mpt.Indexed.setup_from_execution
@@ -87,3 +90,4 @@ end InitECandidate.Solver.Mpt.Indexed
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_locals
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_saved
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_heap
+#print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_globals

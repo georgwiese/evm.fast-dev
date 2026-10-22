@@ -2409,6 +2409,7 @@
     "submission/InitECandidate/Solver/Input/MixLengthCost.lean",
     "submission/InitECandidate/Solver/Input/MixLengthMemory.lean",
     "submission/InitECandidate/Solver/Input/MixLengthProgram.lean",
+    "submission/InitECandidate/Solver/Input/MptWorkspaceBindings.lean",
     "submission/InitECandidate/Solver/Input/NoException.lean",
     "submission/InitECandidate/Solver/Input/NoExceptionCall.lean",
     "submission/InitECandidate/Solver/Input/NoExceptionEvent.lean",
@@ -7362,8 +7363,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64231,
-  "package_bytes": 2267014735,
+  "package_entries": 64232,
+  "package_bytes": 2267019426,
   "claim": {
     "K": "infinity"
   },

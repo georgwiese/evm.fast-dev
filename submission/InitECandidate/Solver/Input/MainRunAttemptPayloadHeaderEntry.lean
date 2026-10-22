@@ -13,6 +13,7 @@ structure PayloadHeaderEntry (input : Guest.InputBlob)
   inputFrame : HashInput.Frame origin entry inputPointer.toNat root.toNat
   rootBefore : root.toNat≤workspace.toNat
   rootLower : inputPointer.toNat≤root.toNat
+  mpt : MptWorkspace.Bindings entry
 
 /-- Fresh header work starts beyond the genuine old decoder/state region.
 The real current heap remains an aligned ordinary arena frontier. -/
@@ -49,7 +50,7 @@ theorem payload_header_entry_of_actual (input : Guest.InputBlob)
         RunAttempt.PayloadHeaderResumes caller target inner childResult outcome := by
   rcases transactions_of_actual input before copiedSource origin hashed source post root counts copied actual bounded prepared returned entryFrame siCell outcome run with stopped|reached
   · exact Or.inl (stopped.trans (Nat.le_add_right _ _))
-  · obtain ⟨initializer,caller,inner,workspace,nodes,stateRoot,codes,output,environment,forward,spent,endpoint,remaining,bindings,inputFrame,rootBefore⟩:=reached
+  · obtain ⟨initializer,caller,inner,workspace,nodes,stateRoot,codes,output,environment,forward,spent,endpoint,remaining,bindings,inputFrame,rootBefore,mpt⟩:=reached
     rcases RunAttempt.payload_header_call_trace caller inner (RequestPrefix.cursor input) output.1 bindings.si outcome remaining with stopped|observed
     · exact Or.inl (by unfold payloadHeaderEntryPrice; rw [endpoint]; omega)
     · obtain ⟨entry,target,childResult,frame,clock,entrySI,childRun,resumes⟩:=observed
@@ -61,12 +62,13 @@ theorem payload_header_entry_of_actual (input : Guest.InputBlob)
       have sameOracle:=congrArg (fun state=>state.ffi.oracle) frame
       have currentEnvironment:=Keccak256.Environment.of_fields caller entry 2713714976#64 2713715176#64 environment
         sameDomain sameCode sameOracle (by intro key other; have sameGlobal:=congrArg (fun state=>state.globals.lookup key) frame; exact sameGlobal)
+      have currentMpt:=MptWorkspace.Bindings.of_erase caller entry mpt frame
       have rootLower : inputPointer.toNat≤root.toNat:=by
         have lower:=prepared.layout.siLower
         have beforeRoot:=prepared.layout.siBefore
         omega
       exact Or.inr ⟨initializer,caller,entry,target,inner,workspace,nodes,stateRoot,codes,childResult,
-        ⟨currentOutput,currentEnvironment,entrySI,currentInput,rootBefore,rootLower⟩,by omega,by unfold payloadHeaderEntryPrice; omega,endpoint,childRun,resumes⟩
+        ⟨currentOutput,currentEnvironment,entrySI,currentInput,rootBefore,rootLower,currentMpt⟩,by omega,by unfold payloadHeaderEntryPrice; omega,endpoint,childRun,resumes⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

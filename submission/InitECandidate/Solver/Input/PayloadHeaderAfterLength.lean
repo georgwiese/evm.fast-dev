@@ -30,6 +30,11 @@ theorem PhysicalHeader.after_length (input : Guest.InputBlob) (origin source cur
   have domain:=congrArg PanSemStateFiniteExact.memaddrs control
   have endian:=congrArg PanSemStateFiniteExact.be control
   have globals:=congrArg PanSemStateFiniteExact.globals control
+  have mpt : MptWorkspace.Bindings continued:=by
+    apply MptWorkspace.Bindings.of_heap_globals current continued physical.mpt
+    intro key other
+    have kept:=congrArg (fun state=>state.globals.lookup key) control
+    exact kept
   have installed : OriginalCode.Installed continued.code:=by
     change OriginalCode.Installed target.code
     rw [code]
@@ -43,6 +48,7 @@ theorem PhysicalHeader.after_length (input : Guest.InputBlob) (origin source cur
     omega
   refine ⟨installed,domain.trans physical.domain,endian.trans physical.little,continuedFrame,physical.buffers,
     physical.outputs.after_length current target header value,
+    mpt,
     physical.frontier.of_globals current continued header (headerFrontier header) globals,rootBefore,?_,?_,?_⟩
   · constructor
     intro query low high

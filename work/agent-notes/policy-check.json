@@ -1938,6 +1938,7 @@
     "submission/InitECandidate/Solver/Input/ClockCostCurrentLoop.lean",
     "submission/InitECandidate/Solver/Input/ClockCostCurrentScoped.lean",
     "submission/InitECandidate/Solver/Input/ClockCostCurrentValue.lean",
+    "submission/InitECandidate/Solver/Input/ClockCostDeclaredReached.lean",
     "submission/InitECandidate/Solver/Input/ClockCostFundedTick.lean",
     "submission/InitECandidate/Solver/Input/ClockCostGuardReached.lean",
     "submission/InitECandidate/Solver/Input/ClockCostLoop.lean",
@@ -4233,6 +4234,7 @@
     "submission/InitECandidate/Solver/Mpt/IndexedProgram.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedSetup.lean",
     "submission/InitECandidate/Solver/Mpt/InsertEmptyChoice.lean",
+    "submission/InitECandidate/Solver/Mpt/InsertEmptyCost.lean",
     "submission/InitECandidate/Solver/Mpt/InsertEmptyEntry.lean",
     "submission/InitECandidate/Solver/Mpt/InsertEmptyFields.lean",
     "submission/InitECandidate/Solver/Mpt/InsertEmptyFinish.lean",
@@ -4269,6 +4271,8 @@
     "submission/InitECandidate/Solver/Mpt/KeyToNibblesSpanLoops.lean",
     "submission/InitECandidate/Solver/Mpt/KeyToNibblesWriteFrame.lean",
     "submission/InitECandidate/Solver/Mpt/LeafConstructorCall.lean",
+    "submission/InitECandidate/Solver/Mpt/LeafInsertCost.lean",
+    "submission/InitECandidate/Solver/Mpt/LeafInsertDispatch.lean",
     "submission/InitECandidate/Solver/Mpt/LeafRegistration.lean",
     "submission/InitECandidate/Solver/Mpt/LeafUpdateGraph.lean",
     "submission/InitECandidate/Solver/Mpt/LeafUpdateProgram.lean",
@@ -4955,6 +4959,7 @@
     "submission/InitECandidate/Solver/MutableTable/MemeqSmallNormal.lean",
     "submission/InitECandidate/Solver/MutableTable/MemeqSmallNormalPrefix.lean",
     "submission/InitECandidate/Solver/MutableTable/MemeqSmallScopedCall.lean",
+    "submission/InitECandidate/Solver/MutableTable/MemeqVariableCost.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryFrame.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryModel.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryModelAppend.lean",
@@ -7410,8 +7415,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64279,
-  "package_bytes": 2267215148,
+  "package_entries": 64284,
+  "package_bytes": 2267243561,
   "claim": {
     "K": "infinity"
   },

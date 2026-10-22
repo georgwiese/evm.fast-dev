@@ -24,7 +24,7 @@ theorem root_call_rich_normal (input : Guest.InputBlob) (source post : PanSemSta
       current.locals.lookup (ofString "root")=some (.val (.word node)) ∧ StablePrefix source current heap.toNat ∧
       current.code=source.code ∧
       (∀ key,key≠ofString "heap_ptr" → key≠ofString "scratch_ptr" → current.globals.lookup key=source.globals.lookup key) ∧
-      evaluateHOLFiniteState current afterRoot=(some (.returned returned),inner) ∧ post=restore source "root" inner := by
+      evaluateHOLFiniteState current afterRoot=(some (.returned returned),inner) ∧ post=restore source "root" inner ∧ current.globals.lookup (ofString "scratch_ptr")=some (.val (.word 2713714688#64)) := by
   have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) rootArguments=
       some (WitnessDecodeRoot.values nodes rootHash):=by
     simp [rootArguments,WitnessDecodeRoot.values,localVar,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,nodesCell,rootCell]
@@ -36,7 +36,7 @@ theorem root_call_rich_normal (input : Guest.InputBlob) (source post : PanSemSta
   let entry:=callEntryStateHOLFinite source callee
   have entryBoundary:=RootBoundary.of_state_init input source entry boundary rfl (entryDb.trans nodesCell.symm)
   have entryArena:=scratch.of_fields source entry 2713714688#64 2701135872#64 rfl rfl
-  have output:=WitnessDecodeRoot.rich_body_normal_prefix input entry target nodes heap rootHash emptyRoot entryBoundary installed entryDb entryRoot emptyCell heapCell heapLower entryArena rootArena childReturn childRun
+  have output:=WitnessDecodeRoot.rich_body_normal_prefix_scratch input entry target nodes heap rootHash emptyRoot entryBoundary installed entryDb entryRoot emptyCell heapCell heapLower entryArena rootArena childReturn childRun
   have physical:=output.1.1
   obtain ⟨nextHeap,node,valueEq,childHeap,rest⟩:=physical
   let current:=Input.CallNormal.continuationEntry source target "root" childReturn
@@ -45,8 +45,8 @@ theorem root_call_rich_normal (input : Guest.InputBlob) (source post : PanSemSta
     exact output.1.of_erase input heap.toNat nodes target current childReturn rfl
   have currentRoot : current.locals.lookup (ofString "root")=some (.val (.word node)):=
     (Input.CallNormal.continuation_lookup_same source target "root" childReturn).trans (congrArg some valueEq)
-  refine ⟨current,inner,node,currentOutput,currentRoot,?_,?_,?_,continued,endpoint⟩
-  · exact output.2
+  refine ⟨current,inner,node,currentOutput,currentRoot,?_,?_,?_,continued,endpoint,output.2.2⟩
+  · exact output.2.1
   · exact (Input.evaluation_fields entry target WitnessDecodeRoot.body (some (.returned childReturn)) childRun).2.2.2
   · intro key notHeap notScratch
     have frame:=WitnessDecodeRoot.globals key source.code installed notHeap notScratch entry rfl

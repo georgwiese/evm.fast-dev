@@ -3,6 +3,8 @@ import InitECandidate.Solver.Mpt.StateInitWorkspace
 import InitECandidate.Solver.Mpt.StateInitStorageMemory
 import InitECandidate.Solver.Mpt.StateInitStorageRuntime
 import InitECandidate.Solver.Mpt.StateInitBlockGlobals
+import InitECandidate.Solver.Mpt.StateInitBlockOwnedNormal
+import InitECandidate.Solver.Mpt.StateInitBlockOwnershipFrame
 import InitECandidate.Solver.Input.EvaluationOracle
 
 namespace InitECandidate.Solver.Mpt.StateInit
@@ -16,8 +18,8 @@ def OtherGlobals (source post : PanSemStateFiniteExact 64 Guest.HostMemory) : Pr
     post.globals.lookup key=source.globals.lookup key
 
 /-- Actual initialized workspace, closed trie graph and empty storage-root
-cache, at the genuine final heap. Later table-family/journal models are
-separate reachability obligations. -/
+cache, seven disjoint block tables and empty reserved journal at the
+genuine final heap. Caller entry reachability remains separate. -/
 def Output (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (workspace nodes rootHash codes : BitVec 64) : Prop:=
   Input.OriginalCode.Installed post.code ∧ Input.OriginalScalarGlobals.Scalars post.globals ∧
@@ -29,7 +31,8 @@ def Output (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Gu
       TableState post .word (fresh .word storageTable.toNat 64) [] heap.toNat storageTable.toNat ∧
       post.globals.lookup (ofString "bs")=some (.val (.word (BitVec.ofNat 64 (freshEnd .word storageTable.toNat 64)))) ∧
       ∃ registry : NodeRegistry post (PersistentAlloc.rounded workspace 40#64).toNat heap nodes,
-        registry.graph.valid root ∧ registry.graph.Regions (PersistentAlloc.rounded workspace 40#64).toNat storageTable.toNat
+        registry.graph.valid root ∧ registry.graph.Regions (PersistentAlloc.rounded workspace 40#64).toNat storageTable.toNat ∧
+          Block.Initialized post (BitVec.ofNat 64 (freshEnd .word storageTable.toNat 64)) workspace
 
 set_option maxRecDepth 100000 in
 open scoped InitE.MetadataComputation InitE.NameComputation in
@@ -81,6 +84,8 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
   obtain ⟨oldBs,bsCell⟩:=storageScalars _ block_name
   obtain ⟨returnedEq,blockFunded,finalBound,blockResult,finalClock,finalCell,finalArena,finalAligned,finalScalars,layouts,olderMemory,postFrozen,blockRegistry,blockMembers⟩:=
     Block.body_normal input stored blockPost frontier storageHeap nodes workspace oldBs rootHeap storageRegistry storageFrozen (by omega) storageWs bsCell storageT storageCell storageArena storageAligned storageScalars storageInstalled returned blockRun
+  obtain ⟨array,nodeDb,codeDb,nodeData,codeData,dbCell,nodeBefore,codeBefore⟩:=storageFrozen
+  have blockInitialized:=Block.initialized_of_result stored blockPost storageHeap workspace storageArena.lower storageAligned nodeData.domain nodeData.little finalBound layouts blockResult
   let finalHeap:=BitVec.ofNat 64 (storageHeap.toNat+16848200)
   have finalNumber : finalHeap.toNat=storageHeap.toNat+16848200:=by
     rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
@@ -88,6 +93,7 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
   have scopeGlobals : post.globals=blockPost.globals:=by rw [rootEnd,storageEnd]; rfl
   have scopeDomain : post.memaddrs=blockPost.memaddrs:=by rw [rootEnd,storageEnd]; rfl
   have scopeEndian : post.be=blockPost.be:=by rw [rootEnd,storageEnd]; rfl
+  have postInitialized:=blockInitialized.of_fields blockPost post storageHeap workspace scopeGlobals scopeMemory scopeDomain scopeEndian
   have blockOther (key : MlS) (a : key≠ofString "heap_ptr") (b : key≠ofString "bs") (c : key≠ofString "sk_buf")
       (d : key≠ofString "journal_cap") (e : key≠ofString "journal") (f : key≠ofString "journal_n") (g : key≠ofString "ts") :
       blockPost.globals.lookup key=stored.globals.lookup key:=by
@@ -163,7 +169,7 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
   have bsPointer : post.globals.lookup (ofString "bs")=some (.val (.word storageHeap)):=by
     rw [scopeGlobals,blockResult]
     exact Block.result_block_pointer stored storageHeap workspace
-  exact ⟨returnedEq,postInstalled,postScalars,postScratch,otherGlobals,codeEq,domain,endian,oracle,finalHeap,root,rootHeap,postHeap,finalArena,finalAligned,view,frozen,table,bsPointer,registry,member,regions⟩
+  exact ⟨returnedEq,postInstalled,postScalars,postScratch,otherGlobals,codeEq,domain,endian,oracle,finalHeap,root,rootHeap,postHeap,finalArena,finalAligned,view,frozen,table,bsPointer,registry,member,regions,postInitialized⟩
 
 end InitECandidate.Solver.Mpt.StateInit
 

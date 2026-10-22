@@ -19,7 +19,7 @@ theorem Output.table_family (input : Guest.InputBlob) (source post : PanSemState
       TableFamily.Model post heap.toNat (initializedObjects storage) ∧
       Zone (initializedObjects storage) (journalBase storage) Initialization.capacity heap.toNat:=by
   obtain ⟨installed,scalars,scratch,globals,code,domain,endian,oracle,heap,root,storage,heapCell,arena,aligned,view,frozen,table,bs,
-    registry,member,regions,block,older⟩:=output
+    registry,member,regions,block,older,workspaceBefore⟩:=output
   have bounded : freshEnd .word storage.toNat 64≤33806089496:=table.valid.upper .position
   have blockNumber : (blockPointer storage).toNat=freshEnd .word storage.toNat 64:=by
     rw [blockPointer,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]

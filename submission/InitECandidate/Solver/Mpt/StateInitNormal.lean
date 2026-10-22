@@ -33,7 +33,7 @@ def Output (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Gu
       ∃ registry : NodeRegistry post (PersistentAlloc.rounded workspace 40#64).toNat heap nodes,
         registry.graph.valid root ∧ registry.graph.Regions (PersistentAlloc.rounded workspace 40#64).toNat storageTable.toNat ∧
           Block.Initialized post (BitVec.ofNat 64 (freshEnd .word storageTable.toNat 64)) workspace ∧
-          StablePrefix source post workspace.toNat
+          StablePrefix source post workspace.toNat ∧ workspace.toNat+40≤heap.toNat
 
 set_option maxRecDepth 100000 in
 open scoped InitE.MetadataComputation InitE.NameComputation in
@@ -184,7 +184,7 @@ theorem body_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteEx
   have bsPointer : post.globals.lookup (ofString "bs")=some (.val (.word storageHeap)):=by
     rw [scopeGlobals,blockResult]
     exact Block.result_block_pointer stored storageHeap workspace
-  exact ⟨returnedEq,postInstalled,postScalars,postScratch,otherGlobals,codeEq,domain,endian,oracle,finalHeap,root,rootHeap,postHeap,finalArena,finalAligned,view,frozen,table,bsPointer,registry,member,regions,postInitialized,olderPrefix⟩
+  exact ⟨returnedEq,postInstalled,postScalars,postScratch,otherGlobals,codeEq,domain,endian,oracle,finalHeap,root,rootHeap,postHeap,finalArena,finalAligned,view,frozen,table,bsPointer,registry,member,regions,postInitialized,olderPrefix,by rw [finalNumber]; omega⟩
 
 end InitECandidate.Solver.Mpt.StateInit
 

@@ -23,7 +23,7 @@ theorem Output.of_erase (input : Guest.InputBlob) (origin source target : PanSem
   change target.be=source.be at endianEq
   change target.ffi.oracle=source.ffi.oracle at oracleEq
   obtain ⟨installed,scalars,scratch,otherGlobals,code,domain,endian,oracle,heap,root,storage,heapCell,arena,aligned,view,frozen,table,bs,
-    registry,member,regions,block,older⟩:=output
+    registry,member,regions,block,older,workspaceBefore⟩:=output
   have nextScratch:=scratch.of_fields source target 2713714688#64 2701135872#64 domainEq globals
   have nextView : WorkspaceView target workspace nodes rootHash codes root storage:=by
     refine ⟨view.arena,view.aligned,?_,?_,?_,?_,?_,?_⟩
@@ -44,7 +44,7 @@ theorem Output.of_erase (input : Guest.InputBlob) (origin source target : PanSem
   have nextTable:=TableState.of_fields table globals memory domainEq endianEq
   have nextBlock:=block.of_fields source target (BitVec.ofNat 64 (NaturalLayout.freshEnd .word storage.toNat 64)) workspace globals memory domainEq endianEq
   refine ⟨by rw [codeEq]; exact installed,by rw [globals]; exact scalars,nextScratch,?_,codeEq.trans code,domainEq.trans domain,
-    endianEq.trans endian,oracleEq.trans oracle,heap,root,storage,?_,arena,aligned,nextView,nextFrozen,nextTable,?_,next,nextMember,nextRegions,nextBlock,?_⟩
+    endianEq.trans endian,oracleEq.trans oracle,heap,root,storage,?_,arena,aligned,nextView,nextFrozen,nextTable,?_,next,nextMember,nextRegions,nextBlock,?_,workspaceBefore⟩
   · intro key h w b s c j n t
     rw [globals]
     exact otherGlobals key h w b s c j n t

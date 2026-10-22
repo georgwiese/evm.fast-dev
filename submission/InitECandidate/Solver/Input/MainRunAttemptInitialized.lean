@@ -22,7 +22,7 @@ theorem initialized_of_actual (input : Guest.InputBlob)
         Mpt.StateInit.Output input entry current workspace nodes stateRoot codes ∧
         Keccak256.Environment current 2713714976#64 2713715176#64 ∧
         current.clock≤source.clock ∧ source.clock-current.clock≤initializationPrice input ∧ post.clock=inner.clock ∧
-        evaluateHOLFiniteState current RunAttempt.afterStateInit=(outcome,inner) ∧ CallerLocals input current ∧ HashInput.Frame origin current inputPointer.toNat root.toNat:=by
+        evaluateHOLFiniteState current RunAttempt.afterStateInit=(outcome,inner) ∧ CallerLocals input current ∧ HashInput.Frame origin current inputPointer.toNat root.toNat ∧ root.toNat≤workspace.toNat:=by
   rcases state_init_entry_of_actual input before copiedSource origin hashed source post root counts copied actual bounded prepared returned entryFrame siCell outcome run with stopped|reached
   · exact Or.inl (stopped.trans (Nat.le_add_right _ _))
   · obtain ⟨caller,inner,stateRoot,entry,target,childResult,boundary,frame,installed,scalars,rootCell,scratch,environment,forward,spent,endpoint,childRun,resumes,heapFloor,bindings,retained⟩:=reached
@@ -37,6 +37,9 @@ theorem initialized_of_actual (input : Guest.InputBlob)
     · obtain ⟨value,resultEq,checked,continued⟩:=normal
       rw [resultEq] at childRun
       obtain ⟨zero,workspace,nodes,codes,output,workspaceCell⟩:=Mpt.StateInit.normal_of_boundary input entry target stateRoot boundary installed scalars rootCell scratch heapFloor value childRun
+      obtain ⟨priorHeap,priorCell,priorBefore⟩:=retained.heap
+      have sameHeap : priorHeap=workspace:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (priorCell.symm.trans workspaceCell)))
+      have rootBefore : root.toNat≤workspace.toNat:=by rw [sameHeap] at priorBefore; exact prepared.before.trans priorBefore
       let current:={target with locals:=caller.locals}
       have originalInput:=returned.input.of_memory origin hashed source inputPointer.toNat root.toNat (LocalEffects.memory_of_erase hashed source entryFrame)
       have preservedInput:=output.input_frame input origin source entry target workspace nodes stateRoot codes root workspaceCell retained prepared.before originalInput
@@ -45,7 +48,7 @@ theorem initialized_of_actual (input : Guest.InputBlob)
       have currentOutput:=output.with_locals input entry target workspace nodes stateRoot codes caller.locals
       have currentEnvironment:=currentOutput.hash_environment input entry current workspace nodes stateRoot codes 2713714976#64 2713715176#64 environment
       exact Or.inr ⟨entry,current,inner,workspace,nodes,stateRoot,codes,currentOutput,currentEnvironment,back.trans forward,
-        by unfold initializationPrice; change source.clock-target.clock≤_; omega,endpoint,continued,currentBindings,currentInput⟩
+        by unfold initializationPrice; change source.clock-target.clock≤_; omega,endpoint,continued,currentBindings,currentInput,rootBefore⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

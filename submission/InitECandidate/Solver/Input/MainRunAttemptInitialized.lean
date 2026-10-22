@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.MainRunAttemptStateInitCost
 import InitECandidate.Solver.Mpt.StateInitInputFrame
+import InitECandidate.Solver.Input.MptWorkspaceBindings
 
 namespace InitECandidate.Solver.Input.Main.RunAttemptConstructors
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -22,7 +23,7 @@ theorem initialized_of_actual (input : Guest.InputBlob)
         Mpt.StateInit.Output input entry current workspace nodes stateRoot codes ∧
         Keccak256.Environment current 2713714976#64 2713715176#64 ∧
         current.clock≤source.clock ∧ source.clock-current.clock≤initializationPrice input ∧ post.clock=inner.clock ∧
-        evaluateHOLFiniteState current RunAttempt.afterStateInit=(outcome,inner) ∧ CallerLocals input current ∧ HashInput.Frame origin current inputPointer.toNat root.toNat ∧ root.toNat≤workspace.toNat:=by
+        evaluateHOLFiniteState current RunAttempt.afterStateInit=(outcome,inner) ∧ CallerLocals input current ∧ HashInput.Frame origin current inputPointer.toNat root.toNat ∧ root.toNat≤workspace.toNat ∧ MptWorkspace.Bindings current:=by
   rcases state_init_entry_of_actual input before copiedSource origin hashed source post root counts copied actual bounded prepared returned entryFrame siCell outcome run with stopped|reached
   · exact Or.inl (stopped.trans (Nat.le_add_right _ _))
   · obtain ⟨caller,inner,stateRoot,entry,target,childResult,boundary,frame,installed,scalars,rootCell,scratch,environment,forward,spent,endpoint,childRun,resumes,heapFloor,bindings,retained⟩:=reached
@@ -47,8 +48,12 @@ theorem initialized_of_actual (input : Guest.InputBlob)
       have currentBindings:=bindings.of_locals input caller current rfl
       have currentOutput:=output.with_locals input entry target workspace nodes stateRoot codes caller.locals
       have currentEnvironment:=currentOutput.hash_environment input entry current workspace nodes stateRoot codes 2713714976#64 2713715176#64 environment
+      have hashedMpt:=MptWorkspace.after_hash_bindings input before copiedSource origin hashed root copied actual returned
+      have sourceMpt:=MptWorkspace.Bindings.of_erase hashed source hashedMpt entryFrame
+      have entryMpt:=MptWorkspace.Bindings.of_constructor source entry sourceMpt frame
+      have currentMpt:=MptWorkspace.Bindings.of_state_init input entry current workspace nodes stateRoot codes entryMpt currentOutput
       exact Or.inr ⟨entry,current,inner,workspace,nodes,stateRoot,codes,currentOutput,currentEnvironment,back.trans forward,
-        by unfold initializationPrice; change source.clock-target.clock≤_; omega,endpoint,continued,currentBindings,currentInput,rootBefore⟩
+        by unfold initializationPrice; change source.clock-target.clock≤_; omega,endpoint,continued,currentBindings,currentInput,rootBefore,currentMpt⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

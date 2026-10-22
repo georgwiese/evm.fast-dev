@@ -26,10 +26,10 @@ theorem transactions_of_actual (input : Guest.InputBlob)
         Keccak256.Environment current 2713714976#64 2713715176#64 ∧
         current.clock≤source.clock ∧ source.clock-current.clock≤transactionPrecheckPrice input ∧ post.clock=inner.clock ∧
         evaluateHOLFiniteState current RunAttempt.afterTransactionScan=(outcome,inner) ∧ CallerLocals input current ∧
-        HashInput.Frame origin current inputPointer.toNat root.toNat ∧ root.toNat≤workspace.toNat := by
+        HashInput.Frame origin current inputPointer.toNat root.toNat ∧ root.toNat≤workspace.toNat ∧ MptWorkspace.Bindings current := by
   rcases initialized_of_actual input before copiedSource origin hashed source post root counts copied actual bounded prepared returned entryFrame siCell outcome run with stopped|reached
   · exact Or.inl (stopped.trans (Nat.le_add_right _ _))
-  · obtain ⟨entry,initialized,initInner,workspace,nodes,stateRoot,codes,output,environment,forward,spent,endpoint,continued,bindings,inputFrame,rootBefore⟩:=reached
+  · obtain ⟨entry,initialized,initInner,workspace,nodes,stateRoot,codes,output,environment,forward,spent,endpoint,continued,bindings,inputFrame,rootBefore,mpt⟩:=reached
     have domain : initialized.memaddrs=InitE.ordinaryDomain:=output.2.2.1.domain
     obtain ⟨arrayRead,countRead,countBound,countSmall⟩:=transaction_reads input origin initialized root counts prepared inputFrame domain bindings
     rcases RunAttempt.transaction_prefix_trace initialized initInner (PayloadHashData.description input).transactions
@@ -54,8 +54,9 @@ theorem transactions_of_actual (input : Guest.InputBlob)
       have sameOracle:=congrArg (fun state=>state.ffi.oracle) frame
       have currentEnvironment:=Keccak256.Environment.of_fields initialized current 2713714976#64 2713715176#64 environment
         sameDomain sameCode sameOracle (by intro key other; have sameGlobal:=congrArg (fun state=>state.globals.lookup key) frame; exact sameGlobal)
+      have currentMpt:=MptWorkspace.Bindings.of_erase initialized current mpt frame
       exact Or.inr ⟨entry,current,inner,workspace,nodes,stateRoot,codes,currentOutput,currentEnvironment,
-        scanForward.trans forward,by unfold transactionPrecheckPrice; omega,endpoint.trans scanEndpoint,remaining,currentBindings,currentInput,rootBefore⟩
+        scanForward.trans forward,by unfold transactionPrecheckPrice; omega,endpoint.trans scanEndpoint,remaining,currentBindings,currentInput,rootBefore,currentMpt⟩
 
 end InitECandidate.Solver.Input.Main.RunAttemptConstructors
 

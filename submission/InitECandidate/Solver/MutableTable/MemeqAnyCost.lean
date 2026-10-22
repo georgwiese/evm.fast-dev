@@ -9,13 +9,13 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 theorem other_model : Model Memeq32.parts.otherAligned 64 := by
   rw [other_shape]
   exact (Model.decision decisions.2.2).sequence
-    ((Model.loop (blockTest 32) word32Body 32 (by decide) guarded_bodies.1 (block_test_reads 32 (by decide))).sequence
-      (Model.loop (blockTest 8) word8Body 8 (by decide) guarded_bodies.2.1 (block_test_reads 8 (by decide))))
+    ((Model.loop (blockTest 32) word32Body 32 (by decide) guarded_bodies.1 (block_test_reads 32 (by decide)) (by decide)).sequence
+      (Model.loop (blockTest 8) word8Body 8 (by decide) guarded_bodies.2.1 (block_test_reads 8 (by decide)) (by decide)))
 
 theorem tail_model : Model Memeq32.parts.tailCode 64 := by
   rw [Memeq32.tail_shape]
-  exact (Model.loop Memeq32.condition8 Memeq32.byteBodies.1 8 (by decide) guarded_bodies.2.2.1 (block_test_reads 8 (by decide))).sequence
-    ((Model.loop Memeq32.condition1 Memeq32.byteBodies.2 1 (by decide) guarded_bodies.2.2.2 byte_test_reads).sequence
+  exact (Model.loop Memeq32.condition8 Memeq32.byteBodies.1 8 (by decide) guarded_bodies.2.2.1 (block_test_reads 8 (by decide)) (by decide)).sequence
+    ((Model.loop Memeq32.condition1 Memeq32.byteBodies.2 1 (by decide) guarded_bodies.2.2.2 byte_test_reads (by decide)).sequence
       (Model.decision (.returned (.const 1#64))))
 
 /-- A uniform original32-byte comparison bound, including unmapped or

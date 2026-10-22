@@ -1,0 +1,75 @@
+import InitECandidate.Solver.Input.CallPrefix
+
+namespace InitECandidate.Solver.Input.CallPrefix
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+
+def project (output : Option (PanSemResultExact 64)×PanSemStateFiniteExact 64 Guest.HostMemory) := (output.1,output.2.clock)
+
+/-- One genuine reached lexical action, with its observed argument reads,
+checked callee return or actual normal command. Caller locals remain in
+scope at the next action; final scope restoration affects no clock. -/
+inductive Reaches : PanSemStateFiniteExact 64 Guest.HostMemory→Action→PanSemStateFiniteExact 64 Guest.HostMemory→Prop where
+  | declare (source name shape expression value)
+      (read : WitnessRadix.QueryBranch.eval source expression=some value)
+      (checked : shapeEqHOL shape (shapeOfHOLExact value)=true) :
+      Reaches source (.declare name shape expression) (setVarHOLFinite name value source)
+  | scoped (source name shape function arguments values body callee returnShape returned target)
+      (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some values)
+      (called : lookupCodeHOLFinite source.code.lookup function values=some (body,callee,returnShape))
+      (funded : source.clock≠0)
+      (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body=(some (.returned returned),target))
+      (checked : (shapeEqHOL (shapeOfHOLExact returned) shape && shapeEqHOL (shapeOfHOLExact returned) returnShape)=true) :
+      Reaches source (.scoped name shape function arguments) (setVarHOLFinite name returned {target with locals:=source.locals})
+  | command (source target command) (run : evaluateHOLFiniteState source command=(none,target)) :
+      Reaches source (.command command) target
+
+theorem Reaches.project {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {action : Action}
+    (reached : Reaches source action target) (tail : ProgHOL 64) :
+    project (evaluateHOLFiniteState source (program [action] tail))=project (evaluateHOLFiniteState target tail) := by
+  cases reached with
+  | declare name shape expression value read checked=>
+    simp only [WitnessRadix.QueryBranch.eval] at read
+    rw [program,evaluateHOLFiniteState_dec_total]
+    simp only [read,if_pos checked,program]
+    rfl
+  | «scoped» name shape function arguments values body callee returnShape returned target args called funded run checked=>
+    rw [program,evaluateHOLFiniteState_decCall_fixClockRewrite]
+    simp only [args,called,if_neg funded,run,if_pos checked,program]
+    rfl
+  | command target command run=>
+    rw [program,evaluateHOLFiniteState_seq_line780,run]
+    rfl
+
+inductive Execution : PanSemStateFiniteExact 64 Guest.HostMemory→List Action→PanSemStateFiniteExact 64 Guest.HostMemory→Prop where
+  | done (source) : Execution source [] source
+  | step {source middle target action rest} (first : Reaches source action middle) (next : Execution middle rest target) :
+      Execution source (action::rest) target
+
+theorem program_cons (action : Action) (rest : List Action) (tail : ProgHOL 64) :
+    program (action::rest) tail=program [action] (program rest tail) := by cases action <;> rfl
+
+theorem Execution.project {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List Action}
+    (execution : Execution source actions target) (tail : ProgHOL 64) :
+    project (evaluateHOLFiniteState source (program actions tail))=project (evaluateHOLFiniteState target tail) := by
+  induction execution with
+  | done source=>rfl
+  | step first next ih=>rw [program_cons]; exact (first.project _).trans ih
+
+theorem Execution.skip_clock {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List Action}
+    (execution : Execution source actions target) :
+    (evaluateHOLFiniteState source (program actions .skip)).2.clock=target.clock := by
+  have clocks:=congrArg Prod.snd (execution.project .skip)
+  simpa only [CallPrefix.project,evaluateHOLFiniteState_skip] using clocks
+
+theorem Execution.forward {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List Action}
+    (execution : Execution source actions target) : target.clock≤source.clock := by
+  have clock:=evaluateHOLFiniteState_clock_le source (program actions .skip)
+  rw [execution.skip_clock] at clock
+  exact clock
+
+end InitECandidate.Solver.Input.CallPrefix
+
+#print axioms InitECandidate.Solver.Input.CallPrefix.Reaches.project
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.project
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.skip_clock
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.forward

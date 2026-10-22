@@ -30,6 +30,7 @@ theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSem
       current.locals.lookup (ofString "root")=some (.val (.word root)) ∧
       current.globals.lookup (ofString "ws")=some (.val (.word heap)) ∧
       Input.OriginalCode.Installed current.code ∧ Input.OriginalScalarGlobals.Scalars current.globals ∧
+      current.globals.lookup (ofString "scratch_ptr")=some (.val (.word 2713714688#64)) ∧
       (∀ key,key≠ofString "heap_ptr" → key≠ofString "scratch_ptr" → current.globals.lookup key=(ready source heap nodes rootHash codes).globals.lookup key) ∧
       StablePrefix (ready source heap nodes rootHash codes) current frontier ∧
       FrozenWitnessDatabases input (QueryBranch.bind (installedRoot current heap root) "db" nodes) heap.toNat ∧
@@ -62,7 +63,7 @@ theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSem
   have callerEmpty : caller.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)):=
     (fields.2.2.2 _ (by decide) (by decide)).trans emptyCell
   have callerScratch:=ready_scratch source heap nodes rootHash codes 2713714688#64 2701135872#64 scratch
-  obtain ⟨current,inner,root,output,currentRoot,stableMemory,currentCode,globals,continued,endpoint⟩:=root_call_rich_normal input caller post nodes next rootHash emptyRoot
+  obtain ⟨current,inner,root,output,currentRoot,stableMemory,currentCode,globals,continued,endpoint,currentScratch⟩:=root_call_rich_normal input caller post nodes next rootHash emptyRoot
     callerBoundary installed nodesCell rootCell callerEmpty fields.2.2.1 (heapLower.trans geometry.2.2) callerScratch rootArena returned rootRun
   have currentWs : current.globals.lookup (ofString "ws")=some (.val (.word heap)):=
     (globals _ (by decide) (by decide)).trans fields.2.1
@@ -97,7 +98,7 @@ theorem root_installed_of_normal (input : Guest.InputBlob) (source post : PanSem
       intro query lower upper
       have away : query≠heap+24#64:=by intro equal; have numeric:=congrArg BitVec.toNat equal; rw [addressNumber] at numeric; omega
       exact if_neg away)
-  exact ⟨arena,current,inner,root,output,currentRoot,currentWs,currentInstalled,currentScalars,globals,stableMemory,installedFrozen,tailRun,endpoint,finalHeap,finalCell,registry,member⟩
+  exact ⟨arena,current,inner,root,output,currentRoot,currentWs,currentInstalled,currentScalars,currentScratch,globals,stableMemory,installedFrozen,tailRun,endpoint,finalHeap,finalCell,registry,member⟩
 
 end InitECandidate.Solver.Mpt.StateInit
 

@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.WitnessRootPrefixNormal
 import InitECandidate.Solver.Mpt.WitnessMaterializeRichNormal
 import InitECandidate.Solver.Mpt.WitnessMaterializeEnvironment
 import InitECandidate.Solver.Mpt.FailGuard
+import InitECandidate.Solver.Mpt.WitnessRootSuffixGlobals
 
 namespace InitECandidate.Solver.Mpt.WitnessDecodeRoot
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -11,7 +12,7 @@ open Input.Main.RunAttemptConstructors WitnessMaterialize
 /-- Successful original lookup tails must pass the actual missing guard,
 materialize the actual bounded database slice, and retain its closed graph
 through the root cache/footer. All callee success is derived from this run. -/
-theorem after_lookup_rich_normal_prefix (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem after_lookup_rich_normal_prefix_scratch (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (db heap root : BitVec 64) (answer : Option Graph.Slice) (boundary : RootBoundary input source)
     (installed : Input.OriginalCode.Installed source.code)
     (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
@@ -21,7 +22,8 @@ theorem after_lookup_rich_normal_prefix (input : Guest.InputBlob) (source post :
     (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena root 32)
     (hit : ∀ slice,answer=some slice → slice.2.toNat≤1024 ∧ 2713731432≤slice.1.toNat ∧ slice.1.toNat+slice.2.toNat≤db.toNat)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLookup=(some (.returned returned),post)) :
-    RichOutput input heap.toNat db post returned ∧ WitnessCore.Stack.StablePrefix source post heap.toNat := by
+    RichOutput input heap.toNat db post returned ∧ WitnessCore.Stack.StablePrefix source post heap.toNat ∧
+      post.globals.lookup (ofString "scratch_ptr")=some (.val (.word 2713714688#64)) := by
   have safe : Input.LocalPrefix (ofString "db") missingGuard:=.ite _ (.call none _ _ (by simp)) .skip
   rw [lookup_tail_shape.1] at normal
   obtain ⟨middle,guardRun,continued,dbFrame⟩:=safe.normal_continue source post materializeCall returned normal
@@ -64,10 +66,29 @@ theorem after_lookup_rich_normal_prefix (input : Guest.InputBlob) (source post :
     have codeEq:=(Input.evaluation_fields entry target WitnessMaterialize.body (some (.returned childReturn)) childRun).2.2.2
     have readyInstalled : Input.OriginalCode.Installed ready.code:=by change Input.OriginalCode.Installed target.code; rw [codeEq]; exact installed
     have result:=suffix_rich_normal_prefix input ready inner heap.toNat db root node returned readyOutput heapLower readyRoot readyNode rootArena readyInstalled suffixRun
-    refine ⟨result.2.1.of_erase input heap.toNat db inner post returned (by rw [endpoint]; rfl),?_⟩
-    intro query lowerBound upperBound
-    have endMemory : post.memory=inner.memory:=by rw [endpoint]; rfl
-    exact (congrFun endMemory query).trans ((result.2.2 query lowerBound upperBound).trans (childResult.2.2 query lowerBound upperBound))
+    refine ⟨result.2.1.of_erase input heap.toNat db inner post returned (by rw [endpoint]; rfl),?_,?_⟩
+    · intro query lowerBound upperBound
+      have endMemory : post.memory=inner.memory:=by rw [endpoint]; rfl
+      exact (congrFun endMemory query).trans ((result.2.2 query lowerBound upperBound).trans (childResult.2.2 query lowerBound upperBound))
+    · have frame:=suffix_globals (ofString "scratch_ptr") ready.code readyInstalled (by decide) ready rfl
+      rw [suffixRun] at frame
+      have kept : inner.globals.lookup (ofString "scratch_ptr")=ready.globals.lookup (ofString "scratch_ptr"):=congrArg Prod.snd frame
+      rw [endpoint]
+      exact kept.trans childResult.2.1
+
+theorem after_lookup_rich_normal_prefix (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (db heap root : BitVec 64) (answer : Option Graph.Slice) (boundary : RootBoundary input source)
+    (installed : Input.OriginalCode.Installed source.code)
+    (dbCell : source.locals.lookup (ofString "db")=some (.val (.word db)))
+    (rootCell : source.locals.lookup (ofString "root_hash")=some (.val (.word root)))
+    (rCell : source.locals.lookup (ofString "r")=some (MutableTable.NodeDb.output answer))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
+    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena root 32)
+    (hit : ∀ slice,answer=some slice → slice.2.toNat≤1024 ∧ 2713731432≤slice.1.toNat ∧ slice.1.toNat+slice.2.toNat≤db.toNat)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLookup=(some (.returned returned),post)) :
+    RichOutput input heap.toNat db post returned ∧ WitnessCore.Stack.StablePrefix source post heap.toNat := by
+  have result:=after_lookup_rich_normal_prefix_scratch input source post db heap root answer boundary installed dbCell rootCell rCell heapCell heapLower scratch rootArena hit returned normal
+  exact ⟨result.1,result.2.1⟩
 
 theorem after_lookup_rich_normal (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (db heap root : BitVec 64) (answer : Option Graph.Slice) (boundary : RootBoundary input source)
@@ -87,3 +108,5 @@ end InitECandidate.Solver.Mpt.WitnessDecodeRoot
 #print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.after_lookup_rich_normal
 
 #print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.after_lookup_rich_normal_prefix
+
+#print axioms InitECandidate.Solver.Mpt.WitnessDecodeRoot.after_lookup_rich_normal_prefix_scratch

@@ -48,7 +48,7 @@ theorem registered_body_normal (input : Guest.InputBlob) (source post : PanSemSt
     (rootCell : source.locals.lookup (ofString "root_hash")=some (.val (.word root)))
     (emptyCell : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word emptyRoot)))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapLower : 2713731432≤heap.toNat)
-    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64) (rootArena : AllocatedBytes.Arena root 32)
+    (scratch : Rlp.Validation.Arena source 2713714688#64 2701135872#64)
     (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post))
     (old : TrieWalk.Graph source.memory source.memaddrs) (floor limit : Nat) (property : BitVec 64 → BitVec 64 → Prop)
     (values : TrieWalk.Values old limit property) (regions : old.Regions floor heap.toNat) (disjoint : old.Disjoint)
@@ -58,7 +58,7 @@ theorem registered_body_normal (input : Guest.InputBlob) (source post : PanSemSt
       ∃ graph : TrieWalk.Graph post.memory post.memaddrs,
         Nonempty (TrieWalk.Values graph limit property) ∧ graph.Regions floor nextHeap.toNat ∧ graph.Disjoint ∧
         (∀ child,old.valid child → graph.valid child) ∧ graph.valid node := by
-  have result:=rich_body_normal_prefix input source post db heap root emptyRoot boundary installed dbCell rootCell emptyCell heapCell heapLower scratch rootArena returned normal
+  have result:=rich_body_normal_prefix input source post db heap root emptyRoot boundary installed dbCell rootCell emptyCell heapCell heapLower scratch returned normal
   exact result.1.join_registry input source post db heap returned floor limit result.2
     (Input.evaluation_fields source post body (some (.returned returned)) normal).1 old property values regions disjoint above ordered bounded extra
 

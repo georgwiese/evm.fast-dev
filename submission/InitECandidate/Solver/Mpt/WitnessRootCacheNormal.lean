@@ -11,13 +11,14 @@ open WitnessCore WitnessCore.Stack WitnessMaterialize Input.Main.RunAttemptConst
 
 /-- The genuine root cache allocation/copy/store retains the materialized
 closed graph and frozen databases, deriving actual room and next heap
-from the real allocator. Buffer ownership is current caller data. -/
+from the real allocator. Normal copy writes supply their own footprint;
+no source-buffer ownership is required. -/
 theorem cache_allocated_normal_prefix (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (frontier : Nat) (db heap hashPtr node : BitVec 64)
     (output : RichOutput input frontier db source (.val (.word node))) (frontierLower : 2713731432≤frontier)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (nonnull : node≠0#64)
     (hashCell : source.locals.lookup (ofString "root_hash")=some (.val (.word hashPtr)))
-    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) (hashArena : AllocatedBytes.Arena hashPtr 32)
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) 
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source cacheAllocated=(none,post)) : RichOutput input frontier db post (.val (.word node)) ∧ StablePrefix source post frontier := by
   have physical:=output.1
@@ -54,13 +55,12 @@ theorem cache_allocated_normal_prefix (input : Guest.InputBlob) (source post : P
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,readyH,readyHash,CopyGeneral.values]
   obtain ⟨copied,copyRun,cacheRun⟩:=Input.sequence_none ready inner rootCopy rootCache continued
   obtain ⟨readyRegistry,readyValid⟩:=registry.of_fields source ready frontier heap db rfl rfl
-  obtain ⟨⟨copiedRegistry,copiedValid⟩,copyMemory⟩:=readyRegistry.copy32_after ready copied frontier heap db hashPtr heap _ (Nat.le_refl _) hashArena targetArena heapAligned
-    sourceDomain installed args copyRun
-  obtain ⟨copyFunded,copyPrice,copiedEq⟩:=CopyGeneral.call_normal ready copied _ hashPtr heap 32 args (CopyGeneral.original_code source.code installed)
-    (AllocatedBytes.copy_mapped ready hashPtr heap 32 sourceDomain hashArena targetArena) (by decide) copyRun
-  have copiedNode : copied.locals.lookup (ofString "nd")=some (.val (.word node)) := by rw [copiedEq]; exact readyNode
-  have copiedH : copied.locals.lookup (ofString "h")=some (.val (.word heap)) := by rw [copiedEq]; exact readyH
-  have copiedDomain : copied.memaddrs=source.memaddrs := by rw [copiedEq]; rfl
+  obtain ⟨⟨copiedRegistry,copiedValid⟩,copyMemory⟩:=readyRegistry.copy32_after ready copied frontier heap db hashPtr heap _ (Nat.le_refl _) targetArena heapAligned
+    installed args copyRun
+  obtain ⟨copiedFrame,copiedLocals⟩:=Input.Copy32Span.call_normal ready copied heap hashPtr _ args installed copyRun
+  have copiedNode : copied.locals.lookup (ofString "nd")=some (.val (.word node)):=by rw [copiedLocals]; exact readyNode
+  have copiedH : copied.locals.lookup (ofString "h")=some (.val (.word heap)):=by rw [copiedLocals]; exact readyH
+  have copiedDomain : copied.memaddrs=source.memaddrs:=copiedFrame.domain
   have mapped : copied.memaddrs (node+24#64) := AllocatedBytes.word_mapped copied node 32 24 (copiedDomain.trans sourceDomain) nodeOwned.arena (by decide) nodeOwned.aligned (by decide)
   have addressRead : eval copied (addConst (localVar "nd") 24#64)=some (.val (.word (node+24#64))) := by
     simp [eval,addConst,localVar,evalHOLExact,evalListHOLExact,toExact,copiedNode,valueIsWord,valueWord,wordOpHOL,wordOp]
@@ -81,7 +81,7 @@ theorem cache_allocated_normal_prefix (input : Guest.InputBlob) (source post : P
   have postGlobals : post.globals=ready.globals := by
     rw [postEq,innerEq,cacheEq]
     change copied.globals=ready.globals
-    rw [copiedEq]; rfl
+    exact copiedFrame.globals
   have targetHeap : post.globals.lookup (ofString "heap_ptr")=some (.val (.word next)) := by
     rw [postGlobals]
     simp [ready,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,next]
@@ -97,7 +97,7 @@ theorem cache_allocated_normal_prefix (input : Guest.InputBlob) (source post : P
   have endian : post.be=source.be := by
     rw [postEq,innerEq,cacheEq]
     change copied.be=source.be
-    rw [copiedEq]; rfl
+    exact copiedFrame.endian
   have cacheNumber : (node+24#64).toNat=node.toNat+24 := byteAddress_toNat node 24 (by have upper:=nodeOwned.arena.upper; omega)
   have memory : ∀ query : BitVec 64,2713717616≤query.toNat → query.toNat<frontier → post.memory query=source.memory query := by
     intro query lower upper
@@ -120,10 +120,10 @@ theorem cache_allocated_normal (input : Guest.InputBlob) (source post : PanSemSt
     (output : RichOutput input frontier db source (.val (.word node))) (frontierLower : 2713731432≤frontier)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (nonnull : node≠0#64)
     (hashCell : source.locals.lookup (ofString "root_hash")=some (.val (.word hashPtr)))
-    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) (hashArena : AllocatedBytes.Arena hashPtr 32)
+    (nodeCell : source.locals.lookup (ofString "nd")=some (.val (.word node))) 
     (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source cacheAllocated=(none,post)) : RichOutput input frontier db post (.val (.word node)) :=
-  (cache_allocated_normal_prefix input source post frontier db heap hashPtr node output frontierLower heapCell nonnull hashCell nodeCell hashArena installed normal).1
+  (cache_allocated_normal_prefix input source post frontier db heap hashPtr node output frontierLower heapCell nonnull hashCell nodeCell installed normal).1
 
 end InitECandidate.Solver.Mpt.WitnessDecodeRoot
 

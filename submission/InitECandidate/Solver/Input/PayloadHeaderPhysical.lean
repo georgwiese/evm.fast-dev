@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.PayloadHeaderFieldFacts
+import InitECandidate.Solver.Input.PayloadHeaderOutputLocals
 
 namespace InitECandidate.Solver.Input.PayloadHeader
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -11,6 +12,7 @@ structure PhysicalHeader (input : Guest.InputBlob) (origin source current : PanS
   little : current.be=false
   frame : HeaderFrame input source header current
   buffers : HeaderBuffers header
+  outputs : OutputBindings current header
   frontier : HeapFrontier current header (headerFrontier header)
   rootBefore : root.toNat≤header.toNat
   inputFrame : HashInput.Frame origin current inputPointer.toNat root.toNat
@@ -39,7 +41,8 @@ theorem physical_header (input : Guest.InputBlob) (origin initializer source cur
   have installed : OriginalCode.Installed current.code:=by rw [frame.code]; exact ready.state.1
   have domain:=frame.domain.trans ready.environment.domain
   have little:=frame.endian.trans (ready.little input origin initializer source root workspace nodes stateRoot codes)
-  exact ⟨header,⟨installed,domain,little,frame,buffers,frontier,rootBefore,
+  have outputs : OutputBindings current header:=by rw [same]; exact complete_output_bindings input source hashed header words
+  exact ⟨header,⟨installed,domain,little,frame,buffers,outputs,frontier,rootBefore,
     frame.input_frame input origin source current header root ready.inputFrame rootBefore,fields,optional⟩⟩
 
 end InitECandidate.Solver.Input.PayloadHeader

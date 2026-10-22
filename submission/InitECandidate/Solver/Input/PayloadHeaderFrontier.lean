@@ -13,6 +13,10 @@ structure HeapFrontier (current : PanSemStateFiniteExact 64 Guest.HostMemory) (h
 def allocatedField (current : PanSemStateFiniteExact 64 Guest.HostMemory) (name : MlS) (pointer amount : BitVec 64):=
   setVarHOLFinite name (.val (.word pointer)) (PersistentAlloc.post {current with clock:=current.clock-1} pointer amount)
 
+theorem HeapFrontier.of_globals (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (header pointer : BitVec 64)
+    (frontier : HeapFrontier source header pointer) (same : target.globals=source.globals) : HeapFrontier target header pointer :=
+  ⟨by rw [same]; exact frontier.cell,frontier.arena,frontier.aligned,frontier.afterHeader⟩
+
 /-- The true successful original allocation derives its complete fresh
 extent and next frontier. No future room or allocation success is assumed. -/
 theorem allocate_field (input : Guest.InputBlob) (source current target : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -44,3 +48,4 @@ theorem allocate_field (input : Guest.InputBlob) (source current target : PanSem
 end InitECandidate.Solver.Input.PayloadHeader
 
 #print axioms InitECandidate.Solver.Input.PayloadHeader.allocate_field
+#print axioms InitECandidate.Solver.Input.PayloadHeader.HeapFrontier.of_globals

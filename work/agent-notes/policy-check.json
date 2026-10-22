@@ -1903,6 +1903,9 @@
     "submission/InitECandidate/Solver/Input/CallArgumentsEqual.lean",
     "submission/InitECandidate/Solver/Input/CallNormal.lean",
     "submission/InitECandidate/Solver/Input/CallPrefix.lean",
+    "submission/InitECandidate/Solver/Input/CallPrefixAllocation.lean",
+    "submission/InitECandidate/Solver/Input/CallPrefixCommand.lean",
+    "submission/InitECandidate/Solver/Input/CallPrefixDeclaration.lean",
     "submission/InitECandidate/Solver/Input/CallPrefixExecution.lean",
     "submission/InitECandidate/Solver/Input/CallPrefixTrace.lean",
     "submission/InitECandidate/Solver/Input/CallResume.lean",
@@ -2531,8 +2534,12 @@
     "submission/InitECandidate/Solver/Input/PayloadHashWithdrawalStep.lean",
     "submission/InitECandidate/Solver/Input/PayloadHashWithdrawalSuffix.lean",
     "submission/InitECandidate/Solver/Input/PayloadHashWithdrawals.lean",
+    "submission/InitECandidate/Solver/Input/PayloadHeaderCleared.lean",
     "submission/InitECandidate/Solver/Input/PayloadHeaderEntryData.lean",
     "submission/InitECandidate/Solver/Input/PayloadHeaderEnvironment.lean",
+    "submission/InitECandidate/Solver/Input/PayloadHeaderFirstAllocation.lean",
+    "submission/InitECandidate/Solver/Input/PayloadHeaderFirstStores.lean",
+    "submission/InitECandidate/Solver/Input/PayloadHeaderInitialScopes.lean",
     "submission/InitECandidate/Solver/Input/PayloadHeaderPrefixControl.lean",
     "submission/InitECandidate/Solver/Input/PayloadHeaderPrefixCost.lean",
     "submission/InitECandidate/Solver/Input/PayloadHeaderPrefixGlobals.lean",
@@ -7290,8 +7297,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64159,
-  "package_bytes": 2266730648,
+  "package_entries": 64166,
+  "package_bytes": 2266755153,
   "claim": {
     "K": "infinity"
   },

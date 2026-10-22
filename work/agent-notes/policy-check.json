@@ -2324,6 +2324,7 @@
     "submission/InitECandidate/Solver/Input/MainSszWorkspace.lean",
     "submission/InitECandidate/Solver/Input/MainStartupTrace.lean",
     "submission/InitECandidate/Solver/Input/MainStateInitBoundary.lean",
+    "submission/InitECandidate/Solver/Input/MainStateInitCallerLocals.lean",
     "submission/InitECandidate/Solver/Input/MainStateInitEntryData.lean",
     "submission/InitECandidate/Solver/Input/MainStateInitRuntime.lean",
     "submission/InitECandidate/Solver/Input/MainU256Initialization.lean",
@@ -7255,8 +7256,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64124,
-  "package_bytes": 2266592286,
+  "package_entries": 64125,
+  "package_bytes": 2266596873,
   "claim": {
     "K": "infinity"
   },

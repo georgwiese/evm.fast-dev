@@ -4370,7 +4370,9 @@
     "submission/InitECandidate/Solver/Mpt/TransientSetZero.lean",
     "submission/InitECandidate/Solver/Mpt/TransientSetZeroPrefix.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphCacheFrame.lean",
+    "submission/InitECandidate/Solver/Mpt/TrieGraphCacheOffsets.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphExclusion.lean",
+    "submission/InitECandidate/Solver/Mpt/TrieGraphInvalidateFrame.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphRegions.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphRegister.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphRegisteredRegions.lean",
@@ -7388,8 +7390,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64257,
-  "package_bytes": 2267123387,
+  "package_entries": 64259,
+  "package_bytes": 2267131606,
   "claim": {
     "K": "infinity"
   },

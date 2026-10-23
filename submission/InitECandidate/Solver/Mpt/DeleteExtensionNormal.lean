@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.DeleteExtensionMergeNormal
+import InitECandidate.Solver.Mpt.TrieGraphPathFieldsFrame
 
 namespace InitECandidate.Solver.Mpt.DeleteExtension
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -24,18 +25,20 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
     target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.code=source.code ∧
       source.clock-target.clock≤length.toNat/8+(wordAt source.memory (child+40#64)).toNat/8+22 ∧
-      (∀ query : BitVec 64,query.toNat<nodeLower → target.memory query=source.memory query) ∧
+      (∀ query : BitVec 64,query.toNat<nodeLower → target.memory query=source.memory query) ∧ graph.PathFields target.memory ∧
       ∃ root finalHeap : BitVec 64,value=.val (.word root) ∧ target.globals.lookup (ofString "heap_ptr")=some (.val (.word finalHeap)) ∧
-        AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧
-        ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,graph.valid current → next.valid current) ∧ next.valid root ∧
+        AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ (graph.valid root ∨ heap.toNat≤root.toNat) ∧
+        ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,graph.valid current → next.valid current) ∧ (∀ current,next.valid current ↔ graph.valid current ∨ current=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
   by_cases null : child=0#64
   · subst child
     obtain ⟨answer,endpoint⟩:=null_normal source target childCell value normal
     rw [endpoint]
-    exact ⟨rfl,rfl,rfl,by change source.clock-source.clock≤_; omega,fun _ _=>rfl,0#64,heap,answer,heapCell,frontier,aligned,Nat.le_refl _,
-      graph,fun _ old=>old,graph.null,regions,disjoint,⟨values⟩,paths,pathRegions,separated⟩
+    exact ⟨rfl,rfl,rfl,by change source.clock-source.clock≤_; omega,fun _ _=>rfl,
+      TrieWalk.Graph.PathFields.of_agreement graph source.memory (fun _ _=>rfl),
+      0#64,heap,answer,heapCell,frontier,aligned,Nat.le_refl _,Or.inl graph.null,
+      graph,fun _ old=>old,(fun current=>⟨Or.inl,fun choice=>choice.elim id (fun same=>same.symm ▸ graph.null)⟩),graph.null,regions,disjoint,⟨values⟩,paths,pathRegions,separated⟩
   · obtain ⟨inner,continued,endpoint⟩:=tag_entry source target child graph childMember null childCell value normal
     let entered:=QueryBranch.bind source "ck" (wordAt source.memory child)
     have enteredNode : entered.locals.lookup (ofString "node")=some (.val (.word node)):=
@@ -70,16 +73,22 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
         rw [addressNumber] at number
         have floor:=(regions node member active).1
         omega
-      exact ⟨rfl,rfl,rfl,by change source.clock-source.clock≤_; omega,before,node,heap,answer,heapCell,frontier,aligned,Nat.le_refl _,next,
-        (fun current old=>by rw [same]; exact old),(by rw [same]; exact member),nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+      have fields : graph.PathFields (branchPost entered node child).memory:=
+        TrieWalk.Graph.PathFields.of_child_store graph nodeLower heap.toNat regions disjoint node child 48 (.extension tag) member active
+      have exactMembers (current : BitVec 64) : next.valid current ↔ graph.valid current ∨ current=node:=by
+        rw [same]
+        exact ⟨Or.inl,fun choice=>choice.elim id (fun same=>same.symm ▸ member)⟩
+      exact ⟨rfl,rfl,rfl,by change source.clock-source.clock≤_; omega,before,fields,node,heap,answer,heapCell,frontier,aligned,Nat.le_refl _,Or.inl member,next,
+        (fun current old=>by rw [same]; exact old),exactMembers,(by rw [same]; exact member),nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
     · obtain ⟨pathTag,mergeRun⟩:=merge_entry entered inner child graph childMember null enteredTag branch installed value continued
-      obtain ⟨domainEq,endianEq,codeEq,price,older,root,finalHeap,answer,finalCell,finalArena,finalAligned,grows,
-        next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+      obtain ⟨domainEq,endianEq,codeEq,price,older,root,finalHeap,answer,finalCell,finalArena,finalAligned,grows,fresh,
+        next,members,exactMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
         merge_paths entered inner heap child segment length graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated segmentBuffer floor nodeFloor positive
           childMember null pathTag enteredSegment enteredLength enteredChild enteredTag heapCell frontier aligned little domain installed value mergeRun
       rw [endpoint]
-      exact ⟨domainEq,endianEq,codeEq,price,fun query before=>older query (by omega),root,finalHeap,answer,finalCell,finalArena,finalAligned,grows,
-        next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+      have fields : graph.PathFields inner.memory:=TrieWalk.Graph.PathFields.of_prefix graph inner.memory nodeLower heap.toNat regions older
+      exact ⟨domainEq,endianEq,codeEq,price,(fun query before=>older query (by omega)),fields,root,finalHeap,answer,finalCell,finalArena,finalAligned,grows,Or.inr fresh,
+        next,members,exactMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
 
 end InitECandidate.Solver.Mpt.DeleteExtension
 

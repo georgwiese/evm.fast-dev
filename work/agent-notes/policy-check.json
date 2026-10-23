@@ -4386,6 +4386,7 @@
     "submission/InitECandidate/Solver/Mpt/IndexedProgram.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedSetup.lean",
     "submission/InitECandidate/Solver/Mpt/InsertAfterHashOutput.lean",
+    "submission/InitECandidate/Solver/Mpt/InsertAssignedPaths.lean",
     "submission/InitECandidate/Solver/Mpt/InsertBranchDescend.lean",
     "submission/InitECandidate/Solver/Mpt/InsertBranchOutput.lean",
     "submission/InitECandidate/Solver/Mpt/InsertBranchScopeNormal.lean",
@@ -4413,7 +4414,9 @@
     "submission/InitECandidate/Solver/Mpt/InsertExtensionSplitNormal.lean",
     "submission/InitECandidate/Solver/Mpt/InsertFooterNormal.lean",
     "submission/InitECandidate/Solver/Mpt/InsertGeneralCallCost.lean",
+    "submission/InitECandidate/Solver/Mpt/InsertGlobals.lean",
     "submission/InitECandidate/Solver/Mpt/InsertHashGuardNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/InsertHelperGlobals.lean",
     "submission/InitECandidate/Solver/Mpt/InsertIterationCost.lean",
     "submission/InitECandidate/Solver/Mpt/InsertIterationDispatch.lean",
     "submission/InitECandidate/Solver/Mpt/InsertIterationEntry.lean",
@@ -7794,8 +7797,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64663,
-  "package_bytes": 2269127446,
+  "package_entries": 64666,
+  "package_bytes": 2269153676,
   "claim": {
     "K": "infinity"
   },

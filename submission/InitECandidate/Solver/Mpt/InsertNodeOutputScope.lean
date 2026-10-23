@@ -41,6 +41,9 @@ theorem NodeOutput.restore_scope (source ready inner : PanSemStateFiniteExact 64
     rw [output.tags node (originalMember node live) active,memoryEq]
   have olderMemory (query : BitVec 64) (before : query.toNat<nodeLower) : inner.memory query=source.memory query:=
     (output.olderPrefix query before).trans (congrFun memoryEq query)
+  have fields : old.PathFields ready.memory:=by
+    rw [memoryEq]
+    exact ⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
   exact ⟨{ output with
     rootCell:=(restore_lookup_other source inner name "r" notRoot).trans output.rootCell
     nodeCell:=(restore_lookup_other source inner name "next_node" notNode).trans output.nodeCell
@@ -58,6 +61,12 @@ theorem NodeOutput.restore_scope (source ready inner : PanSemStateFiniteExact 64
     endian:=output.endian.trans endianEq
     code:=output.code.trans (Input.LocalEffects.code_of_erase source ready frame)
     olderPrefix:=olderMemory
+    oldPathFields:=fields.trans old base output.oldPathFields originalMember
+    protectedMemory:=by
+      intro address safe before
+      have currentSafe:=safe.of_fields old base address same fields
+      exact (output.protectedMemory address currentSafe before).trans (congrFun memoryEq address)
+    activeRegistry:=by intro active; exact (output.activeRegistry active).trans same
     tags:=tags
     oldMember:=fun node live=>output.oldMember node (originalMember node live) }⟩
 

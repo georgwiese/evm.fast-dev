@@ -17,7 +17,9 @@ theorem iteration_path_normal (source target : PanSemStateFiniteExact 64 Guest.H
       model.heap.toNat≤next.heap.toNat ∧ (∀ node,model.graph.valid node → next.graph.valid node) ∧
       (∀ query : BitVec 64,query.toNat<nodeLower → target.memory query=source.memory query) ∧
       (∀ node,model.graph.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node) ∧
-      (next.go=0#64 ∨ model.level.toNat<next.level.toNat) := by
+      (next.go=0#64 ∨ model.level.toNat<next.level.toNat) ∧ model.graph.PathFields target.memory ∧
+      (∀ address : BitVec 64,model.graph.ProtectedWord address → address.toNat<model.heap.toNat → target.memory address=source.memory address) ∧
+      (next.go≠0#64 → next.graph.valid=model.graph.valid) := by
   obtain ⟨chosen,finished,choiceRun,footerRun,endpoint⟩:=iteration_entry_normal source target normal
   obtain ⟨output⟩:=dispatch_output source chosen key length pointer size limit nodeLower pathLower property model active extra empty choiceRun
   have chosenSaved (name : String) (notRoot : ofString name≠ofString "r") (notNode : ofString name≠ofString "next_node")
@@ -29,7 +31,7 @@ theorem iteration_path_normal (source target : PanSemStateFiniteExact 64 Guest.H
   have chosenResult : chosen.locals.lookup (ofString "result")=some (.val (.word model.result)):=
     (chosenSaved _ (by decide) (by decide) (by decide) (by decide) (by decide)).trans model.resultCell
   have selected:=model.parentSlot.of_tags model.graph output.graph model.slot output.oldMember output.tags
-  obtain ⟨localsEq,globalsEq,domainEq,endianEq,codeEq,clockEq,memory,tags,graph,same,regions,disjoint,⟨values⟩,paths,pathRegions,separated,buffers⟩:=
+  obtain ⟨localsEq,globalsEq,domainEq,endianEq,codeEq,clockEq,memory,tags,graph,same,regions,disjoint,⟨values⟩,paths,pathRegions,separated,buffers,footerFields,footerWords⟩:=
     footer_normal chosen finished model.slot output.root output.nextNode output.nextSlot output.nextLevel output.graph
       limit nodeLower output.heap.toNat pathLower output.heap.toNat property output.values output.regions output.disjoint output.paths output.pathRegions output.separated
       selected output.rootMember chosenSlot output.rootCell output.nodeCell output.slotCell output.levelCell footerRun
@@ -118,8 +120,22 @@ theorem iteration_path_normal (source target : PanSemStateFiniteExact 64 Guest.H
   have finalTags (node : BitVec 64) (live : model.graph.valid node) (nonzero : node≠0#64) : wordAt finished.memory node=wordAt source.memory node:=
     (tags node (output.oldMember node live) nonzero).trans (output.tags node live nonzero)
   have progress : next.go=0#64 ∨ model.level.toNat<next.level.toNat:=output.step.elim Or.inl (fun step=>Or.inr step.2.1)
+  have fields : model.graph.PathFields finished.memory:=
+    output.oldPathFields.trans model.graph output.graph footerFields output.oldMember
+  have protectedWords (address : BitVec 64) (safe : model.graph.ProtectedWord address) (before : address.toNat<model.heap.toNat) :
+      finished.memory address=source.memory address:=by
+    have different : model.slot≠0#64 → address≠model.slot:=by
+      intro nonzero
+      rcases model.parentSlot with zero|⟨owner,offset,member,active,location,equal⟩
+      · exact (nonzero zero).elim
+      · rw [equal]
+        exact safe.nodes owner member active offset (location.bounds source.memory owner offset).2.2.1
+    exact (footerWords address different).trans (output.protectedMemory address safe before)
+  have activeRegistry : next.go≠0#64 → next.graph.valid=model.graph.valid:=by
+    intro active
+    exact same.trans (output.activeRegistry active)
   rw [endpoint]
-  exact ⟨next,output.heapGrows,inclusion,olderMemory,finalTags,progress⟩
+  exact ⟨next,output.heapGrows,inclusion,olderMemory,finalTags,progress,fields,protectedWords,activeRegistry⟩
 
 end InitECandidate.Solver.Mpt.Insert
 

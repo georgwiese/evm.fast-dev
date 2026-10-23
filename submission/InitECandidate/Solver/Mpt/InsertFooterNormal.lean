@@ -27,10 +27,11 @@ theorem footer_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
       (∀ node,graph.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node) ∧
       ∃ next : TrieWalk.Graph target.memory target.memaddrs,next.valid=graph.valid ∧ next.Regions nodeLower nodeUpper ∧ next.Disjoint ∧
         Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower pathUpper ∧ next.PathSeparated ∧
-        ∀ key length,graph.PathBuffer source.be pathLower pathUpper key length → next.PathBuffer target.be pathLower pathUpper key length := by
+        (∀ key length,graph.PathBuffer source.be pathLower pathUpper key length → next.PathBuffer target.be pathLower pathUpper key length) ∧
+        graph.PathFields target.memory ∧ (∀ address : BitVec 64,(slot≠0#64 → address≠slot) → target.memory address=source.memory address) := by
   rw [after_choice_shape] at normal
   obtain ⟨middle,chosen,continued⟩:=Input.sequence_none source target _ _ normal
-  obtain ⟨localsEq,globalsEq,domainEq,endianEq,codeEq,clockEq,memory,tags,next,same,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,buffers⟩:=
+  obtain ⟨localsEq,globalsEq,domainEq,endianEq,codeEq,clockEq,memory,tags,next,same,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,buffers,fields,protectedWords⟩:=
     choose_result_normal source middle slot root graph limit nodeLower nodeUpper pathLower pathUpper property values regions disjoint paths pathRegions separated selected member slotCell rootCell chosen
   have current (name : MlS) (other : name≠ofString "result") : middle.locals.lookup name=source.locals.lookup name:=by
     rw [localsEq]
@@ -61,7 +62,7 @@ theorem footer_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
       (ofString "node",.val (.word nextNode))).update (ofString "slot",.val (.word nextSlot))).update (ofString "level",.val (.word nextLevel)):=by
     change ((middle.locals.update (ofString "node",.val (.word nextNode))).update (ofString "slot",.val (.word nextSlot))).update (ofString "level",.val (.word nextLevel))=_
     rw [localsEq]
-  exact ⟨finalLocals,globalsEq,domainEq,endianEq,codeEq,clockEq,memory,tags,next,same,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,buffers⟩
+  exact ⟨finalLocals,globalsEq,domainEq,endianEq,codeEq,clockEq,memory,tags,next,same,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,buffers,fields,protectedWords⟩
 
 end InitECandidate.Solver.Mpt.Insert
 

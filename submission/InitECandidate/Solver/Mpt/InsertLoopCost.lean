@@ -73,7 +73,7 @@ theorem loop_cost_ranked (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       · exact (summary.2.2.2 continued).elim
     have run : evaluateHOLFiniteState (decClockHOLFinite current) loopBody=(none,output.2):=Prod.ext normal rfl
     let entered : LoopModel (decClockHOLFinite current) key length pointer size limit nodeLower pathLower property:={model with}
-    obtain ⟨next,_grows,_members,_memory,_tags,advance⟩:=iteration_path_normal (decClockHOLFinite current) output.2 key length pointer size limit nodeLower pathLower property entered active extra empty run
+    obtain ⟨next,_grows,_members,_memory,_tags,advance,_fields,_protectedWords,_activeRegistry⟩:=iteration_path_normal (decClockHOLFinite current) output.2 key length pointer size limit nodeLower pathLower property entered active extra empty run
     have nextRank:=loop_rank_model output.2 key length pointer size limit nodeLower pathLower property next
     refine ⟨⟨next⟩,?_⟩
     change loopRank output.2 length<loopRank current length

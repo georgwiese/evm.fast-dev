@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.TrieParentSlot
 import InitECandidate.Solver.Mpt.TriePathBuffer
+import InitECandidate.Solver.Mpt.TrieProtectedWord
 
 namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -32,9 +33,12 @@ structure NodeOutput (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   heapAligned : heap.toNat%8=0
   heapGrows : incoming.toNat≤heap.toNat
   olderPrefix : ∀ query : BitVec 64,query.toNat<nodeLower → target.memory query=source.memory query
+  oldPathFields : old.PathFields target.memory
+  protectedMemory : ∀ address : BitVec 64,old.ProtectedWord address → address.toNat<incoming.toNat → target.memory address=source.memory address
   tags : ∀ node,old.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node
   graph : TrieWalk.Graph target.memory target.memaddrs
   oldMember : ∀ node,old.valid node → graph.valid node
+  activeRegistry : go≠0#64 → graph.valid=old.valid
   rootMember : graph.valid root
   nodeMember : graph.valid nextNode
   nextParent : graph.ParentSlot nextSlot

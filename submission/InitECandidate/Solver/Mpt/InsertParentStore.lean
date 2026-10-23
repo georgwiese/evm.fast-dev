@@ -3,6 +3,7 @@ import InitECandidate.Solver.Mpt.TrieParentSlot
 import InitECandidate.Solver.Mpt.TrieGraphChildStore
 import InitECandidate.Solver.Input.WordStoreNormal
 import InitECandidate.Solver.Input.AssignNormal
+import InitECandidate.Solver.Mpt.TrieProtectedMutation
 
 namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -26,7 +27,8 @@ theorem choose_result_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
       (∀ node,graph.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node) ∧
       ∃ next : TrieWalk.Graph target.memory target.memaddrs,next.valid=graph.valid ∧ next.Regions nodeLower nodeUpper ∧ next.Disjoint ∧
         Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower pathUpper ∧ next.PathSeparated ∧
-        ∀ key length,graph.PathBuffer source.be pathLower pathUpper key length → next.PathBuffer target.be pathLower pathUpper key length := by
+        (∀ key length,graph.PathBuffer source.be pathLower pathUpper key length → next.PathBuffer target.be pathLower pathUpper key length) ∧
+        graph.PathFields target.memory ∧ (∀ address : BitVec 64,(slot≠0#64 → address≠slot) → target.memory address=source.memory address) := by
   have read : eval source (localVar "r")=some (.val (.word root)):=by simp [eval,evalHOLExact,toExact,localVar,rootCell]
   by_cases zero : slot=0#64
   · have chosen : evaluateHOLFiniteState source chooseResult=evaluateHOLFiniteState source (.assign .local (ofString "result") (localVar "r")):=by
@@ -35,7 +37,8 @@ theorem choose_result_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     have endpoint:=Input.assign_none source target "result" (localVar "r") root read (chosen.symm.trans normal)
     rw [endpoint,if_pos zero]
     exact ⟨rfl,rfl,rfl,rfl,rfl,rfl,(by intro query before; rfl),(by intro node live active; rfl),
-      graph,rfl,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro key length buffer; exact buffer)⟩
+      graph,rfl,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro key length buffer; exact buffer),
+      ⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩,(by intro address _different; rfl)⟩
   · rcases selected with empty|⟨owner,offset,ownerMember,ownerActive,location,address⟩
     · exact (zero empty).elim
     have chosen : evaluateHOLFiniteState source chooseResult=evaluateHOLFiniteState source (.store (localVar "slot") (localVar "r")):=by
@@ -64,7 +67,9 @@ theorem choose_result_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
       exact if_neg away
     rw [if_neg zero]
     exact ⟨rfl,rfl,rfl,rfl,rfl,rfl,olderMemory,tags,next,same,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
-      by intro key length buffer; exact buffer.after_child_store source graph pathLower pathUpper key length owner root offset location ownerMember ownerActive next same tags⟩
+      (by intro key length buffer; exact buffer.after_child_store source graph pathLower pathUpper key length owner root offset location ownerMember ownerActive next same tags),
+      TrieWalk.Graph.PathFields.of_child_store graph nodeLower nodeUpper regions disjoint owner root offset location ownerMember ownerActive,
+      (by intro query different; exact if_neg (fun equal=>different zero (equal.trans address.symm)))⟩
 
 end InitECandidate.Solver.Mpt.Insert
 

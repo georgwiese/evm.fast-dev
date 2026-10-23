@@ -1,6 +1,8 @@
 import InitECandidate.Solver.Mpt.InsertKindOutput
 import InitECandidate.Solver.Mpt.InsertNodeOutputPrefix
 import InitECandidate.Solver.Mpt.TrieInvalidateMemoryFrame
+import InitECandidate.Solver.Mpt.TriePathFieldsMutation
+import InitECandidate.Solver.Mpt.TrieProtectedMutation
 import InitECandidate.Solver.Input.LoopNormal
 
 namespace InitECandidate.Solver.Mpt.Insert
@@ -60,7 +62,9 @@ theorem after_hash_output (source target : PanSemStateFiniteExact 64 Guest.HostM
     (by rw [localsEq]; exact pointerCell) (by rw [localsEq]; exact sizeCell) before bounded (by rw [domainEq]; exact payload) extra floor empty (domainEq.trans domain)
     (by rw [codeEq]; exact installed) (by rw [globalsEq]; exact heapCell) frontier aligned continued
   exact output.prepend source middle target graph base heap heap key length level limit nodeLower pathLower property localsEq domainEq endianEq codeEq (Nat.le_refl _)
-    memory tags (by intro current live; rw [same]; exact live)
+    memory tags (by intro current live; rw [same]; exact live) same
+    (by rw [middleEq]; exact TrieWalk.Graph.PathFields.of_invalidate source node graph nodeLower heap.toNat regions disjoint member active)
+    (by intro address safe _before; rw [middleEq]; exact safe.invalidate_memory source graph address node member active)
 
 end InitECandidate.Solver.Mpt.Insert
 

@@ -18,6 +18,8 @@ theorem terminal_output (source target : PanSemStateFiniteExact 64 Guest.HostMem
     (heapCell : target.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (arena : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0) (grows : incoming.toNat≤heap.toNat)
     (olderMemory : ∀ query : BitVec 64,query.toNat<nodeLower → target.memory query=source.memory query)
+    (oldPathFields : old.PathFields target.memory)
+    (protectedMemory : ∀ address : BitVec 64,old.ProtectedWord address → address.toNat<incoming.toNat → target.memory address=source.memory address)
     (tags : ∀ node,old.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node)
     (graph : TrieWalk.Graph target.memory target.memaddrs) (members : ∀ node,old.valid node → graph.valid node) (member : graph.valid root)
     (values : TrieWalk.Values graph limit property) (regions : graph.Regions nodeLower heap.toNat) (disjoint : graph.Disjoint)
@@ -47,9 +49,12 @@ theorem terminal_output (source target : PanSemStateFiniteExact 64 Guest.HostMem
     heapAligned:=aligned
     heapGrows:=grows
     olderPrefix:=olderMemory
+    oldPathFields:=oldPathFields
+    protectedMemory:=protectedMemory
     tags:=tags
     graph:=graph
     oldMember:=members
+    activeRegistry:=by intro impossible; exact (impossible rfl).elim
     rootMember:=member
     nodeMember:=graph.null
     nextParent:=Or.inl rfl

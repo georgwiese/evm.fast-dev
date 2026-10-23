@@ -3,6 +3,7 @@ import InitECandidate.Solver.Mpt.LeafAssignedPathGraph
 import InitECandidate.Solver.Mpt.InsertNodeOutputTerminal
 import InitECandidate.Solver.Mpt.InsertPending
 import InitECandidate.Solver.Mpt.TriePathBufferOldPrefix
+import InitECandidate.Solver.Mpt.NodeConstructorProtected
 
 namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -50,6 +51,16 @@ theorem empty_node_output (source target : PanSemStateFiniteExact 64 Guest.HostM
       (fun address before=>physical.memory address (Or.inl before)))
     (by intro address _safe before; exact physical.memory address (Or.inl before)) tags
     next (fun current live=>(members current).mpr (Or.inl live)) rootMember nextValues nextRegions nextDisjoint nextPaths nextPathRegions nextSeparated
+    (by
+      intro node live
+      rcases (members node).mp live with old|new
+      · exact Or.inl old
+      · exact Or.inr (by rw [new]))
+    (by
+      intro address safe beforeHeap away
+      have suffixAway:=away.window key level address length.toNat (length-level).toNat before (by rw [subtraction])
+      exact (physical.path_protected .leaf (Or.inl rfl) source target heap _ graph next nodeLower regions members address safe beforeHeap
+        (by simpa [NodeConstructor.leafWords] using suffixAway)).2)
 
 end InitECandidate.Solver.Mpt.Insert
 

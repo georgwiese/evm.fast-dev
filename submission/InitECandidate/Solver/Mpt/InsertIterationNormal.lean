@@ -19,7 +19,10 @@ theorem iteration_path_normal (source target : PanSemStateFiniteExact 64 Guest.H
       (∀ node,model.graph.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node) ∧
       (next.go=0#64 ∨ model.level.toNat<next.level.toNat) ∧ model.graph.PathFields target.memory ∧
       (∀ address : BitVec 64,model.graph.ProtectedWord address → address.toNat<model.heap.toNat → target.memory address=source.memory address) ∧
-      (next.go≠0#64 → next.graph.valid=model.graph.valid) := by
+      (next.go≠0#64 → next.graph.valid=model.graph.valid) ∧
+      (∀ node,next.graph.valid node → model.graph.valid node ∨ model.heap.toNat≤node.toNat) ∧
+      (∀ address : BitVec 64,model.graph.ProtectedWord address → address.toNat<model.heap.toNat →
+        TrieWalk.PathWordAway key length.toNat address → next.graph.ProtectedWord address) := by
   obtain ⟨chosen,finished,choiceRun,footerRun,endpoint⟩:=iteration_entry_normal source target normal
   obtain ⟨output⟩:=dispatch_output source chosen key length pointer size limit nodeLower pathLower property model active extra empty choiceRun
   have chosenSaved (name : String) (notRoot : ofString name≠ofString "r") (notNode : ofString name≠ofString "next_node")
@@ -134,8 +137,13 @@ theorem iteration_path_normal (source target : PanSemStateFiniteExact 64 Guest.H
   have activeRegistry : next.go≠0#64 → next.graph.valid=model.graph.valid:=by
     intro active
     exact same.trans (output.activeRegistry active)
+  have provenance (node : BitVec 64) (live : next.graph.valid node) : model.graph.valid node ∨ model.heap.toNat≤node.toNat:=by
+    exact output.freshMembers node (by rwa [same] at live)
+  have protection (address : BitVec 64) (safe : model.graph.ProtectedWord address) (before : address.toNat<model.heap.toNat)
+      (away : TrieWalk.PathWordAway key length.toNat address) : next.graph.ProtectedWord address:=by
+    exact (output.protectedGraph address safe before away).of_fields output.graph graph address same footerFields
   rw [endpoint]
-  exact ⟨next,output.heapGrows,inclusion,olderMemory,finalTags,progress,fields,protectedWords,activeRegistry⟩
+  exact ⟨next,output.heapGrows,inclusion,olderMemory,finalTags,progress,fields,protectedWords,activeRegistry,provenance,protection⟩
 
 end InitECandidate.Solver.Mpt.Insert
 

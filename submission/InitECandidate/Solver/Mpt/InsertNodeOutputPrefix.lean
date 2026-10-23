@@ -31,6 +31,14 @@ theorem NodeOutput.prepend (source ready target : PanSemStateFiniteExact 64 Gues
       intro address safe before
       have currentSafe:=safe.of_fields old base address same fields
       exact (output.protectedMemory address currentSafe (before.trans_le grows)).trans (protectedWords address safe before)
+    freshMembers:=by
+      intro node live
+      rcases output.freshMembers node live with old|fresh
+      · exact Or.inl (by rwa [same] at old)
+      · exact Or.inr (grows.trans fresh)
+    protectedGraph:=by
+      intro address safe before away
+      exact output.protectedGraph address (safe.of_fields old base address same fields) (before.trans_le grows) away
     activeRegistry:=by intro active; exact (output.activeRegistry active).trans same
     tags:=fun node live active=>(output.tags node (members node live) active).trans (tags node live active)
     oldMember:=fun node live=>output.oldMember node (members node live) }⟩

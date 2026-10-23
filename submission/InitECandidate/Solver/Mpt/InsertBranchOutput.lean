@@ -4,6 +4,7 @@ import InitECandidate.Solver.Mpt.InsertNodeOutputTerminal
 import InitECandidate.Solver.Mpt.InsertNodeOutputDescend
 import InitECandidate.Solver.Mpt.InsertPending
 import InitECandidate.Solver.Mpt.TrieProtectedMutation
+import InitECandidate.Solver.Mpt.TriePathFieldsMutation
 
 namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -53,6 +54,12 @@ theorem branch_output_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
           (safe.nodes node member active 160 (by simp [TrieWalk.nodeBytes,notHash,notLeaf,notExtension]))
           (safe.nodes node member active 168 (by simp [TrieWalk.nodeBytes,notHash,notLeaf,notExtension])))
       tags next (by intro current live; rw [same]; exact live) (by rw [same]; exact member) nextValues nextRegions nextDisjoint nextPaths nextPathRegions nextSeparated
+      (by intro current live; exact Or.inl (by rwa [same] at live))
+      (by
+        intro address safe _before _away
+        apply safe.of_fields graph next address same
+        rw [endpoint]
+        exact TrieWalk.Graph.PathFields.of_branch_value source node pointer size graph nodeLower heap.toNat regions disjoint member active notHash notLeaf notExtension)
   · have strict : level.toNat<length.toNat:=by
       have different : level.toNat≠length.toNat:=by intro same; exact equal (BitVec.toNat_inj.mp same)
       omega

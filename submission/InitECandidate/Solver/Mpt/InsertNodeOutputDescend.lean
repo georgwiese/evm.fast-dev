@@ -50,6 +50,8 @@ theorem descend_output (source target : PanSemStateFiniteExact 64 Guest.HostMemo
     tags:=by intro node live active; rfl
     graph:=graph
     oldMember:=fun node live=>live
+    freshMembers:=by intro node live; exact Or.inl live
+    protectedGraph:=by intro address safe _before _away; exact safe
     activeRegistry:=by intro nonzero; rfl
     rootMember:=rootMember
     nodeMember:=childMember

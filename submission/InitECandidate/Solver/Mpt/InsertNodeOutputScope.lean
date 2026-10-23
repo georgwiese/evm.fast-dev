@@ -66,6 +66,14 @@ theorem NodeOutput.restore_scope (source ready inner : PanSemStateFiniteExact 64
       intro address safe before
       have currentSafe:=safe.of_fields old base address same fields
       exact (output.protectedMemory address currentSafe before).trans (congrFun memoryEq address)
+    freshMembers:=by
+      intro node live
+      rcases output.freshMembers node live with old|fresh
+      · exact Or.inl (by rwa [same] at old)
+      · exact Or.inr fresh
+    protectedGraph:=by
+      intro address safe before away
+      exact output.protectedGraph address (safe.of_fields old base address same fields) before away
     activeRegistry:=by intro active; exact (output.activeRegistry active).trans same
     tags:=tags
     oldMember:=fun node live=>output.oldMember node (originalMember node live) }⟩

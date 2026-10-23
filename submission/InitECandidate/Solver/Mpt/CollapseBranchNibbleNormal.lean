@@ -27,7 +27,8 @@ theorem nibble_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤root.toNat ∧ root.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ node,next.valid node ↔ graph.valid node ∨ node=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → next.ProtectedWord address) := by
   obtain ⟨ready,inner,localsEq,readyDomain,readyEndian,readyCode,entryPrice,nextHeapCell,nextArena,nextAligned,grows,continued,endpoint,older,
     current,same,currentRegions,currentDisjoint,⟨currentValues⟩,currentPaths,currentPathRegions,currentSeparated,buffer⟩:=
     nibble_entry_paths source target heap index graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated lower bounded indexCell heapCell frontier aligned little domain installed value normal
@@ -57,7 +58,7 @@ theorem nibble_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   have currentNotHash : wordAt ready.memory child≠0#64:=by rwa [currentTag]
   have currentInstalled : Input.OriginalCode.Installed ready.code:=by rw [readyCode]; exact installed
   obtain ⟨domainEq,endianEq,codeEq,price,innerMemory,root,finalHeap,answer,finalCell,finalArena,finalAligned,fresh,heapGrows,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,tailProtection⟩:=
     after_store_paths ready inner nextHeap heap child current limit nodeLower pathLower property currentValues currentRegions currentDisjoint currentPaths currentPathRegions currentSeparated buffer floor
       (by omega) currentMember active currentNotHash currentNibble currentChild currentKind nextHeapCell nextArena nextAligned (readyEndian.trans little) (readyDomain.trans domain) currentInstalled value continued
   have samePrice : afterStorePrice ready.memory child=afterStorePrice source.memory child:=by simp only [afterStorePrice,currentTag,currentLength]
@@ -66,9 +67,14 @@ theorem nibble_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   have memory (query : BitVec 64) (before : query.toNat<heap.toNat) : inner.memory query=source.memory query:=
     (innerMemory query (by omega)).trans (older query before)
   have exactMembers (node : BitVec 64) : next.valid node ↔ graph.valid node ∨ node=root:=by rw [members node,same]
+  have protection (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat) : next.ProtectedWord address:=by
+    have oldFields:=TrieWalk.Graph.PathFields.of_prefix graph ready.memory nodeLower heap.toNat regions older
+    have currentSafe:=safe.of_fields graph current address same oldFields
+    have away:=TrieWalk.PathWordAway.above_frontier heap address 1 heap.toNat buffer.span.fits aligned before (Nat.le_refl _)
+    exact tailProtection address currentSafe (by omega) away
   rw [endpoint]
   exact ⟨domainEq.trans readyDomain,endianEq.trans readyEndian,codeEq.trans readyCode,finalPrice,memory,root,finalHeap,answer,finalCell,finalArena,finalAligned,
-    by omega,heapGrows,next,exactMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    by omega,heapGrows,next,exactMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩
 
 end InitECandidate.Solver.Mpt.CollapseBranch
 

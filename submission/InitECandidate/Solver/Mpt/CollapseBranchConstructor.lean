@@ -3,6 +3,7 @@ import InitECandidate.Solver.Mpt.LeafConstructorTail
 import InitECandidate.Solver.Mpt.ExtensionConstructorTail
 import InitECandidate.Solver.Mpt.LeafConstructorPathGraph
 import InitECandidate.Solver.Mpt.ExtensionConstructorPathGraph
+import InitECandidate.Solver.Mpt.NodeConstructorProtected
 
 namespace InitECandidate.Solver.Mpt.CollapseBranch
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -30,7 +31,8 @@ theorem constructor_paths (source target : PanSemStateFiniteExact 64 Guest.HostM
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ node,next.valid node ↔ graph.valid node ∨ node=heap) ∧ next.valid heap ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → TrieWalk.PathWordAway key (1+(wordAt source.memory (child+40#64)).toNat) address → next.ProtectedWord address) := by
   let childLength:=wordAt source.memory (child+40#64)
   let total:=1#64+childLength
   have amount : total.toNat=1+childLength.toNat:=BitVec.toNat_add_of_lt (by
@@ -53,7 +55,12 @@ theorem constructor_paths (source target : PanSemStateFiniteExact 64 Guest.HostM
       change heap.toNat+64≤(PersistentAlloc.rounded heap 64#64).toNat at before
       omega
     exact ⟨answer,physical.domain,physical.endian,code,price,fun query before=>physical.memory query (Or.inl before),
-      PersistentAlloc.rounded heap 64#64,physical.heapCell,physical.nextArena,physical.nextAligned,grows,next,same,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+      PersistentAlloc.rounded heap 64#64,physical.heapCell,physical.nextArena,physical.nextAligned,grows,next,same,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
+      (by
+        intro address safe before away
+        have typedAway : TrieWalk.PathWordAway key total.toNat address:=by rw [amount]; exact away
+        exact (physical.path_protected .leaf (Or.inl rfl) source target heap _ graph next nodeLower regions same address safe before
+          (by simpa [NodeConstructor.leafWords] using typedAway)).2)⟩
   · have extension:=tag.resolve_left leaf
     rw [constructor_dispatch source _ tagCell,if_neg leaf,merge_shapes.2.2.2.2.2] at normal
     obtain ⟨grandchild,args⟩:=extension_arguments source child key graph member active extension keyCell childCell
@@ -67,7 +74,12 @@ theorem constructor_paths (source target : PanSemStateFiniteExact 64 Guest.HostM
       change heap.toNat+56≤(PersistentAlloc.rounded heap 56#64).toNat at before
       omega
     exact ⟨answer,physical.domain,physical.endian,code,price,fun query before=>physical.memory query (Or.inl before),
-      PersistentAlloc.rounded heap 56#64,physical.heapCell,physical.nextArena,physical.nextAligned,grows,next,same,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+      PersistentAlloc.rounded heap 56#64,physical.heapCell,physical.nextArena,physical.nextAligned,grows,next,same,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
+      (by
+        intro address safe before away
+        have typedAway : TrieWalk.PathWordAway key total.toNat address:=by rw [amount]; exact away
+        exact (physical.path_protected .extension (Or.inr rfl) source target heap _ graph next nodeLower regions same address safe before
+          (by simpa [NodeConstructor.extensionWords] using typedAway)).2)⟩
 
 end InitECandidate.Solver.Mpt.CollapseBranch
 

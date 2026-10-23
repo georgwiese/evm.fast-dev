@@ -31,7 +31,8 @@ theorem after_store_paths (source target : PanSemStateFiniteExact 64 Guest.HostM
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤root.toNat ∧ root.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ node,next.valid node ↔ graph.valid node ∨ node=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → TrieWalk.PathWordAway nibble 1 address → next.ProtectedWord address) := by
   by_cases branch : wordAt source.memory child=3#64
   · have currentTag : source.locals.lookup (ofString "ck")=some (.val (.word 3#64)):=by simpa only [branch] using tagCell
     obtain ⟨answer,price,code,physical,next,members,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
@@ -43,15 +44,20 @@ theorem after_store_paths (source target : PanSemStateFiniteExact 64 Guest.HostM
       omega
     exact ⟨physical.domain,physical.endian,code,(by simpa only [afterStorePrice,if_pos branch] using price),fun query before=>physical.memory query (Or.inl before),
       heap,PersistentAlloc.rounded heap 56#64,answer,physical.heapCell,physical.nextArena,physical.nextAligned,Nat.le_refl _,grows,
-      next,members,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+      next,members,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
+      (by
+        intro address safe before away
+        exact (physical.path_protected .extension (Or.inr rfl) source target heap _ graph next nodeLower regions members address safe before
+          (by simpa [NodeConstructor.extensionWords] using away)).2)⟩
   · have pathTag:=graph.path_kind child member active notHash branch
     rw [branch_dispatch source _ tagCell,if_neg branch] at normal
     obtain ⟨domainEq,endianEq,codeEq,price,older,root,finalHeap,answer,finalCell,finalArena,finalAligned,fresh,grows,
-      next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+      next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩:=
       merge_paths source target heap nibble child graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated buffer floor nodeFloor member active pathTag
         nibbleCell childCell tagCell heapCell frontier aligned little domain installed value normal
     exact ⟨domainEq,endianEq,codeEq,(by simpa only [afterStorePrice,if_neg branch] using price),older,root,finalHeap,answer,finalCell,finalArena,finalAligned,fresh,grows,
-      next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+      next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
+      (by intro address safe before _away; exact protection address safe before)⟩
 
 end InitECandidate.Solver.Mpt.CollapseBranch
 

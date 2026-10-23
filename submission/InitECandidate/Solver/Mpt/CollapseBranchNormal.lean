@@ -28,7 +28,8 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ (graph.valid root ∨ heap.toNat≤root.toNat) ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,next.valid current ↔ graph.valid current ∨ current=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → next.ProtectedWord address) := by
   have children (index : Nat) (inside : index<16) : ∃ child : BitVec 64,source.memaddrs (node+32#64+BitVec.ofNat 64 index*8#64) ∧
       source.memory (node+32#64+BitVec.ofNat 64 index*8#64)=.word child:=by
     let view:=graph.branch node member active (by rw [tag]; decide) (by rw [tag]; decide) (by rw [tag]; decide) index inside
@@ -55,7 +56,7 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
   let valueModel:=finished.with_value scanned node (wordAt scanned.memory (node+168#64))
   have valueCell : valueState.locals.lookup (ofString "vl")=some (.val (.word (wordAt valueState.memory (node+168#64)))):=bind_lookup_same _ _ _
   obtain ⟨_domainEq,_endianEq,_codeEq,older,root,finalHeap,answer,finalCell,finalArena,finalAligned,grows,fresh,
-    result,members,rootMember,resultRegions,resultDisjoint,⟨resultValues⟩,resultPaths,resultPathRegions,resultSeparated⟩:=
+    result,members,rootMember,resultRegions,resultDisjoint,⟨resultValues⟩,resultPaths,resultPathRegions,resultSeparated,protection⟩:=
     choices_paths valueState valueInner heap node valueModel current limit nodeLower pathLower property currentValues currentRegions currentDisjoint currentPaths currentPathRegions currentSeparated
       floor pathFloor nodeFloor currentMember active currentTag valueCell currentHeapCell frontier aligned (scannerEndian.trans little) (scannerDomain.trans domain) currentInstalled value valueRun
   rw [innerEq] at frame
@@ -71,8 +72,19 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
   have olderMemory (query : BitVec 64) (before : query.toNat<heap.toNat) : target.memory query=source.memory query:=
     (congrFun finalMemory query).trans ((older query before).trans (congrFun scannerMemory query))
   have fields:=Input.evaluation_fields source target body (some (.returned value)) normal
+  have finalProtection (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat) : next.ProtectedWord address:=by
+    have oldFields : graph.PathFields valueState.memory:=by
+      change graph.PathFields scanned.memory
+      rw [scannerMemory]
+      exact ⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
+    have currentSafe:=safe.of_fields graph current address same oldFields
+    have resultSafe:=protection address currentSafe before
+    have lastFields : result.PathFields target.memory:=by
+      rw [finalMemory]
+      exact ⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
+    exact resultSafe.of_fields result next address finalSame lastFields
   exact ⟨fields.1,fields.2.1,fields.2.2.2,olderMemory,root,finalHeap,answer,finalHeapCell,finalArena,finalAligned,grows,finalFresh,next,exactMembers,
-    (by rw [finalSame]; exact rootMember),nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    (by rw [finalSame]; exact rootMember),nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalProtection⟩
 
 end InitECandidate.Solver.Mpt.CollapseBranch
 

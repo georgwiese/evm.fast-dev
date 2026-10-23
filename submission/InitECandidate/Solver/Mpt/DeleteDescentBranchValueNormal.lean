@@ -28,7 +28,7 @@ theorem branch_clear_output (source target : PanSemStateFiniteExact 64 Guest.Hos
   have currentTag : wordAt post.memory model.node=3#64:=(storeFields.tags model.node model.nodeMember active).trans tag
   have floor : 2701131776≤pathLower:=(by decide : 2701131776≤DeleteFrame.ceiling).trans model.pending.floor
   obtain ⟨root,localsEq,domainEq,endianEq,codeEq,_price,globalsEq,helperMemory,helperFields,finalHeap,finalCell,finalArena,finalAligned,grows,fresh,
-    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated⟩:=
+    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,_protection⟩:=
     CollapseBranch.assigned_path_normal post target model.pending.heap model.node current limit nodeLower pathLower property currentValues currentRegions currentDisjoint currentPaths currentPathRegions currentSeparated
       floor model.pending.pathFloor model.pending.nodeFloor currentMember active currentTag model.pending.heapCell model.pending.heapArena model.pending.heapAligned model.pending.little model.pending.scratch.domain model.pending.installed
       (ofString "res") branchValueArguments args normal

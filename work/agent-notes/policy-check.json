@@ -4510,9 +4510,13 @@
     "submission/InitECandidate/Solver/Mpt/TwoLeavesBranchEntry.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesChildStore.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesCost.lean",
+    "submission/InitECandidate/Solver/Mpt/TwoLeavesInputs.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesLeafEntry.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesLeafSide.lean",
+    "submission/InitECandidate/Solver/Mpt/TwoLeavesNormal.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesProgram.lean",
+    "submission/InitECandidate/Solver/Mpt/TwoLeavesSideNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/TwoLeavesSideOutput.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesZero.lean",
     "submission/InitECandidate/Solver/Mpt/Value32Allocation.lean",
     "submission/InitECandidate/Solver/Mpt/Value32Memory.lean",
@@ -7533,8 +7537,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64402,
-  "package_bytes": 2267891845,
+  "package_entries": 64406,
+  "package_bytes": 2267912925,
   "claim": {
     "K": "infinity"
   },

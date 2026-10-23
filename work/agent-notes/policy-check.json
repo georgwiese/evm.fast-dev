@@ -4195,6 +4195,7 @@
     "submission/InitECandidate/Solver/Mpt/CommonPrefixNormal.lean",
     "submission/InitECandidate/Solver/Mpt/CommonPrefixProgram.lean",
     "submission/InitECandidate/Solver/Mpt/CommonPrefixReturned.lean",
+    "submission/InitECandidate/Solver/Mpt/CompactPathBytes.lean",
     "submission/InitECandidate/Solver/Mpt/CompactToNibblesAfterNibbles.lean",
     "submission/InitECandidate/Solver/Mpt/CompactToNibblesAfterNormal.lean",
     "submission/InitECandidate/Solver/Mpt/CompactToNibblesByteTrace.lean",
@@ -4408,6 +4409,7 @@
     "submission/InitECandidate/Solver/Mpt/TrieGraphExclusion.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphInvalidateFrame.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphLeafFields.lean",
+    "submission/InitECandidate/Solver/Mpt/TrieGraphPathBytes.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphRegions.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphRegister.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphRegisteredRegions.lean",
@@ -4419,6 +4421,10 @@
     "submission/InitECandidate/Solver/Mpt/TrieLookupMemory.lean",
     "submission/InitECandidate/Solver/Mpt/TrieLookupNormal.lean",
     "submission/InitECandidate/Solver/Mpt/TrieLookupProgram.lean",
+    "submission/InitECandidate/Solver/Mpt/TriePathBytes.lean",
+    "submission/InitECandidate/Solver/Mpt/TriePathBytesInvalidate.lean",
+    "submission/InitECandidate/Solver/Mpt/TriePathBytesLeafUpdate.lean",
+    "submission/InitECandidate/Solver/Mpt/TriePathBytesRegister.lean",
     "submission/InitECandidate/Solver/Mpt/TrieWalkBodyCost.lean",
     "submission/InitECandidate/Solver/Mpt/TrieWalkBodyNormal.lean",
     "submission/InitECandidate/Solver/Mpt/TrieWalkBodyValues.lean",
@@ -7427,8 +7433,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64296,
-  "package_bytes": 2267307238,
+  "package_entries": 64302,
+  "package_bytes": 2267332367,
   "claim": {
     "K": "infinity"
   },

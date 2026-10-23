@@ -111,6 +111,9 @@ theorem descent_push_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
     fields:=fields
     memoryLow:=low
     memoryBand:=fun query above _=>high query above
+    protectedWords:=by
+      intro address safe above _before
+      exact ⟨high address (model.pending.scratchBefore.trans above),safe.of_fields model.pending.graph graph address same fields⟩
     globals:=fun name _ notScratch=>globals name notScratch
     progress:=Or.inr increases }⟩
 

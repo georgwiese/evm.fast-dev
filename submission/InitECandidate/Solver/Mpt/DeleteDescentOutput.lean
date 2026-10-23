@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.DeleteDescentModel
+import InitECandidate.Solver.Mpt.TrieProtectedWord
 
 namespace InitECandidate.Solver.Mpt.DeleteBody
 open Flapjack PanSemStateFiniteExact WitnessRadix GasBudget
@@ -20,6 +21,9 @@ structure DescentOutput (source target : PanSemStateFiniteExact 64 Guest.HostMem
   fields : model.pending.graph.PathFields target.memory
   memoryLow : ∀ query : BitVec 64,query.toNat<model.pending.frame.toNat→target.memory query=source.memory query
   memoryBand : ∀ query : BitVec 64,model.pending.cursor.toNat≤query.toNat→query.toNat<nodeLower→target.memory query=source.memory query
+  protectedWords : ∀ address : BitVec 64,model.pending.graph.ProtectedWord address →
+    DeleteFrame.ceiling≤address.toNat → address.toNat<model.pending.heap.toNat →
+    target.memory address=source.memory address ∧ next.pending.graph.ProtectedWord address
   globals : ∀ name,name≠ofString "heap_ptr"→name≠ofString "scratch_ptr"→target.globals.lookup name=source.globals.lookup name
   progress : next.go=0#64 ∨ model.level.toNat<next.level.toNat
 

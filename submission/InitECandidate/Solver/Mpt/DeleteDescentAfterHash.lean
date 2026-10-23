@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.DeleteDescentKindNormal
 import InitECandidate.Solver.Mpt.DeleteDescentInvalidate
+import InitECandidate.Solver.Mpt.TrieProtectedMutation
 
 namespace InitECandidate.Solver.Mpt.DeleteBody
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -50,6 +51,14 @@ theorem after_hash_output (source target : PanSemStateFiniteExact 64 Guest.HostM
     memoryBand:=by
       intro address above before
       exact (output.memoryBand address (by rw [cursorEq]; exact above) before).trans (memory address before)
+    protectedWords:=by
+      intro address safe above before
+      have currentSafe:=safe.of_fields model.pending.graph current.pending.graph address validEq fields
+      obtain ⟨lastWord,lastSafe⟩:=output.protectedWords address currentSafe above (by rw [heapEq]; exact before)
+      have firstWord : middle.memory address=source.memory address:=by
+        rw [middleEq]
+        exact safe.invalidate_memory source model.pending.graph address model.node model.nodeMember active
+      exact ⟨lastWord.trans firstWord,lastSafe⟩
     globals:=by
       intro name notHeap notScratch
       have same : middle.globals=source.globals:=by rw [middleEq]; rfl

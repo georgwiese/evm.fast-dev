@@ -19,6 +19,7 @@ theorem DescentOutput.of_erase (source target : PanSemStateFiniteExact 64 Guest.
   have memory:=Input.LocalEffects.memory_of_erase source target pureFrame
   have globals:=congrArg PanSemStateFiniteExact.globals pureFrame
   change target.globals=source.globals at globals
+  have fields:=TrieWalk.Graph.PathFields.of_agreement model.pending.graph target.memory (by intros; rw [memory])
   exact ⟨{
     next:=next
     grows:=by rw [heap]
@@ -29,6 +30,9 @@ theorem DescentOutput.of_erase (source target : PanSemStateFiniteExact 64 Guest.
     fields:=TrieWalk.Graph.PathFields.of_agreement model.pending.graph target.memory (by intros; rw [memory])
     memoryLow:=fun query _=>congrFun memory query
     memoryBand:=fun query _ _=>congrFun memory query
+    protectedWords:=by
+      intro address safe _above _before
+      exact ⟨congrFun memory address,safe.of_fields model.pending.graph next.pending.graph address members fields⟩
     globals:=by intro name _ _; rw [globals]
     progress:=Or.inl stopped }⟩
 

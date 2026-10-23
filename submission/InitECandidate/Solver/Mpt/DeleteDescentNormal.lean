@@ -44,6 +44,7 @@ theorem descent_path_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
           fields:=TrieWalk.Graph.PathFields.of_agreement model.pending.graph source.memory (fun _ _=>rfl)
           memoryLow:=fun _ _=>rfl
           memoryBand:=fun _ _ _=>rfl
+          protectedWords:=by intro address safe _above _before; exact ⟨rfl,safe⟩
           globals:=fun _ _ _=>rfl
           progress:=Or.inl stopped },stopped⟩⟩
       · have read : eval source descentTest=some (.val (.word 1#64)):=by

@@ -50,6 +50,7 @@ theorem DescentOutput.of_choice (source target : PanSemStateFiniteExact 64 Guest
     fields:=output.fields
     memoryLow:=fun address before=>output.memory address (before.trans_le frameBefore)
     memoryBand:=fun address _ before=>output.memory address before
+    protectedWords:=by intro address safe _above before; exact output.protectedWords address safe before
     globals:=fun name other _=>output.globals name other
     progress:=Or.inl stopped }⟩
 

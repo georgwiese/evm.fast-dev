@@ -39,4 +39,8 @@ structure BodyOutput (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   memoryLow : ∀ query : BitVec 64,query.toNat<frame.toNat→target.memory query=source.memory query
   memoryBand : ∀ query : BitVec 64,cursor.toNat≤query.toNat→query.toNat<nodeLower→target.memory query=source.memory query
 
+  protectedWords : ∀ address : BitVec 64,graph.ProtectedWord address →
+    DeleteFrame.ceiling≤address.toNat → address.toNat<heap.toNat →
+    target.memory address=source.memory address ∧ next.ProtectedWord address
+
 end InitECandidate.Solver.Mpt.DeleteBody

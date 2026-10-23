@@ -30,6 +30,11 @@ theorem DescentOutput.then_stopped (source middle target : PanSemStateFiniteExac
       intro address before
       exact (second.memoryLow address (by rw [first.frameEq]; exact before)).trans (first.memoryLow address before)
     memoryBand:=fun address above before=>(second.memoryBand address (first.scratchDecreases.trans above) before).trans (first.memoryBand address above before)
+    protectedWords:=by
+      intro address safe above before
+      obtain ⟨firstWord,firstSafe⟩:=first.protectedWords address safe above before
+      obtain ⟨lastWord,lastSafe⟩:=second.protectedWords address firstSafe above (before.trans_le first.grows)
+      exact ⟨lastWord.trans firstWord,lastSafe⟩
     globals:=fun name notHeap notScratch=>(second.globals name notHeap notScratch).trans (first.globals name notHeap notScratch)
     progress:=Or.inl stopped },stopped⟩⟩
 

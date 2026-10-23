@@ -44,7 +44,7 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
   have unwindSafe : Input.LocalPrefix (ofString "key") unwind:=by rw [unwind_shapes.1]; exact .loop _ unwind_body_safe
   obtain ⟨last,unwindRun,returnRun⟩:=Input.sequence_returned middle inner unwind footer value
     (fun returned=>(unwindSafe.summary_full middle).2.1 returned) remainingRun
-  obtain ⟨finished,_topZero,_empty,unwindGrows,unwindMembers,unwindFields,unwindMemory,unwindGlobals,unwindFresh,_unwindProtection⟩:=
+  obtain ⟨finished,_topZero,_empty,unwindGrows,unwindMembers,unwindFields,unwindMemory,unwindGlobals,unwindFresh,unwindProtection⟩:=
     unwind_path_normal middle last limit nodeLower pathLower property descended.next.pending unwindRun
   rw [setup_shapes.2.2.2.2.2] at returnRun
   obtain ⟨read,innerEq⟩:=Input.return_normal last inner (localVar "res") value returnRun
@@ -98,6 +98,15 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
     rw [globalsEq]
     exact (unwindGlobals name notHeap).trans (descended.globals name notHeap notScratch)
   have targetFields:=Input.evaluation_fields source target body (some (.returned value)) normal
+  have protection (address : BitVec 64) (safe : graph.ProtectedWord address) (above : DeleteFrame.ceiling≤address.toNat)
+      (before : address.toNat<heap.toNat) : target.memory address=source.memory address ∧ next.ProtectedWord address:=by
+    have initialSafe : initial.pending.graph.ProtectedWord address:=by rw [initialGraph]; exact safe
+    obtain ⟨descentWord,descentSafe⟩:=descended.protectedWords address initialSafe above (by rw [initialHeap]; exact before)
+    obtain ⟨unwindWord,unwindSafe⟩:=unwindProtection address descentSafe (before.trans_le descentGrows)
+    have finalFields : finished.graph.PathFields target.memory:=by
+      rw [memoryEq]
+      exact ⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
+    exact ⟨(congrFun memoryEq address).trans (unwindWord.trans descentWord),unwindSafe.of_fields finished.graph next address same finalFields⟩
   exact ⟨{
     root:=finished.result
     finalHeap:=finished.heap
@@ -125,7 +134,8 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
     separated:=nextSeparated
     fields:=oldFields
     memoryLow:=low
-    memoryBand:=band }⟩
+    memoryBand:=band
+    protectedWords:=protection }⟩
 
 end InitECandidate.Solver.Mpt.DeleteBody
 

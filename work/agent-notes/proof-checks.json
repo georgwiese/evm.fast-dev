@@ -11114,6 +11114,10 @@
       "sha256": "1b4cb4e929c9c4cb214e2370ff5658d83b2642b767d763394bd324fd8b87c20c"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/RlpLength/BytesSizeGeneralCall.lean",
+      "sha256": "2101fc3fa205ccde910559f0f2b5402d5ec9735d5268a78104506478f2872a83"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/RlpLength/BytesSizeProgram.lean",
       "sha256": "121fc3769cd57ee45d5e230d0d9250dc6bb504886d1a0d93c412d2505359360c"
     },
@@ -84716,7 +84720,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.environment",
@@ -84725,7 +84729,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.call_execute",
@@ -84734,7 +84738,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.loop_execute",
@@ -84743,7 +84747,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_shape",
@@ -84752,7 +84756,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.body_execute",
@@ -84761,7 +84765,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Be.step_fields",
@@ -84770,7 +84774,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.loop_execute",
@@ -84779,7 +84783,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.loop_shape",
@@ -84788,7 +84792,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.test_read",
@@ -84797,7 +84801,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.arguments_read",
@@ -84806,7 +84810,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.body_execute",
@@ -84815,7 +84819,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.step_other",
@@ -84824,7 +84828,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.suffix_execute",
@@ -84833,7 +84837,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.suffix_shape",
@@ -84842,7 +84846,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.withdrawal_phase_execute",
@@ -84851,7 +84855,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.withdrawal_count_of_length",
@@ -84859,7 +84863,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.execute",
@@ -84868,7 +84872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.call_execute",
@@ -84877,7 +84881,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.ListHeader.assign_execute",
@@ -84886,7 +84890,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Header.execute",
@@ -84895,7 +84899,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Header.call_execute",
@@ -84904,7 +84908,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.execute",
@@ -84913,7 +84917,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.WordSize.call_execute",
@@ -84922,7 +84926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.short_or_be",
@@ -84931,7 +84935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.execute",
@@ -84940,7 +84944,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.call_execute",
@@ -84949,7 +84953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.body_shape",
@@ -84958,7 +84962,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Withdrawal.scalar_read",
@@ -84967,7 +84971,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.after_transactions_execute",
@@ -84976,7 +84980,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.transaction_suffix_shape",
@@ -84985,7 +84989,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.execute",
@@ -84994,7 +84998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.assign_execute",
@@ -85003,7 +85007,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.body_shape",
@@ -85012,7 +85016,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.condition_read",
@@ -85021,7 +85025,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.environment",
@@ -85030,7 +85034,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_after_first_execute",
@@ -85039,7 +85043,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_decoded_loop",
@@ -85048,7 +85052,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_loop_execute",
@@ -85057,7 +85061,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_test_read",
@@ -85066,7 +85070,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_step_other",
@@ -85075,7 +85079,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.transaction_phase_subtree",
@@ -85084,7 +85088,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.transaction_phase_execute",
@@ -85093,7 +85097,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.transaction_loop_shape",
@@ -85102,7 +85106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.wrap_read",
@@ -85111,7 +85115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_length_read",
@@ -85120,7 +85124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_first_read",
@@ -85129,7 +85133,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_step_restore",
@@ -85138,7 +85142,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.tx_body_execute",
@@ -85147,7 +85151,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.Records.pointer_reads",
@@ -86205,7 +86209,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.call_execute",
@@ -86214,7 +86218,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.size_guard_subtree",
@@ -86223,7 +86227,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.size_guard_execute",
@@ -86232,7 +86236,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.count_of_guarded_continuation",
@@ -86241,7 +86245,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.guarded_call_count",
@@ -86250,7 +86254,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.Data.of_fields",
@@ -86259,7 +86263,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.Data.of_old_memory",
@@ -86268,7 +86272,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.after_release_execute",
@@ -86277,7 +86281,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.entry_shape",
@@ -86286,7 +86290,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.Codes.of_code",
@@ -86295,7 +86299,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.Block.execute",
@@ -86304,7 +86308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ignored_return",
@@ -161189,7 +161193,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.body_cost",
@@ -161198,7 +161202,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.body_normal",
@@ -161207,7 +161211,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-caller-v2.log"
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     },
     {
       "theorem": "InitECandidate.Solver.Mpt.NodeRlpFinish.value_arguments",
@@ -161760,6 +161764,33 @@
         "Quot.sound"
       ],
       "successful_log": "trie-node-rlp-begin-caller-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.scoped_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.call_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpLength.BytesSize.scoped_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "trie-rlp-bytes-size-general-caller-v1.log"
     }
   ]
 }

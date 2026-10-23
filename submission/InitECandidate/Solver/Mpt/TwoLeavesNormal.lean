@@ -41,7 +41,10 @@ theorem body_path_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
         ∃ next : TrieWalk.Graph post.memory post.memaddrs,
           (∀ node,graph.valid node → next.valid node) ∧ next.valid heap ∧ next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧
           Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes post.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
-          next.PathBuffer post.be pathLower finalHeap.toNat key1 length1.toNat ∧ next.PathBuffer post.be pathLower finalHeap.toNat key2 length2.toNat := by
+          next.PathBuffer post.be pathLower finalHeap.toNat key1 length1.toNat ∧ next.PathBuffer post.be pathLower finalHeap.toNat key2 length2.toNat ∧
+          (∀ node,next.valid node → graph.valid node ∨ heap.toNat≤node.toNat) ∧
+          (∀ query : BitVec 64,graph.ProtectedWord query → query.toNat<heap.toNat →
+            TrieWalk.PathWordAway key1 length1.toNat query → TrieWalk.PathWordAway key2 length2.toNat query → next.ProtectedWord query) := by
   obtain ⟨ready,inner,branchCell,localsEq,physical,codeEq,continued,endpoint,base,members,member,baseRegions,baseDisjoint,⟨baseValues⟩,basePaths,basePathRegions,baseSeparated,first,other⟩:=
     branch_entry source post heap key1 length1 key2 length2 graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated buffer1 buffer2
       floor empty domain heapCell frontier aligned installed value normal
@@ -90,11 +93,24 @@ theorem body_path_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (secondOutput.olderPrefix query before).trans ((firstOutput.olderPrefix query before).trans (physical.allocation.memory query (Or.inl before)))
   have oldMember (node : BitVec 64) (live : graph.valid node) : secondOutput.graph.valid node:=
     secondOutput.oldMember node (firstOutput.oldMember node ((members node).mpr (Or.inl live)))
+  have provenance (node : BitVec 64) (live : secondOutput.graph.valid node) : graph.valid node ∨ heap.toNat≤node.toNat:=by
+    rcases secondOutput.freshMembers node live with first|secondFresh
+    · rcases firstOutput.freshMembers node first with original|firstFresh
+      · rcases (members node).mp original with old|branch
+        · exact Or.inl old
+        · exact Or.inr (by rw [branch])
+      · exact Or.inr (grows.trans firstFresh)
+    · exact Or.inr ((grows.trans firstOutput.heapGrows).trans secondFresh)
+  have protection (query : BitVec 64) (safe : graph.ProtectedWord query) (before : query.toNat<heap.toNat)
+      (firstAway : TrieWalk.PathWordAway key1 length1.toNat query) (secondAway : TrieWalk.PathWordAway key2 length2.toNat query) : secondOutput.graph.ProtectedWord query:=by
+    have baseSafe:=(physical.protected source ready heap graph base nodeLower regions members query safe before).2
+    have firstSafe:=firstOutput.protectedGraph query baseSafe (before.trans_le grows) firstAway
+    exact secondOutput.protectedGraph query firstSafe (before.trans_le (grows.trans firstOutput.heapGrows)) secondAway
   rw [endpoint,innerEq]
   exact ⟨answer,secondOutput.domain.trans (firstOutput.domain.trans physical.allocation.domain),secondOutput.endian.trans (firstOutput.endian.trans physical.allocation.endian),
     secondOutput.code.trans (firstOutput.code.trans codeEq),prefixMemory,secondOutput.heap,secondOutput.heapCell,secondOutput.heapArena,secondOutput.heapAligned,
     grows.trans (firstOutput.heapGrows.trans secondOutput.heapGrows),secondOutput.branchTag,secondOutput.graph,oldMember,secondOutput.branchMember,
-    secondOutput.regions,secondOutput.disjoint,⟨secondOutput.values⟩,secondOutput.paths,secondOutput.pathRegions,secondOutput.separated,secondOutput.otherBuffer,secondOutput.buffer⟩
+    secondOutput.regions,secondOutput.disjoint,⟨secondOutput.values⟩,secondOutput.paths,secondOutput.pathRegions,secondOutput.separated,secondOutput.otherBuffer,secondOutput.buffer,provenance,protection⟩
 
 end InitECandidate.Solver.Mpt.TwoLeaves
 

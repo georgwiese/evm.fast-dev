@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.TwoLeavesLeafEntry
 import InitECandidate.Solver.Mpt.TwoLeavesChildStore
 import InitECandidate.Solver.WitnessRadix.Bindings
+import InitECandidate.Solver.Mpt.NodeConstructorProtected
 
 namespace InitECandidate.Solver.Mpt.TwoLeaves
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -37,7 +38,9 @@ theorem leaf_side_paths (second : Bool) (source post : PanSemStateFiniteExact 64
         next.Regions nodeLower (PersistentAlloc.rounded heap 64#64).toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
         next.PathBytes post.be ∧ next.PathRegions pathLower (PersistentAlloc.rounded heap 64#64).toNat ∧ next.PathSeparated ∧
         next.PathBuffer post.be pathLower (PersistentAlloc.rounded heap 64#64).toNat key length.toNat ∧
-        next.PathBuffer post.be pathLower (PersistentAlloc.rounded heap 64#64).toNat otherKey otherLength.toNat := by
+        next.PathBuffer post.be pathLower (PersistentAlloc.rounded heap 64#64).toNat otherKey otherLength.toNat ∧
+        (∀ query : BitVec 64,graph.ProtectedWord query → query.toNat<heap.toNat →
+          TrieWalk.PathWordAway key length.toNat query → next.ProtectedWord query) := by
   obtain ⟨ready,inner,leafCell,localsEq,physical,codeEq,continued,endpoint,base,members,member,baseRegions,baseDisjoint,⟨baseValues⟩,basePaths,basePathRegions,baseSeparated,first,other⟩:=
     leaf_entry second source post heap key length pointer size otherKey otherLength graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated
       buffer otherBuffer positive floor keyCell lengthCell pointerCell sizeCell payload extra domain heapCell frontier aligned installed normal
@@ -91,13 +94,22 @@ theorem leaf_side_paths (second : Bool) (source post : PanSemStateFiniteExact 64
     change StoreWord.put ready.memory (branch+BitVec.ofNat 64 (32+index*8)) heap query=source.memory query
     rw [StoreWord.put,if_neg away]
     exact physical.memory query (Or.inl (before.trans branchBefore))
+  have protection (query : BitVec 64) (safe : graph.ProtectedWord query) (before : query.toNat<heap.toNat)
+      (pathAway : TrieWalk.PathWordAway key length.toNat query) : next.ProtectedWord query:=by
+    have subtraction : (length-1#64).toNat=length.toNat-1:=BitVec.toNat_sub_of_le (by rw [BitVec.le_def]; exact positive)
+    have suffixAway:=pathAway.window key 1#64 query length.toNat (length-1#64).toNat (by exact positive) (by rw [subtraction]; exact Nat.le_refl _)
+    have baseSafe:=(physical.path_protected .leaf (Or.inl rfl) source ready heap _ graph base nodeLower regions members query safe before
+      (by simpa [NodeConstructor.leafWords] using suffixAway)).2
+    have storeFields:=TrieWalk.Graph.PathFields.of_child_store base nodeLower (PersistentAlloc.rounded heap 64#64).toNat baseRegions baseDisjoint
+      branch heap (32+index*8) slot currentMember branchActive
+    exact baseSafe.of_fields base next query same storeFields
   rw [endpoint,innerEq]
   have restoredLocals : (restore source (label second "lf1" "lf2") changed).locals=source.locals:=by
     change HolFiniteMapExact.resVarEq ready.locals (ofString (label second "lf1" "lf2"),source.locals.lookup (ofString (label second "lf1" "lf2")))=source.locals
     rw [localsEq]
     exact congrArg PanSemStateFiniteExact.locals (restore_bound source (label second "lf1" "lf2") heap)
   exact ⟨restoredLocals,physical.domain,physical.endian,codeEq,physical.heapCell,physical.nextArena,physical.nextAligned,grows,finalTag,prefixMemory,
-    next,finalMembers,nextBranch,nextLeaf,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,firstAfter,otherAfter⟩
+    next,finalMembers,nextBranch,nextLeaf,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,firstAfter,otherAfter,protection⟩
 
 end InitECandidate.Solver.Mpt.TwoLeaves
 

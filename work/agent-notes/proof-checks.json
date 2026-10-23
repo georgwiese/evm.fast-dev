@@ -11222,6 +11222,10 @@
       "sha256": "93f23d358a80adc48f9c057cd4e5103948908bb4071fba78f02cdff75186ece5"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/RlpWrite/BytesWriteSafe.lean",
+      "sha256": "2c5db0ea4287d75e016178ed170644531ee1478b8ce681a5a85fb53c96267277"
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/RlpWrite/Forms.lean",
       "sha256": "e4be702a572adafc6c76113191dab531dede4cd5ff880dbba467048f8996cb71"
     },
@@ -85265,7 +85269,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.long_form_execute",
@@ -85274,7 +85278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.body_shape",
@@ -85283,7 +85287,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.execute",
@@ -85292,7 +85296,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.length_tail_execute",
@@ -85301,7 +85305,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.execute",
@@ -85310,7 +85314,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.environment",
@@ -85319,7 +85323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.call_execute",
@@ -85328,7 +85332,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.loop_execute",
@@ -85337,7 +85341,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.step_other",
@@ -85346,7 +85350,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.body_shape",
@@ -85355,7 +85359,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.PutBe.step_execute",
@@ -85364,7 +85368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.body_shape",
@@ -85409,7 +85413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.general_execute",
@@ -85418,7 +85422,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.body_shape",
@@ -85427,7 +85431,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.first_guard_one",
@@ -85436,7 +85440,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.environment",
@@ -85445,7 +85449,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.call_execute",
@@ -85454,7 +85458,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.HeaderWrite.tail_call_execute",
@@ -85463,7 +85467,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.WordWrite.environment",
@@ -162335,6 +162339,24 @@
         "Quot.sound"
       ],
       "successful_log": "trie-node-rlp-begin-graph-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.general_safe_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.BytesWrite.safe_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     }
   ]
 }

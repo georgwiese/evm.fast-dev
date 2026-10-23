@@ -4533,6 +4533,13 @@
     "submission/InitECandidate/Solver/Mpt/NibbleKeySecureProgram.lean",
     "submission/InitECandidate/Solver/Mpt/NibbleKeySecureTail.lean",
     "submission/InitECandidate/Solver/Mpt/NibbleKeyUnsecured.lean",
+    "submission/InitECandidate/Solver/Mpt/NibblesCompactCall.lean",
+    "submission/InitECandidate/Solver/Mpt/NibblesCompactCost.lean",
+    "submission/InitECandidate/Solver/Mpt/NibblesCompactFrame.lean",
+    "submission/InitECandidate/Solver/Mpt/NibblesCompactLoopCost.lean",
+    "submission/InitECandidate/Solver/Mpt/NibblesCompactLoopNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/NibblesCompactNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/NibblesCompactProgram.lean",
     "submission/InitECandidate/Solver/Mpt/NibblesConcatAllocation.lean",
     "submission/InitECandidate/Solver/Mpt/NibblesConcatCopies.lean",
     "submission/InitECandidate/Solver/Mpt/NibblesConcatCopiesCost.lean",
@@ -7844,8 +7851,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64713,
-  "package_bytes": 2269417170,
+  "package_entries": 64720,
+  "package_bytes": 2269458673,
   "claim": {
     "K": "infinity"
   },

@@ -1714,5 +1714,65 @@
   },
   "validation": "original-plan-validation-targets.json",
   "baseline_identity_inventory": "original-plan-inventory.json",
-  "final_removed_solver_module_count": 258
+  "final_removed_solver_module_count": 258,
+  "additional_cleanup_batches": [
+    {
+      "date": "2026-10-23",
+      "reason": "Share the generalized prefixed key-to-nibbles proof with the existing short-key normal contract; remove its five private superseded modules after checking that no other source refers to their symbols.",
+      "removed_sources": [
+        {
+          "path": "submission/InitECandidate/Solver/Mpt/KeyToNibblesSmallReady.lean",
+          "sha256": "31ff000c9ac7ee4e3157e0a0fdc9f91ccb1c2643cbc56e0a27d5225d142ad17e",
+          "printed_facts": [
+            "InitECandidate.Solver.Mpt.KeyToNibbles.SmallReady.byte",
+            "InitECandidate.Solver.Mpt.KeyToNibbles.SmallReady.input_byte",
+            "InitECandidate.Solver.Mpt.KeyToNibbles.SmallReady.restore"
+          ]
+        },
+        {
+          "path": "submission/InitECandidate/Solver/Mpt/KeyToNibblesSmallFootprint.lean",
+          "sha256": "ebc4ff16daeb19c3c1fe5bc64de934d72a3fbebc7aa165d48629174521b357d7",
+          "printed_facts": [
+            "InitECandidate.Solver.Mpt.KeyToNibbles.SmallReady.byte_memory"
+          ]
+        },
+        {
+          "path": "submission/InitECandidate/Solver/Mpt/KeyToNibblesSmallBlock.lean",
+          "sha256": "98c9b8c39c7445f9556c2bf1ba725f803a817452eb164e7dadfef3aa0ca9f7c9",
+          "printed_facts": [
+            "InitECandidate.Solver.Mpt.KeyToNibbles.small_block_steps",
+            "InitECandidate.Solver.Mpt.KeyToNibbles.SmallReady.byte_execute",
+            "InitECandidate.Solver.Mpt.KeyToNibbles.SmallReady.advance",
+            "InitECandidate.Solver.Mpt.KeyToNibbles.SmallReady.increment_execute",
+            "InitECandidate.Solver.Mpt.KeyToNibbles.small_block_execute"
+          ]
+        },
+        {
+          "path": "submission/InitECandidate/Solver/Mpt/KeyToNibblesSmallLoops.lean",
+          "sha256": "5e3a77b1d34dc33ebd67eab7ee51301687288fb00c399406492bccb3329eb12f",
+          "printed_facts": [
+            "InitECandidate.Solver.Mpt.KeyToNibbles.SmallReady.with_clock",
+            "InitECandidate.Solver.Mpt.KeyToNibbles.small_tail_execute",
+            "InitECandidate.Solver.Mpt.KeyToNibbles.small_loop_execute"
+          ]
+        },
+        {
+          "path": "submission/InitECandidate/Solver/Mpt/KeyToNibblesSmallExecution.lean",
+          "sha256": "1117d4a0c217dd9ed75f8c4698886e8fcd9054c732796678eaf7caba06740dac",
+          "printed_facts": [
+            "InitECandidate.Solver.Mpt.KeyToNibbles.small_execute",
+            "InitECandidate.Solver.Mpt.KeyToNibbles.small_execute_mapped"
+          ]
+        }
+      ],
+      "validation": {
+        "successful_log": "prefixed-nibbles-cleanup-v1.log",
+        "jobs": 1701,
+        "modified_existing_reverse_closure_modules": 14,
+        "modified_existing_leaf_targets": 2,
+        "additional_target": "InitECandidate.Solver.Mpt.CompactToNibblesOddNibbles",
+        "not_full_verification": true
+      }
+    }
+  ]
 }

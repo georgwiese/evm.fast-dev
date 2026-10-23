@@ -29,7 +29,8 @@ theorem single_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory
         heap.toNat≤root.toNat ∧ root.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,next.valid current ↔ graph.valid current ∨ current=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → next.ProtectedWord address) := by
   obtain ⟨child,inner,childMember,childActive,continued,endpoint⟩:=child_entry_normal source target node index graph member active tag nodeCell indexCell bounded selectedNonzero value normal
   let selected:=QueryBranch.bind source "child" child
   let entered:=QueryBranch.bind selected "ck" (wordAt source.memory child)
@@ -40,12 +41,12 @@ theorem single_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory
   have currentTag : entered.locals.lookup (ofString "ck")=some (.val (.word (wordAt entered.memory child))):=bind_lookup_same _ _ _
   obtain ⟨notHash,nibbleRun⟩:=after_kind_entry entered inner (wordAt source.memory child) currentTag installed value continued
   obtain ⟨domainEq,endianEq,codeEq,price,older,root,finalHeap,answer,finalCell,finalArena,finalAligned,fresh,grows,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩:=
     nibble_paths entered inner heap index child graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated lower floor nodeFloor bounded childMember childActive notHash
       currentIndex currentChild currentTag heapCell frontier aligned little domain installed value nibbleRun
   rw [endpoint]
   exact ⟨domainEq,endianEq,codeEq,older,child,root,finalHeap,childMember,childActive,notHash,price,answer,finalCell,finalArena,finalAligned,fresh,grows,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩
 
 end InitECandidate.Solver.Mpt.CollapseBranch
 

@@ -32,11 +32,12 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ (graph.valid root ∨ heap.toNat≤root.toNat) ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,next.valid current ↔ graph.valid current ∨ current=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → next.ProtectedWord address) := by
   obtain ⟨callee,called,nodeCell⟩:=environment source node (original_code source.code installed)
   obtain ⟨funded,childTarget,returned,run,endpoint⟩:=Input.CallNormal.local_known source target name (ofString "_collapse_branch") arguments _ body callee .one argsRead called normal
   obtain ⟨domainEq,endianEq,codeEq,older,root,finalHeap,answer,finalCell,finalArena,finalAligned,grows,fresh,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩:=
     body_path_normal (callEntryStateHOLFinite source callee) childTarget heap node graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated
       floor pathFloor nodeFloor member active tag nodeCell heapCell frontier aligned little domain installed returned run
   have priced:=body_cost (callEntryStateHOLFinite source callee) heap node graph limit nodeLower pathLower (heap.toNat-pathLower) property values regions disjoint paths pathRegions separated
@@ -54,7 +55,7 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
   rw [endpoint,answer] at globalFrame
   rw [endpoint,answer]
   exact ⟨root,rfl,domainEq,endianEq,codeEq,spent,globalFrame,older,fields,finalHeap,finalCell,finalArena,finalAligned,grows,fresh,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩
 
 end InitECandidate.Solver.Mpt.CollapseBranch
 

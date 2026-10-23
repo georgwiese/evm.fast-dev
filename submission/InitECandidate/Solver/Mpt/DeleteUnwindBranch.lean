@@ -36,7 +36,7 @@ theorem unwind_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
   have tag : wordAt source.memory saved.node=3#64:=by simpa only [branchKind,DeleteFrame.Kind.tag] using owned.2.2.1
   have currentTag : wordAt post.memory saved.node=3#64:=(storeFields.tags saved.node owned.1 owned.2.1).trans tag
   obtain ⟨root,localsEq,domainEq,endianEq,codeEq,_price,globalsEq,helperMemory,helperFields,finalHeap,finalCell,finalArena,finalAligned,grows,fresh,
-    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated⟩:=
+    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,_protection⟩:=
     CollapseBranch.assigned_path_normal post target heap saved.node current limit nodeLower pathLower property currentValues currentRegions currentDisjoint currentPaths currentPathRegions currentSeparated
       floor pathFloor nodeFloor currentMember owned.2.1 currentTag heapCell frontier aligned little domain installed (ofString "res") branchArguments args normal
   have older (query : BitVec 64) (before : query.toNat<nodeLower) : target.memory query=source.memory query:=

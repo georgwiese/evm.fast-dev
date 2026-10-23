@@ -27,7 +27,8 @@ theorem choices_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemor
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ (graph.valid root ∨ heap.toNat≤root.toNat) ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,next.valid current ↔ graph.valid current ∨ current=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → next.ProtectedWord address) := by
   rw [after_value_dispatch source model.count _ model.countCell valueCell] at normal
   by_cases empty : model.count=0#64
   · rw [if_pos empty] at normal
@@ -39,23 +40,27 @@ theorem choices_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemor
       change heap.toNat+64≤(PersistentAlloc.rounded heap 64#64).toNat at before
       omega
     exact ⟨physical.domain,physical.endian,code,fun query before=>physical.memory query (Or.inl before),heap,PersistentAlloc.rounded heap 64#64,answer,physical.heapCell,
-      physical.nextArena,physical.nextAligned,grows,Or.inr (Nat.le_refl _),next,members,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+      physical.nextArena,physical.nextAligned,grows,Or.inr (Nat.le_refl _),next,members,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
+      (by
+        intro address safe before
+        exact (physical.path_protected .leaf (Or.inl rfl) source target heap _ graph next nodeLower regions members address safe before
+          (by change TrieWalk.PathWordAway node 0 address; intro index impossible; omega)).2)⟩
   · rw [if_neg empty] at normal
     by_cases single : model.count=1#64 ∧ wordAt source.memory (node+168#64)=0#64
     · rw [if_pos single] at normal
       have positiveCount : model.count≠0#64:=by rw [single.1]; decide
       obtain ⟨domainEq,endianEq,codeEq,older,child,root,finalHeap,_childMember,_childActive,_notHash,_price,answer,finalCell,finalArena,finalAligned,fresh,grows,
-        next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+        next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩:=
         single_paths source target heap node model.selectedIndex graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated (pathFloor.trans nodeFloor) floor nodeFloor
           member active tag model.nodeCell model.indexCell model.indexBound (model.selectedNonzero positiveCount) heapCell frontier aligned little domain installed value normal
       exact ⟨domainEq,endianEq,codeEq,older,root,finalHeap,answer,finalCell,finalArena,finalAligned,fresh.trans grows,Or.inr fresh,
-        next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+        next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩
     · rw [if_neg single,value_shapes.2.2.2.2.2.2.2.2] at normal
       obtain ⟨read,endpoint⟩:=Input.return_normal source target (localVar "node") value normal
       have expected : eval source (localVar "node")=some (.val (.word node)):=by simp [eval,localVar,evalHOLExact,toExact,model.nodeCell]
       have answer : value=.val (.word node):=Option.some.inj (read.symm.trans expected)
       rw [endpoint]
-      refine ⟨rfl,rfl,rfl,fun _ _=>rfl,node,heap,answer,heapCell,frontier,aligned,Nat.le_refl _,Or.inl member,graph,?_,member,regions,disjoint,⟨values⟩,paths,pathRegions,separated⟩
+      refine ⟨rfl,rfl,rfl,fun _ _=>rfl,node,heap,answer,heapCell,frontier,aligned,Nat.le_refl _,Or.inl member,graph,?_,member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro address safe _before; exact safe)⟩
       intro current
       constructor
       · exact Or.inl

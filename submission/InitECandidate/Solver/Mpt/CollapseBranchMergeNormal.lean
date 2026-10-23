@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.CollapseBranchConcatEntry
 import InitECandidate.Solver.Mpt.CollapseBranchConstructor
+import InitECandidate.Solver.Mpt.TrieProtectedFreshPath
 
 namespace InitECandidate.Solver.Mpt.CollapseBranch
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -28,7 +29,8 @@ theorem merge_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤root.toNat ∧ root.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ node,next.valid node ↔ graph.valid node ∨ node=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → next.ProtectedWord address) := by
   obtain ⟨ready,inner,localsEq,readyDomain,readyEndian,readyCode,copyPrice,continued,endpoint,nextHeapCell,nextArena,nextAligned,grows,older,
     current,same,currentRegions,currentDisjoint,⟨currentValues⟩,currentPaths,currentPathRegions,currentSeparated,joined⟩:=
     concat_entry source target heap nibble child graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated buffer floor member active tag
@@ -58,16 +60,21 @@ theorem merge_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   have currentBuffer : current.PathBuffer ready.be pathLower nextHeap.toNat heap (1+(wordAt ready.memory (child+40#64)).toNat):=by rw [currentLength]; exact joined
   have currentInstalled : Input.OriginalCode.Installed ready.code:=by rw [readyCode]; exact installed
   obtain ⟨answer,innerDomain,innerEndian,innerCode,price,innerMemory,finalHeap,finalCell,finalArena,finalAligned,heapGrows,
-    next,members,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+    next,members,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,tailProtection⟩:=
     constructor_paths ready inner nextHeap child heap current limit nodeLower pathLower property currentValues currentRegions currentDisjoint currentPaths currentPathRegions currentSeparated currentBuffer
       (by omega) currentMember active pathTag currentKey currentChild currentKind nextHeapCell nextArena nextAligned (readyDomain.trans domain) currentInstalled value continued
   have finalPrice : source.clock-inner.clock≤childLength.toNat/8+22:=by omega
   have memory (query : BitVec 64) (before : query.toNat<heap.toNat) : inner.memory query=source.memory query:=
     (innerMemory query (by omega)).trans (older query before)
   have exactMembers (node : BitVec 64) : next.valid node ↔ graph.valid node ∨ node=nextHeap:=by rw [members node,same]
+  have protection (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat) : next.ProtectedWord address:=by
+    have oldFields:=TrieWalk.Graph.PathFields.of_prefix graph ready.memory nodeLower heap.toNat regions older
+    have currentSafe:=safe.of_fields graph current address same oldFields
+    have away:=TrieWalk.PathWordAway.above_frontier heap address (1+(wordAt ready.memory (child+40#64)).toNat) heap.toNat currentBuffer.span.fits aligned before (Nat.le_refl _)
+    exact tailProtection address currentSafe (by omega) away
   rw [endpoint]
   exact ⟨innerDomain.trans readyDomain,innerEndian.trans readyEndian,innerCode.trans readyCode,finalPrice,memory,nextHeap,finalHeap,answer,finalCell,finalArena,finalAligned,
-    by omega,heapGrows,next,exactMembers,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    by omega,heapGrows,next,exactMembers,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩
 
 end InitECandidate.Solver.Mpt.CollapseBranch
 

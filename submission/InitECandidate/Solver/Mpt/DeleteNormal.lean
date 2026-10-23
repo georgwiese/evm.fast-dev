@@ -44,7 +44,7 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
   have unwindSafe : Input.LocalPrefix (ofString "key") unwind:=by rw [unwind_shapes.1]; exact .loop _ unwind_body_safe
   obtain ⟨last,unwindRun,returnRun⟩:=Input.sequence_returned middle inner unwind footer value
     (fun returned=>(unwindSafe.summary_full middle).2.1 returned) remainingRun
-  obtain ⟨finished,_topZero,_empty,unwindGrows,unwindMembers,unwindFields,unwindMemory,unwindGlobals,unwindFresh⟩:=
+  obtain ⟨finished,_topZero,_empty,unwindGrows,unwindMembers,unwindFields,unwindMemory,unwindGlobals,unwindFresh,_unwindProtection⟩:=
     unwind_path_normal middle last limit nodeLower pathLower property descended.next.pending unwindRun
   rw [setup_shapes.2.2.2.2.2] at returnRun
   obtain ⟨read,innerEq⟩:=Input.return_normal last inner (localVar "res") value returnRun

@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.DeleteFrameOwnership
 import InitECandidate.Solver.Mpt.TriePathBuffer
+import InitECandidate.Solver.Mpt.TrieProtectedWord
 
 namespace InitECandidate.Solver.Mpt.DeleteBody
 open Flapjack PanSemStateFiniteExact WitnessRadix GasBudget
@@ -33,6 +34,8 @@ structure ChoiceOutput (source target : PanSemStateFiniteExact 64 Guest.HostMemo
   paths : next.PathBytes target.be
   pathRegions : next.PathRegions pathLower finalHeap.toNat
   separated : next.PathSeparated
+  protectedWords : ∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+    target.memory address=source.memory address ∧ next.ProtectedWord address
 
 theorem ChoiceOutput.old_member (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (graph : TrieWalk.Graph source.memory source.memaddrs) (heap : BitVec 64)

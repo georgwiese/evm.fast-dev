@@ -4,6 +4,7 @@ import InitECandidate.Solver.Mpt.DeleteDescentPure
 import InitECandidate.Solver.Mpt.DeleteDescentOutputPure
 import InitECandidate.Solver.Mpt.CollapseBranchAssigned
 import InitECandidate.Solver.Mpt.TriePathBufferGrowth
+import InitECandidate.Solver.Mpt.TrieProtectedMutation
 
 namespace InitECandidate.Solver.Mpt.DeleteBody
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -28,7 +29,7 @@ theorem branch_clear_output (source target : PanSemStateFiniteExact 64 Guest.Hos
   have currentTag : wordAt post.memory model.node=3#64:=(storeFields.tags model.node model.nodeMember active).trans tag
   have floor : 2701131776≤pathLower:=(by decide : 2701131776≤DeleteFrame.ceiling).trans model.pending.floor
   obtain ⟨root,localsEq,domainEq,endianEq,codeEq,_price,globalsEq,helperMemory,helperFields,finalHeap,finalCell,finalArena,finalAligned,grows,fresh,
-    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,_protection⟩:=
+    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,protection⟩:=
     CollapseBranch.assigned_path_normal post target model.pending.heap model.node current limit nodeLower pathLower property currentValues currentRegions currentDisjoint currentPaths currentPathRegions currentSeparated
       floor model.pending.pathFloor model.pending.nodeFloor currentMember active currentTag model.pending.heapCell model.pending.heapArena model.pending.heapAligned model.pending.little model.pending.scratch.domain model.pending.installed
       (ofString "res") branchValueArguments args normal
@@ -69,7 +70,11 @@ theorem branch_clear_output (source target : PanSemStateFiniteExact 64 Guest.Hos
     values:=nextValues
     paths:=nextPaths
     pathRegions:=nextPathRegions
-    separated:=nextSeparated }
+    separated:=nextSeparated
+    protectedWords:=by
+      intro address safe before
+      exact ⟨(helperMemory address before).trans (safe.branch_value_memory source model.pending.graph address model.node 0#64 0#64 model.nodeMember active tag),
+        protection address (safe.of_fields model.pending.graph current address same storeFields) before⟩ }
   exact DescentOutput.of_choice source target key length limit nodeLower pathLower property model output nextQuery stopped
 
 /-- Whole terminal branch-value choice. An already empty value keeps

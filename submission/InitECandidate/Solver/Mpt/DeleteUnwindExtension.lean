@@ -30,12 +30,12 @@ theorem unwind_extension_normal (source target : PanSemStateFiniteExact 64 Guest
   have actualTag : wordAt source.memory saved.node=2#64:=by simpa only [extensionKind,DeleteFrame.Kind.tag] using tag
   rw [unwind_dispatch source saved view domain topCell,extensionKind] at normal
   obtain ⟨root,localsEq,domainEq,endianEq,codeEq,_price,globalsEq,older,fields,finalHeap,finalCell,finalArena,finalAligned,grows,fresh,
-    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,_protection⟩:=
+    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,protection⟩:=
     DeleteExtension.assigned_path_normal source target heap saved.node result (saved.words "seg") (saved.words "sl") graph limit nodeLower pathLower property
       values regions disjoint paths pathRegions separated segmentBuffer floor nodeFloor positive member active actualTag resultMember heapCell frontier aligned little domain installed
       (ofString "res") extensionArguments args normal
   exact ⟨⟨root,finalHeap,localsEq,domainEq,endianEq,codeEq,globalsEq,older,fields,finalCell,finalArena,finalAligned,grows,fresh,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩⟩
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩⟩
 
 end InitECandidate.Solver.Mpt.DeleteBody
 

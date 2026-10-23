@@ -11,7 +11,7 @@ open Flapjack.Basis.Pure.MlString
 headers may lie between old and fresh nodes; their frames follow from
 separation, rather than from a global order of node addresses. -/
 structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (root incoming : BitVec 64) (old : TrieWalk.Graph source.memory source.memaddrs)
+    (root incoming key length : BitVec 64) (old : TrieWalk.Graph source.memory source.memaddrs)
     (limit nodeLower pathLower : Nat) (property : BitVec 64→BitVec 64→Prop) where
   heap : BitVec 64
   domain : target.memaddrs=source.memaddrs
@@ -28,6 +28,9 @@ structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   protectedMemory : ∀ address : BitVec 64,old.ProtectedWord address → address.toNat<incoming.toNat → target.memory address=source.memory address
   next : TrieWalk.Graph target.memory target.memaddrs
   members : ∀ node,old.valid node → next.valid node
+  freshMembers : ∀ node,next.valid node → old.valid node ∨ incoming.toNat≤node.toNat
+  protectedGraph : ∀ address : BitVec 64,old.ProtectedWord address → address.toNat<incoming.toNat →
+    TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address
   rootMember : next.valid root
   values : TrieWalk.Values next limit property
   regions : next.Regions nodeLower heap.toNat
@@ -54,11 +57,11 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values node key length level pointer size))
     (normal : evaluateHOLFiniteState source (.call (some (some (.local,name),none)) (ofString "_mpt_insert_node") arguments)=(none,target)) :
     ∃ root : BitVec 64,target.locals=source.locals.update (name,.val (.word root)) ∧
-      Nonempty (Output source target root heap graph limit nodeLower pathLower property) := by
+      Nonempty (Output source target root heap key length graph limit nodeLower pathLower property) := by
   obtain ⟨callee,called,nodeCell,keyCell,lengthCell,levelCell,pointerCell,sizeCell⟩:=environment source.code.lookup node key length level pointer size (original_code source.code installed)
   obtain ⟨_funded,childTarget,returned,run,endpoint⟩:=Input.CallNormal.local_known source target name (ofString "_mpt_insert_node") arguments _ body callee .one args called normal
   let entry:=callEntryStateHOLFinite source callee
-  obtain ⟨domainEq,endianEq,codeEq,memory,_tags,root,finalHeap,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords⟩:=
+  obtain ⟨domainEq,endianEq,codeEq,memory,_tags,root,finalHeap,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords,provenance,protection⟩:=
     body_path_normal entry heap node key level length pointer size graph limit nodeLower pathLower property valuesModel regions disjoint paths pathRegions separated query member
       nodeCell keyCell levelCell lengthCell pointerCell sizeCell before bounded payload extra empty floor domain installed heapCell frontier aligned childTarget returned run
   have kept:=heap_globals entry installed
@@ -85,6 +88,8 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     protectedMemory:=protectedWords
     next:=next
     members:=members
+    freshMembers:=provenance
+    protectedGraph:=protection
     rootMember:=rootMember
     values:=nextValues
     regions:=nextRegions

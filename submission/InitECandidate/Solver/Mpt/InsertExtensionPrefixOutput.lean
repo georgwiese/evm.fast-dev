@@ -52,14 +52,14 @@ theorem extension_prefix_output (source target : PanSemStateFiniteExact 64 Guest
     have selected : evaluateHOLFiniteState source extensionPrefixChoice=evaluateHOLFiniteState source extensionSplitScope:=by
       rw [extension_shapes.2.2.2.1,evaluateHOLFiniteState_ite]
       simp [evalHOLExact,toExact,localVar,prefixCell,oldLengthCell,matched,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-    obtain ⟨root,localsEq,domainEq,endianEq,codeEq,price,memory,tags,finalHeap,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,_provenance,_protection⟩:=
+    obtain ⟨root,localsEq,domainEq,endianEq,codeEq,price,memory,tags,finalHeap,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩:=
       extension_split_normal source target heap node key level length prefixLength pointer size graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query
         member active tag nodeCell keyCell levelCell lengthCell pointerCell sizeCell prefixCell segmentCell before strict queryBound payload extra floor empty domain heapCell frontier aligned installed (selected.symm.trans normal)
     exact terminal_output source target heap key length level root finalHeap graph limit nodeLower pathLower property pending.node pending.slot pending.level pending.go localsEq
       domainEq endianEq codeEq finalHeapCell finalArena finalAligned grows (fun address before=>memory address (before.trans_le floor))
       (TrieWalk.Graph.PathFields.of_prefix graph target.memory nodeLower heap.toNat regions memory)
       (by intro address _safe before; exact memory address before) tags
-      next members rootMember nextValues nextRegions nextDisjoint nextPaths nextPathRegions nextSeparated
+      next members rootMember nextValues nextRegions nextDisjoint nextPaths nextPathRegions nextSeparated provenance protection
 
 end InitECandidate.Solver.Mpt.Insert
 

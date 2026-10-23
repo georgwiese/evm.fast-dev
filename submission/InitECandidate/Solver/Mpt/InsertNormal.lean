@@ -37,7 +37,10 @@ theorem body_path_normal (source : PanSemStateFiniteExact 64 Guest.HostMemory)
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,graph.valid current → next.valid current) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧ graph.PathFields target.memory ∧
-          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → target.memory address=source.memory address) := by
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → target.memory address=source.memory address) ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
   obtain ⟨initial,initialMembers,initialHeap⟩:=initial_loop_model source heap node key level length pointer size graph limit nodeLower pathLower property
     values regions disjoint paths pathRegions separated query member nodeCell keyCell levelCell lengthCell pointerCell sizeCell before bounded payload floor domain installed heapCell frontier aligned
   obtain ⟨inner,clock,frame,continued⟩:=normal_setup source target value normal
@@ -45,7 +48,7 @@ theorem body_path_normal (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have safe : Input.LocalPrefix (ofString "klen") (.while test loopBody):=.loop test loop_body_safe
   obtain ⟨last,loopRun,returnRun⟩:=Input.sequence_returned (setup source) inner (.while test loopBody) (.return (localVar "result")) value
     (fun returned=>(safe.summary_full (setup source)).2.1 returned) continued
-  obtain ⟨finished,stopped,grows,members,memory,tags,fields,protectedWords⟩:=loop_path_normal (setup source) last key length pointer size limit nodeLower pathLower property initial extra empty loopRun
+  obtain ⟨finished,stopped,grows,members,memory,tags,fields,protectedWords,provenance,protection⟩:=loop_path_normal (setup source) last key length pointer size limit nodeLower pathLower property initial extra empty loopRun
   obtain ⟨read,innerEq⟩:=Input.return_normal last inner (localVar "result") value returnRun
   have expected : eval last (localVar "result")=some (.val (.word finished.result)):=by
     simp [eval,evalHOLExact,toExact,localVar,finished.resultCell]
@@ -69,7 +72,7 @@ theorem body_path_normal (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have heapGrows : heap.toNat≤finished.heap.toNat:=by rw [←initialHeap]; exact grows
   have evaluatedFields:=Input.evaluation_fields source target body (some (.returned value)) normal
   refine ⟨evaluatedFields.1,evaluatedFields.2.1,evaluatedFields.2.2.2,preserved,finalTags,finished.result,finished.heap,answer,finalHeapCell,finished.heapArena,finished.heapAligned,heapGrows,
-    next,inclusion,(by rw [same]; exact finished.resultMember),nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,?_,?_⟩
+    next,inclusion,(by rw [same]; exact finished.resultMember),nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,?_,?_,?_,?_⟩
   · rw [memoryEq]
     have initialFields : graph.PathFields (setup source).memory:=⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
     exact initialFields.trans graph initial.graph fields (by intro node live; rw [initialMembers]; exact live)
@@ -78,6 +81,20 @@ theorem body_path_normal (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     have initialFields : graph.PathFields (setup source).memory:=⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
     have initialSafe:=safe.of_fields graph initial.graph address initialMembers initialFields
     exact protectedWords address (fun _=>initialSafe) (by rw [initialHeap]; exact before)
+
+  · intro current live
+    rw [same] at live
+    rcases provenance current live with old|fresh
+    · exact Or.inl (by rwa [initialMembers] at old)
+    · exact Or.inr (by rwa [initialHeap] at fresh)
+  · intro address safe before away
+    have initialFields : graph.PathFields (setup source).memory:=⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
+    have initialSafe:=safe.of_fields graph initial.graph address initialMembers initialFields
+    have finalSafe:=protection address initialSafe (by rw [initialHeap]; exact before) away
+    have finalFields : finished.graph.PathFields target.memory:=by
+      rw [memoryEq]
+      exact ⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
+    exact finalSafe.of_fields finished.graph next address same finalFields
 
 end InitECandidate.Solver.Mpt.Insert
 

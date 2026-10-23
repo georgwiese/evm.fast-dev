@@ -23,7 +23,10 @@ theorem terminal_output (source target : PanSemStateFiniteExact 64 Guest.HostMem
     (tags : ∀ node,old.valid node → node≠0#64 → wordAt target.memory node=wordAt source.memory node)
     (graph : TrieWalk.Graph target.memory target.memaddrs) (members : ∀ node,old.valid node → graph.valid node) (member : graph.valid root)
     (values : TrieWalk.Values graph limit property) (regions : graph.Regions nodeLower heap.toNat) (disjoint : graph.Disjoint)
-    (paths : graph.PathBytes target.be) (pathRegions : graph.PathRegions pathLower heap.toNat) (separated : graph.PathSeparated) :
+    (paths : graph.PathBytes target.be) (pathRegions : graph.PathRegions pathLower heap.toNat) (separated : graph.PathSeparated)
+    (freshMembers : ∀ node,graph.valid node → old.valid node ∨ incoming.toNat≤node.toNat)
+    (protectedGraph : ∀ address : BitVec 64,old.ProtectedWord address → address.toNat<incoming.toNat →
+      TrieWalk.PathWordAway key length.toNat address → graph.ProtectedWord address) :
     Nonempty (NodeOutput source target old incoming key length level limit nodeLower pathLower property) := by
   have current (name : MlS) (other : name≠ofString "r") : target.locals.lookup name=source.locals.lookup name:=by
     rw [localsEq]
@@ -54,6 +57,8 @@ theorem terminal_output (source target : PanSemStateFiniteExact 64 Guest.HostMem
     tags:=tags
     graph:=graph
     oldMember:=members
+    freshMembers:=freshMembers
+    protectedGraph:=protectedGraph
     activeRegistry:=by intro impossible; exact (impossible rfl).elim
     rootMember:=member
     nodeMember:=graph.null

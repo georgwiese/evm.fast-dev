@@ -29,7 +29,10 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           graph.PathFields target.memory ∧
-          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → target.memory address=source.memory address) := by
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → target.memory address=source.memory address) ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
   obtain ⟨callee,expectedCall,nodeCell,keyCell,lengthCell,pointerCell,sizeCell⟩:=environment source node key length pointer size (original_code source.code installed)
   obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,childTarget,returned,args,called,run,checked,endpoint⟩:=
     Input.CallNormal.local_data source target name (ofString "_insert_into_leaf") arguments normal
@@ -45,7 +48,7 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
   subst actualBody
   subst actualCallee
   subst actualShape
-  obtain ⟨domainEq,endianEq,codeEq,price,memory,tags,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords⟩:=
+  obtain ⟨domainEq,endianEq,codeEq,price,memory,tags,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords,provenance,protection⟩:=
     body_path_normal (callEntryStateHOLFinite source callee) childTarget heap node key length pointer size graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated
       query member active leaf nodeCell keyCell lengthCell pointerCell sizeCell payload extra floor empty domain heapCell frontier aligned installed small returned run
   have spent : source.clock-childTarget.clock≤5*length.toNat+243:=by
@@ -53,7 +56,7 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     omega
   rw [endpoint,answer]
   exact ⟨root,rfl,domainEq,endianEq,codeEq,spent,memory,tags,finalHeap,finalHeapCell,finalArena,finalAligned,grows,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords⟩
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords,provenance,protection⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

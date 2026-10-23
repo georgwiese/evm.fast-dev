@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.LeafInsertSplitProgram
 import InitECandidate.Solver.Mpt.ExtensionConstructorTail
 import InitECandidate.Solver.Mpt.ExtensionConstructorPathGraph
 import InitECandidate.Solver.Input.TailCallNoFallthrough
+import InitECandidate.Solver.Mpt.NodeConstructorProtected
 
 namespace InitECandidate.Solver.Mpt.InsertLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -28,7 +29,10 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ node,graph.valid node → next.valid node) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ node,next.valid node → graph.valid node ∨ heap.toNat≤node.toNat) ∧
+          (∀ query : BitVec 64,graph.ProtectedWord query → query.toNat<heap.toNat →
+            TrieWalk.PathWordAway key prefixLength.toNat query → next.ProtectedWord query) := by
   by_cases zero : prefixLength=0#64
   · have read : eval source prefixPositive=some (.val (.word 0#64)):=by
       simp [eval,prefixPositive,localVar,evalHOLExact,toExact,prefixCell,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
@@ -44,7 +48,7 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
     have answer : value=.val (.word branch):=Option.some.inj (observed.symm.trans expected)
     rw [endpoint]
     exact ⟨rfl,rfl,rfl,(by change source.clock-source.clock≤3; omega),(by intro query before; rfl),heap,branch,answer,heapCell,frontier,aligned,Nat.le_refl _,
-      graph,(fun _ live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated⟩
+      graph,(fun _ live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro node live; exact Or.inl live),(by intro query safe _before _away; exact safe)⟩
   · have positive : 0<prefixLength.toNat:=by
       by_contra bad
       have number : prefixLength.toNat=(0#64).toNat:=by change prefixLength.toNat=0; omega
@@ -73,7 +77,16 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
       omega
     exact ⟨physical.domain,physical.endian,codeEq,price,(fun query before=>physical.memory query (Or.inl before)),PersistentAlloc.rounded heap 56#64,heap,answer,
       physical.heapCell,physical.nextArena,physical.nextAligned,grows,next,(fun node live=>(members node).mpr (Or.inl live)),rootMember,
-      nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+      nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
+      (by
+        intro node live
+        rcases (members node).mp live with old|new
+        · exact Or.inl old
+        · exact Or.inr (by rw [new])),
+      (by
+        intro query safe before away
+        exact (physical.path_protected .extension (Or.inr rfl) source target heap _ graph next nodeLower regions members query safe before
+          (by simpa [NodeConstructor.extensionWords] using away)).2)⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

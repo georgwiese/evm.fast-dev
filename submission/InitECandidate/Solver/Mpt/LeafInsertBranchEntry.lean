@@ -39,7 +39,10 @@ theorem branch_entry_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
         ∃ next : TrieWalk.Graph ready.memory ready.memaddrs,
           (∀ current,graph.valid current → next.valid current) ∧ next.valid heap ∧ next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧
           Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes ready.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
-          next.PathBuffer ready.be pathLower finalHeap.toNat (wordAt source.memory (node+32#64)) prefixLength.toNat := by
+          next.PathBuffer ready.be pathLower finalHeap.toNat (wordAt source.memory (node+32#64)) prefixLength.toNat ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
   let oldValue:=values.leaf node member active leaf
   let oldBuffer:=TrieWalk.Graph.PathBuffer.stored graph source.be pathLower heap.toNat paths pathRegions separated node member active (Or.inl leaf)
   have leftBound : prefixLength.toNat≤(wordAt source.memory (node+40#64)).toNat:=bound.trans (Nat.min_le_left _ _)
@@ -55,7 +58,7 @@ theorem branch_entry_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
     simp [branchArguments,TwoLeaves.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,addConst,localVar,toExact,nodeCell,leftCell,oldLengthCell,keyCell,lengthCell,pointerCell,sizeCell,prefixCell,
       valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact,isWfShapeExactHOL,oldValue.pointerMapped,oldValue.pointerStored,oldValue.lengthMapped,oldValue.lengthStored]
   rw [split_shapes.1] at normal
-  obtain ⟨ready,inner,branchCell,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,olderMemory,finalHeap,nextHeapCell,nextArena,nextAligned,grows,branchTag,next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,firstAfter,secondAfter,_provenance,_protection⟩:=
+  obtain ⟨ready,inner,branchCell,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,olderMemory,finalHeap,nextHeapCell,nextArena,nextAligned,grows,branchTag,next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,firstAfter,secondAfter,provenance,protection⟩:=
     TwoLeaves.scoped_path_normal source target heap (wordAt source.memory (node+32#64)+prefixLength) (wordAt source.memory (node+40#64)-prefixLength) oldValue.pointer oldValue.length
       (key+prefixLength) (length-prefixLength) pointer size graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated first second
       oldValue.payload oldValue.extra payload extra floor empty domain heapCell frontier aligned installed value "br" branchArguments afterBranch args normal
@@ -71,8 +74,14 @@ theorem branch_entry_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
     (by change 0≤(wordAt source.memory (node+40#64)).toNat; omega) (by change prefixLength.toNat≤(wordAt source.memory (node+40#64)).toNat; exact leftBound)
   have prefixBuffer : next.PathBuffer ready.be pathLower finalHeap.toNat (wordAt source.memory (node+32#64)) prefixLength.toNat:=by
     simpa only [BitVec.add_zero] using leading
+  have finalProtection (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat)
+      (away : TrieWalk.PathWordAway key length.toNat address) : next.ProtectedWord address:=by
+    have oldAway:=safe.stored graph address node member active (Or.inl leaf)
+    exact protection address safe before
+      (oldAway.window _ prefixLength address _ _ leftBound (by rw [leftSub]))
+      (away.window key prefixLength address length.toNat _ rightBound (by rw [rightSub]))
   exact ⟨ready,inner,branchCell,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,olderMemory,finalHeap,nextHeapCell,nextArena,nextAligned,grows,branchTag,
-    next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,prefixBuffer⟩
+    next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,prefixBuffer,provenance,finalProtection⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

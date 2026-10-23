@@ -35,20 +35,23 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           graph.PathFields target.memory ∧
-          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → target.memory address=source.memory address) := by
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → target.memory address=source.memory address) ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
   obtain ⟨inner,continued,endpoint⟩:=field_entry_normal source target graph node member active leaf nodeCell value normal
   let ready:=fieldEntry source node
   have current (name : MlS) (notKey : name≠ofString "ek") (notLength : name≠ofString "el") : ready.locals.lookup name=source.locals.lookup name:=
     field_entry_lookup_other source node name notKey notLength
   obtain ⟨leftCell,oldLengthCell⟩:=field_entry_cells source node
-  obtain ⟨domainEq,endianEq,codeEq,price,olderMemory,tags,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords⟩:=
+  obtain ⟨domainEq,endianEq,codeEq,price,olderMemory,tags,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords,provenance,protection⟩:=
     after_length_path_normal ready inner heap node key length pointer size graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query member active leaf
       ((current _ (by decide) (by decide)).trans nodeCell) leftCell oldLengthCell ((current _ (by decide) (by decide)).trans keyCell)
       ((current _ (by decide) (by decide)).trans lengthCell) ((current _ (by decide) (by decide)).trans pointerCell) ((current _ (by decide) (by decide)).trans sizeCell)
       payload extra floor empty domain heapCell frontier aligned installed small value continued
   rw [endpoint]
   exact ⟨domainEq,endianEq,codeEq,price,olderMemory,tags,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords⟩
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords,provenance,protection⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

@@ -34,7 +34,10 @@ theorem split_scope_path_normal (source target : PanSemStateFiniteExact 64 Guest
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,graph.valid current → next.valid current) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
   obtain ⟨ready,inner,prefixLength,bound,prefixCell,localsEq,frame,price,continued,endpoint⟩:=prefix_entry_normal source target (wordAt source.memory (node+32#64))
     (wordAt source.memory (node+40#64)) key length small installed leftCell oldLengthCell keyCell lengthCell value normal
   have memoryEq:=congrArg PanSemStateFiniteExact.memory frame
@@ -62,7 +65,7 @@ theorem split_scope_path_normal (source target : PanSemStateFiniteExact 64 Guest
     rw [memoryEq,current _ (by decide)]
     exact oldLengthCell
   have readyBound : prefixLength.toNat≤min (wordAt ready.memory (node+40#64)).toNat length.toNat:=by rw [memoryEq]; exact bound
-  obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+  obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection⟩:=
     after_prefix_path_normal ready inner heap node key length pointer size prefixLength base limit nodeLower pathLower property baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated
       currentQuery currentMember active currentLeaf readyBound ((current _ (by decide)).trans nodeCell) currentLeft currentLength
       ((current _ (by decide)).trans keyCell) ((current _ (by decide)).trans lengthCell) ((current _ (by decide)).trans pointerCell) ((current _ (by decide)).trans sizeCell) prefixCell
@@ -70,9 +73,19 @@ theorem split_scope_path_normal (source target : PanSemStateFiniteExact 64 Guest
   have spent : source.clock-inner.clock≤length.toNat+241:=by omega
   have preserved (query : BitVec 64) (before : query.toNat<heap.toNat) : inner.memory query=source.memory query:=(finalMemory query before).trans (congrFun memoryEq query)
   have inclusion (current : BitVec 64) (live : graph.valid current) : next.valid current:=members current (by rw [same]; exact live)
+  have provenance (current : BitVec 64) (live : next.valid current) : graph.valid current ∨ heap.toNat≤current.toNat:=by
+    rcases finalFresh current live with old|fresh
+    · exact Or.inl (by rwa [same] at old)
+    · exact Or.inr fresh
+  have protection (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat)
+      (away : TrieWalk.PathWordAway key length.toNat address) : next.ProtectedWord address:=by
+    have pureFields : graph.PathFields ready.memory:=by
+      rw [memoryEq]
+      exact ⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
+    exact finalProtection address (safe.of_fields graph base address same pureFields) before away
   rw [endpoint]
   exact ⟨finalDomain.trans domainEq,finalEndian.trans endianEq,finalCode.trans codeEq,spent,preserved,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,
-    next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

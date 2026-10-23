@@ -16,6 +16,21 @@ structure Header (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   rootSafe : graph.ProtectedWord m
   flagSafe : graph.ProtectedWord (m+8#64)
 
+/-- Actual caller restoration and lexical scopes retain both header
+words and their separation from the transported current registry. -/
+theorem Header.of_erase (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : TrieWalk.Graph source.memory source.memaddrs) (next : TrieWalk.Graph target.memory target.memaddrs)
+    (m root flag : BitVec 64) (header : Header source graph m root flag)
+    (same : next.valid=graph.valid) (frame : Input.LocalEffects.erase target=Input.LocalEffects.erase source) :
+    Header target next m root flag := by
+  have memory:=Input.LocalEffects.memory_of_erase source target frame
+  have fields : graph.PathFields target.memory:=by
+    rw [memory]
+    exact ⟨by intros; rfl,by intros; exact ⟨rfl,rfl⟩⟩
+  exact ⟨header.arena,header.aligned,(congrFun memory m).trans header.rootStored,
+    (congrFun memory (m+8#64)).trans header.flagStored,by rw [same]; exact header.member,
+    header.rootSafe.of_fields graph next m same fields,header.flagSafe.of_fields graph next (m+8#64) same fields⟩
+
 /-- The whole setter converts the key into a fresh buffer at its incoming
 heap. Every older protected word therefore has the required path frame;
 callers need no additional premise about a future query allocation. -/
@@ -55,5 +70,6 @@ theorem Header.after_set (source target : PanSemStateFiniteExact 64 Guest.HostMe
 
 end InitECandidate.Solver.Mpt.SetTrie
 
+#print axioms InitECandidate.Solver.Mpt.SetTrie.Header.of_erase
 #print axioms InitECandidate.Solver.Mpt.SetTrie.Output.older_word
 #print axioms InitECandidate.Solver.Mpt.SetTrie.Header.after_set

@@ -4379,6 +4379,11 @@
     "submission/InitECandidate/Solver/Mpt/Fail.lean",
     "submission/InitECandidate/Solver/Mpt/FailGuard.lean",
     "submission/InitECandidate/Solver/Mpt/FailGuardReturn.lean",
+    "submission/InitECandidate/Solver/Mpt/FromWitnessCall.lean",
+    "submission/InitECandidate/Solver/Mpt/FromWitnessCost.lean",
+    "submission/InitECandidate/Solver/Mpt/FromWitnessNormal.lean",
+    "submission/InitECandidate/Solver/Mpt/FromWitnessOutput.lean",
+    "submission/InitECandidate/Solver/Mpt/FromWitnessProgram.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedCounter.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedKeyBuffer.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedKeyNormal.lean",
@@ -4569,6 +4574,7 @@
     "submission/InitECandidate/Solver/Mpt/SetMutationNormal.lean",
     "submission/InitECandidate/Solver/Mpt/SetNormal.lean",
     "submission/InitECandidate/Solver/Mpt/SetOutput.lean",
+    "submission/InitECandidate/Solver/Mpt/SetPersistentPrefix.lean",
     "submission/InitECandidate/Solver/Mpt/SetProgram.lean",
     "submission/InitECandidate/Solver/Mpt/SetRootProtected.lean",
     "submission/InitECandidate/Solver/Mpt/SetRootStore.lean",
@@ -4728,6 +4734,7 @@
     "submission/InitECandidate/Solver/Mpt/TriePathLimit.lean",
     "submission/InitECandidate/Solver/Mpt/TriePathRegisterFresh.lean",
     "submission/InitECandidate/Solver/Mpt/TriePathRegisterFreshGraph.lean",
+    "submission/InitECandidate/Solver/Mpt/TrieProtectedBelow.lean",
     "submission/InitECandidate/Solver/Mpt/TrieProtectedFreshPath.lean",
     "submission/InitECandidate/Solver/Mpt/TrieProtectedGrowth.lean",
     "submission/InitECandidate/Solver/Mpt/TrieProtectedMutation.lean",
@@ -7809,8 +7816,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64678,
-  "package_bytes": 2269251740,
+  "package_entries": 64685,
+  "package_bytes": 2269280732,
   "claim": {
     "K": "infinity"
   },

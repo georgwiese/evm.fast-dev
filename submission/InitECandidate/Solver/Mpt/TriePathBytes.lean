@@ -69,6 +69,23 @@ theorem NibbleSpan.of_before (source target : PanSemStateFiniteExact 64 Guest.Ho
   rw [number] at backing
   omega
 
+/-- A decoder's real scratch-to-heap memory band protects an older path
+buffer. Alignment puts even its first byte's backing word in that band. -/
+theorem NibbleSpan.of_band (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (length lower upper : Nat)
+    (view : NibbleSpan source.memory source.memaddrs source.be pointer length)
+    (aligned : pointer.toNat%8=0) (above : lower≤pointer.toNat) (before : pointer.toNat+length≤upper)
+    (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
+    (memory : ∀ query : BitVec 64,lower≤query.toNat→query.toNat<upper→target.memory query=source.memory query) :
+    NibbleSpan target.memory target.memaddrs target.be pointer length := by
+  apply view.of_agreement source.memory target.memory source.memaddrs target.memaddrs source.be target.be pointer length domain endian
+  intro offset inside
+  have number:=byteAddress_toNat pointer offset (by have fits:=view.fits; omega)
+  apply memory
+  · rw [AllocatedBytes.aligned_number,number]
+    omega
+  · rw [AllocatedBytes.aligned_number,number]
+    omega
+
 end InitECandidate.Solver.Mpt.TrieWalk
 
 #print axioms InitECandidate.Solver.Mpt.TrieWalk.KeyView.nibble_span
@@ -76,3 +93,4 @@ end InitECandidate.Solver.Mpt.TrieWalk
 #print axioms InitECandidate.Solver.Mpt.TrieWalk.NibbleSpan.window
 #print axioms InitECandidate.Solver.Mpt.TrieWalk.NibbleSpan.of_agreement
 #print axioms InitECandidate.Solver.Mpt.TrieWalk.NibbleSpan.of_before
+#print axioms InitECandidate.Solver.Mpt.TrieWalk.NibbleSpan.of_band

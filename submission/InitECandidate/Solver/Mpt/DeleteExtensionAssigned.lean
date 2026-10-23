@@ -31,13 +31,15 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ (graph.valid root ∨ heap.toNat≤root.toNat) ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,next.valid current ↔ graph.valid current ∨ current=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            target.memory address=source.memory address ∧ next.ProtectedWord address) := by
   obtain ⟨callee,called,nodeCell,segmentCell,lengthCell,childCell⟩:=Input.word_quad_environment source.code.lookup (ofString "_delete_ext_finish")
     (ofString "node") (ofString "seg") (ofString "sl") (ofString "nc") body .one node segment length child
     (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (original_code source.code installed)
   obtain ⟨funded,childTarget,returned,run,endpoint⟩:=Input.CallNormal.local_known source target name (ofString "_delete_ext_finish") arguments _ body callee .one argsRead called normal
   obtain ⟨domainEq,endianEq,codeEq,price,older,fields,root,finalHeap,answer,finalCell,finalArena,finalAligned,grows,fresh,
-    next,_included,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+    next,_included,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩:=
     body_path_normal (callEntryStateHOLFinite source callee) childTarget heap node child segment length graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated
       segmentBuffer floor nodeFloor positive member active tag childMember nodeCell segmentCell lengthCell childCell heapCell frontier aligned little domain installed returned run
   have spent : source.clock-childTarget.clock≤length.toNat/8+(wordAt source.memory (child+40#64)).toNat/8+23:=by
@@ -52,7 +54,7 @@ theorem assigned_path_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
   rw [endpoint,answer] at globalFrame
   rw [endpoint,answer]
   exact ⟨root,rfl,domainEq,endianEq,codeEq,spent,globalFrame,older,fields,finalHeap,finalCell,finalArena,finalAligned,grows,fresh,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩
 
 end InitECandidate.Solver.Mpt.DeleteExtension
 

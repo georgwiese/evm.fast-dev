@@ -4719,6 +4719,7 @@
     "submission/InitECandidate/Solver/Mpt/TriePathLimit.lean",
     "submission/InitECandidate/Solver/Mpt/TriePathRegisterFresh.lean",
     "submission/InitECandidate/Solver/Mpt/TriePathRegisterFreshGraph.lean",
+    "submission/InitECandidate/Solver/Mpt/TrieProtectedFreshPath.lean",
     "submission/InitECandidate/Solver/Mpt/TrieProtectedGrowth.lean",
     "submission/InitECandidate/Solver/Mpt/TrieProtectedMutation.lean",
     "submission/InitECandidate/Solver/Mpt/TrieProtectedWord.lean",
@@ -7799,8 +7800,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64668,
-  "package_bytes": 2269188320,
+  "package_entries": 64669,
+  "package_bytes": 2269191597,
   "claim": {
     "K": "infinity"
   },

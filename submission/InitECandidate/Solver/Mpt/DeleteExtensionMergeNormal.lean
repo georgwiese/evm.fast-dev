@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.DeleteExtensionConcat
 import InitECandidate.Solver.Mpt.DeleteExtensionConstructor
+import InitECandidate.Solver.Mpt.TrieProtectedFreshPath
 
 namespace InitECandidate.Solver.Mpt.DeleteExtension
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -30,7 +31,8 @@ theorem merge_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ heap.toNat≤root.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ node,graph.valid node → next.valid node) ∧ (∀ node,next.valid node ↔ graph.valid node ∨ node=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → next.ProtectedWord address) := by
   obtain ⟨ready,inner,localsEq,readyDomain,readyEndian,readyCode,copyPrice,continued,endpoint,nextHeapCell,nextArena,nextAligned,grows,older,
     current,same,currentRegions,currentDisjoint,⟨currentValues⟩,currentPaths,currentPathRegions,currentSeparated,buffer⟩:=
     concat_entry source target heap child segment length graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated segmentBuffer floor
@@ -85,9 +87,14 @@ theorem merge_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   have madeBuffer : current.PathBuffer made.be pathLower nextHeap.toNat heap total.toNat:=by rw [amount]; exact buffer
   have madeInstalled : Input.OriginalCode.Installed made.code:=by change Input.OriginalCode.Installed ready.code; rw [readyCode]; exact installed
   obtain ⟨answer,tailDomain,tailEndian,tailCode,price,tailMemory,finalHeap,finalCell,finalArena,finalAligned,heapGrows,
-    next,members,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+    next,members,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,tailProtection⟩:=
     constructor_paths made tail nextHeap child heap total current limit nodeLower pathLower property currentValues currentRegions currentDisjoint currentPaths currentPathRegions currentSeparated
       madeBuffer positiveTotal (by omega) currentMember active pathTag madeKey madeLength madeChild madeTag nextHeapCell nextArena nextAligned (readyDomain.trans domain) madeInstalled value tailRun
+  have protection (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat) : next.ProtectedWord address:=by
+    have oldFields:=TrieWalk.Graph.PathFields.of_prefix graph made.memory nodeLower heap.toNat regions older
+    have currentSafe:=safe.of_fields graph current address same oldFields
+    have away:=TrieWalk.PathWordAway.above_frontier heap address total.toNat heap.toNat madeBuffer.span.fits aligned before (Nat.le_refl _)
+    exact tailProtection address currentSafe (by omega) away
   rw [endpoint,innerEq]
   have finalPrice : source.clock-tail.clock≤length.toNat/8+childLength.toNat/8+22:=by
     change ready.clock-tail.clock≤3 at price
@@ -99,7 +106,7 @@ theorem merge_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   have exactMembers (node : BitVec 64) : next.valid node ↔ graph.valid node ∨ node=nextHeap:=by
     rw [members node,same]
   exact ⟨tailDomain.trans readyDomain,tailEndian.trans readyEndian,tailCode.trans readyCode,finalPrice,memory,
-    nextHeap,finalHeap,answer,finalCell,finalArena,finalAligned,by omega,by omega,next,included,exactMembers,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    nextHeap,finalHeap,answer,finalCell,finalArena,finalAligned,by omega,by omega,next,included,exactMembers,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protection⟩
 
 end InitECandidate.Solver.Mpt.DeleteExtension
 

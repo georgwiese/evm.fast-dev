@@ -46,7 +46,10 @@ theorem new_remainder_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ wordAt target.memory branch=3#64 ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,
           (∀ node,graph.valid node → next.valid node) ∧ next.valid branch ∧ next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧
-          Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
   have subtraction : (length-prefixLength).toNat=length.toNat-prefixLength.toNat:=BitVec.toNat_sub_of_le (by rwa [BitVec.le_def])
   have suffix:=buffer.window graph source.be pathLower heap.toNat key prefixLength length.toNat (length-prefixLength).toNat bound (by rw [subtraction])
   have read : eval source newRemainder=some (.val (.word (length-prefixLength))):=by
@@ -71,7 +74,10 @@ theorem new_remainder_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
   have answer : value=.val (.word branch):=Option.some.inj (observed.symm.trans expected)
   rw [endpoint,innerEq]
   exact ⟨answer,output.domain,output.endian,output.code,output.olderPrefix,output.heap,output.heapCell,output.heapArena,output.heapAligned,
-    output.heapGrows,output.branchTag,output.graph,output.oldMember,output.branchMember,output.regions,output.disjoint,⟨output.values⟩,output.paths,output.pathRegions,output.separated⟩
+    output.heapGrows,output.branchTag,output.graph,output.oldMember,output.branchMember,output.regions,output.disjoint,⟨output.values⟩,output.paths,output.pathRegions,output.separated,output.freshMembers,
+    (by
+      intro address safe before away
+      exact output.protectedGraph address safe before (away.window key prefixLength address length.toNat _ bound (by rw [subtraction])))⟩
 
 end InitECandidate.Solver.Mpt.SplitExtension
 

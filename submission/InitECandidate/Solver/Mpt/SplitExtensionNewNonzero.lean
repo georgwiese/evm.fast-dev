@@ -52,7 +52,7 @@ theorem new_nonzero_normal (source target : PanSemStateFiniteExact 64 Guest.Host
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (frontier : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source newNonzeroScope=(none,target)) :
-    Nonempty (TwoLeaves.SideOutput source target graph heap (key+prefixLength) remaining otherKey otherLength branch limit nodeLower pathLower property) := by
+    Nonempty (TwoLeaves.ProtectedSideOutput source target graph heap (key+prefixLength) remaining otherKey otherLength branch limit nodeLower pathLower property) := by
   obtain ⟨nibble,small,byteRead⟩:=buffer.span.nibble 0 positive
   have first : @panMemLoadByteHOL 64 _ source.memory source.memaddrs (fun address=>Classical.propDecidable (source.memaddrs address)) source.be (key+prefixLength)=some nibble:=by
     simpa only [byteAddress,BitVec.add_zero] using byteRead

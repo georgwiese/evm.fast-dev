@@ -40,7 +40,10 @@ theorem extension_split_normal (source target : PanSemStateFiniteExact 64 Guest.
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,graph.valid current → next.valid current) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
   have subtraction : (length-level).toNat=length.toNat-level.toNat:=BitVec.toNat_sub_of_le (by rwa [BitVec.le_def])
   have suffix:=query.window graph source.be pathLower heap.toNat key level length.toNat (length-level).toNat before (by rw [subtraction])
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) splitArguments=
@@ -48,7 +51,7 @@ theorem extension_split_normal (source target : PanSemStateFiniteExact 64 Guest.
     simp [splitArguments,insertLeafArguments,queryPointer,queryLength,SplitExtension.callValues,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,
       nodeCell,keyCell,levelCell,lengthCell,pointerCell,sizeCell,prefixCell,valueIsWord,valueWord,wordOpHOL,wordOp]
   rw [extension_shapes.2.2.2.2.1] at normal
-  obtain ⟨ready,inner,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,memory,currentHeap,currentHeapCell,currentArena,currentAligned,grows,branchTag,base,members,branchMember,baseRegions,baseDisjoint,⟨baseValues⟩,basePaths,basePathRegions,baseSeparated⟩:=
+  obtain ⟨ready,inner,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,memory,currentHeap,currentHeapCell,currentArena,currentAligned,grows,branchTag,base,members,branchMember,baseRegions,baseDisjoint,⟨baseValues⟩,basePaths,basePathRegions,baseSeparated,baseFresh,baseProtection⟩:=
     SplitExtension.scoped_none_paths source target heap node (key+level) (length-level) prefixLength pointer size graph limit nodeLower pathLower property
       values regions disjoint paths pathRegions separated suffix member active tag strict (by rwa [subtraction]) payload extra floor empty domain heapCell frontier aligned installed
       "br" splitArguments extensionSplitChoice args normal
@@ -58,7 +61,7 @@ theorem extension_split_normal (source target : PanSemStateFiniteExact 64 Guest.
     rw [localsEq]
     simp [HolFiniteMapExact.update,FUPDATE,Ne.symm other]
   have currentBranch : ready.locals.lookup (ofString "br")=some (.val (.word heap)):=by rw [localsEq]; simp [HolFiniteMapExact.update,FUPDATE]
-  obtain ⟨root,resultLocals,finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalTags,finalHeap,finalHeapCell,finalArena,finalAligned,finalGrows,next,finalMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+  obtain ⟨root,resultLocals,finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalTags,finalHeap,finalHeapCell,finalArena,finalAligned,finalGrows,next,finalMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection⟩:=
     extension_result_normal ready inner currentHeap (wordAt source.memory (node+32#64)) prefixLength heap base limit nodeLower pathLower property
       baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated buffer branchMember (floor.trans grows)
       ((current _ (by decide)).trans segmentCell) ((current _ (by decide)).trans prefixCell) currentBranch
@@ -76,10 +79,21 @@ theorem extension_split_normal (source target : PanSemStateFiniteExact 64 Guest.
     rw [restore_bind_other source _ "br" "r" root (by decide),restore_bound]
     rfl
   have spent : source.clock-inner.clock≤239:=by omega
+  have provenance (current : BitVec 64) (live : next.valid current) : graph.valid current ∨ heap.toNat≤current.toNat:=by
+    rcases finalFresh current live with old|fresh
+    · exact baseFresh current old
+    · exact Or.inr (grows.trans fresh)
+  have protection (address : BitVec 64) (safe : graph.ProtectedWord address) (beforeHeap : address.toNat<heap.toNat)
+      (away : TrieWalk.PathWordAway key length.toNat address) : next.ProtectedWord address:=by
+    have baseSafe:=baseProtection address safe beforeHeap (away.window key level address length.toNat _ before (by rw [subtraction]))
+    have oldAway:=safe.stored graph address node member active (Or.inr tag)
+    have leading:=oldAway.window _ 0#64 address _ prefixLength.toNat (by change 0≤(wordAt source.memory (node+40#64)).toNat; omega)
+      (by change prefixLength.toNat≤(wordAt source.memory (node+40#64)).toNat; omega)
+    exact finalProtection address baseSafe (beforeHeap.trans_le grows) (by simpa only [BitVec.add_zero] using leading)
   rw [endpoint]
   exact ⟨root,restoredLocals,finalDomain.trans domainEq,finalEndian.trans endianEq,finalCode.trans codeEq,spent,olderMemory,tags,
     finalHeap,finalHeapCell,finalArena,finalAligned,grows.trans finalGrows,next,(fun current live=>finalMembers current (members current live)),rootMember,
-    nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩
 
 end InitECandidate.Solver.Mpt.Insert
 

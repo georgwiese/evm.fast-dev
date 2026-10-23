@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.SplitExtensionNewNonzero
 import InitECandidate.Solver.Mpt.BranchValueUpdateGraph
+import InitECandidate.Solver.Mpt.TriePathFieldsMutation
 
 namespace InitECandidate.Solver.Mpt.SplitExtension
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -25,7 +26,7 @@ theorem new_side_normal (source target : PanSemStateFiniteExact 64 Guest.HostMem
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (frontier : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source newChoice=(none,target)) :
-    Nonempty (TwoLeaves.SideOutput source target graph heap (key+prefixLength) remaining otherKey otherLength branch limit nodeLower pathLower property) := by
+    Nonempty (TwoLeaves.ProtectedSideOutput source target graph heap (key+prefixLength) remaining otherKey otherLength branch limit nodeLower pathLower property) := by
   by_cases zero : remaining=0#64
   · subst remaining
     have notHash : wordAt source.memory branch≠0#64:=by rw [tag]; decide
@@ -78,6 +79,11 @@ theorem new_side_normal (source target : PanSemStateFiniteExact 64 Guest.HostMem
       olderPrefix:=prefixMemory
       graph:=next
       oldMember:=by intro node member; rw [same]; exact member
+      freshMembers:=by intro node live; rw [same] at live; exact Or.inl live
+      protectedGraph:=by
+        intro address safe _before _away
+        exact safe.of_fields graph next address same
+          (TrieWalk.Graph.PathFields.of_branch_value source branch pointer size graph nodeLower heap.toNat regions disjoint branchMember branchActive notHash notLeaf notExtension)
       branchMember:=by rw [same]; exact branchMember
       values:=nextValues
       regions:=nextRegions

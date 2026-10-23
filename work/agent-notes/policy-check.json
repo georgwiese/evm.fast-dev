@@ -4263,7 +4263,9 @@
     "submission/InitECandidate/Solver/Mpt/CompactToNibblesSnapshotNibbles.lean",
     "submission/InitECandidate/Solver/Mpt/CompactToNibblesSnapshotNormal.lean",
     "submission/InitECandidate/Solver/Mpt/CompactToNibblesSuffixCost.lean",
+    "submission/InitECandidate/Solver/Mpt/DeleteBodyOutput.lean",
     "submission/InitECandidate/Solver/Mpt/DeleteBodyProgram.lean",
+    "submission/InitECandidate/Solver/Mpt/DeleteCost.lean",
     "submission/InitECandidate/Solver/Mpt/DeleteDescentAfterHash.lean",
     "submission/InitECandidate/Solver/Mpt/DeleteDescentBranchCost.lean",
     "submission/InitECandidate/Solver/Mpt/DeleteDescentBranchNormal.lean",
@@ -4330,6 +4332,7 @@
     "submission/InitECandidate/Solver/Mpt/DeleteFrameReads.lean",
     "submission/InitECandidate/Solver/Mpt/DeleteFrameStack.lean",
     "submission/InitECandidate/Solver/Mpt/DeleteHelperGlobals.lean",
+    "submission/InitECandidate/Solver/Mpt/DeleteNormal.lean",
     "submission/InitECandidate/Solver/Mpt/DeleteSetup.lean",
     "submission/InitECandidate/Solver/Mpt/DeleteUnwindBranch.lean",
     "submission/InitECandidate/Solver/Mpt/DeleteUnwindChildStore.lean",
@@ -7768,8 +7771,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64637,
-  "package_bytes": 2268987646,
+  "package_entries": 64640,
+  "package_bytes": 2269005960,
   "claim": {
     "K": "infinity"
   },

@@ -18,7 +18,8 @@ theorem unwind_iteration_normal (source target : PanSemStateFiniteExact 64 Guest
       model.heap.toNat≤next.heap.toNat ∧ (∀ node,model.graph.valid node→next.graph.valid node) ∧
       model.graph.PathFields target.memory ∧
       (∀ query : BitVec 64,query.toNat<nodeLower→target.memory query=source.memory query) ∧
-      (∀ key,key≠ofString "heap_ptr"→target.globals.lookup key=source.globals.lookup key) := by
+      (∀ key,key≠ofString "heap_ptr"→target.globals.lookup key=source.globals.lookup key) ∧
+      (∀ node,next.graph.valid node→model.graph.valid node ∨ model.heap.toNat≤node.toNat) := by
   obtain ⟨saved,tail,framesEq,topEq,view,_previous,_rest,_decreases⟩:=model.stack.pop source model.cursor.toNat model.top model.frames active
   have owned : saved.Owned model.graph:=model.parents saved (by rw [framesEq]; simp)
   have topCell : source.locals.lookup (ofString "top")=some (.val (.word saved.pointer)):=by rw [←topEq]; exact model.topCell
@@ -46,7 +47,7 @@ theorem unwind_iteration_normal (source target : PanSemStateFiniteExact 64 Guest
   change inner.globals=middle.globals at popGlobals
   let next:=finished.restore_other source inner limit nodeLower pathLower property "fnode" (by decide) (by decide)
   rw [endpoint]
-  refine ⟨next,decreases,?_,?_,?_,?_,?_⟩
+  refine ⟨next,decreases,?_,?_,?_,?_,?_,?_⟩
   · change model.heap.toNat≤finished.heap.toNat
     rw [heapEq]
     exact output.grows
@@ -65,6 +66,12 @@ theorem unwind_iteration_normal (source target : PanSemStateFiniteExact 64 Guest
     change inner.globals.lookup key=source.globals.lookup key
     rw [popGlobals]
     exact output.globals key other
+  · intro node member
+    change finished.graph.valid node at member
+    rw [validEq] at member
+    rcases (output.members node).1 member with old|same
+    · exact Or.inl old
+    · rw [same]; exact output.fresh
 
 end InitECandidate.Solver.Mpt.DeleteBody
 

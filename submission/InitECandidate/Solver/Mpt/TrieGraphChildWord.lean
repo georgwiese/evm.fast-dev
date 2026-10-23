@@ -23,7 +23,7 @@ noncomputable def Graph.of_child_word (memory : Memory) (domain : BitVec 64 → 
     by_cases same : slot=address
     · exact ⟨child,old.mapped,by simp [nextMemory,same,StoreWord.put],childMember⟩
     · exact ⟨old.child,old.mapped,by change StoreWord.put memory address child slot=.word old.child; rw [StoreWord.put,if_neg same]; exact old.stored,old.member⟩
-  refine {valid:=graph.valid,null:=graph.null,header:=?_,path:=?_,extension:=?_,zeroHop:=?_,branch:=?_}
+  refine {valid:=graph.valid,null:=graph.null,header:=?_,path:=?_,extension:=?_,zeroHop:=?_,branch:=?_,kindBound:=?_}
   · intro node member active
     obtain ⟨mapped,stored⟩:=graph.header node member active
     exact ⟨mapped,by rw [headers node member active,tags node member active]; exact stored⟩
@@ -55,6 +55,10 @@ noncomputable def Graph.of_child_word (memory : Memory) (domain : BitVec 64 → 
   · intro node member active notHash notLeaf notExtension index inside
     rw [tags node member active] at notHash notLeaf notExtension
     exact childView _ (graph.branch node member active notHash notLeaf notExtension index inside)
+
+  · intro node member active
+    rw [tags node member active]
+    exact graph.kindBound node member active
 
 end InitECandidate.Solver.Mpt.TrieWalk
 

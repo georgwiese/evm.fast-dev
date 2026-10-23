@@ -39,7 +39,11 @@ def Graph.of_agreement (memory memory' : Memory) (domain domain' : BitVec 64 →
     path := ?_
     extension := ?_
     zeroHop := ?_
-    branch := ?_ }
+    branch := ?_
+    kindBound := by
+      intro node member active
+      rw [tagEq node member active]
+      exact graph.kindBound node member active }
   · intro node member active
     obtain ⟨mapped, stored⟩ := graph.header node member active
     exact ⟨by rwa [sameDomain], by rw [agree node (.header node member active), tagEq node member active]; exact stored⟩

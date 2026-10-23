@@ -19,7 +19,7 @@ noncomputable def Graph.union {memory : Memory} {domain : BitVec 64 → Prop}
     by_cases old : first.valid node
     · exact (first.extension node old active tag).map_valid (fun _ h=>Or.inl h)
     · exact (second.extension node (member.resolve_left old) active tag).map_valid (fun _ h=>Or.inr h)
-  refine {valid:=valid,null:=Or.inl first.null,header:=?_,path:=?_,extension:=extension,zeroHop:=?_,branch:=?_}
+  refine {valid:=valid,null:=Or.inl first.null,header:=?_,path:=?_,extension:=extension,zeroHop:=?_,branch:=?_,kindBound:=?_}
   · intro node member active
     rcases member with left|right
     · exact first.header node left active
@@ -41,6 +41,11 @@ noncomputable def Graph.union {memory : Memory} {domain : BitVec 64 → Prop}
     by_cases old : first.valid node
     · exact (first.branch node old active notHash notLeaf notExtension index inside).map_valid (fun _ h=>Or.inl h)
     · exact (second.branch node (member.resolve_left old) active notHash notLeaf notExtension index inside).map_valid (fun _ h=>Or.inr h)
+
+  · intro node member active
+    rcases member with left|right
+    · exact first.kindBound node left active
+    · exact second.kindBound node right active
 
 noncomputable def Values.union {memory : Memory} {domain : BitVec 64 → Prop}
     (first second : Graph memory domain) (limit : Nat) (property : BitVec 64 → BitVec 64 → Prop)

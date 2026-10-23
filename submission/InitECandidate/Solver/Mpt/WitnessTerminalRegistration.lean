@@ -10,7 +10,7 @@ open Flapjack PanSemStateFiniteExact GasBudget WitnessRadix
 def Registration.hashed (memory : Memory) (domain : BitVec 64 → Prop) (graph : Graph memory domain)
     (node : BitVec 64) (mapped : domain node) (stored : memory node=.word 0#64) : Registration graph node := by
   have tag : wordAt memory node=0#64 := by simp [wordAt,stored,MemoryBytes.wordBits]
-  refine ⟨mapped,by rw [tag]; exact stored,?_,?_,?_,?_⟩
+  refine ⟨mapped,by rw [tag]; exact stored,?_,?_,?_,?_,by rw [tag]; decide⟩
   · intro pathTag
     have bad : False := by rw [tag] at pathTag; rcases pathTag with bad|bad <;> cases bad
     exact bad.elim
@@ -28,7 +28,7 @@ def LeafView.registration (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (view : LeafView source node db pointer length nibbles nibbleLength valuePointer valueLength)
     (graph : TrieWalk.Graph source.memory source.memaddrs) : TrieWalk.Registration graph node := by
   have tag : wordAt source.memory node=1#64 := by simp [wordAt,view.tag,MemoryBytes.wordBits]
-  refine ⟨?_,by rw [tag]; exact view.tag,fun _=>view.path,?_,?_,?_⟩
+  refine ⟨?_,by rw [tag]; exact view.tag,fun _=>view.path,?_,?_,?_,by rw [tag]; decide⟩
   · simpa only [byteAddress,BitVec.add_zero] using AllocatedBytes.word_mapped source node 64 0 view.domain view.arena (by decide) view.aligned (by decide)
   · intro extensionTag; rw [tag] at extensionTag; cases extensionTag
   · intro extensionTag; rw [tag] at extensionTag; cases extensionTag

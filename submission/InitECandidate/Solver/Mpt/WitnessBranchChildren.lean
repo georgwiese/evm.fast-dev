@@ -73,7 +73,7 @@ noncomputable def Children.registration (source : PanSemStateFiniteExact 64 Gues
     (arena : AllocatedBytes.Arena node 176) (aligned : node.toNat%8=0) (stored : source.memory node=.word 3#64) :
     TrieWalk.Registration graph node := by
   have tag : wordAt source.memory node=3#64 := by simp [wordAt,stored,MemoryBytes.wordBits]
-  refine ⟨?_,by rw [tag]; exact stored,?_,?_,?_,?_⟩
+  refine ⟨?_,by rw [tag]; exact stored,?_,?_,?_,?_,by rw [tag]; decide⟩
   · simpa only [byteAddress,BitVec.add_zero] using AllocatedBytes.word_mapped source node 176 0 domain arena (by decide) aligned (by decide)
   · intro pathTag
     have bad : False := by rw [tag] at pathTag; rcases pathTag with bad|bad <;> cases bad

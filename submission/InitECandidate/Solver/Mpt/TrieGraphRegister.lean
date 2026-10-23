@@ -15,6 +15,7 @@ structure Registration {memory : Memory} {domain : BitVec 64 → Prop}
     (extension tag).child=0#64 ∨ wordAt memory (extension tag).child≠2#64
   branch : wordAt memory node≠0#64 → wordAt memory node≠1#64 → wordAt memory node≠2#64 →
     ∀ index, index<16 → ChildView memory domain graph.valid (node+32#64+BitVec.ofNat 64 (index*8))
+  kindBound : (wordAt memory node).toNat≤3
 
 private def ChildView.enlarge {memory : Memory} {domain : BitVec 64 → Prop}
     {valid : BitVec 64 → Prop} {address : BitVec 64} (view : ChildView memory domain valid address) (node : BitVec 64) :
@@ -39,7 +40,7 @@ noncomputable def Graph.register {memory : Memory} {domain : BitVec 64 → Prop}
     · have fresh := member.resolve_left old
       subst current
       exact (data.extension tag).enlarge node
-  refine { valid:=valid, null:=Or.inl graph.null, header:=?_, path:=?_, extension:=extension, zeroHop:=?_, branch:=?_ }
+  refine { valid:=valid, null:=Or.inl graph.null, header:=?_, path:=?_, extension:=extension, zeroHop:=?_, branch:=?_, kindBound:=?_ }
   · intro current member active
     rcases member with old|fresh
     · exact graph.header current old active
@@ -66,6 +67,11 @@ noncomputable def Graph.register {memory : Memory} {domain : BitVec 64 → Prop}
     · have fresh := member.resolve_left old
       subst current; exact (data.branch notHash notLeaf notExtension index inside).enlarge node
 
+  · intro current member active
+    rcases member with old|fresh
+    · exact graph.kindBound current old active
+    · subst current; exact data.kindBound
+
 theorem Graph.register_valid {memory : Memory} {domain : BitVec 64 → Prop}
     (graph : Graph memory domain) (node : BitVec 64) (data : Registration graph node) :
     (graph.register node data).valid = (fun pointer=>graph.valid pointer ∨ pointer=node) := rfl
@@ -91,7 +97,7 @@ noncomputable def Values.register {memory : Memory} {domain : BitVec 64 → Prop
 
 /-- The actual empty completed-node registry before materialization. -/
 def Graph.empty (memory : Memory) (domain : BitVec 64 → Prop) : Graph memory domain := by
-  refine { valid:=fun node=>node=0#64, null:=rfl, header:=?_, path:=?_, extension:=?_, zeroHop:=?_, branch:=?_ }
+  refine { valid:=fun node=>node=0#64, null:=rfl, header:=?_, path:=?_, extension:=?_, zeroHop:=?_, branch:=?_, kindBound:=?_ }
   all_goals intro node member active; exact (active member).elim
 
 def Values.empty (memory : Memory) (domain : BitVec 64 → Prop) (limit : Nat)

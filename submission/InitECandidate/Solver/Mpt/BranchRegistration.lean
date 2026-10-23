@@ -11,7 +11,7 @@ def Registration.empty_branch (source : PanSemStateFiniteExact 64 Guest.HostMemo
     (zeros : ∀ offset : Nat,0<offset → offset<176 → offset%8=0 → source.memory (node+BitVec.ofNat 64 offset)=.word 0#64) :
     Registration graph node := by
   have nodeTag : wordAt source.memory node=3#64:=by simp [wordAt,tag,MemoryBytes.wordBits]
-  refine ⟨?_,by rw [nodeTag]; exact tag,?_,?_,?_,?_⟩
+  refine ⟨?_,by rw [nodeTag]; exact tag,?_,?_,?_,?_,by rw [nodeTag]; decide⟩
   · simpa only [byteAddress,BitVec.add_zero] using AllocatedBytes.word_mapped source node 176 0 domain arena (by decide) aligned (by decide)
   · intro pathTag
     have impossible : False:=by rw [nodeTag] at pathTag; rcases pathTag with bad|bad <;> cases bad

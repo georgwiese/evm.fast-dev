@@ -18,7 +18,7 @@ def Registration.positive_extension (source : PanSemStateFiniteExact 64 Guest.Ho
   have fields (offset : Nat) (inside : offset<56) (alignedOffset : offset%8=0) :
       source.memaddrs (node+BitVec.ofNat 64 offset):=
     AllocatedBytes.word_mapped source node 56 offset domain arena inside aligned alignedOffset
-  refine ⟨?_,by rw [nodeTag]; exact tag,?_,?_,?_,?_⟩
+  refine ⟨?_,by rw [nodeTag]; exact tag,?_,?_,?_,?_,by rw [nodeTag]; decide⟩
   · simpa only [BitVec.add_zero] using fields 0 (by decide) (by decide)
   · intro pathTag
     exact {

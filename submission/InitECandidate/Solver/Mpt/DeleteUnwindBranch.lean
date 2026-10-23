@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.DeleteUnwindChildStore
 import InitECandidate.Solver.Mpt.DeleteUnwindOutput
 import InitECandidate.Solver.Mpt.CollapseBranchAssigned
+import InitECandidate.Solver.Mpt.TrieProtectedMutation
 
 namespace InitECandidate.Solver.Mpt.DeleteBody
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -36,7 +37,7 @@ theorem unwind_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
   have tag : wordAt source.memory saved.node=3#64:=by simpa only [branchKind,DeleteFrame.Kind.tag] using owned.2.2.1
   have currentTag : wordAt post.memory saved.node=3#64:=(storeFields.tags saved.node owned.1 owned.2.1).trans tag
   obtain ⟨root,localsEq,domainEq,endianEq,codeEq,_price,globalsEq,helperMemory,helperFields,finalHeap,finalCell,finalArena,finalAligned,grows,fresh,
-    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,_protection⟩:=
+    next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,protection⟩:=
     CollapseBranch.assigned_path_normal post target heap saved.node current limit nodeLower pathLower property currentValues currentRegions currentDisjoint currentPaths currentPathRegions currentSeparated
       floor pathFloor nodeFloor currentMember owned.2.1 currentTag heapCell frontier aligned little domain installed (ofString "res") branchArguments args normal
   have older (query : BitVec 64) (before : query.toNat<nodeLower) : target.memory query=source.memory query:=
@@ -47,8 +48,17 @@ theorem unwind_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     rcases fresh with old|above
     · exact Or.inl (by rwa [same] at old)
     · exact Or.inr above
+  have protectedWords (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat) :
+      target.memory address=source.memory address ∧ next.ProtectedWord address:=by
+    have small : (saved.words "idx").toNat<16:=by simpa only [branchKind] using owned.2.2.2
+    have slot : TrieWalk.ChildSlot source.memory saved.node (32+(saved.words "idx").toNat*8):=
+      .branch (by rw [tag]; decide) (by rw [tag]; decide) (by rw [tag]; decide) _ small
+    have storeWord : post.memory address=source.memory address:=
+      safe.child_memory graph address saved.node result (32+(saved.words "idx").toNat*8) owned.1 owned.2.1 slot
+    exact ⟨(helperMemory address before).trans storeWord,
+      protection address (safe.of_fields graph current address same storeFields) before⟩
   exact ⟨⟨root,finalHeap,localsEq,domainEq,endianEq,codeEq,globalsEq,older,fields,finalCell,finalArena,finalAligned,grows,sourceFresh,
-    next,exactMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩⟩
+    next,exactMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,protectedWords⟩⟩
 
 end InitECandidate.Solver.Mpt.DeleteBody
 

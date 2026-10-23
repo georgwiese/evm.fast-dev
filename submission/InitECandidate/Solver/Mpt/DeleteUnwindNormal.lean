@@ -17,7 +17,9 @@ theorem unwind_path_normal (source target : PanSemStateFiniteExact 64 Guest.Host
       model.graph.PathFields target.memory ∧
       (∀ query : BitVec 64,query.toNat<nodeLower→target.memory query=source.memory query) ∧
       (∀ key,key≠ofString "heap_ptr"→target.globals.lookup key=source.globals.lookup key) ∧
-      (∀ node,next.graph.valid node→model.graph.valid node ∨ model.heap.toNat≤node.toNat) := by
+      (∀ node,next.graph.valid node→model.graph.valid node ∨ model.heap.toNat≤node.toNat) ∧
+      (∀ address : BitVec 64,model.graph.ProtectedWord address → address.toNat<model.heap.toNat →
+        target.memory address=source.memory address ∧ next.graph.ProtectedWord address) := by
   have auxiliary : ∀ depth (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
       (model : UnwindModel source limit nodeLower pathLower property),model.frames.length=depth→
       evaluateHOLFiniteState source (.while unwindTest unwindBody)=(none,target)→
@@ -26,7 +28,9 @@ theorem unwind_path_normal (source target : PanSemStateFiniteExact 64 Guest.Host
         model.graph.PathFields target.memory ∧
         (∀ query : BitVec 64,query.toNat<nodeLower→target.memory query=source.memory query) ∧
         (∀ key,key≠ofString "heap_ptr"→target.globals.lookup key=source.globals.lookup key) ∧
-        (∀ node,next.graph.valid node→model.graph.valid node ∨ model.heap.toNat≤node.toNat) := by
+        (∀ node,next.graph.valid node→model.graph.valid node ∨ model.heap.toNat≤node.toNat) ∧
+      (∀ address : BitVec 64,model.graph.ProtectedWord address → address.toNat<model.heap.toNat →
+        target.memory address=source.memory address ∧ next.graph.ProtectedWord address) := by
     intro depth
     induction depth using Nat.strong_induction_on with
     | h depth ih=>
@@ -42,22 +46,26 @@ theorem unwind_path_normal (source target : PanSemStateFiniteExact 64 Guest.Host
         have targetEq : target=source:=congrArg Prod.snd (normal.symm.trans skipped)
         subst target
         exact ⟨model,stopped,(model.empty_iff source limit nodeLower pathLower property).2 stopped,Nat.le_refl _,(fun _ live=>live),
-          TrieWalk.Graph.PathFields.of_agreement model.graph source.memory (fun _ _=>rfl),(fun _ _=>rfl),(fun _ _=>rfl),(fun _ member=>Or.inl member)⟩
+          TrieWalk.Graph.PathFields.of_agreement model.graph source.memory (fun _ _=>rfl),(fun _ _=>rfl),(fun _ _=>rfl),(fun _ member=>Or.inl member),(by intro address safe _before; exact ⟨rfl,safe⟩)⟩
       · have read : eval source unwindTest=some (.val (.word 1#64)):=by
           simp [eval,unwindTest,localVar,evalHOLExact,toExact,model.topCell,stopped,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
         obtain ⟨_funded,middle,bodyRun,tailRun,_forward⟩:=Input.while_none_step source target (ofString "key") unwindTest unwindBody unwind_body_safe read normal
         let entered:=model.with_clock source limit nodeLower pathLower property (source.clock-1)
-        obtain ⟨current,decreases,grows,members,fields,memory,globals,fresh⟩:=unwind_iteration_normal (decClockHOLFinite source) middle limit nodeLower pathLower property entered stopped bodyRun
+        obtain ⟨current,decreases,grows,members,fields,memory,globals,fresh,protection⟩:=unwind_iteration_normal (decClockHOLFinite source) middle limit nodeLower pathLower property entered stopped bodyRun
         have smaller : current.frames.length<depth:=by change current.frames.length+1=model.frames.length at decreases; omega
-        obtain ⟨next,topZero,empty,finalGrows,finalMembers,finalFields,finalMemory,finalGlobals,finalFresh⟩:=ih current.frames.length smaller middle target current rfl tailRun
+        obtain ⟨next,topZero,empty,finalGrows,finalMembers,finalFields,finalMemory,finalGlobals,finalFresh,finalProtection⟩:=ih current.frames.length smaller middle target current rfl tailRun
         have composedFields : model.graph.PathFields target.memory:=fields.trans model.graph current.graph finalFields members
         refine ⟨next,topZero,empty,grows.trans finalGrows,(fun node live=>finalMembers node (members node live)),composedFields,
           (fun query before=>(finalMemory query before).trans (memory query before)),
-          (fun key other=>(finalGlobals key other).trans (globals key other)),?_⟩
-        intro node member
-        rcases finalFresh node member with older|newer
-        · exact fresh node older
-        · exact Or.inr (grows.trans newer)
+          (fun key other=>(finalGlobals key other).trans (globals key other)),?_,?_⟩
+        · intro node member
+          rcases finalFresh node member with older|newer
+          · exact fresh node older
+          · exact Or.inr (grows.trans newer)
+        · intro address safe before
+          obtain ⟨firstWord,firstSafe⟩:=protection address safe before
+          obtain ⟨lastWord,lastSafe⟩:=finalProtection address firstSafe (before.trans_le grows)
+          exact ⟨lastWord.trans firstWord,lastSafe⟩
   rw [unwind_shapes.1] at normal
   exact auxiliary model.frames.length source target model rfl normal
 

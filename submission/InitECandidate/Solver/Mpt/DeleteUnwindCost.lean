@@ -53,7 +53,7 @@ theorem unwind_cost_ranked (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       · exact (summary.2.2.2 continued).elim
     have run : evaluateHOLFiniteState (decClockHOLFinite current) unwindBody=(none,output.2):=Prod.ext normal rfl
     let entered:=model.with_clock current limit nodeLower pathLower property (current.clock-1)
-    obtain ⟨next,decreases,_grows,_members,_fields,_memory,_globals⟩:=unwind_iteration_normal (decClockHOLFinite current) output.2 limit nodeLower pathLower property entered active run
+    obtain ⟨next,decreases,_grows,_members,_fields,_memory,_globals,_fresh⟩:=unwind_iteration_normal (decClockHOLFinite current) output.2 limit nodeLower pathLower property entered active run
     refine ⟨⟨next⟩,?_⟩
     change unwindRank output.2<unwindRank current
     rw [unwind_rank_model output.2 limit nodeLower pathLower property next,unwind_rank_model current limit nodeLower pathLower property model]

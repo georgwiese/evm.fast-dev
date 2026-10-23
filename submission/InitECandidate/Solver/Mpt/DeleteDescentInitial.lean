@@ -25,7 +25,8 @@ theorem initial_descent_model (source : PanSemStateFiniteExact 64 Guest.HostMemo
     (floor : DeleteFrame.ceiling≤pathLower) (pathFloor : pathLower≤nodeLower) (nodeFloor : nodeLower≤heap.toNat)
     (little : source.be=false) (installed : Input.OriginalCode.Installed source.code) :
     ∃ initial : DescentModel (setup source) key length limit nodeLower pathLower property,
-      initial.pending.heap=heap ∧ initial.pending.graph.valid=graph.valid ∧ initial.pending.frames=[] ∧ initial.go=1#64 := by
+      initial.pending.heap=heap ∧ initial.pending.graph.valid=graph.valid ∧ initial.pending.frames=[] ∧ initial.go=1#64 ∧
+      initial.pending.cursor=cursor ∧ initial.pending.frame=frame ∧ initial.node=node ∧ initial.level=level ∧ initial.pending.graph=graph := by
   obtain ⟨topCell,resultCell,goCell⟩:=setup_locals source
   let pending : UnwindModel (setup source) limit nodeLower pathLower property := {
     heap:=heap
@@ -74,7 +75,7 @@ theorem initial_descent_model (source : PanSemStateFiniteExact 64 Guest.HostMemo
     levelBound:=within
     depthBound:=by change 0≤level.toNat; omega
     nodeMember:=member
-    query:=query },rfl,rfl,rfl,rfl⟩
+    query:=query },rfl,rfl,rfl,rfl,rfl,rfl,rfl,rfl,rfl⟩
 
 end InitECandidate.Solver.Mpt.DeleteBody
 

@@ -43,7 +43,10 @@ theorem choices_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemo
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ wordAt target.memory branch=3#64 ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,
           (∀ node,graph.valid node → next.valid node) ∧ next.valid branch ∧ next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧
-          Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway (segment+prefixLength) remaining.toNat address → TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
   rw [old_shapes.1] at normal
   obtain ⟨middle,firstRun,afterFirst,_⟩:=old_single_prefix.normal_continue source target afterSingle value normal
   rw [old_shapes.2.1] at afterFirst
@@ -56,7 +59,7 @@ theorem choices_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemo
     branchMember branchActive tag childMember domain heapCell frontier aligned installed sideRun
   have current (name : MlS) : last.locals.lookup name=source.locals.lookup name:=by rw [output.locals]
   have currentInstalled : Input.OriginalCode.Installed last.code:=by rw [output.code]; exact installed
-  obtain ⟨answer,domainEq,endianEq,codeEq,memory,finalHeap,finalHeapCell,finalArena,finalAligned,grows,finalTag,next,members,member,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+  obtain ⟨answer,domainEq,endianEq,codeEq,memory,finalHeap,finalHeapCell,finalArena,finalAligned,grows,finalTag,next,members,member,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection⟩:=
     new_remainder_normal last target output.heap branch key prefixLength length pointer size (segment+prefixLength) remaining output.graph limit nodeLower pathLower property
       output.values output.regions output.disjoint output.paths output.pathRegions output.separated output.otherBuffer queryBound output.buffer (floor.trans output.heapGrows)
       ((current _).trans branchCell) ((current _).trans keyCell) ((current _).trans prefixCell) ((current _).trans lengthCell)
@@ -64,9 +67,16 @@ theorem choices_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemo
       output.branchMember branchActive output.branchTag (output.domain.trans domain) output.heapCell output.heapArena output.heapAligned currentInstalled value continued
   have prefixMemory (query : BitVec 64) (before : query.toNat<branch.toNat) : target.memory query=source.memory query:=
     (memory query before).trans (output.olderPrefix query before)
+  have provenance (current : BitVec 64) (live : next.valid current) : graph.valid current ∨ heap.toNat≤current.toNat:=by
+    rcases finalFresh current live with old|fresh
+    · exact output.freshMembers current old
+    · exact Or.inr (output.heapGrows.trans fresh)
+  have protection (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat)
+      (oldAway : TrieWalk.PathWordAway (segment+prefixLength) remaining.toNat address) (queryAway : TrieWalk.PathWordAway key length.toNat address) : next.ProtectedWord address:=by
+    exact finalProtection address (output.protectedGraph address safe before oldAway) (before.trans_le output.heapGrows) queryAway
   exact ⟨answer,domainEq.trans output.domain,endianEq.trans output.endian,codeEq.trans output.code,prefixMemory,
     finalHeap,finalHeapCell,finalArena,finalAligned,output.heapGrows.trans grows,finalTag,next,
-    (fun node live=>members node (output.oldMember node live)),member,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    (fun node live=>members node (output.oldMember node live)),member,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩
 
 end InitECandidate.Solver.Mpt.SplitExtension
 

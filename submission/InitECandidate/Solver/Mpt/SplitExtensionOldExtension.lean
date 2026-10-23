@@ -5,6 +5,7 @@ import InitECandidate.Solver.Mpt.TriePathBufferMutation
 import InitECandidate.Solver.Mpt.TriePathBufferBounds
 import InitECandidate.Solver.Mpt.TwoLeavesSideOutput
 import InitECandidate.Solver.WitnessRadix.Bindings
+import InitECandidate.Solver.Mpt.NodeConstructorProtected
 
 namespace InitECandidate.Solver.Mpt.SplitExtension
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -31,7 +32,7 @@ theorem old_extension_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (frontier : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source oldExtensionScope=(none,target)) :
-    Nonempty (TwoLeaves.SideOutput source target graph heap (segment+prefixLength) remaining key length branch limit nodeLower pathLower property) := by
+    Nonempty (TwoLeaves.ProtectedSideOutput source target graph heap (segment+prefixLength) remaining key length branch limit nodeLower pathLower property) := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) oldExtensionArguments=
       some [.val (.word (segment+prefixLength+1#64)),.val (.word (remaining-1#64)),.val (.word child)]:=by
     simp [oldExtensionArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,segmentCell,prefixCell,remainingCell,childCell,valueIsWord,valueWord,wordOpHOL,wordOp,BitVec.add_assoc]
@@ -108,6 +109,21 @@ theorem old_extension_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     olderPrefix:=prefixMemory
     graph:=next
     oldMember:=finalMembers
+    freshMembers:=by
+      intro node live
+      rw [same] at live
+      rcases (members node).mp live with old|new
+      · exact Or.inl old
+      · exact Or.inr (by rw [new])
+    protectedGraph:=by
+      intro address safe before away
+      have suffixAway:=away.window (segment+prefixLength) 1#64 address remaining.toNat (remaining-1#64).toNat
+        (by change 1≤remaining.toNat; omega) (by rw [subtraction]; exact Nat.le_refl _)
+      have baseSafe:=(physical.path_protected .extension (Or.inr rfl) source ready heap _ graph base nodeLower regions members address safe before
+        (by simpa [NodeConstructor.extensionWords] using suffixAway)).2
+      have storeFields:=TrieWalk.Graph.PathFields.of_child_store base nodeLower (PersistentAlloc.rounded heap 56#64).toNat baseRegions baseDisjoint
+        branch heap (32+index*8) slot currentMember branchActive
+      exact baseSafe.of_fields base next address same storeFields
     branchMember:=finalBranch
     values:=Classical.choice nextValues
     regions:=nextRegions

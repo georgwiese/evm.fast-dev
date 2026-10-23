@@ -34,7 +34,10 @@ theorem branch_scope_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ wordAt target.memory heap=3#64 ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,
           (∀ node,graph.valid node → next.valid node) ∧ next.valid heap ∧ next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧
-          Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway segment oldLength.toNat address → TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
   obtain ⟨ready,inner,branchCell,localsEq,physical,codeEq,continued,endpoint,base,members,member,baseRegions,baseDisjoint,⟨baseValues⟩,basePaths,basePathRegions,baseSeparated,first,other⟩:=
     branch_entry source target heap segment oldLength key length graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated buffer query
       floor empty domain heapCell frontier aligned installed value normal
@@ -52,7 +55,7 @@ theorem branch_scope_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
   have current (name : MlS) (other : name≠ofString "br") : ready.locals.lookup name=source.locals.lookup name:=by
     rw [localsEq]
     simp [HolFiniteMapExact.update,FUPDATE,Ne.symm other]
-  obtain ⟨answer,domainEq,endianEq,finalCode,memory,finalHeap,finalHeapCell,finalArena,finalAligned,finalGrows,finalTag,next,oldMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+  obtain ⟨answer,domainEq,endianEq,finalCode,memory,finalHeap,finalHeapCell,finalArena,finalAligned,finalGrows,finalTag,next,oldMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection⟩:=
     after_branch_normal ready inner (PersistentAlloc.rounded heap 176#64) heap segment prefixLength oldLength child key length pointer size
       base limit nodeLower pathLower property baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated first other queryBound
       ((current _ (by decide)).trans keyCell) ((current _ (by decide)).trans lengthCell) ((current _ (by decide)).trans pointerCell) ((current _ (by decide)).trans sizeCell)
@@ -63,9 +66,19 @@ theorem branch_scope_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
   have prefixMemory (query : BitVec 64) (before : query.toNat<heap.toNat) : inner.memory query=source.memory query:=
     (memory query before).trans (physical.allocation.memory query (Or.inl before))
   have inclusion (node : BitVec 64) (live : graph.valid node) : next.valid node:=oldMembers node ((members node).mpr (Or.inl live))
+  have provenance (current : BitVec 64) (live : next.valid current) : graph.valid current ∨ heap.toNat≤current.toNat:=by
+    rcases finalFresh current live with old|fresh
+    · rcases (members current).mp old with original|branch
+      · exact Or.inl original
+      · exact Or.inr (by rw [branch])
+    · exact Or.inr (grows.trans fresh)
+  have protection (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat)
+      (oldAway : TrieWalk.PathWordAway segment oldLength.toNat address) (queryAway : TrieWalk.PathWordAway key length.toNat address) : next.ProtectedWord address:=by
+    have baseSafe:=(physical.protected source ready heap graph base nodeLower regions members address safe before).2
+    exact finalProtection address baseSafe (before.trans_le grows) oldAway queryAway
   rw [endpoint]
   exact ⟨answer,domainEq.trans physical.allocation.domain,endianEq.trans physical.allocation.endian,finalCode.trans codeEq,prefixMemory,
-    finalHeap,finalHeapCell,finalArena,finalAligned,grows.trans finalGrows,finalTag,next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    finalHeap,finalHeapCell,finalArena,finalAligned,grows.trans finalGrows,finalTag,next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩
 
 end InitECandidate.Solver.Mpt.SplitExtension
 

@@ -28,7 +28,7 @@ theorem old_side_normal (source target : PanSemStateFiniteExact 64 Guest.HostMem
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (frontier : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0) (installed : Input.OriginalCode.Installed source.code)
     (normal : evaluateHOLFiniteState source oldSide=(none,target)) :
-    Nonempty (TwoLeaves.SideOutput source target graph heap (segment+prefixLength) remaining key length branch limit nodeLower pathLower property) := by
+    Nonempty (TwoLeaves.ProtectedSideOutput source target graph heap (segment+prefixLength) remaining key length branch limit nodeLower pathLower property) := by
   by_cases one : remaining=1#64
   · obtain ⟨index,small,stored,tags,next,same,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
       old_store_paths source branch child segment prefixLength "child" remaining.toNat buffer.span positive branchCell segmentCell prefixCell childCell
@@ -75,6 +75,11 @@ theorem old_side_normal (source target : PanSemStateFiniteExact 64 Guest.HostMem
       olderPrefix:=prefixMemory
       graph:=next
       oldMember:=by intro node live; rw [same]; exact live
+      freshMembers:=by intro node live; rw [same] at live; exact Or.inl live
+      protectedGraph:=by
+        intro address safe _before _away
+        exact safe.of_fields graph next address same
+          (TrieWalk.Graph.PathFields.of_child_store graph nodeLower heap.toNat regions disjoint branch child (32+index*8) slot branchMember branchActive)
       branchMember:=by rw [same]; exact branchMember
       values:=Classical.choice nextValues
       regions:=nextRegions

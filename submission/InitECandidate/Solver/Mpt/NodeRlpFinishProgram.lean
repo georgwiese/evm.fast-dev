@@ -22,6 +22,8 @@ def scanTest : ExpHOL 64:=.cmp .less (localVar "i") (.const 16#64)
 def childArguments : List (ExpHOL 64):=[.load .one (.op .add [localVar "node",.const 32#64,.panop .mul [localVar "i",.const 8#64]])]
 def addLength : ProgHOL 64:=.assign .local (ofString "payload") (.op .add [localVar "payload",localVar "rl2"])
 def advance : ProgHOL 64:=.assign .local (ofString "i") (.op .add [localVar "i",.const 1#64])
+def valueArguments : List (ExpHOL 64):=[.load .one (.op .add [localVar "node",.const 160#64]),.load .one (.op .add [localVar "node",.const 168#64])]
+def addValue : ProgHOL 64:=.assign .local (ofString "payload") (.op .add [localVar "payload",localVar "vl2"])
 
 set_option maxRecDepth 100000 in
 theorem scan_shapes : scanLoop=.while scanTest scanBody ∧
@@ -33,6 +35,11 @@ theorem scan_shapes : scanLoop=.while scanTest scanBody ∧
   trivial
 
 set_option maxRecDepth 100000 in
+theorem after_scan_shape : afterScan=.decCall (ofString "vl2") .one (ofString "rlp_value_encoded_len") valueArguments addValue := by
+  simp only [afterScan,scanAndAfter,branchScope,branchChoice,afterExtension,afterLength,afterBuffer,afterPayload,afterTag,body,
+    Guest.guestFn__node_rlp_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,valueArguments,addValue,localVar]
+
+set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "_node_rlp_finish")=some (formals,body,.one) := by
   have checked:=Input.OriginalCode.indexed code installed 258 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn__node_rlp_finish) (by rfl)
@@ -42,4 +49,5 @@ theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
 end InitECandidate.Solver.Mpt.NodeRlpFinish
 
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.scan_shapes
+#print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.after_scan_shape
 #print axioms InitECandidate.Solver.Mpt.NodeRlpFinish.original_code

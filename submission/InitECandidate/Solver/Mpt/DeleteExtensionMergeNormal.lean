@@ -27,8 +27,8 @@ theorem merge_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
       source.clock-target.clock≤length.toNat/8+(wordAt source.memory (child+40#64)).toNat/8+22 ∧
       (∀ query : BitVec 64,query.toNat<heap.toNat → target.memory query=source.memory query) ∧
       ∃ root finalHeap : BitVec 64,value=.val (.word root) ∧ target.globals.lookup (ofString "heap_ptr")=some (.val (.word finalHeap)) ∧
-        AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧
-        ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ node,graph.valid node → next.valid node) ∧ next.valid root ∧
+        AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧ heap.toNat≤root.toNat ∧
+        ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ node,graph.valid node → next.valid node) ∧ (∀ node,next.valid node ↔ graph.valid node ∨ node=root) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
   obtain ⟨ready,inner,localsEq,readyDomain,readyEndian,readyCode,copyPrice,continued,endpoint,nextHeapCell,nextArena,nextAligned,grows,older,
@@ -96,8 +96,10 @@ theorem merge_paths (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (tailMemory query (by omega)).trans (older query before)
   have included (node : BitVec 64) (old : graph.valid node) : next.valid node:=
     (members node).2 (Or.inl (by rw [same]; exact old))
+  have exactMembers (node : BitVec 64) : next.valid node ↔ graph.valid node ∨ node=nextHeap:=by
+    rw [members node,same]
   exact ⟨tailDomain.trans readyDomain,tailEndian.trans readyEndian,tailCode.trans readyCode,finalPrice,memory,
-    nextHeap,finalHeap,answer,finalCell,finalArena,finalAligned,by omega,next,included,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    nextHeap,finalHeap,answer,finalCell,finalArena,finalAligned,by omega,by omega,next,included,exactMembers,root,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
 
 end InitECandidate.Solver.Mpt.DeleteExtension
 

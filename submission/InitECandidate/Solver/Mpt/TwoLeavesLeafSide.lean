@@ -31,6 +31,7 @@ theorem leaf_side_paths (second : Bool) (source post : PanSemStateFiniteExact 64
       post.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 64#64))) ∧
       AllocatedBytes.Arena (PersistentAlloc.rounded heap 64#64) 0 ∧ (PersistentAlloc.rounded heap 64#64).toNat%8=0 ∧
       heap.toNat≤(PersistentAlloc.rounded heap 64#64).toNat ∧ wordAt post.memory branch=3#64 ∧
+      (∀ query : BitVec 64,query.toNat<branch.toNat → post.memory query=source.memory query) ∧
       ∃ next : TrieWalk.Graph post.memory post.memaddrs,
         (∀ node,next.valid node ↔ graph.valid node ∨ node=heap) ∧ next.valid branch ∧ next.valid heap ∧
         next.Regions nodeLower (PersistentAlloc.rounded heap 64#64).toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
@@ -78,12 +79,24 @@ theorem leaf_side_paths (second : Bool) (source post : PanSemStateFiniteExact 64
   have grows : heap.toNat≤(PersistentAlloc.rounded heap 64#64).toNat:=by
     have before : heap.toNat+64≤(PersistentAlloc.rounded heap 64#64).toNat:=physical.before
     omega
+  have prefixMemory (query : BitVec 64) (before : query.toNat<branch.toNat) : changed.memory query=source.memory query:=by
+    have arena:=(baseRegions branch currentMember branchActive).2.1
+    have within : 32+index*8<TrieWalk.nodeBytes (wordAt ready.memory branch):=slot.bounds ready.memory branch (32+index*8) |>.2.2.1
+    have away : query≠branch+BitVec.ofNat 64 (32+index*8):=by
+      intro equal
+      have number:=congrArg BitVec.toNat equal
+      change query.toNat=(byteAddress branch (32+index*8)).toNat at number
+      rw [byteAddress_toNat branch (32+index*8) (by have fits:=arena.upper; omega)] at number
+      omega
+    change StoreWord.put ready.memory (branch+BitVec.ofNat 64 (32+index*8)) heap query=source.memory query
+    rw [StoreWord.put,if_neg away]
+    exact physical.memory query (Or.inl (before.trans branchBefore))
   rw [endpoint,innerEq]
   have restoredLocals : (restore source (label second "lf1" "lf2") changed).locals=source.locals:=by
     change HolFiniteMapExact.resVarEq ready.locals (ofString (label second "lf1" "lf2"),source.locals.lookup (ofString (label second "lf1" "lf2")))=source.locals
     rw [localsEq]
     exact congrArg PanSemStateFiniteExact.locals (restore_bound source (label second "lf1" "lf2") heap)
-  exact ⟨restoredLocals,physical.domain,physical.endian,codeEq,physical.heapCell,physical.nextArena,physical.nextAligned,grows,finalTag,
+  exact ⟨restoredLocals,physical.domain,physical.endian,codeEq,physical.heapCell,physical.nextArena,physical.nextAligned,grows,finalTag,prefixMemory,
     next,finalMembers,nextBranch,nextLeaf,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,firstAfter,otherAfter⟩
 
 end InitECandidate.Solver.Mpt.TwoLeaves

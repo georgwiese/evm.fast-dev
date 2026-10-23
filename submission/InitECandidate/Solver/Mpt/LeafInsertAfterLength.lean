@@ -29,6 +29,7 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
     (small : length.toNat≤64) (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLength=(some (.returned value),target)) :
     target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.code=source.code ∧ source.clock-target.clock≤5*length.toNat+242 ∧
       (∀ query : BitVec 64,query.toNat<nodeLower → target.memory query=source.memory query) ∧
+      (∀ current,graph.valid current → current≠0#64 → wordAt target.memory current=wordAt source.memory current) ∧
       ∃ finalHeap root : BitVec 64,value=.val (.word root) ∧ target.globals.lookup (ofString "heap_ptr")=some (.val (.word finalHeap)) ∧
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,graph.valid current → next.valid current) ∧ next.valid root ∧
@@ -71,8 +72,15 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
         (by rw [domainEq]; exact payload) extra floor empty (domainEq.trans domain) (by rw [globalsEq]; exact heapCell) frontier aligned (by rw [codeEq]; exact installed) small value normal
     have preserved (query : BitVec 64) (before : query.toNat<nodeLower) : target.memory query=source.memory query:=
       (finalMemory query (before.trans_le floor)).trans (congrFun memoryEq query)
+    have tags (current : BitVec 64) (live : graph.valid current) (nonzero : current≠0#64) : wordAt target.memory current=wordAt source.memory current:=by
+      have before : current.toNat<heap.toNat:=by
+        have bounds:=(regions current live nonzero).2.2.2
+        have size:=(TrieWalk.nodeBytes_bounds (wordAt source.memory current)).1
+        omega
+      unfold wordAt
+      rw [finalMemory current before,memoryEq]
     have inclusion (current : BitVec 64) (live : graph.valid current) : next.valid current:=members current (by rw [same]; exact live)
-    exact ⟨finalDomain.trans domainEq,finalEndian.trans endianEq,finalCode.trans codeEq,priced,preserved,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,
+    exact ⟨finalDomain.trans domainEq,finalEndian.trans endianEq,finalCode.trans codeEq,priced,preserved,tags,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,
       next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
   | some result=>
     have sameResult : result=.returned value:=Option.some.inj (congrArg Prod.fst normal)
@@ -103,9 +111,13 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
         rw [byteAddress_toNat node offset (by have upper:=arena.upper; omega)] at number
         omega
       exact post_away source node pointer size query (away 48 (by decide)) (away 56 (by decide))
+    have tags (current : BitVec 64) (live : graph.valid current) (nonzero : current≠0#64) : wordAt middle.memory current=wordAt source.memory current:=by
+      have away:=graph.leaf_value_away nodeLower heap.toNat regions disjoint node current member active leaf (.header current live nonzero)
+      unfold wordAt
+      rw [memoryEq,post_away source node pointer size current away.1 away.2]
     have rootMember : next.valid node:=by rw [same]; exact member
     have inclusion (current : BitVec 64) (live : graph.valid current) : next.valid current:=by rw [same]; exact live
-    exact ⟨domainEq,endianEq,codeEq,priced,preserved,heap,node,answer,(by rw [globalsEq]; exact heapCell),frontier,aligned,Nat.le_refl _,
+    exact ⟨domainEq,endianEq,codeEq,priced,preserved,tags,heap,node,answer,(by rw [globalsEq]; exact heapCell),frontier,aligned,Nat.le_refl _,
       next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf

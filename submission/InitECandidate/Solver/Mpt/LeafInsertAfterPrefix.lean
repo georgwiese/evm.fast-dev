@@ -34,8 +34,11 @@ theorem after_prefix_path_normal (source target : PanSemStateFiniteExact 64 Gues
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,graph.valid current → next.valid current) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
-  obtain ⟨ready,inner,branchCell,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,olderMemory,currentHeap,currentHeapCell,currentArena,currentAligned,grows,branchTag,base,oldMember,branchMember,baseRegions,baseDisjoint,⟨baseValues⟩,basePaths,basePathRegions,baseSeparated,buffer⟩:=
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
+  obtain ⟨ready,inner,branchCell,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,olderMemory,currentHeap,currentHeapCell,currentArena,currentAligned,grows,branchTag,base,oldMember,branchMember,baseRegions,baseDisjoint,⟨baseValues⟩,basePaths,basePathRegions,baseSeparated,buffer,baseFresh,baseProtection⟩:=
     branch_entry_normal source target heap node key length pointer size prefixLength graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query member active leaf bound
       nodeCell leftCell oldLengthCell keyCell lengthCell pointerCell sizeCell prefixCell payload extra floor empty domain heapCell frontier aligned installed value normal
   have currentKey : ready.locals.lookup (ofString "ek")=some (.val (.word (wordAt source.memory (node+32#64)))):=by
@@ -45,16 +48,28 @@ theorem after_prefix_path_normal (source target : PanSemStateFiniteExact 64 Gues
     rw [localsEq]
     simpa [HolFiniteMapExact.update,FUPDATE,ofString] using prefixCell
   have readyInstalled : Input.OriginalCode.Installed ready.code:=by rw [codeEq]; exact installed
-  obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,finalGrows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
+  obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,finalGrows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection⟩:=
     after_branch_normal ready inner currentHeap (wordAt source.memory (node+32#64)) prefixLength heap base limit nodeLower pathLower property baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated
       buffer branchMember (floor.trans grows) currentKey currentPrefix branchCell (domainEq.trans domain) currentHeapCell currentArena currentAligned readyInstalled value continued
   have spent : source.clock-inner.clock≤239:=by omega
   have memory (query : BitVec 64) (before : query.toNat<heap.toNat) : inner.memory query=source.memory query:=
     (finalMemory query (before.trans_le grows)).trans (olderMemory query before)
   have inclusion (current : BitVec 64) (live : graph.valid current) : next.valid current:=members current (oldMember current live)
+  have provenance (current : BitVec 64) (live : next.valid current) : graph.valid current ∨ heap.toNat≤current.toNat:=by
+    rcases finalFresh current live with old|fresh
+    · exact baseFresh current old
+    · exact Or.inr (grows.trans fresh)
+  have protection (address : BitVec 64) (safe : graph.ProtectedWord address) (before : address.toNat<heap.toNat)
+      (away : TrieWalk.PathWordAway key length.toNat address) : next.ProtectedWord address:=by
+    have baseSafe:=baseProtection address safe before away
+    have oldAway:=safe.stored graph address node member active (Or.inl leaf)
+    have prefixBound : prefixLength.toNat≤(wordAt source.memory (node+40#64)).toNat:=bound.trans (Nat.min_le_left _ _)
+    have leading:=oldAway.window _ 0#64 address _ prefixLength.toNat (by change 0≤(wordAt source.memory (node+40#64)).toNat; omega)
+      (by change prefixLength.toNat≤(wordAt source.memory (node+40#64)).toNat; exact prefixBound)
+    exact finalProtection address baseSafe (before.trans_le grows) (by simpa only [BitVec.add_zero] using leading)
   rw [endpoint]
   exact ⟨finalDomain.trans domainEq,finalEndian.trans endianEq,finalCode.trans codeEq,spent,memory,finalHeap,root,answer,
-    finalHeapCell,finalArena,finalAligned,grows.trans finalGrows,next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    finalHeapCell,finalArena,finalAligned,grows.trans finalGrows,next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

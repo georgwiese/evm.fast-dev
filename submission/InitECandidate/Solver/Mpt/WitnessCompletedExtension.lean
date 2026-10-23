@@ -91,7 +91,7 @@ def ExtensionView.registration (source : PanSemStateFiniteExact 64 Guest.HostMem
     (graph : TrieWalk.Graph source.memory source.memaddrs) (member : graph.valid child) : TrieWalk.Registration graph node := by
   have tag : wordAt source.memory node=2#64 := by
     simp [wordAt,MemoryBytes.wordBits,show source.memory node=.word 2#64 from by simpa only [BitVec.add_zero] using view.cells (0,2#64) (by simp)]
-  refine ⟨?_,by rw [tag]; simpa only [BitVec.add_zero] using view.cells (0,2#64) (by simp),fun _=>view.path source node nibbles length child,?_,?_,?_⟩
+  refine ⟨?_,by rw [tag]; simpa only [BitVec.add_zero] using view.cells (0,2#64) (by simp),fun _=>view.path source node nibbles length child,?_,?_,?_,by rw [tag]; decide⟩
   · simpa only [byteAddress,BitVec.add_zero] using AllocatedBytes.word_mapped source node 56 0 view.domain view.arena (by decide) view.aligned (by decide)
   · intro extensionTag
     exact ⟨child,by simpa only [byteAddress] using AllocatedBytes.word_mapped source node 56 48 view.domain view.arena (by decide) view.aligned (by decide),

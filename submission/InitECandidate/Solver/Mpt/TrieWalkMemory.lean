@@ -41,6 +41,8 @@ structure Graph (memory : Memory) (domain : BitVec 64 → Prop) where
   branch : ∀ node, valid node → node ≠ 0#64 →
     wordAt memory node ≠ 0#64 → wordAt memory node ≠ 1#64 → wordAt memory node ≠ 2#64 →
     ∀ index, index < 16 → ChildView memory domain valid (node + 32#64 + BitVec.ofNat 64 (index * 8))
+  /-- Every registered node was initialized with an original tag0,1,2or3. -/
+  kindBound : ∀ node, valid node → node≠0#64 → (wordAt memory node).toNat≤3
 
 /-- The actual key byte buffer, including the nibble range needed to keep
 branch child selection within the original sixteen-slot array. -/

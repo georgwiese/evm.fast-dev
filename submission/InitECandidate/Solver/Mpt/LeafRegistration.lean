@@ -17,7 +17,7 @@ def Registration.leaf (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have fields (offset : Nat) (inside : offset<64) (alignedOffset : offset%8=0) :
       source.memaddrs (node+BitVec.ofNat 64 offset):=
     AllocatedBytes.word_mapped source node 64 offset domain arena inside aligned alignedOffset
-  refine ⟨?_,by rw [nodeTag]; exact tag,?_,?_,?_,?_⟩
+  refine ⟨?_,by rw [nodeTag]; exact tag,?_,?_,?_,?_,by rw [nodeTag]; decide⟩
   · simpa only [BitVec.add_zero] using fields 0 (by decide) (by decide)
   · intro pathTag
     exact {

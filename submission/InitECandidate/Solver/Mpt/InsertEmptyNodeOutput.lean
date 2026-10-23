@@ -45,7 +45,10 @@ theorem empty_node_output (source target : PanSemStateFiniteExact 64 Guest.HostM
     unfold wordAt
     rw [physical.memory current (Or.inl (regions.footprint_before graph nodeLower heap.toNat current (.header current live active)))]
   exact terminal_output source target heap key length level heap (PersistentAlloc.rounded heap 64#64) graph limit nodeLower pathLower property pending.node pending.slot pending.level pending.go localsEq
-    physical.domain physical.endian codeEq physical.heapCell physical.nextArena physical.nextAligned grows memory tags
+    physical.domain physical.endian codeEq physical.heapCell physical.nextArena physical.nextAligned grows memory
+    (TrieWalk.Graph.PathFields.of_prefix graph target.memory nodeLower heap.toNat regions
+      (fun address before=>physical.memory address (Or.inl before)))
+    (by intro address _safe before; exact physical.memory address (Or.inl before)) tags
     next (fun current live=>(members current).mpr (Or.inl live)) rootMember nextValues nextRegions nextDisjoint nextPaths nextPathRegions nextSeparated
 
 end InitECandidate.Solver.Mpt.Insert

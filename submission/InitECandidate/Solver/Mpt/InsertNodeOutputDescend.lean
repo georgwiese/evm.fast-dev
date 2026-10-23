@@ -45,9 +45,12 @@ theorem descend_output (source target : PanSemStateFiniteExact 64 Guest.HostMemo
     heapAligned:=aligned
     heapGrows:=Nat.le_refl _
     olderPrefix:=by intro query before; rfl
+    oldPathFields:=⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
+    protectedMemory:=by intro address safe before; rfl
     tags:=by intro node live active; rfl
     graph:=graph
     oldMember:=fun node live=>live
+    activeRegistry:=by intro nonzero; rfl
     rootMember:=rootMember
     nodeMember:=childMember
     nextParent:=slot

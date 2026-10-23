@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.LeafInsertSplitNormal
 import InitECandidate.Solver.Mpt.LeafInsertCompareNormal
 import InitECandidate.Solver.Mpt.LeafInsertCost
+import InitECandidate.Solver.Mpt.TrieProtectedMutation
 
 namespace InitECandidate.Solver.Mpt.InsertLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -34,7 +35,9 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
         AllocatedBytes.Arena finalHeap 0 ∧ finalHeap.toNat%8=0 ∧ heap.toNat≤finalHeap.toNat ∧
         ∃ next : TrieWalk.Graph target.memory target.memaddrs,(∀ current,graph.valid current → next.valid current) ∧ next.valid root ∧
           next.Regions nodeLower finalHeap.toNat ∧ next.Disjoint ∧ Nonempty (TrieWalk.Values next limit property) ∧
-          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated := by
+          next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
+          graph.PathFields target.memory ∧
+          (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → target.memory address=source.memory address) := by
   have priced:=after_length_cost source (wordAt source.memory (node+32#64)) (wordAt source.memory (node+40#64)) key length small installed leftCell oldLengthCell keyCell lengthCell
   rw [normal] at priced
   rw [dispatch_shapes.2.2.1,evaluateHOLFiniteState_seq_line780] at normal
@@ -81,7 +84,10 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
       rw [finalMemory current before,memoryEq]
     have inclusion (current : BitVec 64) (live : graph.valid current) : next.valid current:=members current (by rw [same]; exact live)
     exact ⟨finalDomain.trans domainEq,finalEndian.trans endianEq,finalCode.trans codeEq,priced,preserved,tags,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,
-      next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+      next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
+      TrieWalk.Graph.PathFields.of_prefix graph target.memory nodeLower heap.toNat regions
+        (fun address before=>(finalMemory address before).trans (congrFun memoryEq address)),
+      (by intro address _safe before; exact (finalMemory address before).trans (congrFun memoryEq address))⟩
   | some result=>
     have sameResult : result=.returned value:=Option.some.inj (congrArg Prod.fst normal)
     subst result
@@ -117,8 +123,18 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
       rw [memoryEq,post_away source node pointer size current away.1 away.2]
     have rootMember : next.valid node:=by rw [same]; exact member
     have inclusion (current : BitVec 64) (live : graph.valid current) : next.valid current:=by rw [same]; exact live
-    exact ⟨domainEq,endianEq,codeEq,priced,preserved,tags,heap,node,answer,(by rw [globalsEq]; exact heapCell),frontier,aligned,Nat.le_refl _,
-      next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩
+    refine ⟨domainEq,endianEq,codeEq,priced,preserved,tags,heap,node,answer,(by rw [globalsEq]; exact heapCell),frontier,aligned,Nat.le_refl _,
+      next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,?_,?_⟩
+    · have agree : ∀ address,graph.Footprint address→(post source node pointer size).memory address=source.memory address:=by
+        intro address needed
+        have apart:=graph.leaf_value_away nodeLower heap.toNat regions disjoint node address member active leaf needed
+        exact post_away source node pointer size address apart.1 apart.2
+      have fields:=TrieWalk.Graph.PathFields.of_agreement graph (post source node pointer size).memory agree
+      rw [memoryEq]
+      exact fields
+    · intro address safe _before
+      rw [memoryEq]
+      exact safe.leaf_value_memory source graph address node pointer size member active leaf
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

@@ -3,6 +3,7 @@ import InitECandidate.Solver.Mpt.InsertBranchValueNormal
 import InitECandidate.Solver.Mpt.InsertNodeOutputTerminal
 import InitECandidate.Solver.Mpt.InsertNodeOutputDescend
 import InitECandidate.Solver.Mpt.InsertPending
+import InitECandidate.Solver.Mpt.TrieProtectedMutation
 
 namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -38,8 +39,20 @@ theorem branch_output_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
         member active notHash notLeaf notExtension nodeCell pointerCell sizeCell payload extra (selected.symm.trans normal)
     have localsEq : target.locals=source.locals.update (ofString "r",.val (.word node)):=by rw [endpoint]; rfl
     exact terminal_output source target heap key length level node heap graph limit nodeLower pathLower property pending.node pending.slot pending.level pending.go localsEq
-      (by rw [endpoint]; rfl) (by rw [endpoint]; rfl) (by rw [endpoint]; rfl) (by rw [endpoint]; exact heapCell) frontier aligned (Nat.le_refl _) memory tags
-      next (by intro current live; rw [same]; exact live) (by rw [same]; exact member) nextValues nextRegions nextDisjoint nextPaths nextPathRegions nextSeparated
+      (by rw [endpoint]; rfl) (by rw [endpoint]; rfl) (by rw [endpoint]; rfl) (by rw [endpoint]; exact heapCell) frontier aligned (Nat.le_refl _) memory
+      (by
+        rw [endpoint]
+        apply TrieWalk.Graph.PathFields.of_agreement graph
+        intro address needed
+        have away:=graph.branch_value_away nodeLower heap.toNat regions disjoint node address member active notHash notLeaf notExtension needed
+        exact BranchValueUpdate.post_away source node pointer size address away.1 away.2)
+      (by
+        intro address safe _before
+        rw [endpoint]
+        exact BranchValueUpdate.post_away source node pointer size address
+          (safe.nodes node member active 160 (by simp [TrieWalk.nodeBytes,notHash,notLeaf,notExtension]))
+          (safe.nodes node member active 168 (by simp [TrieWalk.nodeBytes,notHash,notLeaf,notExtension])))
+      tags next (by intro current live; rw [same]; exact live) (by rw [same]; exact member) nextValues nextRegions nextDisjoint nextPaths nextPathRegions nextSeparated
   · have strict : level.toNat<length.toNat:=by
       have different : level.toNat≠length.toNat:=by intro same; exact equal (BitVec.toNat_inj.mp same)
       omega

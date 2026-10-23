@@ -15,6 +15,8 @@ theorem NodeOutput.prepend (source ready target : PanSemStateFiniteExact 64 Gues
     (olderMemory : ∀ query : BitVec 64,query.toNat<nodeLower → ready.memory query=source.memory query)
     (tags : ∀ node,old.valid node → node≠0#64 → wordAt ready.memory node=wordAt source.memory node)
     (members : ∀ node,old.valid node → base.valid node)
+    (same : base.valid=old.valid) (fields : old.PathFields ready.memory)
+    (protectedWords : ∀ address : BitVec 64,old.ProtectedWord address → address.toNat<incoming.toNat → ready.memory address=source.memory address)
     (output : NodeOutput ready target base current key length level limit nodeLower pathLower property) :
     Nonempty (NodeOutput source target old incoming key length level limit nodeLower pathLower property) := by
   exact ⟨{ output with
@@ -24,6 +26,12 @@ theorem NodeOutput.prepend (source ready target : PanSemStateFiniteExact 64 Gues
     code:=output.code.trans code
     heapGrows:=grows.trans output.heapGrows
     olderPrefix:=fun query before=>(output.olderPrefix query before).trans (olderMemory query before)
+    oldPathFields:=fields.trans old base output.oldPathFields members
+    protectedMemory:=by
+      intro address safe before
+      have currentSafe:=safe.of_fields old base address same fields
+      exact (output.protectedMemory address currentSafe (before.trans_le grows)).trans (protectedWords address safe before)
+    activeRegistry:=by intro active; exact (output.activeRegistry active).trans same
     tags:=fun node live active=>(output.tags node (members node live) active).trans (tags node live active)
     oldMember:=fun node live=>output.oldMember node (members node live) }⟩
 

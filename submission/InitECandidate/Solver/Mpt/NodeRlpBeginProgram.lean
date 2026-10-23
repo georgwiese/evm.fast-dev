@@ -26,6 +26,11 @@ def afterEncoded : ProgHOL 64:=match lengthScope with | .decCall _ _ _ _ rest=>r
 def compactArguments : List (ExpHOL 64):=[nodeField 32,localVar "nlen",localVar "isl",localVar "cbuf"]
 def allocationArguments : List (ExpHOL 64):=[.op .add [.shift .lsr (localVar "nlen") (.const 1#64),.const 2#64]]
 def compactCall : ProgHOL 64:=.call (some (some (.local,ofString "clen"),none)) (ofString "nibble_list_to_compact") compactArguments
+def leafChoice : ProgHOL 64:=match afterEncoded with | .seq _ rest=>rest | _=>.skip
+def assignPath : ProgHOL 64:=.assign .local (ofString "payload") (localVar "el")
+def leafArguments : List (ExpHOL 64):=[nodeField 48,nodeField 56]
+def addLeaf : ProgHOL 64:=.assign .local (ofString "payload") (.op .add [localVar "payload",localVar "vl"])
+def leafValueCall : ProgHOL 64:=.decCall (ofString "vl") .one (ofString "rlp_value_encoded_len") leafArguments addLeaf
 
 theorem body_shapes : body=.dec (ofString "k") .one (nodeField 0) afterTag ∧
     afterTag=.dec (ofString "payload") .one (.const 0#64) afterPayload ∧
@@ -54,6 +59,13 @@ theorem path_shapes : pathScope=.dec (ofString "nlen") .one (nodeField 40) after
     Guest.guestFn__node_rlp_begin,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
   simp
 
+theorem after_encoded_shapes : afterEncoded=.seq assignPath leafChoice ∧
+    leafChoice=.ite (.cmp .equal (localVar "k") (.const 1#64)) leafValueCall .skip := by
+  simp only [afterEncoded,lengthScope,compactAndLengths,afterLeafFlag,afterAllocation,afterPathLength,pathScope,pathChoice,
+    afterLength,afterBuffer,afterPayload,afterTag,body,leafChoice,assignPath,leafValueCall,leafArguments,addLeaf,nodeField,
+    Guest.guestFn__node_rlp_begin,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
+  simp
+
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "_node_rlp_begin")=some (formals,body,.one) := by
@@ -78,6 +90,7 @@ end InitECandidate.Solver.Mpt.NodeRlpBegin
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.body_shapes
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.footer_shape
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.path_shapes
+#print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.after_encoded_shapes
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.original_code
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.environment
 #print axioms InitECandidate.Solver.Mpt.NodeRlpBegin.footer_cost

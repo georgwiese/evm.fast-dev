@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.TwoLeavesSideOutput
 import InitECandidate.Solver.Mpt.TwoLeavesLeafSide
 import InitECandidate.Solver.Mpt.TwoLeavesZero
+import InitECandidate.Solver.Mpt.TriePathFieldsMutation
 
 namespace InitECandidate.Solver.Mpt.TwoLeaves
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -27,7 +28,7 @@ theorem side_normal (second : Bool) (source post : PanSemStateFiniteExact 64 Gue
     (branchCell : source.locals.lookup (ofString "br")=some (.val (.word branch)))
     (branchMember : graph.valid branch) (branchActive : branch≠0#64) (tag : wordAt source.memory branch=3#64)
     (normal : evaluateHOLFiniteState source (choice second)=(none,post)) :
-    Nonempty (SideOutput source post graph heap key length otherKey otherLength branch limit nodeLower pathLower property) := by
+    Nonempty (ProtectedSideOutput source post graph heap key length otherKey otherLength branch limit nodeLower pathLower property) := by
   by_cases zero : length=0#64
   · subst length
     obtain ⟨run,next,same,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated⟩:=
@@ -74,6 +75,11 @@ theorem side_normal (second : Bool) (source post : PanSemStateFiniteExact 64 Gue
       olderPrefix:=prefixMemory
       graph:=next
       oldMember:=by intro node member; rw [same]; exact member
+      freshMembers:=by intro node member; rw [same] at member; exact Or.inl member
+      protectedGraph:=by
+        intro query safe _before _away
+        exact safe.of_fields graph next query same
+          (TrieWalk.Graph.PathFields.of_branch_value source branch pointer size graph nodeLower heap.toNat regions disjoint branchMember branchActive notHash notLeaf notExtension)
       branchMember:=by rw [same]; exact branchMember
       values:=nextValues
       regions:=nextRegions
@@ -88,7 +94,7 @@ theorem side_normal (second : Bool) (source post : PanSemStateFiniteExact 64 Gue
       have numeric : length.toNat=(0#64).toNat:=by change length.toNat=0; omega
       exact zero (BitVec.toNat_inj.mp numeric)
     have leafRun : evaluateHOLFiniteState source (leafScope second)=(none,post):=(nonzero_choice second source length zero lengthCell).symm.trans normal
-    obtain ⟨localsEq,domainEq,endianEq,codeEq,nextHeapCell,nextArena,nextAligned,grows,nextTag,prefixMemory,next,members,nextBranch,nextLeaf,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,first,other⟩:=
+    obtain ⟨localsEq,domainEq,endianEq,codeEq,nextHeapCell,nextArena,nextAligned,grows,nextTag,prefixMemory,next,members,nextBranch,nextLeaf,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,first,other,protection⟩:=
       leaf_side_paths second source post heap key length pointer size otherKey otherLength branch graph limit nodeLower pathLower property
         values regions disjoint paths pathRegions separated buffer otherBuffer positive floor keyCell lengthCell pointerCell sizeCell payload extra domain heapCell frontier aligned installed
         branchCell branchMember branchActive tag leafRun
@@ -106,6 +112,12 @@ theorem side_normal (second : Bool) (source post : PanSemStateFiniteExact 64 Gue
       olderPrefix:=prefixMemory
       graph:=next
       oldMember:=fun node member=>(members node).mpr (Or.inl member)
+      freshMembers:=by
+        intro node member
+        rcases (members node).mp member with old|new
+        · exact Or.inl old
+        · exact Or.inr (by rw [new])
+      protectedGraph:=protection
       branchMember:=nextBranch
       values:=nextValues
       regions:=nextRegions

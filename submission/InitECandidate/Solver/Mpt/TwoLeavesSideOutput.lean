@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.TriePathBuffer
+import InitECandidate.Solver.Mpt.TrieProtectedGrowth
 
 namespace InitECandidate.Solver.Mpt.TwoLeaves
 open Flapjack PanSemStateFiniteExact WitnessRadix GasBudget
@@ -30,5 +31,15 @@ structure SideOutput (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   separated : graph.PathSeparated
   buffer : graph.PathBuffer post.be pathLower heap.toNat key length.toNat
   otherBuffer : graph.PathBuffer post.be pathLower heap.toNat otherKey otherLength.toNat
+
+/-- The two-leaf builder additionally records real fresh-node provenance
+and caller-word protection for its one newly borrowed input suffix. -/
+structure ProtectedSideOutput (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (old : TrieWalk.Graph source.memory source.memaddrs) (incoming key length otherKey otherLength branch : BitVec 64)
+    (limit nodeLower pathLower : Nat) (property : BitVec 64 → BitVec 64 → Prop)
+    extends SideOutput source post old incoming key length otherKey otherLength branch limit nodeLower pathLower property where
+  freshMembers : ∀ node,graph.valid node → old.valid node ∨ incoming.toNat≤node.toNat
+  protectedGraph : ∀ query : BitVec 64,old.ProtectedWord query → query.toNat<incoming.toNat →
+    TrieWalk.PathWordAway key length.toNat query → graph.ProtectedWord query
 
 end InitECandidate.Solver.Mpt.TwoLeaves

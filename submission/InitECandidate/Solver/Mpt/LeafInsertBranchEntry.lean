@@ -55,7 +55,7 @@ theorem branch_entry_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
     simp [branchArguments,TwoLeaves.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,addConst,localVar,toExact,nodeCell,leftCell,oldLengthCell,keyCell,lengthCell,pointerCell,sizeCell,prefixCell,
       valueIsWord,valueWord,wordOpHOL,wordOp,memLoadHOLExact,isWfShapeExactHOL,oldValue.pointerMapped,oldValue.pointerStored,oldValue.lengthMapped,oldValue.lengthStored]
   rw [split_shapes.1] at normal
-  obtain ⟨ready,inner,branchCell,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,olderMemory,finalHeap,nextHeapCell,nextArena,nextAligned,grows,branchTag,next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,firstAfter,secondAfter⟩:=
+  obtain ⟨ready,inner,branchCell,localsEq,domainEq,endianEq,codeEq,price,continued,endpoint,olderMemory,finalHeap,nextHeapCell,nextArena,nextAligned,grows,branchTag,next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,firstAfter,secondAfter,_provenance,_protection⟩:=
     TwoLeaves.scoped_path_normal source target heap (wordAt source.memory (node+32#64)+prefixLength) (wordAt source.memory (node+40#64)-prefixLength) oldValue.pointer oldValue.length
       (key+prefixLength) (length-prefixLength) pointer size graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated first second
       oldValue.payload oldValue.extra payload extra floor empty domain heapCell frontier aligned installed value "br" branchArguments afterBranch args normal

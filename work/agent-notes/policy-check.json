@@ -4295,6 +4295,7 @@
     "submission/InitECandidate/Solver/Mpt/KeyToNibblesWriteFrame.lean",
     "submission/InitECandidate/Solver/Mpt/LeafConstructorCall.lean",
     "submission/InitECandidate/Solver/Mpt/LeafConstructorPathGraph.lean",
+    "submission/InitECandidate/Solver/Mpt/LeafConstructorScopedNone.lean",
     "submission/InitECandidate/Solver/Mpt/LeafInsertCost.lean",
     "submission/InitECandidate/Solver/Mpt/LeafInsertDispatch.lean",
     "submission/InitECandidate/Solver/Mpt/LeafRegistration.lean",
@@ -4328,6 +4329,7 @@
     "submission/InitECandidate/Solver/Mpt/NodeConstructorPhysicalFrame.lean",
     "submission/InitECandidate/Solver/Mpt/NodeConstructorProgram.lean",
     "submission/InitECandidate/Solver/Mpt/NodeConstructorScoped.lean",
+    "submission/InitECandidate/Solver/Mpt/NodeConstructorScopedNone.lean",
     "submission/InitECandidate/Solver/Mpt/NodeInvalidate.lean",
     "submission/InitECandidate/Solver/Mpt/NodeInvalidateCall.lean",
     "submission/InitECandidate/Solver/Mpt/NodeRegistryCopy32.lean",
@@ -4508,6 +4510,8 @@
     "submission/InitECandidate/Solver/Mpt/TwoLeavesBranchEntry.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesChildStore.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesCost.lean",
+    "submission/InitECandidate/Solver/Mpt/TwoLeavesLeafEntry.lean",
+    "submission/InitECandidate/Solver/Mpt/TwoLeavesLeafSide.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesProgram.lean",
     "submission/InitECandidate/Solver/Mpt/TwoLeavesZero.lean",
     "submission/InitECandidate/Solver/Mpt/Value32Allocation.lean",
@@ -7529,8 +7533,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64398,
-  "package_bytes": 2267869546,
+  "package_entries": 64402,
+  "package_bytes": 2267891845,
   "claim": {
     "K": "infinity"
   },

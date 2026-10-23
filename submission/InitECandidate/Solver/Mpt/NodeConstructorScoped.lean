@@ -21,7 +21,7 @@ theorem scalar_scoped_physical (kind : Kind) (scalar : kind≠.branch)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString (NodeConstructor.name kind)) arguments continuation)=(some (.returned value),post)) :
     1≤source.clock ∧ ∃ ready inner,
-      ready.locals.lookup (ofString name)=some (.val (.word heap)) ∧ Physical kind source ready heap words ∧ ready.code=source.code ∧
+      ready.locals.lookup (ofString name)=some (.val (.word heap)) ∧ ready.locals=source.locals.update (ofString name,.val (.word heap)) ∧ Physical kind source ready heap words ∧ ready.code=source.code ∧
       evaluateHOLFiniteState ready continuation=(some (.returned value),inner) ∧ post=QueryBranch.restore source name inner := by
   obtain ⟨funded,target,returned,inner,run,checked,continued,endpoint⟩:=Input.CallNormal.scoped_normal source post name .one
     (ofString (NodeConstructor.name kind)) arguments values (body kind) continuation callee .one argsRead expectedCall value normal
@@ -29,8 +29,9 @@ theorem scalar_scoped_physical (kind : Kind) (scalar : kind≠.branch)
   let ready:=Input.CallNormal.continuationEntry source target name returned
   have callerPhysical : Physical kind source ready heap words:=physical.of_erase kind (callEntryStateHOLFinite source callee) target source ready heap words rfl rfl
   have codeEq:= (Input.evaluation_fields (callEntryStateHOLFinite source callee) target (body kind) (some (.returned returned)) run).2.2.2
-  refine ⟨funded,ready,inner,?_,callerPhysical,codeEq,continued,endpoint⟩
-  simp [ready,Input.CallNormal.continuationEntry,answer,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  refine ⟨funded,ready,inner,?_,?_,callerPhysical,codeEq,continued,endpoint⟩
+  · simp [ready,Input.CallNormal.continuationEntry,answer,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · simp [ready,Input.CallNormal.continuationEntry,answer,setVarHOLFinite]
 
 theorem branch_environment (code) (installed : Input.OriginalCode.Installed code) :
     ∃ callee : HolFiniteMapExact MlS (ValueHOL 64),lookupCodeHOLFinite code.lookup (ofString "node_new_branch") []=some (body .branch,callee,.one) := by
@@ -48,7 +49,7 @@ theorem branch_scoped_physical (source post : PanSemStateFiniteExact 64 Guest.Ho
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "node_new_branch") [] continuation)=(some (.returned value),post)) :
     1≤source.clock ∧ ∃ ready inner,
-      ready.locals.lookup (ofString name)=some (.val (.word heap)) ∧ BranchPhysical source ready heap ∧ ready.code=source.code ∧
+      ready.locals.lookup (ofString name)=some (.val (.word heap)) ∧ ready.locals=source.locals.update (ofString name,.val (.word heap)) ∧ BranchPhysical source ready heap ∧ ready.code=source.code ∧
       evaluateHOLFiniteState ready continuation=(some (.returned value),inner) ∧ post=QueryBranch.restore source name inner := by
   obtain ⟨callee,called⟩:=branch_environment source.code installed
   obtain ⟨funded,target,returned,inner,run,checked,continued,endpoint⟩:=Input.CallNormal.scoped_normal source post name .one
@@ -57,8 +58,9 @@ theorem branch_scoped_physical (source post : PanSemStateFiniteExact 64 Guest.Ho
   let ready:=Input.CallNormal.continuationEntry source target name returned
   have callerPhysical : BranchPhysical source ready heap:=physical.of_erase (callEntryStateHOLFinite source callee) target source ready heap rfl rfl
   have codeEq:= (Input.evaluation_fields (callEntryStateHOLFinite source callee) target (body .branch) (some (.returned returned)) run).2.2.2
-  refine ⟨funded,ready,inner,?_,callerPhysical,codeEq,continued,endpoint⟩
-  simp [ready,Input.CallNormal.continuationEntry,answer,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  refine ⟨funded,ready,inner,?_,?_,callerPhysical,codeEq,continued,endpoint⟩
+  · simp [ready,Input.CallNormal.continuationEntry,answer,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · simp [ready,Input.CallNormal.continuationEntry,answer,setVarHOLFinite]
 
 end InitECandidate.Solver.Mpt.NodeConstructor
 

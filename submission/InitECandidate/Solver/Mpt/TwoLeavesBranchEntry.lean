@@ -25,6 +25,7 @@ theorem branch_entry (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
     ∃ ready inner,ready.locals.lookup (ofString "br")=some (.val (.word heap)) ∧
+      ready.locals=source.locals.update (ofString "br",.val (.word heap)) ∧
       NodeConstructor.BranchPhysical source ready heap ∧ ready.code=source.code ∧
       evaluateHOLFiniteState ready afterBranch=(some (.returned value),inner) ∧ post=restore source "br" inner ∧
       ∃ next : TrieWalk.Graph ready.memory ready.memaddrs,
@@ -36,7 +37,7 @@ theorem branch_entry (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have called : evaluateHOLFiniteState source (.decCall (ofString "br") .one (ofString "node_new_branch") [] afterBranch)=(some (.returned value),post):=by
     rw [←program_shapes.1]
     exact normal
-  obtain ⟨funded,ready,inner,branchCell,physical,codeEq,continued,endpoint⟩:=NodeConstructor.branch_scoped_physical source post heap "br" afterBranch
+  obtain ⟨funded,ready,inner,branchCell,localsEq,physical,codeEq,continued,endpoint⟩:=NodeConstructor.branch_scoped_physical source post heap "br" afterBranch
     domain heapCell frontier aligned installed value called
   obtain ⟨next,members,member,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated⟩:=
     physical.path_graph source ready heap domain aligned graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated floor empty
@@ -52,7 +53,7 @@ theorem branch_entry (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (fun node live=>(members node).mp live) arena physical.allocation.domain physical.allocation.endian memory
   have second:=secondBuffer.after_fresh_node source ready graph next nodeLower pathLower heap key2 length2.toNat regions
     (fun node live=>(members node).mp live) arena physical.allocation.domain physical.allocation.endian memory
-  exact ⟨ready,inner,branchCell,physical,codeEq,continued,endpoint,next,members,member,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
+  exact ⟨ready,inner,branchCell,localsEq,physical,codeEq,continued,endpoint,next,members,member,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,
     first.weaken next ready.be pathLower heap.toNat pathLower (PersistentAlloc.rounded heap 176#64).toNat key1 length1.toNat (Nat.le_refl _) grows,
     second.weaken next ready.be pathLower heap.toNat pathLower (PersistentAlloc.rounded heap 176#64).toNat key2 length2.toNat (Nat.le_refl _) grows⟩
 

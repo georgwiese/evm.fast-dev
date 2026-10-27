@@ -16,6 +16,26 @@ theorem data_word (input : Guest.InputBlob) (index : Nat) :
   simp [dataBytes, List.range_succ, convertNat, Guest.GasLimit.le64,
     Guest.GasLimit.le32, Guest.GasLimit.byte, Nat.add_assoc] <;> omega
 
+/-- Bytes of an observed readable input word. Presence must come from that
+actual read, rather than a blanket promise about unused host arena bytes. -/
+theorem present_bytes (input : Guest.InputBlob) (index : Nat)
+    (visible : index + 8 ≤ Guest.maxInputBytes)
+    (present : ∀ offset < 8, (Guest.guestHostMemory input
+      (Guest.inputDataAddr + BitVec.ofNat 64 index + BitVec.ofNat 64 offset)).isSome = true) :
+    SharedRead.bytes (Guest.guestHostMemory input)
+      (Guest.inputDataAddr + BitVec.ofNat 64 index) = dataBytes input index := by
+  apply List.map_congr_left
+  intro offset member
+  have inside := List.mem_range.mp member
+  have current := present offset inside
+  have address : Guest.inputDataAddr + BitVec.ofNat 64 index + BitVec.ofNat 64 offset =
+      Guest.inputDataAddr + BitVec.ofNat 64 (index + offset) := by
+    rw [BitVec.add_assoc, BitVec.ofNat_add]
+  rw [address] at current
+  have read := Framing.host_data input (index + offset) (by omega) current
+  rw [address, read]
+  rfl
+
 /-- Identify a successful current input word read without assuming that later
 input words, or padding outside the supplied input, will be readable. -/
 theorem normal_reply (input : Guest.InputBlob) (index : Nat)
@@ -26,19 +46,7 @@ theorem normal_reply (input : Guest.InputBlob) (index : Nat)
     next = Guest.guestHostMemory input ∧ answer = (dataBytes input index).map byteToBits := by
   have present := SharedRead.oracle_return_present _ next _ answer reply
   have actual := SharedRead.oracle_return_data _ next _ answer reply
-  have bytes : SharedRead.bytes (Guest.guestHostMemory input)
-      (Guest.inputDataAddr + BitVec.ofNat 64 index) = dataBytes input index := by
-    apply List.map_congr_left
-    intro offset member
-    have inside := List.mem_range.mp member
-    have current := present offset inside
-    have address : Guest.inputDataAddr + BitVec.ofNat 64 index + BitVec.ofNat 64 offset =
-        Guest.inputDataAddr + BitVec.ofNat 64 (index + offset) := by
-      rw [BitVec.add_assoc, BitVec.ofNat_add]
-    rw [address] at current
-    have read := Framing.host_data input (index + offset) (by omega) current
-    rw [address, read]
-    rfl
+  have bytes := present_bytes input index visible present
   exact ⟨actual.1, by rw [actual.2, bytes]⟩
 
 /-- Decode only the bytes of an observed normal reply. No mathematical-list
@@ -115,6 +123,7 @@ theorem reached_gas_word (source target : PanSemStateFiniteExact 64 Guest.HostMe
 end InitECandidate.Solver.Input.CurrentHostRead
 
 #print axioms InitECandidate.Solver.Input.CurrentHostRead.normal_reply
+#print axioms InitECandidate.Solver.Input.CurrentHostRead.present_bytes
 #print axioms InitECandidate.Solver.Input.CurrentHostRead.data_word
 #print axioms InitECandidate.Solver.Input.CurrentHostRead.normal_word
 #print axioms InitECandidate.Solver.Input.CurrentHostRead.normal_gas_word

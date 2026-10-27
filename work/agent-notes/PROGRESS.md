@@ -4,6 +4,46 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual copy bytes, returned tuple and length read
+
+CopyStepReached inverts the real shared-read/store/increment sequence, deriving
+the destination mapping, all eight present host bytes and exact wordPost.
+CopyLoopReached follows the actual finite evaluator, excludes body break/continue,
+derives the exact repeated state and every observed read/store, and requires no
+future presence, mappings, completed helper trace or clock funding.
+
+CopyObservedBytes derives InputBytes and the exact frame outside copied words
+from that actual normal loop. Actual raw-list bytes (including padding) come from
+observed current-host presence. Domains/endian/host/oracle/globals/code survive;
+clock falls by exactly ceil(length/8). Pointer alignment/no-wrap, the bounded
+current scalar length and actual p/i/len/w bindings remain caller entry facts.
+CopyTailReached joins the real i/w lexical scopes, loop, tuple return and scope
+restorations: its actual returned value is exactly the pointer/length pair, with
+the complete byte/frame facts retained.
+
+HostLengthCurrent derives length-header presence from actual normal reads and
+identifies the real scalar as the low64bits of input.length. No mathematical
+list-size bound, backing extent or future mapping premise is introduced.
+CurrentHostRead.present_bytes factors the corresponding observed-data lemma.
+CopyStep no longer imports stale HostWords; CopyMemory imports only CopyState;
+pure walk state/frame lemmas moved into CopyWalkState with public names retained.
+CopyWalk's explicit current maximum is corrected to134217726iterations.
+
+Validation: current-copy-tail-reached-v1.log PASS1025jobs/permitted printed axioms;
+6.18s/MaxRSS1777696KiB, same8GiBhostguard/twoslots/artifactcachefalse. Component
+successes: current-copy-loop-reached-v2 PASS667jobs, current-copy-observed-bytes-v3
+PASS1021jobs, current-host-length-reached-v1 PASS1022jobs. Failed diagnostics
+unindexed. Index7802historical-or-current modules/15321facts,139current-reference
+modules; inventory7836/replacement closure0/fixed latest-main unchanged; incremental
+policy PASS64603entries/2480471113bytes. No full verifier/finite global K claimed.
+
+Next: real initial allocator/caller-to-copy-tail geometry and decoder lifetime;
+AllocationArithmetic/AllocationNormal still contain old33806089496ceiling and
+must use current2952790016heap-end invariant. Check earliest scratch accesses and
+their real source covered-outcome consequences before large map/crypto migration.
+Then actual canonical offsets/gas and remaining global/weighted-target obligations.
+Five unfinished RLP files remain preserved/untracked/unclaimed; account4%used.
+
 ## Current input-copy cost and dependency cleanup
 
 BlobCurrentCost bounds every actual input_blob body outcome by 134,217,728
@@ -64,6 +104,7 @@ zero reset credits, ordinary usage allowed. Push every commit to georg.
 
 | Commit | Checked result | Remaining limit |
 | --- | --- | --- |
+| 418e447ec | Whole current input-copy all-outcome source cost; stale dependencies removed and history separated from active plan. | Copy contents/caller reachability still needed at that checkpoint. |
 | 44d188c1b | Whole current header precheck ≤85body/86caller source ticks; actual signed small-count offset loops. | Offset guard semantics/global target composition open. |
 | ff66d97ab | Actual shared reads derive presence/bytes/scalar post-state; bounded gas word under canonical offsets. | Offsets need caller derivation. |
 | 441ac0cb5 | Core Software installed-code environment;65closed stale generated modules removed. | Software migration incomplete. |

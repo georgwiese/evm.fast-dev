@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.CopyWalk
+import InitECandidate.Solver.Input.CopyState
 
 namespace InitECandidate.Solver.Input.Blob
 open Flapjack PanSemStateFiniteExact

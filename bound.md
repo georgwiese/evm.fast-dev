@@ -53,6 +53,12 @@ Checked against the current Software AST:
   caller source ticks**. The stride-eight loop costs `(length + 7 - i)/8`;
   length comes from the actual load and passing guard. Allocation/trap failures
   are included without future readability, room or store-success premises.
+- Actual normal copy-loop execution now yields its exact state, observed host
+  presence/destination mappings, input-byte correspondence and an exact frame
+  outside copied words. This composes through the real i/w scopes and tuple
+  return. Actual continuing length reads identify input.length modulo 2^64,
+  deriving header presence even for word-overflowing mathematical list sizes.
+  The initial allocator/caller geometry still needs its current reachability join.
 - Allocator/trap/input catalogues use actual Software function entries 2/0/24.
   Shared local-summary composition and fixed counter increments are generic.
 - Replacement implementation/closed proofs/generators/harness were removed
@@ -60,10 +66,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-blob-body-cost-v3.log`, 304 jobs, permitted
-printed axioms only, 5.36 seconds, MaxRSS 1,441,208 KiB. Historical/current index:
-7,796 modules /15,310 facts; 123 modules carry the current dependency reference.
-Incremental Solver/package policy passes at 64,597 entries /2,480,443,432 bytes.
+Latest successful closure: `current-copy-tail-reached-v1.log`, 1,025 jobs,
+permitted printed axioms only, 6.18 seconds, MaxRSS 1,777,696 KiB.
+Historical/current index: 7,802 modules /15,321 facts; 139 modules carry the
+current dependency reference. Incremental Solver/package policy passes at
+64,603 entries /2,480,471,113 bytes.
 These checks are not full verification.
 
 ## Remaining plan
@@ -73,14 +80,19 @@ These checks are not full verification.
   modules; retain shared helpers needed by actual current-program proofs.
 - [x] Retarget core code installation, actual shared reads, current header cost
   and complete input-copy cost; clean their stale dependencies.
-- [ ] Derive successful input-copy contents/frame/lifetime from actual reads and
-  stores. Port HostLength/HostWords/HostGas callers: old unconditional backing
-  claims are stale. Close actual offset guard semantics/decoder reachability/gas.
+- [ ] Join the checked actual copy-tail bytes/frame to the real initial allocator
+  and caller, then its decoder lifetime. Port remaining HostLength/HostWords/
+  HostGas callers; old unconditional backing claims are stale. Close actual
+  offset guard semantics/decoder reachability/gas.
 - [ ] Derive current main initialization, allocation geometry, memory ownership
   and input/heap/scratch lifetimes. Input maximum is 1,073,741,808 bytes; allocation
   ceiling is 2,952,790,016. Scratch is below sourceBase and outside compiler ordinary
   memory; analyze actual covered execution rather than assuming it excludes all
   valid inputs. Retain arbitrary mathematical list sizes, including word wrap.
+  Prioritize checking the earliest actual scratch access and its covered-outcome
+  consequences before expanding the map/crypto migration. AllocationArithmetic/
+  AllocationNormal still use the obsolete 33,806,089,496 ceiling and need the real
+  heap-end invariant, not merely their old numeric premise.
 - [ ] Bound actual Patricia maps and software cryptography. Reuse unchanged
   proofs only after checking current code, indices and dependencies; obsolete
   table/accelerator contracts do not discharge the new obligations.

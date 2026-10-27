@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.WordAssemble
-import InitECandidate.Solver.Input.BlobBytes
+import InitECandidate.Solver.Input.HeapInput
 
 namespace InitECandidate.Solver.Input.Scalar
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

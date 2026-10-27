@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 7933,
+  "solver_modules": 7938,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -48,7 +48,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1394,
+    "Input": 1398,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -86,7 +86,7 @@
     "TargetClock": 1,
     "WeightedTrace": 1,
     "WitnessAllocationPlan": 1,
-    "WitnessRadix": 201,
+    "WitnessRadix": 202,
     "WordStatic": 862,
     "WordToStackBound": 48,
     "WordToWordBound": 1
@@ -102,123 +102,123 @@
     "original_witness_constructor": [
       {
         "module": "MutableTable.WitnessBuildExecution",
-        "solver_dependency_count": 220,
+        "solver_dependency_count": 203,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.WitnessBuildEmpty",
-        "solver_dependency_count": 219,
+        "solver_dependency_count": 202,
         "imports_replacement_ast": false
       }
     ],
     "original_witness_lookup": [
       {
         "module": "MutableTable.WitnessDictionaryLookup",
-        "solver_dependency_count": 214,
+        "solver_dependency_count": 197,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.NodeDbDictionary32",
-        "solver_dependency_count": 94,
+        "solver_dependency_count": 67,
         "imports_replacement_ast": false
       }
     ],
     "original_mutable_key_operations": [
       {
         "module": "MutableTable.GetGeneralCall",
-        "solver_dependency_count": 166,
+        "solver_dependency_count": 132,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.HasGeneralCall",
-        "solver_dependency_count": 161,
+        "solver_dependency_count": 127,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.InsertGeneralCall",
-        "solver_dependency_count": 176,
+        "solver_dependency_count": 154,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.SetNoGrowthBudget",
-        "solver_dependency_count": 193,
+        "solver_dependency_count": 171,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.MemoryModelEntry",
-        "solver_dependency_count": 178,
+        "solver_dependency_count": 156,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.MemoryModelInsertCall",
-        "solver_dependency_count": 194,
+        "solver_dependency_count": 172,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.MemoryModelSetCall",
-        "solver_dependency_count": 226,
+        "solver_dependency_count": 208,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.GrowRuntime.CallerBudget",
-        "solver_dependency_count": 326,
+        "solver_dependency_count": 309,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.SetModelHeap",
-        "solver_dependency_count": 343,
+        "solver_dependency_count": 326,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.DeleteModelBudget",
-        "solver_dependency_count": 277,
+        "solver_dependency_count": 259,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.ItemCall",
-        "solver_dependency_count": 213,
+        "solver_dependency_count": 195,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.KeysCall",
-        "solver_dependency_count": 225,
+        "solver_dependency_count": 207,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.TruncateBudget",
-        "solver_dependency_count": 361,
+        "solver_dependency_count": 344,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.DeleteFinalSlots",
-        "solver_dependency_count": 181,
+        "solver_dependency_count": 163,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.TableRuntime.Budget",
-        "solver_dependency_count": 226,
+        "solver_dependency_count": 208,
         "imports_replacement_ast": false
       }
     ],
     "input_reachability": [
       {
         "module": "Input.Witness.BodyNormal",
-        "solver_dependency_count": 225,
+        "solver_dependency_count": 209,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.Witness.PrefixNormal",
-        "solver_dependency_count": 218,
+        "solver_dependency_count": 202,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.RequestStoredGasFromHeader",
-        "solver_dependency_count": 229,
+        "solver_dependency_count": 181,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.RlpLength.BlockGuard",
-        "solver_dependency_count": 272,
+        "solver_dependency_count": 255,
         "imports_replacement_ast": false
       }
     ],
@@ -230,7 +230,7 @@
       },
       {
         "module": "GasBudget.ForwardSites",
-        "solver_dependency_count": 167,
+        "solver_dependency_count": 145,
         "imports_replacement_ast": false
       },
       {
@@ -252,7 +252,7 @@
       },
       {
         "module": "GasBudget.FrameOpenCall",
-        "solver_dependency_count": 196,
+        "solver_dependency_count": 166,
         "imports_replacement_ast": false
       },
       {
@@ -264,22 +264,22 @@
     "abstract_global_accounting": [
       {
         "module": "GasBudget.BlockAccounting",
-        "solver_dependency_count": 164,
+        "solver_dependency_count": 142,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.MergeBudget",
-        "solver_dependency_count": 172,
+        "solver_dependency_count": 150,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.NestedDecay",
-        "solver_dependency_count": 171,
+        "solver_dependency_count": 149,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.StorageDebt",
-        "solver_dependency_count": 161,
+        "solver_dependency_count": 139,
         "imports_replacement_ast": false
       }
     ],

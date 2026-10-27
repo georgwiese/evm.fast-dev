@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CurrentStartup.CopiedHeap
 import InitECandidate.Solver.Input.CurrentStartup.StartupHeap
 import InitECandidate.Solver.Input.CurrentStartup.MainCopiedInput
 
@@ -15,9 +16,10 @@ def StatelessRun (input : Guest.InputBlob) (word : BitVec 64) : Prop :=
     source.locals.lookup (ofString "p") = some (.val (.word pointer)) ∧
     source.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 (input.length % 2^64)))) ∧
     source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)) ∧
-    2701134640 ≤ pointer.toNat ∧
+    2701134640 ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧
     pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016 ∧
     (∀ offset : Nat, offset < 64 → 2701132528 + offset < pointer.toNat) ∧
+    NormalHeapEffects.AtLeast (pointer.toNat + input.length % 2^64 + 8) source ∧
     evaluateHOLFiniteState source (Code.body .decode_stateless_input) =
       (some (.returned (.val (.word word))), target)
 
@@ -54,7 +56,7 @@ theorem stateless_run (input : Guest.InputBlob) (source target : PanSemStateFini
   have same : old = pointer := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heapCell)))
   subst old
   refine ⟨callEntryStateHOLFinite ready callee, post, pointer, lengthBound, entry, heapEntry, bytes,
-    pCell, lenCell, ?_, low, copied.1, ?_, returned⟩
+    pCell, lenCell, ?_, low, aligned, copied.1, ?_, DecoderInput.copied_frontier input before ready pointer (input.length % 2^64) _ copied, returned⟩
   · exact (globals (ofString "ssz_offs") (by decide)).trans offsets
   · intro offset small
     omega

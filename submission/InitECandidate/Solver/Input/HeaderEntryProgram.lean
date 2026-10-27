@@ -19,7 +19,7 @@ def shifted (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : Bit
 
 theorem entry_shape : body=.seq (lengthGuard 2 1) (.seq schemaGuard
     (.seq shiftPointer (.seq shiftLength (.seq (lengthGuard 16 80) afterHeader)))) := by
-  simp only [body,afterHeader,Guest.guestFn_decode_stateless_input,progToHOL,expToHOL,shapeToHOL,
+  simp only [body,afterHeader,Guest.Software.guestFn_decode_stateless_input,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,Option.map_none,lengthGuard,lengthTest,schemaGuard,schemaTest,schemaFirst,schemaSecond,
     shiftPointer,shiftLength,Scalar.plus,localVar]
 

@@ -100,6 +100,16 @@ theorem host_data_value (input : InputBlob) (index : Nat) (visible : index < max
   have actual := host_data input index visible (by rw [read]; rfl)
   exact Option.some.inj (read.symm.trans actual)
 
+/-- A raw four-byte field cannot overflow its natural uint32 range. This
+uses mathematical input bytes directly and makes no host-backing claim. -/
+theorem le32_lt (input : Guest.InputBlob) (index : Nat) : Guest.GasLimit.le32 input index < 2^32 := by
+  have b0 := ((input[index]?).getD 0).isLt
+  have b1 := ((input[index+1]?).getD 0).isLt
+  have b2 := ((input[index+2]?).getD 0).isLt
+  have b3 := ((input[index+3]?).getD 0).isLt
+  unfold Guest.GasLimit.le32 Guest.GasLimit.byte
+  omega
+
 end InitECandidate.Solver.Input.Framing
 
 #print axioms InitECandidate.Solver.Input.Framing.framed_data
@@ -108,3 +118,5 @@ end InitECandidate.Solver.Input.Framing
 #print axioms InitECandidate.Solver.Input.Framing.framed_length_word
 #print axioms InitECandidate.Solver.Input.Framing.host_data
 #print axioms InitECandidate.Solver.Input.Framing.host_data_value
+
+#print axioms InitECandidate.Solver.Input.Framing.le32_lt

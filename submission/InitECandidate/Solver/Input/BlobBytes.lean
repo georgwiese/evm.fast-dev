@@ -1,17 +1,10 @@
+import InitECandidate.Solver.Input.HeapInput
 import InitECandidate.Solver.Input.BlobExecute
 import InitECandidate.Solver.Input.CopyBytes
 
 namespace InitECandidate.Solver.Input.Blob
 open Flapjack PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
-
-/-- Exact byte correspondence over the encoded input extent. This does not
-replace the encoded extent with the arbitrary mathematical list's length. -/
-def HeapInput (state : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (pointer : BitVec 64) : Prop :=
-  ∀ offset<input.length%2^64,
-    @panMemLoadByteHOL 64 _ state.memory state.memaddrs
-      (fun address=>Classical.propDecidable (state.memaddrs address)) state.be
-      (pointer+BitVec.ofNat 64 offset)=some (Framing.convert ((input[offset]?).getD 0))
 
 /-- Complete actual input_blob execution, exact copied bytes for the decoder,
 and a uniform 16,777,215 source-clock ceiling on the successful copy path. -/

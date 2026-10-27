@@ -114,12 +114,24 @@ Checked against the current Software AST:
   stateless entry, ssz_offs=2701132528, input pointer≥2701134640and its entire
   bounded copied allocation is in range. Every64-byte workspace address is below
   that pointer. Startup/decoder stopped paths remain explicit; image lifetime
-  through later decoder writes remains open.
+  through later decoder writes remains open. CopiedHeap additionally derives
+  that the stateless-entry heap lies beyond pointer+encodedlength+8, including
+  real alignment rounding. CanonicalHeader now derives the actual schema bytes,
+  encodedlength≥18and first container offset=16 from the real returned decoder.
+  HeaderAfterTrace reaches the actual first-container continuation at its original
+  clock with paid≤4derived from enclosing execution and input bytes intact through
+  the first two workspace stores and validator. The witness offset is also
+  derived between16and encodedlength−2. The second canonical offset and gas
+  connection remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
   helpers, reducing its Solver dependency closure151to9. NoReturnScoped reuses
   the shared ignored-call rule instead of declaring a duplicate theorem.
+  HeapInput and AllocatedArena split byte-image/geometry facts from unrelated
+  historical copy/zero execution. HeapFrame closure82to29, ScalarProgram51to12,
+  HeaderEntryNormal114to65and HeaderAfterNormal111to62. Header syntax uses the
+  actual Software decoder; raw le32 bounds use mathematical bytes directly.
   Existing clock-only interfaces are retained as projections of the stronger
   stopped-state classification. CaughtAssignedStops and NoFallthrough also use
   their actual minimal imports. These are proof dependency changes, not changes
@@ -129,11 +141,12 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-separated-input-v1.log`, 1,166 jobs,
-permitted printed axioms only, 4.64 seconds, MaxRSS 1,853,380 KiB.
-Historical/current index: 7,898 modules /15,683 facts; 298 modules carry the
+Latest successful closure: `current-canonical-header-v7.log`, 1,224 jobs,
+permitted printed axioms only, 7.52 seconds, MaxRSS 1,853,748 KiB.
+Historical/current index: 7,902 modules /15,691 facts; 337 modules carry the
 current dependency reference. Incremental Solver/package policy passes at
-64,701 entries /2,481,645,727 bytes.
+64,706 entries /2,481,661,563 bytes; historical copy/zero execution wrappers
+are not revalidated.
 These checks are not full verification.
 
 ## Remaining plan
@@ -149,7 +162,7 @@ These checks are not full verification.
   and later startup pointer frame are proved. Persistent heap ordering through
   actual startup/setup/precheck, including the real heap mark/release, now derives
   workspace/input separation at genuine stateless entry. Preserve the copied
-  image through decoding writes.
+  image through remaining decoding writes; the first two stores/validator now pass.
   Port remaining HostLength/HostWords/HostGas callers; old unconditional backing
   claims are stale. Close actual offset guards/decoded layouts/gas.
 - [ ] Derive current main initialization, allocation geometry, memory ownership
@@ -198,7 +211,7 @@ These checks are not full verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with `/tmp/init-e-account-usage.py`. User means
-  account usage-limit resets. Last check: 9% weekly used, zero reset credits,
+  account usage-limit resets. Last check: 10% weekly used, zero reset credits,
   ordinary usage allowed.
 - One selected build at a time, two Lean slots, artifact cache disabled,
   **8 GiB whole-host used-memory stop guard**. Stop if disk exceeds 85%. Poll

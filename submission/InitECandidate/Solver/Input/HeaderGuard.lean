@@ -53,15 +53,13 @@ theorem guard_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
   obtain ⟨first,valid,paid,bound,postEq⟩:=Offsets.call_normal_first (pairState source input array) post guardArguments array 16#64 total
     (offsetWords input) 2 (by decide) (by decide) args code failCode exceptionShape mapped cells enough guardRun
   have rawSmall : Guest.GasLimit.le32 input 2<2^64 := by
-    have bound:=HostGas.le32_lt input 2
-    rw [HostGas.le32_eq input 2 (by decide)] at bound
+    have bound:=Framing.le32_lt input 2
     omega
   have number:=congrArg BitVec.toNat first
   change (BitVec.ofNat 64 (Guest.GasLimit.le32 input 2)).toNat=16 at number
   rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt rawSmall] at number
   have secondSmall : Guest.GasLimit.le32 input 6<2^64 := by
-    have bound:=HostGas.le32_lt input 6
-    rw [HostGas.le32_eq input 6 (by decide)] at bound
+    have bound:=Framing.le32_lt input 6
     omega
   have secondEncoded : (secondWord input).toNat=Guest.GasLimit.le32 input 6 := by
     rw [secondWord,BitVec.toNat_ofNat,Nat.mod_eq_of_lt secondSmall]

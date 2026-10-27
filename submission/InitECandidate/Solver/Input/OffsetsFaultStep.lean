@@ -1,3 +1,5 @@
+import InitECandidate.Solver.PanDeclarations
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 import InitECandidate.Solver.Input.OffsetsFaultChecks
 
 namespace InitECandidate.Solver.Input.Offsets

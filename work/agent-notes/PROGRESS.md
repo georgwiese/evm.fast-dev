@@ -4,6 +4,53 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual canonical first-container header and input-image dependency cleanup
+
+HeapInput is now independent of the historical BlobBytes execute proof. The old
+execution wrapper imports/reexports the unchanged definition. ScalarProgram and
+HeapFrame consume the small definition directly. AllocatedArena splits the basic
+arena/alignment/mapping facts from CopyContext; AllocatedBytes reexports it before
+its historical copy_mapped theorem. That copy/zero execution closure is not claimed
+revalidated. HeapFrame imports StoreWord explicitly. OffsetsValidStep/FaultStep
+now explicitly import their generic declaration and binding rules after earlier
+cleanup removed their transitive imports. Actual header syntax is retargeted to
+Guest.Software.guestFn_decode_stateless_input. Framing.le32_lt bounds raw list
+bytes directly; HeaderGuard no longer uses stale HostGas host-backing equations.
+[Cleanup manifest](current-input-image-cleanup-20261027.json): HeapFrame82to29,
+ScalarProgram51to12, HeaderEntryNormal114to65and HeaderAfterNormal111to62Solver
+modules, compared with3df4e973d. All frozen implementation bytes remain unchanged.
+
+CopiedHeap derives the actual post-copy frontier≥inputpointer+encodedlength+8,
+using observed allocation room and current rounding arithmetic. SeparatedInput
+retains that frontier and pointer alignment at the true stateless body entry.
+CanonicalHeader derives schema21/1, encodedlength≥18, first offset=16and witness
+offset between16and encodedlength−2 from real decoder return. No offset/schema
+hypothesis or future helper success is supplied by the caller. A checked four-
+clock extension funds the reusable header inversion; its natural conclusions
+then apply to the original mathematical input. HeaderAfterTrace additionally
+extracts the real unpadded continuing prefix: paid≤4and paid≤originalclock,
+actual first-container continuation, and copied bytes intact through the first
+two real workspace stores and validator. It uses the actual non-timeout enclosing
+run to derive its precise funding. This does not yet derive the request/payload
+second canonical offset or retain bytes through all subsequent decoder writes.
+
+Validation: current-canonical-header-v7.log PASS1224jobs/permitted printed axioms,
+7.52s/MaxRSS1853748KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Component
+current-header-image-cleanup-v4 and canonical-header-v2 passed. Diagnostics v3/v4/v6
+were stopped by the memory guard; v5 localized the kernel reduction issue. The
+successful trace factors the prefix equality and input-image field transport;
+no resource limit was increased. Failed/guarded logs are not indexed. Index7902
+historical/currentmodules/15691facts,337current-reference modules; inventory7938,
+replacementclosure0/frozenmainunchanged; incremental policyPASS64706entries/
+2481661563bytes. No full verification or global K. Account10%weekly/0resetcredits/
+ordinaryallowed. Five old untracked RLP files retained. Push each commit.
+
+Next carry the actual allocator frontier and byte frame through the fresh96-byte
+stateless record and its gas store, then derive request offsets (including44),
+payload layouts and actual gas. Preserve all covered failure alternatives. Scratch
+covered-outcome classification and global current-program quantitative/target
+composition remain open. Overall estimate40%, plausible30–50%.
+
 ## Actual startup heap ordering and whole-main input separation
 
 NormalHeapEffects/Loop/Call/Prefix retain a lower heap frontier only on real

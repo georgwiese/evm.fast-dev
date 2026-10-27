@@ -1,5 +1,6 @@
-import InitECandidate.Solver.Input.BlobBytes
-import InitECandidate.Solver.WitnessRadix.AllocatedBytes
+import InitECandidate.Solver.WitnessRadix.StoreWord
+import InitECandidate.Solver.Input.HeapInput
+import InitECandidate.Solver.WitnessRadix.AllocatedArena
 
 namespace InitECandidate.Solver.Input.Blob
 open Flapjack PanSemStateFiniteExact

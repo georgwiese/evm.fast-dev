@@ -1,5 +1,4 @@
 import InitECandidate.Solver.WitnessRadix.AllocationCall
-import InitECandidate.Solver.WitnessRadix.ZeroCall
 
 namespace InitECandidate.Solver.WitnessRadix.ProgramPrefix
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -30,7 +29,7 @@ inductive Executes {F : Type} : PanSemStateFiniteExact 64 F → List Action → 
       (read : eval source expression = some (.val (.word amount)))
       (code : source.code.lookup (ofString "alloc") = some (PersistentAlloc.formals, PersistentAlloc.body, .one))
       (heapGlobal : source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)))
-      (fits : pointer.toNat + amount.toNat ≤ 33806089496) (enough : 1 ≤ source.clock)
+      (fits : pointer.toNat + amount.toNat ≤ 2952790016) (enough : 1 ≤ source.clock)
       (next : Executes (bind (PersistentAlloc.post { source with clock := source.clock - 1 } pointer amount) name pointer)
         rest entered restoreRest) :
       Executes source (.allocate name expression :: rest) entered (fun target => restore source name (restoreRest target))

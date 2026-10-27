@@ -1,4 +1,6 @@
-import InitECandidate.Solver.WitnessRadix.AllocationNormalExpected
+import InitECandidate.Solver.WitnessRadix.AllocationNormal
+import InitECandidate.Solver.WitnessRadix.AllocationEnvironment
+import InitECandidate.Solver.WitnessRadix.AllocationRoundedExpected
 import InitECandidate.Solver.Input.AssignedCallNormal
 import InitECandidate.Solver.Input.GlobalAssign
 
@@ -16,9 +18,9 @@ theorem global_call_normal {F : Type} (source target : PanSemStateFiniteExact 64
     (code : source.code.lookup (ofString "alloc") = some (formals, body, .one))
     (trapCode : source.code.lookup (ofString "trap_with") = some (Input.Trap.formals, Input.Trap.body, .one))
     (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)))
-    (bounded : pointer.toNat ≤ 33806089496)
+    (bounded : pointer.toNat ≤ 2952790016)
     (normal : evaluateHOLFiniteState source (.call (some (some (.global, ofString name), none)) (ofString "alloc") arguments) = (none, target)) :
-    pointer.toNat + amount.toNat ≤ 33806089496 ∧ 1 ≤ source.clock ∧
+    pointer.toNat + amount.toNat ≤ 2952790016 ∧ 1 ≤ source.clock ∧
       target = Input.putGlobal (post {source with clock := source.clock - 1} pointer amount) name pointer := by
   obtain ⟨callee, called, n⟩ := environment source.code.lookup amount code
   obtain ⟨positive, actualPost, returned, bodyRun⟩ := Input.CallNormal.assigned_callee_return source target (some (.global, ofString name)) (ofString "alloc") arguments _ body callee .one args called normal
@@ -37,7 +39,7 @@ theorem global_call_normal {F : Type} (source target : PanSemStateFiniteExact 64
   exact ⟨room, positive, same⟩
 
 theorem global_call_normal_expected {F : Type} (source target : PanSemStateFiniteExact 64 F) (name : String) (old : BitVec 64)
-    (pointer amount next : Nat) (pointerBound : pointer ≤ 33806089496) (amountSmall : amount < 2 ^ 64)
+    (pointer amount next : Nat) (pointerBound : pointer ≤ 2952790016) (amountSmall : amount < 2 ^ 64)
     (lower : pointer + amount ≤ next) (upper : next < pointer + amount + 8) (aligned : next % 8 = 0)
     (present : source.globals.lookup (ofString name) = some (.val (.word old)))
     (arguments : List (ExpHOL 64))
@@ -46,7 +48,7 @@ theorem global_call_normal_expected {F : Type} (source target : PanSemStateFinit
     (trapCode : source.code.lookup (ofString "trap_with") = some (Input.Trap.formals, Input.Trap.body, .one))
     (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 pointer))))
     (normal : evaluateHOLFiniteState source (.call (some (some (.global, ofString name), none)) (ofString "alloc") arguments) = (none, target)) :
-    pointer + amount ≤ 33806089496 ∧ next ≤ 33806089496 ∧ 1 ≤ source.clock ∧
+    pointer + amount ≤ 2952790016 ∧ next ≤ 2952790016 ∧ 1 ≤ source.clock ∧
       target = Input.putGlobal {source with globals := source.globals.update (ofString "heap_ptr", .val (.word (BitVec.ofNat 64 next))), clock := source.clock - 1}
         name (BitVec.ofNat 64 pointer) := by
   have pointerNat : (BitVec.ofNat 64 pointer).toNat = pointer := by rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by omega)]

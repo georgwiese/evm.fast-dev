@@ -87,7 +87,7 @@ allocator caller once. Current typed globals and aggregate room suffice. -/
 theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (actions : List Action) (continuation : ProgHOL 64)
     (installed : OriginalCode.Installed source.code) (scalars : OriginalScalarGlobals.Scalars source.globals)
     (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 cursor))))
-    (valid : ∀ action,action ∈ actions → Valid action) (room : cursor + totalBytes actions ≤ 33806089496)
+    (valid : ∀ action,action ∈ actions → Valid action) (room : cursor + totalBytes actions ≤ 2952790016)
     (aligned : cursor % 8 = 0) (enough : actions.length ≤ source.clock) :
     evaluateHOLFiniteState source (withTail actions continuation) =
       evaluateHOLFiniteState {template source cursor actions with clock := source.clock - actions.length} continuation := by
@@ -96,7 +96,7 @@ theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cu
   | cons action rest ih =>
     have current := valid action (by simp)
     have tailValid : ∀ item,item ∈ rest → Valid item := fun item member => valid item (List.mem_cons_of_mem _ member)
-    have totalRoom : cursor + action.bytes + totalBytes rest ≤ 33806089496 := by simpa only [totalBytes,Nat.add_assoc] using room
+    have totalRoom : cursor + action.bytes + totalBytes rest ≤ 2952790016 := by simpa only [totalBytes,Nat.add_assoc] using room
     obtain ⟨old,present⟩ := scalars (ofString action.name) current.member
     have args : evalListHOLFinite source (h := fun query => Classical.propDecidable (source.memaddrs query)) [action.expression] = some (PersistentAlloc.values (BitVec.ofNat 64 action.bytes)) := by
       have read := current.read source
@@ -120,7 +120,7 @@ theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cu
 theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) (actions : List Action)
     (installed : OriginalCode.Installed source.code) (scalars : OriginalScalarGlobals.Scalars source.globals)
     (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 cursor))))
-    (valid : ∀ action,action ∈ actions → Valid action) (room : cursor + totalBytes actions ≤ 33806089496)
+    (valid : ∀ action,action ∈ actions → Valid action) (room : cursor + totalBytes actions ≤ 2952790016)
     (aligned : cursor % 8 = 0) (enough : actions.length ≤ source.clock) :
     evaluateHOLFiniteState source (program actions) =
       (some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite {template source cursor actions with clock := source.clock - actions.length}) := by

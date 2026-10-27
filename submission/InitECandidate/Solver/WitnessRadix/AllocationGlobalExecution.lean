@@ -1,5 +1,5 @@
 import InitECandidate.Solver.WitnessRadix.AllocationCall
-import InitECandidate.Solver.WitnessRadix.AllocationExpected
+import InitECandidate.Solver.WitnessRadix.AllocationRoundedExpected
 import InitECandidate.Solver.Input.GlobalAssign
 
 namespace InitECandidate.Solver.WitnessRadix.PersistentAlloc
@@ -15,7 +15,7 @@ theorem global_call_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (n
     (args : evalListHOLFinite source (h := fun query => Classical.propDecidable (source.memaddrs query)) arguments = some (values amount))
     (code : source.code.lookup (ofString "alloc") = some (formals,body,.one))
     (heap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)))
-    (room : pointer.toNat + amount.toNat ≤ 33806089496) (positive : 1 ≤ source.clock) :
+    (room : pointer.toNat + amount.toNat ≤ 2952790016) (positive : 1 ≤ source.clock) :
     evaluateHOLFiniteState source (.call (some (some (.global,ofString name),none)) (ofString "alloc") arguments) =
       (none,Input.putGlobal (post {source with clock := source.clock - 1} pointer amount) name pointer) := by
   obtain ⟨callee,called,amountLocal⟩ := environment source.code.lookup amount code
@@ -32,7 +32,7 @@ theorem global_call_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (n
   exact actual
 
 theorem global_call_execute_expected {F : Type} (source : PanSemStateFiniteExact 64 F) (name : String) (old : BitVec 64)
-    (pointer amount next : Nat) (room : pointer + amount ≤ 33806089496)
+    (pointer amount next : Nat) (room : pointer + amount ≤ 2952790016)
     (lower : pointer + amount ≤ next) (upper : next < pointer + amount + 8) (aligned : next % 8 = 0)
     (present : source.globals.lookup (ofString name) = some (.val (.word old)))
     (arguments : List (ExpHOL 64))

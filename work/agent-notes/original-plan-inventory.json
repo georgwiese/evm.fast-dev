@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 7912,
+  "solver_modules": 7919,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -48,7 +48,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1375,
+    "Input": 1381,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -86,7 +86,7 @@
     "TargetClock": 1,
     "WeightedTrace": 1,
     "WitnessAllocationPlan": 1,
-    "WitnessRadix": 199,
+    "WitnessRadix": 200,
     "WordStatic": 862,
     "WordToStackBound": 48,
     "WordToWordBound": 1
@@ -156,7 +156,7 @@
       },
       {
         "module": "MutableTable.MemoryModelSetCall",
-        "solver_dependency_count": 233,
+        "solver_dependency_count": 226,
         "imports_replacement_ast": false
       },
       {
@@ -176,22 +176,22 @@
       },
       {
         "module": "MutableTable.ItemCall",
-        "solver_dependency_count": 220,
+        "solver_dependency_count": 213,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.KeysCall",
-        "solver_dependency_count": 232,
+        "solver_dependency_count": 225,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.TruncateBudget",
-        "solver_dependency_count": 360,
+        "solver_dependency_count": 361,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.DeleteFinalSlots",
-        "solver_dependency_count": 188,
+        "solver_dependency_count": 181,
         "imports_replacement_ast": false
       },
       {
@@ -203,22 +203,22 @@
     "input_reachability": [
       {
         "module": "Input.Witness.BodyNormal",
-        "solver_dependency_count": 232,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "Input.Witness.PrefixNormal",
         "solver_dependency_count": 225,
         "imports_replacement_ast": false
       },
       {
+        "module": "Input.Witness.PrefixNormal",
+        "solver_dependency_count": 218,
+        "imports_replacement_ast": false
+      },
+      {
         "module": "Input.RequestStoredGasFromHeader",
-        "solver_dependency_count": 236,
+        "solver_dependency_count": 229,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.RlpLength.BlockGuard",
-        "solver_dependency_count": 291,
+        "solver_dependency_count": 285,
         "imports_replacement_ast": false
       }
     ],

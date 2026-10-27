@@ -1,17 +1,10 @@
-import InitECandidate.Solver.WitnessRadix.AllocationArithmetic
+import InitECandidate.Solver.WitnessRadix.AllocationRoundedExpected
 import InitECandidate.Solver.WitnessRadix.ProgramPrefix
 
 namespace InitECandidate.Solver.WitnessRadix.PersistentAlloc
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString QueryBranch
 
-theorem rounded_expected (pointer amount : BitVec 64) (next : Nat)
-    (fits : pointer.toNat + amount.toNat + 7 < 2 ^ 64)
-    (lower : pointer.toNat + amount.toNat ≤ next) (upper : next < pointer.toNat + amount.toNat + 8)
-    (aligned : next % 8 = 0) : rounded pointer amount = BitVec.ofNat 64 next := by
-  apply BitVec.eq_of_toNat_eq
-  rw [rounded_nat pointer amount fits, BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  omega
 
 def nextState {F : Type} (source : PanSemStateFiniteExact 64 F) (name : String) (pointer next : Nat) :
     PanSemStateFiniteExact 64 F :=
@@ -27,7 +20,7 @@ theorem prefix_allocate {F : Type} (source entered : PanSemStateFiniteExact 64 F
     (read : eval source expression = some (.val (.word (BitVec.ofNat 64 amount))))
     (code : source.code.lookup (ofString "alloc") = some (formals, body, .one))
     (heapGlobal : source.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 pointer))))
-    (fits : pointer + amount ≤ 33806089496) (lower : pointer + amount ≤ next)
+    (fits : pointer + amount ≤ 2952790016) (lower : pointer + amount ≤ next)
     (upper : next < pointer + amount + 8) (aligned : next % 8 = 0) (enough : 1 ≤ source.clock)
     (continuation : ProgramPrefix.Executes (nextState source name pointer next) rest entered restoreRest) :
     ProgramPrefix.Executes source (.allocate name expression :: rest) entered
@@ -45,5 +38,4 @@ theorem prefix_allocate {F : Type} (source entered : PanSemStateFiniteExact 64 F
 
 end InitECandidate.Solver.WitnessRadix.PersistentAlloc
 
-#print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_expected
 #print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.prefix_allocate

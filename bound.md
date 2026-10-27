@@ -99,7 +99,13 @@ Checked against the current Software AST:
   at the actual stateless body entry. MainCopiedInput reaches this from complete
   source observations, preserving startup/decoder stops and main's true si binding.
   HostState now retains exception declarations, shared domain and source base too.
-  Workspace geometry and image lifetime after stateless entry remain open.
+  EarlyWorkspace now checks the actual SHA/Keccak/first SSZ allocations and
+  the zero-hash guard. Main starts SSZ with a 720-byte heap advance and allocates
+  its64-byte offset buffer at **0xa10002f0 (2701132528)**. WorkspacePointer proves
+  that pointer survives all later actual startup calls; OffsetsFrame checks the
+  closed43-helper suffix/decoder/output graph. This is pointer preservation,
+  not nonaliasing or memory-content preservation. Later heap ordering and copied
+  image lifetime remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   Existing clock-only interfaces are retained as projections of the stronger
@@ -111,11 +117,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-main-copied-input-v2.log`, 1,131 jobs,
-permitted printed axioms only, 231.79 seconds, MaxRSS 5,367,852 KiB.
-Historical/current index: 7,877 modules /15,535 facts; 264 modules carry the
+Latest successful closure: `current-workspace-pointer-v1.log`, 1,146 jobs,
+permitted printed axioms only, 3.45 seconds, MaxRSS 1,451,372 KiB.
+Historical/current index: 7,884 modules /15,607 facts; 279 modules carry the
 current dependency reference. Incremental Solver/package policy passes at
-64,680 entries /2,481,116,195 bytes.
+64,687 entries /2,481,410,152 bytes.
 These checks are not full verification.
 
 ## Remaining plan
@@ -127,8 +133,10 @@ These checks are not full verification.
   and complete input-copy cost; clean their stale dependencies.
 - [x] Join actual main/startup/setup/precheck/input_blob to the copied image,
   real pointer/length parameters and metadata at the stateless decoder entry.
-- [ ] Derive startup workspace geometry and persistent ordering relative to the
-  copied input, especially ssz_offs; preserve the image through actual decoding.
+- [ ] Finish workspace geometry: the actual ssz_offs address/64-byte allocation
+  and later startup pointer frame are proved. Derive persistent heap ordering
+  through the remaining startup helpers and their real heap mark/release, then
+  show separation from copied input and preserve its image through decoding.
   Port remaining HostLength/HostWords/HostGas callers; old unconditional backing
   claims are stale. Close actual offset guards/decoded layouts/gas.
 - [ ] Derive current main initialization, allocation geometry, memory ownership
@@ -152,9 +160,12 @@ These checks are not full verification.
   geometry and later persistent ownership before transporting parsed offsets/gas
   through workspace writes. Classify genuine scratch helper outcomes. NoReturn alone does not rule out covered terminal
   FFI outcomes, so do not discard later EVM/map obligations on that basis.
-  AllocationArithmetic/AllocationNormal/AllocationCall/AllocationCallNormal now
-  use the actual 2,952,790,016 ceiling. Extended Expected/Global/Local variants
-  and their old callers still require migration.
+  AllocationArithmetic/Normal/Call/CallNormal and the Expected/NormalExpected/
+  GlobalExecution/GlobalNormal/ProgramPrefix/InitializerAllocations interfaces
+  now use the actual 2,952,790,016 ceiling. RoundedExpected is split from the
+  prefix umbrella; GlobalNormal dependencies fall66to23 and initializer allocation
+  dependencies82to43. InitializerNormal derives real prefix room and states from
+  observed returns. Remaining Local variants and old callers still need migration.
 - [ ] Bound actual Patricia maps and software cryptography. Reuse unchanged
   proofs only after checking current code, indices and dependencies; obsolete
   table/accelerator contracts do not discharge the new obligations.

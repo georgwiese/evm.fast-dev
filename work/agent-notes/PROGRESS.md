@@ -4,6 +4,65 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual first SSZ workspace and later-startup pointer preservation
+
+Global allocation execution/normal/expected APIs and ProgramPrefix now use the
+actual2952790016ceiling. RoundedExpected splits the reusable arithmetic lemma
+from AllocationExpected's lexical prefix import; ProgramPrefix drops unused
+ZeroCall. [Cleanup manifest](current-initializer-cleanup-20261027.json) records
+exact prior imports at f762ad605 and current source hashes: GlobalNormal Solver
+closure66to23, GlobalExecution56to17, Expected50to13, ProgramPrefix49to11 and
+InitializerAllocations82to43. Existing literal initializer execution interfaces
+are retargeted; remaining old Local helpers/callers are not silently revalidated.
+
+InitializerNormal.prefix_return exposes every actual global allocation before
+an observed initializer return. normal_prefix derives each real allocation's
+room/funding and exact current state, plus the aggregate bound and clock, without
+a future successful allocation or aggregate room/clock premise. Literal action
+validity and word-sized numeric requests are checked static syntax facts.
+
+EarlyWorkspace checks current SHA's64+128allocations, Keccak's192+200+136,
+and first SSZ initialization's32+64+2048. Real zero_hashes=0 excludes the SSZ
+initializer's early return. Keccak/SSZ literal stores preserve all globals on
+every outcome, including failed stores; no future readability is supplied.
+EarlyWorkspaceCalls derives real returned bodies/caller restoration from actual
+continuing ignored calls. First_three/main_first_three connect these to the
+literal first3main startup calls and declaration-derived heap/scalars/zero flag.
+After SSZ, heap=sourceBase+2864=2701134640; the64-byte ssz_offs allocation is
+sourceBase+752=2701132528=0xa10002f0. This replaces the old accelerated program's
+unrelated2713715344literal; no frozen guest bytes were changed.
+
+OffsetsFrame checks all-outcome ssz_offs global preservation for the closed43-
+helper graph used by later10startup roots and decoder/result/output helpers.
+[Generator/manifest](current-offsets-frame-generation.json) record all source
+proof inputs/hashes; Lean validates every literal inequality and actual callee.
+WorkspacePointer joins it to the real remaining startup sequence: main_offsets
+proves the actual post-startup cursor cell, retaining arbitrary mathematical
+input lists and actual early-stop alternatives in the existing whole-main cut.
+This proves global pointer preservation only. It does not prove that workspace
+contents are unchanged, that input cannot overlap it, or a startup runtime bound.
+
+Validation: current-workspace-pointer-v1.log PASS1146jobs/permitted printed axioms,
+3.45s/MaxRSS1451372KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Combined
+roots include WorkspacePointer, existing MainCopiedInput and NormalExpected,
+so both allocation API retargeting and the previous whole input bridge pass.
+Components: global-allocation-api-v1 PASS282, initializer-normal-prefix-v1 PASS290,
+early-workspace-reached-v1 PASS366, offsets-frame-v1 PASS270. Failed diagnostics
+unindexed. Generation inputs/current source hashes match. Index7884historical-or-
+current modules/15607facts,279current-reference modules; inventory7919/replacement
+closure0/frozenmain unchanged; incremental policy PASS64687entries/2481410152bytes.
+No full fixed-policy/axiom audit/comparator verification or uniform K claimed.
+
+Next preserve a lower persistent allocation frontier through the remaining
+startup helpers, treating evm_init's real saved heap mark/release explicitly.
+Then relate the actual input pointer to the64-byte SSZ workspace, derive its
+protection through copying/decoder writes and finish offset/layout/gas joins.
+Do not infer memory ownership from a preserved global pointer. Current local
+scratch NoReturn results still need genuine covered-outcome classification;
+global quantitative/target composition remains open. Overall estimate40%, range
+30–50%; no finite uniform target K. Five untracked pre-rebase RLP files preserved.
+Account8%weeklyused/0resetcredits/ordinary allowed. Push every commit to georg.
+
 ## Complete main-to-copied-input/stateless-entry bridge
 
 ReadHostEffects proves host-byte equality on every outcome under the real
@@ -56,8 +115,9 @@ or-current modules/15535facts,264current-reference modules; inventory7912modules
 replacement closure0/fixedmain unchanged; incremental policy PASS64680entries/
 2481116195bytes. No full fixed-policy/axiom audit/comparator replay claimed.
 
-Next derive real startup workspace geometry/persistent ordering, especially the
-64-byte ssz_offs allocation, relative to the later copied input. A bounded aligned
+At that checkpoint the workspace address was pending; the later checkpoint
+above now derives its actual64-byte allocation and pointer transport. Persistent
+heap ordering relative to the later copied input remains open. A bounded aligned
 heap cell alone does not prove nonaliasing, so do not transport the entry byte
 image through header workspace stores without that separation. Then actual
 decoder offsets/layouts/gas, genuine scratch covered-outcome classification and

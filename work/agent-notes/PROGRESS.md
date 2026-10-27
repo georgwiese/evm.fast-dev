@@ -4,6 +4,43 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Real payload record and input image through its header/offset loads
+
+PayloadPrefixProgram now imports actual PayloadProgram and generic ProgramPrefix
+syntax instead of the unrelated RequestGasFromHeader bridge; its shape proof uses
+Software. [Cleanup manifest](current-payload-prefix-cleanup-20261027.json) records
+the exact prior import/revision, current hash and Solver closure85to72. The older
+whole-payload/gas bridge is not revalidated by this cleanup.
+
+PayloadCut reconstructs the real seven actions after the passed length guard:
+alloc136, pointer/length stores, and four flattened byte-offset declarations.
+Actual payload return exposes their live lexical execution, original clock/frame
+and retained lower heap frontier. AllocationFrontier derives the observed pl
+pointer, whole136-byte room and alignment; later actions preserve that binding.
+InputImageFrame.word_store_separate shares the exact observed ordinary word-store
+frame and physical byte separation. PayloadHeaderImage applies it to both header
+stores, using the actual p/len bindings, then retains bytes through all four real
+reads. No future mapping, room, field read or store success is assumed.
+
+PayloadWorkspace joins these to the main-derived PayloadEntry. The actual offset
+body now has original copied bytes, genuine code/domain/endian/exception metadata,
+ssz_offs2701132528, correct p/len/pl and allocator frontier, contained540-byte-or-
+larger slice and separate136-byte record. It exposes the real continuing body.
+The next four workspace stores, offset validator, transaction/list allocations
+and later scalar field/gas store still need their actual-entry byte frames.
+
+Validation: current-payload-workspace-v1.log PASS1254jobs/permitted printed axioms,
+4.87s/MaxRSS1876448KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Components
+payload-prefix-program-v1 PASS672, payload-cut-v2 PASS1252, payload-header-image-v2
+PASS1253. Failed diagnostics unindexed. Index7913historical/currentmodules/15722
+facts,366current-reference modules; inventory7949/replacementclosure0/frozenmain
+unchanged; incremental policyPASS64717entries/2481722057bytes. No full verifier
+run or finite global K. Account11%weekly/0resetcredits/ordinaryallowed. Five old
+untracked RLP files retained. Push each commit. Next the real four-offset payload
+workspace writes/validator, then remaining array/header/scalar stores to gas.
+Scratch covered-outcome classification/global target composition remain open.
+Overall estimate40%, plausible30–50%.
+
 ## Genuine payload callee, minimum slice and copied image
 
 PayloadGas/Program now use actual Software payload syntax. PayloadProgram imports

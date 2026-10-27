@@ -1,0 +1,15 @@
+{
+  "previous_revision": "8f78c12e1b321c487ef68ba06361befc658261c4",
+  "path": "submission/InitECandidate/Solver/Input/PayloadPrefixProgram.lean",
+  "previous_imports": [
+    "InitECandidate.Solver.Input.RequestGasFromHeader"
+  ],
+  "current_imports": [
+    "InitECandidate.Solver.Input.PayloadProgram",
+    "InitECandidate.Solver.WitnessRadix.ProgramPrefixAppend"
+  ],
+  "previous_solver_closure": 85,
+  "current_solver_closure": 72,
+  "sha256": "9f790c6ad31ebbf511fd325381a7d924f4ed3b1b360939ff253cd61e2e0fadff",
+  "scope": "Current literal payload prefix only; no source or semantics changes, and no validation of the old whole-payload/gas bridge."
+}

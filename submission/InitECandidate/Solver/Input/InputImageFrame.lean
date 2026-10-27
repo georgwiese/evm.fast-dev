@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.WordStoreNormal
 import InitECandidate.Solver.Input.HeapFrame
 import InitECandidate.Solver.Input.ScalarStoreMemory
 
@@ -44,7 +45,23 @@ theorem HeapInput.op_store_separate (source target : PanSemStateFiniteExact 64 G
   rw [cellNumber, number] at equal
   rcases separate with before | after <;> omega
 
+/-- A real scalar word store has its exact one-word memory update. Natural
+separation then retains the copied byte image, including partial last words. -/
+theorem HeapInput.word_store_separate (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (input : Guest.InputBlob) (pointer address word : BitVec 64) (destination expression : ExpHOL 64)
+    (image : HeapInput source input pointer) (aligned : pointer.toNat % 8 = 0)
+    (fits : pointer.toNat + input.length % 2^64 < 2^64)
+    (separate : address.toNat < pointer.toNat ∨ pointer.toNat + input.length % 2^64 ≤ address.toNat)
+    (readAddress : eval source destination = some (.val (.word address)))
+    (readWord : eval source expression = some (.val (.word word)))
+    (actual : evaluateHOLFiniteState source (.store destination expression) = (none, target)) : HeapInput target input pointer := by
+  obtain ⟨mapped, targetEq⟩ := Input.word_store_normal source target destination expression address word readAddress readWord actual
+  rw [targetEq]
+  exact HeapInput.store_separate source input pointer address word image aligned fits separate
+
 end InitECandidate.Solver.Input.Blob
 
 #print axioms InitECandidate.Solver.Input.Blob.HeapInput.of_words
 #print axioms InitECandidate.Solver.Input.Blob.HeapInput.op_store_separate
+
+#print axioms InitECandidate.Solver.Input.Blob.HeapInput.word_store_separate

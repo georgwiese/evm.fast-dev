@@ -1,4 +1,5 @@
-import InitECandidate.Solver.Input.RequestGasFromHeader
+import InitECandidate.Solver.Input.PayloadProgram
+import InitECandidate.Solver.WitnessRadix.ProgramPrefixAppend
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -24,7 +25,7 @@ def prefixActions : List Action := [
 /-- Exact allocated payload header and all four offset declarations, before
 its real count-four/fixed-540 validator. -/
 theorem prefix_shape : afterGuard=program prefixActions offsetBody := by
-  simp only [afterGuard,body,Scalar.payloadBody,Guest.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,
+  simp only [afterGuard,body,Scalar.payloadBody,Guest.Software.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,Option.map_none,offsetBody,dropLeading,prefixActions,program,pointerStore,lengthStore,
     Scalar.plus,Scalar.flat32,Scalar.flatAddress,Scalar.shift,localVar,List.nil_append,List.cons_append,List.append_nil]
 

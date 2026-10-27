@@ -140,7 +140,13 @@ Checked against the current Software AST:
   post-copy heap frontier at the real payload callee. The passing guard and body
   return are extracted at their original clocks; no future funding is supplied.
   PayloadProgram/Gas now select the actual Software payload AST and explicit
-  minimal header/gas imports.
+  minimal header/gas imports. PayloadCut now reconstructs the real seven actions
+  through alloc136, pointer/length stores and four offset loads. Allocation room,
+  current pl binding and lower frontier derive from actual execution.
+  PayloadHeaderImage preserves copied bytes through both real header stores;
+  PayloadWorkspace joins this back to main-derived payload entry with current
+  metadata, p/len/pl bindings, separate136-byte record and actual offset body.
+  The later four workspace stores/validator/array writes/gas store remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -159,11 +165,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-payload-entry-v2.log`, 1,250 jobs,
-permitted printed axioms only, 5.45 seconds, MaxRSS 1,887,100 KiB.
-Historical/current index: 7,910 modules /15,711 facts; 362 modules carry the
-current dependency reference. Incremental package policy passes at64,714entries/
-2,481,704,812bytes; historical copy/zero execution wrappers are not revalidated.
+Latest successful closure: `current-payload-workspace-v1.log`, 1,254 jobs,
+permitted printed axioms only, 4.87 seconds, MaxRSS 1,876,448 KiB.
+Historical/current index: 7,913 modules /15,722 facts; 366 modules carry the
+current dependency reference. Incremental package policy passes at64,717entries/
+2,481,722,057bytes; historical copy/zero execution wrappers are not revalidated.
 These checks are not full verification.
 
 ## Remaining plan

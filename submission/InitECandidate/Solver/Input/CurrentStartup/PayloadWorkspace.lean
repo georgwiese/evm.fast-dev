@@ -41,7 +41,7 @@ def Reached (input : Guest.InputBlob) : Prop :=
   ∃ current post, ∃ pointer record : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,
     Context input current pointer record length ∧
     evaluateHOLFiniteState current Payload.offsetBody = (some (.returned returned), post) ∧
-    PayloadEntry.Endpoint input post pointer length returned
+    PayloadEntry.Endpoint input post pointer record length returned
 
 /-- Transfer the retained context through real memory/clock-only effects;
 the copied image must be established for the actual resulting memory. -/
@@ -84,12 +84,13 @@ theorem offsets_frame (code) (installed : OriginalCode.Installed code) :
 
 theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached input) : Reached input := by
   obtain ⟨source, post, pointer, length, returned, entryFacts⟩ := actual
-  have endpoint : PayloadEntry.Endpoint input post pointer length returned := ⟨source, post, entryFacts, rfl, rfl⟩
+  have originalEntry := entryFacts
   obtain ⟨lengthBound, installed, shapes, domain, endian, image, heap,
     workspace, lower, aligned, room, pCell, lenCell, extent, minimum, sliceUpper, sliceEq, actual, invocation⟩ := entryFacts
   obtain ⟨current, inner, execution, currentHeap, remaining, clock, frame⟩ :=
     PayloadCut.reached source post _ installed heap returned actual
-  obtain ⟨record, recordLower, recordAligned, recordRoom, recordCell, recordHeap⟩ := PayloadCut.record_pointer _ installed heap execution
+  obtain ⟨record, originHeap, recordLower, recordAligned, recordRoom, recordCell, recordHeap⟩ := PayloadCut.record_pointer _ installed heap execution
+  have endpoint : PayloadEntry.Endpoint input post pointer record length returned := ⟨source, post, originalEntry, originHeap, rfl, rfl⟩
   have retained := PayloadCut.input_frame input pointer length installed heap image aligned room pCell lenCell execution
   have currentCode : OriginalCode.Installed current.code := by rw [execution.runtime.2.2.2.1]; exact installed
   have currentShapes : OriginalExceptions.Installed current.eshapes := by rw [execution.runtime.2.2.1]; exact shapes
@@ -105,7 +106,7 @@ theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached i
     execution.runtime.1.trans domain, execution.runtime.2.1.trans endian, retained, currentHeap, currentWorkspace,
     currentP, currentLen, recordCell, extra, txs, wd, bal, lengthBound, extent, lower, aligned, room, minimum, sliceUpper, sliceEq,
     recordLower, recordAligned, recordRoom, recordHeap⟩, remaining,
-    PayloadEntry.Endpoint.of_frame input post inner pointer length returned endpoint frame clock⟩
+    PayloadEntry.Endpoint.of_frame input post inner pointer record length returned endpoint frame clock⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
   entry_reached input (PayloadEntry.separated input word actual)

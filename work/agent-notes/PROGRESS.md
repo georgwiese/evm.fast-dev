@@ -4,6 +4,33 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Real payload caller resumption and stateless/payload record ownership
+
+RequestCut now retains the real post-allocation frontier beyond the96-byte
+stateless record; RecordEntry carries it through its actual length guard.
+PayloadEntry retains this frontier and real caller si binding/record geometry.
+PayloadCut also exposes the incoming heap cell; Endpoint retains that exact
+payload allocation pointer through all nested returns. All are derived from
+actual execution, without new future-success/room premises.
+
+PayloadCallerReturn resumes the real enclosing Request.afterPayload with its
+actual returned pl binding, copied bytes, installed code/shapes/domain/endian,
+bounded aligned heap beyond the136-byte payload, physical gas cell≤200000000
+and real si binding. It proves si+96≤pl and both records' alignment/room. This
+is the real request continuation, before its remaining count/request/witness
+calls; it does not yet claim full stateless/main return or a global target bound.
+
+Validation: current-payload-caller-return-v1.log PASS1369jobs/permitted printed
+axioms,4.83s/MaxRSS1909216KiB;8GiBwhole-hostguard/twoslots/cachefalse. Index7927/
+15759facts; inventory7964/replacementclosure0/frozenmainunchanged; incremental
+policy PASS64732entries/2481813901bytes. No full verification or global finite K.
+Account14%weekly/0resetcredits/ordinaryallowed. Overall40%, range30–50%.
+
+Next retain actual caller offset/length locals and workspace through the payload,
+then the fixed hash-count call, decode_requests and three witness-list calls,
+protecting the actual payload gas cell through later writes. Continue toward
+main run_attempt; earliest scratch covered-outcome analysis remains prioritized.
+
 ## Complete actual payload return retains its physical bounded gas word
 
 PayloadEntry.Result indexes the original actual payload entry/poststate and

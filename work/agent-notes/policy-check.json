@@ -2055,6 +2055,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/NormalHost.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/OutputWrite.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadCallerReturn.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadCut.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadExtra.lean",
@@ -7968,8 +7969,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64731,
-  "package_bytes": 2481804875,
+  "package_entries": 64732,
+  "package_bytes": 2481813901,
   "claim": {
     "K": "infinity"
   },

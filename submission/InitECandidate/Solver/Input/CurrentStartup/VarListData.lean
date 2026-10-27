@@ -37,7 +37,7 @@ structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFinit
       (VarList.values (pointer + BitVec.ofNat 64 start) (BitVec.ofNat 64 size) 9223372036854775807#64) =
       some (VarList.body, callee, VarList.returnShape) ∧
     evaluateHOLFiniteState caller Payload.transactionCall = (some (.returned parentValue), parentPost) ∧
-    PayloadEntry.Endpoint input parentPost pointer length parentValue
+    PayloadEntry.Endpoint input parentPost pointer record length parentValue
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller entry post, ∃ pointer record array : BitVec 64, ∃ length start size : Nat, ∃ value : ValueHOL 64,

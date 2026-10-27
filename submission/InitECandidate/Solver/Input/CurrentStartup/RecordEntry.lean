@@ -20,7 +20,7 @@ def Reached (input : Guest.InputBlob) (word : BitVec 64) : Prop :=
     2701134640 ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧
     pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016 ∧
     pointer.toNat + input.length % 2^64 + 8 ≤ record.toNat ∧ record.toNat % 8 = 0 ∧
-    record.toNat + 96 ≤ 2952790016 ∧ current.locals.lookup (ofString "si") = some (.val (.word record)) ∧
+    record.toNat + 96 ≤ 2952790016 ∧ NormalHeapEffects.AtLeast (record.toNat + 96) current ∧ current.locals.lookup (ofString "si") = some (.val (.word record)) ∧
     current.locals.lookup (ofString "np") = some (.val (.word (pointer + 18#64))) ∧
     current.locals.lookup (ofString "nlen") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16)))) ∧
     62 ≤ input.length % 2^64 ∧ 44 ≤ Guest.GasLimit.le32 input 6 - 16 ∧
@@ -72,7 +72,7 @@ theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     simp [Header.pairState, Header.secondWord, WitnessRadix.StoreWord.put]
   obtain ⟨current, inner, execution, currentHeap, remaining, clock, frame⟩ :=
     RequestCut.reached before target _ beforeCode beforeHeap (.val (.word word)) continuation
-  obtain ⟨record, recordLower, recordAligned, recordRoom, binding⟩ := RequestCut.record_pointer _ beforeCode beforeHeap execution
+  obtain ⟨record, recordLower, recordAligned, recordRoom, binding, recordHeap⟩ := RequestCut.record_pointer _ beforeCode beforeHeap execution
   have currentBytes := RequestCut.input_frame input pointer beforeCode beforeHeap beforeBytes aligned room execution
   have currentCode : OriginalCode.Installed current.code := by rw [execution.runtime.2.2.2.1]; exact beforeCode
   have currentShapes : OriginalExceptions.Installed current.eshapes := by rw [execution.runtime.2.2.1]; exact beforeShapes
@@ -89,7 +89,7 @@ theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     (CanonicalHeader.fail_code current.code currentCode) (currentShapes .SszErr) Request.requestBody (.val (.word word)) remaining
   exact ⟨current, inner, pointer, record, lengthBound, currentCode, currentShapes,
     execution.runtime.1.trans beforeDomain, execution.runtime.2.1.trans beforeEndian,
-    currentBytes, currentHeap, currentOffsets, lower, aligned, room, recordLower, recordAligned, recordRoom, binding, np, nlen, (by omega), (by omega), (by omega), requestRun⟩
+    currentBytes, currentHeap, currentOffsets, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, binding, np, nlen, (by omega), (by omega), (by omega), requestRun⟩
 
 end InitECandidate.Solver.Input.CurrentStartup.RecordEntry
 

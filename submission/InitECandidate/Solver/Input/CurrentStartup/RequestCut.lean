@@ -47,13 +47,20 @@ theorem reached (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (lowe
   obtain ⟨current, inner, execution, remaining, clock, frame⟩ := CallPrefix.normal_frame_trace source post actions tail value never actual
   exact ⟨current, inner, execution, NormalHeapEffects.execution execution (actions_heap source.code installed) lower heap, remaining, clock, frame⟩
 
+theorem remainder_heap (code) :
+    NormalHeapEffects.Preserves code (CallPrefix.program (actions.drop 3) .skip) := by
+  simp only [actions, List.drop_succ_cons, List.drop_zero, CallPrefix.program]
+  exact NormalHeapEffects.sequence code _ _ (NormalHeapEffects.store code _ _)
+    (NormalHeapEffects.declared code _ _ _ _ (NormalHeapEffects.declared code _ _ _ _ (NormalHeapEffects.skip code)))
+
 /-- The observed six-action trace allocates the current frontier as its
 record pointer, with derived room. This is the real si binding after the store. -/
 theorem record_pointer {source target : PanSemStateFiniteExact 64 Guest.HostMemory} (lower : Nat)
     (installed : OriginalCode.Installed source.code) (heap : NormalHeapEffects.AtLeast lower source)
     (actual : CallPrefix.Execution source actions target) :
     ∃ pointer : BitVec 64, lower ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧
-      pointer.toNat + 96 ≤ 2952790016 ∧ target.locals.lookup (ofString "si") = some (.val (.word pointer)) := by
+      pointer.toNat + 96 ≤ 2952790016 ∧ target.locals.lookup (ofString "si") = some (.val (.word pointer)) ∧
+      NormalHeapEffects.AtLeast (pointer.toNat + 96) target := by
   cases actual with
   | @step _ firstState _ _ _ first rest =>
     cases rest with
@@ -66,7 +73,7 @@ theorem record_pointer {source target : PanSemStateFiniteExact 64 Guest.HostMemo
           (NormalHeapEffects.declared firstState.code _ _ _ _ (NormalHeapEffects.skip firstState.code)) lower firstHeap
         have sameCode := second.runtime.2.2.2.1.trans first.runtime.2.2.2.1
         have currentInstalled : OriginalCode.Installed loadedState.code := by rw [sameCode]; exact installed
-        obtain ⟨pointer, heapCell, low, aligned, room, stateEq⟩ := allocation_frontier (ofString "si") 96#64 lower currentInstalled secondHeap allocated
+        obtain ⟨pointer, heapCell, low, aligned, room, stateEq, afterHeap⟩ := allocation_frontier_after (ofString "si") 96#64 lower currentInstalled secondHeap allocated
         have binding : allocatedState.locals.lookup (ofString "si") = some (.val (.word pointer)) := by
           rw [stateEq]
           simp [setVarHOLFinite, HolFiniteMapExact.update, FUPDATE]
@@ -74,7 +81,8 @@ theorem record_pointer {source target : PanSemStateFiniteExact 64 Guest.HostMemo
           intro action member
           simp only [actions, List.mem_cons, List.not_mem_nil, or_false] at member
           rcases member with rfl | rfl | rfl <;> decide)
-        exact ⟨pointer, low, aligned, room, kept.trans binding⟩
+        have currentHeap := NormalHeapEffects.execution rest (remainder_heap allocatedState.code) (pointer.toNat + 96) afterHeap
+        exact ⟨pointer, low, aligned, room, kept.trans binding, currentHeap⟩
 
 /-- Copied bytes survive the real record allocation/store and local setup.
 The record destination is separated by the incoming derived heap frontier. -/
@@ -132,3 +140,5 @@ end InitECandidate.Solver.Input.CurrentStartup.RequestCut
 #print axioms InitECandidate.Solver.Input.CurrentStartup.RequestCut.record_pointer
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.RequestCut.input_frame
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.RequestCut.remainder_heap

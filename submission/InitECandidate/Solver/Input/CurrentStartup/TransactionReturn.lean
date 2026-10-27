@@ -20,7 +20,7 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   price : caller.clock - current.clock ≤ size / 4 + 2
   clock : current.clock ≤ caller.clock
   returned : evaluateHOLFiniteState current Payload.afterTransactions = (some (.returned value), post)
-  endpoint : PayloadEntry.Endpoint input post pointer length value
+  endpoint : PayloadEntry.Endpoint input post pointer record length value
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer record array : BitVec 64, ∃ length start size : Nat, ∃ value : ValueHOL 64,
@@ -94,7 +94,7 @@ theorem returned (input : Guest.InputBlob) (actual : VarListData.Reached input) 
   refine ⟨caller, current, (evaluateHOLFiniteState current Payload.afterTransactions).2, pointer, record, array,
     length, start, size, value, ⟨context, data.valid, ?_, data.recordBefore, VarList.Records.of_memory bodyPost current input pointer array start size rfl data.records,
     data.startEq, data.sizeEq, data.inside, ?_, ?_, ?_, Prod.ext resumed rfl,
-    PayloadEntry.Endpoint.of_frame input parentPost _ pointer length value endpoint (by rw [parentEq]; rfl) (by rw [parentEq]; rfl)⟩⟩
+    PayloadEntry.Endpoint.of_frame input parentPost _ pointer record length value endpoint (by rw [parentEq]; rfl) (by rw [parentEq]; rfl)⟩⟩
   · change (caller.locals.update (ofString "txs", tuple)).lookup (ofString "txs") = _
     simp [HolFiniteMapExact.update, FUPDATE, data.tuple]
   · intro query before

@@ -12,7 +12,7 @@ def Reached (input : Guest.InputBlob) : Prop :=
     (∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position) ∧
     (Payload.offsetWords input 1).toNat - 540 ≤ 32 ∧
     evaluateHOLFiniteState current Payload.afterExtra = (some (.returned returned), post) ∧
-    PayloadEntry.Endpoint input post pointer length returned
+    PayloadEntry.Endpoint input post pointer record length returned
 
 /-- Real payload return passes the actual extra-data guard, deriving its
 32-byte bound at the original state and clock. -/

@@ -18,8 +18,12 @@ def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Gue
     602 ≤ input.length % 2^64 ∧ 540 ≤ length ∧ length ≤ input.length % 2^64 - 62 ∧
     length = Guest.GasLimit.le32 input 22 - 44 ∧
     evaluateHOLFiniteState entry Payload.afterGuard = (some (.returned returned), post) ∧
-    ∃ caller callee parentPost parentValue,
+    ∃ caller callee parentPost parentValue, ∃ statelessRecord : BitVec 64,
       entry = callEntryStateHOLFinite caller callee ∧
+      pointer.toNat + input.length % 2^64 + 8 ≤ statelessRecord.toNat ∧ statelessRecord.toNat % 8 = 0 ∧
+      statelessRecord.toNat + 96 ≤ 2952790016 ∧
+      caller.locals.lookup (ofString "si") = some (.val (.word statelessRecord)) ∧
+      NormalHeapEffects.AtLeast (statelessRecord.toNat + 96) entry ∧
       evalListHOLFinite caller (h := fun address => Classical.propDecidable (caller.memaddrs address)) Request.payloadArguments =
         some (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) ∧
       lookupCodeHOLFinite caller.code.lookup (ofString "decode_payload")
@@ -33,17 +37,17 @@ def Reached (input : Guest.InputBlob) : Prop :=
 /-- A later returned suffix has the same nonlocal result as the complete
 payload entry. This remembers the actual endpoint through lexical restoration. -/
 def Endpoint (input : Guest.InputBlob) (post : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (pointer : BitVec 64) (length : Nat) (value : ValueHOL 64) : Prop :=
+    (pointer record : BitVec 64) (length : Nat) (value : ValueHOL 64) : Prop :=
   ∃ entry payloadPost, Result input entry payloadPost pointer length value ∧
-    LocalEffects.erase payloadPost = LocalEffects.erase post ∧ payloadPost.clock = post.clock
+    entry.globals.lookup (ofString "heap_ptr") = some (.val (.word record)) ∧ LocalEffects.erase payloadPost = LocalEffects.erase post ∧ payloadPost.clock = post.clock
 
 theorem Endpoint.of_frame (input : Guest.InputBlob) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (pointer : BitVec 64) (length : Nat) (value : ValueHOL 64)
-    (original : Endpoint input source pointer length value)
+    (pointer record : BitVec 64) (length : Nat) (value : ValueHOL 64)
+    (original : Endpoint input source pointer record length value)
     (frame : LocalEffects.erase source = LocalEffects.erase target) (clock : source.clock = target.clock) :
-    Endpoint input target pointer length value := by
-  obtain ⟨entry, post, actual, originalFrame, originalClock⟩ := original
-  exact ⟨entry, post, actual, originalFrame.trans frame, originalClock.trans clock⟩
+    Endpoint input target pointer record length value := by
+  obtain ⟨entry, post, actual, cell, originalFrame, originalClock⟩ := original
+  exact ⟨entry, post, actual, cell, originalFrame.trans frame, originalClock.trans clock⟩
 
 theorem original_code (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "decode_payload") = some (Payload.formals, Payload.body, .one) := by
@@ -59,7 +63,7 @@ bytes and allocator frontier survive the real offset writes and call entry. -/
 theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
     (actual : RecordEntry.Reached input word) : Reached input := by
   obtain ⟨source, post, pointer, record, lengthBound, installed, shapes, domain, endian, image, heap,
-    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, si, np, nlen, extent, requestLower, requestUpper, returned⟩ := actual
+    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, si, np, nlen, extent, requestLower, requestUpper, returned⟩ := actual
   rcases Request.offsets_trace source post input pointer 2701132528#64 (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16))
     image extent np nlen workspace domain aligned (by decide) (by omega) (by decide)
     (by change 2701132528 + 64 ≤ pointer.toNat; omega)
@@ -96,6 +100,10 @@ theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
     obtain ⟨callee, called, pCell, lenCell, bodyPost, value, bodyRun⟩ := Payload.callee_normal next inner Request.payloadArguments Request.afterPayload
       (pointer + 62#64) (BitVec.ofNat 64 (Guest.GasLimit.le32 input 22 - 44)) args
       (by rw [nextCode]; exact original_code source.code installed) positive (.val (.word word)) remaining
+    have nextSi : next.locals.lookup (ofString "si") = some (.val (.word record)) := by
+      rw [nextEq]
+      exact (bind_lookup_other _ "o_rq" "si" _ (by decide)).trans
+        ((bind_lookup_other _ "o_vh" "si" _ (by decide)).trans ((bind_lookup_other _ "o_pl" "si" _ (by decide)).trans si))
     let entry := callEntryStateHOLFinite next callee
     have sliceNumber : (BitVec.ofNat 64 (Guest.GasLimit.le32 input 22 - 44)).toNat = Guest.GasLimit.le32 input 22 - 44 := by
       rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by have := Framing.le32_lt input 22; omega)]
@@ -112,9 +120,12 @@ theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
     have entryHeap : NormalHeapEffects.AtLeast (pointer.toNat + input.length % 2^64 + 8) entry := by
       obtain ⟨cursor, cell, low, high, aligned⟩ := heap
       exact ⟨cursor, (congrArg (fun globals => globals.lookup (ofString "heap_ptr")) nextGlobals).trans cell, low, high, aligned⟩
+    have entryRecordHeap : NormalHeapEffects.AtLeast (record.toNat + 96) entry := by
+      obtain ⟨cursor, cell, low, high, cursorAligned⟩ := recordHeap
+      exact ⟨cursor, (congrArg (fun globals => globals.lookup (ofString "heap_ptr")) nextGlobals).trans cell, low, high, cursorAligned⟩
     refine ⟨entry, bodyPost, pointer, Guest.GasLimit.le32 input 22 - 44, value, lengthBound, entryCode, entryShapes,
       nextDomain.trans domain, nextEndian.trans endian, entryBytes, entryHeap, ?_, lower, aligned, room, pCell, lenCell,
-      (by omega), (by omega), sliceUpper, rfl, after, next, callee, inner, .val (.word word), rfl, args, called, callerRun⟩
+      (by omega), (by omega), sliceUpper, rfl, after, next, callee, inner, .val (.word word), record, rfl, recordLower, recordAligned, recordRoom, nextSi, entryRecordHeap, args, called, callerRun⟩
     exact (congrArg (fun globals => globals.lookup (ofString "ssz_offs")) nextGlobals).trans workspace
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=

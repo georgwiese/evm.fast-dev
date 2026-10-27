@@ -11,7 +11,7 @@ def Reached (input : Guest.InputBlob) : Prop :=
     Guest.GasLimit.le32 input 498 = 540 ∧ Payload.offsetWords input 0 = 540#64 ∧
     (∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position) ∧
     evaluateHOLFiniteState current Payload.offsetContinuation = (some (.returned returned), post) ∧
-    PayloadEntry.Endpoint input post pointer length returned
+    PayloadEntry.Endpoint input post pointer record length returned
 
 /-- Whole-main-derived payload execution passes the real four-offset
 validator. Its writes retain the original copied bytes and record geometry;

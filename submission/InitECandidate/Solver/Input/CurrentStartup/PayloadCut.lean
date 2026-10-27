@@ -56,7 +56,7 @@ pl, and actual return derives the entire allocation's room. -/
 theorem record_pointer {source target : PanSemStateFiniteExact 64 Guest.HostMemory} (lower : Nat)
     (installed : OriginalCode.Installed source.code) (heap : NormalHeapEffects.AtLeast lower source)
     (actual : CallPrefix.Execution source actions target) :
-    ∃ pointer : BitVec 64, lower ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧
+    ∃ pointer : BitVec 64, source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)) ∧ lower ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧
       pointer.toNat + 136 ≤ 2952790016 ∧ target.locals.lookup (ofString "pl") = some (.val (.word pointer)) ∧
       NormalHeapEffects.AtLeast (pointer.toNat + 136) target := by
   cases actual with
@@ -69,7 +69,7 @@ theorem record_pointer {source target : PanSemStateFiniteExact 64 Guest.HostMemo
       intro action member
       exact List.all_eq_true.mp kept_pl action member)
     have currentHeap := NormalHeapEffects.execution rest (remainder_heap allocatedState.code) (pointer.toNat + 136) afterHeap
-    exact ⟨pointer, low, aligned, room, kept.trans binding, currentHeap⟩
+    exact ⟨pointer, heapCell, low, aligned, room, kept.trans binding, currentHeap⟩
 
 end InitECandidate.Solver.Input.CurrentStartup.PayloadCut
 

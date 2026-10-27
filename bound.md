@@ -183,8 +183,12 @@ Checked against the current Software AST:
   and call returns. PayloadGasReturned.complete checks the whole actual payload
   body return with that gas word, original copied bytes and bounded aligned heap;
   separated_complete derives its gasWord≤200000000. PayloadEntry.Result retains
-  the enclosing request invocation. Request/stateless/main return composition and
-  later record lifetime remain open.
+  the enclosing request invocation. RequestCut/RecordEntry now retain the real frontier beyond the96-byte si
+  record. PayloadCut/Endpoint retain the exact incoming payload heap cell.
+  PayloadCallerReturn resumes the actual request continuation with real pl/si
+  bindings, copied bytes, installed metadata, bounded heap and bounded physical
+  gas cell. It derives si+96≤pl and both records’ alignment/room. Remaining
+  request/witness/stateless/main returns and record lifetime remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -203,10 +207,10 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-payload-complete-gas-v1.log`, 1,368 jobs,
-permitted printed axioms only, 45.42 seconds /MaxRSS1,942,456KiB. Historical/current
-index:7,926modules/15,756facts. Incremental policy passes at64,731entries/
-2,481,804,875bytes. Old unselected whole-body/caller/image/trace helpers remain
+Latest successful closure: `current-payload-caller-return-v1.log`, 1,369 jobs,
+permitted printed axioms only, 4.83 seconds /MaxRSS1,909,216KiB. Historical/current
+index:7,927modules/15,759facts. Incremental policy passes at64,732entries/
+2,481,813,901bytes. Old unselected whole-body/caller/image/trace helpers remain
 historical. These checks are not full verification.
 
 ## Remaining plan

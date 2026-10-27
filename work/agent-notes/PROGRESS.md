@@ -4,6 +4,30 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## All three actual witness lists through the final si return
+
+WitnessHeadersReturn joins the genuine final hd call, si+72/80stores and literal
+return si. It derives the actual returned stateless-record value, all three
+physical record arrays and per-item bounds(1024nodes/65536code/1024headers),
+headercount≤256, exact header pointer/count cells, protected original input and
+payload gas, bounded post-heap beyond the header array, and a complete nonlocal
+frame through return/caller restoration. Header-call sourcecost≤2*(sliceLength/4)+3.
+The current decoder/main return joins, payload transaction-record retention and
+whole-program target-step pricing remain open; this is no global finite K.
+
+Validation: current-witness-headers-v2.log PASS1446jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. No full verification. Account18%weekly/0resetcredits.
+
+Implementation note for the next join: the stage wrappers often return
+existential intermediate states. Do not infer that a final physical record
+belongs to an arbitrary particular main decoder post-state without an explicit
+execution/endpoint relation. WitnessEntry currently retains prefix execution
+but not its previous RequestCallerReturn.Result; add the missing provenance
+when rewinding that store/caller. Earlier full-stateless return also needs an
+explicit relation to the same main-derived source/post run, not just existential
+normal-return facts for the same input. Preserve or parameterize the original
+run endpoints while composing; no unproved identification of states/values.
+
 ## Second real witness list preserves node records
 
 WitnessLive factors the five real witness-slice bindings; node-return summaries

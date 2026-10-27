@@ -1,7 +1,6 @@
 import InitECandidate.Solver.Input.Requests.CountLocals
 import InitECandidate.Solver.Input.FixedList.CallerTrace
 import InitECandidate.Solver.Input.DecoderRuntimeCode
-import InitECandidate.Solver.Input.MainDecoderCall
 
 namespace InitECandidate.Solver.Input.Requests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -42,7 +41,7 @@ theorem counts_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) 
     have args := CountLocals.arguments source words total pointer cursor model index small
     rw [count_stage_shape index small] at run
     rcases FixedList.caller_trace source post (countSpan words total index) (elementSize index) 9223372036854775807#64 (element_size_nonzero index).1
-      (DecoderRuntime.division_code source.code installed) (Main.DecoderCall.original_fail_code source.code installed) shape (DecoderRuntime.fixed_list_code source.code installed)
+      (DecoderRuntime.division_code source.code installed) (DecoderRuntime.fail_code source.code installed) shape (DecoderRuntime.fixed_list_code source.code installed)
       (countName index) (countArguments index) (countStage (index+1)) args result run notTimeout with rejected | normal
     · obtain ⟨error,allowed,same,cost⟩ := rejected
       exact Or.inl ⟨error,allowed,same,by omega⟩

@@ -32,7 +32,8 @@ structure Result (input : Guest.InputBlob) (caller source current post : PanSemS
   gasCell : current.memory (record + 88#64) = .word gasWord
   returned : evaluateHOLFiniteState current Requests.afterAllocation = (some (.returned value), post)
   endpoint : ∃ entry originalPost, RequestsEntry.Result input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
-    LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
+    WitnessRadix.BackingLayout.control current = WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post entry requestRecord 80#64) ∧
+    current.clock ≤ entry.clock ∧ entry.clock - current.clock ≤ 13 ∧ LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller source current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
@@ -75,11 +76,20 @@ theorem validated (input : Guest.InputBlob) (actual : RequestsValidated.Reached 
       current.locals.lookup (ofString name) = source.locals.lookup (ofString name) := by
     rw [stateEq]
     simp [setVarHOLFinite, WitnessRadix.PersistentAlloc.post, HolFiniteMapExact.update, FUPDATE, other]
-  obtain ⟨entry, originalPost, original, originalFrame, originalClock⟩ := data.endpoint
+  obtain ⟨entry, originalPost, original, originControl, prefixForward, prefixCost, originalFrame, originalClock⟩ := data.endpoint
+  have nextControl : WitnessRadix.BackingLayout.control current =
+      WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post entry requestRecord 80#64) := by
+    have lifted := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory =>
+      WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post state requestRecord 80#64)) originControl
+    change WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post source requestRecord 80#64) =
+      WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post entry requestRecord 80#64) at lifted
+    rw [stateEq]
+    exact lifted
+  have currentClock : current.clock = source.clock - 1 := by rw [stateEq]; rfl
   refine ⟨caller, source, current, innerPost, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, start, size, value,
     ⟨data.context, code, shapes, domain, endian, image, heap, afterRecord, aligned, room, sourceHeap, stateEq, ?_,
       (kept "p" (by decide)).trans data.p, (kept "len" (by decide)).trans data.len, workspace, data.inside, data.minimum,
-      data.first, data.valid, ?_, ?_, remaining, entry, originalPost, original, originalFrame.trans frame, originalClock.trans clock⟩⟩
+      data.first, data.valid, ?_, ?_, remaining, entry, originalPost, original, nextControl, (by rw [currentClock]; omega), (by rw [currentClock]; omega), originalFrame.trans frame, originalClock.trans clock⟩⟩
   · rw [stateEq]
     simp [setVarHOLFinite, HolFiniteMapExact.update, FUPDATE]
   · intro position inside

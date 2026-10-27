@@ -1,5 +1,7 @@
-import InitECandidate.Solver.Input.PayloadWordStore
-import InitECandidate.Solver.WitnessRadix.AllocatedBytes
+import InitECandidate.Solver.Input.HeapFrame
+import InitECandidate.Solver.Input.ScalarProgram
+import InitECandidate.Solver.Input.LocalWord
+import InitECandidate.Solver.WitnessRadix.AllocatedArena
 
 namespace InitECandidate.Solver.Input.StructureStore
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix WitnessRadix.AllocatedBytes

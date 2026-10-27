@@ -4,6 +4,41 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete current request return:348source ticks and exact physical fields
+
+The current five-count suffix checks on every non-timeout outcome (real list
+error or complete ten-field output), cost≤335source call/loop ticks and exact
+outside-memory/control frame. DecoderRuntimeCode now imports actual minimal
+parser/division syntax and current declaration entries (185/186for variable/
+fixed lists), adding fail179/offset184entries. CountsTrace uses that fail entry
+instead of MainDecoderCall. StructureStore uses real HeapFrame/ScalarProgram/
+LocalWord/AllocatedArena imports. TerminatingPaddedScopeArgs uses explicit
+clock-zero cases, avoiding an implicitly imported by_contra tactic. Existing
+APIs retained. Cleanup closure counts: DecoderRuntimeCode357→83, CountsTrace
+743→109, StructureStore124→34; manifest records compared sets.
+
+RequestsValidated/Allocation/CountsEntry now retain exact control and prefix
+clock price alongside the actual original endpoint. RequestsReturned joins the
+five actual count calls and ten output stores to the complete decode_requests
+body return: actual record pointer, all ten physical cells, quotient/remainder
+facts, copied bytes, aligned bounded post-heap beyond the80-byte record, protected
+payload gas word, exact allocation/control effect and body source-clock cost≤348.
+This is a complete normal request return, not a global main target-step bound.
+
+Validation: current-requests-returned-v2.log PASS1406jobs/permitted printed axioms,
+14.30s/MaxRSS1924444KiB;8GiBwhole-hostguard/twoslots/cachefalse. Index7938modules/
+15784facts; inventory7975/replacementclosure0/frozenmainunchanged; incremental
+policy PASS64743entries/2481880685bytes. No full verification/global finite K.
+Account16%weekly/0resetcredits/ordinaryallowed. Overall40%, plausible30–50%.
+
+Next inspect the earliest actual scratch constructors/callers and covered-outcome
+consequences before expanding the remaining decoder/map/crypto work. Actual main
+DecoderPrefix already carries ArenaState through the complete caught decoder on
+all outcomes, independently of physical decoded layout; this may allow an earlier
+execution cut. Do not infer whole-path exclusion from constructor NoReturn alone.
+Pending dataflow: request caller, three witness lists/stateless/main, complete
+payload tx records/count. Source/all-outcome and weighted target bounds remain.
+
 ## Actual80-byte request allocation and real count-call entry
 
 RequestsAllocation inverts the actual scoped allocation, deriving the incoming

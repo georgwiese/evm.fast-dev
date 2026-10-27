@@ -18,7 +18,7 @@ def outputFields (pointer : BitVec 64) (words counts : Nat → BitVec 64) : List
   (72,localVar "n4",counts 4)]
 
 theorem output_shape (pointer : BitVec 64) (words counts : Nat → BitVec 64) : countStage 5 = StructureStore.fieldProgram "rq" (outputFields pointer words counts) := by
-  simp only [countStage,countCalls,afterAllocation,afterOffsets,offsetTail,body,Guest.guestFn_decode_requests,Payload.dropLeading,
+  simp only [countStage,countCalls,afterAllocation,afterOffsets,offsetTail,body,Guest.Software.guestFn_decode_requests,Payload.dropLeading,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,StructureStore.fieldProgram,outputFields,Scalar.plus,localVar]
 
 theorem output_valid (pointer : BitVec 64) (words counts : Nat → BitVec 64) :

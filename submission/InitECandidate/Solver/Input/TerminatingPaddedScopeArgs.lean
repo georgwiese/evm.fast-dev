@@ -32,13 +32,13 @@ theorem terminating_padded_scope_args {F : Type} (source post middle : PanSemSta
       ∃ target,evaluateHOLFiniteState (CallNormal.continuationEntry source {middle with clock := middle.clock - padding} name value) continuation = (result,target) ∧
         post = WitnessRadix.QueryBranch.restore source name target := by
   have positive : 1 ≤ source.clock := by
-    by_contra bad
-    have zero : source.clock = 0 := by omega
-    have stopped : evaluateHOLFiniteState source (.decCall (ofString name) shape function arguments continuation) = (some .timeOut,emptyLocalsHOLFinite source) := by
-      rw [evaluateHOLFiniteState_decCall_fixClockRewrite]
-      simp only [args,called,if_pos zero]
-    have same := congrArg Prod.fst (stopped.symm.trans normal)
-    exact notTimeout same.symm
+    by_cases zero : source.clock = 0
+    · have stopped : evaluateHOLFiniteState source (.decCall (ofString name) shape function arguments continuation) = (some .timeOut, emptyLocalsHOLFinite source) := by
+        rw [evaluateHOLFiniteState_decCall_fixClockRewrite]
+        simp only [args, called, if_pos zero]
+      have same := congrArg Prod.fst (stopped.symm.trans normal)
+      exact (notTimeout same.symm).elim
+    · omega
   let padded := {source with clock := source.clock + padding}
   have scopeRun := CallNormal.return_execute padded middle name shape function arguments values body continuation callee returnShape value (by dsimp only [padded]; rw [EvaluateClockSubCall.evalList_upd_clock]; exact args) called
     (by change 1 ≤ source.clock + padding; omega) bodyRun shapePass

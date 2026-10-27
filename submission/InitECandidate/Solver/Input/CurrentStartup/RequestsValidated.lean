@@ -25,7 +25,8 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   gasCell : current.memory (record + 88#64) = .word gasWord
   returned : evaluateHOLFiniteState current Requests.afterOffsets = (some (.returned value), post)
   endpoint : ∃ entry originalPost, RequestsEntry.Result input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
-    LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
+    WitnessRadix.BackingLayout.control current = WitnessRadix.BackingLayout.control entry ∧
+    current.clock ≤ entry.clock ∧ entry.clock - current.clock ≤ 12 ∧ LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer statelessRecord record gasWord : BitVec 64, ∃ payloadLength start size : Nat, ∃ value : ValueHOL 64,
@@ -93,7 +94,7 @@ theorem entry (input : Guest.InputBlob) (actual : RequestsEntry.Reached input) :
       ⟨context, code ▸ data.code, shapes ▸ data.shapes, domain.trans data.domain, endian.trans data.endian, image, heap,
         currentWorkspace, (locals (ofString "p") (by decide)).trans data.p, (locals (ofString "len") (by decide)).trans data.len,
         data.inside, data.minimum, first, valid, cells, gasFrame.trans sourceGas, remaining,
-        source, post, data, by rw [restored]; rfl, by rw [restored]; rfl⟩⟩
+        source, post, data, control, forward, price, by rw [restored]; rfl, by rw [restored]; rfl⟩⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     (actual : MainSeparatedInput.StatelessRun input word)

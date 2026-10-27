@@ -210,8 +210,13 @@ Checked against the current Software AST:
   execution; OffsetLocals/PanDeclarations prove the pure five loads and real
   CountLocals. RequestsCountsEntry joins the actual count-call stage at original
   clock with endpoint/gas/ownership retained. WorkspaceWord separates generic
-  word lookup from RequestLoad’s allocator prefix. Five count calls/output remain
-  open; old unselected Setup execution is not revalidated.
+  word lookup from RequestLoad’s allocator prefix. Five actual count calls/output now check on every non-timeout outcome
+  with cost≤335source ticks, full outside-memory/control frame and physical
+  fields. RequestsReturned joins the complete current decode_requests normal
+  return: actual pointer/ten cells/quotient-remainder, original bytes, protected
+  gas, real80-byte allocation/control and body source-clock price≤348. Minimal
+  DecoderRuntimeCode/CountsTrace/StructureStore imports reduce Solver closures
+  357→83/743→109/124→34. Old unselected Setup execution remains historical.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -230,10 +235,10 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-requests-counts-entry-v2.log`, 1,392 jobs,
-permitted printed axioms only, 4.77 seconds /MaxRSS1,912,972KiB. Historical/current
-index:7,937modules/15,780facts. Incremental policy passes at64,742entries/
-2,481,870,203bytes. Old unselected whole-body/caller/image/trace helpers remain
+Latest successful closure: `current-requests-returned-v2.log`, 1,406 jobs,
+permitted printed axioms only, 14.30 seconds /MaxRSS1,924,444KiB. Historical/current
+index:7,938modules/15,784facts. Incremental policy passes at64,743entries/
+2,481,880,685bytes. Old unselected whole-body/caller/image/trace helpers remain
 historical. These checks are not full verification.
 
 ## Remaining plan

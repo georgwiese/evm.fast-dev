@@ -1,15 +1,21 @@
 {
   "objective": "Reasonably tight finite bound for the unchanged implementation; no numerical ceiling.",
-  "reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
+  "reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
   "fixed_files_sha256": {
-    "Guest/Ast.lean": "21925d793b4159c30406a4d48a7402d4a2cdc23e0189201342aa89778d4534ed",
-    "Guest/guest.pp.pnk": "414d70d031f9e367ad9e5c70bc6dbd523238a3c542fba59a09aed866f3e5f860",
+    "Guest/Ast.lean": "181d3ae9b0efafab367c7a7487c4cf29c7b0d0feaf05afeb7560d2f09de59034",
+    "Guest/SoftwareAst.lean": "8e806c795bc4e0c3edc6d1475ad6e14b43c74cf69c71732133f2dda03d84721f",
+    "Guest/guest-software.pp.pnk": "2cc9024d6979d623c503521b219123bc5f63cd69504bea97b93b3aad62e5360c",
+    "InitE/Parameters.lean": "017ae9122bdd3b57b627c7a98f52a55c11ab97430849de2023f6804910e9444c",
+    "InitE/SourceSemantics.lean": "f8740409301a726af656766fd9210c3c5bf15b9c5eb9c12b8ff31128ccb59473",
     "submission/Solution.lean": "1905a0c02feb548c03a4df824390d57cf64007d93d52e848202679670101374b",
     "submission/claim.json": "b980b85c0c6af561b32a24bb55ec46832dccd7ca5ffc5fa3111d6ff5e7015ef0"
   },
   "frozen_source_semantics_rom_and_proofs_unchanged": true,
-  "scope": "Dependency and obligation inventory only; neither whole-program bound nor verification.",
-  "solver_modules": 7871,
+  "scope": "Historical helper dependency inventory only; neither validation against the software guest nor whole-program verification.",
+  "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
+  "software_guest_retargeting_complete": false,
+  "historical_proof_checks_require_revalidation": true,
+  "solver_modules": 7876,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -42,7 +48,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1270,
+    "Input": 1275,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -306,6 +312,9 @@
     "Remove replacement-only result-format imports from original dictionary lookup."
   ],
   "open_global_obligations": [
+    "Retarget Installed/code catalogues from Guest.guestAst to the fixed Guest.Software.guestAst.",
+    "Replace obsolete open-addressing map proofs with bounds and invariants for the current Patricia maps.",
+    "Bound the current software cryptography and rederive current heap/scratch/input/bootstrap facts.",
     "Reachable entry/code/arena/clock facts for original decoder, headers and dictionaries.",
     "Actual executed regular/state gas conservation across roots, calls, successful merges, rollback and block counters.",
     "Aggregate original mutable-map probes, growth, deletion, copies and phase sharing.",

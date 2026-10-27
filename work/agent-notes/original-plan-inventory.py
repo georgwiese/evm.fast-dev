@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline inventory for the unchanged-program bound; not verification."""
+"""Offline inventory after the upstream rebase; not proof-port validation."""
 from pathlib import Path
 from collections import Counter
 import hashlib
@@ -49,14 +49,16 @@ def closure(root):
         stack.extend(imports[node])
     return seen
 
-reference = '7d656e5b6878aa420de793d9d6f689fa26ec0842'
+reference = 'f892870c8682517186860842a3ff5f0dea1aa3eb'
 frozen_changes = subprocess.check_output([
     'git', 'diff', '--name-only', reference, '--', 'Guest', 'InitE',
     'submission/Solution.lean', 'submission/claim.json', 'submission/InitECandidate',
     ':(exclude)submission/InitECandidate/Solver',
 ], cwd=ROOT, text=True).splitlines()
 assert not frozen_changes, frozen_changes
-fixed = ['Guest/Ast.lean', 'Guest/guest.pp.pnk', 'submission/Solution.lean', 'submission/claim.json']
+fixed = ['Guest/Ast.lean', 'Guest/SoftwareAst.lean', 'Guest/guest-software.pp.pnk',
+         'InitE/Parameters.lean', 'InitE/SourceSemantics.lean',
+         'submission/Solution.lean', 'submission/claim.json']
 identity = {}
 for path in fixed:
     actual = (ROOT/path).read_bytes()
@@ -69,7 +71,10 @@ report = {
     'reference': reference,
     'fixed_files_sha256': identity,
     'frozen_source_semantics_rom_and_proofs_unchanged': not frozen_changes,
-    'scope': 'Dependency and obligation inventory only; neither whole-program bound nor verification.',
+    'scope': 'Historical helper dependency inventory only; neither validation against the software guest nor whole-program verification.',
+    'previous_reference': '7d656e5b6878aa420de793d9d6f689fa26ec0842',
+    'software_guest_retargeting_complete': False,
+    'historical_proof_checks_require_revalidation': True,
     'solver_modules': len(modules),
     'missing_solver_imports': missing_imports,
     'module_families': dict(sorted(Counter(m.split('.')[2] for m in modules).items())),
@@ -87,6 +92,9 @@ report = {
         'Remove replacement-only result-format imports from original dictionary lookup.',
     ],
     'open_global_obligations': [
+        'Retarget Installed/code catalogues from Guest.guestAst to the fixed Guest.Software.guestAst.',
+        'Replace obsolete open-addressing map proofs with bounds and invariants for the current Patricia maps.',
+        'Bound the current software cryptography and rederive current heap/scratch/input/bootstrap facts.',
         'Reachable entry/code/arena/clock facts for original decoder, headers and dictionaries.',
         'Actual executed regular/state gas conservation across roots, calls, successful merges, rollback and block counters.',
         'Aggregate original mutable-map probes, growth, deletion, copies and phase sharing.',

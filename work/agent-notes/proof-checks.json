@@ -1,5 +1,5 @@
 {
-  "scope": "Local Lean builds and printed axiom sets; not a submission verification or finite certificate",
+  "scope": "Historical local Lean builds and printed axiom sets; imported dependencies changed in the 2026-10-27 rebase, so these entries alone do not validate the current software guest.",
   "modules": [
     {
       "path": "submission/InitECandidate/Solver/Arenas/Arithmetic.lean",
@@ -162358,5 +162358,8 @@
       ],
       "successful_log": "trie-rlp-bytes-write-safe-v2.log"
     }
-  ]
+  ],
+  "historical_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
+  "current_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+  "software_guest_revalidation_complete": false
 }

@@ -12,13 +12,13 @@ theorem original_code (code) (installed : Input.OriginalCode.Installed code) (di
     code.lookup (ofString (functionName direction))=some (formals,body direction,.one) := by
   cases direction with
   | up =>
-    have checked := Input.OriginalCode.indexed code installed 5 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_frame_mem_alloc) (by rfl)
+    have checked := Input.OriginalCode.indexed code installed 5 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_frame_mem_alloc) (by rfl)
     simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,formals,functionName,
-      Guest.guestFn_frame_mem_alloc,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+      Guest.Software.guestFn_frame_mem_alloc,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
   | down =>
-    have checked := Input.OriginalCode.indexed code installed 8 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_scratch_alloc) (by rfl)
+    have checked := Input.OriginalCode.indexed code installed 8 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_scratch_alloc) (by rfl)
     simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,formals,functionName,
-      Guest.guestFn_scratch_alloc,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+      Guest.Software.guestFn_scratch_alloc,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem trap_guard_price (code) (installed : Input.OriginalCode.Installed code) (direction : Direction)
     (test : ExpHOL 64) (continuation : ProgHOL 64) (tailPrice : Nat)

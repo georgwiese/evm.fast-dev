@@ -4,6 +4,20 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual node encoder scratch boundary
+
+ScratchStore derives a below-domain error from an actual normal scratch
+allocation followed by a literal in-record scalar store; no future allocation
+room or successful clock premise. The complete scoped allocation/store costs
+at most two source call/loop ticks on every outcome. Arenas.Cost now references
+actual Guest.Software declarations. ScratchNodeFill checks actual declaration258
+and scratch_mark9, deriving no normal return and all-outcome body cost≤3 before
+its later traversal loop. Actual caller arena transport remains open.
+
+Validation: current-scratch-node-fill-v2.log PASS1434jobs/permitted printed axioms,
+4.14s/MaxRSS1676076KiB;8GiBwhole-hostguard/twoslots/cachefalse. No global K or full
+verification. Overall40%, plausible30–50%; account16%weekly/0resetcredits.
+
 ## Complete current request return:348source ticks and exact physical fields
 
 The current five-count suffix checks on every non-timeout outcome (real list

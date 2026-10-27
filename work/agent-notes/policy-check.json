@@ -3039,6 +3039,8 @@
     "submission/InitECandidate/Solver/Input/ScratchClear.lean",
     "submission/InitECandidate/Solver/Input/ScratchConstructors.lean",
     "submission/InitECandidate/Solver/Input/ScratchFrame.lean",
+    "submission/InitECandidate/Solver/Input/ScratchNodeFill.lean",
+    "submission/InitECandidate/Solver/Input/ScratchStore.lean",
     "submission/InitECandidate/Solver/Input/SequenceChoice.lean",
     "submission/InitECandidate/Solver/Input/SequenceControl.lean",
     "submission/InitECandidate/Solver/Input/SequenceReturned.lean",
@@ -7980,8 +7982,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64743,
-  "package_bytes": 2481880685,
+  "package_entries": 64745,
+  "package_bytes": 2481895639,
   "claim": {
     "K": "infinity"
   },

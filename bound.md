@@ -41,6 +41,13 @@ earlier speculative K guess, 10^14–10^18, is not proved or a target ceiling.
 
 Checked against the current Software AST:
 
+- The current `_node_rlp_fill` body cannot pass its first scratch store under
+  the derived ordered arena bounds and actual ordinary memory domain. All body
+  outcomes cost at most three source ticks, including allocator/trap failure
+  and missing clocks. Actual caller transport is still needed; this is not a
+  whole-main exclusion or target-step bound. Allocator cost syntax now uses
+  the actual Software declarations.
+
 - Actual installed-code/declaration-pass/evaluation-preservation interfaces;
   generic helpers shed old host/map/hash dependencies.
 - Actual continuing shared reads derive presence, replies and scalar values.

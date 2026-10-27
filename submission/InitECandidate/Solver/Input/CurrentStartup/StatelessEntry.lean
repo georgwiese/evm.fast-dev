@@ -48,6 +48,15 @@ theorem arguments_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (po
 
 end Stateless
 
+/-- The exact copied allocator update changes no other global cell. -/
+theorem copied_global (input : Guest.InputBlob) (before ready : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer : BitVec 64) (length : Nat) (value : ValueHOL 64)
+    (copied : Blob.Copied {before with clock := before.clock - 1} ready input pointer length value)
+    (selected : MlS) (other : selected ≠ ofString "heap_ptr") :
+    ready.globals.lookup selected = before.globals.lookup selected := by
+  rw [copied.2.2.2.2.1]
+  simp [WitnessRadix.PersistentAlloc.post, HolFiniteMapExact.update, FUPDATE, Ne.symm other]
+
 /-- The real copy trace and exact copied heap update retain entry metadata
 and bootstrap the next allocation frontier. This includes byte order and
 exception declarations retained by the actual lexical call action. -/
@@ -97,7 +106,10 @@ theorem stateless_reached (input : Guest.InputBlob) (source target : PanSemState
       callee.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 (input.length % 2^64)))) ∧
       evaluateHOLFiniteState (callEntryStateHOLFinite ready callee) (Code.body .decode_stateless_input) =
         (some (.returned value), post) ∧
-      target = WitnessRadix.QueryBranch.restore before "inp" (emptyLocalsHOLFinite post) := by
+      target = WitnessRadix.QueryBranch.restore before "inp" (emptyLocalsHOLFinite post) ∧
+      before.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)) ∧
+      (∀ selected, selected ≠ ofString "heap_ptr" →
+        (callEntryStateHOLFinite ready callee).globals.lookup selected = source.globals.lookup selected) := by
   obtain ⟨before, pointer, ready, inner, precheckRun, beforeState, heapCell, pointerBound, aligned,
       lengthBound, binding, copied, tailRun, restored, scope⟩ := body_copied input source target initial heap value actual
   obtain ⟨readyState, readyHeap⟩ := copied_state input before ready pointer (input.length % 2^64) beforeState copied scope
@@ -108,13 +120,18 @@ theorem stateless_reached (input : Guest.InputBlob) (source target : PanSemState
   have entry : HostState input (callEntryStateHOLFinite ready callee) :=
     ⟨⟨readyState.arena.scratch, readyState.arena.frame, readyState.arena.domain, readyState.arena.code⟩,
       readyState.little, readyState.oracle, readyState.host, readyState.shapes, readyState.shared, readyState.base⟩
-  exact ⟨before, pointer, ready, callee, post, lengthBound, precheckRun, copied, entry, readyHeap,
-    copied.2.2.1, pCell, lenCell, returned, by rw [restored, innerEq]⟩
+  refine ⟨before, pointer, ready, callee, post, lengthBound, precheckRun, copied, entry, readyHeap,
+    copied.2.2.1, pCell, lenCell, returned, (by rw [restored, innerEq]), heapCell, ?_⟩
+  intro selected other
+  have frame := precheck_global selected source.code initial.arena.code source rfl
+  rw [precheckRun] at frame
+  exact (copied_global input before ready pointer (input.length % 2^64) _ copied selected other).trans (congrArg Prod.snd frame)
 
 end InitECandidate.Solver.Input.CurrentStartup.DecoderInput
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.DecoderInput.Stateless.original_code
 #print axioms InitECandidate.Solver.Input.CurrentStartup.DecoderInput.Stateless.environment
 #print axioms InitECandidate.Solver.Input.CurrentStartup.DecoderInput.Stateless.arguments_read
+#print axioms InitECandidate.Solver.Input.CurrentStartup.DecoderInput.copied_global
 #print axioms InitECandidate.Solver.Input.CurrentStartup.DecoderInput.copied_state
 #print axioms InitECandidate.Solver.Input.CurrentStartup.DecoderInput.stateless_reached

@@ -22,7 +22,7 @@ theorem stateless_run (input : Guest.InputBlob) (source target : PanSemStateFini
     (actual : evaluateHOLFiniteState source (Code.body .decode_host_input) =
       (some (.returned (.val (.word word))), target)) : StatelessRun input word := by
   obtain ⟨before, pointer, ready, callee, post, lengthBound, precheckRun, copied, entry,
-    heapEntry, bytes, pCell, lenCell, returned, restored⟩ :=
+    heapEntry, bytes, pCell, lenCell, returned, restored, heapCell, globals⟩ :=
     DecoderInput.stateless_reached input source target initial heap (.val (.word word)) actual
   exact ⟨callEntryStateHOLFinite ready callee, post, pointer, lengthBound, entry, heapEntry, bytes, pCell, lenCell, returned⟩
 

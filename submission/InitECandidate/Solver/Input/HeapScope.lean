@@ -1,21 +1,23 @@
-import InitECandidate.Solver.Input.RlpWrite.U256MinCall
+import InitECandidate.Solver.Input.PureReturn
+import InitECandidate.Solver.WitnessRadix.StateSteps
+import Guest.SoftwareAst
 
 namespace InitECandidate.Solver.Input.HeapScope
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def markBody : ProgHOL 64 := match Guest.guestFn_heap_mark with | .function fn=>progToHOL fn.body | _=>.skip
-def releaseBody : ProgHOL 64 := match Guest.guestFn_heap_release with | .function fn=>progToHOL fn.body | _=>.skip
+def markBody : ProgHOL 64 := match Guest.Software.guestFn_heap_mark with | .function fn=>progToHOL fn.body | _=>.skip
+def releaseBody : ProgHOL 64 := match Guest.Software.guestFn_heap_release with | .function fn=>progToHOL fn.body | _=>.skip
 def releaseFormals : List (MlS×ShapeHOL) := [(ofString "m",.one)]
 def heapVar : ExpHOL 64 := .var .global (ofString "heap_ptr")
 def releasePost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (mark : BitVec 64) : PanSemStateFiniteExact 64 Guest.HostMemory :=
   {source with globals:=source.globals.update (ofString "heap_ptr",.val (.word mark))}
 
 theorem mark_shape : markBody=.return heapVar := by
-  simp only [markBody,Guest.guestFn_heap_mark,progToHOL,expToHOL,heapVar]
+  simp only [markBody,Guest.Software.guestFn_heap_mark,progToHOL,expToHOL,heapVar]
 
 theorem release_shape : releaseBody=.seq (.assign .global (ofString "heap_ptr") (localVar "m")) (.return (.const 0#64)) := by
-  simp only [releaseBody,Guest.guestFn_heap_release,progToHOL,expToHOL,localVar]
+  simp only [releaseBody,Guest.Software.guestFn_heap_release,progToHOL,expToHOL,localVar]
 
 theorem mark_call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (mark : BitVec 64) (name : String) (continuation : ProgHOL 64)
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word mark)))

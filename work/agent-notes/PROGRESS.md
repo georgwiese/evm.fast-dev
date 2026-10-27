@@ -4,6 +4,57 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual startup heap ordering and whole-main input separation
+
+NormalHeapEffects/Loop/Call/Prefix retain a lower heap frontier only on real
+resuming outcomes. AllocationRequest derives the actual request scalar from
+an observed allocator return and its checked guard, then derives no-wrap room
+and next-cursor order. No future allocation success, readable memory or room is
+assumed. HeapMonotone checks the26-helper actual startup closure; source AST and
+generated proof hashes are in current-startup-heap-generation.json.
+
+EvmHeap treats the real mark/release explicitly. CallPrefixKey derives the saved
+local mark through the literal prefix; CallPrefixFrameTrace recovers live scopes
+from actual returned execution. EvmHeapProgram checks the35actions before the
+release (including33literal byte stores). HeapMarks derives the exact real
+snapshot and checks the actual release call; EvmHeapBounds proves the intervening
+and remaining effects. Release is not assumed monotone: its real saved mark
+restores the incoming lower frontier. Exceptional outcomes have no fabricated
+heap effect. StartupHeap now retains2701134640after first SSZ through the actual
+remaining startup calls, main setup and decoder precheck.
+
+StatelessEntry retains the observed before-copy heap cell and proves all other
+globals survive actual precheck/copy/tail entry. SeparatedInput reaches the real
+stateless decoder from whole source termination with ssz_offs=2701132528,
+input pointer≥2701134640and pointer+encodedlength+8≤2952790016. Every offset of
+the64-byte workspace is strictly below the input. Mathematical input lengths
+remain unrestricted, including lengths≥2^64. Startup/decoder stopped paths and
+their full nonlocal observations remain explicit alternatives. This is entry
+geometry; preserving copied bytes through actual decoder writes remains open.
+
+Cleanup: HeapScope drops stale RLP U256MinCall dependencies, Solver closure151to9,
+and uses current Software mark/release bodies. NoReturnScoped reuses the common
+ignored-call theorem to avoid duplicate declarations when closures join. Exact
+old imports/new hashes are in current-heap-cleanup-20261027.json. No guest source,
+semantics, ROM, fixed proofs, Solution or claim bytes changed.
+
+Validation: current-separated-input-v1.log PASS1166jobs/permitted printed axioms,
+4.64s/MaxRSS1853380KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Roots include
+SeparatedInput and NoReturnScoped; MainCopiedInput regression is in that closure.
+Components: current-heap-base-allocation-v1, current-heap-call-marks-v1,
+current-startup-heap-trace-v1, current-evm-heap-return-v2,
+current-startup-heap-lower-v2 and current-stateless-heap-frame-v2 all passed.
+Only the final successful unchanged-source closure is indexed; failed diagnostics
+are not proof evidence. Index7898historical/currentmodules/15683facts,
+298current-reference modules; inventory7933/replacementclosure0/fixedmainunchanged;
+incremental policyPASS64701entries/2481645727bytes. No whole verification or K.
+
+Next prove copied-image frames for real workspace/decoder stores, then close the
+actual offset/layout/gas joins. Scratch covered-outcome classification, remaining
+current crypto/maps and global weighted target composition remain open. Overall
+estimate40%, plausible30–50%; no finite uniform target K. Five old untracked RLP
+files retained. Account9%weeklyused/0resetcredits/ordinaryallowed. Push eachcommit.
+
 ## Actual first SSZ workspace and later-startup pointer preservation
 
 Global allocation execution/normal/expected APIs and ProgramPrefix now use the

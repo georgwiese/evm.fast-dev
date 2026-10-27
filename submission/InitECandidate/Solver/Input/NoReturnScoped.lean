@@ -1,15 +1,9 @@
-import InitECandidate.Solver.Input.NoReturn
+import InitECandidate.Solver.Input.NoReturnIgnored
 import InitECandidate.Solver.Input.LocalPrefix
 
 namespace InitECandidate.Solver.Input.NoReturn
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
-
-theorem ignored_call (function : MlS) (arguments : List (ExpHOL 64)) :
-    Never (.call (some (none, none)) function arguments) := by
-  intro F source value
-  have safe : LocalPrefix (ofString "_") (.call (some (none, none)) function arguments) := .call none _ _ (by simp)
-  exact (safe.summary source).2 value
 
 theorem store (address value : ExpHOL 64) : Never (.store address value) := by
   intro F source returned
@@ -70,7 +64,6 @@ theorem scoped_call (name : MlS) (shape : ShapeHOL) (function : MlS) (arguments 
 
 end InitECandidate.Solver.Input.NoReturn
 
-#print axioms InitECandidate.Solver.Input.NoReturn.ignored_call
 #print axioms InitECandidate.Solver.Input.NoReturn.store
 #print axioms InitECandidate.Solver.Input.NoReturn.raised_sequence
 #print axioms InitECandidate.Solver.Input.NoReturn.scoped_call

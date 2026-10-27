@@ -1,0 +1,34 @@
+{
+  "previous_revision": "a6b9383cb72a13f13894503a1a5ba6c1826f3e32",
+  "scope": "Proof dependency cleanup only; no source implementation or runtime bound changes.",
+  "changes": [
+    {
+      "path": "submission/InitECandidate/Solver/Input/HeapScope.lean",
+      "previous_imports": [
+        "InitECandidate.Solver.Input.RlpWrite.U256MinCall"
+      ],
+      "current_imports": [
+        "InitECandidate.Solver.Input.PureReturn",
+        "InitECandidate.Solver.WitnessRadix.StateSteps",
+        "Guest.SoftwareAst"
+      ],
+      "previous_solver_closure": 151,
+      "current_solver_closure": 9,
+      "sha256": "5d3dce2a9d9348d815551971b63360237d46a304b63a34a0a019d68c6f5090cf"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/NoReturnScoped.lean",
+      "previous_imports": [
+        "InitECandidate.Solver.Input.NoReturn",
+        "InitECandidate.Solver.Input.LocalPrefix"
+      ],
+      "current_imports": [
+        "InitECandidate.Solver.Input.NoReturnIgnored",
+        "InitECandidate.Solver.Input.LocalPrefix"
+      ],
+      "previous_solver_closure": 10,
+      "current_solver_closure": 11,
+      "sha256": "592b43e90b6599e5c1003030ea6605178636b13ed2a1695c68d9ad0c16bb3174"
+    }
+  ]
+}

@@ -104,10 +104,22 @@ Checked against the current Software AST:
   its64-byte offset buffer at **0xa10002f0 (2701132528)**. WorkspacePointer proves
   that pointer survives all later actual startup calls; OffsetsFrame checks the
   closed43-helper suffix/decoder/output graph. This is pointer preservation,
-  not nonaliasing or memory-content preservation. Later heap ordering and copied
-  image lifetime remain open.
+  not memory-content preservation. NormalHeap now checks real returning effects
+  for the26-helper startup closure. EvmHeap derives the real snapshot, preserves
+  its local mark through35prefix actions, and proves the actual release restores
+  the saved frontier; it does not assume release is monotone. StartupHeap carries
+  the post-SSZ lower frontier2701134640through all remaining startup/setup/precheck
+  work. StatelessEntry retains the observed input pointer cell and nonheap global
+  frame. SeparatedInput joins this to complete source observations: at the actual
+  stateless entry, ssz_offs=2701132528, input pointer≥2701134640and its entire
+  bounded copied allocation is in range. Every64-byte workspace address is below
+  that pointer. Startup/decoder stopped paths remain explicit; image lifetime
+  through later decoder writes remains open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
+  HeapScope now imports actual Software AST and minimal generic return/state
+  helpers, reducing its Solver dependency closure151to9. NoReturnScoped reuses
+  the shared ignored-call rule instead of declaring a duplicate theorem.
   Existing clock-only interfaces are retained as projections of the stronger
   stopped-state classification. CaughtAssignedStops and NoFallthrough also use
   their actual minimal imports. These are proof dependency changes, not changes
@@ -117,11 +129,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-workspace-pointer-v1.log`, 1,146 jobs,
-permitted printed axioms only, 3.45 seconds, MaxRSS 1,451,372 KiB.
-Historical/current index: 7,884 modules /15,607 facts; 279 modules carry the
+Latest successful closure: `current-separated-input-v1.log`, 1,166 jobs,
+permitted printed axioms only, 4.64 seconds, MaxRSS 1,853,380 KiB.
+Historical/current index: 7,898 modules /15,683 facts; 298 modules carry the
 current dependency reference. Incremental Solver/package policy passes at
-64,687 entries /2,481,410,152 bytes.
+64,701 entries /2,481,645,727 bytes.
 These checks are not full verification.
 
 ## Remaining plan
@@ -134,9 +146,10 @@ These checks are not full verification.
 - [x] Join actual main/startup/setup/precheck/input_blob to the copied image,
   real pointer/length parameters and metadata at the stateless decoder entry.
 - [ ] Finish workspace geometry: the actual ssz_offs address/64-byte allocation
-  and later startup pointer frame are proved. Derive persistent heap ordering
-  through the remaining startup helpers and their real heap mark/release, then
-  show separation from copied input and preserve its image through decoding.
+  and later startup pointer frame are proved. Persistent heap ordering through
+  actual startup/setup/precheck, including the real heap mark/release, now derives
+  workspace/input separation at genuine stateless entry. Preserve the copied
+  image through decoding writes.
   Port remaining HostLength/HostWords/HostGas callers; old unconditional backing
   claims are stale. Close actual offset guards/decoded layouts/gas.
 - [ ] Derive current main initialization, allocation geometry, memory ownership
@@ -156,9 +169,9 @@ These checks are not full verification.
   The heap invariant is bootstrapped by the actual last setup allocation's second
   guard and alignment mask; an exact normal-startup allocation total is not needed
   for that invariant. The real precheck/copy/stateless-entry join now passes.
-  This does not prove workspace/input separation: derive real startup workspace
-  geometry and later persistent ownership before transporting parsed offsets/gas
-  through workspace writes. Classify genuine scratch helper outcomes. NoReturn alone does not rule out covered terminal
+  Real workspace/input separation now derives at the genuine stateless entry.
+  Prove image lifetime through decoder stores before transporting parsed
+  offsets/gas through workspace writes. Classify genuine scratch helper outcomes. NoReturn alone does not rule out covered terminal
   FFI outcomes, so do not discard later EVM/map obligations on that basis.
   AllocationArithmetic/Normal/Call/CallNormal and the Expected/NormalExpected/
   GlobalExecution/GlobalNormal/ProgramPrefix/InitializerAllocations interfaces
@@ -185,7 +198,7 @@ These checks are not full verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with `/tmp/init-e-account-usage.py`. User means
-  account usage-limit resets. Last check: 8% weekly used, zero reset credits,
+  account usage-limit resets. Last check: 9% weekly used, zero reset credits,
   ordinary usage allowed.
 - One selected build at a time, two Lean slots, artifact cache disabled,
   **8 GiB whole-host used-memory stop guard**. Stop if disk exceeds 85%. Poll

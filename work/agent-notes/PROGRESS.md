@@ -4,6 +4,39 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual request decoder entry and dependency cleanup
+
+RequestRequestsProgram selects the genuine three stores after nvh and the
+actual decode_requests call. RequestsEntry derives those stores using the
+shared stateless-field rule, retains input and the bounded physical gas word,
+derives start=18+le32(input,58)and size=le32(input,6)-16-le32(input,58)within
+the copied extent, and inverts the real length guard to size≥20at original
+clock. It retains actual callee args/lookup and caller return for later resumption.
+CallerLocals now retains the actual outer request upper bound too.
+
+Requests.Program now uses Software and its actual declaration index188, with
+OriginalEntry, HeaderProgram and AllocatedArena imports replacing the old whole
+DecoderRuntimeCode/AllocatedBytes umbrellas. Its transitive Solver closure falls
+359to64modules. NonTimeoutSequenceCall imports only PanState plus the evaluator's
+actual equation module; unused padded-clock/exhaustion proof dependencies are
+removed. Direct clock-zero cases replace an implicitly imported by_contra tactic.
+Sequence/scoped timeout helpers retain their APIs and fall10to2/11to3Solver
+modules. The cleanup manifest records the compared checkpoint/import sets.
+
+Validation: current-requests-entry-v5.log PASS1378jobs/permitted printed axioms,
+5.06s/MaxRSS1913712KiB;8GiBwhole-hostguard/twoslots/cachefalse. Index7931modules/
+15770facts; inventory7968/replacementclosure0/frozenmainunchanged; incremental
+policy PASS64736entries/2481843040bytes. Failed diagnostic logs unindexed; no
+full verification or global finite K. Account15%weekly/0resets/ordinaryallowed.
+Overall estimate40%, plausible30–50%.
+
+Next real five-offset loop/validator, deriving its80-byte allocation room from
+observed return rather than ordinary backing. Then fixed counts/output, request
+resumption, three witness lists and complete stateless/main return. Still need
+physical transaction records/count at complete payload return for later tx-loop
+bounds; current Context retains actual bounded gas but not the full payload image.
+Prioritize earliest scratch covered-outcome consequences before map/crypto work.
+
 ## Real hash-count caller and shared request-context frames
 
 PayloadEntry.CallerLocals retains the actual np/nlen/o_vh/o_rqbindings and three

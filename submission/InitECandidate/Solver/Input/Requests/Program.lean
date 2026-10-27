@@ -1,13 +1,15 @@
 import InitECandidate.Solver.Input.HeapFlatScalar
-import InitECandidate.Solver.WitnessRadix.AllocatedBytes
-import InitECandidate.Solver.Input.DecoderRuntimeCode
+import InitECandidate.Solver.WitnessRadix.AllocatedArena
+import InitECandidate.Solver.Input.HeaderProgram
+import InitECandidate.Solver.Input.OriginalCode
+import InitECandidate.Solver.Input.OriginalEntry
 
 namespace InitECandidate.Solver.Input.Requests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString QueryBranch
 set_option maxRecDepth 10000
 
-def body : ProgHOL 64 := match Guest.guestFn_decode_requests with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_decode_requests with | .function fn => progToHOL fn.body | _ => .skip
 def formals : List (MlS × ShapeHOL) := [(ofString "p",.one),(ofString "len",.one)]
 def shortTest : ExpHOL 64 := .cmp .lower (localVar "len") (.const 20#64)
 def shortGuard : ProgHOL 64 := .ite shortTest (.call (some (none,none)) (ofString "ssz_fail") [.const 60#64]) .skip
@@ -26,13 +28,13 @@ def offsetArguments : List (ExpHOL 64):=[Header.offsets,.const 5#64,.const 20#64
 def offsetGuard : ProgHOL 64:=.call (some (none,none)) (ofString "ssz_check_offsets") offsetArguments
 
 theorem body_shape : body = .seq shortGuard (.dec (ofString "i") .one (.const 0#64) (.seq offsetLoop offsetTail)) := by
-  simp only [body,Guest.guestFn_decode_requests,progToHOL,shortGuard,shortTest,offsetLoop,offsetTest,offsetStep,offsetStore,offsetIncrement,
+  simp only [body,Guest.Software.guestFn_decode_requests,progToHOL,shortGuard,shortTest,offsetLoop,offsetTest,offsetStep,offsetStore,offsetIncrement,
     offsetAddress,offsetInput,offsetByte,offsetRead,offsetTail,shapeToHOL,expToHOL,List.map_cons,List.map_nil,Option.map_none,Header.offsets,Scalar.shift,localVar]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : OriginalCode.Installed code) : code.lookup (ofString "decode_requests") = some (formals,body,.one) := by
-  have checked := OriginalCode.indexed code installed 190 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_decode_requests) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_decode_requests,
+  have checked := OriginalCode.indexed code installed 188 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_decode_requests) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_decode_requests,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 def offsetWord (input : Guest.InputBlob) (start index : Nat) : BitVec 64:=

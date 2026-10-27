@@ -109,7 +109,7 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
       change (caller.locals.update (ofString "pl", .val (.word record))).lookup (ofString name) = _
       simp [HolFiniteMapExact.update, FUPDATE, other]
     exact ⟨(kept "np" (by decide)).trans callerLocals.np, (kept "nlen" (by decide)).trans callerLocals.nlen,
-      (kept "o_vh" (by decide)).trans callerLocals.vh, (kept "o_rq" (by decide)).trans callerLocals.rq, callerLocals.valid⟩
+      (kept "o_vh" (by decide)).trans callerLocals.vh, (kept "o_rq" (by decide)).trans callerLocals.rq, callerLocals.valid, callerLocals.upper⟩
 
 /-- Memory/clock changes retain the request context when original input
 and the actual gas cell are separately preserved. -/
@@ -122,7 +122,7 @@ theorem Context.memory_clock (input : Guest.InputBlob) (source : PanSemStateFini
   ⟨context.code, context.shapes, context.domain, context.endian, image, context.heap, context.pl, context.si,
     context.statelessLower, context.statelessAligned, context.statelessRoom, context.recordAfter, context.recordAligned,
     context.recordRoom, gas, context.gasBound, context.pointerLower, context.pointerAligned, context.inputBound,
-    context.slice, ⟨context.request.np, context.request.nlen, context.request.vh, context.request.rq, context.request.valid⟩, context.workspace⟩
+    context.slice, ⟨context.request.np, context.request.nlen, context.request.vh, context.request.rq, context.request.valid, context.request.upper⟩, context.workspace⟩
 
 /-- A real scalar field store to the earlier stateless record preserves the
 separate payload gas cell and original input, using derived allocation bounds. -/
@@ -199,7 +199,7 @@ theorem Context.bind_frame (input : Guest.InputBlob) (source target : PanSemStat
     ((kept (ofString "pl") (by simp)).trans context.pl) ((kept (ofString "si") (by simp)).trans context.si)
     ⟨(kept (ofString "np") (by simp)).trans context.request.np, (kept (ofString "nlen") (by simp)).trans context.request.nlen,
       (kept (ofString "o_vh") (by simp)).trans context.request.vh, (kept (ofString "o_rq") (by simp)).trans context.request.rq,
-      context.request.valid⟩
+      context.request.valid, context.request.upper⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     (actual : MainSeparatedInput.StatelessRun input word)

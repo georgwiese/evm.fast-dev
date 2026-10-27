@@ -1,5 +1,5 @@
-import InitECandidate.Solver.Input.TerminatingPaddedSequence
-import InitECandidate.Solver.Input.ClockExhaustion
+import InitECandidate.Solver.PanState
+import Flapjack.Pancake.Semantics.PanSem.EvaluateClock
 
 namespace InitECandidate.Solver.Input
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -29,11 +29,9 @@ theorem sequence_call_non_timeout {F : Type} (source target : PanSemStateFiniteE
     rw [run] at whole
     exact notTimeout whole
   have funded : 1 ≤ source.clock := by
-    by_contra insufficient
-    have zero : source.clock = 0 := by omega
-    apply stop
-    rw [evaluateHOLFiniteState_call,args]
-    simp only [called,if_pos zero]
+    by_cases zero : source.clock = 0
+    · exact (stop (by rw [evaluateHOLFiniteState_call, args]; simp only [called, if_pos zero])).elim
+    · omega
   refine ⟨funded,?_⟩
   intro timed
   apply stop

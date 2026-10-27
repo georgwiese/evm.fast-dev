@@ -16,13 +16,13 @@ theorem scoped_call_non_timeout {F : Type} (source target : PanSemStateFiniteExa
     (notTimeout : result ≠ some .timeOut) :
     1 ≤ source.clock ∧ (evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body).1 ≠ some .timeOut := by
   have funded : 1 ≤ source.clock := by
-    by_contra insufficient
-    have zero : source.clock = 0 := by omega
-    have actual := run
-    rw [evaluateHOLFiniteState_decCall_fixClockRewrite] at actual
-    simp only [args,called,if_pos zero] at actual
-    have bad := congrArg Prod.fst actual
-    exact notTimeout bad.symm
+    by_cases zero : source.clock = 0
+    · have actual := run
+      rw [evaluateHOLFiniteState_decCall_fixClockRewrite] at actual
+      simp only [args, called, if_pos zero] at actual
+      have bad := congrArg Prod.fst actual
+      exact (notTimeout bad.symm).elim
+    · omega
   refine ⟨funded,?_⟩
   intro timed
   have bodyRun : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body =

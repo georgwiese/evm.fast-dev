@@ -13,6 +13,7 @@ structure CallerLocals (input : Guest.InputBlob) (current : PanSemStateFiniteExa
   vh : current.locals.lookup (ofString "o_vh") = some (.val (.word (Request.requestWords input 1)))
   rq : current.locals.lookup (ofString "o_rq") = some (.val (.word (Request.requestWords input 2)))
   valid : ∀ position < 3, Offsets.ValidAt 44#64 (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16)) (Request.requestWords input) position
+  upper : Guest.GasLimit.le32 input 6 - 16 ≤ input.length % 2^64 - 18
 
 /-- Entry facts for the actual complete payload return, indexed by its states. -/
 def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -116,7 +117,7 @@ theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
     have nextRq : next.locals.lookup (ofString "o_rq") = some (.val (.word (Request.requestWords input 2))) := by
       rw [nextEq]
       exact bind_lookup_same _ _ _
-    have callerLocals : CallerLocals input next pointer := ⟨nextNp, nextNlen, nextVh, nextRq, valid⟩
+    have callerLocals : CallerLocals input next pointer := ⟨nextNp, nextNlen, nextVh, nextRq, valid, requestUpper⟩
     have nextSi : next.locals.lookup (ofString "si") = some (.val (.word record)) := by
       rw [nextEq]
       exact (bind_lookup_other _ "o_rq" "si" _ (by decide)).trans

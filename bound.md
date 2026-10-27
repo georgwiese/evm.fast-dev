@@ -193,7 +193,13 @@ Checked against the current Software AST:
   copied input and separate gas cell. HashCountReturn now includes store(si,pl)
   and the real32-byte hash-count call, deriving its quotient/remainder and
   ≤66source-clock cost at original funding. Remaining request/witness/stateless/
-  main returns and record lifetime remain open.
+  main returns and record lifetime remain open. RequestsEntry now includes the
+  genuine three hash/header stores, contained decode_requests slice and its
+  actual passing20-byte guard, preserving the gas cell/input and invocation.
+  Requests.Program uses actual Software/index188and drops the old whole-runtime
+  proof umbrella (Solver closure359→64). Shared non-timeout helpers drop unused
+  padded/exhaustion dependencies (10→2/11→3), keeping APIs with direct clock-zero
+  arguments. The actual request offset loop/allocator/output remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -212,10 +218,10 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-hash-count-return-v3.log`, 1,371 jobs,
-permitted printed axioms only, 8.06 seconds /MaxRSS1,931,584KiB. Historical/current
-index:7,929modules/15,767facts. Incremental policy passes at64,734entries/
-2,481,831,635bytes. Old unselected whole-body/caller/image/trace helpers remain
+Latest successful closure: `current-requests-entry-v5.log`, 1,378 jobs,
+permitted printed axioms only, 5.06 seconds /MaxRSS1,913,712KiB. Historical/current
+index:7,931modules/15,770facts. Incremental policy passes at64,736entries/
+2,481,843,040bytes. Old unselected whole-body/caller/image/trace helpers remain
 historical. These checks are not full verification.
 
 ## Remaining plan

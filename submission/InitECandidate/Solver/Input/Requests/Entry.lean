@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.Requests.Program
+import InitECandidate.Solver.WitnessRadix.CodeEnvironment
 import InitECandidate.Solver.Input.NonTimeoutScopedCall
 import InitECandidate.Solver.Input.SszGuardTrace
 

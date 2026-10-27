@@ -30,21 +30,21 @@ theorem rounded_aligned (pointer amount : BitVec 64)
 /-- Natural heap-room facts imply both actual guards, no overflow, monotone
 allocation and the exact aligned next pointer. -/
 theorem guards (pointer amount : BitVec 64)
-    (fits : pointer.toNat + amount.toNat ≤ 33806089496) :
+    (fits : pointer.toNat + amount.toNat ≤ 2952790016) :
     (¬ heapEnd - pointer < amount) ∧ (¬ heapEnd < rounded pointer amount) ∧
       pointer.toNat + amount.toNat ≤ (rounded pointer amount).toNat ∧
-      (rounded pointer amount).toNat ≤ 33806089496 ∧ (rounded pointer amount).toNat % 8 = 0 := by
+      (rounded pointer amount).toNat ≤ 2952790016 ∧ (rounded pointer amount).toNat % 8 = 0 := by
   have noWrap : pointer.toNat + amount.toNat + 7 < 2 ^ 64 := by omega
   have number := rounded_nat pointer amount noWrap
   have aligned := rounded_aligned pointer amount noWrap
-  have pointerLe : pointer ≤ heapEnd := by change pointer.toNat ≤ 33806089496; omega
+  have pointerLe : pointer ≤ heapEnd := by change pointer.toNat ≤ 2952790016; omega
   have difference := BitVec.toNat_sub_of_le pointerLe
-  change (heapEnd - pointer).toNat = 33806089496 - pointer.toNat at difference
+  change (heapEnd - pointer).toNat = 2952790016 - pointer.toNat at difference
   refine ⟨?_, ?_, ?_, ?_, aligned⟩
   · change ¬ (heapEnd - pointer).toNat < amount.toNat
     rw [difference]
     omega
-  · change ¬ 33806089496 < (rounded pointer amount).toNat
+  · change ¬ 2952790016 < (rounded pointer amount).toNat
     omega
   · omega
   · omega

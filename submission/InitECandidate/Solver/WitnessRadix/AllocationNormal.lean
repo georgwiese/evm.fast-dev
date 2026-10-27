@@ -12,10 +12,10 @@ actual fixed trap routine is proved unable to continue normally. -/
 theorem room_of_normal {F : Type} (source target : PanSemStateFiniteExact 64 F) (pointer amount : BitVec 64)
     (amountLocal : source.locals.lookup (ofString "n") = some (.val (.word amount)))
     (heapGlobal : source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)))
-    (pointerBound : pointer.toNat ≤ 33806089496)
+    (pointerBound : pointer.toNat ≤ 2952790016)
     (trapCode : source.code.lookup (ofString "trap_with") = some (Input.Trap.formals, Input.Trap.body, .one))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body = (some (.returned value), target)) :
-    pointer.toNat + amount.toNat ≤ 33806089496 := by
+    pointer.toNat + amount.toNat ≤ 2952790016 := by
   classical
   let entered := WitnessRadix.QueryBranch.bind source "p" pointer
   have pointerRead : eval source heapVar = some (.val (.word pointer)) := by
@@ -47,7 +47,7 @@ theorem room_of_normal {F : Type} (source target : PanSemStateFiniteExact 64 F) 
     exact Input.Trap.call_not_normal entered middle [.const 1#64] 1#64 trapCode args trapRun
   have pointerLe : pointer ≤ heapEnd := pointerBound
   have difference := BitVec.toNat_sub_of_le pointerLe
-  change (heapEnd - pointer).toNat = 33806089496 - pointer.toNat at difference
+  change (heapEnd - pointer).toNat = 2952790016 - pointer.toNat at difference
   change ¬ (heapEnd - pointer).toNat < amount.toNat at fit
   rw [difference] at fit
   omega
@@ -57,10 +57,10 @@ from the derived request room, rather than an assumed allocator outcome. -/
 theorem post_of_normal {F : Type} (source target : PanSemStateFiniteExact 64 F) (pointer amount : BitVec 64)
     (amountLocal : source.locals.lookup (ofString "n") = some (.val (.word amount)))
     (heapGlobal : source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)))
-    (pointerBound : pointer.toNat ≤ 33806089496)
+    (pointerBound : pointer.toNat ≤ 2952790016)
     (trapCode : source.code.lookup (ofString "trap_with") = some (Input.Trap.formals, Input.Trap.body, .one))
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body = (some (.returned value), target)) :
-    value = .val (.word pointer) ∧ pointer.toNat + amount.toNat ≤ 33806089496 ∧
+    value = .val (.word pointer) ∧ pointer.toNat + amount.toNat ≤ 2952790016 ∧
       emptyLocalsHOLFinite target = emptyLocalsHOLFinite (post source pointer amount) := by
   have room := room_of_normal source target pointer amount amountLocal heapGlobal pointerBound trapCode value normal
   have checked := guards pointer amount room

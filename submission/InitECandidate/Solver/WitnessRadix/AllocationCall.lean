@@ -14,7 +14,7 @@ theorem call_execute {F : Type} (source : PanSemStateFiniteExact 64 F)
       arguments = some (values amount))
     (code : source.code.lookup (ofString "alloc") = some (formals, body, .one))
     (heapGlobal : source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)))
-    (fits : pointer.toNat + amount.toNat ≤ 33806089496) (enough : 1 ≤ source.clock) :
+    (fits : pointer.toNat + amount.toNat ≤ 2952790016) (enough : 1 ≤ source.clock) :
     evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "alloc") arguments continuation) =
       (let output := evaluateHOLFiniteState (bind (post { source with clock := source.clock - 1 } pointer amount) name pointer) continuation;
        (output.1, restore source name output.2)) := by

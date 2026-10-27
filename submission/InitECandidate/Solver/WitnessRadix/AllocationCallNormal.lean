@@ -15,9 +15,9 @@ theorem call_normal {F : Type} (source target : PanSemStateFiniteExact 64 F)
     (code : source.code.lookup (ofString "alloc") = some (formals, body, .one))
     (trapCode : source.code.lookup (ofString "trap_with") = some (Input.Trap.formals, Input.Trap.body, .one))
     (heapGlobal : source.globals.lookup (ofString "heap_ptr") = some (.val (.word pointer)))
-    (pointerBound : pointer.toNat ≤ 33806089496) (value : ValueHOL 64)
+    (pointerBound : pointer.toNat ≤ 2952790016) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "alloc") arguments continuation) = (some (.returned value), target)) :
-    pointer.toNat + amount.toNat ≤ 33806089496 ∧ 1 ≤ source.clock ∧
+    pointer.toNat + amount.toNat ≤ 2952790016 ∧ 1 ≤ source.clock ∧
       ∃ inner, evaluateHOLFiniteState (WitnessRadix.QueryBranch.bind (post {source with clock := source.clock - 1} pointer amount) name pointer) continuation =
         (some (.returned value), inner) ∧ target = restore source name inner := by
   have positive := Input.CallNormal.normal_clock source target (ofString name) .one (ofString "alloc") arguments continuation value normal

@@ -7318,7 +7318,7 @@
       "sha256": "b1d287cb4a576639490bfa7bccf6e5f79e8108ff8b79c414a304141da44323a6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7326,7 +7326,7 @@
       "sha256": "41ef3077cd8e99dfc841cebaf90e21b54c590a4e6364f9f5d0d3a80b2384beb3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7334,7 +7334,7 @@
       "sha256": "70ddd3a414eaa6dff248c144a85bbf8436a626e94139db7bc3b06987f947195d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7354,7 +7354,15 @@
       "sha256": "7137603c1b2348963d4838182c61d45daabf3f374ba16903b8e0115cc8257967",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/BlobReached.lean",
+      "sha256": "e331c517a80c50f61fdf7806b193ecd81e8b0806511a69dc5a34cab3b531880e",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7410,7 +7418,7 @@
       "sha256": "2bebbf2efd37a76852c39ccd3d8dec8cee9fc858135bd09ddca614e5360f46a4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7554,7 +7562,7 @@
       "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7606,7 +7614,7 @@
       "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7654,7 +7662,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7670,7 +7678,7 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7694,7 +7702,7 @@
       "sha256": "d046f37e3506bbb7a82cf411bbcbfe665f26170a6ba17a6a949b07225d0dbef3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7714,7 +7722,7 @@
       "sha256": "e6781483e78a78bd17065de1599de31e3e9d810163c23268230561c2c89f99ca",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7726,7 +7734,7 @@
       "sha256": "0ccb23656f25fed27209cc0afb3aba632f83b20052f384c3e35d9b18ed32a26f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7746,7 +7754,7 @@
       "sha256": "5b0bd3675dd2082487de2fea81579625cddac3d12b2b6819ad653daa1dcce697",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7754,7 +7762,7 @@
       "sha256": "a216a35096856e7f5f2f90ddd9a79f012451c267220837ab976ce6faae2ae805",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7770,7 +7778,7 @@
       "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7778,7 +7786,7 @@
       "sha256": "a104d50eab575fb6b5ab5802b4dad79c7080ea0272b427cbeadcaedd450716f5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7786,7 +7794,7 @@
       "sha256": "4bcaede2c3d999ea8adb63513d843a8036ca6b9edcfbc385755001a1ca83f711",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7894,7 +7902,7 @@
       "sha256": "d9dbaecda7f15628d1589938955022ef30400d5b238684e4fbcbed4842ec6b06",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7902,7 +7910,7 @@
       "sha256": "4fa01478b09639a469d60ed57b1568427a1a2bde0e81eb183ecad466d250fd39",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7910,7 +7918,7 @@
       "sha256": "77075f2632628b0c3456673ef3d4af93c833062e300fa46784b40e6c7e57563b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7918,7 +7926,7 @@
       "sha256": "2392b86a919a384605d9fab7d66eda42fe9fd00d38f5c3e83acf4cb03e5d1ee0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7938,7 +7946,7 @@
       "sha256": "5d6e436aace3213baf7e77ad00ac7b4ab0a7c95ebfd2fb402aba005ce86c49f6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7946,7 +7954,7 @@
       "sha256": "18bc7c150ea46f367444a037a79fc4baed1119af7bef86935090ee8818f75742",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7954,7 +7962,7 @@
       "sha256": "4edb7606603aab5c4c6ccdb2131db3e11c83c83927cece7e9b39eade6f45546e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7962,7 +7970,7 @@
       "sha256": "8ae1bc456853d3fc866173efa6469ca41e873c8d85885bdbfcc0f817974525e5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7970,7 +7978,7 @@
       "sha256": "93f30ad064f8dadc75fe0c1f37c15745dd043a1d5a556164afaa6970f4913759",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -7978,7 +7986,7 @@
       "sha256": "b05897d2a025164ad886c018d20bdbfafe2e44c4f769cd69115452852ff8c0c4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8050,7 +8058,7 @@
       "sha256": "07942d45f6f8f52f636c9e8f73e0b6bd13a4ab98dc0bd3abf454ebfb208acb3f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8066,7 +8074,7 @@
       "sha256": "80ef11e18ea17feb523e6c7240129eb2a27ecec2c6f790050bfaaaf8fdff56fb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8074,7 +8082,7 @@
       "sha256": "f09de1978081f37fee3e3ccb544a65cf619e25092cb9c1ea653830e9c48a8eb6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8086,12 +8094,20 @@
       "sha256": "e4794a9d9596c8e865cb2253968bb8aa366eb6e10f40b99d490836e92f98e4e4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterStrideLoop.lean",
       "sha256": "b4ec22a1b2a6e8bca9b5d86fdb7ff203546b2a9451f9c183df199903811db96e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentDomain.lean",
+      "sha256": "f92b1f75e69489458f893d920b14d224e5ea8f884bd713a68e96d3dcfe74c2a1",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-input-entry-domain-v1.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/DecCallFallthroughReturn.lean",
@@ -8106,7 +8122,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8150,7 +8166,7 @@
       "sha256": "c4a0775cb216dba01dd5eacb601f06da663fdb382c443ab71dc4032c2a5fcb3a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8274,7 +8290,7 @@
       "sha256": "32573eadb27703e8df701750b350d18cbfefcf80525410e7ebd3c96c39cb7722",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8602,7 +8618,7 @@
       "sha256": "38003056770293f360822138d5a5cf4e5e2784975c2d11c56c3088a4c5aee062",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8618,7 +8634,7 @@
       "sha256": "12727b0e347ccc2e54bbdf23e792a559ee7af5f10ac12c192347f93c6a97f3de",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8642,7 +8658,7 @@
       "sha256": "32d384b0a1c20ee8afba2faf869a6deb2107548e0801e5b7ab7c2fb7f121067c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8770,7 +8786,7 @@
       "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8778,7 +8794,7 @@
       "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8786,7 +8802,7 @@
       "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8810,7 +8826,7 @@
       "sha256": "c73b9d6a36d7eead87a9a4d6403b7e1d85eb4b11fbdc1e62990069e4cc4762f7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8826,7 +8842,7 @@
       "sha256": "2a420307922047b232f8fc3d3f9ef3c2dc270d83f27b4169b049acaaca1b9a81",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -8842,7 +8858,7 @@
       "sha256": "aff2f3d110719386f24ea8507edd5a087d84a8fcdd9f650264b78fc189b9b401",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -9886,7 +9902,7 @@
       "sha256": "1f29d1109ed9c9d8fc33520ceddad0e2ba6422a6a3d57a5bac30ab4b93dc4bb0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -9922,12 +9938,16 @@
       "sha256": "21e58e40b3615b0e5cd9ad90bc30098f39f1b0102c532cef8967b78932651bfb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/NormalCallClock.lean",
-      "sha256": "aba2477b2e7de68b99ef7a7de83b86edd86fb3e10b40407d12cbb90abbbbb725"
+      "sha256": "bb8a83423c6565c8664816d61b014ae5c29b242c2ffd50838e12afeb0088f4f3",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-input-entry-domain-v1.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/NormalCallData.lean",
@@ -9950,7 +9970,7 @@
       "sha256": "444b58e3f4c9b086dade918533a469c8c2ce06d0ca52050f3fbdf863a789b7fa",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -10058,7 +10078,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -10898,7 +10918,7 @@
       "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -10930,7 +10950,7 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -10938,7 +10958,7 @@
       "sha256": "fd4b142862a214c56d86b7276616e6852aee03f89dd4b3769e3b72d6415db4d0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -10946,7 +10966,7 @@
       "sha256": "b2cd5dd4156728f85cdf061a0a7425700dfd723125a1bfb5e5627ce9bf99631c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -11298,7 +11318,7 @@
       "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -11750,7 +11770,7 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -11850,7 +11870,7 @@
       "sha256": "4f1e9b801540e7bbd98f41af0f7295c1461c8ef2c53fdf5a40d8e14b4a64076f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -11958,7 +11978,7 @@
       "sha256": "cd3386e81e430fee72c2f5bbe1669a7ed946e30c4d95301b12ba0d440bf09054",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -11966,7 +11986,7 @@
       "sha256": "6c37c1726567030ba3e0f4c48cfae00cebe5aa528f64274f57e4c1e624ad2f59",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -11974,7 +11994,7 @@
       "sha256": "cfd80807b28ecc59246aa9939b56f5b96ace0dce33c98ca85a4b76a18c980c5d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -11982,7 +12002,7 @@
       "sha256": "d44016ada1634ca8e8ff14e8834d9015fc3267c43f0f18e2e8f3e1fd5ce9b8b7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -11990,7 +12010,7 @@
       "sha256": "c604815f8ec7bf8bd6c4c073b8632d0bb04fed0c53194c57288b441b4cb0a659",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -12066,7 +12086,7 @@
       "sha256": "68a12b38808faaaf77d5dbffc969ce883716ace344764f9a22077fd19ac97211",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -12082,7 +12102,7 @@
       "sha256": "8415e12f98227a88ff182bfde6b8233492b69f004d01ee879242baa9db03c8b5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -12142,7 +12162,7 @@
       "sha256": "4450f713a9fcc64fb1f5a12664d971aea9327d9984a7cc4a381bc15d284b69c7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -12150,7 +12170,7 @@
       "sha256": "9049c70243bdf689fb9548a82de10265db97c602e5a2bc3cc20d81dfa01f4259",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -12658,7 +12678,7 @@
       "sha256": "4327161056ae5aae8634b32aed28193da70e8e6cd5155615b95b25bd96a7dbd7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -12682,7 +12702,7 @@
       "sha256": "cc790bc048559bb7cd10523bafed3f61236552f5e3c7414bb4ae2bde9500617a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -22678,7 +22698,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27126,7 +27146,7 @@
       "sha256": "499a7062f31ec74e4568f2533ae4aa29bac2c8aa419be8aa4fdb6f87eb2a510e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27151,15 +27171,27 @@
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationArithmetic.lean",
-      "sha256": "75e829948f60f005b1baff1a5f1384010d9c5a98694c44f72ab6919d9778ff36"
+      "sha256": "48b8273d1ee0afe2ebd278206864053392a9f22092141292fd2c364c89313ff7",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-input-entry-domain-v1.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationCall.lean",
-      "sha256": "7ad68186d16f12dd9cda1fdc211f48cf497dd453a127604e0226a2bed2af5171"
+      "sha256": "5b415e8d1debaed0a2963924e460937cd93456715d471475ffcc80d8705eeda6",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-input-entry-domain-v1.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationCallNormal.lean",
-      "sha256": "675d387d00e2330ff2f2fe1a27f9586afabfc5c3a13ab7eb65c2cd0d3598c0ce"
+      "sha256": "ee05c5f849e471cd4f22978923bc3eabaad7b6d8d2bec1ebb45400d44c2c430e",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-input-entry-domain-v1.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationContinuing.lean",
@@ -27170,7 +27202,7 @@
       "sha256": "ef1996cabff66a28dcc85099cd2c1bb68c9c4c03c476763f49425d887ef1632e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27186,7 +27218,7 @@
       "sha256": "8b2d86e96522c7b741325eb8314840ff1a97693e480a02888d2e164c9c845bce",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27207,7 +27239,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationNormal.lean",
-      "sha256": "cc94eb222d74f2988be484c7e13e3f48f856041791f6f3096af7a83a513d3965"
+      "sha256": "96e075a2d7be581b74bb881e7370ab05ade1d801665d39d64a107df365dbeb93",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-input-entry-domain-v1.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationNormalExpected.lean",
@@ -27230,7 +27266,7 @@
       "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27238,7 +27274,7 @@
       "sha256": "02071e2394e8a909552d0d29cc091e76ecb5a43b2909b69ab4dd731d1a5bf044",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27262,7 +27298,7 @@
       "sha256": "437ded0bbc2dbeea0eb5909575a2895a32e0335a9ce8bed077dc09d9cfa06016",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27306,7 +27342,7 @@
       "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27314,7 +27350,7 @@
       "sha256": "9bf469db054912ee33f4aed500be2e85029f2a7f6c5476b0bf0dbe31b8104c4e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27322,7 +27358,7 @@
       "sha256": "5f4f94c543c77f028eccb5e14d46cb47a84e9495bf8a4208605eb2db6c2e6b1d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27802,7 +27838,7 @@
       "sha256": "00496c0a1c173eb32d8df0463c59b14de29c7328603a98dc6b0c112fbb93934c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27810,7 +27846,7 @@
       "sha256": "c6fdc8a09e4996d2da0b16a6a0440a2fd69ee375557bb530b76a1f8448514a52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27818,7 +27854,7 @@
       "sha256": "afd581628da544649c453743c68b58e6b4ca94482d391efb1ffb14781ce68394",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27826,7 +27862,7 @@
       "sha256": "2fff59466ce3299a8761387286fc7c63f313eee4a1255155cce0053d4ed1776a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27834,7 +27870,7 @@
       "sha256": "ec1bf723f03a1ac0bfe94da02c09ce084671bd3fdccd0ada35781ed1e1d902e0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27846,7 +27882,7 @@
       "sha256": "2941b3ac83ce909b1a8068ce503772b29ea52a43f11c608f4f0a7abe48b4744b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27854,7 +27890,7 @@
       "sha256": "6ab96ace982f411c854278c50e9b95392fef23147aced50f944fc2eb92a55d11",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27862,7 +27898,7 @@
       "sha256": "e43d813f36d73b97ba1da6d69ba3606285c1de8ee703a7a3b6d49c8f1b04f06a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27890,7 +27926,7 @@
       "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27910,7 +27946,7 @@
       "sha256": "5acb07092e466bcbd01ab17e1841b1ae72c53c6a26984bfd8923690ae1550f70",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27930,7 +27966,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -27938,7 +27974,7 @@
       "sha256": "751b89698479201e036a489982de317a96f8cc9901949acc630acdac40624387",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -28014,7 +28050,7 @@
       "sha256": "18293761d3208f32f393fd4b61cdd264e8a2c459a854ba9ab19a7805a5fe68ff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-copy-tail-reached-v1.log"
+        "current-input-entry-domain-v1.log"
       ]
     },
     {
@@ -78561,7 +78597,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78570,7 +78606,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78578,13 +78614,13 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78593,7 +78629,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78630,7 +78666,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78640,7 +78676,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78650,7 +78686,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78660,7 +78696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78670,7 +78706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78680,7 +78716,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78690,7 +78726,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78700,7 +78736,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78710,7 +78746,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78720,7 +78756,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78730,7 +78766,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78739,7 +78775,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78748,7 +78784,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78758,7 +78794,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78768,7 +78804,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78778,7 +78814,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78787,7 +78823,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78797,7 +78833,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78825,7 +78861,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78835,7 +78871,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78845,7 +78881,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78855,7 +78891,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78865,7 +78901,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78875,7 +78911,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78885,7 +78921,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78895,7 +78931,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78913,7 +78949,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78922,7 +78958,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78932,7 +78968,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78942,7 +78978,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78952,7 +78988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78980,7 +79016,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78990,7 +79026,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -79000,7 +79036,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -79010,7 +79046,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -79020,7 +79056,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -79191,7 +79227,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -79219,7 +79255,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guards",
@@ -79228,7 +79265,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_execute",
@@ -79237,7 +79275,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.environment",
@@ -79246,7 +79285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81393,7 +81432,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81401,7 +81440,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81411,7 +81450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81421,7 +81460,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81431,7 +81470,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81440,7 +81479,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81449,7 +81488,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81458,7 +81497,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81467,7 +81506,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81476,7 +81515,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81485,7 +81524,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81529,7 +81568,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81557,7 +81596,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81567,7 +81606,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81577,7 +81616,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81587,7 +81626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81597,7 +81636,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81607,7 +81646,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81617,7 +81656,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81627,7 +81666,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81637,7 +81676,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81647,7 +81686,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81657,7 +81696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81667,7 +81706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81713,7 +81752,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81723,7 +81762,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81749,7 +81788,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81759,7 +81798,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81769,7 +81808,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83283,7 +83322,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83704,7 +83743,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83714,7 +83753,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84285,7 +84324,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89637,7 +89676,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89647,7 +89686,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89657,7 +89696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89667,7 +89706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89676,7 +89715,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89685,7 +89724,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89694,7 +89733,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89740,7 +89779,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89750,7 +89789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89759,7 +89798,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89768,7 +89807,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89842,7 +89881,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89861,7 +89900,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89871,7 +89910,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90525,7 +90564,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90535,7 +90574,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90581,7 +90620,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90591,7 +90630,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90637,7 +90676,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.operation_local_words",
@@ -92063,7 +92103,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92073,7 +92113,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95885,7 +95925,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96898,7 +96938,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96908,7 +96948,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96918,7 +96958,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96928,7 +96968,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96938,7 +96978,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96948,7 +96988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96958,7 +96998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -97040,7 +97080,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.room_of_normal",
@@ -97049,7 +97090,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.post_of_normal",
@@ -97058,7 +97100,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.call_normal_expected",
@@ -97226,7 +97269,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -97349,7 +97392,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -97359,7 +97402,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98066,7 +98109,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98076,7 +98119,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98637,7 +98680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101350,7 +101393,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101531,7 +101574,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101541,7 +101584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101551,7 +101594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101561,7 +101604,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101571,7 +101614,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101581,7 +101624,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101591,7 +101634,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101601,7 +101644,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101609,7 +101652,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101617,7 +101660,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101627,7 +101670,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101636,7 +101679,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101646,7 +101689,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101656,7 +101699,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101931,7 +101974,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101941,7 +101984,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101951,7 +101994,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101961,7 +102004,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101971,7 +102014,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101981,7 +102024,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101991,7 +102034,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102001,7 +102044,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102011,7 +102054,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102021,7 +102064,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102031,7 +102074,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102041,7 +102084,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102051,7 +102094,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102061,7 +102104,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102071,7 +102114,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102081,7 +102124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102091,7 +102134,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102101,7 +102144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102111,7 +102154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102336,7 +102379,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102344,7 +102387,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102378,7 +102421,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102388,7 +102431,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102398,7 +102441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102408,7 +102451,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102735,7 +102778,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103538,7 +103581,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103548,7 +103591,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103558,7 +103601,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103568,7 +103611,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103578,7 +103621,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103588,7 +103631,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105786,7 +105829,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106119,7 +106162,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110034,7 +110077,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110443,7 +110486,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110453,7 +110496,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111993,7 +112036,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112713,7 +112756,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112723,7 +112766,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112733,7 +112776,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112743,7 +112786,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112753,7 +112796,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112763,7 +112806,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113407,7 +113450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113885,7 +113928,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113895,7 +113938,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -114659,7 +114702,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -114669,7 +114712,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -114679,7 +114722,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -114689,7 +114732,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115906,7 +115949,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -127711,7 +127754,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -127721,7 +127764,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -128435,7 +128478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -132407,7 +132450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156323,7 +156366,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162226,7 +162269,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162236,7 +162279,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162245,7 +162288,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162255,7 +162298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162265,7 +162308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162275,7 +162318,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162285,7 +162328,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162294,7 +162337,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162304,7 +162347,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162314,7 +162357,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162322,7 +162365,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162332,7 +162375,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162342,7 +162385,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162582,7 +162625,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162592,7 +162635,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162622,7 +162665,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162632,7 +162675,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162642,7 +162685,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162652,7 +162695,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162662,7 +162705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162672,7 +162715,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162682,7 +162725,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162692,7 +162735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162702,7 +162745,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162712,7 +162755,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162722,7 +162765,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162732,7 +162775,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162742,7 +162785,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162752,7 +162795,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162762,7 +162805,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162772,7 +162815,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162782,7 +162825,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162792,7 +162835,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162802,7 +162845,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162811,7 +162854,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162820,7 +162863,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162829,7 +162872,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162839,7 +162882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162849,7 +162892,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162858,7 +162901,84 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-copy-tail-reached-v1.log",
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.after_guard_reached",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.guard_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.body_reached",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.call_reached",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentDomain.ordinary_lower",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentDomain.unmapped_below_base",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentDomain.scratch_unmapped",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-input-entry-domain-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentDomain.store_below_base_error",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-input-entry-domain-v1.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.NormalCallEntry
+import InitECandidate.Solver.Input.CallNormal
 
 namespace InitECandidate.Solver.Input.CallNormal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -11,7 +11,8 @@ theorem normal_clock {F : Type} (source post : PanSemStateFiniteExact 64 F)
     (run : evaluateHOLFiniteState source (.decCall name shape function arguments continuation) =
       (some (.returned value), post)) : 1 ≤ source.clock := by
   classical
-  by_contra insufficient
+  by_cases positive : 1 ≤ source.clock
+  · exact positive
   have zero : source.clock = 0 := by omega
   rw [evaluateHOLFiniteState_decCall_fixClockRewrite] at run
   cases args : evalListHOLFinite source

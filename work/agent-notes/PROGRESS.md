@@ -4,6 +4,46 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual input body/caller and current allocation room
+
+AllocationArithmetic, AllocationNormal, AllocationCall and AllocationCallNormal
+now use the real2952790016guest ceiling. A normal allocator return derives room
+from the actual passing guard and the current heap-end invariant; replay then
+identifies the true returned pointer and exact heap-global update. NormalCallClock
+uses core case analysis and imports only the generic call interface.
+
+BlobReached.after_guard_reached joins that actual allocation to the checked
+copy tail. body_reached additionally inverts the real len declaration, successful
+host length read and passing guard. For arbitrary mathematical input lists it
+derives encodedLength≤1073741808, pointer+encodedLength+8≤2952790016, the exact
+returned pair, copied byte view, exact heap globals, ceil(encodedLength/8)+1
+paid body ticks, code/domain/host/oracle preservation and the protected-word
+frame. call_reached derives the genuine callee return from an actual returning
+caller, restores caller locals, installs the true tuple at its destination and
+reaches its actual continuation, with the extra caller tick explicit. No room,
+read/store success, returned helper result or completed copy is an entry premise.
+Current initial heap cursor≤cap, pointer alignment, endian, installed code and
+host/oracle facts remain to be derived from actual main at this boundary.
+
+CurrentDomain.ordinary_lower proves the actual compiler installation domain has
+no addresses below sourceBase, including wraparound exclusion at its real cell
+count. scratch_unmapped and store_below_base_error prove a real scalar store
+there fails immediately. This does not yet prove whole-program unreachability;
+next check genuine scratch allocator/clear callers and propagation to covered
+outcomes before extending old EVM/map/crypto proof families unnecessarily.
+
+Validation: current-input-entry-domain-v1.log PASS1032jobs/permitted printed axioms,
+3.64s/MaxRSS1310368KiB, same8GiBwhole-hostguard/twoslots/artifactcachefalse.
+Component current-allocation-normal-v2 PASS116jobs and current-blob-reached-v5
+PASS1031jobs; failed diagnostics unindexed. Index7804historical-or-current modules/
+15329facts,146current-reference modules; inventory7838/replacement closure0/fixed
+latest-main unchanged; incremental policy PASS64605entries/2480485979bytes.
+No fresh fixed-source policy/axiom audit, full verifier or finite global K.
+Extended Expected/Global/Local allocator APIs retain old assumptions and still
+need migration; do not treat their historical checks as current success.
+Five unfinished RLP files preserved/untracked/unclaimed; account5%weeklyused,
+zero reset credits/ordinary allowed. Continue autonomously and push every commit.
+
 ## Actual copy bytes, returned tuple and length read
 
 CopyStepReached inverts the real shared-read/store/increment sequence, deriving
@@ -104,6 +144,7 @@ zero reset credits, ordinary usage allowed. Push every commit to georg.
 
 | Commit | Checked result | Remaining limit |
 | --- | --- | --- |
+| b0ca826ff | Actual loop/suffix copied bytes and protected frame; real length read with arbitrary list sizes. | Whole allocator/input-body/caller join still needed at that checkpoint. |
 | 418e447ec | Whole current input-copy all-outcome source cost; stale dependencies removed and history separated from active plan. | Copy contents/caller reachability still needed at that checkpoint. |
 | 44d188c1b | Whole current header precheck ≤85body/86caller source ticks; actual signed small-count offset loops. | Offset guard semantics/global target composition open. |
 | ff66d97ab | Actual shared reads derive presence/bytes/scalar post-state; bounded gas word under canonical offsets. | Offsets need caller derivation. |

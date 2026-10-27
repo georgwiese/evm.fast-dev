@@ -58,7 +58,10 @@ Checked against the current Software AST:
   outside copied words. This composes through the real i/w scopes and tuple
   return. Actual continuing length reads identify input.length modulo 2^64,
   deriving header presence even for word-overflowing mathematical list sizes.
-  The initial allocator/caller geometry still needs its current reachability join.
+  BlobReached now joins the actual allocator, complete body and returning caller:
+  it derives real room, the encoded-length bound, tuple binding, byte image,
+  exact heap update, paid clocks and protected-word frame. Initial heap cursor,
+  alignment/endian/oracle invariants still need derivation from actual main.
 - Allocator/trap/input catalogues use actual Software function entries 2/0/24.
   Shared local-summary composition and fixed counter increments are generic.
 - Replacement implementation/closed proofs/generators/harness were removed
@@ -66,11 +69,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-copy-tail-reached-v1.log`, 1,025 jobs,
-permitted printed axioms only, 6.18 seconds, MaxRSS 1,777,696 KiB.
-Historical/current index: 7,802 modules /15,321 facts; 139 modules carry the
+Latest successful closure: `current-input-entry-domain-v1.log`, 1,032 jobs,
+permitted printed axioms only, 3.64 seconds, MaxRSS 1,310,368 KiB.
+Historical/current index: 7,804 modules /15,329 facts; 146 modules carry the
 current dependency reference. Incremental Solver/package policy passes at
-64,603 entries /2,480,471,113 bytes.
+64,605 entries /2,480,485,979 bytes.
 These checks are not full verification.
 
 ## Remaining plan
@@ -80,8 +83,8 @@ These checks are not full verification.
   modules; retain shared helpers needed by actual current-program proofs.
 - [x] Retarget core code installation, actual shared reads, current header cost
   and complete input-copy cost; clean their stale dependencies.
-- [ ] Join the checked actual copy-tail bytes/frame to the real initial allocator
-  and caller, then its decoder lifetime. Port remaining HostLength/HostWords/
+- [ ] Derive the checked input body/caller's initial heap/oracle/alignment facts
+  from actual main and carry the image through its decoder lifetime. Port remaining HostLength/HostWords/
   HostGas callers; old unconditional backing claims are stale. Close actual
   offset guard semantics/decoder reachability/gas.
 - [ ] Derive current main initialization, allocation geometry, memory ownership
@@ -90,9 +93,12 @@ These checks are not full verification.
   memory; analyze actual covered execution rather than assuming it excludes all
   valid inputs. Retain arbitrary mathematical list sizes, including word wrap.
   Prioritize checking the earliest actual scratch access and its covered-outcome
-  consequences before expanding the map/crypto migration. AllocationArithmetic/
-  AllocationNormal still use the obsolete 33,806,089,496 ceiling and need the real
-  heap-end invariant, not merely their old numeric premise.
+  consequences before expanding the map/crypto migration. CurrentDomain now
+  proves every ordinary address is at least sourceBase and that scalar stores
+  below it fail immediately; no whole-path unreachability is claimed yet.
+  AllocationArithmetic/AllocationNormal/AllocationCall/AllocationCallNormal now
+  use the actual 2,952,790,016 ceiling. Extended Expected/Global/Local variants
+  and their old callers still require migration.
 - [ ] Bound actual Patricia maps and software cryptography. Reuse unchanged
   proofs only after checking current code, indices and dependencies; obsolete
   table/accelerator contracts do not discharge the new obligations.
@@ -112,7 +118,7 @@ These checks are not full verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with `/tmp/init-e-account-usage.py`. User means
-  account usage-limit resets. Last check: 4% weekly used, zero reset credits,
+  account usage-limit resets. Last check: 5% weekly used, zero reset credits,
   ordinary usage allowed.
 - One selected build at a time, two Lean slots, artifact cache disabled,
   **8 GiB whole-host used-memory stop guard**. Stop if disk exceeds 85%. Poll

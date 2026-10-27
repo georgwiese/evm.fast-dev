@@ -1844,6 +1844,7 @@
     "submission/InitECandidate/Solver/Input/BlobOversize.lean",
     "submission/InitECandidate/Solver/Input/BlobOversizeCall.lean",
     "submission/InitECandidate/Solver/Input/BlobProgram.lean",
+    "submission/InitECandidate/Solver/Input/BlobReached.lean",
     "submission/InitECandidate/Solver/Input/BnArithmeticFrame.lean",
     "submission/InitECandidate/Solver/Input/BnArithmeticOracle.lean",
     "submission/InitECandidate/Solver/Input/BnEnvironmentFields.lean",
@@ -1998,6 +1999,7 @@
     "submission/InitECandidate/Solver/Input/CounterLoopLocal.lean",
     "submission/InitECandidate/Solver/Input/CounterStrideCost.lean",
     "submission/InitECandidate/Solver/Input/CounterStrideLoop.lean",
+    "submission/InitECandidate/Solver/Input/CurrentDomain.lean",
     "submission/InitECandidate/Solver/Input/DecCallFallthroughReturn.lean",
     "submission/InitECandidate/Solver/Input/DeclarationClock.lean",
     "submission/InitECandidate/Solver/Input/DeclarationCode.lean",
@@ -7841,8 +7843,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64603,
-  "package_bytes": 2480471113,
+  "package_entries": 64605,
+  "package_bytes": 2480485979,
   "claim": {
     "K": "infinity"
   },

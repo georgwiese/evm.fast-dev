@@ -1,4 +1,5 @@
-import InitECandidate.Solver.Input.Witness.OffsetsNormal
+import InitECandidate.Solver.Input.Witness.OffsetProgram
+import InitECandidate.Solver.Input.OffsetsAnyLoop
 import InitECandidate.Solver.Input.RawScalar
 
 namespace InitECandidate.Solver.Input.Witness

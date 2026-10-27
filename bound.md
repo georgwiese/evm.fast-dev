@@ -41,6 +41,11 @@ earlier speculative K guess, 10^14–10^18, is not proved or a target ceiling.
 
 Checked against the current Software AST:
 
+- The first actual witness-list call and si+40/48output stores now check:
+  physical node records,1024-byte item limits, exact pointer/count fields,
+  original input/gas and bounded frontier beyond the new array. The actual
+  code/header-list calls and final stateless/main join remain.
+
 - WitnessValidated now joins the real three offset writes/validator with
   first12, validated ranges/order, sourceprefixcost≤8and protected request/gas
   cells. Current decode_bytes_list189 normal return/caller proofs and arbitrary

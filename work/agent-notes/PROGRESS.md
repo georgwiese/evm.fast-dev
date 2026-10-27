@@ -4,6 +4,61 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## First real witness list and both stateless-record output stores
+
+WitnessSlices derives the contained node-list slice and literal ABI from the
+actual validated offsets. WitnessNodesReturn applies the shared current byte-list
+caller proof to the genuine st0 call and both si+40/48stores, retaining physical
+node records,1024-byte item limits, actual pointer/count cells, input/gas Context,
+original caller locals and parent endpoint, and the real next code-list call.
+ByteListData/ByteListCall now retain the allocated array end as a lower bound
+on the next bounded heap frontier; later arrays can therefore be shown disjoint
+from earlier records. AllocationHeapControl factors this stronger end-bound
+and common heap-maximum rule; superseded unused generic lower-bound rule removed.
+Code/header lists and final stateless/main joins remain. No global finite K.
+
+Validation: current-witness-nodes-v2.log PASS1443jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. No full verification. Account17%weekly/0resetcredits.
+
+## Shared real byte-list caller return and field-store cleanup
+
+CallerPairStores now checks Context preservation through the actual two tuple
+field stores to si, using the existing genuine scalar-store rules. Validation:
+current-witness-pair-context-v1.log PASS1440jobs/permitted printed axioms.
+
+
+ByteListCall.normal rejoins an arbitrary actual current byte-list invocation
+without minimum clock/future room: resumes its genuine continuation with the
+saved caller locals and exact tuple, physical records/count/per-item bounds,
+preserved prior memory and bounded aligned post-frontier. It transports the
+shared caller Context and protected physical gas through the allocating call;
+caller sourcecost≤2*(sliceLength/4)+3. CallerContextFields factors the immutable
+field/input/gas/heap/live-local transport. Witness.Fields now imports only the
+actual allocated-domain mapping helper rather than the AllocatedBytes umbrella
+(which pulled an unrelated stale ZeroByteStore proof); OffsetValues imports
+its actual syntax/offset predicate rather than the old normal-offset pipeline.
+
+Validation: current-bytes-list-call-v4.log PASS1440jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. Three actual witness-list/store joins remain.
+No global finite K or full verification; account17%weekly/0resetcredits.
+
+## Actual loaded witness offsets and returned byte-list frontier
+
+WitnessLoaded rejoins all three actual readonly offset declarations to the
+real node-list call, with validated offsets, copied input, request/gas cells,
+heap and exact parent endpoint frame. These loads spend no source ticks.
+BytesList.RoomFromReturn exposes its real returning split-list allocation and
+derives the persistent ceiling. Generic AllocationHeapControl factors bounded
+aligned frontier transport for exact empty/nonempty allocation effects.
+ByteListData.normal combines arbitrary-clock current byte-list return data with
+that observed room: physical records, count/per-item limits, copied bytes and
+old-memory frame, exact allocation/control, bounded post-heap and source cost
+≤2*(sliceLength/4)+2. No future successful allocation/clock is supplied.
+
+Validation: current-bytes-list-data-v1.log PASS1434jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. Actual three witness-list calls still need joining.
+No global finite target K/full verification; account17%weekly/0resetcredits.
+
 ## Current witness offsets and arbitrary-clock byte-list returns
 
 WitnessValidated joins the real three workspace writes/offset validator to the

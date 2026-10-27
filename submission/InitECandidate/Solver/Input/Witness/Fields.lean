@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.Witness.Program
-import InitECandidate.Solver.WitnessRadix.AllocatedBytes
+import InitECandidate.Solver.WitnessRadix.AllocatedArena
 import InitECandidate.Solver.Input.VarList.RecordsFrame
 
 namespace InitECandidate.Solver.Input.Witness

@@ -16,6 +16,19 @@ theorem evaluation_fields (source target : PanSemStateFiniteExact 64 Guest.HostM
     (PanPropsEvalStateFiniteExact.ofPanSemFinite target) encoded
   exact ⟨fields.1,fields.2.2.1,fields.2.2.2.1,fields.2.2.2.2.2.2.1⟩
 
+/-- The actual shared-memory domain and base address are also immutable on
+every evaluator outcome, including failed and terminal FFI accesses. -/
+theorem evaluation_layout (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (program : ProgHOL 64)
+    (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source program=(result,target)) :
+    target.shMemaddrs=source.shMemaddrs ∧ target.baseAddr=source.baseAddr := by
+  have encoded : PanPropsEvalStateFiniteExact.evaluateHOLFinitePair (PanPropsEvalStateFiniteExact.ofPanSemFinite source) program=
+      (result,PanPropsEvalStateFiniteExact.ofPanSemFinite target) := by
+    simp only [PanPropsEvalStateFiniteExact.evaluateHOLFinitePair,PanPropsEvalStateFiniteExact.toPanSemFinite_ofPanSemFinite,run]
+  have fields:=evaluateInvariantsHOLFinite program (PanPropsEvalStateFiniteExact.ofPanSemFinite source) result
+    (PanPropsEvalStateFiniteExact.ofPanSemFinite target) encoded
+  exact ⟨fields.2.1,fields.2.2.2.2.1⟩
+
 end InitECandidate.Solver.Input
 
 #print axioms InitECandidate.Solver.Input.evaluation_fields
+#print axioms InitECandidate.Solver.Input.evaluation_layout

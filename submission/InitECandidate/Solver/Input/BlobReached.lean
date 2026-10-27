@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CallPrefixExecution
 import InitECandidate.Solver.Input.CopyTailReached
 import InitECandidate.Solver.Input.HostLengthCurrent
 import InitECandidate.Solver.WitnessRadix.AllocationCallNormal
@@ -143,7 +144,8 @@ theorem call_reached (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
       Copied {source with clock := source.clock - 1} ready input pointer (input.length % 2^64)
         (.rStruct [.val (.word pointer), .val (.word (BitVec.ofNat 64 (input.length % 2^64)))]) ∧
       evaluateHOLFiniteState ready continuation = (some (.returned value), inner) ∧
-      post = restore source name inner := by
+      post = restore source name inner ∧
+      CallPrefix.Reaches source (.scoped (ofString name) returnShape (ofString "input_blob") []) ready := by
   obtain ⟨callee, called⟩ := environment source.code.lookup (original_code source.code installed)
   have positive := CallNormal.normal_clock source post _ returnShape (ofString "input_blob") [] continuation value normal
   obtain ⟨target, returned, actual⟩ := CallNormal.callee_return source post (ofString name) returnShape
@@ -161,8 +163,11 @@ theorem call_reached (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   let output := evaluateHOLFiniteState ready continuation
   have resultEq : output.1 = some (.returned value) := congrArg Prod.fst normal
   have postEq : post = restore source name output.2 := (congrArg Prod.snd normal).symm
-  refine ⟨bound, ready, output.2, ?_, copied, Prod.ext resultEq rfl, postEq⟩
-  simp [ready, pair, CallNormal.continuationEntry, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE]
+  refine ⟨bound, ready, output.2, ?_, copied, Prod.ext resultEq rfl, postEq, ?_⟩
+  · simp [ready, pair, CallNormal.continuationEntry, setVarHOLFinite, HolFiniteMapExact.update, FUPDATE]
+  · exact CallPrefix.Reaches.scoped source (ofString name) returnShape (ofString "input_blob") [] [] body callee
+      returnShape pair target rfl called (by omega) actual
+      (by simp [pair, returnShape, shapeOfHOLExact, shapeEqHOL, shapeEqHOL.shapeEqListHOL])
 
 end InitECandidate.Solver.Input.Blob
 

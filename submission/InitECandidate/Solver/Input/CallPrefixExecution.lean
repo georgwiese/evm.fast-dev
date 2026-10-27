@@ -164,6 +164,20 @@ theorem Execution.singleton {source target : PanSemStateFiniteExact 64 Guest.Hos
   cases execution with
   | step first next => cases next; exact first
 
+theorem Execution.layout {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List Action}
+    (execution : Execution source actions target) :
+    target.shMemaddrs=source.shMemaddrs ∧ target.baseAddr=source.baseAddr := by
+  have fields := evaluation_layout source (evaluateHOLFiniteState source (program actions .skip)).2
+    (program actions .skip) (evaluateHOLFiniteState source (program actions .skip)).1 rfl
+  have shared := congrArg PanSemStateFiniteExact.shMemaddrs execution.skip_erase
+  have base := congrArg PanSemStateFiniteExact.baseAddr execution.skip_erase
+  exact ⟨shared.symm.trans fields.1, base.symm.trans fields.2⟩
+
+theorem Reaches.layout {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {action : Action}
+    (reached : Reaches source action target) :
+    target.shMemaddrs=source.shMemaddrs ∧ target.baseAddr=source.baseAddr :=
+  (Execution.step reached (.done target)).layout
+
 end InitECandidate.Solver.Input.CallPrefix
 
 #print axioms InitECandidate.Solver.Input.CallPrefix.Reaches.project
@@ -179,3 +193,5 @@ end InitECandidate.Solver.Input.CallPrefix
 #print axioms InitECandidate.Solver.Input.CallPrefix.Execution.observe
 #print axioms InitECandidate.Solver.Input.CallPrefix.Execution.split
 #print axioms InitECandidate.Solver.Input.CallPrefix.Execution.singleton
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.layout
+#print axioms InitECandidate.Solver.Input.CallPrefix.Reaches.layout

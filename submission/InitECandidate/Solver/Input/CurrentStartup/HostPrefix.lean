@@ -50,6 +50,9 @@ structure HostState (input : Guest.InputBlob) (state : PanSemStateFiniteExact 64
   little : state.be = false
   oracle : state.ffi.oracle = InitE.sourceOracle
   host : state.ffi.ffiState = Guest.guestHostMemory input
+  shapes : OriginalExceptions.Installed state.eshapes
+  shared : state.shMemaddrs = InitE.sharedDomain
+  base : state.baseAddr = BitVec.ofNat 64 InitE.sourceBase
 
 theorem startup_state (input : Guest.InputBlob) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (initial : HostState input source)
@@ -59,9 +62,11 @@ theorem startup_state (input : Guest.InputBlob) (source target : PanSemStateFini
   change (evaluateHOLFiniteState source (withTail routines .skip)).2.ffi.ffiState = source.ffi.ffiState at host
   rw [actual] at host
   have fields := evaluation_fields source target _ none actual
+  have layout := evaluation_layout source target _ none actual
+  have shapes : OriginalExceptions.Installed target.eshapes := by rw [fields.2.2.1]; exact initial.shapes
   exact ⟨prefix_state source target none initial.arena actual,
     fields.2.1.trans initial.little, (evaluation_oracle source target _ none actual).trans initial.oracle,
-    host.trans initial.host⟩
+    host.trans initial.host, shapes, layout.1.trans initial.shared, layout.2.trans initial.base⟩
 
 namespace DecoderPrefix
 
@@ -111,8 +116,10 @@ theorem setup_state {input : Guest.InputBlob} {source target : PanSemStateFinite
     · exact (execution.globals (key .scratch) (setup_arena_preserves .scratch source.code initial.arena.code)).trans initial.arena.scratch
     · exact (execution.globals (key .frame) (setup_arena_preserves .frame source.code initial.arena.code)).trans initial.arena.frame
     · rw [execution.runtime.2.2.2.1]; exact initial.arena.code
+  have shapes : OriginalExceptions.Installed target.eshapes := by rw [execution.runtime.2.2.1]; exact initial.shapes
   exact ⟨arena, execution.runtime.2.1.trans initial.little,
-    execution.runtime.2.2.2.2.trans initial.oracle, transferred.symm.trans (host.trans initial.host)⟩
+    execution.runtime.2.2.2.2.trans initial.oracle, transferred.symm.trans (host.trans initial.host),
+    shapes, execution.layout.1.trans initial.shared, execution.layout.2.trans initial.base⟩
 
 /-- A real completed decoder prefix supplies its actual callee entry with
 original host input, current arenas, byte order and source oracle. These
@@ -132,7 +139,7 @@ theorem decoder_entry_data {input : Guest.InputBlob} {source target : PanSemStat
   have ready := setup_state initial setup
   exact ⟨before, setup, positive, callee, post, word,
     ⟨⟨ready.arena.scratch, ready.arena.frame, ready.arena.domain, ready.arena.code⟩,
-      ready.little, ready.oracle, ready.host⟩, called, actual, binding⟩
+      ready.little, ready.oracle, ready.host, ready.shapes, ready.shared, ready.base⟩, called, actual, binding⟩
 
 end DecoderPrefix
 
@@ -159,7 +166,8 @@ theorem reached_host (input : Guest.InputBlob) (outcome : HolOutcome) (events : 
   · obtain ⟨middle, startupRun, arena, actual⟩ := continued
     have globals := Main.memory_globals origin
     have initial : HostState input (Main.memoryState origin) :=
-      ⟨⟨globals.2.1, globals.2.2, entry.domain, entry.code⟩, entry.little, entry.oracle, entry.host⟩
+      ⟨⟨globals.2.1, globals.2.2, entry.domain, entry.code⟩, entry.little, entry.oracle, entry.host,
+        entry.shapes, entry.shared, entry.base⟩
     exact Or.inl ⟨middle, startupRun, startup_state input _ _ initial startupRun, actual⟩
   · exact Or.inr stopped
 

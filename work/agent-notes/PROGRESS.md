@@ -4,6 +4,67 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete main-to-copied-input/stateless-entry bridge
+
+ReadHostEffects proves host-byte equality on every outcome under the real
+source oracle. Its generic read reply/wrapper proof covers arbitrary widths,
+absent backing and returned-length checks. Calls, loops, branches and lexical
+scopes compose using actual code/oracle invariants; event histories are allowed
+to change. Unlike normal-return startup host frames, this read-only interface
+also covers exceptions and terminal read failures. PrecheckHostFrame checks
+all5actual precheck helpers, generated from checked fixed-syntax proof terms;
+[manifest](current-precheck-host-generation.json) records every input/hash.
+
+The generated global frames for ssz_fail/host_input_byte/host_input_le32/
+ssz_check_offsets/precheck_host_ssz_header now share any_key proofs, retaining
+old cursor-specific wrappers. This proves actual heap_ptr preservation through
+the precheck without assuming a future successful read, valid schema or stable
+ordinary memory. Its actual workspace writes are not erased from execution.
+TailCallNormal now imports Guest.Model explicitly after earlier dependency cleanup.
+
+DecoderInput reconstructs the literal decode_host_input body and joins its real
+precheck/input_blob calls. Every actual precheck outcome preserves host bytes,
+heap and arenas. A real returning decoder exposes the completed precheck and
+copy, derived encoded-length bound, exact copied tuple/image and real tail-call
+continuation/restoration. Blob.call_reached now also returns its actual
+CallPrefix.Reaches action; downstream metadata comes from that trace instead of
+an assumed caller state or byte-order field missing from Copied.
+
+StatelessEntry checks the real installed Software decoder, actual tuple argument
+reads and real p/len callee bindings. It transports copied bytes into that actual
+callee and derives the bounded aligned next allocation frontier from the true
+copy heap update. MainCopiedInput joins this to complete source termination:
+startup stops and actual decoder/handler stops remain explicit, while a completed
+prefix supplies the real stateless run and main's actual si binding. No future
+successful helper, supplied schema/layout/gas, mathematical input-length ceiling
+or extra post_not_timeOut premise is introduced. This reaches the stateless
+entry only; image lifetime through later workspace writes is not yet proved.
+
+EvaluationFields adds unconditional shared-domain/base preservation from the
+trusted evaluator invariant. CallPrefix Reaches/Execution retain both fields.
+HostState now carries installed exception declarations, the true shared domain
+and actual source base through main/startup/setup/copy/tail entry, alongside its
+arenas/domain/code/little-endian/oracle/host fields. No fixed source/semantics/
+ROM/Proofs/Solution/claim changes were made.
+
+Validation: current-main-copied-input-v2.log PASS1131jobs/permitted printed axioms,
+231.79s/MaxRSS5367852KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Components:
+precheck-host-frame-v2 PASS219, decoder-input-image-v2/v3 PASS1128 and whole-main
+copied-input-v1 PASS1131 before the extra layout fields. Failed diagnostics
+unindexed. All generated source/input hashes match reports. Index7877historical-
+or-current modules/15535facts,264current-reference modules; inventory7912modules,
+replacement closure0/fixedmain unchanged; incremental policy PASS64680entries/
+2481116195bytes. No full fixed-policy/axiom audit/comparator replay claimed.
+
+Next derive real startup workspace geometry/persistent ordering, especially the
+64-byte ssz_offs allocation, relative to the later copied input. A bounded aligned
+heap cell alone does not prove nonaliasing, so do not transport the entry byte
+image through header workspace stores without that separation. Then actual
+decoder offsets/layouts/gas, genuine scratch covered-outcome classification and
+remaining global quantitative/target obligations. Overall estimate40%, plausible
+30–50%; no uniform finite target K yet. Five old untracked RLP files retained.
+Account8%weeklyused/0resetcredits/ordinary allowed. Push each commit to georg.
+
 ## Actual normal startup host frame and bootstrapped decoder heap cursor
 
 NormalHostEffects proves conditional host preservation for resuming outcomes:
@@ -55,8 +116,9 @@ source hashes match their reports. Index7869historical-or-current modules/15490f
 255current-reference modules; inventory7904/replacement closure0/frozen main unchanged;
 incremental policy 64,672 entries /2,481,059,647 bytes. No full verification claimed.
 
-Next internal precheck read-only host/heap frame, actual input_blob caller/copied
-image/decoder lifetime and canonical offset/gas joins. Then covered scratch
+At that checkpoint the internal precheck/input_blob/stateless-entry join was
+pending; the later checkpoint above now supplies it. Workspace geometry/image
+lifetime and canonical offset/gas joins remain open. Then covered scratch
 classification and remaining global quantitative/target obligations. Normal host
 frames say nothing about terminal startup budgets or covered FFI classifications.
 Overall estimate remains40%, plausible30–50%; no uniform finite target K yet.

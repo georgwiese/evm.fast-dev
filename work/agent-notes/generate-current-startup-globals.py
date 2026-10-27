@@ -171,14 +171,20 @@ end InitECandidate.Solver.Input.CurrentStartup
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.{module(name)}.preserves
 '''
-    if name == 'memzero':
-        text=text.replace('theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed code)',
-                          'theorem any_key (selected : MlS) (code)')
+    read_only = {'ssz_fail', 'host_input_byte', 'host_input_le32', 'ssz_check_offsets', 'precheck_host_ssz_header'}
+    if name == 'memzero' or name in read_only:
+        signature = 'theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed code)'
+        extra = '' if name == 'memzero' else ' (installed : OriginalCode.Installed code)'
+        text=text.replace(signature, 'theorem any_key (selected : MlS) (code)'+extra)
         text=text.replace('(key cursor)', 'selected')
-        marker='\nend Memzero'
-        wrapper='\ntheorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed code) :\n    GlobalEffects.Preserves (key cursor) code (Code.body .memzero) :=\n  any_key (key cursor) code\n'
+        for child in functions[name]['calls']:
+            assert child in read_only, (name, child)
+            text=text.replace(module(child)+'.preserves cursor code installed',
+                              module(child)+'.any_key selected code installed')
+        marker='\nend '+module(name)
+        wrapper=f"\ntheorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed code) :\n    GlobalEffects.Preserves (key cursor) code (Code.body .{name}) :=\n  any_key (key cursor) code"+('' if name == 'memzero' else ' installed')+'\n'
         text=text.replace(marker, wrapper+marker)
-        text+='\n#print axioms InitECandidate.Solver.Input.CurrentStartup.Memzero.any_key\n'
+        text+=f'\n#print axioms InitECandidate.Solver.Input.CurrentStartup.{module(name)}.any_key\n'
     (folder/(module(name)+'.lean')).write_text(text)
 report={'source':'Guest/SoftwareAst.lean','source_sha256':hashlib.sha256(source.encode()).hexdigest(),
         'roots':roots,'extra_roots':extra_roots,'order':order,'closure_functions':len(order),'syntax_constructors':dict(constructors),

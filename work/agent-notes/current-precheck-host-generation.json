@@ -1,0 +1,36 @@
+{
+  "fixed_source": "Guest/SoftwareAst.lean",
+  "fixed_source_sha256": "8e806c795bc4e0c3edc6d1475ad6e14b43c74cf69c71732133f2dda03d84721f",
+  "inputs": [
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/SszFail.lean",
+      "sha256": "b301f0abb72c6ac5d983f58ed445770d2e51c5602cacaca44bc28c1227526040"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/HostInputByte.lean",
+      "sha256": "2453c1a7f626335638c21dffa070602086fed0cbdfb1ff439474cb0bdb722718"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/HostInputLe32.lean",
+      "sha256": "09c3724ae163046d618cf33385905de471069357fb3f7113f46396171b92dd5b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/SszCheckOffsets.lean",
+      "sha256": "8fe022c8614f5fd08ed0ecda548b2b1a41f1ff1abb62847534db2a954fc9d724"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/PrecheckHostSszHeader.lean",
+      "sha256": "1a09808d1f552844583d28f3d26992c5378d948bf5a82da62aed998e635ebb37"
+    }
+  ],
+  "order": [
+    "ssz_fail",
+    "host_input_byte",
+    "host_input_le32",
+    "ssz_check_offsets",
+    "precheck_host_ssz_header"
+  ],
+  "generated_source": "submission/InitECandidate/Solver/Input/CurrentStartup/PrecheckHostFrame.lean",
+  "generated_sha256": "39e3563d1f1467e4a3bc98596f6a96a40811c6ce64331db74578f14f4eca59e4",
+  "scope": "Generated proof terms, not validation; all-outcome host bytes equality under the actual source oracle, not event equality or runtime."
+}

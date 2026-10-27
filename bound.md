@@ -92,7 +92,14 @@ Checked against the current Software AST:
   AllocationChecked derives bounded/aligned post-cursors from actual returns
   without an initial heap bound or assumed heap cell. DecoderHeap applies this
   to main's last setup allocation and carries it through memzero/declarations.
-  The internal decoder precheck/input_blob/image/lifetime joins remain open.
+  ReadHostEffects now proves all-outcome host-byte preservation under the real
+  source oracle; precheck/callee proofs retain the heap and arenas as well.
+  DecoderInput joins the actual precheck and input_blob call to the live copied
+  tuple/image. StatelessEntry derives real p/len parameters, image and next heap
+  at the actual stateless body entry. MainCopiedInput reaches this from complete
+  source observations, preserving startup/decoder stops and main's true si binding.
+  HostState now retains exception declarations, shared domain and source base too.
+  Workspace geometry and image lifetime after stateless entry remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   Existing clock-only interfaces are retained as projections of the stronger
@@ -104,11 +111,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-decoder-entry-heap-v1.log`, 372 jobs,
-permitted printed axioms only, 3.49 seconds, MaxRSS 1,451,084 KiB.
-Historical/current index: 7,869 modules /15,490 facts; 255 modules carry the
+Latest successful closure: `current-main-copied-input-v2.log`, 1,131 jobs,
+permitted printed axioms only, 231.79 seconds, MaxRSS 5,367,852 KiB.
+Historical/current index: 7,877 modules /15,535 facts; 264 modules carry the
 current dependency reference. Incremental Solver/package policy passes at
-64,672 entries /2,481,059,647 bytes.
+64,680 entries /2,481,116,195 bytes.
 These checks are not full verification.
 
 ## Remaining plan
@@ -118,11 +125,12 @@ These checks are not full verification.
   modules; retain shared helpers needed by actual current-program proofs.
 - [x] Retarget core code installation, actual shared reads, current header cost
   and complete input-copy cost; clean their stale dependencies.
-- [ ] Carry main's now-derived host/oracle/heap/alignment facts through the
-  decoder's actual header precheck into input_blob; join its checked body/caller
-  and carry the resulting image through its decoder lifetime. Port remaining HostLength/HostWords/
-  HostGas callers; old unconditional backing claims are stale. Close actual
-  offset guard semantics/decoder reachability/gas.
+- [x] Join actual main/startup/setup/precheck/input_blob to the copied image,
+  real pointer/length parameters and metadata at the stateless decoder entry.
+- [ ] Derive startup workspace geometry and persistent ordering relative to the
+  copied input, especially ssz_offs; preserve the image through actual decoding.
+  Port remaining HostLength/HostWords/HostGas callers; old unconditional backing
+  claims are stale. Close actual offset guards/decoded layouts/gas.
 - [ ] Derive current main initialization, allocation geometry, memory ownership
   and input/heap/scratch lifetimes. Input maximum is 1,073,741,808 bytes; allocation
   ceiling is 2,952,790,016. Scratch is below sourceBase and outside compiler ordinary
@@ -139,9 +147,10 @@ These checks are not full verification.
   Host/heap input prerequisites now derive at the genuine decoder body entry.
   The heap invariant is bootstrapped by the actual last setup allocation's second
   guard and alignment mask; an exact normal-startup allocation total is not needed
-  for that invariant. Next transport these through the header precheck, join the
-  actual input_blob and decode_stateless_input calls/image/lifetime, and classify
-  scratch helper outcomes. NoReturn alone does not rule out covered terminal
+  for that invariant. The real precheck/copy/stateless-entry join now passes.
+  This does not prove workspace/input separation: derive real startup workspace
+  geometry and later persistent ownership before transporting parsed offsets/gas
+  through workspace writes. Classify genuine scratch helper outcomes. NoReturn alone does not rule out covered terminal
   FFI outcomes, so do not discard later EVM/map obligations on that basis.
   AllocationArithmetic/AllocationNormal/AllocationCall/AllocationCallNormal now
   use the actual 2,952,790,016 ceiling. Extended Expected/Global/Local variants
@@ -165,7 +174,7 @@ These checks are not full verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with `/tmp/init-e-account-usage.py`. User means
-  account usage-limit resets. Last check: 7% weekly used, zero reset credits,
+  account usage-limit resets. Last check: 8% weekly used, zero reset credits,
   ordinary usage allowed.
 - One selected build at a time, two Lean slots, artifact cache disabled,
   **8 GiB whole-host used-memory stop guard**. Stop if disk exceeds 85%. Poll

@@ -204,7 +204,14 @@ Checked against the current Software AST:
   first20/order/range guards, installed metadata/heap/p/len, protected gas cell
   and original request endpoint. Shared WhileActive uses explicit evaluator/
   state dependencies; loop/step helpers import only their real lookup/control/
-  declaration rules. Actual80-byte allocation, fixed counts/output remain open.
+  declaration rules. RequestsAllocation now derives its real80-byte room/cursor/exact caller
+  update and aligned post-frontier from observed return, preserving gas/input/
+  workspace. LayoutProgram shares actual syntax independently of old allocation
+  execution; OffsetLocals/PanDeclarations prove the pure five loads and real
+  CountLocals. RequestsCountsEntry joins the actual count-call stage at original
+  clock with endpoint/gas/ownership retained. WorkspaceWord separates generic
+  word lookup from RequestLoad’s allocator prefix. Five count calls/output remain
+  open; old unselected Setup execution is not revalidated.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -223,10 +230,10 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-requests-validated-v2.log`, 1,384 jobs,
-permitted printed axioms only, 4.83 seconds /MaxRSS1,925,656KiB. Historical/current
-index:7,932modules/15,772facts. Incremental policy passes at64,737entries/
-2,481,850,402bytes. Old unselected whole-body/caller/image/trace helpers remain
+Latest successful closure: `current-requests-counts-entry-v2.log`, 1,392 jobs,
+permitted printed axioms only, 4.77 seconds /MaxRSS1,912,972KiB. Historical/current
+index:7,937modules/15,780facts. Incremental policy passes at64,742entries/
+2,481,870,203bytes. Old unselected whole-body/caller/image/trace helpers remain
 historical. These checks are not full verification.
 
 ## Remaining plan

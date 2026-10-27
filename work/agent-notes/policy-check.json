@@ -2072,6 +2072,8 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/RecordEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RequestCut.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RequestPositions.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsAllocation.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsCountsEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsValidated.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Ripemd160Init.lean",
@@ -2864,7 +2866,9 @@
     "submission/InitECandidate/Solver/Input/Requests/CountsBody.lean",
     "submission/InitECandidate/Solver/Input/Requests/CountsTrace.lean",
     "submission/InitECandidate/Solver/Input/Requests/Entry.lean",
+    "submission/InitECandidate/Solver/Input/Requests/LayoutProgram.lean",
     "submission/InitECandidate/Solver/Input/Requests/LoopTrace.lean",
+    "submission/InitECandidate/Solver/Input/Requests/OffsetLocals.lean",
     "submission/InitECandidate/Solver/Input/Requests/OffsetLoop.lean",
     "submission/InitECandidate/Solver/Input/Requests/OffsetStep.lean",
     "submission/InitECandidate/Solver/Input/Requests/OffsetsTrace.lean",
@@ -3235,6 +3239,7 @@
     "submission/InitECandidate/Solver/Input/WordTableImage.lean",
     "submission/InitECandidate/Solver/Input/WordTableInitialization.lean",
     "submission/InitECandidate/Solver/Input/WordTripleEnvironment.lean",
+    "submission/InitECandidate/Solver/Input/WorkspaceWord.lean",
     "submission/InitECandidate/Solver/Input/ZeroAnyCost.lean",
     "submission/InitECandidate/Solver/Input/ZeroAnyFlow.lean",
     "submission/InitECandidate/Solver/Input/ZeroByteFlow.lean",
@@ -7974,8 +7979,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64737,
-  "package_bytes": 2481850402,
+  "package_entries": 64742,
+  "package_bytes": 2481870203,
   "claim": {
     "K": "infinity"
   },

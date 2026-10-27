@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.RequestPrefixProgram
+import InitECandidate.Solver.Input.WorkspaceWord
 
 namespace InitECandidate.Solver.Input.Request
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -11,17 +12,6 @@ theorem first_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array 
   classical
   simp [eval,Header.offsets,evalHOLExact,toExact,globalArray,isWfShapeExactHOL,memLoadHOLExact,mapped,cell]
 
-theorem word_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array value : BitVec 64) (offset : Nat)
-    (globalArray : source.globals.lookup (ofString "ssz_offs")=some (.val (.word array)))
-    (mapped : source.memaddrs (array+BitVec.ofNat 64 offset)) (cell : source.memory (array+BitVec.ofNat 64 offset)=.word value) :
-    eval source (.load .one (Scalar.plus Header.offsets offset))=some (.val (.word value)) := by
-  classical
-  have base : eval source Header.offsets=some (.val (.word array)) := by
-    simpa [eval,Header.offsets,evalHOLExact,toExact] using globalArray
-  have address:=Scalar.plus_read source Header.offsets array offset base
-  simp only [eval] at address ⊢
-  rw [evalHOLExact,address]
-  simp [isWfShapeExactHOL,memLoadHOLExact,toExact,mapped,cell]
 
 theorem second_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array : BitVec 64) (witness : Nat)
     (globalArray : source.globals.lookup (ofString "ssz_offs")=some (.val (.word array)))

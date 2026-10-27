@@ -4,6 +4,38 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual80-byte request allocation and real count-call entry
+
+RequestsAllocation inverts the actual scoped allocation, deriving the incoming
+cursor, real80-byte room≤2952790016, exact caller update and next aligned frontier
+beyond the full request record. It preserves original input, workspace cells,
+installed metadata, p/len and the earlier bounded payload gas word. No future
+allocation room or clock is supplied. Original request endpoint/frame remains.
+
+LayoutProgram extracts shared actual allocation/load/count selectors from the
+old allocator-bearing SetupProgram; both syntax modules check against Software.
+CountProgram now imports LayoutProgram directly and selects current Software.
+OffsetLocals executes only the five readonly declarations with PanDeclarations
+and proves their actual CountLocals model. RequestsCountsEntry joins this to the
+real already-allocated state at original clock, preserving gas/input/heap and
+full request endpoint. WorkspaceWord moves the generic Request.word_read lookup
+out of RequestLoad's allocation-prefix import; old consumers retain that API.
+RequestLoad reexports it. The old allocation execution Setup is not revalidated.
+
+Validation: current-requests-counts-entry-v2.log PASS1392jobs/permitted printed
+axioms,4.77s/MaxRSS1912972KiB;8GiBwhole-hostguard/twoslots/cachefalse. Index7937/
+15780facts; inventory7974/replacementclosure0/frozenmainunchanged; incremental
+policy PASS64742entries/2481870203bytes. Failed diagnostics unindexed; no full
+verification or global finite K. Account15%weekly/0resetcredits/ordinaryallowed.
+Overall40%, plausible30–50%.
+
+Next current five fixed-list count calls/output and complete request return,
+protecting the payload gas cell and real count arithmetic. DecoderRuntimeCode /
+CountsTrace still import old whole payload/main proof umbrellas; replace with
+minimal current code-entry proofs before selected checks. Then request caller,
+three witness lists/stateless/main. Still need whole-payload tx records/count;
+scratch covered-outcome analysis stays prioritized before map/crypto migration.
+
 ## Current five-offset loop/validator and protected payload gas cell
 
 Requests.OffsetStep/OffsetLoop/LoopTrace now check the actual five scratch-word

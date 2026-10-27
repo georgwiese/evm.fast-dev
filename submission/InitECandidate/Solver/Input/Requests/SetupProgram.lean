@@ -1,18 +1,15 @@
-import InitECandidate.Solver.Input.Requests.OffsetsTrace
+import InitECandidate.Solver.Input.Requests.LayoutProgram
 import InitECandidate.Solver.WitnessRadix.ProgramPrefix
 
 namespace InitECandidate.Solver.Input.Requests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString QueryBranch ProgramPrefix
 
-def afterAllocation : ProgHOL 64 := match afterOffsets with | .decCall _ _ _ _ rest => rest | _ => .skip
-def countCalls : ProgHOL 64 := Payload.dropLeading 5 afterAllocation
-def loadOffset (position : Nat) : ExpHOL 64 := .load .one (if position = 0 then Header.offsets else Scalar.plus Header.offsets (8*position))
 def setupActions : List Action := [.allocate "rq" (.const 80#64),
   .declare "o0" (loadOffset 0),.declare "o1" (loadOffset 1),.declare "o2" (loadOffset 2),.declare "o3" (loadOffset 3),.declare "o4" (loadOffset 4)]
 
 theorem setup_shape : afterOffsets = program setupActions countCalls := by
-  simp only [afterOffsets,offsetTail,body,Guest.guestFn_decode_requests,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
+  simp only [afterOffsets,offsetTail,body,Guest.Software.guestFn_decode_requests,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
     program,setupActions,countCalls,afterAllocation,Payload.dropLeading,loadOffset,Header.offsets,Scalar.plus]
   rfl
 

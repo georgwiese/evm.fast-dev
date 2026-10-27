@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.Requests.SetupProgram
+import InitECandidate.Solver.Input.Requests.LayoutProgram
 
 namespace InitECandidate.Solver.Input.Requests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -17,7 +17,7 @@ theorem count_stage_shape (index : Nat) (small : index < 5) : countStage index =
     .decCall (ofString (countName index)) .one (ofString "ssz_fixed_list_count") (countArguments index) (countStage (index+1)) := by
   have cases : index = 0 ∨ index = 1 ∨ index = 2 ∨ index = 3 ∨ index = 4 := by omega
   rcases cases with rfl | rfl | rfl | rfl | rfl <;>
-    simp only [countStage,countCalls,afterAllocation,afterOffsets,offsetTail,body,Guest.guestFn_decode_requests,Payload.dropLeading,progToHOL,expToHOL,
+    simp only [countStage,countCalls,afterAllocation,afterOffsets,offsetTail,body,Guest.Software.guestFn_decode_requests,Payload.dropLeading,progToHOL,expToHOL,
       shapeToHOL,List.map_cons,List.map_nil,Option.map_none,countArguments,countName,offsetName,elementSize,localVar]
   all_goals rfl
 

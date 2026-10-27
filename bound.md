@@ -153,7 +153,12 @@ Checked against the current Software AST:
   PayloadExtra now derives the32-byte extra-data bound from the real next guard
   with original clock and Context. Variable-list literal AST and its parameter
   environment now use actual Software with minimal dependencies; body/caller
-  summaries and actual transaction/array writes remain open before the gas store.
+  summaries and array writes remain open before the gas store. AllocationFrontier
+  and PayloadCut now retain a stronger heap frontier beyond the full136-byte pl
+  record. Context.op_store preserves all current metadata/input facts through the
+  real extra-data pointer/length stores. TransactionEntry joins these to the real
+  installed variable-list callee, deriving p/len/lim and a contained transaction
+  slice without a supplied list return, whole-array room or clock allowance.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -172,11 +177,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-payload-transaction-program-v1.log`, 1,269
-jobs, permitted printed axioms only, 39.31 seconds, MaxRSS 1,894,148 KiB.
-Historical/current index: 7,916 modules /15,729 facts; 380 modules carry the
-current dependency reference. Incremental package policy passes at64,721entries/
-2,481,736,437bytes; historical copy/zero/list runtime summaries are not revalidated.
+Latest successful closure: `current-transaction-entry-v2.log`, 1,271 jobs,
+permitted printed axioms only, 4.65 seconds, MaxRSS 1,881,128 KiB.
+Historical/current index: 7,918 modules /15,735 facts; 382 modules carry the
+current dependency reference. Incremental package policy passes at64,723entries/
+2,481,747,581bytes; historical copy/zero/list runtime summaries are not revalidated.
 These checks are not full verification.
 
 ## Remaining plan

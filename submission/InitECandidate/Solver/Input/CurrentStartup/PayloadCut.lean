@@ -20,16 +20,21 @@ theorem actions_safe : actions.all (fun action => action.keeps (ofString "unused
 
 theorem kept_pl : (actions.drop 1).all (fun action => action.keeps (ofString "pl")) = true := by decide
 
+theorem remainder_heap (code) :
+    NormalHeapEffects.Preserves code (CallPrefix.program (actions.drop 1) .skip) := by
+  simp only [actions, List.drop_succ_cons, List.drop_zero, CallPrefix.program]
+  refine NormalHeapEffects.sequence code _ _ (NormalHeapEffects.store code _ _) ?_
+  refine NormalHeapEffects.sequence code _ _ (NormalHeapEffects.store code _ _) ?_
+  exact NormalHeapEffects.declared code _ _ _ _ (NormalHeapEffects.declared code _ _ _ _
+    (NormalHeapEffects.declared code _ _ _ _ (NormalHeapEffects.declared code _ _ _ _ (NormalHeapEffects.skip code))))
+
 theorem actions_heap (code) (installed : OriginalCode.Installed code) :
     NormalHeapEffects.Preserves code (CallPrefix.program actions .skip) := by
   simp only [actions, CallPrefix.program]
   refine NormalHeapEffects.scoped_body code _ _ (Code.name .alloc) _ _
     (Code.formals .alloc) (Code.body .alloc) (Code.shape .alloc)
     (Code.installed code installed .alloc) (HeapMonotone.alloc code installed) ?_
-  refine NormalHeapEffects.sequence code _ _ (NormalHeapEffects.store code _ _) ?_
-  refine NormalHeapEffects.sequence code _ _ (NormalHeapEffects.store code _ _) ?_
-  exact NormalHeapEffects.declared code _ _ _ _ (NormalHeapEffects.declared code _ _ _ _
-    (NormalHeapEffects.declared code _ _ _ _ (NormalHeapEffects.declared code _ _ _ _ (NormalHeapEffects.skip code))))
+  exact remainder_heap code
 
 /-- Actual payload return reaches all seven literal header actions without
 requiring future room, successful stores/reads or a minimum source clock. -/
@@ -52,17 +57,19 @@ theorem record_pointer {source target : PanSemStateFiniteExact 64 Guest.HostMemo
     (installed : OriginalCode.Installed source.code) (heap : NormalHeapEffects.AtLeast lower source)
     (actual : CallPrefix.Execution source actions target) :
     ∃ pointer : BitVec 64, lower ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧
-      pointer.toNat + 136 ≤ 2952790016 ∧ target.locals.lookup (ofString "pl") = some (.val (.word pointer)) := by
+      pointer.toNat + 136 ≤ 2952790016 ∧ target.locals.lookup (ofString "pl") = some (.val (.word pointer)) ∧
+      NormalHeapEffects.AtLeast (pointer.toNat + 136) target := by
   cases actual with
   | @step _ allocatedState _ _ _ allocated rest =>
-    obtain ⟨pointer, heapCell, low, aligned, room, stateEq⟩ := allocation_frontier (ofString "pl") 136#64 lower installed heap allocated
+    obtain ⟨pointer, heapCell, low, aligned, room, stateEq, afterHeap⟩ := allocation_frontier_after (ofString "pl") 136#64 lower installed heap allocated
     have binding : allocatedState.locals.lookup (ofString "pl") = some (.val (.word pointer)) := by
       rw [stateEq]
       simp [setVarHOLFinite, HolFiniteMapExact.update, FUPDATE]
     have kept := rest.keeps (ofString "pl") (by
       intro action member
       exact List.all_eq_true.mp kept_pl action member)
-    exact ⟨pointer, low, aligned, room, kept.trans binding⟩
+    have currentHeap := NormalHeapEffects.execution rest (remainder_heap allocatedState.code) (pointer.toNat + 136) afterHeap
+    exact ⟨pointer, low, aligned, room, kept.trans binding, currentHeap⟩
 
 end InitECandidate.Solver.Input.CurrentStartup.PayloadCut
 
@@ -72,3 +79,5 @@ end InitECandidate.Solver.Input.CurrentStartup.PayloadCut
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCut.actions_heap
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCut.reached
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCut.record_pointer
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCut.remainder_heap

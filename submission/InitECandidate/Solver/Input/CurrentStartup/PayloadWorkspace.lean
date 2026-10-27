@@ -35,6 +35,7 @@ structure Context (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64
   recordLower : pointer.toNat + input.length % 2^64 + 8 ≤ record.toNat
   recordAligned : record.toNat % 8 = 0
   recordRoom : record.toNat + 136 ≤ 2952790016
+  recordHeap : NormalHeapEffects.AtLeast (record.toNat + 136) current
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ current post, ∃ pointer record : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,
@@ -51,7 +52,7 @@ theorem Context.memory_clock (input : Guest.InputBlob) (source : PanSemStateFini
   ⟨context.code, context.shapes, context.domain, context.endian, image, context.heap, context.workspace,
     context.p, context.len, context.pl, context.extra, context.txs, context.wd, context.bal, context.lengthBound,
     context.extent, context.lower, context.aligned, context.room, context.minimum, context.sliceUpper, context.sliceEq,
-    context.recordLower, context.recordAligned, context.recordRoom⟩
+    context.recordLower, context.recordAligned, context.recordRoom, context.recordHeap⟩
 
 theorem offsets_frame (code) (installed : OriginalCode.Installed code) :
     GlobalEffects.Preserves (ofString "ssz_offs") code (CallPrefix.program PayloadCut.actions .skip) := by
@@ -69,7 +70,7 @@ theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached i
     workspace, lower, aligned, room, pCell, lenCell, extent, minimum, sliceUpper, sliceEq, actual⟩ := actual
   obtain ⟨current, inner, execution, currentHeap, remaining, clock, frame⟩ :=
     PayloadCut.reached source post _ installed heap returned actual
-  obtain ⟨record, recordLower, recordAligned, recordRoom, recordCell⟩ := PayloadCut.record_pointer _ installed heap execution
+  obtain ⟨record, recordLower, recordAligned, recordRoom, recordCell, recordHeap⟩ := PayloadCut.record_pointer _ installed heap execution
   have retained := PayloadCut.input_frame input pointer length installed heap image aligned room pCell lenCell execution
   have currentCode : OriginalCode.Installed current.code := by rw [execution.runtime.2.2.2.1]; exact installed
   have currentShapes : OriginalExceptions.Installed current.eshapes := by rw [execution.runtime.2.2.1]; exact shapes
@@ -84,7 +85,7 @@ theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached i
   exact ⟨current, inner, pointer, record, length, returned, ⟨currentCode, currentShapes,
     execution.runtime.1.trans domain, execution.runtime.2.1.trans endian, retained, currentHeap, currentWorkspace,
     currentP, currentLen, recordCell, extra, txs, wd, bal, lengthBound, extent, lower, aligned, room, minimum, sliceUpper, sliceEq,
-    recordLower, recordAligned, recordRoom⟩, remaining⟩
+    recordLower, recordAligned, recordRoom, recordHeap⟩, remaining⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
   entry_reached input (PayloadEntry.separated input word actual)

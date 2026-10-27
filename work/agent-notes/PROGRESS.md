@@ -4,6 +4,44 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Real transaction-list callee and heap frontier beyond payload record
+
+AllocationFrontier.after now retains the post-allocation frontier beyond the
+entire returned record, using observed room and actual alignment rounding.
+PayloadCut carries that stronger pl+136frontier through the two stores/four
+reads and records it in Context.recordHeap. remainder_heap shares the pure
+suffix proof rather than duplicating it inside the allocation rule.
+
+Context.op_store derives an actual scalar-operation store's memory update and
+copied-byte separation from the current record geometry, then retains all other
+Context facts. TransactionEntry applies it to real extra-data pointer/length
+stores at pl+16/pl+24, using their observed normal prefix executions. Actual
+four-offset ordering and slice containment derive the real variable-list p/len
+arguments. Real enclosing return supplies scoped-call funding; the installed
+Software function and checked parameter environment identify the true callee.
+At that entry, original copied bytes and heap≥pl+136remain available, p points
+to the contained transaction slice, len is its real byte length and lim is the
+actual9223372036854775807literal. Its actual returned body is exposed. No whole-
+array room, successful future list parsing/return or clock allowance is assumed.
+
+Validation: current-transaction-entry-v2.log PASS1271jobs/permitted printed axioms,
+4.65s/MaxRSS1881128KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Components
+payload-record-frontier-v1 PASS1266, payload-store-context-v1 PASS1267. Failed
+extent diagnostic unindexed. Index7918historical/currentmodules/15735facts,
+382current-reference modules; inventory7955/replacementclosure0/frozenmainunchanged;
+incremental policyPASS64723entries/2481747581bytes. No complete verification or
+finite global K. Account11%weekly/0resetcredits/ordinaryallowed. Five old untracked
+RLP files retained. Push each commit.
+
+Next invert the real variable-list length/first/count guards and actual allocation
+to derive room for16*countwithin2952790016. The old ordinary-memory premise
+array+4*slice≤33806089496is coarse (and can follow from current heap/input bounds)
+but does not by itself fund the smaller actual allocator ceiling. Reuse checked
+allocated-loop/record proofs after resolving that distinction; include the real
+empty-list branch. Then fixed withdrawal count, remaining gas stores/record joins,
+scratch covered outcomes and global current-program quantitative target work.
+Overall40%, plausible30–50%.
+
 ## Actual extra-data size guard and variable-list entry dependency cleanup
 
 PayloadExtraGuard's literal shape now uses Software; its import is reduced to

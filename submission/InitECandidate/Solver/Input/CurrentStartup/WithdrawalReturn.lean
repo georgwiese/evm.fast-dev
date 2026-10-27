@@ -24,6 +24,7 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   price : source.clock - current.clock ≤ 66
   clock : current.clock ≤ source.clock
   returned : evaluateHOLFiniteState current Payload.afterWithdrawals = (some (.returned value), post)
+  endpoint : PayloadEntry.Endpoint input post pointer length value
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer record array count : BitVec 64, ∃ length start size : Nat, ∃ value : ValueHOL 64,
@@ -110,7 +111,8 @@ theorem transaction (input : Guest.InputBlob) (actual : TransactionReturn.Reache
   have memory : current.memory = stored.memory := by rw [currentEq]
   refine ⟨source, current, innerPost, pointer, record, array, count, length, start, size, value,
     ⟨currentContext, data.valid, ?_, ?_, ?_, data.arrayAfter, VarList.Records.of_memory stored current input pointer array start size memory storedRecords,
-    data.startEq, data.sizeEq, data.inside, (arithmetic (by decide)).1, (arithmetic (by decide)).2, price, clock, remaining⟩⟩
+    data.startEq, data.sizeEq, data.inside, (arithmetic (by decide)).1, (arithmetic (by decide)).2, price, clock, remaining,
+    PayloadEntry.Endpoint.of_frame input post innerPost pointer length value data.endpoint (by rw [postEq]; rfl) (by rw [postEq]; rfl)⟩⟩
   · rw [locals]
     simp [HolFiniteMapExact.update, FUPDATE]
   · rw [memory]

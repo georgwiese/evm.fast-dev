@@ -24,7 +24,8 @@ def Reached (input : Guest.InputBlob) : Prop :=
       lookupCodeHOLFinite caller.code.lookup (ofString "ssz_split_var_list")
         (VarList.values (pointer + BitVec.ofNat 64 start) (BitVec.ofNat 64 size) 9223372036854775807#64) =
         some (VarList.body, callee, VarList.returnShape) ∧
-      evaluateHOLFiniteState caller Payload.transactionCall = (some (.returned parentValue), parentPost)
+      evaluateHOLFiniteState caller Payload.transactionCall = (some (.returned parentValue), parentPost) ∧
+      PayloadEntry.Endpoint input parentPost pointer length parentValue
 
 theorem original_code (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "ssz_split_var_list") = some (VarList.formals, VarList.body, VarList.returnShape) := by
@@ -38,7 +39,7 @@ theorem original_code (code) (installed : OriginalCode.Installed code) :
 return then exposes the genuine transaction-list callee and a contained slice;
 no whole-array allocation room or future list return is assumed. -/
 theorem extra_reached (input : Guest.InputBlob) (actual : PayloadExtra.Reached input) : Reached input := by
-  obtain ⟨source, post, pointer, record, length, value, context, first, valid, extraBound, actual⟩ := actual
+  obtain ⟨source, post, pointer, record, length, value, context, first, valid, extraBound, actual, endpoint⟩ := actual
   rw [Payload.transactions_shape.1] at actual
   have safePointer : LocalPrefix (ofString "pl") Payload.extraPointerStore := .store _ _
   obtain ⟨firstState, firstRun, remaining, pl⟩ := safePointer.normal_continue source post (.seq Payload.extraLengthStore Payload.transactionCall) value actual
@@ -78,7 +79,7 @@ theorem extra_reached (input : Guest.InputBlob) (actual : PayloadExtra.Reached i
   have image : Blob.HeapInput entry input pointer := Blob.HeapInput.of_fields current entry input pointer rfl rfl rfl currentContext.image
   exact ⟨current, entry, bodyPost, pointer, record, length, 62 + Guest.GasLimit.le32 input 566,
     Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566, returned, currentContext, valid, entryCode, entryShapes,
-    currentContext.domain, currentContext.endian, rfl, image, currentContext.recordHeap, pCell, lenCell, limCell, rfl, rfl, sliceUpper, bodyRun, callee, post, value, rfl, args, called, callerRun⟩
+    currentContext.domain, currentContext.endian, rfl, image, currentContext.recordHeap, pCell, lenCell, limCell, rfl, rfl, sliceUpper, bodyRun, callee, post, value, rfl, args, called, callerRun, endpoint⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
   extra_reached input (PayloadExtra.separated input word actual)

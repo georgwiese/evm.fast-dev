@@ -5,8 +5,9 @@ namespace InitECandidate.Solver.Input.CurrentStartup.PayloadEntry
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def Reached (input : Guest.InputBlob) : Prop :=
-  ∃ entry post, ∃ pointer : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,
+/-- Entry facts for the actual complete payload return, indexed by its states. -/
+def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer : BitVec 64) (length : Nat) (returned : ValueHOL 64) : Prop :=
     input.length % 2^64 ≤ Guest.maxInputBytes ∧ OriginalCode.Installed entry.code ∧
     OriginalExceptions.Installed entry.eshapes ∧ entry.memaddrs = InitE.ordinaryDomain ∧ entry.be = false ∧
     Blob.HeapInput entry input pointer ∧ NormalHeapEffects.AtLeast (pointer.toNat + input.length % 2^64 + 8) entry ∧
@@ -16,7 +17,33 @@ def Reached (input : Guest.InputBlob) : Prop :=
     entry.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 length))) ∧
     602 ≤ input.length % 2^64 ∧ 540 ≤ length ∧ length ≤ input.length % 2^64 - 62 ∧
     length = Guest.GasLimit.le32 input 22 - 44 ∧
-    evaluateHOLFiniteState entry Payload.afterGuard = (some (.returned returned), post)
+    evaluateHOLFiniteState entry Payload.afterGuard = (some (.returned returned), post) ∧
+    ∃ caller callee parentPost parentValue,
+      entry = callEntryStateHOLFinite caller callee ∧
+      evalListHOLFinite caller (h := fun address => Classical.propDecidable (caller.memaddrs address)) Request.payloadArguments =
+        some (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) ∧
+      lookupCodeHOLFinite caller.code.lookup (ofString "decode_payload")
+        (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) = some (Payload.body, callee, .one) ∧
+      evaluateHOLFiniteState caller Request.continuation = (some (.returned parentValue), parentPost)
+
+def Reached (input : Guest.InputBlob) : Prop :=
+  ∃ entry post, ∃ pointer : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,
+    Result input entry post pointer length returned
+
+/-- A later returned suffix has the same nonlocal result as the complete
+payload entry. This remembers the actual endpoint through lexical restoration. -/
+def Endpoint (input : Guest.InputBlob) (post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer : BitVec 64) (length : Nat) (value : ValueHOL 64) : Prop :=
+  ∃ entry payloadPost, Result input entry payloadPost pointer length value ∧
+    LocalEffects.erase payloadPost = LocalEffects.erase post ∧ payloadPost.clock = post.clock
+
+theorem Endpoint.of_frame (input : Guest.InputBlob) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer : BitVec 64) (length : Nat) (value : ValueHOL 64)
+    (original : Endpoint input source pointer length value)
+    (frame : LocalEffects.erase source = LocalEffects.erase target) (clock : source.clock = target.clock) :
+    Endpoint input target pointer length value := by
+  obtain ⟨entry, post, actual, originalFrame, originalClock⟩ := original
+  exact ⟨entry, post, actual, originalFrame.trans frame, originalClock.trans clock⟩
 
 theorem original_code (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "decode_payload") = some (Payload.formals, Payload.body, .one) := by
@@ -62,6 +89,7 @@ theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
     have nextDomain : next.memaddrs = source.memaddrs := by rw [nextEq]; rfl
     have nextEndian : next.be = source.be := by rw [nextEq]; rfl
     have nextGlobals : next.globals = source.globals := by rw [nextEq]; rfl
+    have callerRun := remaining
     rw [Request.payload_call_shape] at remaining
     have positive := CallNormal.normal_clock next inner (ofString "pl") .one (ofString "decode_payload")
       Request.payloadArguments Request.afterPayload (.val (.word word)) remaining
@@ -86,7 +114,7 @@ theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
       exact ⟨cursor, (congrArg (fun globals => globals.lookup (ofString "heap_ptr")) nextGlobals).trans cell, low, high, aligned⟩
     refine ⟨entry, bodyPost, pointer, Guest.GasLimit.le32 input 22 - 44, value, lengthBound, entryCode, entryShapes,
       nextDomain.trans domain, nextEndian.trans endian, entryBytes, entryHeap, ?_, lower, aligned, room, pCell, lenCell,
-      (by omega), (by omega), sliceUpper, rfl, after⟩
+      (by omega), (by omega), sliceUpper, rfl, after, next, callee, inner, .val (.word word), rfl, args, called, callerRun⟩
     exact (congrArg (fun globals => globals.lookup (ofString "ssz_offs")) nextGlobals).trans workspace
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
@@ -97,3 +125,5 @@ end InitECandidate.Solver.Input.CurrentStartup.PayloadEntry
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadEntry.original_code
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadEntry.request_reached
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadEntry.separated
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadEntry.Endpoint.of_frame

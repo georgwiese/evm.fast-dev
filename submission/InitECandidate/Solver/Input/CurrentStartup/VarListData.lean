@@ -36,7 +36,8 @@ structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFinit
     lookupCodeHOLFinite caller.code.lookup (ofString "ssz_split_var_list")
       (VarList.values (pointer + BitVec.ofNat 64 start) (BitVec.ofNat 64 size) 9223372036854775807#64) =
       some (VarList.body, callee, VarList.returnShape) ∧
-    evaluateHOLFiniteState caller Payload.transactionCall = (some (.returned parentValue), parentPost)
+    evaluateHOLFiniteState caller Payload.transactionCall = (some (.returned parentValue), parentPost) ∧
+    PayloadEntry.Endpoint input parentPost pointer length parentValue
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller entry post, ∃ pointer record array : BitVec 64, ∃ length start size : Nat, ∃ value : ValueHOL 64,

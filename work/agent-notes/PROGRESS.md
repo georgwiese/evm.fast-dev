@@ -4,6 +4,32 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual payload return retains its physical bounded gas word
+
+PayloadEntry.Result indexes the original actual payload entry/poststate and
+retains its enclosing request invocation. Endpoint records the same nonlocal
+poststate and clock through lexical scopes. Workspace, validated offsets,
+extra-data, transaction callee/caller and withdrawal return now carry that
+endpoint; real call resumption proves its restoration frame.
+
+PayloadGasReturned.complete joins all eleven suffix stores to the complete
+current decode_payload body return at the original clock. It proves the actual
+returned record's gas cell is le64(input,474), with copied input and the bounded
+aligned heap beyond the136-byte record. separated_complete joins original gas
+and canonical offsets to gasWord.toNat≤200000000at that complete return. This
+closes the prior suffix-only limitation; request/stateless/main return joins,
+record lifetime, global all-outcome source and weighted target bounds remain.
+
+Validation: current-payload-complete-gas-v1.log PASS1368jobs/permitted printed
+axioms,45.42s/MaxRSS1942456KiB;8GiBwhole-hostguard/twoslots/cachefalse. Index7926/
+15756facts; inventory7963/replacementclosure0/frozenmainunchanged; incremental
+policy PASS64731entries/2481804875bytes. No full verification or global finite K.
+Account14%weekly/0resetcredits/ordinaryallowed. Overall40%, range30–50%.
+
+Next resume the real enclosing request call with its bounded-gas payload, derive
+record separation/lifetimes and continue to actual main run_attempt. Prioritize
+scratch covered-outcome analysis before expanding map/crypto work.
+
 ## Real transaction caller, withdrawal count and physical gas store
 
 TransactionReturn resumes the actual list caller at its original clock, with the

@@ -20,6 +20,7 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   price : caller.clock - current.clock ≤ size / 4 + 2
   clock : current.clock ≤ caller.clock
   returned : evaluateHOLFiniteState current Payload.afterTransactions = (some (.returned value), post)
+  endpoint : PayloadEntry.Endpoint input post pointer length value
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer record array : BitVec 64, ∃ length start size : Nat, ∃ value : ValueHOL 64,
@@ -30,7 +31,7 @@ minimum caller clock or successful future store is assumed. -/
 theorem returned (input : Guest.InputBlob) (actual : VarListData.Reached input) : Reached input := by
   classical
   obtain ⟨caller, entry, bodyPost, pointer, record, array, length, start, size, tuple, data⟩ := actual
-  obtain ⟨callee, parentPost, value, entryEq, args, called, callerRun⟩ := data.invocation
+  obtain ⟨callee, parentPost, value, entryEq, args, called, callerRun, endpoint⟩ := data.invocation
   have scopedRun := callerRun
   rw [Payload.transactions_shape.2.1] at scopedRun
   have positive := CallNormal.normal_clock caller parentPost (ofString "txs") VarList.returnShape (ofString "ssz_split_var_list")
@@ -46,6 +47,8 @@ theorem returned (input : Guest.InputBlob) (actual : VarListData.Reached input) 
   have normal := invoked.symm.trans scopedRun
   let current := CallNormal.continuationEntry caller bodyPost "txs" tuple
   have resumed : (evaluateHOLFiniteState current Payload.afterTransactions).1 = some (.returned value) := congrArg Prod.fst normal
+  have parentEq : parentPost = restore caller "txs" (evaluateHOLFiniteState current Payload.afterTransactions).2 :=
+    (congrArg Prod.snd normal).symm
   let allocation := if size = 0 then caller else WitnessRadix.PersistentAlloc.post caller array
     (BitVec.ofNat 64 (16 * (Guest.GasLimit.le32 input start / 4)))
   have currentEq : current = setVarHOLFinite (ofString "txs") tuple
@@ -90,7 +93,8 @@ theorem returned (input : Guest.InputBlob) (actual : VarListData.Reached input) 
   have entryClock : entry.clock = caller.clock - 1 := by rw [entryEq]; rfl
   refine ⟨caller, current, (evaluateHOLFiniteState current Payload.afterTransactions).2, pointer, record, array,
     length, start, size, value, ⟨context, data.valid, ?_, data.recordBefore, VarList.Records.of_memory bodyPost current input pointer array start size rfl data.records,
-    data.startEq, data.sizeEq, data.inside, ?_, ?_, ?_, Prod.ext resumed rfl⟩⟩
+    data.startEq, data.sizeEq, data.inside, ?_, ?_, ?_, Prod.ext resumed rfl,
+    PayloadEntry.Endpoint.of_frame input parentPost _ pointer length value endpoint (by rw [parentEq]; rfl) (by rw [parentEq]; rfl)⟩⟩
   · change (caller.locals.update (ofString "txs", tuple)).lookup (ofString "txs") = _
     simp [HolFiniteMapExact.update, FUPDATE, data.tuple]
   · intro query before

@@ -179,8 +179,12 @@ Checked against the current Software AST:
   uses Software and sheds unused payload-allocation dependencies; clock extension
   removes future funding. All eleven remaining payload stores/return now pass:
   PayloadGasReturned joins the actual returned suffix gas cell at record+88to
-  original le64(input,474)and≤200000000. Complete payload/request/stateless/main
-  return composition and later memory preservation remain open.
+  original le64(input,474)and≤200000000. Endpoint now retains the original nonlocal poststate/clock through all lexical
+  and call returns. PayloadGasReturned.complete checks the whole actual payload
+  body return with that gas word, original copied bytes and bounded aligned heap;
+  separated_complete derives its gasWord≤200000000. PayloadEntry.Result retains
+  the enclosing request invocation. Request/stateless/main return composition and
+  later record lifetime remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -199,10 +203,10 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-payload-gas-return-v2.log`, 1,368 jobs,
-permitted printed axioms only, 4.44 seconds /MaxRSS1,888,216KiB. Historical/current
-index:7,926modules/15,753facts. Incremental policy passes at64,731entries/
-2,481,797,419bytes. Old unselected whole-body/caller/image/trace helpers remain
+Latest successful closure: `current-payload-complete-gas-v1.log`, 1,368 jobs,
+permitted printed axioms only, 45.42 seconds /MaxRSS1,942,456KiB. Historical/current
+index:7,926modules/15,756facts. Incremental policy passes at64,731entries/
+2,481,804,875bytes. Old unselected whole-body/caller/image/trace helpers remain
 historical. These checks are not full verification.
 
 ## Remaining plan

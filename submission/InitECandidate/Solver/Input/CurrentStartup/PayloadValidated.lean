@@ -10,13 +10,14 @@ def Reached (input : Guest.InputBlob) : Prop :=
     PayloadWorkspace.Context input current pointer record length ∧
     Guest.GasLimit.le32 input 498 = 540 ∧ Payload.offsetWords input 0 = 540#64 ∧
     (∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position) ∧
-    evaluateHOLFiniteState current Payload.offsetContinuation = (some (.returned returned), post)
+    evaluateHOLFiniteState current Payload.offsetContinuation = (some (.returned returned), post) ∧
+    PayloadEntry.Endpoint input post pointer length returned
 
 /-- Whole-main-derived payload execution passes the real four-offset
 validator. Its writes retain the original copied bytes and record geometry;
 normal return rules out each actual rejection outcome. -/
 theorem workspace_reached (input : Guest.InputBlob) (actual : PayloadWorkspace.Reached input) : Reached input := by
-  obtain ⟨source, post, pointer, record, length, value, context, actual⟩ := actual
+  obtain ⟨source, post, pointer, record, length, value, context, actual, endpoint⟩ := actual
   rcases Payload.offsets_trace source post input pointer 2701132528#64 (BitVec.ofNat 64 length) context.image context.workspace
     context.extra context.txs context.wd context.bal context.domain context.aligned (by decide) (by have := context.room; omega)
     (by decide) (by change 2701132528 + 64 ≤ pointer.toNat; have := context.lower; omega) context.len
@@ -32,7 +33,7 @@ theorem workspace_reached (input : Guest.InputBlob) (actual : PayloadWorkspace.R
     have nextContext : PayloadWorkspace.Context input next pointer record length := by
       rw [fields] at image ⊢
       exact PayloadWorkspace.Context.memory_clock input source pointer record length next.clock next.memory context image
-    exact ⟨next, post, pointer, record, length, value, nextContext, number, first, valid, remaining⟩
+    exact ⟨next, post, pointer, record, length, value, nextContext, number, first, valid, remaining, endpoint⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
   workspace_reached input (PayloadWorkspace.separated input word actual)

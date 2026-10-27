@@ -10,6 +10,7 @@ so that later proofs can resume the actual payload continuation. -/
 structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer record array : BitVec 64) (length start size : Nat) (value : ValueHOL 64) : Prop where
   context : PayloadWorkspace.Context input caller pointer record length
+  valid : ∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position
   heapCell : entry.globals.lookup (ofString "heap_ptr") = some (.val (.word array))
   recordBefore : record.toNat + 136 ≤ array.toNat
   arrayAligned : array.toNat % 8 = 0
@@ -42,7 +43,7 @@ def Reached (input : Guest.InputBlob) : Prop :=
     Result input caller entry post pointer record array length start size value
 
 theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached input) : Reached input := by
-  obtain ⟨caller, entry, post, pointer, record, length, start, size, value, context, installed, shapes, domain, endian,
+  obtain ⟨caller, entry, post, pointer, record, length, start, size, value, context, valid, installed, shapes, domain, endian,
     globals, image, heap, p, n, l, startEq, sizeEq, inside, returned, invocation⟩ := actual
   obtain ⟨array, cell, low, high, aligned⟩ := heap
   have afterInput : pointer.toNat + input.length % 2^64 + 8 ≤ array.toNat := by have := context.recordLower; omega
@@ -76,7 +77,7 @@ theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached
       rw [show post.globals = (WitnessRadix.PersistentAlloc.post entry array amount).globals from globalFrame]
       simp [WitnessRadix.PersistentAlloc.post, HolFiniteMapExact.update, FUPDATE]
   exact ⟨caller, entry, post, pointer, record, array, length, start, size, value,
-    ⟨context, cell, low, aligned, high, startEq, sizeEq, inside, returned, tuple, bytes, records, memory, control, postHeap, price, clock, invocation⟩⟩
+    ⟨context, valid, cell, low, aligned, high, startEq, sizeEq, inside, returned, tuple, bytes, records, memory, control, postHeap, price, clock, invocation⟩⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
   transaction input (TransactionEntry.separated input word actual)

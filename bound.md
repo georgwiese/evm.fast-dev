@@ -172,7 +172,15 @@ Checked against the current Software AST:
   original image/old-memory frame, exact allocation control and bounded aligned
   post-heap beyond the payload record, with source-clock price≤slice/4+1. Its
   structured result retains the real caller invocation for resuming the payload
-  continuation; withdrawal/gas stores remain open.
+  continuation. TransactionReturn now resumes that actual continuation with
+  original clock/Context/records/offset validation. WithdrawalReturn checks both
+  tuple-field stores and actual fixed-list count (≤66source ticks), retaining
+  physical fields, copied input and initialized records. FixedList/UDivMod syntax
+  uses Software and sheds unused payload-allocation dependencies; clock extension
+  removes future funding. All eleven remaining payload stores/return now pass:
+  PayloadGasReturned joins the actual returned suffix gas cell at record+88to
+  original le64(input,474)and≤200000000. Complete payload/request/stateless/main
+  return composition and later memory preservation remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -191,11 +199,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-transaction-data-v3.log`, 1,314 jobs,
-permitted printed axioms only. Historical/current index: 7,922 modules /15,740
-facts. Incremental policy passes at64,727entries/2,481,765,738bytes. Old unselected
-body/caller traces and copy/zero wrappers remain historical. These checks are not
-full verification.
+Latest successful closure: `current-payload-gas-return-v2.log`, 1,368 jobs,
+permitted printed axioms only, 4.44 seconds /MaxRSS1,888,216KiB. Historical/current
+index:7,926modules/15,753facts. Incremental policy passes at64,731entries/
+2,481,797,419bytes. Old unselected whole-body/caller/image/trace helpers remain
+historical. These checks are not full verification.
 
 ## Remaining plan
 

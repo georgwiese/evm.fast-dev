@@ -54,6 +54,22 @@ theorem Context.memory_clock (input : Guest.InputBlob) (source : PanSemStateFini
     context.extent, context.lower, context.aligned, context.room, context.minimum, context.sliceUpper, context.sliceEq,
     context.recordLower, context.recordAligned, context.recordRoom, context.recordHeap⟩
 
+/-- Pure local-scope/clock changes retain context when the seven live payload
+bindings agree. This keeps later call-return proofs independent of their bodies. -/
+theorem Context.locals_clock (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer record : BitVec 64) (length clock : Nat) (locals : HolFiniteMapExact MlS (ValueHOL 64))
+    (context : Context input source pointer record length)
+    (kept : ∀ name : String, name ∈ ["p", "len", "pl", "o_extra", "o_txs", "o_wd", "o_bal"] →
+      locals.lookup (ofString name) = source.locals.lookup (ofString name)) :
+    Context input {source with locals := locals, clock := clock} pointer record length :=
+  ⟨context.code, context.shapes, context.domain, context.endian, context.image, context.heap, context.workspace,
+    (kept "p" (by simp)).trans context.p, (kept "len" (by simp)).trans context.len,
+    (kept "pl" (by simp)).trans context.pl, (kept "o_extra" (by simp)).trans context.extra,
+    (kept "o_txs" (by simp)).trans context.txs, (kept "o_wd" (by simp)).trans context.wd,
+    (kept "o_bal" (by simp)).trans context.bal, context.lengthBound, context.extent, context.lower, context.aligned,
+    context.room, context.minimum, context.sliceUpper, context.sliceEq, context.recordLower, context.recordAligned,
+    context.recordRoom, context.recordHeap⟩
+
 theorem offsets_frame (code) (installed : OriginalCode.Installed code) :
     GlobalEffects.Preserves (ofString "ssz_offs") code (CallPrefix.program PayloadCut.actions .skip) := by
   simp only [PayloadCut.actions, CallPrefix.program]
@@ -97,3 +113,5 @@ end InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace.separated
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace.Context.memory_clock
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace.Context.locals_clock

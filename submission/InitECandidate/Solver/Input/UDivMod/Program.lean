@@ -1,11 +1,14 @@
-import InitECandidate.Solver.Input.ScalarScope
-import InitECandidate.Solver.Input.PayloadPrefixProgram
+import Guest.SoftwareAst
+import Guest.Model
+import InitECandidate.Solver.Input.ScalarDeclaration
+import InitECandidate.Solver.WitnessRadix.BindingLookup
+import InitECandidate.Solver.WitnessRadix.StateSteps
 
 namespace InitECandidate.Solver.Input.UDivMod
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_udivmod with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_udivmod with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL) := [(ofString "a",.one),(ofString "b",.one)]
 def returnShape : ShapeHOL := .comb [.one,.one]
 def zeroTest : ExpHOL 64 := .cmp .equal (localVar "b") (.const 0#64)
@@ -30,7 +33,7 @@ def setupProgram : ProgHOL 64 := .dec (ofString "q") .one (.const 0#64)
   (.dec (ofString "r") .one (.const 0#64) (.dec (ofString "i") .one (.const 64#64) initializedBody))
 
 theorem body_shape : body=.seq zeroGuard (.seq smallGuard setupProgram) := by
-  simp only [body,Guest.guestFn_udivmod,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
+  simp only [body,Guest.Software.guestFn_udivmod,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
     zeroGuard,zeroTest,smallGuard,smallTest,setupProgram,initializedBody,loop,loopTest,loopBody,indexExpression,
     remainderExpression,subtractTest,subtractBody,subtractExpression,quotientExpression,returnPair,localVar]
 

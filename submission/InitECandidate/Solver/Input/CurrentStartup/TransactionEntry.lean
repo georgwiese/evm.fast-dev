@@ -8,6 +8,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller entry post, ∃ pointer record : BitVec 64, ∃ length start size : Nat, ∃ returned : ValueHOL 64,
     PayloadWorkspace.Context input caller pointer record length ∧
+    (∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position) ∧
     OriginalCode.Installed entry.code ∧ OriginalExceptions.Installed entry.eshapes ∧
     entry.memaddrs = InitE.ordinaryDomain ∧ entry.be = false ∧ entry.globals = caller.globals ∧
     Blob.HeapInput entry input pointer ∧ NormalHeapEffects.AtLeast (record.toNat + 136) entry ∧
@@ -76,7 +77,7 @@ theorem extra_reached (input : Guest.InputBlob) (actual : PayloadExtra.Reached i
   have entryShapes : OriginalExceptions.Installed entry.eshapes := currentContext.shapes
   have image : Blob.HeapInput entry input pointer := Blob.HeapInput.of_fields current entry input pointer rfl rfl rfl currentContext.image
   exact ⟨current, entry, bodyPost, pointer, record, length, 62 + Guest.GasLimit.le32 input 566,
-    Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566, returned, currentContext, entryCode, entryShapes,
+    Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566, returned, currentContext, valid, entryCode, entryShapes,
     currentContext.domain, currentContext.endian, rfl, image, currentContext.recordHeap, pCell, lenCell, limCell, rfl, rfl, sliceUpper, bodyRun, callee, post, value, rfl, args, called, callerRun⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=

@@ -1,5 +1,5 @@
-import InitECandidate.Solver.Input.PayloadExtraStores
-import InitECandidate.Solver.Input.FixedList.CallerNormal
+import InitECandidate.Solver.Input.PayloadWordStore
+import InitECandidate.Solver.Input.FixedList.Environment
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

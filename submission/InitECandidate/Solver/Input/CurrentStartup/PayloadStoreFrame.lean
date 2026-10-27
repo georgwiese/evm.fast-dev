@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CurrentStartup.PayloadExtra
+import InitECandidate.Solver.Input.PayloadWordStore
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -23,6 +24,25 @@ theorem Context.op_store (input : Guest.InputBlob) (source target : PanSemStateF
   rw [fields] at image ⊢
   exact Context.memory_clock input source pointer record length target.clock target.memory context image
 
+/-- A known scalar payload-field value can be stored using the actual derived
+record geometry. This retains the complete context and exact old-word frame. -/
+theorem Context.field_store (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer record : BitVec 64) (length offset : Nat) (expression : ExpHOL 64) (word : BitVec 64)
+    (context : Context input source pointer record length) (inside : offset ≤ 128) (aligned : offset % 8 = 0)
+    (read : eval source expression = some (.val (.word word))) :
+    evaluateHOLFiniteState source (.store (Scalar.plus (localVar "pl") offset) expression) =
+      (none, Payload.fieldStored source record offset word) ∧
+    Context input (Payload.fieldStored source record offset word) pointer record length ∧
+    (Payload.fieldStored source record offset word).memory (record + BitVec.ofNat 64 offset) = .word word ∧
+    (∀ query, query ≠ record + BitVec.ofNat 64 offset →
+      (Payload.fieldStored source record offset word).memory query = source.memory query) := by
+  obtain ⟨run, image, cell, frame⟩ := Payload.field_store source input pointer record context.image context.pl context.domain
+    context.aligned context.recordAligned (by have := context.lower; omega) context.recordLower (by have := context.recordRoom; omega)
+    offset inside aligned expression word read
+  exact ⟨run, Context.memory_clock input source pointer record length source.clock _ context image, cell, frame⟩
+
 end InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace.Context.op_store
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace.Context.field_store

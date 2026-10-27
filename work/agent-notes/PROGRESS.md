@@ -4,6 +4,41 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Real transaction caller, withdrawal count and physical gas store
+
+TransactionReturn resumes the actual list caller at its original clock, with the
+returned tuple, live payload Context, copied image, initialized records, valid
+four offsets, protected payload words and actual price≤slice/4+2. TransactionEntry
+and VarListData retain original offset validation. PayloadStoreFrame shares known
+field-store/context proofs; Context.locals_clock shares seven live-binding frames.
+Records.store_before preserves initialized arrays across earlier field stores.
+
+WithdrawalReturn follows both actual tuple-field stores and the real fixed-list
+count call, retaining physical transaction fields/records, copied bytes, division
+facts and actual cost≤66. FixedList.NormalAnyClock removes clock funding through
+checked extension. UDivMod/FixedList literal checks now use Software; division
+syntax drops the unrelated payload allocator-prefix imports. Transaction stores
+import their actual word-store/environment dependencies; old WithdrawalsNormal
+now imports its caller theorem explicitly. PayloadWordStore imports PanControl
+explicitly. RemainingProgram uses Software and RemainingExecute imports its raw
+byte arithmetic directly.
+
+PayloadGasReturned checks all eleven remaining real stores and actual suffix
+return: gas at record+88 is the copied le64(input,474), bounded≤200000000from the
+main-derived canonical offsets and original gas premise. Input and bounded heap
+remain. This is the actual returned suffix; connecting its state to the complete
+payload/request/stateless/main return is still required. No global finite K.
+
+Validation: current-payload-gas-return-v2.log PASS1368jobs/permitted printed axioms,
+4.44s/MaxRSS1888216KiB;8GiBwhole-hostguard/twoslots/cachefalse. Index7926modules/
+15753facts; inventory7963/replacementclosure0/frozenmainunchanged; incremental
+policy PASS64731entries/2481797419bytes. Old unselected whole-body/caller/image/
+trace proofs remain historical. No full verification. Account13%weekly/0resets.
+Overall effort estimate40%, plausible30–50%; source clock costs are not target K.
+
+Next connect complete actual payload return/physical layout and enclosing decoder
+calls, then earliest scratch-call covered-outcome analysis before map/crypto work.
+
 ## Actual returned transaction records and allocation-room composition
 
 Allocation.allocation_execute now requires the real allocator ceiling separately

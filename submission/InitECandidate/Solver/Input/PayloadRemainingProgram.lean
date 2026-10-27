@@ -21,7 +21,7 @@ def remainingFields (input : Guest.InputBlob) (pointer length withdrawals balanc
 theorem remaining_shape (input : Guest.InputBlob) (pointer length withdrawals balances count : BitVec 64) :
     afterWithdrawals=fieldProgram (remainingFields input pointer length withdrawals balances count) := by
   simp only [afterWithdrawals,withdrawalCall,afterTransactions,transactionCall,afterExtra,offsetContinuation,offsetBody,dropLeading,
-    afterGuard,body,Scalar.payloadBody,Guest.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
+    afterGuard,body,Scalar.payloadBody,Guest.Software.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
     fieldProgram,remainingFields,Scalar.flat64,Scalar.flat32,Scalar.flatAddress,Scalar.shift,Scalar.plus,localVar,List.nil_append,List.cons_append,List.append_nil]
 
 theorem remaining_valid (input : Guest.InputBlob) (pointer length withdrawals balances count : BitVec 64) :

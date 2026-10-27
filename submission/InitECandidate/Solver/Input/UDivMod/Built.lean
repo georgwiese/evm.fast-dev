@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.UDivMod.Setup
+import InitECandidate.Solver.WitnessRadix.CodeEnvironment
 
 namespace InitECandidate.Solver.Input.UDivMod
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

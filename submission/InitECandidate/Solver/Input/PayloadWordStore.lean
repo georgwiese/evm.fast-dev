@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.PayloadTransactionsProgram
+import InitECandidate.Solver.PanControl
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

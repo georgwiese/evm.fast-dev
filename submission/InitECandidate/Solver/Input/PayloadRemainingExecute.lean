@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.PayloadRemainingReads
+import InitECandidate.Solver.Input.RawScalar
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

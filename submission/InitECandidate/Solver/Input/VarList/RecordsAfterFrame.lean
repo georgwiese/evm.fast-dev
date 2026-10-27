@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.VarList.RecordsFrame
+import InitECandidate.Solver.WitnessRadix.StoreWord
 
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack PanSemStateFiniteExact
@@ -28,6 +29,19 @@ theorem Records.of_after (source target : PanSemStateFiniteExact 64 Guest.HostMe
     rw [plan.length_nat index planInside,arrayEq]
     omega
 
+/-- A single earlier scalar store preserves every initialized record cell. -/
+theorem Records.store_before (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
+    (pointer array destination word : BitVec 64) (start length : Nat)
+    (records : Records source input pointer array start length) (before : destination.toNat < array.toNat) :
+    Records {source with memory := WitnessRadix.StoreWord.put source.memory destination word}
+      input pointer array start length := by
+  apply Records.of_after source _ input pointer array start length array.toNat records (Nat.le_refl _)
+  intro query after
+  have away : query ≠ destination := by intro same; rw [same] at after; omega
+  simp [WitnessRadix.StoreWord.put, away]
+
 end InitECandidate.Solver.Input.VarList
 
 #print axioms InitECandidate.Solver.Input.VarList.Records.of_after
+
+#print axioms InitECandidate.Solver.Input.VarList.Records.store_before

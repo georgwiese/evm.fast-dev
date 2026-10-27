@@ -74,16 +74,23 @@ Checked against the current Software AST:
   index812, 67 scalar declaration globals, heap=@base, scratch=2701127680 and
   frame_mem=2688618496. Entry.base comes from the actual source declaration
   frame. Every actual terminating source behavior reaches this computed prefix.
+- CurrentStartup now checks the actual closed startup/decoder/result-writer call
+  graph (46 helpers), preserving both arena globals on every outcome. Prefix
+  reconstructs the literal13initializer calls after mem_init and proves their
+  exact evaluation cut: each actual termination either stops inside that prefix
+  or reaches the real following main state with both initialized cursors retained.
+  This is not an initializer runtime bound or a proof that every input reaches
+  the suffix. Later decoder lexical scopes/host/heap facts remain to be joined.
 - Replacement implementation/closed proofs/generators/harness were removed
   earlier. Another 65 closed stale generated modules were removed after rebase.
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-main-memory-prefix-v1.log`, 708 jobs,
-permitted printed axioms only, 8.72 seconds, MaxRSS 1,353,688 KiB.
-Historical/current index: 7,809 modules /15,346 facts; 179 modules carry the
+Latest successful closure: `current-startup-decoder-globals-v1.log`, 343 jobs,
+permitted printed axioms only, 72.90 seconds, MaxRSS 1,536,032 KiB.
+Historical/current index: 7,859 modules /15,404 facts; 235 modules carry the
 current dependency reference. Incremental Solver/package policy passes at
-64,610 entries /2,480,511,183 bytes.
+64,662 entries /2,480,817,587 bytes.
 These checks are not full verification.
 
 ## Remaining plan
@@ -107,7 +114,9 @@ These checks are not full verification.
   proves every ordinary address is at least sourceBase and that scalar stores
   below it fail immediately; no whole-path unreachability is claimed yet.
   The initial arena cursors now follow from the real main/mem_init prefix.
-  Next transport those facts through actual startup/decoder calls and classify
+  Their transport through the13startup calls now has an exact whole-main cut.
+  Next retain out/z32/si/error lexical scopes through the actual decoder call,
+  derive normal startup host/heap facts, and classify
   scratch helper outcomes. NoReturn alone does not rule out covered terminal
   FFI outcomes, so do not discard later EVM/map obligations on that basis.
   AllocationArithmetic/AllocationNormal/AllocationCall/AllocationCallNormal now
@@ -132,7 +141,7 @@ These checks are not full verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with `/tmp/init-e-account-usage.py`. User means
-  account usage-limit resets. Last check: 5% weekly used, zero reset credits,
+  account usage-limit resets. Last check: 6% weekly used, zero reset credits,
   ordinary usage allowed.
 - One selected build at a time, two Lean slots, artifact cache disabled,
   **8 GiB whole-host used-memory stop guard**. Stop if disk exceeds 85%. Poll

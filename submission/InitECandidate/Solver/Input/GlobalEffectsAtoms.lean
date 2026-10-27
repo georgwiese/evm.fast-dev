@@ -46,6 +46,21 @@ theorem external (key : MlS) (code) (name : MlS) (configuration configurationLen
   rw [evaluateHOLFiniteState_extCall_source]
   repeat first | rfl | split
 
+/-- Shared loads into caller locals retain every global on all outcomes,
+including missing host bytes and terminal oracle replies. -/
+theorem shared_load (key : MlS) (code) (operator : OpSize) (name : MlS) (expression : ExpHOL 64) :
+    Preserves key code (.shMemLoad operator .local name expression) := by
+  classical
+  intro source installed
+  rw [evaluateHOLFiniteState_shMemLoad_source]
+  simp only [shMemLoadHOLFiniteExact]
+  repeat' first
+    | rfl
+    | unfold setKvarFfiHOLFinite
+    | unfold setKvarHOLFinite
+    | unfold setVarHOLFinite
+    | split
+
 end InitECandidate.Solver.Input.GlobalEffects
 
 #print axioms InitECandidate.Solver.Input.GlobalEffects.of_readonly
@@ -53,3 +68,4 @@ end InitECandidate.Solver.Input.GlobalEffects
 #print axioms InitECandidate.Solver.Input.GlobalEffects.store
 #print axioms InitECandidate.Solver.Input.GlobalEffects.shared_store
 #print axioms InitECandidate.Solver.Input.GlobalEffects.external
+#print axioms InitECandidate.Solver.Input.GlobalEffects.shared_load

@@ -1,0 +1,293 @@
+{
+  "source": "Guest/SoftwareAst.lean",
+  "source_sha256": "8e806c795bc4e0c3edc6d1475ad6e14b43c74cf69c71732133f2dda03d84721f",
+  "roots": [
+    "sha256_init",
+    "keccak_init",
+    "ssz_init",
+    "mpt_init",
+    "u256_ws_init",
+    "secp256k1_init",
+    "bn254_init",
+    "bls_precompiles_init",
+    "ripemd160_init",
+    "blake2_init",
+    "header_init",
+    "evm_init",
+    "fork_init"
+  ],
+  "extra_roots": [
+    "decode_host_input",
+    "serialize_result",
+    "output_write"
+  ],
+  "order": [
+    "trap_with",
+    "alloc",
+    "sha256_init",
+    "keccak_init",
+    "ssz_init",
+    "keccak_f1600",
+    "keccak_absorb_block",
+    "memcpy",
+    "memzero",
+    "keccak256",
+    "mpt_init",
+    "u256_ws_init",
+    "secp256k1_init",
+    "bn254_init",
+    "bls_consts_init",
+    "bls_lib_init",
+    "bls_precompiles_init",
+    "ripemd160_init",
+    "blake2_init",
+    "header_init",
+    "heap_mark",
+    "heap_release",
+    "evm_init",
+    "st_be32",
+    "bswap64",
+    "st_be64",
+    "addr_from_words",
+    "fork_init",
+    "ssz_fail",
+    "ssz_split_var_list",
+    "decode_bytes_list",
+    "ssz_check_offsets",
+    "udivmod",
+    "ssz_fixed_list_count",
+    "decode_payload",
+    "decode_requests",
+    "decode_stateless_input",
+    "input_blob",
+    "host_input_byte",
+    "host_input_le32",
+    "precheck_host_ssz_header",
+    "decode_host_input",
+    "st_le32",
+    "st_le64",
+    "serialize_result",
+    "output_write"
+  ],
+  "closure_functions": 46,
+  "syntax_constructors": {
+    "Prog.seq": 1890,
+    "Prog.shMemStore": 4,
+    "Prog.extCall": 1,
+    "Prog.raise": 2,
+    "Prog.dec": 141,
+    "Prog.ite": 47,
+    "Prog.call": 117,
+    "Prog.assign": 58,
+    "Prog.return": 56,
+    "Prog.store": 1627,
+    "Prog.while": 22,
+    "Prog.storeByte": 69,
+    "Prog.decCall": 39,
+    "Prog.shMemLoad": 4
+  },
+  "global_assignment_names": {
+    "heap_ptr": 2
+  },
+  "acyclic_scan": true,
+  "lean_build_required": true,
+  "scope": "Generator/scanner output; not proof validation, timing or a whole-program bound.",
+  "generated_sources": [
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Code.lean",
+      "sha256": "e4c070f14089725c4e20214d25ac71cd308c280a31df543f3fe40203500711d0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Base.lean",
+      "sha256": "452c235a50ca8c68ef91d9bebf2440c693a0e2f74000f5590c6a6051b64d3cc5"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Effects.lean",
+      "sha256": "c79bec032d8b356df85340a67e695c1ffa9609a57be4edbcdc1f9beee5d9b715"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/TrapWith.lean",
+      "sha256": "020fb67eaea7f3a66a1f9e1f9ab19e25671a59817ff3f62c323626b468a9ca83"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Alloc.lean",
+      "sha256": "778e8e2b3b6ad8c3291119e517e4ce79bf3ab61a5798605ab516e102f7b78d71"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Sha256Init.lean",
+      "sha256": "71dd160ad0af23622b434ce0b6cf7f23ec860708d3ff242d5b8ee4833f891879"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/KeccakInit.lean",
+      "sha256": "b8f4a8203e2d7336a6fbbc99171c4e5f2b948c1e0b77d8ab941a193dbececc48"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/SszInit.lean",
+      "sha256": "4e016b82b06d5203f1f56e1871aa393269b78a9a61369222c8c795e2beecc13d"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/KeccakF1600.lean",
+      "sha256": "9d3d99d2e8d390969d267caff36fad207dc9c53aed41af7183fce8de96044925"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/KeccakAbsorbBlock.lean",
+      "sha256": "5b246dda12cea3c94b2311dbcbb2924b9dd2f6987a947ffd0cf4586546c99df4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Memcpy.lean",
+      "sha256": "3a863ec9c1274d71f72a51939630a118d94c0d2000ba37f4f1f0495b2782a90f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Memzero.lean",
+      "sha256": "6bf368f46d1ee23ce42b85ac10a3940229ec86f5082b7cb7cc7984a38beb0968"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Keccak256.lean",
+      "sha256": "9739152cf7e70dcb9569db0fa24a91b857427574a07619538a2199b75e978e54"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/MptInit.lean",
+      "sha256": "f66fe733dfae32d712399c3f97a6f4e5708d7b3269244d4bbedb1a322ca4124a"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/U256WsInit.lean",
+      "sha256": "baed0ece9e8606ef559b0bba360f00b76f6cf768dc34b4751b14c7e6e8664532"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Secp256k1Init.lean",
+      "sha256": "ac9d8032baf58c6785940d4542740b408e5053576adb61379e7e5105f78384de"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Bn254Init.lean",
+      "sha256": "f48270a6bd0d28e3a94ef8e7ab1a34c491f14f79f0c9543d00bf11c689b328a3"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/BlsConstsInit.lean",
+      "sha256": "bafd149b2dc1c5863fccb226c4df88055ea3f350d3abd0ee1d02c72b26d7c7dc"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/BlsLibInit.lean",
+      "sha256": "374472c180fc92a71d68fc65a8cc5b2b2dd3e6141f2158ffad9018ee68ddcbb8"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/BlsPrecompilesInit.lean",
+      "sha256": "16795ad25ca7258e23ce339ebb87cb56f6e9a2bd53a3f73407cbb08e89f87e5c"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Ripemd160Init.lean",
+      "sha256": "3b22cd59e5c346bd3f333c8331913b7824820f7cb4a24d3328ab10c4cedcc9e4"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Blake2Init.lean",
+      "sha256": "dc4cb445bc58b435476e3b55d0dfbdf9c6b86a02258c35cda8f9d8937c3d9574"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/HeaderInit.lean",
+      "sha256": "8c13eb086ca7474eef726f83b20c4c78926a96a34380803b1f79e1a8463d7211"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/HeapMark.lean",
+      "sha256": "c4d9a964d253e2cfcf72c0cbc696aa9ed173b451cf579e5180bb666c0ec1f68e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/HeapRelease.lean",
+      "sha256": "26e8781ef33bd86a89b087f480672df4cb76f8bef72d575bbc22cc92a5bc2464"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/EvmInit.lean",
+      "sha256": "5402a551c2cc7911efa85525620bc8f331f94ec346b960e726a3c435484d6d86"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/StBe32.lean",
+      "sha256": "62fe1a09fa251ff423edc6cf4cb1bc0daa9c836ebda736a58d23fd29336aefe8"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Bswap64.lean",
+      "sha256": "2bef45bf174794bfc896fa3eadedb3735c763f45c54f5af0165e4248100d0455"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/StBe64.lean",
+      "sha256": "96754ab636b1411a8f4a1c6bbe5b66dae5cb6962c460e594638b4e1e787bebfa"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/AddrFromWords.lean",
+      "sha256": "fb73d348229ea21e6563fdbd84285056f121cd0cd2f1f88f5cee9ce1692bdaa7"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/ForkInit.lean",
+      "sha256": "b05883c72d4e5f38143ce099a9d448b21daec8de1f376cdff4d3603dd6c9d1da"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/SszFail.lean",
+      "sha256": "84c9c27bd3960b2c9532d3b1226fbd81b1870c6bd5573317d43243a7f3070629"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/SszSplitVarList.lean",
+      "sha256": "4a5af6d6871f6f3dbe1ea0b9b11f54b07ee57c4f4cb5e3b0e88aa36afcf1b184"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/DecodeBytesList.lean",
+      "sha256": "8a1b9635da19d31d4ba10811d90b047f865f8cc820ff0f9677714fd3f2c76ccc"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/SszCheckOffsets.lean",
+      "sha256": "2dbcdab54754e14f03afa37acb1aa668340badcd5fe1bcfbcb67ef95dc33dfcd"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Udivmod.lean",
+      "sha256": "e606c31f39b3d6909b8b59d47d95a5763b4c9fe0f7a7946cddeb3ce66221fa41"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/SszFixedListCount.lean",
+      "sha256": "25418bd2af23e14471e5ffcb882eef3bf4b15db8b40c7287f1cded843fd513c3"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/DecodePayload.lean",
+      "sha256": "d1c9e9beffa9b216a8aec05be1f1f7010c5f66bdf7b2965fbce1ab632187bc7f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/DecodeRequests.lean",
+      "sha256": "1c8b648dcf36ad1653b89f92286f5372766407d9392f3faaff7413fd629e30e3"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/DecodeStatelessInput.lean",
+      "sha256": "68e6f74aa94c7974e56cae24c144e0fa488387fb0188146a9c91d95e9434ec91"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/InputBlob.lean",
+      "sha256": "53853ad5e877ac58e233e5fae7b71ecb4c5a9f4c893bc469f5874563814f609d"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/HostInputByte.lean",
+      "sha256": "9829fe5f5bf6d3046fd82cb7dc664e995020e1bf73c3bca6ef0248d1a3d46ab8"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/HostInputLe32.lean",
+      "sha256": "d3a2850c6fd0efc59c8ebebe0be57f307351ab7bb0cf3fa9909fb91a70d0afe8"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/PrecheckHostSszHeader.lean",
+      "sha256": "6440236c79b373e07bd92b09c916a57dc37e7e2c3fc59b1ea35e50a4f734c922"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/DecodeHostInput.lean",
+      "sha256": "607e87431208a960a3612bd2f5469305557b750094634dd3ca6cab9b14fd5571"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/StLe32.lean",
+      "sha256": "12291349ce6fb33d9cd16b828516399817b48b4b9d1807d492d783fa8ed33f09"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/StLe64.lean",
+      "sha256": "c0122541095b96176132d0a46e86a2ea9fee59329f790131173ee951eaa34123"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/SerializeResult.lean",
+      "sha256": "f63a11b8d62c497055fc127bf6943174a43542e4cfc38db1c4af4541f44c260d"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/OutputWrite.lean",
+      "sha256": "7ef1867a9c9962eb40a3e4a810a3d12e47d8e3e53b3a63aedc2d85e5b0c79ee8"
+    }
+  ]
+}

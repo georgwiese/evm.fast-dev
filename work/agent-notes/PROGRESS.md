@@ -4,6 +4,53 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual startup cut and all-outcome arena-global preservation
+
+CurrentStartup/Code checks real Software entries for a closed46-helper graph:
+all13startup roots, decode_host_input, serialize_result and output_write with
+their actual callees. The graph is acyclic; its preservation proofs use actual
+installed code rather than the scanner as evidence. Every helper outcome
+preserves both scratch_ptr and frame_mem_ptr, including malformed arguments,
+failed reads/stores/shapes, exceptions, terminal FFI and timeout. This supplies
+no iteration count, runtime bound, successful helper trace or mapped buffer.
+
+GlobalEffectsGlobalCall proves the missing generic case of calls assigning a
+different global; GlobalEffects.shared_load handles all actual local shared-load
+outcomes. GlobalEffectsLoop states its Nat induction import explicitly. The
+generator emits checked compositional proofs from actual Software syntax and
+records the source/hash/call closure and generated source hashes; Python output
+alone is not validation. Both arena keys remain untouched even when startup
+calls fail or change memory/FFI/other globals.
+
+CurrentStartup/Prefix reconstructs the literal13commands after real mem_init.
+append_execution is an exact all-clock evaluation identity, retaining stopped
+prefix outcomes/states and resuming only after real fallthrough. prefix_state
+transfers both initialized cursor cells, source domain and installed code.
+split_execution/reached join this to Main.reached_memory for arbitrary actual
+terminating source inputs, preserving the exact observation: either startup
+actually stops or its genuine following main state has ArenaState. No future
+initializer completion or input size/validity premise is supplied.
+
+Validation: current-startup-decoder-globals-v1.log PASS343jobs/permitted printed
+axioms;72.90s/MaxRSS1536032KiB, same8GiBwhole-hostguard/twoslots/artifactcachefalse.
+Earlier current-global-call-frame-v1 PASS266jobs, startup-globals-small-v1 PASS272,
+startup-globals-all-v1 PASS297. Failed startup-prefix diagnostic unindexed.
+Index7859historical-or-current modules/15404facts,235current-reference modules;
+inventory7894/replacement closure0/fixedlatestmain unchanged; incremental policy
+PASS64662entries/2480817587bytes. No fresh full fixed-policy/axiom audit/comparator
+replay, initializer quantitative budget or finite global K claimed.
+
+Next real out/z32/si/error lexical prefix and decoder success/failure join, plus
+normal-startup host and heap frontier facts. A skip sink inside lexical declarations
+restores those locals before an external continuation, so do not extend the simple
+sequence append identity across those scopes. Reuse CallPrefix.Execution/Reaches;
+its existing Stopped classification tracks only outcome/clock, so add a nonlocal
+frame classification before using it to transfer stopped-path globals/memory.
+Then actual scratch cursor transport/covered terminal-outcome classification;
+NoReturn alone does not discharge global covered paths or the target bound.
+Five unfinished pre-rebase RLP files remain preserved/untracked/unclaimed.
+Account6%weeklyused/0resetcredits/ordinary allowed. Push each commit to georg.
+
 ## Actual scratch clears/constructors and genuine main initialization
 
 ZeroProgram now names the real Software memzero. ZeroUnmapped proves its first
@@ -193,6 +240,7 @@ zero reset credits, ordinary usage allowed. Push every commit to georg.
 
 | Commit | Checked result | Remaining limit |
 | --- | --- | --- |
+| 587d4a239 | Genuine current main/mem_init prefix; conditional current scratch constructors cannot return. | Later arena transport and covered-outcome classification still needed at that checkpoint. |
 | ca9b24dc2 | Actual full input body/caller copied image and allocator room; current domain excludes scratch. | Main initialization and genuine scratch callers still needed at that checkpoint. |
 | b0ca826ff | Actual loop/suffix copied bytes and protected frame; real length read with arbitrary list sizes. | Whole allocator/input-body/caller join still needed at that checkpoint. |
 | 418e447ec | Whole current input-copy all-outcome source cost; stale dependencies removed and history separated from active plan. | Copy contents/caller reachability still needed at that checkpoint. |

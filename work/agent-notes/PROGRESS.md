@@ -4,6 +4,21 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual main hash cut retains the initialized arena values
+
+CurrentHash checks the closed31-helper htr_new_payload_request graph at the
+current Software declarations, with8existing startup helper proofs reused.
+Both arena globals are preserved on every outcome. HashPrefix reconstructs
+main's actual root allocation and request hash call, then splits every genuine
+source termination into earlier stops or the real post-hash verification suffix,
+retaining lexical execution, initialized arena values, outcome, clock and FFI
+observations. No successful hash/decoder/clock is assumed.
+
+Validation: current-hash-main-cut-v1.log PASS377jobs/permitted printed axioms,
+4.45s/MaxRSS1536144KiB;8GiBwhole-hostguard/twoslots/cachefalse. Index7966modules/
+15826facts; inventory8004/replacementclosure0/frozenmainunchanged; incremental
+policy PASS64773entries/2482043726bytes. No full verification/global K.
+
 ## Actual node encoder scratch boundary
 
 ScratchStore derives a below-domain error from an actual normal scratch

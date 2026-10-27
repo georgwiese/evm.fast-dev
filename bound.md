@@ -41,6 +41,11 @@ earlier speculative K guess, 10^14–10^18, is not proved or a target ceiling.
 
 Checked against the current Software AST:
 
+- The actual31-helper request-hash graph preserves both arena globals on
+  every outcome, reusing8startup helper proofs. HashPrefix refines the genuine
+  source observation through main's root allocation/hash call: earlier stop
+  alternatives or actual verification entry with initialized arenas retained.
+
 - The current `_node_rlp_fill` body cannot pass its first scratch store under
   the derived ordered arena bounds and actual ordinary memory domain. All body
   outcomes cost at most three source ticks, including allocator/trap failure

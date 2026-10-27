@@ -1,0 +1,173 @@
+{
+  "source": "Guest/SoftwareAst.lean",
+  "source_sha256": "8e806c795bc4e0c3edc6d1475ad6e14b43c74cf69c71732133f2dda03d84721f",
+  "roots": [
+    "htr_new_payload_request"
+  ],
+  "extra_roots": [],
+  "order": [
+    "trap_with",
+    "alloc",
+    "heap_mark",
+    "heap_release",
+    "ceil_log2",
+    "max",
+    "memcpy",
+    "memzero",
+    "sha256_pair",
+    "merkleize",
+    "st_le32",
+    "st_le64",
+    "mix_in_length",
+    "pack_bytes",
+    "htr_bytes_list",
+    "htr_bytes_vector",
+    "merkleize_progressive",
+    "htr_plist_chunks",
+    "htr_pbytes",
+    "htr_pcontainer",
+    "htr_u64_at",
+    "htr_withdrawal",
+    "htr_payload",
+    "htr_bdep",
+    "htr_bexit",
+    "htr_cons",
+    "htr_deposit",
+    "htr_wdreq",
+    "htr_request_list",
+    "htr_requests",
+    "htr_new_payload_request"
+  ],
+  "closure_functions": 31,
+  "syntax_constructors": {
+    "Prog.dec": 45,
+    "Prog.seq": 619,
+    "Prog.while": 10,
+    "Prog.assign": 470,
+    "Prog.return": 26,
+    "Prog.ite": 9,
+    "Prog.storeByte": 33,
+    "Prog.decCall": 39,
+    "Prog.call": 113
+  },
+  "global_assignment_names": {},
+  "reused_startup_functions": [
+    "alloc",
+    "heap_mark",
+    "heap_release",
+    "memcpy",
+    "memzero",
+    "st_le32",
+    "st_le64",
+    "trap_with"
+  ],
+  "acyclic_scan": true,
+  "lean_build_required": true,
+  "scope": "Generator/scanner output; not proof validation, timing or a whole-program bound.",
+  "generated_sources": [
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/Code.lean",
+      "sha256": "287cb170550306814ab06103cfaf1ed13394750d47fdf5ed7d99265a892ffb66"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/Base.lean",
+      "sha256": "f407e87ddc1be873d9b3cd0848d009fdfb272af7b41a5d131b5f3c95b497da7b"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/Effects.lean",
+      "sha256": "88765401ca780244794648916f471aef3ff2e01109b3fcb59c440720188fd63f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/CeilLog2.lean",
+      "sha256": "aaeb30c69ed5cca46b9373cedec64541ba4e304b9510ec36ba6a8fec8ccf292f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/Max.lean",
+      "sha256": "1d05c702c4ac399a2dce1cdd528bd70bd67051d644926a383ce1599044e5dbf1"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/Sha256Pair.lean",
+      "sha256": "5117afcd247dc3a2db79e25be4ded38011d76cce4c43cc93bdc6016e5ee8bf0e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/Merkleize.lean",
+      "sha256": "4bf87877b1379ca27ad40ec3695604d21f45791e3a822ff08627c087824498fa"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/MixInLength.lean",
+      "sha256": "ed57b09c9b226b987228f44f51aba246b31b47ef0f91f5fc087d3275a2f8e0d2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/PackBytes.lean",
+      "sha256": "934971ccc1f9c2ca7b4bfdcbec21aac81273f4fbadcb10299ba07fbfbaffee18"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrBytesList.lean",
+      "sha256": "70901159a5eef8a3e2923d8d710ebe1731e21ec4b397b4fde17c1f7cb402e326"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrBytesVector.lean",
+      "sha256": "a30602a8bdf37edc3b01c089e502422928e03e741660ca20eda8c1481e479c94"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/MerkleizeProgressive.lean",
+      "sha256": "0d2b4105d4b106ae80cf8ca991a98da6b36a56364f3245a63795cffc2ab6caf0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrPlistChunks.lean",
+      "sha256": "90b53ba680800d8348015efd8fe7bf68d88cc6bba64a0427cc64a216dba72e53"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrPbytes.lean",
+      "sha256": "230825fe13883f347db2ef7ec66fcb8c273b7eb1172024fc60ad8bc4577b5f67"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrPcontainer.lean",
+      "sha256": "f51aaafd380cf8e23026ee0b9ea3b3054d666abe5053db87ab68d9a8ee3b10d9"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrU64At.lean",
+      "sha256": "bddc29677e9785b80fe2671432de2308e84234df80a3e0b9ff042ba4fa2c1ba2"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrWithdrawal.lean",
+      "sha256": "342635ae7189e7ba58d359f82155eccecda1876647c00fa6b9b0cd843f204131"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrPayload.lean",
+      "sha256": "b4bbafbf313cf7ad885b3e1c550ca8d9cd65ab0e5c80e7d95f38a92526ae0e00"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrBdep.lean",
+      "sha256": "ee12cebcc96b455b7e4887d990c5d38e162f7e75f333e20ef7a524b9e95b1cb8"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrBexit.lean",
+      "sha256": "8525e0dddde254d1fb52046532feed54cbd97769ce848da98940f4366f12bac9"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrCons.lean",
+      "sha256": "7e054b1f3798215d5e9796600eab6b913c74d208c20631102caa0dff9460abbb"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrDeposit.lean",
+      "sha256": "52132356bc734c412d8026c4309dac42043e1feaacacfbfa536a141c2a605728"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrWdreq.lean",
+      "sha256": "28a5293ec00e0723e6c4c0088593000b6c1e445f95fa4b1c0a1bb17eb8dfe62f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrRequestList.lean",
+      "sha256": "713939057744d7764db5e5bb6686ad08758648ed0cc51f6e624a7cb07402825f"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrRequests.lean",
+      "sha256": "32a00134a0d839e2d931317365a4cdbcbd7868099d3792a73ceff503f9c3b2e7"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrNewPayloadRequest.lean",
+      "sha256": "74a138886ec375286571ce252b44f54e757a7bca27dc84b727e115cb5fd96318"
+    }
+  ]
+}

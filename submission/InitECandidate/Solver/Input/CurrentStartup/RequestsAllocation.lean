@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.RequestsValidated
 import InitECandidate.Solver.Input.Requests.LayoutProgram
 
 namespace InitECandidate.Solver.Input.CurrentStartup.RequestsAllocation
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -31,18 +32,18 @@ structure Result (input : Guest.InputBlob) (caller source current post : PanSemS
   cells : ∀ position < 5, current.memory (WitnessRadix.byteAddress 2701132528#64 (8 * position)) = .word (Requests.offsetWord input start position)
   gasCell : current.memory (record + 88#64) = .word gasWord
   returned : evaluateHOLFiniteState current Requests.afterAllocation = (some (.returned value), post)
-  endpoint : ∃ entry originalPost, RequestsEntry.Result input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
+  endpoint : ∃ entry originalPost, RequestsEntry.Result (decoderOrigin := decoderOrigin) input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
     WitnessRadix.BackingLayout.control current = WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post entry requestRecord 80#64) ∧
     current.clock ≤ entry.clock ∧ entry.clock - current.clock ≤ 13 ∧ LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller source current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
     ∃ payloadLength start size : Nat, ∃ value : ValueHOL 64,
-      Result input caller source current post pointer statelessRecord record gasWord requestRecord payloadLength start size value
+      Result (decoderOrigin := decoderOrigin) input caller source current post pointer statelessRecord record gasWord requestRecord payloadLength start size value
 
 /-- The real normal request allocation derives its actual80-byte room and
 exact heap update. Ordinary backing geometry is not an allocation-room premise. -/
-theorem validated (input : Guest.InputBlob) (actual : RequestsValidated.Reached input) : Reached input := by
+theorem validated (input : Guest.InputBlob) (actual : RequestsValidated.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨caller, source, post, pointer, statelessRecord, record, gasWord, payloadLength, start, size, value, data⟩ := actual
   let actions : List CallPrefix.Action := [.scoped (ofString "rq") .one (Code.name .alloc) [.const 80#64]]
   have shape : Requests.afterOffsets = CallPrefix.program actions Requests.afterAllocation := by
@@ -98,10 +99,10 @@ theorem validated (input : Guest.InputBlob) (actual : RequestsValidated.Reached 
   · rw [stateEq]
     exact data.gasCell
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  validated input (RequestsValidated.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  validated input (RequestsValidated.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.RequestsAllocation
 

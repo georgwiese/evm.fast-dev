@@ -4,6 +4,7 @@ import InitECandidate.Solver.Input.PayloadTransactionStores
 import InitECandidate.Solver.Input.VarList.RecordsAfterFrame
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WithdrawalReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -24,11 +25,11 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   price : source.clock - current.clock ≤ 66
   clock : current.clock ≤ source.clock
   returned : evaluateHOLFiniteState current Payload.afterWithdrawals = (some (.returned value), post)
-  endpoint : PayloadEntry.Endpoint input post pointer record length value
+  endpoint : PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length value
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer record array count : BitVec 64, ∃ length start size : Nat, ∃ value : ValueHOL 64,
-    Result input source current post pointer record array count length start size value
+    Result (decoderOrigin := decoderOrigin) input source current post pointer record array count length start size value
 
 theorem fixed_code (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "ssz_fixed_list_count") = some (FixedList.formals, FixedList.body, .one) := by
@@ -46,7 +47,7 @@ theorem division_code (code) (installed : OriginalCode.Installed code) :
 
 /-- Store the actual transaction result and resume after the real withdrawal
 count call. Copied input and initialized transaction records remain available. -/
-theorem transaction (input : Guest.InputBlob) (actual : TransactionReturn.Reached input) : Reached input := by
+theorem transaction (input : Guest.InputBlob) (actual : TransactionReturn.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨caller, source, post, pointer, record, array, length, start, size, value, data⟩ := actual
   let records := VarList.decodedArray array size
@@ -120,8 +121,8 @@ theorem transaction (input : Guest.InputBlob) (actual : TransactionReturn.Reache
   · rw [memory]
     exact secondCell
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
-  transaction input (TransactionReturn.separated input word actual)
+theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=
+  transaction input (TransactionReturn.separated input actual)
 
 end InitECandidate.Solver.Input.CurrentStartup.WithdrawalReturn
 

@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.HashCountReturn
 import InitECandidate.Solver.Input.RequestRequestsProgram
 
 namespace InitECandidate.Solver.Input.CurrentStartup.RequestsEntry
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -29,7 +30,7 @@ structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFinit
       (Requests.values (pointer + BitVec.ofNat 64 start) (BitVec.ofNat 64 size)) = some (Requests.body, callee, .one) ∧
     evaluateHOLFiniteState caller Request.requestsCall = (some (.returned parentValue), parentPost)
   history : ∃ origin hashSource hashPost count parentValue first second,
-    HashCountReturn.Result input origin hashSource hashPost pointer statelessRecord record gasWord count payloadLength parentValue ∧
+    HashCountReturn.Result (decoderOrigin := decoderOrigin) input origin hashSource hashPost pointer statelessRecord record gasWord count payloadLength parentValue ∧
     evaluateHOLFiniteState caller Request.requestsCall = (some (.returned parentValue), hashPost) ∧
     evaluateHOLFiniteState hashSource Request.hashPointerStore = (none, first) ∧
     evaluateHOLFiniteState first Request.hashCountStore = (none, second) ∧
@@ -37,12 +38,12 @@ structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFinit
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller entry post, ∃ pointer statelessRecord record gasWord : BitVec 64, ∃ payloadLength start size : Nat, ∃ value : ValueHOL 64,
-    Result input caller entry post pointer statelessRecord record gasWord payloadLength start size value
+    Result (decoderOrigin := decoderOrigin) input caller entry post pointer statelessRecord record gasWord payloadLength start size value
 
 /-- Actual hash metadata stores then the real request decoder and its passing
 length guard. Input containment, allocation frontier and gas protection derive
 from the already reached request caller and its original validated offsets. -/
-theorem hashes (input : Guest.InputBlob) (actual : HashCountReturn.Reached input) : Reached input := by
+theorem hashes (input : Guest.InputBlob) (actual : HashCountReturn.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨origin, source, post, pointer, statelessRecord, record, gasWord, count, payloadLength, value, data⟩ := actual
   have context := data.context
@@ -117,10 +118,10 @@ theorem hashes (input : Guest.InputBlob) (actual : HashCountReturn.Reached input
       ⟨callee, post, value, rfl, args, called, callerRun⟩,
       ⟨origin, source, post, count, value, first, second, data, callerRun, firstRun, secondRun, thirdRun⟩⟩⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  hashes input (HashCountReturn.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  hashes input (HashCountReturn.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.RequestsEntry
 

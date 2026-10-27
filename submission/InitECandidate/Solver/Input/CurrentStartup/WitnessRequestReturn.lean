@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentStartup.WitnessSnapshot
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WitnessRequestReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -8,18 +9,18 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 including every intervening lexical restoration and the earlier rq store. -/
 structure Result (input : Guest.InputBlob) (caller source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer statelessRecord record gasWord requestRecord : BitVec 64) (payloadLength : Nat) (counts : Nat → BitVec 64) : Prop where
-  request : RequestCallerReturn.Result input caller source post pointer statelessRecord record gasWord requestRecord
+  request : RequestCallerReturn.Result (decoderOrigin := decoderOrigin) input caller source post pointer statelessRecord record gasWord requestRecord
     payloadLength counts (.val (.word statelessRecord))
-  header : WitnessHeadersReturn.Snapshot input post pointer statelessRecord record gasWord requestRecord payloadLength
+  header : WitnessHeadersReturn.Snapshot (decoderOrigin := decoderOrigin) input post pointer statelessRecord record gasWord requestRecord payloadLength
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller source post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
     ∃ payloadLength : Nat, ∃ counts : Nat → BitVec 64,
-      Result input caller source post pointer statelessRecord record gasWord requestRecord payloadLength counts
+      Result (decoderOrigin := decoderOrigin) input caller source post pointer statelessRecord record gasWord requestRecord payloadLength counts
 
 /-- Rewind the actual header/code/node calls, offset loads, validator and
 witness declarations to the same original request-caller execution. -/
-theorem headers (input : Guest.InputBlob) (actual : WitnessHeadersReturn.Reached input) : Reached input := by
+theorem headers (input : Guest.InputBlob) (actual : WitnessHeadersReturn.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨headerSource, ready, headerPost, pointer, statelessRecord, record, gasWord, requestRecord, nodes, codes, headerArray,
     payloadLength, nodeStart, nodeLength, codeStart, codeLength, start, length, data⟩ := actual
   obtain ⟨codeOrigin, codeData⟩ := data.origin
@@ -53,10 +54,10 @@ theorem headers (input : Guest.InputBlob) (actual : WitnessHeadersReturn.Reached
     ⟨requestData, ⟨headerSource, ready, headerPost, nodes, codes, headerArray, nodeStart, nodeLength, codeStart, codeLength,
       start, length, data, frame, clock⟩⟩⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  headers input (WitnessHeadersReturn.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  headers input (WitnessHeadersReturn.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.WitnessRequestReturn
 

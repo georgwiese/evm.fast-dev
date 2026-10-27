@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentStartup.WitnessNodesReturn
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WitnessCodesReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -29,19 +30,19 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   price : source.clock - current.clock ≤ 2 * (length / 4) + 3
   clock : current.clock ≤ source.clock
   returned : evaluateHOLFiniteState current Witness.headerCall = (some (.returned value), post)
-  origin : ∃ original originalPost, WitnessNodesReturn.Result input original source originalPost
+  origin : ∃ original originalPost, WitnessNodesReturn.Result (decoderOrigin := decoderOrigin) input original source originalPost
     pointer statelessRecord record gasWord requestRecord nodes payloadLength nodeStart nodeLength value ∧
     originalPost = restore source "cd" post
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer statelessRecord record gasWord requestRecord nodes codes : BitVec 64,
     ∃ payloadLength nodeStart nodeLength start length : Nat, ∃ value : ValueHOL 64,
-      Result input source current post pointer statelessRecord record gasWord requestRecord nodes codes
+      Result (decoderOrigin := decoderOrigin) input source current post pointer statelessRecord record gasWord requestRecord nodes codes
         payloadLength nodeStart nodeLength start length value
 
 /-- The second genuine witness-list call and both si stores, preserving the
 previous node records and deriving the65536-byte code-item limit. -/
-theorem nodes (input : Guest.InputBlob) (actual : WitnessNodesReturn.Reached input) : Reached input := by
+theorem nodes (input : Guest.InputBlob) (actual : WitnessNodesReturn.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨original, source, post, pointer, statelessRecord, record, gasWord, requestRecord, nodeArray, payloadLength,
     nodeStart, nodeLength, value, data⟩ := actual
@@ -121,10 +122,10 @@ theorem nodes (input : Guest.InputBlob) (actual : WitnessNodesReturn.Reached inp
       (fun query before firstAway secondAway => (frame query firstAway secondAway).trans (memory query before)),
       price, forward, run, ⟨original, post, data, endpoint⟩⟩⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  nodes input (WitnessNodesReturn.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  nodes input (WitnessNodesReturn.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.WitnessCodesReturn
 

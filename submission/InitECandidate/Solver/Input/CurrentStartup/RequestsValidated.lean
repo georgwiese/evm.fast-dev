@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.RequestsEntry
 import InitECandidate.Solver.Input.Requests.OffsetsTrace
 
 namespace InitECandidate.Solver.Input.CurrentStartup.RequestsValidated
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -24,17 +25,17 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   cells : ∀ position < 5, current.memory (WitnessRadix.byteAddress 2701132528#64 (8 * position)) = .word (Requests.offsetWord input start position)
   gasCell : current.memory (record + 88#64) = .word gasWord
   returned : evaluateHOLFiniteState current Requests.afterOffsets = (some (.returned value), post)
-  endpoint : ∃ entry originalPost, RequestsEntry.Result input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
+  endpoint : ∃ entry originalPost, RequestsEntry.Result (decoderOrigin := decoderOrigin) input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
     WitnessRadix.BackingLayout.control current = WitnessRadix.BackingLayout.control entry ∧
     current.clock ≤ entry.clock ∧ entry.clock - current.clock ≤ 12 ∧ LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer statelessRecord record gasWord : BitVec 64, ∃ payloadLength start size : Nat, ∃ value : ValueHOL 64,
-    Result input caller current post pointer statelessRecord record gasWord payloadLength start size value
+    Result (decoderOrigin := decoderOrigin) input caller current post pointer statelessRecord record gasWord payloadLength start size value
 
 /-- The actual five-offset validator derives its real first offset and all
 range/order guards. Its earlier workspace writes preserve the payload gas cell. -/
-theorem entry (input : Guest.InputBlob) (actual : RequestsEntry.Reached input) : Reached input := by
+theorem entry (input : Guest.InputBlob) (actual : RequestsEntry.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨caller, source, post, pointer, statelessRecord, record, gasWord, payloadLength, start, size, value, data⟩ := actual
   have context := data.context
   have sourceWorkspace : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)) := by
@@ -96,10 +97,10 @@ theorem entry (input : Guest.InputBlob) (actual : RequestsEntry.Reached input) :
         data.inside, data.minimum, first, valid, cells, gasFrame.trans sourceGas, remaining,
         source, post, data, control, forward, price, by rw [restored]; rfl, by rw [restored]; rfl⟩⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  entry input (RequestsEntry.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  entry input (RequestsEntry.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.RequestsValidated
 

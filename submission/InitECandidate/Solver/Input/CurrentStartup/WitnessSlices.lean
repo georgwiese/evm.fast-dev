@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.WitnessLoaded
 import InitECandidate.Solver.Input.Witness.OffsetValues
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WitnessSlices
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
@@ -9,7 +10,7 @@ open Flapjack.Basis.Pure.MlString
 its literal node-list ABI, before any successful list decode is assumed. -/
 theorem node_arguments (input : Guest.InputBlob) (source current post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer statelessRecord record gasWord requestRecord : BitVec 64) (payloadLength : Nat) (value : ValueHOL 64)
-    (data : WitnessLoaded.Result input source current post pointer statelessRecord record gasWord requestRecord payloadLength value) :
+    (data : WitnessLoaded.Result (decoderOrigin := decoderOrigin) input source current post pointer statelessRecord record gasWord requestRecord payloadLength value) :
     let start := 2 + Guest.GasLimit.le32 input 6
     let middle := Witness.offsetNat input start 1
     start + 12 + (middle - 12) ≤ input.length % 2^64 ∧

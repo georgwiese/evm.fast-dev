@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.RequestsReturned
 import InitECandidate.Solver.Input.CallResume
 
 namespace InitECandidate.Solver.Input.CurrentStartup.RequestCallerReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -17,7 +18,7 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   requestRoom : requestRecord.toNat + 80 ≤ 2952790016
   heap : NormalHeapEffects.AtLeast (requestRecord.toNat + 80) current
   decoded : ∃ entry bodyPost start size,
-    RequestsReturned.Result input caller entry bodyPost pointer statelessRecord record gasWord requestRecord payloadLength start size counts ∧
+    RequestsReturned.Result (decoderOrigin := decoderOrigin) input caller entry bodyPost pointer statelessRecord record gasWord requestRecord payloadLength start size counts ∧
       current = CallNormal.continuationEntry caller bodyPost "rq" (.val (.word requestRecord))
   cells : ∀ index < 5, current.memory (requestRecord + BitVec.ofNat 64 (16 * index + 8)) = .word (counts index)
   locals : current.locals = caller.locals.update (ofString "rq", .val (.word requestRecord))
@@ -26,11 +27,11 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
     ∃ payloadLength : Nat, ∃ counts : Nat → BitVec 64, ∃ value : ValueHOL 64,
-      Result input caller current post pointer statelessRecord record gasWord requestRecord payloadLength counts value
+      Result (decoderOrigin := decoderOrigin) input caller current post pointer statelessRecord record gasWord requestRecord payloadLength counts value
 
 /-- Rejoin the complete normally returned request decoder to its genuine
 caller continuation, deriving every retained state field from that execution. -/
-theorem requests (input : Guest.InputBlob) (actual : RequestsReturned.Reached input) : Reached input := by
+theorem requests (input : Guest.InputBlob) (actual : RequestsReturned.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨caller, entry, bodyPost, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, start, size, counts, data⟩ := actual
   have original := data.origin
@@ -98,10 +99,10 @@ theorem requests (input : Guest.InputBlob) (actual : RequestsReturned.Reached in
   change (caller.locals.update (ofString "rq", .val (.word requestRecord))).lookup (ofString "rq") = _
   simp [HolFiniteMapExact.update, FUPDATE]
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  requests input (RequestsReturned.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  requests input (RequestsReturned.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.RequestCallerReturn
 

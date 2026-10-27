@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.RequestCallerReturn
 import InitECandidate.Solver.Input.Witness.PrefixTrace
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WitnessEntry
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -27,17 +28,17 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   endpoint : ∃ callerPost, evaluateHOLFiniteState source Witness.prefixBody = (some (.returned value), callerPost) ∧
     callerPost.clock = post.clock ∧ LocalEffects.erase callerPost = LocalEffects.erase post
   origin : ∃ caller previous previousPost counts,
-    RequestCallerReturn.Result input caller previous previousPost pointer statelessRecord record gasWord requestRecord payloadLength counts value ∧
+    RequestCallerReturn.Result (decoderOrigin := decoderOrigin) input caller previous previousPost pointer statelessRecord record gasWord requestRecord payloadLength counts value ∧
     source = {previous with memory := WitnessRadix.StoreWord.put previous.memory (statelessRecord + 32#64) requestRecord}
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
     ∃ payloadLength : Nat, ∃ value : ValueHOL 64,
-      Result input source current post pointer statelessRecord record gasWord requestRecord payloadLength value
+      Result (decoderOrigin := decoderOrigin) input source current post pointer statelessRecord record gasWord requestRecord payloadLength value
 
 /-- The actual returned request caller derives the witness's real12-byte
 minimum, pointer and contained length. No future offset/list success is added. -/
-theorem requests (input : Guest.InputBlob) (actual : RequestCallerReturn.Reached input) : Reached input := by
+theorem requests (input : Guest.InputBlob) (actual : RequestCallerReturn.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨caller, source, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, counts, value, data⟩ := actual
   have context := data.context
@@ -81,10 +82,10 @@ theorem requests (input : Guest.InputBlob) (actual : RequestCallerReturn.Reached
     · rw [restored]
       rfl
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  requests input (RequestCallerReturn.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  requests input (RequestCallerReturn.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.WitnessEntry
 

@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentStartup.WitnessCodesReturn
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WitnessHeadersReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -31,18 +32,18 @@ structure Result (input : Guest.InputBlob) (source ready post : PanSemStateFinit
   price : source.clock - post.clock ≤ 2 * (length / 4) + 3
   clock : post.clock ≤ source.clock
   returned : evaluateHOLFiniteState source Witness.headerCall = (some (.returned (.val (.word statelessRecord))), post)
-  origin : ∃ original, WitnessCodesReturn.Result input original source post pointer statelessRecord record gasWord requestRecord nodes codes
+  origin : ∃ original, WitnessCodesReturn.Result (decoderOrigin := decoderOrigin) input original source post pointer statelessRecord record gasWord requestRecord nodes codes
     payloadLength nodeStart nodeLength codeStart codeLength (.val (.word statelessRecord))
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source ready post, ∃ pointer statelessRecord record gasWord requestRecord nodes codes headers : BitVec 64,
     ∃ payloadLength nodeStart nodeLength codeStart codeLength start length : Nat,
-      Result input source ready post pointer statelessRecord record gasWord requestRecord nodes codes headers
+      Result (decoderOrigin := decoderOrigin) input source ready post pointer statelessRecord record gasWord requestRecord nodes codes headers
         payloadLength nodeStart nodeLength codeStart codeLength start length
 
 /-- The final witness list and both real output stores return the actual si
 record. All three physical record arrays and their limits survive that return. -/
-theorem codes (input : Guest.InputBlob) (actual : WitnessCodesReturn.Reached input) : Reached input := by
+theorem codes (input : Guest.InputBlob) (actual : WitnessCodesReturn.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨original, source, post, pointer, statelessRecord, record, gasWord, requestRecord, nodeArray, codeArray, payloadLength,
     nodeStart, nodeLength, codeStart, codeLength, value, data⟩ := actual
@@ -159,10 +160,10 @@ theorem codes (input : Guest.InputBlob) (actual : WitnessCodesReturn.Reached inp
   · rw [← valueEq]
     exact ⟨original, data⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  codes input (WitnessCodesReturn.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  codes input (WitnessCodesReturn.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.WitnessHeadersReturn
 

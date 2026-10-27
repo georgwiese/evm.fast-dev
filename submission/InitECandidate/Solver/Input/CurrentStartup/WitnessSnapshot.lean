@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentStartup.WitnessHeadersReturn
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WitnessHeadersReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
 /-- The checked witness arrays at a particular physical post-state. A caller
@@ -9,15 +10,15 @@ def Snapshot (input : Guest.InputBlob) (post : PanSemStateFiniteExact 64 Guest.H
     (pointer statelessRecord record gasWord requestRecord : BitVec 64) (payloadLength : Nat) : Prop :=
   ∃ headerSource ready headerPost, ∃ nodes codes headers : BitVec 64,
     ∃ nodeStart nodeLength codeStart codeLength start length : Nat,
-      Result input headerSource ready headerPost pointer statelessRecord record gasWord requestRecord nodes codes headers
+      Result (decoderOrigin := decoderOrigin) input headerSource ready headerPost pointer statelessRecord record gasWord requestRecord nodes codes headers
         payloadLength nodeStart nodeLength codeStart codeLength start length ∧
       LocalEffects.erase post = LocalEffects.erase headerPost ∧ post.clock = headerPost.clock
 
 theorem Snapshot.of_frame {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer statelessRecord record gasWord requestRecord : BitVec 64} {payloadLength : Nat}
-    (actual : Snapshot input source pointer statelessRecord record gasWord requestRecord payloadLength)
+    (actual : Snapshot (decoderOrigin := decoderOrigin) input source pointer statelessRecord record gasWord requestRecord payloadLength)
     (frame : LocalEffects.erase target = LocalEffects.erase source) (clock : target.clock = source.clock) :
-    Snapshot input target pointer statelessRecord record gasWord requestRecord payloadLength := by
+    Snapshot (decoderOrigin := decoderOrigin) input target pointer statelessRecord record gasWord requestRecord payloadLength := by
   obtain ⟨headerSource, ready, headerPost, nodes, codes, headers, nodeStart, nodeLength, codeStart, codeLength,
     start, length, data, beforeFrame, beforeClock⟩ := actual
   exact ⟨headerSource, ready, headerPost, nodes, codes, headers, nodeStart, nodeLength, codeStart, codeLength,

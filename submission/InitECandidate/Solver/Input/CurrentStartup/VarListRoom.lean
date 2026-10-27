@@ -4,6 +4,7 @@ import InitECandidate.Solver.Input.VarList.NormalEntry
 import InitECandidate.Solver.Input.VarList.EncodedCount
 
 namespace InitECandidate.Solver.Input.CurrentStartup.VarListRoom
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -31,7 +32,7 @@ theorem returned_room (input : Guest.InputBlob) (source post : PanSemStateFinite
 
 /-- Apply allocation inversion at the genuine main-derived transaction
 callee. Nonempty room is bounded by the real current allocator ceiling. -/
-theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached input) :
+theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached (decoderOrigin := decoderOrigin) input) :
     ∃ record : BitVec 64, ∃ start length : Nat,
       start = 62 + Guest.GasLimit.le32 input 566 ∧ length = Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566 ∧
       ((length = 0) ∨ ∃ array : BitVec 64,

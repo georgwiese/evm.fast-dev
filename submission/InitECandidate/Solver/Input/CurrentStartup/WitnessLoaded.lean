@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.WitnessValidated
 import InitECandidate.Solver.Input.Witness.LoadedOffsets
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WitnessLoaded
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -19,18 +20,18 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
     (Witness.offsetWord input (2 + Guest.GasLimit.le32 input 6)) index
   requestCell : current.memory (statelessRecord + 32#64) = .word requestRecord
   returned : evaluateHOLFiniteState current Witness.nodeCall = (some (.returned value), post)
-  endpoint : ∃ origin originalPost, WitnessValidated.Result input origin source originalPost
+  endpoint : ∃ origin originalPost, WitnessValidated.Result (decoderOrigin := decoderOrigin) input origin source originalPost
       pointer statelessRecord record gasWord requestRecord payloadLength value ∧
     LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
     ∃ payloadLength : Nat, ∃ value : ValueHOL 64,
-      Result input source current post pointer statelessRecord record gasWord requestRecord payloadLength value
+      Result (decoderOrigin := decoderOrigin) input source current post pointer statelessRecord record gasWord requestRecord payloadLength value
 
 /-- The real three readonly offset declarations resume the actual node-list
 call without spending a source tick or changing memory, heap, request or gas. -/
-theorem validated (input : Guest.InputBlob) (actual : WitnessValidated.Reached input) : Reached input := by
+theorem validated (input : Guest.InputBlob) (actual : WitnessValidated.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨origin, source, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, value, data⟩ := actual
   have context := data.context
   have mapped : ∀ position < 3, source.memaddrs (WitnessRadix.byteAddress 2701132528#64 (8 * position)) := by
@@ -64,10 +65,10 @@ theorem validated (input : Guest.InputBlob) (actual : WitnessValidated.Reached i
   · rw [endpoint]
     rfl
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  validated input (WitnessValidated.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  validated input (WitnessValidated.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.WitnessLoaded
 

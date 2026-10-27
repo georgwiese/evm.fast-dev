@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.PayloadGasReturned
 import InitECandidate.Solver.Input.CallResume
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -38,19 +39,19 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   locals : current.locals = caller.locals.update (ofString "pl", .val (.word record))
   returned : evaluateHOLFiniteState current Request.afterPayload = (some (.returned value), post)
   payload : ∃ entry bodyPost callee parentPost parentValue,
-    PayloadEntry.Result input entry bodyPost pointer length (.val (.word record)) ∧
+    PayloadEntry.Result (decoderOrigin := decoderOrigin) input entry bodyPost pointer length (.val (.word record)) ∧
     evaluateHOLFiniteState entry Payload.body = (some (.returned (.val (.word record))), bodyPost) ∧
-    PayloadEntry.Invocation input entry pointer length caller callee parentPost parentValue statelessRecord ∧
+    PayloadEntry.Invocation (decoderOrigin := decoderOrigin) input entry pointer length caller callee parentPost parentValue statelessRecord ∧
     current = CallNormal.continuationEntry caller bodyPost "pl" (.val (.word record))
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer statelessRecord record gasWord : BitVec 64, ∃ length : Nat, ∃ value : ValueHOL 64,
-    Result input caller current post pointer statelessRecord record gasWord length value
+    Result (decoderOrigin := decoderOrigin) input caller current post pointer statelessRecord record gasWord length value
 
 /-- Reinstall the real payload pointer in the actual request caller and
 resume its existing continuation. The two record allocations are disjoint. -/
-theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached input)
-    (gas : (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)).toNat ≤ 200000000) : Reached input := by
+theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached (decoderOrigin := decoderOrigin) input)
+    (gas : (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)).toNat ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨entry, bodyPost, pointer, record, length, originHeap, original, bodyRun, image, gasCell, heap⟩ :=
     PayloadGasReturned.complete input actual
@@ -59,9 +60,9 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
   obtain ⟨lengthBound, installed, shapes, domain, endian, entryImage, entryHeap, workspace, lower, aligned, room,
     p, n, extent, minimum, sliceUpper, sliceEq, afterRun, invocation⟩ := original
   obtain ⟨caller, callee, parentPost, value, statelessRecord, entryEq, statelessLower, statelessAligned,
-    statelessRoom, si, requestHeap, callerLocals, args, called, callerRun⟩ := invocation
-  have selected : PayloadEntry.Invocation input entry pointer length caller callee parentPost value statelessRecord :=
-    ⟨entryEq, statelessLower, statelessAligned, statelessRoom, si, requestHeap, callerLocals, args, called, callerRun⟩
+    statelessRoom, si, requestHeap, callerLocals, args, called, callerRun, rootFrame⟩ := invocation
+  have selected : PayloadEntry.Invocation (decoderOrigin := decoderOrigin) input entry pointer length caller callee parentPost value statelessRecord :=
+    ⟨entryEq, statelessLower, statelessAligned, statelessRoom, si, requestHeap, callerLocals, args, called, callerRun, rootFrame⟩
   have positiveRun := callerRun
   rw [Request.payload_call_shape] at positiveRun
   have positive := CallNormal.normal_clock caller parentPost (ofString "pl") .one (ofString "decode_payload")
@@ -222,11 +223,11 @@ theorem Context.bind_frame (input : Guest.InputBlob) (source target : PanSemStat
           simp only [List.mem_cons, List.not_mem_nil, or_false] at member
           rcases member with rfl | rfl | rfl <;> simp))⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input := by
-  obtain ⟨request, payload⟩ := CanonicalRequest.separated_offsets input word actual
-  exact withdrawal input (WithdrawalReturn.separated input word actual) (Payload.stored_gas_bound input request payload gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input := by
+  obtain ⟨request, payload⟩ := CanonicalRequest.separated_offsets input actual
+  exact withdrawal input (WithdrawalReturn.separated input actual) (Payload.stored_gas_bound input request payload gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn
 

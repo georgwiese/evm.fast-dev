@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.CanonicalRequest
 import InitECandidate.Solver.Input.PayloadCalleeNormal
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadEntry
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -31,7 +32,8 @@ def Invocation (input : Guest.InputBlob) (entry : PanSemStateFiniteExact 64 Gues
         some (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) ∧
       lookupCodeHOLFinite caller.code.lookup (ofString "decode_payload")
         (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) = some (Payload.body, callee, .one) ∧
-      evaluateHOLFiniteState caller Request.continuation = (some (.returned parentValue), parentPost)
+      evaluateHOLFiniteState caller Request.continuation = (some (.returned parentValue), parentPost) ∧
+      decoderOrigin.Frame parentPost pointer parentValue
 
 /-- Entry facts for the actual complete payload return, indexed by its states. -/
 def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -47,24 +49,24 @@ def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Gue
     length = Guest.GasLimit.le32 input 22 - 44 ∧
     evaluateHOLFiniteState entry Payload.afterGuard = (some (.returned returned), post) ∧
     ∃ caller callee parentPost parentValue, ∃ statelessRecord : BitVec 64,
-      Invocation input entry pointer length caller callee parentPost parentValue statelessRecord
+      Invocation (decoderOrigin := decoderOrigin) input entry pointer length caller callee parentPost parentValue statelessRecord
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ entry post, ∃ pointer : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,
-    Result input entry post pointer length returned
+    Result (decoderOrigin := decoderOrigin) input entry post pointer length returned
 
 /-- A later returned suffix has the same nonlocal result as the complete
 payload entry. This remembers the actual endpoint through lexical restoration. -/
 def Endpoint (input : Guest.InputBlob) (post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer record : BitVec 64) (length : Nat) (value : ValueHOL 64) : Prop :=
-  ∃ entry payloadPost, Result input entry payloadPost pointer length value ∧
+  ∃ entry payloadPost, Result (decoderOrigin := decoderOrigin) input entry payloadPost pointer length value ∧
     entry.globals.lookup (ofString "heap_ptr") = some (.val (.word record)) ∧ LocalEffects.erase payloadPost = LocalEffects.erase post ∧ payloadPost.clock = post.clock
 
 theorem Endpoint.of_frame (input : Guest.InputBlob) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer record : BitVec 64) (length : Nat) (value : ValueHOL 64)
-    (original : Endpoint input source pointer record length value)
+    (original : Endpoint (decoderOrigin := decoderOrigin) input source pointer record length value)
     (frame : LocalEffects.erase source = LocalEffects.erase target) (clock : source.clock = target.clock) :
-    Endpoint input target pointer record length value := by
+    Endpoint (decoderOrigin := decoderOrigin) input target pointer record length value := by
   obtain ⟨entry, post, actual, cell, originalFrame, originalClock⟩ := original
   exact ⟨entry, post, actual, cell, originalFrame.trans frame, originalClock.trans clock⟩
 
@@ -80,9 +82,9 @@ theorem original_code (code) (installed : OriginalCode.Installed code) :
 Its length guard derives the540-byte slice and602-byte encoded extent; copied
 bytes and allocator frontier survive the real offset writes and call entry. -/
 theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : RecordEntry.Reached input word) : Reached input := by
+    (actual : RecordEntry.Reached (decoderOrigin := decoderOrigin) input word) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨source, post, pointer, record, lengthBound, installed, shapes, domain, endian, image, heap,
-    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, si, np, nlen, extent, requestLower, requestUpper, outer, returned⟩ := actual
+    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, si, np, nlen, extent, requestLower, requestUpper, outer, rootFrame, returned⟩ := actual
   rcases Request.offsets_trace source post input pointer 2701132528#64 (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16))
     image extent np nlen workspace domain aligned (by decide) (by omega) (by decide)
     (by change 2701132528 + 64 ≤ pointer.toNat; omega)
@@ -158,13 +160,15 @@ theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
     have entryRecordHeap : NormalHeapEffects.AtLeast (record.toNat + 96) entry := by
       obtain ⟨cursor, cell, low, high, cursorAligned⟩ := recordHeap
       exact ⟨cursor, (congrArg (fun globals => globals.lookup (ofString "heap_ptr")) nextGlobals).trans cell, low, high, cursorAligned⟩
+    have parentFrame : decoderOrigin.Frame inner pointer (.val (.word word)) := rootFrame.of_frame
+      (by rw [restored]; rfl) (by rw [restored]; rfl)
     refine ⟨entry, bodyPost, pointer, Guest.GasLimit.le32 input 22 - 44, value, lengthBound, entryCode, entryShapes,
       nextDomain.trans domain, nextEndian.trans endian, entryBytes, entryHeap, ?_, lower, aligned, room, pCell, lenCell,
-      (by omega), (by omega), sliceUpper, rfl, after, next, callee, inner, .val (.word word), record, rfl, recordLower, recordAligned, recordRoom, nextSi, entryRecordHeap, callerLocals, args, called, callerRun⟩
+      (by omega), (by omega), sliceUpper, rfl, after, next, callee, inner, .val (.word word), record, rfl, recordLower, recordAligned, recordRoom, nextSi, entryRecordHeap, callerLocals, args, called, callerRun, parentFrame⟩
     exact (congrArg (fun globals => globals.lookup (ofString "ssz_offs")) nextGlobals).trans workspace
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
-  request_reached input word (RecordEntry.separated input word actual)
+theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=
+  request_reached input decoderOrigin.word (RecordEntry.separated input actual)
 
 end InitECandidate.Solver.Input.CurrentStartup.PayloadEntry
 

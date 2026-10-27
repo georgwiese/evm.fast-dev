@@ -1,0 +1,227 @@
+{
+  "models": {
+    "VarListData": [
+      "Reached",
+      "Result"
+    ],
+    "RequestsValidated": [
+      "Reached",
+      "Result"
+    ],
+    "WitnessHeadersReturn": [
+      "Reached",
+      "Result",
+      "Snapshot"
+    ],
+    "WitnessNodesReturn": [
+      "Reached",
+      "Result"
+    ],
+    "HashMetadataReturned": [
+      "Reached",
+      "Result"
+    ],
+    "WitnessValidated": [
+      "Reached",
+      "Result"
+    ],
+    "WitnessRequestReturn": [
+      "Reached",
+      "Result"
+    ],
+    "RequestsEntry": [
+      "Reached",
+      "Result"
+    ],
+    "PayloadValidated": [
+      "Reached"
+    ],
+    "WitnessCodesReturn": [
+      "Reached",
+      "Result"
+    ],
+    "RecordEntry": [
+      "Reached"
+    ],
+    "PayloadCallerReturn": [
+      "Reached",
+      "Result"
+    ],
+    "PayloadExtra": [
+      "Reached"
+    ],
+    "PayloadWorkspace": [
+      "Reached"
+    ],
+    "RequestsReturned": [
+      "Reached",
+      "Result"
+    ],
+    "RequestsAllocation": [
+      "Reached",
+      "Result"
+    ],
+    "PayloadCallReturned": [
+      "Reached",
+      "Result"
+    ],
+    "RequestsCountsEntry": [
+      "Reached",
+      "Result"
+    ],
+    "RequestCallReturned": [
+      "Reached",
+      "Result"
+    ],
+    "WithdrawalReturn": [
+      "Reached",
+      "Result"
+    ],
+    "HashCountReturn": [
+      "Reached",
+      "Result"
+    ],
+    "TransactionReturn": [
+      "Reached",
+      "Result"
+    ],
+    "PayloadSuffixReturned": [
+      "Reached",
+      "Result"
+    ],
+    "WitnessEntry": [
+      "Reached",
+      "Result"
+    ],
+    "RequestCallerReturn": [
+      "Reached",
+      "Result"
+    ],
+    "WitnessLoaded": [
+      "Reached",
+      "Result"
+    ],
+    "PayloadEntry": [
+      "Endpoint",
+      "Invocation",
+      "Reached",
+      "Result"
+    ],
+    "TransactionEntry": [
+      "Reached"
+    ]
+  },
+  "root_functions": [
+    "CanonicalRequest.gas_field",
+    "CanonicalRequest.separated_offsets",
+    "HashCountReturn.separated",
+    "HashMetadataReturned.separated",
+    "PayloadCallReturned.separated",
+    "PayloadCallerReturn.separated",
+    "PayloadEntry.separated",
+    "PayloadExtra.separated",
+    "PayloadGasReturned.separated",
+    "PayloadGasReturned.separated_complete",
+    "PayloadSuffixReturned.separated",
+    "PayloadValidated.separated",
+    "PayloadWorkspace.separated",
+    "RecordEntry.separated",
+    "RequestCallReturned.separated",
+    "RequestCallerReturn.separated",
+    "RequestsAllocation.separated",
+    "RequestsCountsEntry.separated",
+    "RequestsEntry.separated",
+    "RequestsReturned.separated",
+    "RequestsValidated.separated",
+    "TransactionEntry.separated",
+    "TransactionReturn.separated",
+    "VarListData.separated",
+    "WithdrawalReturn.separated",
+    "WitnessCodesReturn.separated",
+    "WitnessEntry.separated",
+    "WitnessHeadersReturn.separated",
+    "WitnessLoaded.separated",
+    "WitnessNodesReturn.separated",
+    "WitnessRequestReturn.separated",
+    "WitnessValidated.separated"
+  ],
+  "changed": [
+    "VarListData.lean",
+    "RequestsValidated.lean",
+    "WitnessSnapshot.lean",
+    "WitnessNodesReturn.lean",
+    "VarListRoom.lean",
+    "HashMetadataReturned.lean",
+    "WitnessValidated.lean",
+    "WitnessRequestReturn.lean",
+    "CanonicalRequest.lean",
+    "WitnessSlices.lean",
+    "WitnessHeadersReturn.lean",
+    "RequestsEntry.lean",
+    "PayloadValidated.lean",
+    "WitnessCodesReturn.lean",
+    "RecordEntry.lean",
+    "PayloadCallerReturn.lean",
+    "PayloadExtra.lean",
+    "PayloadWorkspace.lean",
+    "RequestsReturned.lean",
+    "RequestsAllocation.lean",
+    "PayloadCallReturned.lean",
+    "RequestsCountsEntry.lean",
+    "RequestCallReturned.lean",
+    "WithdrawalReturn.lean",
+    "HashCountReturn.lean",
+    "TransactionReturn.lean",
+    "PayloadSuffixReturned.lean",
+    "WitnessEntry.lean",
+    "RequestCallerReturn.lean",
+    "WitnessLoaded.lean",
+    "PayloadEntry.lean",
+    "TransactionEntry.lean",
+    "PayloadGasReturned.lean"
+  ],
+  "scope": "Implicit decoder-origin indices on phase models; generic context/byte-list/math helpers remain origin-independent. Lean builds required.",
+  "referenceMain": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+  "baselineCommit": "691e2531f",
+  "sourceHashes": {
+    "submission/InitECandidate/Solver/Input/CurrentStartup/CanonicalRequest.lean": "952eeb39428a120f45cf7bdc31d4e823fe724fd48a84e0ad123f1017fa979e62",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/DecoderOrigin.lean": "c9a28c7152637838b7e050d47e7db7f0732718d6ab09495af1ee7d093d685150",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/HashCountReturn.lean": "d5d10cd334a0dc65ac97a80476c865749c0a1dd0607b5c27dbf0f4e1ad0a42cb",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/HashMetadataReturned.lean": "c13e97b0d3454de928fd1545b23d9afe438fc0ed1bc0b67530e753fa92b95533",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/MainDecodedRoot.lean": "3f8e78f812b06c635d61d221578d51f8109781447292fe894a2672bfaad8013e",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/MainDecodedState.lean": "40156d7ec79d0b78ebb50e5f06a9f3da309d22d9aaf55bf1e1f787ae10b10abc",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadCallReturned.lean": "259504169bde328c248275a6b550b1fa815906ec9296dfc95970b75e0026958d",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadCallerReturn.lean": "c5403c9ec328ff8d14b50e59a1f3871271679fda2bd0bca564bc90c3be2c326b",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadEntry.lean": "74fae4b4f823946e0f9974ff88da4c7c2099b72b8eabd560bc26936f4caea9e2",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadExtra.lean": "63e03843a43d98fc03d8cc9fc0a89465ad3a0c540cb3ffeeb320193c4a2f14dd",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadGasReturned.lean": "47369de7549cb0b88be4cd995a1743f8cb7fffc245c0420c20fb20bae7e29130",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadSuffixReturned.lean": "94202ca90f8ad57839cfbad1777556f27fea567f16672a951f1d45d9d0790827",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadValidated.lean": "31f64b6461f919c54fd04eb5d2a3744b756f14bc039a79100d20264cfe031bca",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadWorkspace.lean": "ecb3db26a037a302e753397402c3d6ad2901efb9176bf369645dee2d978601cc",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RecordEntry.lean": "b71064351919b31357225b090cbcace2ecb89485080622e9569941a43dc44ae8",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestCallReturned.lean": "3219cd39c3761f7b407f65449c635fc5f363924ff7f970e803be712b316f88b1",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestCallerReturn.lean": "d9cfd7780efe2bd5128d6ba92ec3414854e6f45d3d2fa5601b3debf235294a5b",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsAllocation.lean": "ee3773a879c2a25f1986494a88c5839743adbccfabda263f7925182af498f63f",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsCountsEntry.lean": "abafb25770b9f2e7f041d4c66b63adc4d740f45effc95adf7f0855870cc37b77",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsEntry.lean": "6b320b9e08d11ecc43286774153c1950177a45d9ad776a5a778dbf10ca4c10c9",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsReturned.lean": "5fa0feacaa38b6ac7858514dea3f68bd18ada5086611df9970c478fcc97cba84",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsValidated.lean": "d3d3031288d8d920d6a4c9045005299545d2e268de65d0a1bd8e069617704b29",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/SeparatedInput.lean": "632fce70397c4db4500566671b9a6c35988ab05314be23cff91ad3f8a2695a9c",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/StatelessReturned.lean": "42ad3c9b6f0c048b46becbd0b416ec09e56d688d1424b19ba6b355c49b9dc4a2",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/TransactionEntry.lean": "fadad5783e2e69f119b25c8c59a7b301a3e52a15309134b0e344e991901355c6",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/TransactionReturn.lean": "7de4072876f2decf7c192a1cc7077ae7143c53cb92ef9b34278f15da21539950",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/VarListData.lean": "350d4a5cd1437a8bad75380af56d0e0d390e8e898eb53eecb4438e7b32da54df",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/VarListRoom.lean": "7d876a7ead8ec74145fc8e80b3650e602f2adc7061305b6979f341317c9fc602",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WithdrawalReturn.lean": "6588a470309b731fa1a1e7434ea990aea7a8a526d31cda60ad5450f481632edf",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessCodesReturn.lean": "7115b31a57467b4934d032fcd9e6ad11d6495b377ec379735ce4ca79edf0dfaf",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessEntry.lean": "72c9a77b2a0609024d403f779fd98998282b6c20d71764455d2b20f853575687",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessHeadersReturn.lean": "d9fefd77e3fee9f68ad81f60c4ca496b7daa0e033abdbb6382845a3f4cda176b",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessLoaded.lean": "1803bb6fdb4a970e3748a69b65aef23665a9ba1f849801baf91e1604d6869c1b",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessNodesReturn.lean": "4c3db07c00ca0aa92e7c98c4af385ecf10b99767d6b435686522671d53181386",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessRequestReturn.lean": "6d2d0bf83f6de7bab61622de868e25c1fd475251d7184c0a7e7aa3ee0e0e2d9a",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessSlices.lean": "4e80eb0bb240dd2b3b26df9f70b990e966fddc6c94820853477da84b709eaae1",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessSnapshot.lean": "a13c128d9628bd4ecb637c987df2181dfc116065c500f3281220ca9826e6842b",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessValidated.lean": "face6be457da13156670bf8b794530de4939e03587c6bb5801ea9bc02b9c06ee"
+  },
+  "validation": "current-main-decoded-state-v1.log;1456jobs;selected Lean build only"
+}

@@ -4,6 +4,35 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## A selected stateless run now supplies physical facts at actual main continuation
+
+DecoderOrigin fixes a particular entry/post/pointer/word; its Frame preserves the
+same original nonlocal state, value and clock. SeparatedInput.EntryReturn factors
+the original run prerequisites; RootRun is indexed by that exact origin, while
+StatelessRun remains an existential compatibility statement. stateless_run_root
+selects the actual stateless callee and relates its post-state to the same host
+call target. Root indices are implicit on phase models/endpoints, threaded from
+RecordEntry through PayloadEntry.Invocation and the existing actual return chain.
+Generic Context/byte-list/math helpers remain origin-independent. The old
+separated wrappers now take the selected RootRun; no arbitrary existential
+intermediate state is identified with a main endpoint.
+
+StatelessReturned.rooted transports the final witness snapshot to that same
+original stateless post-state; physical projects bounded physical gas, copied
+input, bounded heap and all3record arrays/headercount≤256. MainDecodedRoot selects
+the true run from an actual continuing main decoder action trace. MainDecodedState
+joins the physical snapshot to main's actual si binding/afterDecoder state and
+complete source observation; all earlier stopped alternatives and original FFI
+observations remain. This closes the witness/gas snapshot's decoder/main endpoint
+selection gap. Concrete SI field images and complete payload transaction-record
+lifetime still need materialization for actual hash/attempt arguments, followed
+by reachable runtime and target-step composition. No global finite K.
+
+Validation: current-main-decoded-state-v1.log PASS1456jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. The earlier rooted model closure passed1453jobs and
+selected stateless/root projections1455jobs. No full verification. Account19%
+weekly/0resetcredits/ordinaryallowed.
+
 ## Shared invocation descriptor keeps the selected caller explicit
 
 PayloadEntry.Invocation factors the existing caller/callee/parent-post/ownership/

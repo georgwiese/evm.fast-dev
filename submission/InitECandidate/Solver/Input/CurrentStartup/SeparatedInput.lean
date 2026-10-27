@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CurrentStartup.DecoderOrigin
 import InitECandidate.Solver.Input.CurrentStartup.CopiedHeap
 import InitECandidate.Solver.Input.CurrentStartup.StartupHeap
 import InitECandidate.Solver.Input.CurrentStartup.MainCopiedInput
@@ -8,8 +9,8 @@ open Flapjack.Basis.Pure.MlString
 
 /-- Actual stateless entry with the copied input strictly above the real
 64-byte SSZ offset workspace. This is geometry, not its later memory frame. -/
-def StatelessRun (input : Guest.InputBlob) (word : BitVec 64) : Prop :=
-  ∃ source target pointer,
+def EntryReturn (input : Guest.InputBlob) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer word : BitVec 64) : Prop :=
     input.length % 2^64 ≤ Guest.maxInputBytes ∧
     HostState input source ∧ HeapState source ∧
     Blob.InputBytes source input pointer (input.length % 2^64) ∧
@@ -22,6 +23,17 @@ def StatelessRun (input : Guest.InputBlob) (word : BitVec 64) : Prop :=
     NormalHeapEffects.AtLeast (pointer.toNat + input.length % 2^64 + 8) source ∧
     evaluateHOLFiniteState source (Code.body .decode_stateless_input) =
       (some (.returned (.val (.word word))), target)
+
+/-- Compatibility statement for callers which need only existence. -/
+def StatelessRun (input : Guest.InputBlob) (word : BitVec 64) : Prop :=
+  ∃ source target pointer, EntryReturn input source target pointer word
+
+/-- The same entry prerequisites at one particular actual decoder run. -/
+def RootRun (input : Guest.InputBlob) (origin : DecoderOrigin) : Prop :=
+  EntryReturn input origin.entry origin.post origin.pointer origin.word
+
+theorem RootRun.unroot {input : Guest.InputBlob} {origin : DecoderOrigin} (actual : RootRun input origin) :
+    StatelessRun input origin.word := ⟨origin.entry, origin.post, origin.pointer, actual⟩
 
 theorem setup_offsets (code) (installed : OriginalCode.Installed code) :
     GlobalEffects.Preserves (ofString "ssz_offs") code (CallPrefix.program DecoderPrefix.setupActions .skip) := by
@@ -41,11 +53,12 @@ theorem setup_offsets (code) (installed : OriginalCode.Installed code) :
 
 /-- Both the workspace cell and the input pointer lower bound come from
 real preceding execution; no disjointness premise is imposed. -/
-theorem stateless_run (input : Guest.InputBlob) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem stateless_run_root (input : Guest.InputBlob) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701134640 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64))) (word : BitVec 64)
     (actual : evaluateHOLFiniteState source (Code.body .decode_host_input) =
-      (some (.returned (.val (.word word))), target)) : StatelessRun input word := by
+      (some (.returned (.val (.word word))), target)) : ∃ origin : DecoderOrigin, RootRun input origin ∧ origin.word = word ∧
+      LocalEffects.erase target = LocalEffects.erase origin.post ∧ target.clock = origin.post.clock := by
   have cursor : HeapState source := by
     obtain ⟨pointer, cell, low, high, aligned⟩ := heap
     exact ⟨pointer, cell, high, aligned⟩
@@ -55,11 +68,26 @@ theorem stateless_run (input : Guest.InputBlob) (source target : PanSemStateFini
   obtain ⟨old, oldCell, low, high, aligned⟩ := StartupHeap.precheck_lower source before 2701134640 initial.arena.code heap precheckRun
   have same : old = pointer := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans heapCell)))
   subst old
-  refine ⟨callEntryStateHOLFinite ready callee, post, pointer, lengthBound, entry, heapEntry, bytes,
-    pCell, lenCell, ?_, low, aligned, copied.1, ?_, DecoderInput.copied_frontier input before ready pointer (input.length % 2^64) _ copied, returned⟩
+  refine ⟨⟨callEntryStateHOLFinite ready callee, post, pointer, word⟩, ⟨lengthBound, entry, heapEntry, bytes,
+    pCell, lenCell, ?_, low, aligned, copied.1, ?_, DecoderInput.copied_frontier input before ready pointer (input.length % 2^64) _ copied, returned⟩, rfl, ?_, ?_⟩
   · exact (globals (ofString "ssz_offs") (by decide)).trans offsets
   · intro offset small
+    change 2701132528 + offset < pointer.toNat
     omega
+
+  · rw [restored]
+    rfl
+  · rw [restored]
+    rfl
+
+theorem stateless_run (input : Guest.InputBlob) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701134640 source)
+    (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64))) (word : BitVec 64)
+    (actual : evaluateHOLFiniteState source (Code.body .decode_host_input) =
+      (some (.returned (.val (.word word))), target)) : StatelessRun input word := by
+  obtain ⟨origin, run, wordEq, frame, clock⟩ := stateless_run_root input source target initial heap offsets word actual
+  rw [← wordEq]
+  exact run.unroot
 
 /-- A continuing real decoder prefix exposes separated input. Stopped
 prefixes remain explicit, with their full nonlocal observations. -/
@@ -121,3 +149,6 @@ end InitECandidate.Solver.Input.CurrentStartup.MainSeparatedInput
 #print axioms InitECandidate.Solver.Input.CurrentStartup.MainSeparatedInput.stateless_run
 #print axioms InitECandidate.Solver.Input.CurrentStartup.MainSeparatedInput.decoder_cut
 #print axioms InitECandidate.Solver.Input.CurrentStartup.MainSeparatedInput.reached
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.MainSeparatedInput.stateless_run_root
+#print axioms InitECandidate.Solver.Input.CurrentStartup.MainSeparatedInput.RootRun.unroot

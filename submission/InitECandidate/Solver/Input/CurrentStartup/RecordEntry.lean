@@ -4,6 +4,7 @@ import InitECandidate.Solver.Input.GuardActual
 import InitECandidate.Solver.Input.CurrentStartup.RequestCut
 
 namespace InitECandidate.Solver.Input.CurrentStartup.RecordEntry
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
@@ -27,6 +28,7 @@ def Reached (input : Guest.InputBlob) (word : BitVec 64) : Prop :=
     62 ≤ input.length % 2^64 ∧ 44 ≤ Guest.GasLimit.le32 input 6 - 16 ∧
     Guest.GasLimit.le32 input 6 - 16 ≤ input.length % 2^64 - 18 ∧
     OuterLocals input current pointer ∧
+    decoderOrigin.Frame inner pointer (.val (.word word)) ∧
     evaluateHOLFiniteState current Request.requestBody = (some (.returned (.val (.word word))), inner)
 
 theorem offsets_frame (code) (installed : OriginalCode.Installed code) :
@@ -43,13 +45,16 @@ theorem offsets_frame (code) (installed : OriginalCode.Installed code) :
 /-- The real main-derived input run reaches the request guard with its
 original byte image intact. No record separation, room or helper success
 hypothesis is added to that run. -/
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word) : Reached input word := by
-  obtain ⟨source, target, pointer, lengthBound, initial, heap, bytes, pCell, lenCell, offsets, lower, aligned, room, separation, frontier, returned⟩ := actual
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input decoderOrigin.word := by
+  let source := decoderOrigin.entry
+  let target := decoderOrigin.post
+  let pointer := decoderOrigin.pointer
+  obtain ⟨lengthBound, initial, heap, bytes, pCell, lenCell, offsets, lower, aligned, room, separation, frontier, returned⟩ := actual
   obtain ⟨extent, tag, version, firstOffset, witnessLower, witnessUpper⟩ :=
-    CanonicalHeader.first_offset input source target pointer initial bytes pCell lenCell offsets lower aligned room (.val (.word word)) returned
+    CanonicalHeader.first_offset input source target pointer initial bytes pCell lenCell offsets lower aligned room (.val (.word decoderOrigin.word)) returned
   obtain ⟨before, paid, price, funded, beforeEq, beforeBytes, continuation⟩ :=
-    CanonicalHeader.outer_reached input source target pointer initial bytes pCell lenCell offsets lower aligned room (.val (.word word)) returned
+    CanonicalHeader.outer_reached input source target pointer initial bytes pCell lenCell offsets lower aligned room (.val (.word decoderOrigin.word)) returned
   have beforeCode : OriginalCode.Installed before.code := by rw [beforeEq]; exact initial.arena.code
   have beforeShapes : OriginalExceptions.Installed before.eshapes := by rw [beforeEq]; exact initial.shapes
   have beforeDomain : before.memaddrs = InitE.ordinaryDomain := by rw [beforeEq]; exact initial.arena.domain
@@ -73,7 +78,7 @@ theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     rw [beforeEq]
     simp [Header.pairState, Header.secondWord, WitnessRadix.StoreWord.put]
   obtain ⟨current, inner, execution, currentHeap, remaining, clock, frame⟩ :=
-    RequestCut.reached before target _ beforeCode beforeHeap (.val (.word word)) continuation
+    RequestCut.reached before target _ beforeCode beforeHeap (.val (.word decoderOrigin.word)) continuation
   obtain ⟨record, recordLower, recordAligned, recordRoom, binding, recordHeap⟩ := RequestCut.record_pointer _ beforeCode beforeHeap execution
   have currentBytes := RequestCut.input_frame input pointer beforeCode beforeHeap beforeBytes aligned room execution
   have currentCode : OriginalCode.Installed current.code := by rw [execution.runtime.2.2.2.1]; exact beforeCode
@@ -88,7 +93,7 @@ theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     simp [WitnessRadix.QueryBranch.eval, Request.lengthTest, WitnessRadix.QueryBranch.localVar, evalHOLExact, toExact, nlen,
       Flapjack.Compiler.Encoders.Asm.wordCmpHOL, BitVec.lt_def, encoded]
   obtain ⟨large, requestRun⟩ := guard_actual current inner Request.lengthTest 81#64 (Guest.GasLimit.le32 input 6 - 16 < 44) read
-    (CanonicalHeader.fail_code current.code currentCode) (currentShapes .SszErr) Request.requestBody (.val (.word word)) remaining
+    (CanonicalHeader.fail_code current.code currentCode) (currentShapes .SszErr) Request.requestBody (.val (.word decoderOrigin.word)) remaining
   have currentP := execution.keeps (ofString "p") (List.all_eq_true.mp
     (show RequestCut.actions.all (fun action => action.keeps (ofString "p")) = true by decide))
   have currentLen := execution.keeps (ofString "len") (List.all_eq_true.mp
@@ -98,9 +103,11 @@ theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     exact WitnessRadix.QueryBranch.bind_lookup_same _ _ _
   have outer : OuterLocals input current pointer :=
     ⟨currentP.trans beforeP, currentLen.trans beforeLen, witnessCell, witnessLower, witnessUpper⟩
+  have rootFrame : decoderOrigin.Frame inner pointer (.val (.word decoderOrigin.word)) :=
+    ⟨rfl, rfl, frame.symm, clock.symm⟩
   exact ⟨current, inner, pointer, record, lengthBound, currentCode, currentShapes,
     execution.runtime.1.trans beforeDomain, execution.runtime.2.1.trans beforeEndian,
-    currentBytes, currentHeap, currentOffsets, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, binding, np, nlen, (by omega), (by omega), (by omega), outer, requestRun⟩
+    currentBytes, currentHeap, currentOffsets, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, binding, np, nlen, (by omega), (by omega), (by omega), outer, rootFrame, requestRun⟩
 
 end InitECandidate.Solver.Input.CurrentStartup.RecordEntry
 

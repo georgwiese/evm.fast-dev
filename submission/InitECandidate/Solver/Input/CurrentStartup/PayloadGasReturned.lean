@@ -3,17 +3,18 @@ import InitECandidate.Solver.Input.PayloadRemainingExecute
 import InitECandidate.Solver.Input.PayloadPassingEntry
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadGasReturned
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
 /-- The actual payload suffix returns its real record, with original copied
 input and gas field. This is a reachable returned suffix, not a bound for main. -/
-theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached input) :
+theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached (decoderOrigin := decoderOrigin) input) :
     ∃ source post, ∃ pointer record : BitVec 64, ∃ value : ValueHOL 64,
       evaluateHOLFiniteState source Payload.afterWithdrawals = (some (.returned value), post) ∧
       value = .val (.word record) ∧ Blob.HeapInput post input pointer ∧
       post.memory (record + 88#64) = .word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
       source.clock = post.clock ∧ NormalHeapEffects.AtLeast (record.toNat + 136) post ∧
-      ∃ length, PayloadEntry.Endpoint input post pointer record length value := by
+      ∃ length, PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length value := by
   obtain ⟨origin, source, post, pointer, record, array, count, length, start, size, value, data⟩ := actual
   have context := data.context
   have completed := Payload.remaining_execute source input pointer record (BitVec.ofNat 64 length)
@@ -39,27 +40,27 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
 
 /-- Whole-main-derived reachability and the original declared-gas premise
 now meet at the actual returned suffix's physical gas cell. -/
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
     (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) :
     ∃ source post, ∃ pointer record gasWord : BitVec 64,
       evaluateHOLFiniteState source Payload.afterWithdrawals = (some (.returned (.val (.word record))), post) ∧
       Blob.HeapInput post input pointer ∧ post.memory (record + 88#64) = .word gasWord ∧ gasWord.toNat ≤ 200000000 ∧
       source.clock = post.clock ∧ NormalHeapEffects.AtLeast (record.toNat + 136) post := by
   obtain ⟨source, post, pointer, record, value, run, valueEq, image, cell, clock, heap, length, endpoint⟩ :=
-    withdrawal input (WithdrawalReturn.separated input word actual)
-  obtain ⟨request, payload⟩ := CanonicalRequest.separated_offsets input word actual
+    withdrawal input (WithdrawalReturn.separated input actual)
+  obtain ⟨request, payload⟩ := CanonicalRequest.separated_offsets input actual
   rw [valueEq] at run
   exact ⟨source, post, pointer, record, BitVec.ofNat 64 (Guest.GasLimit.le64 input 474), run, image, cell,
     Payload.stored_gas_bound input request payload gas, clock, heap⟩
 
 /-- The suffix endpoint is the complete actual decoder poststate, up to
-local-scope restoration. Thus its physical gas word and copied image survive
+local-scope restoration. Thus its physical gas decoderOrigin.word and copied image survive
 at the complete payload return, not just at an intermediate suffix. -/
-theorem complete (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached input) :
+theorem complete (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached (decoderOrigin := decoderOrigin) input) :
     ∃ entry post, ∃ pointer record : BitVec 64, ∃ length : Nat,
       entry.globals.lookup (Flapjack.Basis.Pure.MlString.ofString "heap_ptr") = some (.val (.word record)) ∧
-      PayloadEntry.Result input entry post pointer length (.val (.word record)) ∧
+      PayloadEntry.Result (decoderOrigin := decoderOrigin) input entry post pointer length (.val (.word record)) ∧
       evaluateHOLFiniteState entry Payload.body = (some (.returned (.val (.word record))), post) ∧
       Blob.HeapInput post input pointer ∧
       post.memory (record + 88#64) = .word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
@@ -91,17 +92,17 @@ theorem complete (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached in
     exact ⟨cursor, (congrArg (fun table => table.lookup (Flapjack.Basis.Pure.MlString.ofString "heap_ptr")) globals).trans cursorCell,
       low, high, cursorAligned⟩
 
-theorem separated_complete (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
+theorem separated_complete (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
     (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) :
     ∃ entry post, ∃ pointer record gasWord : BitVec 64, ∃ length : Nat,
-      PayloadEntry.Result input entry post pointer length (.val (.word record)) ∧
+      PayloadEntry.Result (decoderOrigin := decoderOrigin) input entry post pointer length (.val (.word record)) ∧
       evaluateHOLFiniteState entry Payload.body = (some (.returned (.val (.word record))), post) ∧
       Blob.HeapInput post input pointer ∧ post.memory (record + 88#64) = .word gasWord ∧ gasWord.toNat ≤ 200000000 ∧
       NormalHeapEffects.AtLeast (record.toNat + 136) post := by
   obtain ⟨entry, post, pointer, record, length, originHeap, original, returned, bytes, cell, heap⟩ :=
-    complete input (WithdrawalReturn.separated input word actual)
-  obtain ⟨request, payload⟩ := CanonicalRequest.separated_offsets input word actual
+    complete input (WithdrawalReturn.separated input actual)
+  obtain ⟨request, payload⟩ := CanonicalRequest.separated_offsets input actual
   exact ⟨entry, post, pointer, record, BitVec.ofNat 64 (Guest.GasLimit.le64 input 474), length,
     original, returned, bytes, cell, Payload.stored_gas_bound input request payload gas, heap⟩
 

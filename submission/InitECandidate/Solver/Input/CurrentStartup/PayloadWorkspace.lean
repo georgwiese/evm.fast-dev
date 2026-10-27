@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.PayloadOffsetsLocals
 import InitECandidate.Solver.Input.CurrentStartup.PayloadHeaderImage
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
@@ -41,7 +42,7 @@ def Reached (input : Guest.InputBlob) : Prop :=
   ∃ current post, ∃ pointer record : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,
     Context input current pointer record length ∧
     evaluateHOLFiniteState current Payload.offsetBody = (some (.returned returned), post) ∧
-    PayloadEntry.Endpoint input post pointer record length returned
+    PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length returned
 
 /-- Transfer the retained context through real memory/clock-only effects;
 the copied image must be established for the actual resulting memory. -/
@@ -82,7 +83,7 @@ theorem offsets_frame (code) (installed : OriginalCode.Installed code) :
   exact GlobalEffects.declared (ofString "ssz_offs") code _ _ _ _ (GlobalEffects.declared (ofString "ssz_offs") code _ _ _ _
     (GlobalEffects.declared (ofString "ssz_offs") code _ _ _ _ (GlobalEffects.declared (ofString "ssz_offs") code _ _ _ _ (GlobalEffects.skip (ofString "ssz_offs") code))))
 
-theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached input) : Reached input := by
+theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨source, post, pointer, length, returned, entryFacts⟩ := actual
   have originalEntry := entryFacts
   obtain ⟨lengthBound, installed, shapes, domain, endian, image, heap,
@@ -90,7 +91,7 @@ theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached i
   obtain ⟨current, inner, execution, currentHeap, remaining, clock, frame⟩ :=
     PayloadCut.reached source post _ installed heap returned actual
   obtain ⟨record, originHeap, recordLower, recordAligned, recordRoom, recordCell, recordHeap⟩ := PayloadCut.record_pointer _ installed heap execution
-  have endpoint : PayloadEntry.Endpoint input post pointer record length returned := ⟨source, post, originalEntry, originHeap, rfl, rfl⟩
+  have endpoint : PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length returned := ⟨source, post, originalEntry, originHeap, rfl, rfl⟩
   have retained := PayloadCut.input_frame input pointer length installed heap image aligned room pCell lenCell execution
   have currentCode : OriginalCode.Installed current.code := by rw [execution.runtime.2.2.2.1]; exact installed
   have currentShapes : OriginalExceptions.Installed current.eshapes := by rw [execution.runtime.2.2.1]; exact shapes
@@ -108,8 +109,8 @@ theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached i
     recordLower, recordAligned, recordRoom, recordHeap⟩, remaining,
     PayloadEntry.Endpoint.of_frame input post inner pointer record length returned endpoint frame clock⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
-  entry_reached input (PayloadEntry.separated input word actual)
+theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=
+  entry_reached input (PayloadEntry.separated input actual)
 
 end InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace
 

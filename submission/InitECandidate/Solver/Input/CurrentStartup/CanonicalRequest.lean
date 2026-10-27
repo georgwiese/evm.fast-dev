@@ -3,17 +3,18 @@ import InitECandidate.Solver.Input.RequestOffsetsTrace
 import InitECandidate.Solver.Input.RequestOffsetValues
 
 namespace InitECandidate.Solver.Input.CurrentStartup.CanonicalRequest
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
 /-- The actual main-derived request entry must pass its real three-offset
 validator. All offset facts refer to original mathematical input bytes. -/
-theorem offsets (input : Guest.InputBlob) (word : BitVec 64) (actual : RecordEntry.Reached input word) :
+theorem offsets (input : Guest.InputBlob) (word : BitVec 64) (actual : RecordEntry.Reached (decoderOrigin := decoderOrigin) input word) :
     Guest.GasLimit.le32 input 18 = 44 ∧ 44 ≤ Guest.GasLimit.le32 input 22 ∧
       Guest.GasLimit.le32 input 22 ≤ Guest.GasLimit.le32 input 58 ∧
       Guest.GasLimit.le32 input 58 ≤ Guest.GasLimit.le32 input 6 - 16 := by
   obtain ⟨source, post, pointer, record, lengthBound, installed, shapes, domain, endian, image, heap,
-    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, si, np, nlen, extent, requestLower, requestUpper, outer, returned⟩ := actual
+    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, si, np, nlen, extent, requestLower, requestUpper, outer, rootFrame, returned⟩ := actual
   rcases Request.offsets_trace source post input pointer 2701132528#64 (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16))
     image extent np nlen workspace domain aligned (by decide) (by omega) (by decide)
     (by change 2701132528 + 64 ≤ pointer.toNat; omega)
@@ -29,21 +30,21 @@ theorem offsets (input : Guest.InputBlob) (word : BitVec 64) (actual : RecordEnt
 
 /-- Both canonical container offsets now derive from real normal decoder
 execution, rather than being supplied as gas-decoding hypotheses. -/
-theorem separated_offsets (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word) :
+theorem separated_offsets (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin) :
     Guest.GasLimit.le32 input 2 = 16 ∧ Guest.GasLimit.le32 input 18 = 44 := by
-  have header := CanonicalHeader.separated_first input word actual
-  have request := offsets input word (RecordEntry.separated input word actual)
+  have header := CanonicalHeader.separated_first input decoderOrigin.word actual.unroot
+  have request := offsets input decoderOrigin.word (RecordEntry.separated input actual)
   exact ⟨header.2.2.2.1, request.1⟩
 
 /-- The original declared-gas premise bounds the eight canonical input
 bytes at474, after both actual offset guards. This is the raw byte field;
 its actual later load/store still needs the payload-entry/image proof. -/
-theorem gas_field (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
+theorem gas_field (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
     (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) :
     Guest.GasLimit.le64 input 474 ≤ 200000000 := by
-  obtain ⟨first, second⟩ := separated_offsets input word actual
+  obtain ⟨first, second⟩ := separated_offsets input actual
   rw [Framing.declared_gas_at_474 input first second] at gas
   exact gas
 

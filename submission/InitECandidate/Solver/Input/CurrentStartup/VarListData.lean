@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.VarListRoom
 import InitECandidate.Solver.Input.VarList.NormalAnyClock
 
 namespace InitECandidate.Solver.Input.CurrentStartup.VarListData
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
@@ -37,13 +38,13 @@ structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFinit
       (VarList.values (pointer + BitVec.ofNat 64 start) (BitVec.ofNat 64 size) 9223372036854775807#64) =
       some (VarList.body, callee, VarList.returnShape) ∧
     evaluateHOLFiniteState caller Payload.transactionCall = (some (.returned parentValue), parentPost) ∧
-    PayloadEntry.Endpoint input parentPost pointer record length parentValue
+    PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input parentPost pointer record length parentValue
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller entry post, ∃ pointer record array : BitVec 64, ∃ length start size : Nat, ∃ value : ValueHOL 64,
-    Result input caller entry post pointer record array length start size value
+    Result (decoderOrigin := decoderOrigin) input caller entry post pointer record array length start size value
 
-theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached input) : Reached input := by
+theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨caller, entry, post, pointer, record, length, start, size, value, context, valid, installed, shapes, domain, endian,
     globals, image, heap, p, n, l, startEq, sizeEq, inside, returned, invocation⟩ := actual
   obtain ⟨array, cell, low, high, aligned⟩ := heap
@@ -80,8 +81,8 @@ theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached
   exact ⟨caller, entry, post, pointer, record, array, length, start, size, value,
     ⟨context, valid, cell, low, aligned, high, startEq, sizeEq, inside, returned, tuple, bytes, records, memory, control, postHeap, price, clock, invocation⟩⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
-  transaction input (TransactionEntry.separated input word actual)
+theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=
+  transaction input (TransactionEntry.separated input actual)
 
 end InitECandidate.Solver.Input.CurrentStartup.VarListData
 

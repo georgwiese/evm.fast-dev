@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.VarListData
 import InitECandidate.Solver.Input.CallResume
 
 namespace InitECandidate.Solver.Input.CurrentStartup.TransactionReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -20,15 +21,15 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   price : caller.clock - current.clock ≤ size / 4 + 2
   clock : current.clock ≤ caller.clock
   returned : evaluateHOLFiniteState current Payload.afterTransactions = (some (.returned value), post)
-  endpoint : PayloadEntry.Endpoint input post pointer record length value
+  endpoint : PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length value
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer record array : BitVec 64, ∃ length start size : Nat, ∃ value : ValueHOL 64,
-    Result input caller current post pointer record array length start size value
+    Result (decoderOrigin := decoderOrigin) input caller current post pointer record array length start size value
 
 /-- Resume the actual payload continuation after the real returned list. No
 minimum caller clock or successful future store is assumed. -/
-theorem returned (input : Guest.InputBlob) (actual : VarListData.Reached input) : Reached input := by
+theorem returned (input : Guest.InputBlob) (actual : VarListData.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨caller, entry, bodyPost, pointer, record, array, length, start, size, tuple, data⟩ := actual
   obtain ⟨callee, parentPost, value, entryEq, args, called, callerRun, endpoint⟩ := data.invocation
@@ -111,8 +112,8 @@ theorem returned (input : Guest.InputBlob) (actual : VarListData.Reached input) 
     rw [entryClock] at clock
     omega
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
-  returned input (VarListData.separated input word actual)
+theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=
+  returned input (VarListData.separated input actual)
 
 end InitECandidate.Solver.Input.CurrentStartup.TransactionReturn
 

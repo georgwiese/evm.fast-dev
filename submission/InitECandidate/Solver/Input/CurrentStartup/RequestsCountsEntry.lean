@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.RequestsAllocation
 import InitECandidate.Solver.Input.Requests.OffsetLocals
 
 namespace InitECandidate.Solver.Input.CurrentStartup.RequestsCountsEntry
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -25,18 +26,18 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   valid : ∀ position < 5, Offsets.ValidAt 20#64 (BitVec.ofNat 64 size) (Requests.offsetWord input start) position
   gasCell : current.memory (record + 88#64) = .word gasWord
   returned : evaluateHOLFiniteState current Requests.countCalls = (some (.returned value), post)
-  endpoint : ∃ entry originalPost, RequestsEntry.Result input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
+  endpoint : ∃ entry originalPost, RequestsEntry.Result (decoderOrigin := decoderOrigin) input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
     WitnessRadix.BackingLayout.control current = WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post entry requestRecord 80#64) ∧
     current.clock ≤ entry.clock ∧ entry.clock - current.clock ≤ 13 ∧ LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
     ∃ payloadLength start size : Nat, ∃ value : ValueHOL 64,
-      Result input caller current post pointer statelessRecord record gasWord requestRecord payloadLength start size value
+      Result (decoderOrigin := decoderOrigin) input caller current post pointer statelessRecord record gasWord requestRecord payloadLength start size value
 
 /-- Join the real already-allocated request to its five readonly declarations
 and count calls. Original input, heap ownership and physical gas remain intact. -/
-theorem allocated (input : Guest.InputBlob) (actual : RequestsAllocation.Reached input) : Reached input := by
+theorem allocated (input : Guest.InputBlob) (actual : RequestsAllocation.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨caller, origin, source, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, start, size, value, data⟩ := actual
   obtain ⟨restoreStack, setup⟩ := Requests.offset_locals source input 2701132528#64 start data.workspace data.cells data.domain
     (by decide) ⟨by decide, by decide⟩
@@ -66,10 +67,10 @@ theorem allocated (input : Guest.InputBlob) (actual : RequestsAllocation.Reached
       data.requestAligned, data.requestRoom, model, data.inside, data.minimum, data.first, data.valid, data.gasCell,
       Prod.ext resumed rfl, entry, originalPost, original, originControl, prefixForward, prefixCost, originalFrame.trans frame, originalClock.trans clock⟩⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  allocated input (RequestsAllocation.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  allocated input (RequestsAllocation.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.RequestsCountsEntry
 

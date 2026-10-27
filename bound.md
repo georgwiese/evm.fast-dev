@@ -83,26 +83,23 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-payload-call-returned-v2.log`,1452jobs,
-permitted printed axioms only. Historical/current proof index:7988modules/
-15864facts; Solver inventory8027, replacement closure0, frozen main files
-unchanged. Incremental policy passes64796entries/2482160162bytes. These checks
+Latest successful selected closure: `current-main-decoded-state-v1.log`,1456jobs,
+permitted printed axioms only. Historical/current proof index:7998modules/
+15886facts; Solver inventory8037, replacement closure0, frozen main files
+unchanged. Incremental policy passes64806entries/2482210392bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
 ## Remaining work, in order
 
-1. **Join these physical facts to the same complete decoder/main execution.**
-   Existential stage facts alone do not identify an arbitrary main post-state.
-   Preserve or parameterize original run endpoints while composing actual calls,
-   scopes and stores. WitnessEntry now retains its previous caller; the whole
-   Request.requestsCall, metadata stores and complete payload call now carry
-   the witness snapshot at the original payload caller's actual post-state.
-   Earlier request-offset/record/header and whole-stateless return still need
-   explicit provenance and a relation to the same
-   main-derived source/post run. Carry the complete payload transaction-record
-   image/count through its final stores; the gas-only Context is insufficient
-   for transaction/hash loop bounds.
+1. **Finish the complete physical decoder layouts used by main.** The actual
+   witness/input/gas snapshot now reaches the same selected stateless post-state
+   and main's real afterDecoder continuation. DecoderOrigin/RootRun indices and
+   proved scope/call frames make that relation explicit. Preserve this origin
+   through further interfaces; do not identify arbitrary existential executions.
+   Materialize all concrete SI fields for hash/attempt argument loads. Carry the
+   complete payload transaction-record image/count through its final stores;
+   the gas-only Context is insufficient for transaction/hash loop bounds.
 2. Join request-root hashing to actual physical layouts and ownership; bound
    its current helpers on all relevant outcomes, including failures. Reuse old
    hash/serialization proofs only after checking source/indices/imports.

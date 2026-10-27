@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace
 import InitECandidate.Solver.Input.PayloadOffsetsTrace
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadValidated
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
@@ -11,12 +12,12 @@ def Reached (input : Guest.InputBlob) : Prop :=
     Guest.GasLimit.le32 input 498 = 540 ∧ Payload.offsetWords input 0 = 540#64 ∧
     (∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position) ∧
     evaluateHOLFiniteState current Payload.offsetContinuation = (some (.returned returned), post) ∧
-    PayloadEntry.Endpoint input post pointer record length returned
+    PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length returned
 
 /-- Whole-main-derived payload execution passes the real four-offset
 validator. Its writes retain the original copied bytes and record geometry;
 normal return rules out each actual rejection outcome. -/
-theorem workspace_reached (input : Guest.InputBlob) (actual : PayloadWorkspace.Reached input) : Reached input := by
+theorem workspace_reached (input : Guest.InputBlob) (actual : PayloadWorkspace.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨source, post, pointer, record, length, value, context, actual, endpoint⟩ := actual
   rcases Payload.offsets_trace source post input pointer 2701132528#64 (BitVec.ofNat 64 length) context.image context.workspace
     context.extra context.txs context.wd context.bal context.domain context.aligned (by decide) (by have := context.room; omega)
@@ -35,8 +36,8 @@ theorem workspace_reached (input : Guest.InputBlob) (actual : PayloadWorkspace.R
       exact PayloadWorkspace.Context.memory_clock input source pointer record length next.clock next.memory context image
     exact ⟨next, post, pointer, record, length, value, nextContext, number, first, valid, remaining, endpoint⟩
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
-  workspace_reached input (PayloadWorkspace.separated input word actual)
+theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=
+  workspace_reached input (PayloadWorkspace.separated input actual)
 
 end InitECandidate.Solver.Input.CurrentStartup.PayloadValidated
 

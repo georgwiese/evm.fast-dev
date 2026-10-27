@@ -1,27 +1,28 @@
 import InitECandidate.Solver.Input.CurrentStartup.PayloadSuffixReturned
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadCallReturned
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 structure Result (input : Guest.InputBlob) (caller post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer statelessRecord record gasWord requestRecord : BitVec 64) (payloadLength : Nat) : Prop where
   returned : evaluateHOLFiniteState caller Request.continuation = (some (.returned (.val (.word statelessRecord))), post)
-  header : WitnessHeadersReturn.Snapshot input post pointer statelessRecord record gasWord requestRecord payloadLength
-  decoded : ∃ entry bodyPost callee, PayloadEntry.Result input entry bodyPost pointer payloadLength (.val (.word record)) ∧
-    PayloadEntry.Invocation input entry pointer payloadLength caller callee post (.val (.word statelessRecord)) statelessRecord
+  header : WitnessHeadersReturn.Snapshot (decoderOrigin := decoderOrigin) input post pointer statelessRecord record gasWord requestRecord payloadLength
+  decoded : ∃ entry bodyPost callee, PayloadEntry.Result (decoderOrigin := decoderOrigin) input entry bodyPost pointer payloadLength (.val (.word record)) ∧
+    PayloadEntry.Invocation (decoderOrigin := decoderOrigin) input entry pointer payloadLength caller callee post (.val (.word statelessRecord)) statelessRecord
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64, ∃ payloadLength : Nat,
-    Result input caller post pointer statelessRecord record gasWord requestRecord payloadLength
+    Result (decoderOrigin := decoderOrigin) input caller post pointer statelessRecord record gasWord requestRecord payloadLength
 
 /-- The complete actual payload call, request metadata/decoder, witness lists
 and return share this original enclosing call's exact physical post-state. -/
-theorem suffix (input : Guest.InputBlob) (actual : PayloadSuffixReturned.Reached input) : Reached input := by
+theorem suffix (input : Guest.InputBlob) (actual : PayloadSuffixReturned.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨caller, source, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, data⟩ := actual
   obtain ⟨entry, bodyPost, callee, parentPost, parentValue, decoded, bodyRun, selected, sourceEq⟩ := data.payload.payload
   have invocation := selected
-  obtain ⟨entryEq, statelessLower, statelessAligned, statelessRoom, si, heap, locals, args, called, parentRun⟩ := selected
+  obtain ⟨entryEq, statelessLower, statelessAligned, statelessRoom, si, heap, locals, args, called, parentRun, rootFrame⟩ := selected
   have normal := parentRun
   rw [Request.payload_call_shape] at normal
   have positive := CallNormal.normal_clock caller parentPost (ofString "pl") .one (ofString "decode_payload")
@@ -52,10 +53,10 @@ theorem suffix (input : Guest.InputBlob) (actual : PayloadSuffixReturned.Reached
   rw [← parentValueEq]
   exact invocation
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  suffix input (PayloadSuffixReturned.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  suffix input (PayloadSuffixReturned.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.PayloadCallReturned
 

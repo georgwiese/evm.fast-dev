@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn
 import InitECandidate.Solver.Input.RequestHashesProgram
 
 namespace InitECandidate.Solver.Input.CurrentStartup.HashCountReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -15,17 +16,17 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   clock : current.clock ≤ source.clock
   returned : evaluateHOLFiniteState current Request.afterHashCount = (some (.returned value), post)
   origin : ∃ caller originalPost stored,
-    PayloadCallerReturn.Result input caller source originalPost pointer statelessRecord record gasWord length value ∧
+    PayloadCallerReturn.Result (decoderOrigin := decoderOrigin) input caller source originalPost pointer statelessRecord record gasWord length value ∧
     evaluateHOLFiniteState source Request.payloadPointerStore = (none, stored) ∧
     originalPost = restore stored "nvh" post
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer statelessRecord record gasWord count : BitVec 64, ∃ length : Nat, ∃ value : ValueHOL 64,
-    Result input source current post pointer statelessRecord record gasWord count length value
+    Result (decoderOrigin := decoderOrigin) input source current post pointer statelessRecord record gasWord count length value
 
 /-- The real versioned-hash count call preserves the allocated payload and
 its bounded gas word. Arithmetic follows from actual validated request offsets. -/
-theorem payload (input : Guest.InputBlob) (actual : PayloadCallerReturn.Reached input) : Reached input := by
+theorem payload (input : Guest.InputBlob) (actual : PayloadCallerReturn.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨caller, source, post, pointer, statelessRecord, record, gasWord, length, value, data⟩ := actual
   have context := data.context
@@ -60,10 +61,10 @@ theorem payload (input : Guest.InputBlob) (actual : PayloadCallerReturn.Reached 
   rw [locals]
   simp [HolFiniteMapExact.update, FUPDATE]
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  payload input (PayloadCallerReturn.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  payload input (PayloadCallerReturn.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.HashCountReturn
 

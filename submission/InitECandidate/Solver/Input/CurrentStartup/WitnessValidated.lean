@@ -3,6 +3,7 @@ import InitECandidate.Solver.Input.CurrentStartup.CallerContextControl
 import InitECandidate.Solver.Input.Witness.OffsetsTrace
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WitnessValidated
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -23,18 +24,18 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   price : source.clock - current.clock ≤ 8
   clock : current.clock ≤ source.clock
   returned : evaluateHOLFiniteState current Witness.loadedBody = (some (.returned value), post)
-  endpoint : ∃ caller originalPost, WitnessEntry.Result input caller source originalPost
+  endpoint : ∃ caller originalPost, WitnessEntry.Result (decoderOrigin := decoderOrigin) input caller source originalPost
     pointer statelessRecord record gasWord requestRecord payloadLength value ∧
     LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
     ∃ payloadLength : Nat, ∃ value : ValueHOL 64,
-      Result input source current post pointer statelessRecord record gasWord requestRecord payloadLength value
+      Result (decoderOrigin := decoderOrigin) input source current post pointer statelessRecord record gasWord requestRecord payloadLength value
 
 /-- The actual three workspace writes and validator derive all witness
 slice offsets. Their low-address frame protects the earlier request/gas cells. -/
-theorem entry (input : Guest.InputBlob) (actual : WitnessEntry.Reached input) : Reached input := by
+theorem entry (input : Guest.InputBlob) (actual : WitnessEntry.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨caller, source, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, value, data⟩ := actual
   have context := data.context
   have extent : 2 + Guest.GasLimit.le32 input 6 + 12 ≤ input.length % 2^64 := by
@@ -86,10 +87,10 @@ theorem entry (input : Guest.InputBlob) (actual : WitnessEntry.Reached input) : 
     · rw [restored]
       rfl
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  entry input (WitnessEntry.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  entry input (WitnessEntry.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.WitnessValidated
 

@@ -4,6 +4,7 @@ import InitECandidate.Solver.Input.CurrentStartup.ByteListCall
 import InitECandidate.Solver.Input.CurrentStartup.CallerPairStores
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WitnessNodesReturn
+variable {decoderOrigin : DecoderOrigin}
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
@@ -28,17 +29,17 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   price : source.clock - current.clock ≤ 2 * (length / 4) + 3
   clock : current.clock ≤ source.clock
   returned : evaluateHOLFiniteState current Witness.codeCall = (some (.returned value), post)
-  origin : ∃ original originalPost, WitnessLoaded.Result input original source originalPost
+  origin : ∃ original originalPost, WitnessLoaded.Result (decoderOrigin := decoderOrigin) input original source originalPost
     pointer statelessRecord record gasWord requestRecord payloadLength value ∧ originalPost = restore source "st0" post
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer statelessRecord record gasWord requestRecord array : BitVec 64,
     ∃ payloadLength start length : Nat, ∃ value : ValueHOL 64,
-      Result input source current post pointer statelessRecord record gasWord requestRecord array payloadLength start length value
+      Result (decoderOrigin := decoderOrigin) input source current post pointer statelessRecord record gasWord requestRecord array payloadLength start length value
 
 /-- The first actual witness-list call and both actual output stores: physical
 node records and1024-byte per-item bounds, with input/gas and bounded heap kept. -/
-theorem loaded (input : Guest.InputBlob) (actual : WitnessLoaded.Reached input) : Reached input := by
+theorem loaded (input : Guest.InputBlob) (actual : WitnessLoaded.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
   obtain ⟨original, source, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, value, data⟩ := actual
   let witnessStart := 2 + Guest.GasLimit.le32 input 6
@@ -86,7 +87,7 @@ theorem loaded (input : Guest.InputBlob) (actual : WitnessLoaded.Reached input) 
 /-- The real st0 binding and its two stores leave all witness slice locals live. -/
 theorem Result.live {input : Guest.InputBlob} {source current post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer statelessRecord record gasWord requestRecord array : BitVec 64} {payloadLength start length : Nat} {value : ValueHOL 64}
-    (actual : Result input source current post pointer statelessRecord record gasWord requestRecord array payloadLength start length value) :
+    (actual : Result (decoderOrigin := decoderOrigin) input source current post pointer statelessRecord record gasWord requestRecord array payloadLength start length value) :
     WitnessLive input current pointer := by
   obtain ⟨original, originalPost, data, endpoint⟩ := actual.origin
   have before : WitnessLive input source pointer := ⟨data.wp, data.wlen, data.w0, data.w1, data.w2⟩
@@ -98,10 +99,10 @@ theorem Result.live {input : Guest.InputBlob} {source current post : PanSemState
     rcases member with rfl | rfl | rfl | rfl | rfl <;> decide
   simp [HolFiniteMapExact.update, FUPDATE, different]
 
-theorem separated (input : Guest.InputBlob) (word : BitVec 64)
-    (actual : MainSeparatedInput.StatelessRun input word)
-    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached input :=
-  loaded input (WitnessLoaded.separated input word actual gas)
+theorem separated (input : Guest.InputBlob)
+    (actual : MainSeparatedInput.RootRun input decoderOrigin)
+    (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input :=
+  loaded input (WitnessLoaded.separated input actual gas)
 
 end InitECandidate.Solver.Input.CurrentStartup.WitnessNodesReturn
 

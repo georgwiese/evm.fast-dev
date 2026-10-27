@@ -8107,7 +8107,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/Framing.lean",
-      "sha256": "1f2b4c5427395d99b6d6652abbf7742f43f389309b8198f7c8b5db45fc256714"
+      "sha256": "32573eadb27703e8df701750b350d18cbfefcf80525410e7ebd3c96c39cb7722",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-host-reached-v6.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/FreshRecord.lean",
@@ -8404,6 +8408,14 @@
     {
       "path": "submission/InitECandidate/Solver/Input/HostLength.lean",
       "sha256": "7a7c3360718b6bde6ace3d871f7bbfda2bcfba06dc653e80ff9bce9b57445645"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/HostReadCurrent.lean",
+      "sha256": "467ad794af7e1744747fc544eb2dbce1ccff52df1073b5d12915a35d3ee22713",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-host-reached-v6.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/HostWords.lean",
@@ -11635,11 +11647,35 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/SharedRead.lean",
-      "sha256": "6c37c1726567030ba3e0f4c48cfae00cebe5aa528f64274f57e4c1e624ad2f59"
+      "sha256": "6c37c1726567030ba3e0f4c48cfae00cebe5aa528f64274f57e4c1e624ad2f59",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-host-reached-v6.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/SharedReadExecution.lean",
-      "sha256": "cfd80807b28ecc59246aa9939b56f5b96ace0dce33c98ca85a4b76a18c980c5d"
+      "sha256": "cfd80807b28ecc59246aa9939b56f5b96ace0dce33c98ca85a4b76a18c980c5d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-host-reached-v6.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/SharedReadNormal.lean",
+      "sha256": "d44016ada1634ca8e8ff14e8834d9015fc3267c43f0f18e2e8f3e1fd5ce9b8b7",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-host-reached-v6.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/SharedReadReached.lean",
+      "sha256": "c604815f8ec7bf8bd6c4c073b8632d0bb04fed0c53194c57288b441b4cb0a659",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-host-reached-v6.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/SharedStoreLocal.lean",
@@ -12267,7 +12303,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/WordCodec.lean",
-      "sha256": "7da19e53352bee47d78ad80092dd06b3308ea44bf989144c4573f2a31c1beed1"
+      "sha256": "4327161056ae5aae8634b32aed28193da70e8e6cd5155615b95b25bd96a7dbd7",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-host-reached-v6.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/WordEnvironment.lean",
@@ -27522,7 +27562,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-host-reached-v6.log"
       ]
     },
     {
@@ -78153,7 +78193,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length",
@@ -78161,28 +78202,31 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.declared_gas_at_474",
       "axioms": [
         "propext"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.host_data",
       "axioms": [
         "propext",
-        "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HostGas.byte_eq",
@@ -78608,7 +78652,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-host-reached-v6.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80979,14 +81023,16 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.bytes_length",
       "axioms": [
         "propext"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.oracle",
@@ -80995,7 +81041,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.call_ffi",
@@ -81004,7 +81051,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SharedRead.execute",
@@ -81013,7 +81061,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.guest_roundtrip",
@@ -81021,7 +81070,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_bytes",
@@ -81029,7 +81079,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.oracle_address",
@@ -81037,7 +81088,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.leSumB_guest",
@@ -81045,7 +81097,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_word_guest",
@@ -81053,7 +81106,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.WordCodec.pan_roundtrip",
@@ -81061,7 +81115,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.execute",
@@ -161683,6 +161738,131 @@
         "Quot.sound"
       ],
       "successful_log": "trie-rlp-bytes-write-safe-v2.log"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Framing.host_data_value",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHostRead.normal_reply",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHostRead.data_word",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHostRead.normal_word",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHostRead.normal_gas_word",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHostRead.reached_word",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHostRead.reached_gas_word",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.SharedRead.mapM_present",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.SharedRead.oracle_return_present",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.SharedRead.oracle_return_data",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.SharedRead.ffi_return_oracle",
+      "axioms": [
+        "propext"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.SharedRead.reached_reply",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.SharedRead.normal_post",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],
   "historical_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",

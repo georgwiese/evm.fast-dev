@@ -48,9 +48,11 @@ theorem declared_gas_at_474 (input : InputBlob)
 theorem framed_length_word (input : InputBlob) :
     (BitVec.ofNat 64 input.length).toNat = input.length % 2 ^ 64 := rfl
 
-/-- The actual shared host-memory function exposes the same byte at every
-visible data offset, including zero padding and arbitrary input-list lengths. -/
-theorem host_data (input : InputBlob) (index : Nat) (visible : index < maxInputBytes) :
+/-- A present byte in the current host input is the corresponding framed
+byte. The current model does not map every unused byte of the input arena.
+Presence is an observation about this read, not a future-copy premise. -/
+theorem host_data (input : InputBlob) (index : Nat) (visible : index < maxInputBytes)
+    (present : (guestHostMemory input (inputDataAddr + BitVec.ofNat 64 index)).isSome = true) :
     guestHostMemory input (inputDataAddr + BitVec.ofNat 64 index) =
       some (convert ((input[index]?).getD 0)) := by
   have indexSmall : index < 2 ^ 64 := by dsimp [maxInputBytes] at visible; omega
@@ -63,18 +65,40 @@ theorem host_data (input : InputBlob) (index : Nat) (visible : index < maxInputB
       dsimp [maxInputBytes] at visible
       omega), encoded]
     rfl
-  have inArena : inputAddr ≤ inputDataAddr + BitVec.ofNat 64 index ∧
-      inputDataAddr + BitVec.ofNat 64 index < inputAddr + inputArenaSize := by
-    change 1073741824 ≤ (inputDataAddr + BitVec.ofNat 64 index).toNat ∧
-      (inputDataAddr + BitVec.ofNat 64 index).toNat < 1207959552
+  have lower : inputAddr ≤ inputDataAddr + BitVec.ofNat 64 index := by
+    change 1073741824 ≤ (inputDataAddr + BitVec.ofNat 64 index).toNat
     rw [addressNat]
+    omega
+  have notOutput : ¬ (outputAddr ≤ inputDataAddr + BitVec.ofNat 64 index ∧
+      inputDataAddr + BitVec.ofNat 64 index < scratchBase) := by
+    intro output
+    have first := output.1
+    change 2688614400 ≤ (inputDataAddr + BitVec.ofNat 64 index).toNat at first
+    rw [addressNat] at first
     dsimp [maxInputBytes] at visible
     omega
   have offset : (inputDataAddr + BitVec.ofNat 64 index - inputAddr).toNat = 16 + index := by
-    rw [BitVec.toNat_sub_of_le inArena.1, addressNat]
+    rw [BitVec.toNat_sub_of_le lower, addressNat]
     change 1073741840 + index - 1073741824 = 16 + index
     omega
-  simp only [guestHostMemory, inArena, and_self, ↓reduceIte, offset, framed_data]
+  by_cases backed : inputDataAddr + BitVec.ofNat 64 index < inputAddr + BitVec.ofNat 64 (hostInputBytes input).length
+  · simp only [guestHostMemory, lower, backed, and_self, ↓reduceIte, offset] at present ⊢
+    cases read : (hostInputBytes input)[16 + index]? with
+    | none => simp [read] at present
+    | some byte =>
+      have value := framed_data input index
+      rw [read] at value
+      simpa only [read, Option.getD_some] using congrArg some value
+  · simp only [guestHostMemory, lower, backed, Bool.false_eq_true,
+      and_false, ↓reduceIte, notOutput, Option.isSome_none] at present
+
+/-- An observed successful current host read identifies its actual data byte,
+including for mathematical input lists whose length does not fit in a word. -/
+theorem host_data_value (input : InputBlob) (index : Nat) (visible : index < maxInputBytes)
+    (byte : UInt8) (read : guestHostMemory input (inputDataAddr + BitVec.ofNat 64 index) = some byte) :
+    byte = convert ((input[index]?).getD 0) := by
+  have actual := host_data input index visible (by rw [read]; rfl)
+  exact Option.some.inj (read.symm.trans actual)
 
 end InitECandidate.Solver.Input.Framing
 
@@ -83,3 +107,4 @@ end InitECandidate.Solver.Input.Framing
 #print axioms InitECandidate.Solver.Input.Framing.declared_gas_at_474
 #print axioms InitECandidate.Solver.Input.Framing.framed_length_word
 #print axioms InitECandidate.Solver.Input.Framing.host_data
+#print axioms InitECandidate.Solver.Input.Framing.host_data_value

@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 7812,
+  "solver_modules": 7815,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -48,7 +48,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1276,
+    "Input": 1279,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -102,184 +102,184 @@
     "original_witness_constructor": [
       {
         "module": "MutableTable.WitnessBuildExecution",
-        "solver_dependency_count": 221,
+        "solver_dependency_count": 219,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.WitnessBuildEmpty",
-        "solver_dependency_count": 220,
+        "solver_dependency_count": 218,
         "imports_replacement_ast": false
       }
     ],
     "original_witness_lookup": [
       {
         "module": "MutableTable.WitnessDictionaryLookup",
-        "solver_dependency_count": 215,
+        "solver_dependency_count": 213,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.NodeDbDictionary32",
-        "solver_dependency_count": 127,
+        "solver_dependency_count": 125,
         "imports_replacement_ast": false
       }
     ],
     "original_mutable_key_operations": [
       {
         "module": "MutableTable.GetGeneralCall",
-        "solver_dependency_count": 167,
+        "solver_dependency_count": 165,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.HasGeneralCall",
-        "solver_dependency_count": 162,
+        "solver_dependency_count": 160,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.InsertGeneralCall",
-        "solver_dependency_count": 177,
+        "solver_dependency_count": 175,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.SetNoGrowthBudget",
-        "solver_dependency_count": 194,
+        "solver_dependency_count": 192,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.MemoryModelEntry",
-        "solver_dependency_count": 179,
+        "solver_dependency_count": 177,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.MemoryModelInsertCall",
-        "solver_dependency_count": 195,
+        "solver_dependency_count": 193,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.MemoryModelSetCall",
-        "solver_dependency_count": 234,
+        "solver_dependency_count": 232,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.GrowRuntime.CallerBudget",
-        "solver_dependency_count": 327,
+        "solver_dependency_count": 325,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.SetModelHeap",
-        "solver_dependency_count": 344,
+        "solver_dependency_count": 342,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.DeleteModelBudget",
-        "solver_dependency_count": 278,
+        "solver_dependency_count": 276,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.ItemCall",
-        "solver_dependency_count": 221,
+        "solver_dependency_count": 219,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.KeysCall",
-        "solver_dependency_count": 233,
+        "solver_dependency_count": 231,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.TruncateBudget",
-        "solver_dependency_count": 361,
+        "solver_dependency_count": 359,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.DeleteFinalSlots",
-        "solver_dependency_count": 189,
+        "solver_dependency_count": 187,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.TableRuntime.Budget",
-        "solver_dependency_count": 227,
+        "solver_dependency_count": 225,
         "imports_replacement_ast": false
       }
     ],
     "input_reachability": [
       {
         "module": "Input.Witness.BodyNormal",
-        "solver_dependency_count": 234,
+        "solver_dependency_count": 232,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.Witness.PrefixNormal",
-        "solver_dependency_count": 227,
+        "solver_dependency_count": 225,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.RequestStoredGasFromHeader",
-        "solver_dependency_count": 238,
+        "solver_dependency_count": 236,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.RlpLength.BlockGuard",
-        "solver_dependency_count": 293,
+        "solver_dependency_count": 291,
         "imports_replacement_ast": false
       }
     ],
     "local_gas_accounting": [
       {
         "module": "GasBudget.StateChargeBudget",
-        "solver_dependency_count": 98,
+        "solver_dependency_count": 96,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.ForwardSites",
-        "solver_dependency_count": 168,
+        "solver_dependency_count": 166,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.ChildError",
-        "solver_dependency_count": 103,
+        "solver_dependency_count": 101,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.ChildSuccess",
-        "solver_dependency_count": 107,
+        "solver_dependency_count": 105,
         "imports_replacement_ast": false
       }
     ],
     "original_root_initialization": [
       {
         "module": "GasBudget.RootMsgNormal",
-        "solver_dependency_count": 117,
+        "solver_dependency_count": 115,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.FrameOpenCall",
-        "solver_dependency_count": 197,
+        "solver_dependency_count": 195,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.FreshRecordCall",
-        "solver_dependency_count": 97,
+        "solver_dependency_count": 95,
         "imports_replacement_ast": false
       }
     ],
     "abstract_global_accounting": [
       {
         "module": "GasBudget.BlockAccounting",
-        "solver_dependency_count": 165,
+        "solver_dependency_count": 163,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.MergeBudget",
-        "solver_dependency_count": 173,
+        "solver_dependency_count": 171,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.NestedDecay",
-        "solver_dependency_count": 172,
+        "solver_dependency_count": 170,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.StorageDebt",
-        "solver_dependency_count": 162,
+        "solver_dependency_count": 160,
         "imports_replacement_ast": false
       }
     ],

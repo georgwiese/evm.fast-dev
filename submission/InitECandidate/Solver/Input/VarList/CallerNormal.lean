@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.VarList.NormalSummary
 import InitECandidate.Solver.Input.VarList.Environment
 import InitECandidate.Solver.Input.CallResume
 import InitECandidate.Solver.Input.VarList.CountLimit

@@ -1,11 +1,12 @@
-import InitECandidate.Solver.Input.PayloadPrefixProgram
+import Guest.SoftwareAst
+import InitECandidate.Solver.Input.DropLeading
 import InitECandidate.Solver.Input.HeapFlatScalar
 
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_ssz_split_var_list with
+def body : ProgHOL 64 := match Guest.Software.guestFn_ssz_split_var_list with
   | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL) := [(ofString "p",.one),(ofString "len",.one),(ofString "lim",.one)]
 def emptyTest : ExpHOL 64 := .cmp .equal (localVar "len") (.const 0#64)
@@ -17,7 +18,7 @@ def firstExpression : ExpHOL 64 := Scalar.flat32 (localVar "p") []
 def firstTail : ProgHOL 64 := Payload.dropLeading 3 body
 
 theorem entry_shape : body=.seq emptyGuard (.seq shortGuard (.dec (ofString "first") .one firstExpression firstTail)) := by
-  simp only [body,firstTail,Payload.dropLeading,Guest.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
+  simp only [body,firstTail,Payload.dropLeading,Guest.Software.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,Option.map_none,emptyGuard,emptyTest,emptyReturn,shortGuard,shortTest,firstExpression,
     Scalar.flat32,Scalar.flatAddress,Scalar.shift,localVar,List.nil_append,List.cons_append,List.append_nil]
 
@@ -34,7 +35,7 @@ def allocatedTail : ProgHOL 64 := Payload.dropLeading 4 firstTail
 
 theorem first_tail_shape : firstTail=.seq firstGuard (.dec (ofString "count") .one countExpression
     (.seq countGuard (.decCall (ofString "arr") .one (ofString "alloc") [allocationExpression] allocatedTail))) := by
-  simp only [firstTail,body,Payload.dropLeading,Guest.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
+  simp only [firstTail,body,Payload.dropLeading,Guest.Software.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,Option.map_none,firstGuard,firstTest,countExpression,countTest,countGuard,
     allocationExpression,allocatedTail,localVar]
 
@@ -47,15 +48,15 @@ def returnArray : ProgHOL 64 := .return (.rstruct [localVar "arr",localVar "coun
 
 theorem allocated_tail_shape : allocatedTail=.dec (ofString "i") .one (.const 0#64)
     (.dec (ofString "prev") .one (localVar "first") (.seq loop afterLoop)) := by
-  simp only [allocatedTail,firstTail,body,Payload.dropLeading,Guest.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
+  simp only [allocatedTail,firstTail,body,Payload.dropLeading,Guest.Software.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,Option.map_none,loop,afterLoop,localVar]
 
 theorem loop_shape : loop=.while loopTest loopBody := by
-  simp only [loop,allocatedTail,firstTail,body,Payload.dropLeading,Guest.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
+  simp only [loop,allocatedTail,firstTail,body,Payload.dropLeading,Guest.Software.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,Option.map_none,loopTest,loopBody,localVar]
 
 theorem after_loop_shape : afterLoop=.seq finalLengthStore returnArray := by
-  simp only [afterLoop,allocatedTail,firstTail,body,Payload.dropLeading,Guest.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
+  simp only [afterLoop,allocatedTail,firstTail,body,Payload.dropLeading,Guest.Software.guestFn_ssz_split_var_list,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,Option.map_none,finalLengthStore,returnArray,localVar]
 
 end InitECandidate.Solver.Input.VarList

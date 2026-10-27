@@ -2057,6 +2057,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/OutputWrite.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadCut.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadExtra.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadHeaderImage.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadOffsetsLocals.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadValidated.lean",
@@ -2096,6 +2097,7 @@
     "submission/InitECandidate/Solver/Input/DeclarationTrace.lean",
     "submission/InitECandidate/Solver/Input/DeclarationZeroGlobals.lean",
     "submission/InitECandidate/Solver/Input/DecoderRuntimeCode.lean",
+    "submission/InitECandidate/Solver/Input/DropLeading.lean",
     "submission/InitECandidate/Solver/Input/EraseClock.lean",
     "submission/InitECandidate/Solver/Input/EraseResume.lean",
     "submission/InitECandidate/Solver/Input/EvaluationClockSub.lean",
@@ -7956,8 +7958,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64719,
-  "package_bytes": 2481733835,
+  "package_entries": 64721,
+  "package_bytes": 2481736437,
   "claim": {
     "K": "infinity"
   },

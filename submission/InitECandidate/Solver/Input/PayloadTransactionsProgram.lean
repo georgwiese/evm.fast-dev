@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.PayloadExtraGuard
-import InitECandidate.Solver.Input.VarList.CallerNormal
+import InitECandidate.Solver.Input.VarList.Environment
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -24,7 +24,7 @@ theorem transactions_shape : afterExtra=.seq extraPointerStore (.seq extraLength
     transactionCall=.decCall (ofString "txs") VarList.returnShape (ofString "ssz_split_var_list") transactionArguments afterTransactions ∧
     afterTransactions=.seq transactionPointerStore (.seq transactionCountStore withdrawalCall) ∧
     withdrawalCall=.decCall (ofString "nwd") .one (ofString "ssz_fixed_list_count") withdrawalArguments afterWithdrawals := by
-  simp only [afterExtra,offsetContinuation,offsetBody,dropLeading,afterGuard,body,Scalar.payloadBody,Guest.guestFn_decode_payload,
+  simp only [afterExtra,offsetContinuation,offsetBody,dropLeading,afterGuard,body,Scalar.payloadBody,Guest.Software.guestFn_decode_payload,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
     extraPointerStore,extraPointerValue,extraLengthStore,extraLength,transactionCall,afterTransactions,
     transactionPointerStore,transactionCountStore,withdrawalCall,afterWithdrawals,transactionArguments,withdrawalArguments,
@@ -43,7 +43,7 @@ theorem transaction_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemo
       (62+Guest.GasLimit.le32 input 566)+(Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)≤input.length%2^64 := by
   classical
   have subtraction:=BitVec.ofNat_sub_ofNat_of_le (w:=64) (Guest.GasLimit.le32 input 570) (Guest.GasLimit.le32 input 566)
-    (by have bound:=RawScalar.le32_lt input 566; omega) ordered
+    (by have bound:=Framing.le32_lt input 566; omega) ordered
   refine ⟨?_,by omega⟩
   simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,transactionArguments,localVar,p,t,w,offsetWords,
     VarList.values,valueIsWord,valueWord,wordOpHOL,wordOp,BitVec.add_assoc,←BitVec.ofNat_add,subtraction]

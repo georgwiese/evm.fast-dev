@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.PayloadPrefixGuard
+import InitECandidate.Solver.Input.PayloadOffsetsNormal
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -10,7 +10,7 @@ def extraGuard : ProgHOL 64 := .ite extraTest (.call (some (none,none)) (ofStrin
 def afterExtra : ProgHOL 64 := dropLeading 1 offsetContinuation
 
 theorem extra_shape : offsetContinuation=.seq extraGuard afterExtra := by
-  simp only [offsetContinuation,offsetBody,dropLeading,afterGuard,body,Scalar.payloadBody,Guest.guestFn_decode_payload,
+  simp only [offsetContinuation,offsetBody,dropLeading,afterGuard,body,Scalar.payloadBody,Guest.Software.guestFn_decode_payload,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,afterExtra,extraGuard,extraTest,extraLength,localVar]
 
 theorem extra_test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)

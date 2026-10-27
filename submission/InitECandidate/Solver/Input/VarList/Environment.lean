@@ -1,5 +1,5 @@
-import InitECandidate.Solver.Input.VarList.NormalSummary
-import InitECandidate.Solver.Input.CallNormal
+import InitECandidate.Solver.Input.VarList.Program
+import InitECandidate.Solver.WitnessRadix.CodeEnvironment
 
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

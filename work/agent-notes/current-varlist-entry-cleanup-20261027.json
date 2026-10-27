@@ -1,0 +1,61 @@
+{
+  "previous_revision": "8dcf49fbafa29fdcbfc8744f73345ae609da0443",
+  "scope": "Actual variable-list syntax/parameter environment only; historical body/caller runtime summaries are not revalidated.",
+  "changes": [
+    {
+      "path": "submission/InitECandidate/Solver/Input/PayloadExtraGuard.lean",
+      "previous_imports": [
+        "InitECandidate.Solver.Input.PayloadPrefixGuard"
+      ],
+      "current_imports": [
+        "InitECandidate.Solver.Input.PayloadOffsetsNormal"
+      ],
+      "previous_solver_closure": 85,
+      "current_solver_closure": 84,
+      "sha256": "ca091ff50a67142848e332ad701939e267cf7ac4b4d26456b599b203d67d0bf0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/VarList/Program.lean",
+      "previous_imports": [
+        "InitECandidate.Solver.Input.PayloadPrefixProgram",
+        "InitECandidate.Solver.Input.HeapFlatScalar"
+      ],
+      "current_imports": [
+        "Guest.SoftwareAst",
+        "InitECandidate.Solver.Input.DropLeading",
+        "InitECandidate.Solver.Input.HeapFlatScalar"
+      ],
+      "previous_solver_closure": 74,
+      "current_solver_closure": 20,
+      "sha256": "97b0e40710233f45e4f7614e05e18cefa61aa55dc19f546cc59a4d9df9550cff"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/VarList/Environment.lean",
+      "previous_imports": [
+        "InitECandidate.Solver.Input.VarList.NormalSummary",
+        "InitECandidate.Solver.Input.CallNormal"
+      ],
+      "current_imports": [
+        "InitECandidate.Solver.Input.VarList.Program",
+        "InitECandidate.Solver.WitnessRadix.CodeEnvironment"
+      ],
+      "previous_solver_closure": 109,
+      "current_solver_closure": 21,
+      "sha256": "4be12dbf5e631327f803a000022e5a7ea59a90ccd04e3e5b0722863e17220896"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/PayloadTransactionsProgram.lean",
+      "previous_imports": [
+        "InitECandidate.Solver.Input.PayloadExtraGuard",
+        "InitECandidate.Solver.Input.VarList.CallerNormal"
+      ],
+      "current_imports": [
+        "InitECandidate.Solver.Input.PayloadExtraGuard",
+        "InitECandidate.Solver.Input.VarList.Environment"
+      ],
+      "previous_solver_closure": 127,
+      "current_solver_closure": 88,
+      "sha256": "a39f82681b9acb7a89586c7400dac69e64d2f626a5dd56b84e9798117901407d"
+    }
+  ]
+}

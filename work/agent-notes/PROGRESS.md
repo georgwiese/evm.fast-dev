@@ -4,6 +4,48 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual extra-data size guard and variable-list entry dependency cleanup
+
+PayloadExtraGuard's literal shape now uses Software; its import is reduced to
+PayloadOffsetsNormal instead of the unrelated old whole-prefix bridge.
+CurrentStartup.PayloadExtra applies GuardActual to the real returning continuation,
+deriving extra-data length≤32at the original source clock. It retains Context,
+all four actual offset validity facts and the genuine next payload run. No extra
+fuel or future helper-return premise is introduced.
+
+DropLeading extracts the unchanged generic lexical-tail selector from the payload
+prefix module. VarList.Program uses that small helper, HeapFlatScalar and actual
+Software variable-list syntax. VarList.Environment imports the actual Program and
+CodeEnvironment directly instead of its unrelated NormalSummary/CallNormal
+umbrella. The historical CallerNormal now imports its used NormalSummary explicitly;
+its runtime/room premises are not revalidated at this checkpoint. PayloadTransactions
+Program imports the parameter environment, uses actual Software and raw-list
+Framing.le32_lt. Its true transaction/withdrawal call shapes and argument arithmetic
+pass; the genuine transaction call/array ownership proof remains next.
+
+[Cleanup manifest](current-varlist-entry-cleanup-20261027.json) records old imports,
+revision and current hashes: VarList.Program74to20, Environment109to21,
+PayloadTransactionsProgram127to88Solver modules. PayloadExtraGuard85to84. These
+are proof dependency changes; fixed guest/semantics/ROM/proofs/Solution/claim are
+unchanged. Historical variable-list body/caller cost summaries are not claimed
+current merely because their entry module builds.
+
+Validation: current-payload-transaction-program-v1.log PASS1269jobs/permitted
+printed axioms,39.31s/MaxRSS1894148KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse.
+Component payload-extra-v1 PASS1265. Index7916historical/currentmodules/15729facts,
+380current-reference modules; inventory7953/replacementclosure0/frozenmainunchanged;
+incremental policyPASS64721entries/2481736437bytes. No complete verification or
+finite global K. Account11%weekly/0resetcredits/ordinaryallowed. Five old untracked
+RLP files retained. Push every commit.
+
+Next retain copied bytes through the two extra-data header stores and extract the
+real transaction-list callee. Strengthen the heap frontier beyond the actual136-
+byte payload record to protect it against later array writes. Derive genuine list
+allocation room from its actual returned call; the old sufficient whole-array room
+premise is not a free incoming invariant. Then fixed-list count and remaining gas
+stores, genuine main records and scratch covered-outcome classification/global
+quantitative target composition. Overall40%, plausible30–50%.
+
 ## Real payload offset locals, four workspace stores and fixed540guard
 
 PayloadOffsetsProgram now imports only the literal PayloadPrefixProgram instead

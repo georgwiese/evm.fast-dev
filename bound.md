@@ -150,7 +150,10 @@ Checked against the current Software AST:
   input and actual declarations. PayloadValidated now joins the real four
   workspace stores/validator, deriving extra offset540and all four ordering/range
   guards, preserving input bytes and the reusable PayloadWorkspace.Context.
-  Extra-data guard, array writes and later gas store remain open.
+  PayloadExtra now derives the32-byte extra-data bound from the real next guard
+  with original clock and Context. Variable-list literal AST and its parameter
+  environment now use actual Software with minimal dependencies; body/caller
+  summaries and actual transaction/array writes remain open before the gas store.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -169,11 +172,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-payload-validated-v2.log`, 1,263 jobs,
-permitted printed axioms only, 9.83 seconds, MaxRSS 1,877,572 KiB.
-Historical/current index: 7,915 modules /15,727 facts; 375 modules carry the
-current dependency reference. Incremental package policy passes at64,719entries/
-2,481,733,835bytes; historical copy/zero execution wrappers are not revalidated.
+Latest successful closure: `current-payload-transaction-program-v1.log`, 1,269
+jobs, permitted printed axioms only, 39.31 seconds, MaxRSS 1,894,148 KiB.
+Historical/current index: 7,916 modules /15,729 facts; 380 modules carry the
+current dependency reference. Incremental package policy passes at64,721entries/
+2,481,736,437bytes; historical copy/zero/list runtime summaries are not revalidated.
 These checks are not full verification.
 
 ## Remaining plan

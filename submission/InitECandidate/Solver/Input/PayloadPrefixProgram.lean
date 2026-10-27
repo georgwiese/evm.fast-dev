@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.DropLeading
 import InitECandidate.Solver.Input.PayloadProgram
 import InitECandidate.Solver.WitnessRadix.ProgramPrefixAppend
 
@@ -6,12 +7,6 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 open WitnessRadix.ProgramPrefix
 
-def dropLeading : Nat→ProgHOL 64→ProgHOL 64
-  | 0,code=>code
-  | n+1,.seq _ rest=>dropLeading n rest
-  | n+1,.dec _ _ _ rest=>dropLeading n rest
-  | n+1,.decCall _ _ _ _ rest=>dropLeading n rest
-  | _,_=>.skip
 def offsetBody : ProgHOL 64 := dropLeading 7 afterGuard
 def pointerStore : ProgHOL 64 := .store (Scalar.plus (localVar "pl") 0) (localVar "p")
 def lengthStore : ProgHOL 64 := .store (Scalar.plus (localVar "pl") 8) (localVar "len")

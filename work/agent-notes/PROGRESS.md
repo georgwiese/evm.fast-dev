@@ -4,6 +4,57 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Post-rebase dependency cleanup and genuine lexical decoder cut
+
+CallPrefix now imports LocalEffects instead of the unrelated ClockCostScopeLocals
+umbrella. Its transitive Solver dependency closure falls155to7modules; Execution
+157to9, Trace158to10 and Globals159to11. CaughtAssignedStops drops unused
+AssignedCallData (9to6), while NoFallthrough states Guest.Model explicitly and
+drops unused CallResume (7to5). All before counts use exact pre-cleanup imports
+at f52bea987. [Cleanup manifest](rebase-prefix-cleanup-20261027.json) records the
+method, removed dependencies and retained source hashes. No fixed guest bytes,
+semantics, source ROM, Proofs, Solution or claim changed.
+
+CallPrefix.cutAt/reconstructAt retain exact lexical syntax even for repeated
+calls to alloc. Observe retains outcome, clock and LocalEffects.erase (all state
+except locals/clock); StoppedFrame and actual action/list classification now
+preserve this nonlocal observation on every stopped path. Existing clock-only
+Stopped/classify/priced_trace interfaces remain available as projections.
+Execution.split/singleton expose genuine subtraces without reevaluation or local
+scope restoration. No supplied future successful action or clock is required.
+
+CurrentStartup/DecoderPrefix cuts the literal6actions after13startup calls:
+out allocation, z32 allocation, memzero, si declaration, err_code declaration,
+and the caught decode_host_input call. Its real error handler preserves both
+arena cursors through serialization/byte-store/output/terminal halt. Reached
+continuations retain live lexical bindings; stopped prefixes retain actual
+memory/globals/FFI/clock/result, with both arenas and domain/code preserved.
+reached joins this to the actual complete source observation for arbitrary input
+lists, including stopped startup and decoder paths. This is control/frame
+transport, not a global runtime or initializer cost bound.
+
+DecoderReturn proves the literal rejection handler cannot fall through. The
+real normal assigned caught call must therefore have received an actual checked
+scalar decode_host_input return, paid its caller clock and bound si in the real
+caller locals. reached_return extracts that call from the genuine six-action
+trace; an exception handler is not substituted for a successful decoder.
+
+Validation: current-decoder-return-v5.log PASS354jobs/permitted printed axioms,
+3.88s/MaxRSS1476300KiB,8GiBwhole-hostguard/twoslots/artifactcachefalse. Earlier
+current-decoder-prefix-v4 PASS350jobs/5.20s/MaxRSS1590132KiB and cleaned generic
+prefix-frame-v2 PASS125jobs. Failed diagnostics unindexed. Index7861historical-
+or-current modules/15426facts;245current-reference modules. Inventory7896modules,
+replacement closure0/fixedlatestmain unchanged. Incremental policy
+PASS64664entries/2480839957bytes. No full policy/axiom audit/comparator replay claimed.
+
+Next derive normal startup host/heap frontier facts, then join actual decoder
+input_blob/copy-image/decode_stateless_input lifetimes and genuine scratch
+covered-outcome classification. Conditional arena preservation or NoReturn still
+does not discharge whole-path exclusion or a uniform finite target K.
+Overall effort remains40%, plausible30–50%; no global finite target bound yet.
+Five unfinished pre-rebase RLP files preserved/untracked/unclaimed. Account7%
+weeklyused/0resetcredits/ordinary allowed. Push every commit to georg.
+
 ## Actual startup cut and all-outcome arena-global preservation
 
 CurrentStartup/Code checks real Software entries for a closed46-helper graph:
@@ -40,13 +91,10 @@ inventory7894/replacement closure0/fixedlatestmain unchanged; incremental policy
 PASS64662entries/2480817587bytes. No fresh full fixed-policy/axiom audit/comparator
 replay, initializer quantitative budget or finite global K claimed.
 
-Next real out/z32/si/error lexical prefix and decoder success/failure join, plus
-normal-startup host and heap frontier facts. A skip sink inside lexical declarations
-restores those locals before an external continuation, so do not extend the simple
-sequence append identity across those scopes. Reuse CallPrefix.Execution/Reaches;
-its existing Stopped classification tracks only outcome/clock, so add a nonlocal
-frame classification before using it to transfer stopped-path globals/memory.
-Then actual scratch cursor transport/covered terminal-outcome classification;
+At that checkpoint, the lexical decoder cut and stopped-path nonlocal frame
+were still pending; the later checkpoint above now supplies them. Normal startup
+host/heap frontier and internal decoder input-image joins remain open, followed
+by actual scratch cursor transport/covered terminal-outcome classification;
 NoReturn alone does not discharge global covered paths or the target bound.
 Five unfinished pre-rebase RLP files remain preserved/untracked/unclaimed.
 Account6%weeklyused/0resetcredits/ordinary allowed. Push each commit to georg.

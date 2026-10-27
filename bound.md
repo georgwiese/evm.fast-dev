@@ -80,17 +80,29 @@ Checked against the current Software AST:
   exact evaluation cut: each actual termination either stops inside that prefix
   or reaches the real following main state with both initialized cursors retained.
   This is not an initializer runtime bound or a proof that every input reaches
-  the suffix. Later decoder lexical scopes/host/heap facts remain to be joined.
+  the suffix. DecoderPrefix now reconstructs the real six lexical actions through
+  the caught decoder call and joins their actual continuation/early-stop cut to
+  whole source observations. It retains live out/z32/si/err_code bindings and
+  preserves the full nonlocal observation on stopped paths. DecoderReturn proves
+  the real rejection handler cannot fall through and extracts the actual checked
+  scalar decoder return from a completed prefix. Normal startup host/heap facts
+  and the internal decoder input/lifetime joins remain open.
+- CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
+  Solver closure falls from155to7modules. The trace closure falls158to10.
+  Existing clock-only interfaces are retained as projections of the stronger
+  stopped-state classification. CaughtAssignedStops and NoFallthrough also use
+  their actual minimal imports. These are proof dependency changes, not changes
+  to the fixed guest or semantics.
 - Replacement implementation/closed proofs/generators/harness were removed
   earlier. Another 65 closed stale generated modules were removed after rebase.
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-startup-decoder-globals-v1.log`, 343 jobs,
-permitted printed axioms only, 72.90 seconds, MaxRSS 1,536,032 KiB.
-Historical/current index: 7,859 modules /15,404 facts; 235 modules carry the
+Latest successful closure: `current-decoder-return-v5.log`, 354 jobs,
+permitted printed axioms only, 3.88 seconds, MaxRSS 1,476,300 KiB.
+Historical/current index: 7,861 modules /15,426 facts; 245 modules carry the
 current dependency reference. Incremental Solver/package policy passes at
-64,662 entries /2,480,817,587 bytes.
+64,664 entries /2,480,839,957 bytes.
 These checks are not full verification.
 
 ## Remaining plan
@@ -115,8 +127,10 @@ These checks are not full verification.
   below it fail immediately; no whole-path unreachability is claimed yet.
   The initial arena cursors now follow from the real main/mem_init prefix.
   Their transport through the13startup calls now has an exact whole-main cut.
-  Next retain out/z32/si/error lexical scopes through the actual decoder call,
-  derive normal startup host/heap facts, and classify
+  The actual six-action decoder cut now retains its lexical scopes and both
+  arena globals; successful continuation derives the actual scalar decoder return.
+  Next derive normal startup host/heap facts, join the decoder's actual input_blob
+  and decode_stateless_input calls to its copied image/lifetime, and classify
   scratch helper outcomes. NoReturn alone does not rule out covered terminal
   FFI outcomes, so do not discard later EVM/map obligations on that basis.
   AllocationArithmetic/AllocationNormal/AllocationCall/AllocationCallNormal now
@@ -141,7 +155,7 @@ These checks are not full verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with `/tmp/init-e-account-usage.py`. User means
-  account usage-limit resets. Last check: 6% weekly used, zero reset credits,
+  account usage-limit resets. Last check: 7% weekly used, zero reset credits,
   ordinary usage allowed.
 - One selected build at a time, two Lean slots, artifact cache disabled,
   **8 GiB whole-host used-memory stop guard**. Stop if disk exceeds 85%. Poll

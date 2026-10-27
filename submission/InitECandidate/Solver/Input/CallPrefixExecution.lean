@@ -6,6 +6,11 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
 def project (output : Option (PanSemResultExact 64)×PanSemStateFiniteExact 64 Guest.HostMemory) := (output.1,output.2.clock)
 
+/-- Retain the outcome, clock and every state field except lexical locals.
+In particular, this observation retains memory, globals and the FFI state. -/
+def observe (output : Option (PanSemResultExact 64)×PanSemStateFiniteExact 64 Guest.HostMemory) :=
+  (project output, LocalEffects.erase output.2)
+
 /-- One genuine reached lexical action, with its observed argument reads,
 checked callee return or actual normal command. Caller locals remain in
 scope at the next action; final scope restoration affects no clock. -/
@@ -80,6 +85,12 @@ inductive Execution : PanSemStateFiniteExact 64 Guest.HostMemory→List Action�
   | step {source middle target action rest} (first : Reaches source action middle) (next : Execution middle rest target) :
       Execution source (action::rest) target
 
+theorem Reaches.observe {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {action : Action}
+    (reached : Reaches source action target) (tail : ProgHOL 64) :
+    observe (evaluateHOLFiniteState source (program [action] tail))=
+      observe (evaluateHOLFiniteState target tail) :=
+  Prod.ext (reached.project tail) (reached.erase tail)
+
 theorem program_cons (action : Action) (rest : List Action) (tail : ProgHOL 64) :
     program (action::rest) tail=program [action] (program rest tail) := by cases action <;> rfl
 
@@ -129,6 +140,30 @@ theorem Execution.skip_erase {source target : PanSemStateFiniteExact 64 Guest.Ho
   have same:=execution.erase .skip
   simpa only [evaluateHOLFiniteState_skip] using same
 
+theorem Execution.observe {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List Action}
+    (execution : Execution source actions target) (tail : ProgHOL 64) :
+    observe (evaluateHOLFiniteState source (program actions tail))=
+      observe (evaluateHOLFiniteState target tail) :=
+  Prod.ext (execution.project tail) (execution.erase tail)
+
+/-- Split an observed action trace without reevaluating it or restoring
+its still-live lexical bindings. -/
+theorem Execution.split {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (front back : List Action) (execution : Execution source (front ++ back) target) :
+    ∃ middle, Execution source front middle ∧ Execution middle back target := by
+  induction front generalizing source with
+  | nil => exact ⟨source, .done source, execution⟩
+  | cons action rest ih =>
+    cases execution with
+    | step first next =>
+      obtain ⟨middle, left, right⟩ := ih next
+      exact ⟨middle, .step first left, right⟩
+
+theorem Execution.singleton {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {action : Action}
+    (execution : Execution source [action] target) : Reaches source action target := by
+  cases execution with
+  | step first next => cases next; exact first
+
 end InitECandidate.Solver.Input.CallPrefix
 
 #print axioms InitECandidate.Solver.Input.CallPrefix.Reaches.project
@@ -140,3 +175,7 @@ end InitECandidate.Solver.Input.CallPrefix
 #print axioms InitECandidate.Solver.Input.CallPrefix.Execution.runtime
 #print axioms InitECandidate.Solver.Input.CallPrefix.Execution.erase
 #print axioms InitECandidate.Solver.Input.CallPrefix.Execution.skip_erase
+#print axioms InitECandidate.Solver.Input.CallPrefix.Reaches.observe
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.observe
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.split
+#print axioms InitECandidate.Solver.Input.CallPrefix.Execution.singleton

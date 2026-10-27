@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.ClockCostScopeLocals
+import InitECandidate.Solver.Input.LocalEffects
 
 namespace InitECandidate.Solver.Input.CallPrefix
 open Flapjack Flapjack.Pancake.PanLang
@@ -29,6 +29,32 @@ def cut (target : MlS) : ProgHOL 64→List Action×ProgHOL 64
     (.command command::next.1,next.2)
   | other=>([],other)
 
+/-- Cut by the number of lexical actions, so repeated calls to the same
+function can be distinguished without changing or flattening their scopes. -/
+def cutAt : Nat→ProgHOL 64→List Action×ProgHOL 64
+  | 0,source=>([],source)
+  | count+1,.dec name shape expression rest=>
+    let next:=cutAt count rest
+    (.declare name shape expression::next.1,next.2)
+  | count+1,.decCall name shape function arguments rest=>
+    let next:=cutAt count rest
+    (.scoped name shape function arguments::next.1,next.2)
+  | count+1,.seq command rest=>
+    let next:=cutAt count rest
+    (.command command::next.1,next.2)
+  | _+1,other=>([],other)
+
+theorem reconstructAt (count : Nat) (source : ProgHOL 64) :
+    program (cutAt count source).1 (cutAt count source).2=source := by
+  induction count generalizing source with
+  | zero=>rfl
+  | succ count ih=>
+    cases source with
+    | dec name shape expression rest=>exact congrArg (ProgHOL.dec name shape expression) (ih rest)
+    | decCall name shape function arguments rest=>exact congrArg (ProgHOL.decCall name shape function arguments) (ih rest)
+    | seq command rest=>exact congrArg (ProgHOL.seq command) (ih rest)
+    | _=>rfl
+
 /-- Cutting and rebuilding is literal syntax equality. It does not replace
 guest code, omit an executed command or assume the selected call succeeds. -/
 theorem reconstruct (target : MlS) (source : ProgHOL 64) :
@@ -48,3 +74,4 @@ termination_by source
 end InitECandidate.Solver.Input.CallPrefix
 
 #print axioms InitECandidate.Solver.Input.CallPrefix.reconstruct
+#print axioms InitECandidate.Solver.Input.CallPrefix.reconstructAt

@@ -2015,6 +2015,8 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecodePayload.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecodeRequests.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecodeStatelessInput.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/DecoderPrefix.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/DecoderReturn.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Effects.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/EvmInit.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/ForkInit.lean",
@@ -7899,8 +7901,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64662,
-  "package_bytes": 2480817587,
+  "package_entries": 64664,
+  "package_bytes": 2480839957,
   "claim": {
     "K": "infinity"
   },

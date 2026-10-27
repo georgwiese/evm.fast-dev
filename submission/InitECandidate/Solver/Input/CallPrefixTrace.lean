@@ -6,10 +6,20 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 def Stopped (source : PanSemStateFiniteExact 64 Guest.HostMemory) (actions : List Action) : Prop :=
   ∀ tail,project (evaluateHOLFiniteState source (program actions tail))=project (evaluateHOLFiniteState source (program actions .skip))
 
+/-- A stopped prefix retains its actual nonlocal state as well as its
+outcome and clock. Changing the unevaluated tail affects none of these. -/
+def StoppedFrame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (actions : List Action) : Prop :=
+  ∀ tail,observe (evaluateHOLFiniteState source (program actions tail))=
+    observe (evaluateHOLFiniteState source (program actions .skip))
+
+theorem StoppedFrame.stopped {source : PanSemStateFiniteExact 64 Guest.HostMemory} {actions : List Action}
+    (stopped : StoppedFrame source actions) : Stopped source actions :=
+  fun tail => congrArg Prod.fst (stopped tail)
+
 /-- Classify one actual lexical action. Only an observed checked helper
 return enters its continuation; every other helper outcome stops here. -/
-theorem action_classify (source : PanSemStateFiniteExact 64 Guest.HostMemory) (action : Action) :
-    Stopped source [action] ∨ ∃ target,Reaches source action target := by
+theorem action_classify_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (action : Action) :
+    StoppedFrame source [action] ∨ ∃ target,Reaches source action target := by
   classical
   cases action with
   | declare name shape expression=>
@@ -50,18 +60,27 @@ theorem action_classify (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a
               · exact Or.inl (by intro tail; simp only [program,evaluateHOLFiniteState_decCall_fixClockRewrite,args,called,if_neg zero,run,if_neg checked] <;> rfl)
             | _=>exact Or.inl (by intro tail; simp only [program,evaluateHOLFiniteState_decCall_fixClockRewrite,args,called,if_neg zero,run] <;> rfl)
 
-theorem classify (source : PanSemStateFiniteExact 64 Guest.HostMemory) (actions : List Action) :
-    Stopped source actions ∨ ∃ target,Execution source actions target := by
+theorem classify_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (actions : List Action) :
+    StoppedFrame source actions ∨ ∃ target,Execution source actions target := by
   induction actions generalizing source with
   | nil=>exact Or.inr ⟨source,.done source⟩
   | cons action rest ih=>
-    rcases action_classify source action with stopped|reached
+    rcases action_classify_frame source action with stopped|reached
     · exact Or.inl (by intro tail; rw [program_cons action rest tail,program_cons action rest .skip]; exact (stopped _).trans (stopped _).symm)
     · obtain ⟨middle,first⟩:=reached
       rcases ih middle with stopped|reached
-      · exact Or.inl (by intro tail; rw [program_cons action rest tail,program_cons action rest .skip]; exact (first.project _).trans ((stopped tail).trans (first.project _).symm))
+      · exact Or.inl (by intro tail; rw [program_cons action rest tail,program_cons action rest .skip]; exact (first.observe _).trans ((stopped tail).trans (first.observe _).symm))
       · obtain ⟨target,next⟩:=reached
         exact Or.inr ⟨target,.step first next⟩
+
+/-- Compatibility projection for callers which only need clocks and outcomes. -/
+theorem action_classify (source : PanSemStateFiniteExact 64 Guest.HostMemory) (action : Action) :
+    Stopped source [action] ∨ ∃ target,Reaches source action target :=
+  (action_classify_frame source action).imp StoppedFrame.stopped id
+
+theorem classify (source : PanSemStateFiniteExact 64 Guest.HostMemory) (actions : List Action) :
+    Stopped source actions ∨ ∃ target,Execution source actions target :=
+  (classify_frame source actions).imp StoppedFrame.stopped id
 
 /-- A prefix priced with a skip sink either stops within that allowance or
 exposes the actual reached continuation and a concrete action trace. Scope
@@ -94,3 +113,7 @@ end InitECandidate.Solver.Input.CallPrefix
 #print axioms InitECandidate.Solver.Input.CallPrefix.action_classify
 #print axioms InitECandidate.Solver.Input.CallPrefix.classify
 #print axioms InitECandidate.Solver.Input.CallPrefix.priced_trace
+
+#print axioms InitECandidate.Solver.Input.CallPrefix.action_classify_frame
+#print axioms InitECandidate.Solver.Input.CallPrefix.classify_frame
+#print axioms InitECandidate.Solver.Input.CallPrefix.StoppedFrame.stopped

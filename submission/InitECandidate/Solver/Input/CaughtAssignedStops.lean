@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.AssignedCallData
+import InitECandidate.Solver.Input.CallNormal
 import InitECandidate.Solver.Input.EvaluationFields
 
 namespace InitECandidate.Solver.Input.CallNormal

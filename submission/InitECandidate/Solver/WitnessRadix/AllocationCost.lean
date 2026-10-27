@@ -1,5 +1,7 @@
 import InitECandidate.Solver.WitnessRadix.AllocationEnvironment
-import InitECandidate.Solver.Arenas.Cost
+import InitECandidate.Solver.Input.TrapCost
+import InitECandidate.Solver.Input.ClockCostCurrentGuard
+import InitECandidate.Solver.Input.ClockCostScoped
 
 namespace InitECandidate.Solver.WitnessRadix.PersistentAlloc
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -8,9 +10,9 @@ open Flapjack.Basis.Pure.MlString
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "alloc")=some (formals,body,.one) := by
-  have checked := Input.OriginalCode.indexed code installed 2 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_alloc) (by rfl)
+  have checked := Input.OriginalCode.indexed code installed 2 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_alloc) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,formals,
-    Guest.guestFn_alloc,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_alloc,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem guard_price (code) (installed : Input.OriginalCode.Installed code) (test : ExpHOL 64)
     (continuation : ProgHOL 64) (tailPrice : Nat) (tail : Input.ClockCost.Bound code continuation tailPrice) :

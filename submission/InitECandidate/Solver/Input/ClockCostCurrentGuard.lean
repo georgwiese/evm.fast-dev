@@ -28,13 +28,13 @@ theorem stopping_guard_current (source : PanSemStateFiniteExact 64 Guest.HostMem
         simp only
         by_cases zero : word=0
         · rw [if_pos zero,evaluateHOLFiniteState_skip]
-          exact back.trans (Nat.le_max_right _ _)
+          exact Nat.le_trans back (Nat.le_max_right _ _)
         · rw [if_neg zero]
           generalize computed : evaluateHOLFiniteState source first=output at front stops ⊢
           obtain ⟨result,target⟩ := output
           cases result with
           | none => exact (stops rfl).elim
-          | some result => exact front.trans (Nat.le_max_left _ _)
+          | some result => exact Nat.le_trans front (Nat.le_max_left _ _)
 
 end InitECandidate.Solver.Input.ClockCost
 

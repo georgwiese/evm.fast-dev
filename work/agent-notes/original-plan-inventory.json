@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 7825,
+  "solver_modules": 7830,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -48,7 +48,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1289,
+    "Input": 1294,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -119,7 +119,7 @@
       },
       {
         "module": "MutableTable.NodeDbDictionary32",
-        "solver_dependency_count": 99,
+        "solver_dependency_count": 93,
         "imports_replacement_ast": false
       }
     ],

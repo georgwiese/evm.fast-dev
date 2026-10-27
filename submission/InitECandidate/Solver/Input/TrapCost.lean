@@ -1,7 +1,8 @@
 import InitECandidate.Solver.Input.TrapNoReturn
 import InitECandidate.Solver.Input.QuietClockEffects
 import InitECandidate.Solver.Input.ClockCostCall
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.Input.OriginalEntry
+import InitECandidate.Solver.Input.OriginalCode
 
 namespace InitECandidate.Solver.Input.Trap
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -10,15 +11,15 @@ open Flapjack.Basis.Pure.MlString
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "trap_with")=some (formals,body,.one) := by
-  have checked := OriginalCode.indexed code installed 0 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_trap_with) (by rfl)
+  have checked := OriginalCode.indexed code installed 0 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_trap_with) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,formals,
-    Guest.guestFn_trap_with,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_trap_with,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 /-- The real trap's shared-memory and FFI effects do not spend source
 call/loop clocks. They are retained in the semantics, not erased. -/
 theorem body_price (code) : ClockCost.Bound code body 0 := by
   apply ClockCost.of_quiet
-  simp only [body,Guest.guestFn_trap_with,progToHOL]
+  simp only [body,Guest.Software.guestFn_trap_with,progToHOL]
   repeat first
     | apply QuietClock.sequence
     | exact QuietClock.shared_store code _ _ _

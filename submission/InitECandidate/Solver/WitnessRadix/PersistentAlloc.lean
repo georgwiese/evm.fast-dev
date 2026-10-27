@@ -1,11 +1,13 @@
 import InitECandidate.Solver.PanDeclarations
-import InitECandidate.Solver.WitnessRadix.Copy32Execution
+import Guest.SoftwareAst
+import InitECandidate.Solver.WitnessRadix.BindingLookup
+import InitECandidate.Solver.WitnessRadix.StateSteps
 
 namespace InitECandidate.Solver.WitnessRadix.PersistentAlloc
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_alloc with
+def body : ProgHOL 64 := match Guest.Software.guestFn_alloc with
   | .function fn => progToHOL fn.body | _ => .skip
 def heapEnd : BitVec 64 := 2952790016#64
 def rounded (pointer amount : BitVec 64) : BitVec 64 := (pointer + amount + 7#64) &&& (0#64 - 8#64)
@@ -26,7 +28,7 @@ def qTail : ProgHOL 64 := .seq secondGuard (.seq assignment returnPointer)
 def pTail : ProgHOL 64 := .seq firstGuard (.dec (ofString "q") .one roundExpression qTail)
 
 theorem body_shape : body = .dec (ofString "p") .one heapVar pTail := by
-  simp only [body, Guest.guestFn_alloc, progToHOL, expToHOL, shapeToHOL,
+  simp only [body, Guest.Software.guestFn_alloc, progToHOL, expToHOL, shapeToHOL,
     heapVar, pTail, qTail, firstGuard, secondGuard, trap, assignment, returnPointer,
     roundExpression, heapEnd, localVar, List.map_cons, List.map_nil, Option.map_none]
 

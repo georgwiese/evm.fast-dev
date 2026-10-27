@@ -7315,7 +7315,27 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/BlobCallEnvironment.lean",
-      "sha256": "de88348b9e540b7dc2548a131447f22a72424d321e35beaade00954ef374f924"
+      "sha256": "b1d287cb4a576639490bfa7bccf6e5f79e8108ff8b79c414a304141da44323a6",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/BlobCopyCost.lean",
+      "sha256": "41ef3077cd8e99dfc841cebaf90e21b54c590a4e6364f9f5d0d3a80b2384beb3",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/BlobCurrentCost.lean",
+      "sha256": "70ddd3a414eaa6dff248c144a85bbf8436a626e94139db7bc3b06987f947195d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/BlobExecute.lean",
@@ -7331,7 +7351,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/BlobProgram.lean",
-      "sha256": "297e83869f6cdbf6794e4d728ce660f4cb7f221f2438c62f898e6e680ca801f2"
+      "sha256": "7137603c1b2348963d4838182c61d45daabf3f374ba16903b8e0115cc8257967",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/BnArithmeticFrame.lean",
@@ -7399,7 +7423,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ByteStoreLocal.lean",
-      "sha256": "5b2bad2cfba4f3531618bb4813186fc54ecd9e73abdf19db0d41b6af312a6c81"
+      "sha256": "cba8d316881fb143525645be85d1cd76e71981615b3f92bb528a7c364510755e",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ByteStoreNoException.lean",
@@ -7522,7 +7550,7 @@
       "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7574,7 +7602,7 @@
       "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7622,7 +7650,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7638,7 +7666,7 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7646,7 +7674,7 @@
       "sha256": "0f0217e9acf671365ff323e57f698596a359000538053c92779db0df9151d23d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7662,7 +7690,7 @@
       "sha256": "d046f37e3506bbb7a82cf411bbcbfe665f26170a6ba17a6a949b07225d0dbef3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7670,7 +7698,7 @@
       "sha256": "9359e4bd871b493d4cf5783f21e7aaee390e96028ab930bf648b8d30b9bf4696",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7679,7 +7707,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCurrentGuard.lean",
-      "sha256": "8c593c41b4db557ca31110b7ed947c3e36382c73b93e15100d7a4b3cc751fc1d"
+      "sha256": "e6781483e78a78bd17065de1599de31e3e9d810163c23268230561c2c89f99ca",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCurrentLoop.lean",
@@ -7687,7 +7719,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCurrentScoped.lean",
-      "sha256": "0ccb23656f25fed27209cc0afb3aba632f83b20052f384c3e35d9b18ed32a26f"
+      "sha256": "0ccb23656f25fed27209cc0afb3aba632f83b20052f384c3e35d9b18ed32a26f",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCurrentValue.lean",
@@ -7703,14 +7739,18 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostGuardReached.lean",
-      "sha256": "3c3a12eb6fd1e937ebd2ba58c3e80b6eb7c994ff45bf0b70ac79eba96f974262"
+      "sha256": "5b0bd3675dd2082487de2fea81579625cddac3d12b2b6819ad653daa1dcce697",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostLoop.lean",
       "sha256": "a216a35096856e7f5f2f90ddd9a79f012451c267220837ab976ce6faae2ae805",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7726,19 +7766,23 @@
       "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostScopedReached.lean",
-      "sha256": "a104d50eab575fb6b5ab5802b4dad79c7080ea0272b427cbeadcaedd450716f5"
+      "sha256": "a104d50eab575fb6b5ab5802b4dad79c7080ea0272b427cbeadcaedd450716f5",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostSequenceReached.lean",
       "sha256": "4bcaede2c3d999ea8adb63513d843a8036ca6b9edcfbc385755001a1ca83f711",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7942,7 +7986,7 @@
       "sha256": "07942d45f6f8f52f636c9e8f73e0b6bd13a4ab98dc0bd3abf454ebfb208acb3f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7955,10 +7999,10 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterFlow.lean",
-      "sha256": "6db6e180ac92fcb975717f153728ff326fdc38a320f75630922aceb6147fe94d",
+      "sha256": "80ef11e18ea17feb523e6c7240129eb2a27ecec2c6f790050bfaaaf8fdff56fb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -7966,12 +8010,20 @@
       "sha256": "f09de1978081f37fee3e3ccb544a65cf619e25092cb9c1ea653830e9c48a8eb6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterLoopLocal.lean",
       "sha256": "f251675ecc9540d0358694dbbd1abe0d4ea9d6404027d0336c777c4445ad304e"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CounterStrideCost.lean",
+      "sha256": "e4794a9d9596c8e865cb2253968bb8aa366eb6e10f40b99d490836e92f98e4e4",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterStrideLoop.lean",
@@ -7990,7 +8042,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8034,7 +8086,7 @@
       "sha256": "c4a0775cb216dba01dd5eacb601f06da663fdb382c443ab71dc4032c2a5fcb3a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8458,7 +8510,7 @@
       "sha256": "aa04b0e2f0850d79fc1b558205a38d88e614019d8d69440257be6fbc886bd699",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8466,7 +8518,7 @@
       "sha256": "45ed6d2d87d57240fb9e743223c96d06fd78ad858c80a913e6cc94aa7143cd4b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8474,7 +8526,7 @@
       "sha256": "824a34ae3ad996217ed6d52fe0f51f8997335e486ecf1b2cf3bd060b46bf80ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8486,7 +8538,7 @@
       "sha256": "fc67afa38a0bc12c330e5714bc6e3a4e861a233336a3ab94c56446aa3c1471f6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8515,7 +8567,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/IgnoredCallNormal.lean",
-      "sha256": "32d384b0a1c20ee8afba2faf869a6deb2107548e0801e5b7ab7c2fb7f121067c"
+      "sha256": "32d384b0a1c20ee8afba2faf869a6deb2107548e0801e5b7ab7c2fb7f121067c",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/IgnoredCallTarget.lean",
@@ -8642,7 +8698,7 @@
       "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8650,7 +8706,7 @@
       "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8658,7 +8714,7 @@
       "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8682,7 +8738,7 @@
       "sha256": "c73b9d6a36d7eead87a9a4d6403b7e1d85eb4b11fbdc1e62990069e4cc4762f7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8698,7 +8754,7 @@
       "sha256": "2a420307922047b232f8fc3d3f9ef3c2dc270d83f27b4169b049acaaca1b9a81",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -8708,6 +8764,14 @@
     {
       "path": "submission/InitECandidate/Solver/Input/LocalSummaryDeclaration.lean",
       "sha256": "df0f54e54300ebe5b1210ff582587ab2dcb5a8b9fecc6ef8f0a7ba46d44ebd25"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/LocalSummarySequence.lean",
+      "sha256": "aff2f3d110719386f24ea8507edd5a087d84a8fcdd9f650264b78fc189b9b401",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/LoopInvariant.lean",
@@ -9747,7 +9811,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/NoReturn.lean",
-      "sha256": "1f29d1109ed9c9d8fc33520ceddad0e2ba6422a6a3d57a5bac30ab4b93dc4bb0"
+      "sha256": "1f29d1109ed9c9d8fc33520ceddad0e2ba6422a6a3d57a5bac30ab4b93dc4bb0",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/NoReturnAtoms.lean",
@@ -9759,7 +9827,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/NoReturnIgnored.lean",
-      "sha256": "9f1ce1789c8659b3fd736b8edc51c373a263c15a181e1d3aa99fcb5cd8920d8d"
+      "sha256": "9f1ce1789c8659b3fd736b8edc51c373a263c15a181e1d3aa99fcb5cd8920d8d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/NoReturnScoped.lean",
@@ -9778,7 +9850,7 @@
       "sha256": "21e58e40b3615b0e5cd9ad90bc30098f39f1b0102c532cef8967b78932651bfb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -9834,7 +9906,7 @@
       "sha256": "16199f006e34915cc757e402f73cf4cc624bde1a54ca4a885414a7919803efa9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -9842,7 +9914,7 @@
       "sha256": "d7c4f46e2dddba34b7d693647cd3184b9316e1790dddf5002e541e72d918dea4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -9858,7 +9930,7 @@
       "sha256": "f1121823655edf77b97418d90e7562c8ed3b37d1012b1dcff3c07fc528efd19d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -9870,7 +9942,7 @@
       "sha256": "9df194d3c5efb5fc447d43c37371f230e50e34a31f0290d8bc1d0dee1a29cb9d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -9878,7 +9950,7 @@
       "sha256": "f5898bb0ceb904eb391883d0a27d233f30b4d4d9ae774697209dbb84bd4987cb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -9914,7 +9986,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -10742,7 +10814,7 @@
       "sha256": "f9be4646e4e4a97b1b68f72a5a20b9abfb838aa3fd9784b440c59f47a836bd0d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -10754,7 +10826,7 @@
       "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -10786,19 +10858,23 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/QuietClockEffects.lean",
-      "sha256": "fd4b142862a214c56d86b7276616e6852aee03f89dd4b3769e3b72d6415db4d0"
+      "sha256": "fd4b142862a214c56d86b7276616e6852aee03f89dd4b3769e3b72d6415db4d0",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/QuietClockShared.lean",
       "sha256": "b2cd5dd4156728f85cdf061a0a7425700dfd723125a1bfb5e5627ce9bf99631c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -11150,7 +11226,7 @@
       "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -11602,7 +11678,7 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -11802,6 +11878,14 @@
       "sha256": "76cf369b0b94532e057e1dd1431d09cea01067d5ff939d62ccaffb32307f2846"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/SharedLoadLocal.lean",
+      "sha256": "cd3386e81e430fee72c2f5bbe1669a7ed946e30c4d95301b12ba0d440bf09054",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/SharedRead.lean",
       "sha256": "6c37c1726567030ba3e0f4c48cfae00cebe5aa528f64274f57e4c1e624ad2f59",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
@@ -11835,7 +11919,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/SharedStoreLocal.lean",
-      "sha256": "f22f31d59a91004f1aacfbb148d678459a3a3f911fff1a6b1fe0e9559ac7d7ec"
+      "sha256": "df9cb8cb34dbfe1d4b192b2167f59c22978e936923ab59714260a27b6eeb5c13",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/SignedGuardedCounterLoop.lean",
@@ -11850,7 +11938,7 @@
       "sha256": "725ecc40338ede6e918bec6383492e41a5cabcc3a8c2a39dd6db08e01c60aa53",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -11858,7 +11946,7 @@
       "sha256": "cffb23cd1f41d7e8c01e07e6b9e7d8ad1c1530f70f1e3da5e4b6555120494a1d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -11967,15 +12055,27 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/TrapCost.lean",
-      "sha256": "df106ffd5f53189f689dd69d4077acd35df10c57e5a7d48e137792fea0a60d36"
+      "sha256": "4450f713a9fcc64fb1f5a12664d971aea9327d9984a7cc4a381bc15d284b69c7",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/TrapNoReturn.lean",
-      "sha256": "b25160217547a8a1e9ef581bde65c9db0662615f62d84bcd1b5e059d3471a5ce"
+      "sha256": "9049c70243bdf689fb9548a82de10265db97c602e5a2bc3cc20d81dfa01f4259",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/TrapStopped.lean",
-      "sha256": "ab564706d2ebf017bb2c5aa07c3cec2040459141a506b640ec6a847fb43e760b"
+      "sha256": "ab564706d2ebf017bb2c5aa07c3cec2040459141a506b640ec6a847fb43e760b",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/TwoWordNormalArguments.lean",
@@ -22490,7 +22590,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -26979,7 +27079,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationCost.lean",
-      "sha256": "d4e0625efe3e101a3fbc24e646a6acd2614644116d9650e761c9f55a83b1f008"
+      "sha256": "ef1996cabff66a28dcc85099cd2c1bb68c9c4c03c476763f49425d887ef1632e",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationDomain.lean",
@@ -26991,7 +27095,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationEnvironment.lean",
-      "sha256": "8b2d86e96522c7b741325eb8314840ff1a97693e480a02888d2e164c9c845bce"
+      "sha256": "8b2d86e96522c7b741325eb8314840ff1a97693e480a02888d2e164c9c845bce",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-blob-body-cost-v3.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocationExpected.lean",
@@ -27034,7 +27142,7 @@
       "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -27042,7 +27150,7 @@
       "sha256": "02071e2394e8a909552d0d29cc091e76ecb5a43b2909b69ab4dd731d1a5bf044",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -27110,7 +27218,7 @@
       "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -27711,10 +27819,10 @@
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/PersistentAlloc.lean",
-      "sha256": "00c13b4ce348f3ffa13bfa1769e82f49f6624cb468e01641e0907f99602d0fab",
+      "sha256": "5acb07092e466bcbd01ab17e1841b1ae72c53c6a26984bfd8923690ae1550f70",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -27734,7 +27842,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-precheck-cost-v2.log"
+        "current-blob-body-cost-v3.log"
       ]
     },
     {
@@ -78814,7 +78922,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78824,7 +78932,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78995,7 +79103,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -79050,7 +79158,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.block32_execute",
@@ -81808,7 +81917,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81818,7 +81927,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81828,7 +81937,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81838,7 +81947,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81848,7 +81957,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81858,7 +81967,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81868,7 +81977,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81878,7 +81987,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81888,7 +81997,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81898,7 +82007,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81908,7 +82017,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82106,7 +82215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83068,7 +83177,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83489,7 +83598,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83499,7 +83608,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84070,7 +84179,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89422,7 +89531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89432,7 +89541,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89442,7 +89551,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89452,7 +89561,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89525,7 +89634,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89535,7 +89644,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89627,7 +89736,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89646,7 +89755,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.after_guard_shape",
@@ -89655,7 +89765,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.iteration_clock",
@@ -90308,7 +90419,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90318,7 +90429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90364,7 +90475,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90374,7 +90485,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91846,7 +91957,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91856,7 +91967,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95668,7 +95779,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.Truncate.price_formula",
@@ -96680,7 +96792,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.NoReturn.raise",
@@ -96689,7 +96802,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.NoReturn.external",
@@ -96698,7 +96812,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.NoReturn.shared_store",
@@ -96707,7 +96822,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Trap.never_returns",
@@ -96716,7 +96832,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Trap.environment",
@@ -96725,7 +96842,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Trap.call_not_normal",
@@ -96734,7 +96852,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.MutableTable.GrowRuntime.allocations_normal",
@@ -97001,7 +97120,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101120,7 +101239,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101301,7 +101420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101311,7 +101430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101321,7 +101440,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101331,7 +101450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101341,7 +101460,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101351,7 +101470,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101361,7 +101480,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101371,7 +101490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101379,7 +101498,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101387,7 +101506,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101397,7 +101516,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101406,7 +101525,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101416,7 +101535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101426,7 +101545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101701,7 +101820,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101711,7 +101830,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101721,7 +101840,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101731,7 +101850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101741,7 +101860,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101751,7 +101870,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101761,7 +101880,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101771,7 +101890,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101781,7 +101900,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101791,7 +101910,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101801,7 +101920,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101811,7 +101930,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101821,7 +101940,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101831,7 +101950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101841,7 +101960,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101851,7 +101970,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101861,7 +101980,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101871,7 +101990,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101881,7 +102000,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102106,7 +102225,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102114,7 +102233,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102148,7 +102267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102158,7 +102277,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102168,7 +102287,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102178,7 +102297,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102505,7 +102624,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103308,7 +103427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103318,7 +103437,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103328,7 +103447,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103338,7 +103457,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103348,7 +103467,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103358,7 +103477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105889,7 +106008,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107778,7 +107897,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.NoReturn.store",
@@ -109803,7 +109923,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalFlow.summary",
@@ -110211,7 +110332,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110221,7 +110342,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110231,7 +110352,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111761,7 +111882,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.sequence_choice",
@@ -112480,7 +112602,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.shared_store",
@@ -112489,7 +112612,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.external",
@@ -112498,7 +112622,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Trap.original_code",
@@ -112507,7 +112632,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Trap.body_price",
@@ -112516,7 +112642,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Trap.call_price",
@@ -112525,7 +112652,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Rlp.Validation.after_header_none",
@@ -113645,7 +113773,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-branch-payload-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.scoped_reached_current",
@@ -113654,7 +113783,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Rlp.Item.body_shape",
@@ -114417,7 +114547,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.guard_price",
@@ -114426,7 +114557,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.body_price",
@@ -114435,7 +114567,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.PersistentAlloc.scoped_price",
@@ -114444,7 +114577,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Trap.globals",
@@ -115660,7 +115794,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -127465,7 +127599,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.environment",
@@ -127474,7 +127609,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Blob.oversize_execute",
@@ -127546,7 +127682,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "main-copy-history-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Main.input_copy_prefix",
@@ -128176,7 +128313,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.local_summary_sequence",
@@ -128185,7 +128323,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Header.passing_entry",
@@ -132136,7 +132275,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CounterFlow.byte_store",
@@ -132145,7 +132285,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CounterFlow.increment_by",
@@ -132154,7 +132295,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.scoped_reached_terminating",
@@ -140183,7 +140325,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -140193,7 +140335,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162098,7 +162240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162108,7 +162250,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162118,7 +162260,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162128,7 +162270,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162138,7 +162280,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162148,7 +162290,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162158,7 +162300,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162168,7 +162310,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162178,7 +162320,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162188,7 +162330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162198,7 +162340,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162208,7 +162350,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162218,7 +162360,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162228,7 +162370,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162238,7 +162380,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162248,7 +162390,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162258,7 +162400,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162268,7 +162410,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162278,7 +162420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162288,7 +162430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162298,7 +162440,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162308,7 +162450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162318,7 +162460,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162328,7 +162470,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162338,7 +162480,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162348,7 +162490,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162358,7 +162500,147 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-precheck-cost-v2.log",
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.copy_body_local",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.copy_advance",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.copy_body_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.copy_loop_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.copy_tail_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.after_guard_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.guard_pass_length",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.guarded_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.body_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Blob.call_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CounterFlow.unsigned_stride_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.shared_load_local",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CounterFlow.shared_load",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.shared_load_normal_word",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-blob-body-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

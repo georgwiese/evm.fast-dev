@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-27",
+  "purpose": "Preserve exact pre-cleanup task/status history; current bound.md supersedes archived plans and constraints when they conflict with later user instructions.",
+  "archives": [
+    {
+      "source": "bound.md",
+      "archive": "work/agent-notes/BOUND-HISTORY-PRE-CLEANUP-20261027.md",
+      "sha256": "9228d3293d9f1ca0de6848de45447ba6c561615e9217e1016eaa0e59493a4f94",
+      "bytes": 930435,
+      "exact_copy": true
+    },
+    {
+      "source": "work/agent-notes/PROGRESS.md",
+      "archive": "work/agent-notes/PROGRESS-HISTORY-PRE-CLEANUP-20261027.md",
+      "sha256": "5f6c8a9bcd87a4030b1d78e7386d583bc921b11919d49fa8281f29b5a30e4d4d",
+      "bytes": 1172896,
+      "exact_copy": true
+    }
+  ]
+}

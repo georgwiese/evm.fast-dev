@@ -1838,6 +1838,8 @@
     "submission/InitECandidate/Solver/Input/BinaryCallData.lean",
     "submission/InitECandidate/Solver/Input/BlobBytes.lean",
     "submission/InitECandidate/Solver/Input/BlobCallEnvironment.lean",
+    "submission/InitECandidate/Solver/Input/BlobCopyCost.lean",
+    "submission/InitECandidate/Solver/Input/BlobCurrentCost.lean",
     "submission/InitECandidate/Solver/Input/BlobExecute.lean",
     "submission/InitECandidate/Solver/Input/BlobOversize.lean",
     "submission/InitECandidate/Solver/Input/BlobOversizeCall.lean",
@@ -1989,6 +1991,7 @@
     "submission/InitECandidate/Solver/Input/CounterFlow.lean",
     "submission/InitECandidate/Solver/Input/CounterLoopCost.lean",
     "submission/InitECandidate/Solver/Input/CounterLoopLocal.lean",
+    "submission/InitECandidate/Solver/Input/CounterStrideCost.lean",
     "submission/InitECandidate/Solver/Input/CounterStrideLoop.lean",
     "submission/InitECandidate/Solver/Input/DecCallFallthroughReturn.lean",
     "submission/InitECandidate/Solver/Input/DeclarationClock.lean",
@@ -2161,6 +2164,7 @@
     "submission/InitECandidate/Solver/Input/LocalPrefix.lean",
     "submission/InitECandidate/Solver/Input/LocalSummaryConditional.lean",
     "submission/InitECandidate/Solver/Input/LocalSummaryDeclaration.lean",
+    "submission/InitECandidate/Solver/Input/LocalSummarySequence.lean",
     "submission/InitECandidate/Solver/Input/LoopInvariant.lean",
     "submission/InitECandidate/Solver/Input/LoopInvariantNoControl.lean",
     "submission/InitECandidate/Solver/Input/LoopNormal.lean",
@@ -2926,6 +2930,7 @@
     "submission/InitECandidate/Solver/Input/ShaPairProgram.lean",
     "submission/InitECandidate/Solver/Input/ShaPairStageMemory.lean",
     "submission/InitECandidate/Solver/Input/ShaWorkspace.lean",
+    "submission/InitECandidate/Solver/Input/SharedLoadLocal.lean",
     "submission/InitECandidate/Solver/Input/SharedRead.lean",
     "submission/InitECandidate/Solver/Input/SharedReadExecution.lean",
     "submission/InitECandidate/Solver/Input/SharedReadNormal.lean",
@@ -7830,8 +7835,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64592,
-  "package_bytes": 2480423848,
+  "package_entries": 64597,
+  "package_bytes": 2480443432,
   "claim": {
     "K": "infinity"
   },

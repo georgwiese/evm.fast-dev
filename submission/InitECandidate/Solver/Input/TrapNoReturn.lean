@@ -1,3 +1,4 @@
+import Guest.SoftwareAst
 import InitECandidate.Solver.Input.NoReturn
 import InitECandidate.Solver.Input.IgnoredCallNormal
 import InitECandidate.Solver.WitnessRadix.CodeEnvironment
@@ -6,7 +7,7 @@ namespace InitECandidate.Solver.Input.Trap
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
-def body : ProgHOL 64 := match Guest.guestFn_trap_with with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_trap_with with | .function fn => progToHOL fn.body | _ => .skip
 def formals : List (MlS × ShapeHOL) := [(ofString "code", .one)]
 def values (word : BitVec 64) : List (ValueHOL 64) := [.val (.word word)]
 def rawLocals (word : BitVec 64) (name : MlS) : Option (ValueHOL 64) :=
@@ -15,7 +16,7 @@ def rawLocals (word : BitVec 64) (name : MlS) : Option (ValueHOL 64) :=
 /-- Every original trap path either stops in the FFI or reaches its actual
 raise; arbitrary FFI returns cannot make trap_with return normally. -/
 theorem never_returns : NoReturn.Never body := by
-  simp only [body, Guest.guestFn_trap_with, progToHOL]
+  simp only [body, Guest.Software.guestFn_trap_with, progToHOL]
   repeat first | apply NoReturn.sequence | exact NoReturn.shared_store _ _ _ | exact NoReturn.external _ _ _ _ _ | exact NoReturn.raise _ _
 
 theorem environment (codeFn : MlS → Option (List (MlS × ShapeHOL) × ProgHOL 64 × ShapeHOL)) (word : BitVec 64)

@@ -44,8 +44,8 @@ Checked against the current Software AST:
 - Actual installed-code/declaration-pass/evaluation-preservation interfaces;
   generic helpers shed old host/map/hash dependencies.
 - Actual continuing shared reads derive presence, replies and scalar values.
-  Reached gas word is at most 200,000,000 under canonical offset facts; deriving
-  both canonical container offsets now derive at the genuine returning decoder;
+  The raw gas field is at most 200,000,000 after both canonical container
+  offsets derive at the genuine returning decoder;
   transporting the raw bound to its later actual payload gas load remains open.
 - Whole header precheck: every outcome costs at most **85 body /86 caller source
   ticks**. Its actual signed small-count offset loops include failed accesses
@@ -134,7 +134,13 @@ Checked against the current Software AST:
   CanonicalRequest joins the real three workspace stores/validator, deriving
   offset44and actual offset ordering. Both16/44canonical guards now connect the
   declared gas limit to original le64(input,474)≤200000000. This is the raw input
-  field, not yet its actual payload load/store.
+  field, not yet its actual payload load/store. PayloadEntry now joins the real
+  payload call and its length guard: p=input+62, slice≥540, encodedlength≥602,
+  contained slice, original byte image, actual code/exception/domain/endian and
+  post-copy heap frontier at the real payload callee. The passing guard and body
+  return are extracted at their original clocks; no future funding is supplied.
+  PayloadProgram/Gas now select the actual Software payload AST and explicit
+  minimal header/gas imports.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -153,11 +159,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-canonical-request-v1.log`, 1,245 jobs,
-permitted printed axioms only, 4.69 seconds, MaxRSS 1,874,032 KiB.
-Historical/current index: 7,909 modules /15,708 facts; 357 modules carry the
-current dependency reference. Incremental package policy passes at64,713entries/
-2,481,696,791bytes; historical copy/zero execution wrappers are not revalidated.
+Latest successful closure: `current-payload-entry-v2.log`, 1,250 jobs,
+permitted printed axioms only, 5.45 seconds, MaxRSS 1,887,100 KiB.
+Historical/current index: 7,910 modules /15,711 facts; 362 modules carry the
+current dependency reference. Incremental package policy passes at64,714entries/
+2,481,704,812bytes; historical copy/zero execution wrappers are not revalidated.
 These checks are not full verification.
 
 ## Remaining plan
@@ -224,7 +230,7 @@ These checks are not full verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with `/tmp/init-e-account-usage.py`. User means
-  account usage-limit resets. Last check: 10% weekly used, zero reset credits,
+  account usage-limit resets. Last check: 11% weekly used, zero reset credits,
   ordinary usage allowed.
 - One selected build at a time, two Lean slots, artifact cache disabled,
   **8 GiB whole-host used-memory stop guard**. Stop if disk exceeds 85%. Poll

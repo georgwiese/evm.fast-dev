@@ -1,4 +1,5 @@
-import InitECandidate.Solver.Input.RequestProgram
+import InitECandidate.Solver.Input.PayloadGas
+import InitECandidate.Solver.Input.HeaderGuards
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -10,7 +11,7 @@ def lengthGuard : ProgHOL 64 := .ite lengthTest (.call (some (none,none)) (ofStr
 def afterGuard : ProgHOL 64 := match body with | .seq _ rest=>rest | _=>.skip
 
 theorem body_shape : body=.seq lengthGuard afterGuard := by
-  simp only [body,Scalar.payloadBody,afterGuard,Guest.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,
+  simp only [body,Scalar.payloadBody,afterGuard,Guest.Software.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,Option.map_none,lengthGuard,lengthTest,localVar]
 
 theorem length_test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (length : BitVec 64)

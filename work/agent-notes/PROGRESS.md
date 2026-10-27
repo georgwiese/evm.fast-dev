@@ -4,6 +4,40 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Genuine payload callee, minimum slice and copied image
+
+PayloadGas/Program now use actual Software payload syntax. PayloadProgram imports
+its PayloadGas and HeaderGuards dependencies explicitly; the unrelated request
+bridge import is dropped. Lean checks the actual gas-store expression/position
+against the fixed current AST, and the reusable ordinary copied-byte gas-read
+lemma. This does not establish that the later gas store is reached with its
+byte image intact.
+
+CurrentStartup.PayloadEntry joins the real request-offset trace to actual payload
+arguments, derives real scoped-call funding from enclosing return, and extracts
+the genuine decode_payload callee via its installed code and checked p/len
+parameter environment. GuardActual excludes the real short-payload rejection
+without extra minimum-clock premises. It derives p=input+62, raw slice length
+le32(input,22)−44≥540, contained slice≤encodedlength−62and encodedlength≥602.
+At the actual afterGuard entry it retains original copied bytes, byte order,
+ordinary domain, installed code/exception shapes, actual ssz_offs pointer and the
+post-copy heap frontier beyond input+encodedlength+8. The callee's real returned
+run is exposed; no future allocation room, payload validity or read is assumed.
+
+Validation: current-payload-entry-v2.log PASS1250jobs/permitted printed axioms,
+5.45s/MaxRSS1887100KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Component
+current-payload-program-v1 PASS665. Failed v1 projection diagnostic unindexed.
+Index7910historical/currentmodules/15711facts,362current-reference modules;
+replacementclosure0/frozenmainunchanged; incremental policyPASS64714entries/
+2481704812bytes. No full verification or finite global target K. Five old untracked
+RLP files retained. Account11%weekly/0resetcredits/ordinaryallowed. Push eachcommit.
+
+Next derive the real136-byte payload allocation, copied-image frame through its
+header/workspace/array stores, and actual gas read/store. Then connect returned
+payload/request/stateless records to later genuine main helpers. Scratch covered-
+outcome classification, current crypto/maps and global weighted target bounds
+remain open. Overall estimate40%, plausible30–50%.
+
 ## Actual request length, second canonical offset and raw gas field
 
 RequestPositions inverts the real lexical declarations and derives np=input+18

@@ -1,3 +1,4 @@
+import Guest.SoftwareAst
 import InitECandidate.Solver.Input.FlatScalar
 
 namespace InitECandidate.Solver.Input.Scalar
@@ -15,7 +16,7 @@ def stores : ProgHOL 64→List (ExpHOL 64×ExpHOL 64)
   | .ite _ first second=>stores first++stores second
   | .while _ code=>stores code
   | _=>[]
-def payloadBody : ProgHOL 64 := match Guest.guestFn_decode_payload with
+def payloadBody : ProgHOL 64 := match Guest.Software.guestFn_decode_payload with
   | .function fn=>progToHOL fn.body | _=>.skip
 def gasStore : ExpHOL 64×ExpHOL 64 := ((stores payloadBody)[15]?).getD (.const 0#64,.const 0#64)
 def gasExpression : ExpHOL 64 := gasStore.2
@@ -23,7 +24,7 @@ def gasExpression : ExpHOL 64 := gasStore.2
 /-- Exact literal gas-field store extracted from the fixed guest, including
 its flattened additions and nested high-word macro expansion. -/
 theorem gas_store_shape : gasStore=(plus (localVar "pl") 88,flat64 (localVar "p") [412]) := by
-  simp only [gasStore,payloadBody,stores,Guest.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,
+  simp only [gasStore,payloadBody,stores,Guest.Software.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,List.nil_append,List.cons_append,List.append_nil,List.getElem?_cons_zero,
     List.getElem?_cons_succ,Option.getD_some,Option.map_none,plus,flat64,flat32,flatAddress,localVar,shift]
 

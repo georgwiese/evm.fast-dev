@@ -4,6 +4,29 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Real witness entry and dependency cleanup
+
+OuterLocals now retains actual p/len/o_wit plus validated input containment,
+derived from the real six-action record setup and propagated through payload,
+fixed-count/request returns and shared Context memory/local frames. The original
+request decoder's scoped caller now retains these facts too. WitnessEntry checks
+the actual request-pointer store and full witness declaration/short-length-guard
+suffix: derives the12-byte minimum and actual contained wp/wlen, preserving
+original input, heap, protected gas and exact endpoint memory/clock observations.
+The three variable witness-list decodes and final stateless/main join remain.
+
+Witness.Program and OffsetProgram now use current Software syntax and minimal
+independent BytesList.Values, rather than importing historical byte-list array
+execution theorems just for syntax. Existing values namespace/API retained;
+Environment imports that definition explicitly. PrefixNormal now imports its
+actual guard/declaration dependencies. Solver closures: Program168→109,
+OffsetProgram208→110, PrefixTrace213→113; manifest records exact compared sets.
+Historical BytesList.Environment/caller runtime proofs are not revalidated here.
+
+Validation: current-witness-entry-v1.log PASS1414jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. No full verification/global K. Account17%weekly/
+0resetcredits/ordinaryallowed. Overall40%, plausible30–50%.
+
 ## Actual request return resumes its stateless-input caller
 
 RequestCallerReturn rejoins the complete request decoder to the original

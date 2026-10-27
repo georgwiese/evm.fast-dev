@@ -41,6 +41,14 @@ earlier speculative K guess, 10^14–10^18, is not proved or a target ceiling.
 
 Checked against the current Software AST:
 
+- Outer p/len/o_wit bindings now survive real record setup, request offsets,
+  payload/count/request calls and all shared Context frames. WitnessEntry joins
+  the request-pointer store and actual witness declarations/guard, deriving its
+  contained12-byte minimum and retaining original input, heap and physical gas.
+  The three variable witness arrays are next. Witness syntax now uses current
+  Software and independent byte-list argument values; the witness-prefix Solver
+  import closure shrinks213→113without changing the program.
+
 - Current below-domain memzero costs at most1body/2caller source ticks on
   every outcome. The real scratch allocation/clear including arbitrary later
   suffix costs≤4; current scratch message constructor≤4and frame_new≤6including
@@ -63,7 +71,8 @@ Checked against the current Software AST:
 - Actual continuing shared reads derive presence, replies and scalar values.
   The raw gas field is at most 200,000,000 after both canonical container
   offsets derive at the genuine returning decoder;
-  transporting the raw bound to its later actual payload gas load remains open.
+  the real payload load/store now carries this bound through the returned
+  request caller and into witness parsing. Later main/hash transport remains.
 - Whole header precheck: every outcome costs at most **85 body /86 caller source
   ticks**. Its actual signed small-count offset loops include failed accesses
   and decoder exceptions.
@@ -79,7 +88,7 @@ Checked against the current Software AST:
   BlobReached now joins the actual allocator, complete body and returning caller:
   it derives real room, the encoded-length bound, tuple binding, byte image,
   exact heap update, paid clocks and protected-word frame. Initial heap cursor,
-  alignment/endian/oracle invariants still need derivation from actual main.
+  alignment/endian/oracle invariants now derive from actual main.
 - Allocator/trap/input catalogues use actual Software function entries 2/0/24.
   Shared local-summary composition and fixed counter increments are generic.
 - The actual memzero body/ignored call cannot continue from an aligned clear of

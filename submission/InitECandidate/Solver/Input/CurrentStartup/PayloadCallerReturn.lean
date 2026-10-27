@@ -109,7 +109,12 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
       change (caller.locals.update (ofString "pl", .val (.word record))).lookup (ofString name) = _
       simp [HolFiniteMapExact.update, FUPDATE, other]
     exact ⟨(kept "np" (by decide)).trans callerLocals.np, (kept "nlen" (by decide)).trans callerLocals.nlen,
-      (kept "o_vh" (by decide)).trans callerLocals.vh, (kept "o_rq" (by decide)).trans callerLocals.rq, callerLocals.valid, callerLocals.upper⟩
+      (kept "o_vh" (by decide)).trans callerLocals.vh, (kept "o_rq" (by decide)).trans callerLocals.rq, callerLocals.valid, callerLocals.upper,
+      callerLocals.outer.preserved (by
+        intro name member
+        apply kept
+        simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+        rcases member with rfl | rfl | rfl <;> decide)⟩
 
 /-- Memory/clock changes retain the request context when original input
 and the actual gas cell are separately preserved. -/
@@ -122,7 +127,7 @@ theorem Context.memory_clock (input : Guest.InputBlob) (source : PanSemStateFini
   ⟨context.code, context.shapes, context.domain, context.endian, image, context.heap, context.pl, context.si,
     context.statelessLower, context.statelessAligned, context.statelessRoom, context.recordAfter, context.recordAligned,
     context.recordRoom, gas, context.gasBound, context.pointerLower, context.pointerAligned, context.inputBound,
-    context.slice, ⟨context.request.np, context.request.nlen, context.request.vh, context.request.rq, context.request.valid, context.request.upper⟩, context.workspace⟩
+    context.slice, ⟨context.request.np, context.request.nlen, context.request.vh, context.request.rq, context.request.valid, context.request.upper, context.request.outer.preserved (by intro name member; rfl)⟩, context.workspace⟩
 
 /-- A real scalar field store to the earlier stateless record preserves the
 separate payload gas cell and original input, using derived allocation bounds. -/
@@ -178,7 +183,9 @@ theorem Context.of_frame (input : Guest.InputBlob) (source target : PanSemStateF
   exact ⟨context.code, context.shapes, context.domain, context.endian, context.image, context.heap, pl, si,
     context.statelessLower, context.statelessAligned, context.statelessRoom, context.recordAfter, context.recordAligned,
     context.recordRoom, context.gasCell, context.gasBound, context.pointerLower, context.pointerAligned,
-    context.inputBound, context.slice, request, context.workspace⟩
+    context.inputBound, context.slice,
+      ⟨request.np, request.nlen, request.vh, request.rq, request.valid, request.upper,
+        request.outer.preserved (by intro name member; rfl)⟩, context.workspace⟩
 
 /-- The shared pure-call frame with one fresh caller binding, including all
 live request locals. Distinctness is checked at each actual named call. -/
@@ -187,10 +194,10 @@ theorem Context.bind_frame (input : Guest.InputBlob) (source target : PanSemStat
     (context : Context input source pointer statelessRecord record gasWord length)
     (frame : LocalEffects.erase target = LocalEffects.erase source)
     (locals : target.locals = source.locals.update (name, value))
-    (different : name ∉ [ofString "pl", ofString "si", ofString "np", ofString "nlen", ofString "o_vh", ofString "o_rq"]) :
+    (different : name ∉ [ofString "pl", ofString "si", ofString "np", ofString "nlen", ofString "o_vh", ofString "o_rq", ofString "p", ofString "len", ofString "o_wit"]) :
     Context input target pointer statelessRecord record gasWord length := by
   classical
-  have kept (key : MlS) (member : key ∈ [ofString "pl", ofString "si", ofString "np", ofString "nlen", ofString "o_vh", ofString "o_rq"]) :
+  have kept (key : MlS) (member : key ∈ [ofString "pl", ofString "si", ofString "np", ofString "nlen", ofString "o_vh", ofString "o_rq", ofString "p", ofString "len", ofString "o_wit"]) :
       target.locals.lookup key = source.locals.lookup key := by
     have other : name ≠ key := by intro same; apply different; rw [same]; exact member
     rw [locals]
@@ -199,7 +206,12 @@ theorem Context.bind_frame (input : Guest.InputBlob) (source target : PanSemStat
     ((kept (ofString "pl") (by simp)).trans context.pl) ((kept (ofString "si") (by simp)).trans context.si)
     ⟨(kept (ofString "np") (by simp)).trans context.request.np, (kept (ofString "nlen") (by simp)).trans context.request.nlen,
       (kept (ofString "o_vh") (by simp)).trans context.request.vh, (kept (ofString "o_rq") (by simp)).trans context.request.rq,
-      context.request.valid, context.request.upper⟩
+      context.request.valid, context.request.upper,
+      context.request.outer.preserved (by
+        intro name member
+        exact kept (ofString name) (by
+          simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+          rcases member with rfl | rfl | rfl <;> simp))⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     (actual : MainSeparatedInput.StatelessRun input word)

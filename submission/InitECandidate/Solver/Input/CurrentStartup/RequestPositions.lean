@@ -28,7 +28,8 @@ theorem bindings {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     (secondCell : source.memory (array + 8#64) = .word (BitVec.ofNat 64 witness))
     (actual : CallPrefix.Execution source RequestCut.actions target) :
     target.locals.lookup (ofString "np") = some (.val (.word (pointer + 18#64))) ∧
-    target.locals.lookup (ofString "nlen") = some (.val (.word (BitVec.ofNat 64 (witness - 16)))) := by
+    target.locals.lookup (ofString "nlen") = some (.val (.word (BitVec.ofNat 64 (witness - 16)))) ∧
+    target.locals.lookup (ofString "o_wit") = some (.val (.word (BitVec.ofNat 64 witness))) := by
   have firstRead := Request.first_read source array offsets firstMapped firstCell
   have secondRead := Request.second_read source array witness offsets secondMapped secondCell
   cases actual with
@@ -85,7 +86,9 @@ theorem bindings {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
               cases done
               have nlenEq := declared_exact (ofString "nlen") _ (.val (.word (BitVec.ofNat 64 (witness - 16)))) nlenRead nlen
               rw [nlenEq]
-              simp [setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, show ofString "nlen" ≠ ofString "np" from by decide]
+              simp [setVarHOLFinite, HolFiniteMapExact.update, FUPDATE, show ofString "nlen" ≠ ofString "np" from by decide,
+                show ofString "nlen" ≠ ofString "o_wit" from by decide,
+                show ofString "np" ≠ ofString "o_wit" from by decide, wit]
 
 end InitECandidate.Solver.Input.CurrentStartup.RequestPositions
 

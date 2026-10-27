@@ -1,6 +1,6 @@
-import InitECandidate.Solver.Input.PayloadPrefixProgram
-import InitECandidate.Solver.Input.BytesList.CallerNormal
-import InitECandidate.Solver.Input.VarList.Cursor
+import InitECandidate.Solver.Input.RequestRequestsProgram
+import InitECandidate.Solver.Input.BytesList.Values
+import InitECandidate.Solver.Input.VarList.Environment
 
 namespace InitECandidate.Solver.Input.Witness
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -35,7 +35,7 @@ theorem arrays_shape :
       (listArguments "w2" "wlen" 256 1024) afterHeaders ∧
     afterHeaders=.seq (pointerStore "hd" 72) (.seq (countStore "hd" 72) returnInput) := by
   simp only [nodeCall,afterNode,codeCall,afterCode,headerCall,afterHeaders,Header.body,
-    Guest.guestFn_decode_stateless_input,Payload.dropLeading,progToHOL,expToHOL,shapeToHOL,
+    Guest.Software.guestFn_decode_stateless_input,Payload.dropLeading,progToHOL,expToHOL,shapeToHOL,
     listArguments,pointerStore,countStore,returnInput,Scalar.plus,localVar,VarList.returnShape,
     List.map_cons,List.map_nil,Option.map_none,List.nil_append,List.cons_append,List.append_nil]
   trivial

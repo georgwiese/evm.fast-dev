@@ -13,7 +13,7 @@ theorem offsets (input : Guest.InputBlob) (word : BitVec 64) (actual : RecordEnt
       Guest.GasLimit.le32 input 22 ≤ Guest.GasLimit.le32 input 58 ∧
       Guest.GasLimit.le32 input 58 ≤ Guest.GasLimit.le32 input 6 - 16 := by
   obtain ⟨source, post, pointer, record, lengthBound, installed, shapes, domain, endian, image, heap,
-    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, si, np, nlen, extent, requestLower, requestUpper, returned⟩ := actual
+    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, si, np, nlen, extent, requestLower, requestUpper, outer, returned⟩ := actual
   rcases Request.offsets_trace source post input pointer 2701132528#64 (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16))
     image extent np nlen workspace domain aligned (by decide) (by omega) (by decide)
     (by change 2701132528 + 64 ≤ pointer.toNat; omega)

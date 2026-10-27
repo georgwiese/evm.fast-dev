@@ -14,6 +14,7 @@ structure CallerLocals (input : Guest.InputBlob) (current : PanSemStateFiniteExa
   rq : current.locals.lookup (ofString "o_rq") = some (.val (.word (Request.requestWords input 2)))
   valid : ∀ position < 3, Offsets.ValidAt 44#64 (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16)) (Request.requestWords input) position
   upper : Guest.GasLimit.le32 input 6 - 16 ≤ input.length % 2^64 - 18
+  outer : OuterLocals input current pointer
 
 /-- Entry facts for the actual complete payload return, indexed by its states. -/
 def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -73,7 +74,7 @@ bytes and allocator frontier survive the real offset writes and call entry. -/
 theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
     (actual : RecordEntry.Reached input word) : Reached input := by
   obtain ⟨source, post, pointer, record, lengthBound, installed, shapes, domain, endian, image, heap,
-    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, si, np, nlen, extent, requestLower, requestUpper, returned⟩ := actual
+    workspace, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, si, np, nlen, extent, requestLower, requestUpper, outer, returned⟩ := actual
   rcases Request.offsets_trace source post input pointer 2701132528#64 (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16))
     image extent np nlen workspace domain aligned (by decide) (by omega) (by decide)
     (by change 2701132528 + 64 ≤ pointer.toNat; omega)
@@ -117,7 +118,15 @@ theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
     have nextRq : next.locals.lookup (ofString "o_rq") = some (.val (.word (Request.requestWords input 2))) := by
       rw [nextEq]
       exact bind_lookup_same _ _ _
-    have callerLocals : CallerLocals input next pointer := ⟨nextNp, nextNlen, nextVh, nextRq, valid, requestUpper⟩
+    have nextOuter : OuterLocals input next pointer := outer.preserved (by
+      intro name member
+      have other1 : ofString "o_pl" ≠ ofString name := by simp only [List.mem_cons, List.not_mem_nil, or_false] at member; rcases member with rfl | rfl | rfl <;> decide
+      have other2 : ofString "o_vh" ≠ ofString name := by simp only [List.mem_cons, List.not_mem_nil, or_false] at member; rcases member with rfl | rfl | rfl <;> decide
+      have other3 : ofString "o_rq" ≠ ofString name := by simp only [List.mem_cons, List.not_mem_nil, or_false] at member; rcases member with rfl | rfl | rfl <;> decide
+      rw [nextEq]
+      exact (bind_lookup_other _ "o_rq" name _ other3).trans
+        ((bind_lookup_other _ "o_vh" name _ other2).trans (bind_lookup_other _ "o_pl" name _ other1)))
+    have callerLocals : CallerLocals input next pointer := ⟨nextNp, nextNlen, nextVh, nextRq, valid, requestUpper, nextOuter⟩
     have nextSi : next.locals.lookup (ofString "si") = some (.val (.word record)) := by
       rw [nextEq]
       exact (bind_lookup_other _ "o_rq" "si" _ (by decide)).trans

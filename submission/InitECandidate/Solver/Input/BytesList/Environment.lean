@@ -1,11 +1,10 @@
 import InitECandidate.Solver.Input.BytesList.BodyNormal
+import InitECandidate.Solver.Input.BytesList.Values
 
 namespace InitECandidate.Solver.Input.BytesList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
-def values (pointer length limit maximum : BitVec 64) : List (ValueHOL 64) :=
-  [.val (.word pointer),.val (.word length),.val (.word limit),.val (.word maximum)]
 def rawLocals (pointer length limit maximum : BitVec 64) (name : MlS) : Option (ValueHOL 64) :=
   if name=ofString "maxb" then some (.val (.word maximum)) else if name=ofString "lim" then some (.val (.word limit))
   else if name=ofString "len" then some (.val (.word length)) else if name=ofString "p" then some (.val (.word pointer)) else none

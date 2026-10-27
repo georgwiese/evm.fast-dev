@@ -58,7 +58,12 @@ theorem requests (input : Guest.InputBlob) (actual : RequestsReturned.Reached in
   have request : PayloadEntry.CallerLocals input current pointer :=
     ⟨(kept "np" (by decide)).trans context.request.np, (kept "nlen" (by decide)).trans context.request.nlen,
       (kept "o_vh" (by decide)).trans context.request.vh, (kept "o_rq" (by decide)).trans context.request.rq,
-      context.request.valid, context.request.upper⟩
+      context.request.valid, context.request.upper,
+      context.request.outer.preserved (by
+        intro name member
+        apply kept
+        simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+        rcases member with rfl | rfl | rfl <;> decide)⟩
   have workspace : current.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)) := by
     change bodyPost.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64))
     have globalFrame := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.globals) data.control

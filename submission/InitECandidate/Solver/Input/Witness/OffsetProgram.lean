@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.Witness.ArraysNormal
+import InitECandidate.Solver.Input.Witness.Program
 import InitECandidate.Solver.Input.HeapFlatScalar
 
 namespace InitECandidate.Solver.Input.Witness
@@ -34,7 +34,7 @@ theorem offset_shapes :
     loadedBody=.dec (ofString "w0") .one (.load .one Header.offsets)
       (.dec (ofString "w1") .one (.load .one (Scalar.plus Header.offsets 8))
         (.dec (ofString "w2") .one (.load .one (Scalar.plus Header.offsets 16)) nodeCall)) := by
-  simp only [prefixBody,offsetBody,offsetTail,loadedBody,nodeCall,Header.body,Guest.guestFn_decode_stateless_input,
+  simp only [prefixBody,offsetBody,offsetTail,loadedBody,nodeCall,Header.body,Guest.Software.guestFn_decode_stateless_input,
     Payload.dropLeading,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
     witnessPointer,witnessLength,shortGuard,offsetLoop,offsetTest,offsetStep,offsetStore,offsetIncrement,
     offsetAddress,offsetInput,offsetRead,offsetByte,offsetGuard,offsetArguments,Header.offsets,Scalar.plus,Scalar.flat32,

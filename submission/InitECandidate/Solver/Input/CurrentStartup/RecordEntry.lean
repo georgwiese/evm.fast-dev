@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CurrentStartup.OuterLocals
 import InitECandidate.Solver.Input.CurrentStartup.RequestPositions
 import InitECandidate.Solver.Input.GuardActual
 import InitECandidate.Solver.Input.CurrentStartup.RequestCut
@@ -25,6 +26,7 @@ def Reached (input : Guest.InputBlob) (word : BitVec 64) : Prop :=
     current.locals.lookup (ofString "nlen") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16)))) ∧
     62 ≤ input.length % 2^64 ∧ 44 ≤ Guest.GasLimit.le32 input 6 - 16 ∧
     Guest.GasLimit.le32 input 6 - 16 ≤ input.length % 2^64 - 18 ∧
+    OuterLocals input current pointer ∧
     evaluateHOLFiniteState current Request.requestBody = (some (.returned (.val (.word word))), inner)
 
 theorem offsets_frame (code) (installed : OriginalCode.Installed code) :
@@ -77,7 +79,7 @@ theorem separated (input : Guest.InputBlob) (word : BitVec 64)
   have currentCode : OriginalCode.Installed current.code := by rw [execution.runtime.2.2.2.1]; exact beforeCode
   have currentShapes : OriginalExceptions.Installed current.eshapes := by rw [execution.runtime.2.2.1]; exact beforeShapes
   have currentOffsets := (execution.globals (ofString "ssz_offs") (offsets_frame before.code beforeCode)).trans beforeOffsets
-  obtain ⟨np, nlen⟩ := RequestPositions.bindings pointer 2701132528#64 (Guest.GasLimit.le32 input 6) witnessLower
+  obtain ⟨np, nlen, witnessCell⟩ := RequestPositions.bindings pointer 2701132528#64 (Guest.GasLimit.le32 input 6) witnessLower
     beforeP beforeOffsets firstMapped secondMapped firstCell secondCell execution
   have witnessSmall := Framing.le32_lt input 6
   have encoded : (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16)).toNat = Guest.GasLimit.le32 input 6 - 16 := by
@@ -87,9 +89,18 @@ theorem separated (input : Guest.InputBlob) (word : BitVec 64)
       Flapjack.Compiler.Encoders.Asm.wordCmpHOL, BitVec.lt_def, encoded]
   obtain ⟨large, requestRun⟩ := guard_actual current inner Request.lengthTest 81#64 (Guest.GasLimit.le32 input 6 - 16 < 44) read
     (CanonicalHeader.fail_code current.code currentCode) (currentShapes .SszErr) Request.requestBody (.val (.word word)) remaining
+  have currentP := execution.keeps (ofString "p") (List.all_eq_true.mp
+    (show RequestCut.actions.all (fun action => action.keeps (ofString "p")) = true by decide))
+  have currentLen := execution.keeps (ofString "len") (List.all_eq_true.mp
+    (show RequestCut.actions.all (fun action => action.keeps (ofString "len")) = true by decide))
+  have beforeLen : before.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 (input.length % 2^64 - 2)))) := by
+    rw [beforeEq]
+    exact WitnessRadix.QueryBranch.bind_lookup_same _ _ _
+  have outer : OuterLocals input current pointer :=
+    ⟨currentP.trans beforeP, currentLen.trans beforeLen, witnessCell, witnessLower, witnessUpper⟩
   exact ⟨current, inner, pointer, record, lengthBound, currentCode, currentShapes,
     execution.runtime.1.trans beforeDomain, execution.runtime.2.1.trans beforeEndian,
-    currentBytes, currentHeap, currentOffsets, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, binding, np, nlen, (by omega), (by omega), (by omega), requestRun⟩
+    currentBytes, currentHeap, currentOffsets, lower, aligned, room, recordLower, recordAligned, recordRoom, recordHeap, binding, np, nlen, (by omega), (by omega), (by omega), outer, requestRun⟩
 
 end InitECandidate.Solver.Input.CurrentStartup.RecordEntry
 

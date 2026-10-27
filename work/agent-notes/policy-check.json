@@ -10,6 +10,7 @@
     "submission/InitECandidate/Solver/Arenas/DownPlan.lean",
     "submission/InitECandidate/Solver/Arenas/Execution.lean",
     "submission/InitECandidate/Solver/Arenas/GlobalEffects.lean",
+    "submission/InitECandidate/Solver/Arenas/MarkCost.lean",
     "submission/InitECandidate/Solver/Arenas/Marks.lean",
     "submission/InitECandidate/Solver/Arenas/Normal.lean",
     "submission/InitECandidate/Solver/Arenas/NormalIgnoredCall.lean",
@@ -2097,6 +2098,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/PrecheckHostSszHeader.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Prefix.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RecordEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestCallerReturn.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RequestCut.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RequestPositions.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RequestsAllocation.lean",
@@ -3064,6 +3066,8 @@
     "submission/InitECandidate/Solver/Input/ScopedContinuingData.lean",
     "submission/InitECandidate/Solver/Input/ScopedNoLoopControl.lean",
     "submission/InitECandidate/Solver/Input/ScratchClear.lean",
+    "submission/InitECandidate/Solver/Input/ScratchClearCost.lean",
+    "submission/InitECandidate/Solver/Input/ScratchConstructorCost.lean",
     "submission/InitECandidate/Solver/Input/ScratchConstructors.lean",
     "submission/InitECandidate/Solver/Input/ScratchFrame.lean",
     "submission/InitECandidate/Solver/Input/ScratchNodeFill.lean",
@@ -3280,6 +3284,7 @@
     "submission/InitECandidate/Solver/Input/ZeroShortMemory.lean",
     "submission/InitECandidate/Solver/Input/ZeroUnmapped.lean",
     "submission/InitECandidate/Solver/Input/ZeroUnmappedCall.lean",
+    "submission/InitECandidate/Solver/Input/ZeroUnmappedCost.lean",
     "submission/InitECandidate/Solver/JumpCmpNearCost.lean",
     "submission/InitECandidate/Solver/JumpDest/Advance.lean",
     "submission/InitECandidate/Solver/JumpDest/Arithmetic.lean",
@@ -8009,8 +8014,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64773,
-  "package_bytes": 2482043726,
+  "package_entries": 64778,
+  "package_bytes": 2482067468,
   "claim": {
     "K": "infinity"
   },

@@ -6,7 +6,7 @@
       "sha256": "f4c6b4fbadb4414eef6fa41647aaa918962e2191940f75b1cfc0b029e9f73742",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -14,7 +14,7 @@
       "sha256": "b1d73f74477c783ad80459d1ab044899935e33d6b31c18029ce589d0fb5f71f7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -22,7 +22,7 @@
       "sha256": "d44b92948d624a3bfab258c8ff1c4170ba05cbfe7eac2e2fda01a3592bfcc2bd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -34,7 +34,7 @@
       "sha256": "b0b0c26022b80b687da37e78d5eb65319f0a4fb57d772fe4b59c2ddca06cc9d5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -42,11 +42,19 @@
       "sha256": "7f9e1174b3ed44c57abcd897a3d5e8620b7ea7a58142282e643160905d4bdcc2"
     },
     {
+      "path": "submission/InitECandidate/Solver/Arenas/MarkCost.lean",
+      "sha256": "9a7d6cb275112771c84e469df890b8b827bd5556b5a2ddfffed5627ce30d5998",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-scratch-constructor-cost-v3.log"
+      ]
+    },
+    {
       "path": "submission/InitECandidate/Solver/Arenas/Marks.lean",
       "sha256": "221927bbc6425bf927fa23f000f2008ac0f7d3e919789f0f9f15b22a1a684f34",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -54,7 +62,7 @@
       "sha256": "e133cbbc1547b55ae44ad1cb3c60b318857b8d10178dac8d40ff2699e11828ee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -74,7 +82,7 @@
       "sha256": "08413b2dd0e72d2a7f3b48c9b09bffc62a9ce068abcab23dd8ecd124394d6e46",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7290,7 +7298,7 @@
       "sha256": "162e09f111158ab56767fc92b282afa0590688a5b688e7835a8e38764ba70295",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7598,7 +7606,7 @@
       "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7606,7 +7614,7 @@
       "sha256": "31f9509980c8838f63fecd33d9b924e1720399204a2382b93e15d9e0c4fed612",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7630,7 +7638,7 @@
       "sha256": "05934091e7b3d524dc2d2b343d26476095f23100272bacc23b3ba7ffd25d0724",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7646,7 +7654,7 @@
       "sha256": "7908e1e3894e636c012d62bf01f9a24a074a29cbaeb6956f7e7c7714ba69fd92",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7682,7 +7690,7 @@
       "sha256": "a36f309da82a5e2a8729680f86845f8327ef607b4159044d7638d6ff8a7364e1",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7690,7 +7698,7 @@
       "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7742,7 +7750,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7758,7 +7766,7 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7782,7 +7790,7 @@
       "sha256": "d046f37e3506bbb7a82cf411bbcbfe665f26170a6ba17a6a949b07225d0dbef3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7790,7 +7798,7 @@
       "sha256": "9359e4bd871b493d4cf5783f21e7aaee390e96028ab930bf648b8d30b9bf4696",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-blob-body-cost-v3.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7802,7 +7810,7 @@
       "sha256": "e6781483e78a78bd17065de1599de31e3e9d810163c23268230561c2c89f99ca",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7814,7 +7822,7 @@
       "sha256": "0ccb23656f25fed27209cc0afb3aba632f83b20052f384c3e35d9b18ed32a26f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7858,7 +7866,7 @@
       "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7866,7 +7874,7 @@
       "sha256": "a104d50eab575fb6b5ab5802b4dad79c7080ea0272b427cbeadcaedd450716f5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -7874,7 +7882,7 @@
       "sha256": "4bcaede2c3d999ea8adb63513d843a8036ca6b9edcfbc385755001a1ca83f711",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8186,7 +8194,7 @@
       "sha256": "f92b1f75e69489458f893d920b14d224e5ea8f884bd713a68e96d3dcfe74c2a1",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8194,7 +8202,7 @@
       "sha256": "aaeb30c69ed5cca46b9373cedec64541ba4e304b9510ec36ba6a8fec8ccf292f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8202,7 +8210,7 @@
       "sha256": "287cb170550306814ab06103cfaf1ed13394750d47fdf5ed7d99265a892ffb66",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8210,7 +8218,7 @@
       "sha256": "88765401ca780244794648916f471aef3ff2e01109b3fcb59c440720188fd63f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8218,7 +8226,7 @@
       "sha256": "f9180e49a0db69e9be18076ebf8d8dc3e4e67afcdb97d122b03037ac94d90f60",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8226,7 +8234,7 @@
       "sha256": "ee12cebcc96b455b7e4887d990c5d38e162f7e75f333e20ef7a524b9e95b1cb8",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8234,7 +8242,7 @@
       "sha256": "8525e0dddde254d1fb52046532feed54cbd97769ce848da98940f4366f12bac9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8242,7 +8250,7 @@
       "sha256": "70901159a5eef8a3e2923d8d710ebe1731e21ec4b397b4fde17c1f7cb402e326",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8250,7 +8258,7 @@
       "sha256": "a30602a8bdf37edc3b01c089e502422928e03e741660ca20eda8c1481e479c94",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8258,7 +8266,7 @@
       "sha256": "7e054b1f3798215d5e9796600eab6b913c74d208c20631102caa0dff9460abbb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8266,7 +8274,7 @@
       "sha256": "52132356bc734c412d8026c4309dac42043e1feaacacfbfa536a141c2a605728",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8274,7 +8282,7 @@
       "sha256": "74a138886ec375286571ce252b44f54e757a7bca27dc84b727e115cb5fd96318",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8282,7 +8290,7 @@
       "sha256": "b4bbafbf313cf7ad885b3e1c550ca8d9cd65ab0e5c80e7d95f38a92526ae0e00",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8290,7 +8298,7 @@
       "sha256": "230825fe13883f347db2ef7ec66fcb8c273b7eb1172024fc60ad8bc4577b5f67",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8298,7 +8306,7 @@
       "sha256": "f51aaafd380cf8e23026ee0b9ea3b3054d666abe5053db87ab68d9a8ee3b10d9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8306,7 +8314,7 @@
       "sha256": "90b53ba680800d8348015efd8fe7bf68d88cc6bba64a0427cc64a216dba72e53",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8314,7 +8322,7 @@
       "sha256": "713939057744d7764db5e5bb6686ad08758648ed0cc51f6e624a7cb07402825f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8322,7 +8330,7 @@
       "sha256": "32a00134a0d839e2d931317365a4cdbcbd7868099d3792a73ceff503f9c3b2e7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8330,7 +8338,7 @@
       "sha256": "bddc29677e9785b80fe2671432de2308e84234df80a3e0b9ff042ba4fa2c1ba2",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8338,7 +8346,7 @@
       "sha256": "28a5293ec00e0723e6c4c0088593000b6c1e445f95fa4b1c0a1bb17eb8dfe62f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8346,7 +8354,7 @@
       "sha256": "342635ae7189e7ba58d359f82155eccecda1876647c00fa6b9b0cd843f204131",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8354,7 +8362,7 @@
       "sha256": "1d05c702c4ac399a2dce1cdd528bd70bd67051d644926a383ce1599044e5dbf1",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8362,7 +8370,7 @@
       "sha256": "4bf87877b1379ca27ad40ec3695604d21f45791e3a822ff08627c087824498fa",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8370,7 +8378,7 @@
       "sha256": "0d2b4105d4b106ae80cf8ca991a98da6b36a56364f3245a63795cffc2ab6caf0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8378,7 +8386,7 @@
       "sha256": "ed57b09c9b226b987228f44f51aba246b31b47ef0f91f5fc087d3275a2f8e0d2",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8386,7 +8394,7 @@
       "sha256": "934971ccc1f9c2ca7b4bfdcbec21aac81273f4fbadcb10299ba07fbfbaffee18",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8394,7 +8402,7 @@
       "sha256": "5117afcd247dc3a2db79e25be4ded38011d76cce4c43cc93bdc6016e5ee8bf0e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8402,7 +8410,7 @@
       "sha256": "fb73d348229ea21e6563fdbd84285056f121cd0cd2f1f88f5cee9ce1692bdaa7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8410,7 +8418,7 @@
       "sha256": "778e8e2b3b6ad8c3291119e517e4ce79bf3ab61a5798605ab516e102f7b78d71",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8434,7 +8442,7 @@
       "sha256": "dc4cb445bc58b435476e3b55d0dfbdf9c6b86a02258c35cda8f9d8937c3d9574",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8442,7 +8450,7 @@
       "sha256": "bafd149b2dc1c5863fccb226c4df88055ea3f350d3abd0ee1d02c72b26d7c7dc",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8450,7 +8458,7 @@
       "sha256": "374472c180fc92a71d68fc65a8cc5b2b2dd3e6141f2158ffad9018ee68ddcbb8",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8458,7 +8466,7 @@
       "sha256": "16795ad25ca7258e23ce339ebb87cb56f6e9a2bd53a3f73407cbb08e89f87e5c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8466,7 +8474,7 @@
       "sha256": "f48270a6bd0d28e3a94ef8e7ab1a34c491f14f79f0c9543d00bf11c689b328a3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8474,7 +8482,7 @@
       "sha256": "2bef45bf174794bfc896fa3eadedb3735c763f45c54f5af0165e4248100d0455",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8498,7 +8506,7 @@
       "sha256": "e4c070f14089725c4e20214d25ac71cd308c280a31df543f3fe40203500711d0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8514,7 +8522,7 @@
       "sha256": "8a1b9635da19d31d4ba10811d90b047f865f8cc820ff0f9677714fd3f2c76ccc",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8522,7 +8530,7 @@
       "sha256": "607e87431208a960a3612bd2f5469305557b750094634dd3ca6cab9b14fd5571",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8530,7 +8538,7 @@
       "sha256": "d1c9e9beffa9b216a8aec05be1f1f7010c5f66bdf7b2965fbce1ab632187bc7f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8538,7 +8546,7 @@
       "sha256": "1c8b648dcf36ad1653b89f92286f5372766407d9392f3faaff7413fd629e30e3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8546,7 +8554,7 @@
       "sha256": "68e6f74aa94c7974e56cae24c144e0fa488387fb0188146a9c91d95e9434ec91",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8570,7 +8578,7 @@
       "sha256": "385098ebc9e43e96fa2d4c977773f994f511aac363c326e6c700e6ef994b9731",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8610,7 +8618,7 @@
       "sha256": "c79bec032d8b356df85340a67e695c1ffa9609a57be4edbcdc1f9beee5d9b715",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8642,7 +8650,7 @@
       "sha256": "5402a551c2cc7911efa85525620bc8f331f94ec346b960e726a3c435484d6d86",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8650,7 +8658,7 @@
       "sha256": "b05883c72d4e5f38143ce099a9d448b21daec8de1f376cdff4d3603dd6c9d1da",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8666,7 +8674,7 @@
       "sha256": "8c13eb086ca7474eef726f83b20c4c78926a96a34380803b1f79e1a8463d7211",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8674,7 +8682,7 @@
       "sha256": "c4d9a964d253e2cfcf72c0cbc696aa9ed173b451cf579e5180bb666c0ec1f68e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8698,7 +8706,7 @@
       "sha256": "26e8781ef33bd86a89b087f480672df4cb76f8bef72d575bbc22cc92a5bc2464",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8706,7 +8714,7 @@
       "sha256": "2453c1a7f626335638c21dffa070602086fed0cbdfb1ff439474cb0bdb722718",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8714,7 +8722,7 @@
       "sha256": "09c3724ae163046d618cf33385905de471069357fb3f7113f46396171b92dd5b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8730,7 +8738,7 @@
       "sha256": "53853ad5e877ac58e233e5fae7b71ecb4c5a9f4c893bc469f5874563814f609d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8738,7 +8746,7 @@
       "sha256": "9739152cf7e70dcb9569db0fa24a91b857427574a07619538a2199b75e978e54",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8746,7 +8754,7 @@
       "sha256": "5b246dda12cea3c94b2311dbcbb2924b9dd2f6987a947ffd0cf4586546c99df4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8754,7 +8762,7 @@
       "sha256": "9d3d99d2e8d390969d267caff36fad207dc9c53aed41af7183fce8de96044925",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8762,7 +8770,7 @@
       "sha256": "b8f4a8203e2d7336a6fbbc99171c4e5f2b948c1e0b77d8ab941a193dbececc48",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8778,7 +8786,7 @@
       "sha256": "3a863ec9c1274d71f72a51939630a118d94c0d2000ba37f4f1f0495b2782a90f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8786,7 +8794,7 @@
       "sha256": "5d3cf3a7a3e2c2f0a7df7dfdc5388d0cb70c66fbf3d04f9c18c62ebc54202670",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8794,7 +8802,7 @@
       "sha256": "f66fe733dfae32d712399c3f97a6f4e5708d7b3269244d4bbedb1a322ca4124a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8818,7 +8826,7 @@
       "sha256": "7ef1867a9c9962eb40a3e4a810a3d12e47d8e3e53b3a63aedc2d85e5b0c79ee8",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8914,7 +8922,7 @@
       "sha256": "1a09808d1f552844583d28f3d26992c5378d948bf5a82da62aed998e635ebb37",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8922,7 +8930,7 @@
       "sha256": "9aff55bea01ba9a49cf2d1c12d8b9cb0645f486f24edd889966c7c66a0286809",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -8994,7 +9002,7 @@
       "sha256": "3b22cd59e5c346bd3f333c8331913b7824820f7cb4a24d3328ab10c4cedcc9e4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9002,7 +9010,7 @@
       "sha256": "ac9d8032baf58c6785940d4542740b408e5053576adb61379e7e5105f78384de",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9018,7 +9026,7 @@
       "sha256": "f63a11b8d62c497055fc127bf6943174a43542e4cfc38db1c4af4541f44c260d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9026,7 +9034,7 @@
       "sha256": "71dd160ad0af23622b434ce0b6cf7f23ec860708d3ff242d5b8ee4833f891879",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9034,7 +9042,7 @@
       "sha256": "8fe022c8614f5fd08ed0ecda548b2b1a41f1ff1abb62847534db2a954fc9d724",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9042,7 +9050,7 @@
       "sha256": "b301f0abb72c6ac5d983f58ed445770d2e51c5602cacaca44bc28c1227526040",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9050,7 +9058,7 @@
       "sha256": "25418bd2af23e14471e5ffcb882eef3bf4b15db8b40c7287f1cded843fd513c3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9058,7 +9066,7 @@
       "sha256": "4e016b82b06d5203f1f56e1871aa393269b78a9a61369222c8c795e2beecc13d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9066,7 +9074,7 @@
       "sha256": "4a5af6d6871f6f3dbe1ea0b9b11f54b07ee57c4f4cb5e3b0e88aa36afcf1b184",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9074,7 +9082,7 @@
       "sha256": "62fe1a09fa251ff423edc6cf4cb1bc0daa9c836ebda736a58d23fd29336aefe8",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9082,7 +9090,7 @@
       "sha256": "96754ab636b1411a8f4a1c6bbe5b66dae5cb6962c460e594638b4e1e787bebfa",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9090,7 +9098,7 @@
       "sha256": "12291349ce6fb33d9cd16b828516399817b48b4b9d1807d492d783fa8ed33f09",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9098,7 +9106,7 @@
       "sha256": "c0122541095b96176132d0a46e86a2ea9fee59329f790131173ee951eaa34123",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9138,7 +9146,7 @@
       "sha256": "020fb67eaea7f3a66a1f9e1f9ab19e25671a59817ff3f62c323626b468a9ca83",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9146,7 +9154,7 @@
       "sha256": "baed0ece9e8606ef559b0bba360f00b76f6cf768dc34b4751b14c7e6e8664532",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9154,7 +9162,7 @@
       "sha256": "e606c31f39b3d6909b8b59d47d95a5763b4c9fe0f7a7946cddeb3ce66221fa41",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9202,7 +9210,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9210,7 +9218,7 @@
       "sha256": "7643b8721af64cc2d6171771491ff384906792d15305d9a4d190b97729762ec3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9218,7 +9226,7 @@
       "sha256": "2e929e258559ec759f8afc2280404e02b48bb04e87dbfdbda64182b39249b30b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9226,7 +9234,7 @@
       "sha256": "3ad6ff63a44bfe4fc97abc0e1659b01394c2031082c6e7a27a03b5b36d71553f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9238,7 +9246,7 @@
       "sha256": "a57c969ec6434bbe764bfdec9a2621e66aba6d07290a37a817640b623ab3e7d4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9270,7 +9278,7 @@
       "sha256": "33ed90c3932c7504426b5025443ebde0efb549cf9f3f03a24f55c7c520801f7d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9278,7 +9286,7 @@
       "sha256": "eec99877aac5ce6391377439e01bf1cee4368763ad59e17fd2d0dc2447de4ec8",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9442,7 +9450,7 @@
       "sha256": "5e22bd7a0245e87bf42b83ace67458027f39979a2e0da03d69e5e75e569e50d6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9466,7 +9474,7 @@
       "sha256": "9cf0a81eb240380b63110f34d383a76c79079c9ae20be638b79a6fd07ab94c35",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9478,7 +9486,7 @@
       "sha256": "9ca4139dd862e577e73f9912173bbb5f9f0367204daefba180c601954b4a5210",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9486,7 +9494,7 @@
       "sha256": "409b91300b3db67803e63711a3fb26e1671ff96f9daf5473e4f0ef0b87dde350",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9494,7 +9502,7 @@
       "sha256": "2b0ef6de12fe3829f654012d2538e67529eddc5bd1c263f445653e6a78240ebd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9502,7 +9510,7 @@
       "sha256": "0ff3b8164f1f11b50c3259764bd60bb6d19786a08a39e82e233476c365d15b1c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9510,7 +9518,7 @@
       "sha256": "e73cfa0413d7f60e01127474630f81cc1ce446f4118121dbca1163b49dc117c8",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9518,7 +9526,7 @@
       "sha256": "4140a5743a2f8327876c0d51a23ec7e4cbc047d5ebf7595ed4d5f54e27e1b975",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9526,7 +9534,7 @@
       "sha256": "8e139798a7664a1132147ff62bae7f2b4fa03d28534f31d241c607ecc42afaba",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9534,7 +9542,7 @@
       "sha256": "b6d42abc9ba34c5df098bf20880c8058e3e5f40ae53fa8c34ea2dafd9436d064",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -9934,7 +9942,7 @@
       "sha256": "32d384b0a1c20ee8afba2faf869a6deb2107548e0801e5b7ab7c2fb7f121067c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -10082,7 +10090,7 @@
       "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -10090,7 +10098,7 @@
       "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -10098,7 +10106,7 @@
       "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -10122,7 +10130,7 @@
       "sha256": "c73b9d6a36d7eead87a9a4d6403b7e1d85eb4b11fbdc1e62990069e4cc4762f7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -10138,7 +10146,7 @@
       "sha256": "2a420307922047b232f8fc3d3f9ef3c2dc270d83f27b4169b049acaaca1b9a81",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -10162,7 +10170,7 @@
       "sha256": "68967b7da8399166c922ffb1b3ef5d14177b91ad2689b647bd578bafa0d140b3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -10418,7 +10426,7 @@
       "sha256": "28f313e91e9948a7fca05473468744b6762c3052abe4a68fbb2d263d33113d99",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -10618,7 +10626,7 @@
       "sha256": "0e31bf97b76acd3e92ee8a82576aa91de5748641ce7a90f5d360e62beeb888e7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -10710,7 +10718,7 @@
       "sha256": "38a8ba97e76cbd7707f6d81db34fb0b5e0cc26c7febf9011ed4d4a42f701c0d5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -11222,7 +11230,7 @@
       "sha256": "1f29d1109ed9c9d8fc33520ceddad0e2ba6422a6a3d57a5bac30ab4b93dc4bb0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -11274,7 +11282,7 @@
       "sha256": "21e58e40b3615b0e5cd9ad90bc30098f39f1b0102c532cef8967b78932651bfb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -11282,7 +11290,7 @@
       "sha256": "bb8a83423c6565c8664816d61b014ae5c29b242c2ffd50838e12afeb0088f4f3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -11370,7 +11378,7 @@
       "sha256": "444b58e3f4c9b086dade918533a469c8c2ce06d0ca52050f3fbdf863a789b7fa",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -11526,7 +11534,7 @@
       "sha256": "f5c1e13b24168fdf57d0fdeb4ce9d75245c065e7cecc80ec79e20de2bf309542",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -11534,7 +11542,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -11542,7 +11550,7 @@
       "sha256": "39f7f41e8c00f1c47164c8386f4ab437a3131675ad54986e0b1f9f7436585100",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -11554,7 +11562,7 @@
       "sha256": "188f9b9bd903e05d5bf0081e332145c8458bfb3d755cb8fc68454e6d7e95bd7b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -12466,7 +12474,7 @@
       "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -12486,7 +12494,7 @@
       "sha256": "6b494efa06e32dcd2cdce30dcdca29e5708536080fb8f8dc7be57b2f2818047e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -12502,7 +12510,7 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -12510,7 +12518,7 @@
       "sha256": "fd4b142862a214c56d86b7276616e6852aee03f89dd4b3769e3b72d6415db4d0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13026,7 +13034,7 @@
       "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13486,7 +13494,7 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13514,7 +13522,7 @@
       "sha256": "260583f2ead6709d5362e5604721117c5700c7825da6ef97e20c7db50fe81e74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13598,7 +13606,23 @@
       "sha256": "55bb1da4f9f693c00d1890c45cf4f1dff307cdeac4079926dbf5dce7cf65b938",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/ScratchClearCost.lean",
+      "sha256": "6b739fb812e2166cc73409597d29e601e508e479f40d2b6a4477dd0da3f0fb31",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-scratch-constructor-cost-v3.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/ScratchConstructorCost.lean",
+      "sha256": "6a2c157c83e03f3e1d919ba39e5c5799e8ee838c7ee153fced4437c530513a89",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13606,7 +13630,7 @@
       "sha256": "2a8dcd7e8392d546bc735dc67f895f9f71faaa644a768984dde464bfdae6184c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-memory-prefix-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13614,15 +13638,15 @@
       "sha256": "19119ecd16ed5b57278ffacd5eb35eb5db64f449e61525f5121a2da0ae035ba5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-memory-prefix-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ScratchNodeFill.lean",
-      "sha256": "255e9b54597ecd053756b1a57b837851aafd2bd182b88a620a5e291fe2a4f357",
+      "sha256": "a4ea6c28153ef07d92d5391a81e91a04bd7043175feed0caba2be105931019ca",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13630,7 +13654,7 @@
       "sha256": "d67b085256bf2470c5ed7721990a6ffa8029fd9ac9587308c87b41055a1d7f46",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13806,7 +13830,7 @@
       "sha256": "7be143f00075a15d91874ad879a07754a7c91fe18a3531ec8dc292bf3a4a000a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13946,7 +13970,7 @@
       "sha256": "4df0a8cc06fd2990ae06c505d7b7a603fae8bd2d3b3f56840d03af60e96e5813",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13986,7 +14010,7 @@
       "sha256": "4450f713a9fcc64fb1f5a12664d971aea9327d9984a7cc4a381bc15d284b69c7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -13994,7 +14018,7 @@
       "sha256": "9049c70243bdf689fb9548a82de10265db97c602e5a2bc3cc20d81dfa01f4259",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -14702,7 +14726,7 @@
       "sha256": "633d733f7bad0e1724aafae8b60d6cda037625e18257f1d983bae37436d86eed",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -14710,7 +14734,7 @@
       "sha256": "4327161056ae5aae8634b32aed28193da70e8e6cd5155615b95b25bd96a7dbd7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -14798,7 +14822,7 @@
       "sha256": "2fc15a5e4ac93eb5b791c74424052bb48f63930fc993427aeb99fc8edafba92e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -14806,7 +14830,15 @@
       "sha256": "ace9256004acb9148867575b58fd1eefd19f4bc1314f87ed8b191f9fe68697f1",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/ZeroUnmappedCost.lean",
+      "sha256": "8032e9e20c7e8bc517529b444c2839a01b5c16940852512ec7aac0fe592987ef",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -24758,7 +24790,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29206,7 +29238,7 @@
       "sha256": "499a7062f31ec74e4568f2533ae4aa29bac2c8aa419be8aa4fdb6f87eb2a510e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29242,7 +29274,7 @@
       "sha256": "48b8273d1ee0afe2ebd278206864053392a9f22092141292fd2c364c89313ff7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29374,7 +29406,7 @@
       "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29382,7 +29414,7 @@
       "sha256": "02071e2394e8a909552d0d29cc091e76ecb5a43b2909b69ab4dd731d1a5bf044",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29406,7 +29438,7 @@
       "sha256": "437ded0bbc2dbeea0eb5909575a2895a32e0335a9ce8bed077dc09d9cfa06016",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29450,7 +29482,7 @@
       "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29458,7 +29490,7 @@
       "sha256": "9bf469db054912ee33f4aed500be2e85029f2a7f6c5476b0bf0dbe31b8104c4e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29466,7 +29498,7 @@
       "sha256": "5f4f94c543c77f028eccb5e14d46cb47a84e9495bf8a4208605eb2db6c2e6b1d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29474,7 +29506,7 @@
       "sha256": "a0de5ea30c7795fb5332b93cacd4dd90d63e15da12c167a40d23f356ba067a9a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29482,7 +29514,7 @@
       "sha256": "da45009935dfa9cbab0514a1517be821503768a952cb1377b5eb02b6cca7c229",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29490,7 +29522,7 @@
       "sha256": "7e6a3a0a18e079fbdaf302eb726e96997a66c8618d00bdefd26805ef663b504c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29498,7 +29530,7 @@
       "sha256": "a8b0233748e0f03e90e628b79d3215046558dc40d2e9f89691cca80f462e4427",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29506,7 +29538,7 @@
       "sha256": "6e5ac25c2f99e8ffbcbc7044ccf9e92173523e851534130d22521b7032ad521e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29514,7 +29546,7 @@
       "sha256": "20faa123672a458c7b2275fc4263ee1834eea1d7ea21946e1a030b0fffab0cbe",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29522,7 +29554,7 @@
       "sha256": "be37cf170b6e9a242bd3dd80eec72b548717c29974fb6072f6aa620120278d0a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29530,7 +29562,7 @@
       "sha256": "43aae1f2fffb279b8355aedc19e782069ce31da61e9ffcb3aca94feb989d2d9e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29538,7 +29570,7 @@
       "sha256": "d545a090ea4e2b1cfbbd0114b60eb7c16fa341294a118c6f7186bd5f9feb378e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29946,7 +29978,7 @@
       "sha256": "00496c0a1c173eb32d8df0463c59b14de29c7328603a98dc6b0c112fbb93934c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29954,7 +29986,7 @@
       "sha256": "c6fdc8a09e4996d2da0b16a6a0440a2fd69ee375557bb530b76a1f8448514a52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29962,7 +29994,7 @@
       "sha256": "afd581628da544649c453743c68b58e6b4ca94482d391efb1ffb14781ce68394",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29970,7 +30002,7 @@
       "sha256": "2fff59466ce3299a8761387286fc7c63f313eee4a1255155cce0053d4ed1776a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29978,7 +30010,7 @@
       "sha256": "ec1bf723f03a1ac0bfe94da02c09ce084671bd3fdccd0ada35781ed1e1d902e0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29990,7 +30022,7 @@
       "sha256": "2941b3ac83ce909b1a8068ce503772b29ea52a43f11c608f4f0a7abe48b4744b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -29998,7 +30030,7 @@
       "sha256": "6ab96ace982f411c854278c50e9b95392fef23147aced50f944fc2eb92a55d11",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30006,7 +30038,7 @@
       "sha256": "e43d813f36d73b97ba1da6d69ba3606285c1de8ee703a7a3b6d49c8f1b04f06a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30034,7 +30066,7 @@
       "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30046,7 +30078,7 @@
       "sha256": "28e77a3f74ebcea4b2b99d9994fdef0f8ba6e9826549224c94bd947df61f1612",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30054,7 +30086,7 @@
       "sha256": "5acb07092e466bcbd01ab17e1841b1ae72c53c6a26984bfd8923690ae1550f70",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30082,7 +30114,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-hash-main-cut-v1.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30090,7 +30122,7 @@
       "sha256": "751b89698479201e036a489982de317a96f8cc9901949acc630acdac40624387",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30166,7 +30198,7 @@
       "sha256": "18293761d3208f32f393fd4b61cdd264e8a2c459a854ba9ab19a7805a5fe68ff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30174,7 +30206,7 @@
       "sha256": "ad93b859ea4ff36f33ef1e17afb91976d4a5a58818be76b60a7451b19df94c65",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30182,7 +30214,7 @@
       "sha256": "733106c9b8bbc99ede453052fe54fb84dfff7b672fbf3eb496f2a0690b286d8e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30210,7 +30242,7 @@
       "sha256": "e24e77f84db7341fc326c851ad3cd01e54972f09455b3ea9bac2f7bd97ac0899",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30222,7 +30254,7 @@
       "sha256": "57e6912df0f6cf725c11c97d389c2878501d34a593bf833e6faa65e708b9e13e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -30274,7 +30306,7 @@
       "sha256": "e521ffe5733615cbbbb0b5fc42121f5f4074d920552c89927bb8c38394f6249f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-scratch-node-fill-v2.log"
+        "current-scratch-constructor-cost-v3.log"
       ]
     },
     {
@@ -80741,7 +80773,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80750,7 +80782,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80758,13 +80790,13 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80773,7 +80805,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80810,7 +80842,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80820,7 +80852,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80830,7 +80862,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80840,7 +80872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80850,7 +80882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80860,7 +80892,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80870,7 +80902,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80880,7 +80912,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80890,7 +80922,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80900,7 +80932,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80910,7 +80942,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80919,7 +80951,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80928,7 +80960,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80938,7 +80970,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80948,7 +80980,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80958,7 +80990,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80967,7 +80999,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -80977,7 +81009,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81005,7 +81037,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81015,7 +81047,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81025,7 +81057,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81035,7 +81067,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81045,7 +81077,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81055,7 +81087,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81065,7 +81097,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81075,7 +81107,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81093,7 +81125,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81102,7 +81134,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81112,7 +81144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81122,7 +81154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81132,7 +81164,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81160,7 +81192,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81170,7 +81202,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81180,7 +81212,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81190,7 +81222,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81200,7 +81232,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81208,7 +81240,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81217,7 +81249,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81253,7 +81285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81263,7 +81295,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81273,7 +81305,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81283,7 +81315,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81293,7 +81325,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81303,7 +81335,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81312,7 +81344,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81322,7 +81354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81332,7 +81364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81342,7 +81374,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81352,7 +81384,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81362,7 +81394,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81371,7 +81403,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81399,7 +81431,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81409,7 +81441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81439,7 +81471,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81449,7 +81481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81469,7 +81501,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81479,7 +81511,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81489,7 +81521,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81538,7 +81570,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81548,7 +81580,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81558,7 +81590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83641,7 +83673,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83650,7 +83682,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83659,7 +83691,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83668,7 +83700,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83677,7 +83709,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83686,7 +83718,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83979,7 +84011,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83988,7 +84020,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83997,7 +84029,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84203,7 +84235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84213,7 +84245,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84223,7 +84255,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84233,7 +84265,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84242,7 +84274,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85164,7 +85196,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85618,7 +85650,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86086,7 +86118,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86096,7 +86128,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86718,7 +86750,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86964,7 +86996,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86974,7 +87006,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92088,7 +92120,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92098,7 +92130,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92108,7 +92140,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92118,7 +92150,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92127,7 +92159,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92136,7 +92168,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92145,7 +92177,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92191,7 +92223,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92201,7 +92233,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92210,7 +92242,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92219,7 +92251,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92229,7 +92261,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92283,7 +92315,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92293,7 +92325,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92988,7 +93020,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92998,7 +93030,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93044,7 +93076,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93054,7 +93086,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93100,7 +93132,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93155,7 +93187,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93165,7 +93197,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93175,7 +93207,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93185,7 +93217,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93195,7 +93227,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93205,7 +93237,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93215,7 +93247,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93225,7 +93257,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93235,7 +93267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93245,7 +93277,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94537,7 +94569,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94547,7 +94579,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98359,7 +98391,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99372,7 +99404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99382,7 +99414,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99392,7 +99424,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99402,7 +99434,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99412,7 +99444,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99422,7 +99454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99432,7 +99464,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99704,7 +99736,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99818,7 +99850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101514,7 +101546,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101524,7 +101556,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101534,7 +101566,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103840,7 +103872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104021,7 +104053,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104031,7 +104063,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104041,7 +104073,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104051,7 +104083,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104061,7 +104093,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104071,7 +104103,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104081,7 +104113,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104091,7 +104123,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104099,7 +104131,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104107,7 +104139,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104117,7 +104149,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104126,7 +104158,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104136,7 +104168,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104146,7 +104178,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104421,7 +104453,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104431,7 +104463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104441,7 +104473,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104451,7 +104483,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104461,7 +104493,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104471,7 +104503,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104481,7 +104513,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104491,7 +104523,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104501,7 +104533,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104511,7 +104543,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104521,7 +104553,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104531,7 +104563,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104541,7 +104573,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104551,7 +104583,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104561,7 +104593,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104571,7 +104603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104581,7 +104613,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104591,7 +104623,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104601,7 +104633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104826,7 +104858,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104834,7 +104866,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104843,7 +104875,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104852,7 +104884,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104861,7 +104893,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104871,7 +104903,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104881,7 +104913,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104891,7 +104923,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104901,7 +104933,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104911,7 +104943,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104921,7 +104953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104931,7 +104963,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104941,7 +104973,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104951,7 +104983,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105233,7 +105265,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108001,7 +108033,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108011,7 +108043,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108286,7 +108318,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112541,7 +112573,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112950,7 +112982,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112960,7 +112992,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112970,7 +113002,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-blob-body-cost-v3.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -114501,7 +114533,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115167,7 +115199,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115177,7 +115209,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115187,7 +115219,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115197,7 +115229,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115207,7 +115239,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115226,7 +115258,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115236,7 +115268,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115246,7 +115278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115256,7 +115288,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115266,7 +115298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115276,7 +115308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116408,7 +116440,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117248,7 +117280,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117258,7 +117290,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117268,7 +117300,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117278,7 +117310,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117288,7 +117320,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117298,7 +117330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117308,7 +117340,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117318,7 +117350,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117326,7 +117358,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117336,7 +117368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117346,7 +117378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117356,7 +117388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117366,7 +117398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117376,7 +117408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117386,7 +117418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117395,7 +117427,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117405,7 +117437,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117415,7 +117447,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117425,7 +117457,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117435,7 +117467,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117445,7 +117477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118440,7 +118472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119480,7 +119512,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -120058,7 +120090,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124163,7 +124195,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124172,7 +124204,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124181,7 +124213,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124191,7 +124223,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124201,7 +124233,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124211,7 +124243,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124221,7 +124253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124231,7 +124263,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124241,7 +124273,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124251,7 +124283,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124261,7 +124293,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124271,7 +124303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124281,7 +124313,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124291,7 +124323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124301,7 +124333,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124311,7 +124343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124320,7 +124352,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124328,7 +124360,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124336,7 +124368,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124345,7 +124377,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124355,7 +124387,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124473,7 +124505,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124483,7 +124515,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124493,7 +124525,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124503,7 +124535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124513,7 +124545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124523,7 +124555,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124694,7 +124726,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124793,7 +124825,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124944,7 +124976,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -125349,7 +125381,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -145501,7 +145533,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153190,7 +153222,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153200,7 +153232,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153210,7 +153242,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153220,7 +153252,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153230,7 +153262,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153240,7 +153272,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153250,7 +153282,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153260,7 +153292,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153399,7 +153431,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153409,7 +153441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153419,7 +153451,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153429,7 +153461,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -153439,7 +153471,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -154396,7 +154428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -154406,7 +154438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -158982,7 +159014,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -164885,7 +164917,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165566,7 +165598,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165575,7 +165607,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165584,7 +165616,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165594,7 +165626,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165604,7 +165636,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165614,7 +165646,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165624,7 +165656,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165634,7 +165666,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165644,7 +165676,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165654,7 +165686,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165664,7 +165696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165674,7 +165706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165684,7 +165716,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165694,7 +165726,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165704,7 +165736,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165714,7 +165746,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165724,7 +165756,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165734,7 +165766,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165744,7 +165776,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165754,7 +165786,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165764,7 +165796,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165774,7 +165806,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165784,7 +165816,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165794,7 +165826,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165804,7 +165836,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165814,7 +165846,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165824,7 +165856,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165834,7 +165866,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165844,7 +165876,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165854,7 +165886,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165864,7 +165896,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165874,7 +165906,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165884,7 +165916,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165894,7 +165926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165904,7 +165936,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165914,7 +165946,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165924,7 +165956,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165934,7 +165966,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165944,7 +165976,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165954,7 +165986,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165964,7 +165996,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165974,7 +166006,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165984,7 +166016,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -165994,7 +166026,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166004,7 +166036,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166014,7 +166046,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166024,7 +166056,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166034,7 +166066,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166044,7 +166076,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166054,7 +166086,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166064,7 +166096,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166074,7 +166106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166084,7 +166116,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166094,7 +166126,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166104,7 +166136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166114,7 +166146,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166124,7 +166156,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166134,7 +166166,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166144,7 +166176,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166154,7 +166186,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166164,7 +166196,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166174,7 +166206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166184,7 +166216,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166194,7 +166226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166204,7 +166236,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166214,7 +166246,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166224,7 +166256,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166234,7 +166266,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166244,7 +166276,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166254,7 +166286,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166264,7 +166296,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166274,7 +166306,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166284,7 +166316,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166294,7 +166326,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166304,7 +166336,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166314,7 +166346,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166324,7 +166356,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166334,7 +166366,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166344,7 +166376,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166352,7 +166384,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166362,7 +166394,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166372,7 +166404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166382,7 +166414,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166392,7 +166424,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166402,7 +166434,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166412,7 +166444,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166422,7 +166454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166432,7 +166464,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166442,7 +166474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166452,7 +166484,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166462,7 +166494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166472,7 +166504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166482,7 +166514,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166492,7 +166524,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166502,7 +166534,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166512,7 +166544,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166522,7 +166554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -166732,7 +166764,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167211,7 +167243,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167221,7 +167253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167281,7 +167313,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167291,7 +167323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167381,7 +167413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167391,7 +167423,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167401,7 +167433,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167461,7 +167493,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -169194,7 +169226,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170143,7 +170175,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170153,7 +170185,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170163,7 +170195,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170173,7 +170205,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170183,7 +170215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170193,7 +170225,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170203,7 +170235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170213,7 +170245,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-scratch-node-fill-v2.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170223,7 +170255,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170233,7 +170265,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170243,7 +170275,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170253,7 +170285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170263,7 +170295,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170273,7 +170305,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170283,7 +170315,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170293,7 +170325,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170303,7 +170335,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170313,7 +170345,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170323,7 +170355,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170333,7 +170365,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170343,7 +170375,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170353,7 +170385,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170363,7 +170395,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170373,7 +170405,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170383,7 +170415,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170393,7 +170425,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170403,7 +170435,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170413,7 +170445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170423,7 +170455,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170433,7 +170465,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170443,7 +170475,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170453,7 +170485,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170463,7 +170495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170473,7 +170505,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170483,7 +170515,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170493,7 +170525,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170503,7 +170535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170513,7 +170545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170523,7 +170555,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170533,7 +170565,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170543,7 +170575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170553,7 +170585,87 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-hash-main-cut-v1.log",
+      "successful_log": "current-scratch-constructor-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Arenas.mark_price_reached",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-scratch-constructor-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ScratchClear.returned_clear_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-scratch-constructor-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ScratchClear.allocated_clear_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-scratch-constructor-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ScratchConstructors.message_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-scratch-constructor-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ScratchFrame.body_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-scratch-constructor-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ZeroUnmapped.loop32_run",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-scratch-constructor-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ZeroUnmapped.body_stopped_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-scratch-constructor-cost-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ZeroUnmapped.call_price",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-scratch-constructor-cost-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

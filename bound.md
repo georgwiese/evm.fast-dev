@@ -41,6 +41,11 @@ earlier speculative K guess, 10^14–10^18, is not proved or a target ceiling.
 
 Checked against the current Software AST:
 
+- Current below-domain memzero costs at most1body/2caller source ticks on
+  every outcome. The real scratch allocation/clear including arbitrary later
+  suffix costs≤4; current scratch message constructor≤4and frame_new≤6including
+  both cursor snapshots. Caller arena transport and global target pricing remain.
+
 - The actual31-helper request-hash graph preserves both arena globals on
   every outcome, reusing8startup helper proofs. HashPrefix refines the genuine
   source observation through main's root allocation/hash call: earlier stop

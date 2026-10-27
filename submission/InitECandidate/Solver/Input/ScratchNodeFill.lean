@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.ScratchStore
-import InitECandidate.Solver.Arenas.Marks
+import InitECandidate.Solver.Arenas.MarkCost
 import InitECandidate.Solver.Input.DropLeading
 
 namespace InitECandidate.Solver.Input.ScratchNodeFill
@@ -60,21 +60,13 @@ theorem price (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer lim
     (pointerGlobal : source.globals.lookup (ofString "scratch_ptr") = some (.val (.word pointer)))
     (limitGlobal : source.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word limit))) :
     source.clock - (evaluateHOLFiniteState source body).2.clock ≤ 3 := by
-  by_cases zero : source.clock = 0
-  · simp only [zero, Nat.zero_sub]
-    omega
-  · rw [body_shape]
-    have marked := Arenas.mark_call source .down "mark" pointer tail (mark_installed source.code current) pointerGlobal (by omega)
-    simp only [Arenas.markName] at marked
-    rw [marked]
-    let ready := bind {source with clock := source.clock - 1} "mark" pointer
-    have bound := ScratchStore.allocated_price ready pointer limit 48 0 "fr" 0#64 rest (by decide) (by decide)
-      pointerBound ordered aligned domain current pointerGlobal limitGlobal
-    have forward := evaluateHOLFiniteState_clock_le ready tail
-    change source.clock - (evaluateHOLFiniteState ready tail).2.clock ≤ 3
-    change source.clock - 1 - (evaluateHOLFiniteState ready tail).2.clock ≤ 2 at bound
-    change (evaluateHOLFiniteState ready tail).2.clock ≤ source.clock - 1 at forward
-    omega
+  rw [body_shape]
+  apply Arenas.mark_price_reached source .down "mark" pointer tail 2
+    (mark_installed source.code current) pointerGlobal
+  let ready := bind {source with clock := source.clock - 1} "mark" pointer
+  change ready.clock - (evaluateHOLFiniteState ready tail).2.clock ≤ 2
+  exact ScratchStore.allocated_price ready pointer limit 48 0 "fr" 0#64 rest (by decide) (by decide)
+    pointerBound ordered aligned domain current pointerGlobal limitGlobal
 
 end InitECandidate.Solver.Input.ScratchNodeFill
 

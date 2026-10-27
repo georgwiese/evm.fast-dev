@@ -4,6 +4,23 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## All-outcome scratch clear and constructor source bounds
+
+ZeroUnmappedCost now checks the full first-loop result (including timeout's
+empty locals), then the complete current memzero body: only error/timeout,
+source cost≤1body/2caller ticks at an aligned below-domain clear of≥32bytes.
+ScratchClearCost derives each actual returned scratch allocation before pricing
+that clear, and proves cost≤4for the complete allocation/clear with arbitrary
+unreachable suffix. Real msg_new_scratch body≤4; frame_new's two genuine cursor
+marks add2, giving body≤6on every outcome. The reusable mark pricing rule also
+replaces duplicated clock case analysis in ScratchNodeFill. No future allocation
+room/success/mapped scratch or later EVM operation is assumed.
+
+Validation: current-scratch-constructor-cost-v3.log PASS822jobs/permitted printed
+axioms; two slots/cachefalse/8GiBguard. Index7970modules/15834facts; replacement
+closure0/frozenmainunchanged. Account17%weekly/0resetcredits/ordinaryallowed.
+No global K/full verification; overall40%, plausible30–50%.
+
 ## Actual main hash cut retains the initialized arena values
 
 CurrentHash checks the closed31-helper htr_new_payload_request graph at the

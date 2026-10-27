@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.OriginalCode
+import InitECandidate.Solver.Input.OriginalEntry
 import InitECandidate.Solver.GasBudget.ArithmeticEffects
 import InitECandidate.Solver.GasBudget.ArithmeticStackCall
 import InitECandidate.Solver.GasBudget.DispatchProgram
@@ -11,11 +12,6 @@ open Flapjack.Basis.Pure.MlString
 
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
-
-def originalEntry (declaration : Decl (BitVec 64)) : MlS × (List (MlS × ShapeHOL) × ProgHOL 64 × ShapeHOL) :=
-  match declToHOL declaration with
-  | .function fn => (fn.name, fn.params, fn.body, fn.returnShape)
-  | _ => (ofString "", [], .skip, .one)
 
 -- Literal positions in the unchanged source; this catalogue is not executable code.
 def arithmeticIndex : ArithmeticEffects.Kind → Nat

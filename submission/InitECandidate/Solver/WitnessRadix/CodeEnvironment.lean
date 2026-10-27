@@ -1,4 +1,4 @@
-import InitECandidate.Solver.WitnessRadix.Copy32Environment
+import Flapjack.Pancake.Semantics.PanSem.StateExactFiniteMap
 
 namespace InitECandidate.Solver.WitnessRadix.CodeEnvironment
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

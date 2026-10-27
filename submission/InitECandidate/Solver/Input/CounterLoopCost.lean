@@ -43,10 +43,12 @@ theorem loop_cost (code) (counter limit : MlS) (body : ProgHOL 64) (price length
       simp [evalHOLFinite, evalHOLExact, toExact, currentCell, lengthCell, wordCmpHOL, BitVec.lt_def,
         BitVec.toNat_ofNat, lengthMod]
     have active : current.toNat < length := by
-      by_contra inactive
-      rw [if_neg inactive] at read
-      have equal : observed = 0#64 := by simpa only [Option.some.injEq, ValueHOL.val.injEq, HolWordLab.word.injEq] using actual.symm.trans read
-      exact nonzero equal
+      by_cases active : current.toNat < length
+      · exact active
+      · rw [if_neg active] at read
+        have equal : observed = 0#64 := by
+          simpa only [Option.some.injEq, ValueHOL.val.injEq, HolWordLab.word.injEq] using actual.symm.trans read
+        exact (nonzero equal).elim
     have rankEq : rank state = length - current.toNat := by simp [rank, counterWord, currentCell, valueWord]
     refine ⟨by rw [rankEq]; omega, ?_⟩
     intro funded

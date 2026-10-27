@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.HeapFrame
+import InitECandidate.Solver.Input.EvaluationFields
 import InitECandidate.Solver.Input.ReturnNormal
 import InitECandidate.Solver.WitnessRadix.StateSteps
 

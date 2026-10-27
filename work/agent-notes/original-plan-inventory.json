@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 7815,
+  "solver_modules": 7825,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -48,7 +48,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1279,
+    "Input": 1289,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -119,7 +119,7 @@
       },
       {
         "module": "MutableTable.NodeDbDictionary32",
-        "solver_dependency_count": 125,
+        "solver_dependency_count": 99,
         "imports_replacement_ast": false
       }
     ],
@@ -203,29 +203,29 @@
     "input_reachability": [
       {
         "module": "Input.Witness.BodyNormal",
-        "solver_dependency_count": 232,
+        "solver_dependency_count": 231,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.Witness.PrefixNormal",
-        "solver_dependency_count": 225,
+        "solver_dependency_count": 224,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.RequestStoredGasFromHeader",
-        "solver_dependency_count": 236,
+        "solver_dependency_count": 235,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.RlpLength.BlockGuard",
-        "solver_dependency_count": 291,
+        "solver_dependency_count": 290,
         "imports_replacement_ast": false
       }
     ],
     "local_gas_accounting": [
       {
         "module": "GasBudget.StateChargeBudget",
-        "solver_dependency_count": 96,
+        "solver_dependency_count": 33,
         "imports_replacement_ast": false
       },
       {
@@ -235,19 +235,19 @@
       },
       {
         "module": "GasBudget.ChildError",
-        "solver_dependency_count": 101,
+        "solver_dependency_count": 38,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.ChildSuccess",
-        "solver_dependency_count": 105,
+        "solver_dependency_count": 42,
         "imports_replacement_ast": false
       }
     ],
     "original_root_initialization": [
       {
         "module": "GasBudget.RootMsgNormal",
-        "solver_dependency_count": 115,
+        "solver_dependency_count": 55,
         "imports_replacement_ast": false
       },
       {
@@ -257,7 +257,7 @@
       },
       {
         "module": "Input.FreshRecordCall",
-        "solver_dependency_count": 95,
+        "solver_dependency_count": 54,
         "imports_replacement_ast": false
       }
     ],

@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.LocalPrefix
+import Guest.Model
 import InitECandidate.Solver.Input.NoneControl
 import InitECandidate.Solver.Input.CallResume
 
@@ -54,6 +55,32 @@ private theorem other_restore (map : HolFiniteMapExact MlS (ValueHOL 64)) (key n
     (HolFiniteMapExact.resVarEq map (name, value)).lookup key = map.lookup key := by
   rw [lookup_resVarEq_toExact]
   cases value <;> simp [resVarHOLExact, other]
+
+/-- An unrelated lexical binding preserves actual counter progress through
+its real continuing body and restoration. -/
+theorem declared (key name : MlS) (shape : ShapeHOL) (expression : ExpHOL 64)
+    (body : ProgHOL 64) (amount : Nat) (other : key ≠ name)
+    (tail : Advances key amount body) : Advances key amount (.dec name shape expression body) := by
+  intro source post word cell run
+  rw [evaluateHOLFiniteState_dec_total] at run
+  simp only at run
+  split at run
+  · cases run
+  · rename_i value read
+    split at run
+    · generalize bodyRun : evaluateHOLFiniteState (setVarHOLFinite name value source) body = output at run
+      obtain ⟨result, inner⟩ := output
+      have resultEq := congrArg Prod.fst run
+      change result = none at resultEq
+      have postEq := congrArg Prod.snd run
+      change {inner with locals := HolFiniteMapExact.resVarEq inner.locals (name, source.locals.lookup name)} = post at postEq
+      have actual : evaluateHOLFiniteState (setVarHOLFinite name value source) body = (none, inner) := by
+        rw [bodyRun, resultEq]
+      have before := (other_set source key name value other).trans cell
+      have after := tail _ inner word before actual
+      rw [← postEq]
+      exact (other_restore _ key name _ other).trans after
+    · cases run
 
 /-- Real scoped helper calls restore the caller's counter before their
 continuation, regardless of callee effects and local bindings. -/
@@ -115,3 +142,4 @@ end InitECandidate.Solver.Input.CounterFlow
 #print axioms InitECandidate.Solver.Input.CounterFlow.increment
 #print axioms InitECandidate.Solver.Input.CounterFlow.sequence
 #print axioms InitECandidate.Solver.Input.CounterFlow.scoped_call
+#print axioms InitECandidate.Solver.Input.CounterFlow.declared

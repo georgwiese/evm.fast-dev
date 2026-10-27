@@ -1,11 +1,13 @@
-import InitECandidate.Solver.Input.PayloadGas
+import Guest.SoftwareAst
+import InitECandidate.Solver.WitnessRadix.CodeEnvironment
+import InitECandidate.Solver.WitnessRadix.StateSteps
 import Flapjack.Pancake.Semantics.PanSem.EvaluateClock
 
 namespace InitECandidate.Solver.Input.SszFail
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_ssz_fail with
+def body : ProgHOL 64 := match Guest.Software.guestFn_ssz_fail with
   | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL) := [(ofString "code",.one)]
 def values (code : BitVec 64) : List (ValueHOL 64) := [.val (.word code)]
@@ -13,7 +15,7 @@ def rawLocals (code : BitVec 64) (name : MlS) : Option (ValueHOL 64) :=
   if name=ofString "code" then some (.val (.word code)) else none
 
 theorem body_shape : body=.seq (.raise (ofString "SszErr") (localVar "code")) (.return (.const 0#64)) := by
-  simp only [body,Guest.guestFn_ssz_fail,progToHOL,expToHOL,shapeToHOL,localVar]
+  simp only [body,Guest.Software.guestFn_ssz_fail,progToHOL,expToHOL,shapeToHOL,localVar]
 
 theorem execute {F : Type} (source : PanSemStateFiniteExact 64 F) (code : BitVec 64)
     (codeLocal : source.locals.lookup (ofString "code")=some (.val (.word code)))

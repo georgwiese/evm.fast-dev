@@ -18,11 +18,11 @@ def increment : ProgHOL 64 := .assign .local (ofString "i") (addConst (localVar 
 def checks : ProgHOL 64 := .seq rangeGuard (.seq orderGuard increment)
 
 theorem loop_shape : loop=.while condition loopBody := by
-  simp only [loop,body,loopBody,Guest.guestFn_ssz_check_offsets,progToHOL,expToHOL,shapeToHOL,
+  simp only [loop,body,loopBody,Guest.Software.guestFn_ssz_check_offsets,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,condition,localVar]
 
 theorem loop_body_shape : loopBody=.dec (ofString "o") .one (.load .one cellAddress) checks := by
-  simp only [loopBody,loop,body,Guest.guestFn_ssz_check_offsets,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+  simp only [loopBody,loop,body,Guest.Software.guestFn_ssz_check_offsets,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     cellAddress,checks,rangeGuard,rangeTest,orderGuard,hasPrevious,orderTest,previous,fail,increment,localVar,addConst,Option.map_none]
 
 theorem cell_address_read {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer : BitVec 64) (index : Nat)

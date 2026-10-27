@@ -7519,7 +7519,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CallNormal.lean",
-      "sha256": "332115204270a74eb1c2e30c6c241c416969e9ad7dadef1c6fa105ac9a5dfbff"
+      "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CallPrefix.lean",
@@ -7567,7 +7571,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CallResume.lean",
-      "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e"
+      "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CallResumeFields.lean",
@@ -7614,7 +7622,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
@@ -7627,7 +7635,19 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCall.lean",
-      "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624"
+      "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/ClockCostCallReached.lean",
+      "sha256": "0f0217e9acf671365ff323e57f698596a359000538053c92779db0df9151d23d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCaught.lean",
@@ -7642,12 +7662,16 @@
       "sha256": "d046f37e3506bbb7a82cf411bbcbfe665f26170a6ba17a6a949b07225d0dbef3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCurrentCall.lean",
-      "sha256": "9359e4bd871b493d4cf5783f21e7aaee390e96028ab930bf648b8d30b9bf4696"
+      "sha256": "9359e4bd871b493d4cf5783f21e7aaee390e96028ab930bf648b8d30b9bf4696",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCurrentConditional.lean",
@@ -7683,7 +7707,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostLoop.lean",
-      "sha256": "7123a842b9183a2584a366cd783e93dfd0a32eb5084ec631639613413187ee23"
+      "sha256": "a216a35096856e7f5f2f90ddd9a79f012451c267220837ab976ce6faae2ae805",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostPotentialLoop.lean",
@@ -7695,7 +7723,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostScoped.lean",
-      "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb"
+      "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostScopedReached.lean",
@@ -7703,7 +7735,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostSequenceReached.lean",
-      "sha256": "4bcaede2c3d999ea8adb63513d843a8036ca6b9edcfbc385755001a1ca83f711"
+      "sha256": "4bcaede2c3d999ea8adb63513d843a8036ca6b9edcfbc385755001a1ca83f711",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostSpendChain.lean",
@@ -7903,7 +7939,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterDeclaration.lean",
-      "sha256": "07942d45f6f8f52f636c9e8f73e0b6bd13a4ab98dc0bd3abf454ebfb208acb3f"
+      "sha256": "07942d45f6f8f52f636c9e8f73e0b6bd13a4ab98dc0bd3abf454ebfb208acb3f",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterExpressionCost.lean",
@@ -7915,11 +7955,19 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterFlow.lean",
-      "sha256": "be1efc7954c40124359d7e0ebd414c54e8accf8a33f80ccb4592ad7baa745aea"
+      "sha256": "6db6e180ac92fcb975717f153728ff326fdc38a320f75630922aceb6147fe94d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterLoopCost.lean",
-      "sha256": "ac890157e76885efd5c4104272a6785d78a5b23e34aa89c0858417129efb4296"
+      "sha256": "f09de1978081f37fee3e3ccb544a65cf619e25092cb9c1ea653830e9c48a8eb6",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CounterLoopLocal.lean",
@@ -7942,7 +7990,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
@@ -7986,7 +8034,7 @@
       "sha256": "c4a0775cb216dba01dd5eacb601f06da663fdb382c443ab71dc4032c2a5fcb3a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
@@ -8406,8 +8454,40 @@
       "sha256": "0c96fd8fc5e720555fbfffe022d669455340303b2bb6858106ff5ce158bd3ac3"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/HostInputCode.lean",
+      "sha256": "aa04b0e2f0850d79fc1b558205a38d88e614019d8d69440257be6fbc886bd699",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/HostInputCost.lean",
+      "sha256": "45ed6d2d87d57240fb9e743223c96d06fd78ad858c80a913e6cc94aa7143cd4b",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/HostInputProgram.lean",
+      "sha256": "824a34ae3ad996217ed6d52fe0f51f8997335e486ecf1b2cf3bd060b46bf80ae",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/HostLength.lean",
       "sha256": "7a7c3360718b6bde6ace3d871f7bbfda2bcfba06dc653e80ff9bce9b57445645"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/HostPrecheckCost.lean",
+      "sha256": "fc67afa38a0bc12c330e5714bc6e3a4e861a233336a3ab94c56446aa3c1471f6",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/HostReadCurrent.lean",
@@ -8559,15 +8639,27 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/LocalEffects.lean",
-      "sha256": "2904eecedb7e3de50a46527221a7e48f3cc19ecc4003bbbcb569fe302127aa54"
+      "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/LocalEffectsCall.lean",
-      "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd"
+      "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/LocalEffectsLoop.lean",
-      "sha256": "83fa9c02c8f27b346f762c8d8f4d9b21a845cf3866ba9df93b3c7e50d6d64f5c"
+      "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/LocalEffectsPrefix.lean",
@@ -8587,7 +8679,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/LocalLoopSummary.lean",
-      "sha256": "c73b9d6a36d7eead87a9a4d6403b7e1d85eb4b11fbdc1e62990069e4cc4762f7"
+      "sha256": "c73b9d6a36d7eead87a9a4d6403b7e1d85eb4b11fbdc1e62990069e4cc4762f7",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/LocalPairPath.lean",
@@ -8599,7 +8695,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/LocalPrefix.lean",
-      "sha256": "2a420307922047b232f8fc3d3f9ef3c2dc270d83f27b4169b049acaaca1b9a81"
+      "sha256": "2a420307922047b232f8fc3d3f9ef3c2dc270d83f27b4169b049acaaca1b9a81",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/LocalSummaryConditional.lean",
@@ -9675,7 +9775,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/NoneControl.lean",
-      "sha256": "9c037efe887bbaad781fc60708171e10ba7eec44572107ebd1926ab18f16dccc"
+      "sha256": "21e58e40b3615b0e5cd9ad90bc30098f39f1b0102c532cef8967b78932651bfb",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/NormalCallClock.lean",
@@ -9699,7 +9803,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/NormalWordDeclaration.lean",
-      "sha256": "4e8b7d1ed5a5647a320be20b1b33604ac6ae62b7eea70b9aab29756ad29e6924"
+      "sha256": "444b58e3f4c9b086dade918533a469c8c2ce06d0ca52050f3fbdf863a789b7fa",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsAnyExecute.lean",
@@ -9722,8 +9830,20 @@
       "sha256": "d2b2ad6fe8f5df3861ebe579476bbfdac254a8991753e78fb92cf0fa642ed002"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/OffsetsCurrentCost.lean",
+      "sha256": "16199f006e34915cc757e402f73cf4cc624bde1a54ca4a885414a7919803efa9",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/OffsetsEnvironment.lean",
-      "sha256": "90585b5585069ed084ec26c2412789bca31cf0be5de2c654ea0928c1490cb2ff"
+      "sha256": "d7c4f46e2dddba34b7d693647cd3184b9316e1790dddf5002e541e72d918dea4",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsFaultChecks.lean",
@@ -9734,16 +9854,32 @@
       "sha256": "9991aa7de16d33f03bed87aed684d1b3a96f43227597eb14b5efe0a666f0e140"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/OffsetsFixedCountCall.lean",
+      "sha256": "f1121823655edf77b97418d90e7562c8ed3b37d1012b1dcff3c07fc528efd19d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/OffsetsNormal.lean",
       "sha256": "514e869ebbb874eae6f8fb47aafc9efc6ef8d5310f5e1a08b94ec3fcf10a4263"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsProgram.lean",
-      "sha256": "f7c32c4193bdd80482024342276ff274e852d1d2f03c3ca3184eece317b534b5"
+      "sha256": "9df194d3c5efb5fc447d43c37371f230e50e34a31f0290d8bc1d0dee1a29cb9d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsStepProgram.lean",
-      "sha256": "7f40234dc3b6a0a1aa7daa9471b6dfba29e8fb99866c97bb78ffdd31a9243d6a"
+      "sha256": "f5898bb0ceb904eb391883d0a27d233f30b4d4d9ae774697209dbb84bd4987cb",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/OffsetsTrace.lean",
@@ -9778,7 +9914,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
@@ -10603,7 +10739,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/PureDecision.lean",
-      "sha256": "f9be4646e4e4a97b1b68f72a5a20b9abfb838aa3fd9784b440c59f47a836bd0d"
+      "sha256": "f9be4646e4e4a97b1b68f72a5a20b9abfb838aa3fd9784b440c59f47a836bd0d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/PureDecisionTrace.lean",
@@ -10611,7 +10751,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/PureGuard.lean",
-      "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49"
+      "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/PureGuardNormal.lean",
@@ -10642,12 +10786,20 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/QuietClockEffects.lean",
       "sha256": "fd4b142862a214c56d86b7276616e6852aee03f89dd4b3769e3b72d6415db4d0"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/QuietClockShared.lean",
+      "sha256": "b2cd5dd4156728f85cdf061a0a7425700dfd723125a1bfb5e5627ce9bf99631c",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/QuietHandlerClock.lean",
@@ -10995,7 +11147,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ReturnNormal.lean",
-      "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114"
+      "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/RlpLength/AfterTransactions.lean",
@@ -11446,7 +11602,7 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
@@ -11690,8 +11846,20 @@
       "sha256": "7be143f00075a15d91874ad879a07754a7c91fe18a3531ec8dc292bf3a4a000a"
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/SszCurrentCode.lean",
+      "sha256": "725ecc40338ede6e918bec6383492e41a5cabcc3a8c2a39dd6db08e01c60aa53",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/SszFail.lean",
-      "sha256": "466e6697076b70e00ae648c89742f609adaf2ccce21053b87319444bd5855135"
+      "sha256": "cffb23cd1f41d7e8c01e07e6b9e7d8ad1c1530f70f1e3da5e4b6555120494a1d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/SszGuardTrace.lean",
@@ -22322,7 +22490,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
@@ -26866,7 +27034,7 @@
       "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
@@ -26874,7 +27042,7 @@
       "sha256": "02071e2394e8a909552d0d29cc091e76ecb5a43b2909b69ab4dd731d1a5bf044",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
@@ -26939,7 +27107,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CodeEnvironment.lean",
-      "sha256": "31f3bcaee0716558d56ecd6da9ba139f1fb25a654b60c700eb88bb21d2501e87"
+      "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-precheck-cost-v2.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CompareChain.lean",
@@ -27562,7 +27734,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-host-reached-v6.log"
+        "current-precheck-cost-v2.log"
       ]
     },
     {
@@ -78642,7 +78814,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78652,7 +78824,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-host-reached-v6.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -78823,7 +78995,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.AllocatedLayout.valid",
@@ -81635,7 +81808,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.execute",
@@ -81644,7 +81818,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.environment",
@@ -81653,7 +81828,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.SszFail.call_execute",
@@ -81662,7 +81838,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.body_shape",
@@ -81671,7 +81848,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.last_test_read",
@@ -81680,7 +81858,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.tail_execute",
@@ -81689,7 +81868,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.loop_shape",
@@ -81698,7 +81878,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.loop_body_shape",
@@ -81707,7 +81888,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.cell_address_read",
@@ -81716,7 +81898,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.condition_read",
@@ -81725,7 +81908,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.range_read",
@@ -81922,7 +82106,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Offsets.normal_first",
@@ -82883,7 +83068,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83304,7 +83489,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.return_execute",
@@ -83313,7 +83499,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.VarList.allocation_execute",
@@ -83883,7 +84070,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89235,7 +89422,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89245,7 +89432,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89255,7 +89442,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89265,7 +89452,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89338,7 +89525,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89348,7 +89535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90121,7 +90308,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.PureGuard.normal_continue",
@@ -90130,7 +90318,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.RootBudget.initialize_validated",
@@ -90175,7 +90364,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPrefix.normal_continue",
@@ -90184,7 +90374,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPath.normal_reaches",
@@ -91655,7 +91846,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalPrefix.summary_full",
@@ -91664,7 +91856,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.FrameOpen.geometry",
@@ -96808,7 +97001,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.while_none_step",
@@ -100926,7 +101120,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.scoped_normal",
@@ -101106,7 +101301,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.assign",
@@ -101115,7 +101311,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.returned",
@@ -101124,7 +101321,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.raised",
@@ -101133,7 +101331,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.stopped",
@@ -101142,7 +101341,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.sequence",
@@ -101151,7 +101351,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.conditional",
@@ -101160,7 +101361,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.declared",
@@ -101169,21 +101371,24 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.code_of_erase",
       "axioms": [
         "propext"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.memory_of_erase",
       "axioms": [
         "propext"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.called",
@@ -101192,7 +101397,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.lookup_body",
@@ -101200,7 +101406,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.call_body",
@@ -101209,7 +101416,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.loop",
@@ -101218,7 +101426,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.LocalEffects.primitive",
@@ -101492,7 +101701,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101502,7 +101711,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101512,7 +101721,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101522,7 +101731,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101532,7 +101741,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101542,7 +101751,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.call_body",
@@ -101551,7 +101761,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.scoped_call",
@@ -101560,7 +101771,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ClockCost.scoped_body",
@@ -101569,7 +101781,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.QuietClock.skip",
@@ -101578,7 +101791,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101588,7 +101801,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101598,7 +101811,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101608,7 +101821,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101618,7 +101831,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101628,7 +101841,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101638,7 +101851,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101648,7 +101861,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101658,7 +101871,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101668,7 +101881,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101893,7 +102106,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101901,7 +102114,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101935,7 +102148,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101945,7 +102158,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101955,7 +102168,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101965,7 +102178,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102292,7 +102505,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChargeEvent.prepend",
@@ -103094,7 +103308,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CounterFlow.preserved",
@@ -103103,7 +103318,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CounterFlow.increment",
@@ -103112,7 +103328,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CounterFlow.sequence",
@@ -103121,7 +103338,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CounterFlow.scoped_call",
@@ -103130,7 +103348,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CounterFlow.loop_cost",
@@ -103139,7 +103358,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.RlpWrite.normal_of_funded",
@@ -105336,7 +105556,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.ChargeWithMemory.call_potential",
@@ -105668,7 +105889,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.NoFallthrough.returned",
@@ -109989,7 +110211,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109999,7 +110221,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110009,7 +110231,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.sequence_stopped",
@@ -115437,7 +115660,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CounterFlow.expression_loop_cost",
@@ -139959,7 +140183,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-branch-payload-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.PureDecision.quiet",
@@ -139968,7 +140193,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-branch-payload-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.scoped_no_loop_control",
@@ -155843,7 +156069,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Mpt.NodeConstructor.extension_assigned_paths",
@@ -161862,6 +162089,276 @@
         "Quot.sound"
       ],
       "successful_log": "current-host-reached-v6.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ClockCost.call_arguments_current",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.byte_installed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.le32_installed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.Byte.body_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.Le32.body_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.byte_call_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.le32_call_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.Byte.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.Le32.body_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.precheck_installed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.body_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.HostPrecheck.call_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.failure_body_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.failure_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.loop_local",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.loop_advance",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.loop_body_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.loop_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.tail_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.body_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.lookup_fixed_count",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.evaluated_fixed_count",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.Offsets.call_fixed_count_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.QuietClock.shared_load",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ClockCost.shared_load",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.SszCurrentCode.fail_installed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.SszCurrentCode.offsets_installed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-precheck-cost-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

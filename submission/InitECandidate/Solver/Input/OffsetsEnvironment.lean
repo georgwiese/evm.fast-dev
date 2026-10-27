@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.OffsetsNormal
+import InitECandidate.Solver.Input.OffsetsProgram
 
 namespace InitECandidate.Solver.Input.Offsets
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

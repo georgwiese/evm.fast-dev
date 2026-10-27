@@ -4,7 +4,7 @@ namespace InitECandidate.Solver.Input.Offsets
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_ssz_check_offsets with
+def body : ProgHOL 64 := match Guest.Software.guestFn_ssz_check_offsets with
   | .function fn=>progToHOL fn.body | _=>.skip
 def loop : ProgHOL 64 := match body with
   | .seq _ (.dec _ _ _ (.seq loop _))=>loop | _=>.skip
@@ -16,7 +16,7 @@ def tailCode : ProgHOL 64 := .seq lastGuard returnZero
 
 theorem body_shape : body=.seq (.ite (.cmp .equal (localVar "n") (.const 0#64)) returnZero .skip)
     (.dec (ofString "i") .one (.const 0#64) (.seq loop tailCode)) := by
-  simp only [body,loop,Guest.guestFn_ssz_check_offsets,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+  simp only [body,loop,Guest.Software.guestFn_ssz_check_offsets,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     localVar,tailCode,lastGuard,lastTest,returnZero,Option.map_none]
 
 theorem last_test_read {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer first fixed : BitVec 64)

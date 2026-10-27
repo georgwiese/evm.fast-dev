@@ -1,0 +1,14 @@
+{
+  "source": "Guest/SoftwareAst.lean",
+  "source_sha256": "8e806c795bc4e0c3edc6d1475ad6e14b43c74cf69c71732133f2dda03d84721f",
+  "function": "precheck_host_ssz_header",
+  "candidate_source_clock_price": 85,
+  "syntax_call_occurrences": {
+    "ssz_fail": 5,
+    "host_input_byte": 2,
+    "host_input_le32": 9,
+    "ssz_check_offsets": 3
+  },
+  "lean_build_required": true,
+  "scope": "Proof generation only; not proof validation or a whole-program bound."
+}

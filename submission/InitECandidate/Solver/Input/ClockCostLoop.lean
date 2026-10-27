@@ -1,4 +1,6 @@
 import InitECandidate.Solver.Input.ClockCost
+import InitECandidate.Solver.WitnessRadix.StateSteps
+import Mathlib.Data.Nat.Init
 
 namespace InitECandidate.Solver.Input.ClockCost
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

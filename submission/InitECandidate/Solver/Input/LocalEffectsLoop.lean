@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.LocalEffects
+import Mathlib.Data.Nat.Basic
 
 namespace InitECandidate.Solver.Input.LocalEffects
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

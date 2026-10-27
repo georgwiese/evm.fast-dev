@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.ScalarScope
+import InitECandidate.Solver.Input.ScalarDeclaration
 import Flapjack.Pancake.Semantics.PanSem.EvaluateClock
 
 namespace InitECandidate.Solver.Input.CallNormal

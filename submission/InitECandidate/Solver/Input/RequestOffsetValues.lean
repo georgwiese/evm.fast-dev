@@ -6,8 +6,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 theorem le32_number (input : Guest.InputBlob) (start : Nat) (visible : start+3<Guest.maxInputBytes) :
     (BitVec.ofNat 64 (Guest.GasLimit.le32 input start)).toNat=Guest.GasLimit.le32 input start := by
-  have bound:=HostGas.le32_lt input start
-  rw [HostGas.le32_eq input start visible] at bound
+  have bound:=Framing.le32_lt input start
   rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
 
 theorem request_values (input : Guest.InputBlob) (total : BitVec 64)
@@ -31,7 +30,7 @@ def payloadArguments : List (ExpHOL 64) := [
 def afterPayload : ProgHOL 64 := match continuation with | .decCall _ _ _ _ rest=>rest | _=>.skip
 
 theorem payload_call_shape : continuation=.decCall (ofString "pl") .one (ofString "decode_payload") payloadArguments afterPayload := by
-  simp only [continuation,requestBody,prefixBody,Header.continuation,Header.afterHeader,Header.body,Guest.guestFn_decode_stateless_input,
+  simp only [continuation,requestBody,prefixBody,Header.continuation,Header.afterHeader,Header.body,Guest.Software.guestFn_decode_stateless_input,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,afterPayload,payloadArguments,localVar]
 
 /-- Actual payload call arguments derived from the validator's fixed offset.

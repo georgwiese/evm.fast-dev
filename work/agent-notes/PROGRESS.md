@@ -4,6 +4,42 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual request length, second canonical offset and raw gas field
+
+RequestPositions inverts the real lexical declarations and derives np=input+18
+and nlen=raw witness offset−16. The actual allocation and chain-ID store preserve
+the necessary caller locals; original outer workspace loads derive their words
+from the preceding checked stores. RecordEntry now applies GuardActual to the
+real request-length guard, deriving nlen≥44and encodedlength≥62and exposing the
+actual request body at its original clock with copied bytes still intact.
+
+RequestOffsetsProgram drops the unrelated RequestFromHeader bridge and imports
+RequestPrefixProgram directly. RequestOffsetValues retargets its literal payload
+call shape to actual Software and replaces stale HostGas backing equations with
+the proved raw-list Framing.le32_lt. The real three offset declarations/stores,
+their input-byte frames and all-outcome validator trace now pass against current
+source. CanonicalRequest joins them to RecordEntry: raw offset at18=44, next
+payload end at22≥44and≤requests offset at58≤actual nlen. Rejected validator
+outcomes contradict an actual returned decoder rather than being assumed absent.
+
+CanonicalRequest.separated_offsets derives both canonical16/44offset facts from
+the whole-main stateless run. gas_field then derives le64(input,474)≤200000000
+from the original declared-gas premise. This is a bound on the mathematical raw
+eight-byte field, not a claim that its actual later payload read/store or EVM gas
+accounting is joined yet. Need the payload-entry allocation/image/length proof.
+
+Validation: current-canonical-request-v1.log PASS1245jobs/permitted printed axioms,
+4.69s/MaxRSS1874032KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Components
+current-request-entry-v1 PASS1238and request-offsets-v1 PASS696. Failed diagnostics
+unindexed; no limits increased. Index7909historical/currentmodules/15708facts,
+357current-reference modules; replacementclosure0/frozenmainunchanged. Incremental
+policyPASS64713entries/2481696791bytes; no full verification or finite target K. Five
+old untracked RLP files retained. Account10%weekly/0resetcredits/ordinaryallowed.
+Push each commit. Next retain actual payload continuation/metadata and derive
+payload argument/length, fresh payload record and actual gas load. Scratch
+covered-outcome classification and global target composition remain open.
+Overall40%, plausible30–50%.
+
 ## Actual fresh stateless record and copied bytes at the request guard
 
 AllocationFrontier inverts the actual scoped allocation: the returned value is

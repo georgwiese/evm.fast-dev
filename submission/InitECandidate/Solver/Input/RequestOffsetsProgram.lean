@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.RequestFromHeader
+import InitECandidate.Solver.Input.RequestPrefixProgram
 
 namespace InitECandidate.Solver.Input.Request
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

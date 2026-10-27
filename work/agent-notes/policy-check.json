@@ -2014,6 +2014,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/Bn254Init.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Bswap64.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/CanonicalHeader.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/CanonicalRequest.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Code.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/CopiedHeap.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecodeBytesList.lean",
@@ -2059,6 +2060,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/Prefix.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RecordEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/RequestCut.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestPositions.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Ripemd160Init.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Secp256k1Init.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/SeparatedInput.lean",
@@ -7948,8 +7950,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64711,
-  "package_bytes": 2481684464,
+  "package_entries": 64713,
+  "package_bytes": 2481696791,
   "claim": {
     "K": "infinity"
   },

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.WitnessRadix.AllocationCall
 import InitECandidate.Solver.Input.VarList.AllocatedTail
 
 namespace InitECandidate.Solver.Input.VarList
@@ -9,7 +10,8 @@ def allocationEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input
 
 /-- Actual record-array allocator call and the entire allocated tail. The real
 heap global advances, caller arr scope restores, records initialize, and every
-outcome preserves copied bytes and all memory outside this allocation. -/
+outcome preserves copied bytes and all memory outside this allocation.
+Semantic allocator room is separate from ordinary backing geometry. -/
 theorem allocation_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (plan : Plan input)
     (first total : BitVec 64) (heap : Blob.HeapInput source input plan.inputPointer) (domain : source.memaddrs=InitE.ordinaryDomain)
     (p : source.locals.lookup (ofString "p")=some (.val (.word (plan.inputPointer+BitVec.ofNat 64 plan.start))))
@@ -19,6 +21,7 @@ theorem allocation_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (failCode : source.code.lookup (ofString "ssz_fail")=some (SszFail.formals,SszFail.body,.one))
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one) (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word plan.array)))
     (allocCode : source.code.lookup (ofString "alloc")=some (WitnessRadix.PersistentAlloc.formals,WitnessRadix.PersistentAlloc.body,.one))
+    (room : plan.array.toNat + 16 * plan.count ≤ 2952790016)
     (enough : plan.count+2≤source.clock) :
     ∃ result target paid,
       evaluateHOLFiniteState source allocationCall=(result,target) ∧ paid≤plan.count+2 ∧ target.clock=source.clock-paid ∧
@@ -43,7 +46,7 @@ theorem allocation_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have called : evaluateHOLFiniteState source allocationCall=
       (let output:=evaluateHOLFiniteState entry allocatedTail; (output.1,restore source "arr" output.2)) :=
     WitnessRadix.PersistentAlloc.call_execute source "arr" [allocationExpression] allocatedTail plan.array amount args allocCode heapGlobal
-      (by rw [amountNat]; exact plan.arrayRoom) (by omega)
+      (by rw [amountNat]; exact room) (by omega)
   have entryHeap : Blob.HeapInput entry input plan.inputPointer := Blob.HeapInput.of_fields source entry input plan.inputPointer rfl rfl rfl heap
   have ep : entry.locals.lookup (ofString "p")=some (.val (.word (plan.inputPointer+BitVec.ofNat 64 plan.start))) :=
     (bind_lookup_other (WitnessRadix.PersistentAlloc.post {source with clock:=source.clock-1} plan.array amount) "arr" "p" plan.array (by decide)).trans p

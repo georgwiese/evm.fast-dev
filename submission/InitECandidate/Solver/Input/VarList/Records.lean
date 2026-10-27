@@ -37,6 +37,8 @@ theorem normal_records (source post : PanSemStateFiniteExact 64 Guest.HostMemory
     (arrayAfter : pointer.toNat+input.length%2^64+8≤array.toNat)
     (room : array.toNat+4*length≤33806089496)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word array)))
+    (arrayBound : array.toNat ≤ 2952790016)
+    (trapCode : source.code.lookup (ofString "trap_with") = some (Trap.formals, Trap.body, .one))
     (allocCode : source.code.lookup (ofString "alloc")=some (WitnessRadix.PersistentAlloc.formals,WitnessRadix.PersistentAlloc.body,.one))
     (failCode : source.code.lookup (ofString "ssz_fail")=some (SszFail.formals,SszFail.body,.one))
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one) (enough : length/4+2≤source.clock)
@@ -54,7 +56,7 @@ theorem normal_records (source post : PanSemStateFiniteExact 64 Guest.HostMemory
         omega
     obtain ⟨plan,pointerEq,arrayEq,startEq,lengthEq,countEq,valueEq,clockEq,control,postHeap,frame,complete,valid⟩:=
       nonempty_normal source post input pointer array limit start length positive heap inside p n l domain lower aligned arrayAligned arrayAfter
-        (by omega) heapGlobal allocCode failCode exceptionShape enough value run
+        (by omega) heapGlobal arrayBound trapCode allocCode failCode exceptionShape enough value run
     exact Or.inr ⟨plan,pointerEq,arrayEq,startEq,lengthEq,countEq,complete,valid⟩
 
 end InitECandidate.Solver.Input.VarList

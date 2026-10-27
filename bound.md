@@ -166,8 +166,13 @@ Checked against the current Software AST:
   and heap. The allocation-room inversion is now a generic RoomFromReturn helper
   outside the whole-main entry graph. Actual allocated-loop/tail proofs now pass:
   all valid/error23outcomes, copied bytes, prior-memory frame and count-based
-  source-clock cost. Allocator/body/caller composition still needs the newly
-  derived semantic room; ordinary backing geometry alone is insufficient.
+  source-clock cost. Allocator/body/caller composition now uses the real semantic room, derived
+  from observed return, bounded incoming heap and installed trap. NormalAnyClock
+  removes supplied clock funding. VarListData joins actual returned pair/records,
+  original image/old-memory frame, exact allocation control and bounded aligned
+  post-heap beyond the payload record, with source-clock price≤slice/4+1. Its
+  structured result retains the real caller invocation for resuming the payload
+  continuation; withdrawal/gas stores remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -186,12 +191,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-varlist-allocated-tail-v4.log`, 1,305 jobs,
-permitted printed axioms only, 14.05 seconds, MaxRSS 1,638,508 KiB.
-Historical/current index: 7,921 modules /15,738 facts; 416 modules carry the
-current dependency reference. Incremental policy passes at64,726entries/
-2,481,756,902bytes; historical copy/zero/list body/caller summaries are not revalidated.
-These checks are not full verification.
+Latest successful closure: `current-transaction-data-v3.log`, 1,314 jobs,
+permitted printed axioms only. Historical/current index: 7,922 modules /15,740
+facts. Incremental policy passes at64,727entries/2,481,765,738bytes. Old unselected
+body/caller traces and copy/zero wrappers remain historical. These checks are not
+full verification.
 
 ## Remaining plan
 

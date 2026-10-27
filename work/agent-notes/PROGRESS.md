@@ -4,6 +4,32 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual returned transaction records and allocation-room composition
+
+Allocation.allocation_execute now requires the real allocator ceiling separately
+from ordinary backing geometry. BodyNormal derives that room from the observed
+returned execution, incoming bounded heap and installed trap body. NormalSummary,
+Records, NormalAnyClock and CallerNormal now carry those real prerequisites;
+NormalAnyClock removes a supplied clock budget using checked clock extension.
+
+CurrentStartup.VarListData joins those proofs to the genuine main-derived list
+callee: actual returned pair/physical records, original input, earlier-memory
+frame, exact allocation control, bounded aligned post-heap beyond the136-byte
+payload record and source-clock price≤slice/4+1. Its Result structure retains
+actual caller invocation/return and slice positions for the next continuation
+proof. TransactionEntry now retains that invocation instead of discarding it.
+This changes proof interfaces only; no guest/ROM/semantics/claim changes.
+
+Validation: current-transaction-data-v3.log PASS1314jobs/permitted printed axioms;
+8GiBwhole-hostguard/twoslots/artifactcachefalse. Index7922modules/15740facts;
+inventory7959/replacementclosure0/fixedfilesunchanged; incremental policy
+PASS64727entries/2481765738bytes. Old unselected body/caller traces remain
+historical. No full verification or global finite K; estimate40%, range30–50%.
+Account13%weekly/0resetcredits/ordinaryallowed. Push each commit.
+
+Next resume Payload.afterTransactions at the actual clock with its returned tuple,
+preserved context and record/input memory; then withdrawal count and gas stores.
+
 ## Current allocated-list loop/tail and reusable allocation-room inversion
 
 VarList.StepProgram's literal checks now use Software. The real dynamic offset

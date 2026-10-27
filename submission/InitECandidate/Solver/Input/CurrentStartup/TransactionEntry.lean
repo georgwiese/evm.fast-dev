@@ -15,7 +15,15 @@ def Reached (input : Guest.InputBlob) : Prop :=
     entry.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 size))) ∧
     entry.locals.lookup (ofString "lim") = some (.val (.word 9223372036854775807#64)) ∧
     start = 62 + Guest.GasLimit.le32 input 566 ∧ size = Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566 ∧
-    start + size ≤ input.length % 2^64 ∧ evaluateHOLFiniteState entry VarList.body = (some (.returned returned), post)
+    start + size ≤ input.length % 2^64 ∧ evaluateHOLFiniteState entry VarList.body = (some (.returned returned), post) ∧
+    ∃ callee parentPost parentValue,
+      entry = callEntryStateHOLFinite caller callee ∧
+      evalListHOLFinite caller (h := fun address => Classical.propDecidable (caller.memaddrs address)) Payload.transactionArguments =
+        some (VarList.values (pointer + BitVec.ofNat 64 start) (BitVec.ofNat 64 size) 9223372036854775807#64) ∧
+      lookupCodeHOLFinite caller.code.lookup (ofString "ssz_split_var_list")
+        (VarList.values (pointer + BitVec.ofNat 64 start) (BitVec.ofNat 64 size) 9223372036854775807#64) =
+        some (VarList.body, callee, VarList.returnShape) ∧
+      evaluateHOLFiniteState caller Payload.transactionCall = (some (.returned parentValue), parentPost)
 
 theorem original_code (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "ssz_split_var_list") = some (VarList.formals, VarList.body, VarList.returnShape) := by
@@ -57,6 +65,7 @@ theorem extra_reached (input : Guest.InputBlob) (actual : PayloadExtra.Reached i
     (pointer + BitVec.ofNat 64 (62 + Guest.GasLimit.le32 input 566))
     (BitVec.ofNat 64 (Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566)) 9223372036854775807#64
     (original_code current.code currentContext.code)
+  have callerRun := remaining
   rw [Payload.transactions_shape.2.1] at remaining
   have positive := CallNormal.normal_clock current post (ofString "txs") VarList.returnShape (ofString "ssz_split_var_list")
     Payload.transactionArguments Payload.afterTransactions value remaining
@@ -68,7 +77,7 @@ theorem extra_reached (input : Guest.InputBlob) (actual : PayloadExtra.Reached i
   have image : Blob.HeapInput entry input pointer := Blob.HeapInput.of_fields current entry input pointer rfl rfl rfl currentContext.image
   exact ⟨current, entry, bodyPost, pointer, record, length, 62 + Guest.GasLimit.le32 input 566,
     Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566, returned, currentContext, entryCode, entryShapes,
-    currentContext.domain, currentContext.endian, rfl, image, currentContext.recordHeap, pCell, lenCell, limCell, rfl, rfl, sliceUpper, bodyRun⟩
+    currentContext.domain, currentContext.endian, rfl, image, currentContext.recordHeap, pCell, lenCell, limCell, rfl, rfl, sliceUpper, bodyRun, callee, post, value, rfl, args, called, callerRun⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
   extra_reached input (PayloadExtra.separated input word actual)

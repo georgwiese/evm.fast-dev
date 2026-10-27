@@ -19,6 +19,8 @@ theorem normal_summary_any_clock (source post : PanSemStateFiniteExact 64 Guest.
     (arrayAfter : pointer.toNat+input.length%2^64+8≤array.toNat)
     (room : array.toNat+4*length≤33806089496)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word array)))
+    (arrayBound : array.toNat ≤ 2952790016)
+    (trapCode : source.code.lookup (ofString "trap_with") = some (Trap.formals, Trap.body, .one))
     (allocCode : source.code.lookup (ofString "alloc")=some (WitnessRadix.PersistentAlloc.formals,WitnessRadix.PersistentAlloc.body,.one))
     (failCode : source.code.lookup (ofString "ssz_fail")=some (SszFail.formals,SszFail.body,.one))
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one)
@@ -32,10 +34,10 @@ theorem normal_summary_any_clock (source post : PanSemStateFiniteExact 64 Guest.
   let padding := length/4+2
   have paddedRun := panPropsEvaluateAddClockEq body source (some (.returned value)) post padding ⟨run,by intro impossible; cases impossible⟩
   obtain ⟨returned,clock,control,bytes,memory,lowerClock,upperClock⟩ := normal_summary {source with clock:=source.clock+padding} {post with clock:=post.clock+padding}
-    input pointer array limit start length heap inside p n l domain lower aligned arrayAligned arrayAfter room heapGlobal allocCode failCode exceptionShape
+    input pointer array limit start length heap inside p n l domain lower aligned arrayAligned arrayAfter room heapGlobal arrayBound trapCode allocCode failCode exceptionShape
     (by change length/4+2≤source.clock+padding; dsimp only [padding]; omega) value paddedRun
   have records := normal_records {source with clock:=source.clock+padding} {post with clock:=post.clock+padding}
-    input pointer array limit start length heap inside p n l domain lower aligned arrayAligned arrayAfter room heapGlobal allocCode failCode exceptionShape
+    input pointer array limit start length heap inside p n l domain lower aligned arrayAligned arrayAfter room heapGlobal arrayBound trapCode allocCode failCode exceptionShape
     (by change length/4+2≤source.clock+padding; dsimp only [padding]; omega) value paddedRun
   have countLimit := normal_count_limit {source with clock:=source.clock+padding} {post with clock:=post.clock+padding}
     input pointer limit start length heap inside p n l failCode exceptionShape (by change 1≤source.clock+padding; dsimp only [padding]; omega) value paddedRun

@@ -18,6 +18,8 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (arrayAfter : pointer.toNat+input.length%2^64+8≤array.toNat)
     (room : array.toNat+4*length≤33806089496)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word array)))
+    (arrayBound : array.toNat ≤ 2952790016)
+    (trapCode : source.code.lookup (ofString "trap_with") = some (Trap.formals, Trap.body, .one))
     (allocCode : source.code.lookup (ofString "alloc")=some (WitnessRadix.PersistentAlloc.formals,WitnessRadix.PersistentAlloc.body,.one))
     (failCode : source.code.lookup (ofString "ssz_fail")=some (SszFail.formals,SszFail.body,.one))
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one) (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64)
@@ -43,9 +45,9 @@ theorem caller_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   let entry:=callEntryStateHOLFinite source callee
   have entryHeap : Blob.HeapInput entry input pointer := Blob.HeapInput.of_fields source entry input pointer rfl rfl rfl heap
   obtain ⟨valueEq,bodyClock,bodyControl,bodyHeap,oldMemory,bodyLower,bodyUpper⟩:=normal_summary entry bodyPost input pointer array limit start length
-    entryHeap inside p n l domain lower aligned arrayAligned arrayAfter room heapGlobal allocCode failCode exceptionShape (by change length/4+2≤source.clock-1; omega) returned bodyRun
+    entryHeap inside p n l domain lower aligned arrayAligned arrayAfter room heapGlobal arrayBound trapCode allocCode failCode exceptionShape (by change length/4+2≤source.clock-1; omega) returned bodyRun
   have records:=normal_records entry bodyPost input pointer array limit start length entryHeap inside p n l domain lower aligned arrayAligned arrayAfter room
-    heapGlobal allocCode failCode exceptionShape (by change length/4+2≤source.clock-1; omega) returned bodyRun
+    heapGlobal arrayBound trapCode allocCode failCode exceptionShape (by change length/4+2≤source.clock-1; omega) returned bodyRun
   have countLimit:=normal_count_limit entry bodyPost input pointer limit start length entryHeap inside p n l failCode exceptionShape (by change 1≤source.clock-1; omega) returned bodyRun
   have shapePass : (shapeEqHOL (shapeOfHOLExact returned) returnShape && shapeEqHOL (shapeOfHOLExact returned) returnShape)=true := by
     rw [valueEq]

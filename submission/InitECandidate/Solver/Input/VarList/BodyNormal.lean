@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.VarList.RoomFromReturn
 import InitECandidate.Solver.Input.VarList.Allocation
 import InitECandidate.Solver.Input.VarList.EncodedCount
 
@@ -20,6 +21,8 @@ theorem nonempty_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemor
     (arrayAfter : pointer.toNat+input.length%2^64+8≤array.toNat)
     (arrayRoom : array.toNat+16*(Guest.GasLimit.le32 input start/4)≤33806089496)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word array)))
+    (arrayBound : array.toNat ≤ 2952790016)
+    (trapCode : source.code.lookup (ofString "trap_with") = some (Trap.formals, Trap.body, .one))
     (allocCode : source.code.lookup (ofString "alloc")=some (WitnessRadix.PersistentAlloc.formals,WitnessRadix.PersistentAlloc.body,.one))
     (failCode : source.code.lookup (ofString "ssz_fail")=some (SszFail.formals,SszFail.body,.one))
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one) (enough : length/4+2≤source.clock)
@@ -33,6 +36,15 @@ theorem nonempty_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemor
       Blob.HeapInput post input pointer ∧ ArrayFrame source post input plan ∧ Complete post input plan (BitVec.ofNat 64 length) ∧
       ∀ position,position<plan.count→Offsets.ValidAt (BitVec.ofNat 64 (Guest.GasLimit.le32 input start)) (BitVec.ofNat 64 length) (currentWord input start) position := by
   classical
+  have actualRoom : array.toNat + 16 * (Guest.GasLimit.le32 input start / 4) ≤ 2952790016 := by
+    have cursor : NormalHeapEffects.AtLeast 0 source := ⟨array, heapGlobal, Nat.zero_le _, arrayBound, arrayAligned⟩
+    rcases room_from_return input source post pointer limit start length 0 allocCode trapCode failCode exceptionShape cursor
+      heap inside p n l value run with empty | allocated
+    · omega
+    · obtain ⟨observed, cell, low, aligned, minimum, positive, header, upper, countLimit, room⟩ := allocated
+      have same : observed = array := HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (cell.symm.trans heapGlobal)))
+      subst observed
+      exact room
   have normal:=normal_entry source post input pointer limit start length heap inside p n l failCode exceptionShape (by omega) value run
   rcases normal with empty|parsed
   · omega
@@ -58,7 +70,7 @@ theorem nonempty_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemor
         (congrArg (fun word : BitVec 64=>some (ValueHOL.val (HolWordLab.word word))) encoded)
     have countBound : plan.count≤length/4 := by change Guest.GasLimit.le32 input start/4≤length/4; omega
     obtain ⟨result,target,paid,computed,bound,clock,control,heapAfter,arrayFrame,outcome⟩:=allocation_execute ready input plan first (BitVec.ofNat 64 length) readyHeap domain
-      rp rf rn rc failCode exceptionShape heapGlobal allocCode (by change plan.count+2≤source.clock; omega)
+      rp rf rn rc failCode exceptionShape heapGlobal allocCode actualRoom (by change plan.count+2≤source.clock; omega)
     have equal:=allocationRun.symm.trans computed
     have resultEq : some (.returned value)=result := congrArg Prod.fst equal
     have targetEq : innerPost=target := congrArg Prod.snd equal

@@ -4,6 +4,44 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Real payload offset locals, four workspace stores and fixed540guard
+
+PayloadOffsetsProgram now imports only the literal PayloadPrefixProgram instead
+of the old full PayloadPrefixSetup bridge, and retargets its shape to Software.
+Header/offset stores explicitly import their used generic RequestOffsetsStores
+helpers; PayloadOffsetsNormal explicitly imports the generic state_from_frame
+lemma. The actual read/declaration/stores/validator helpers pass with these
+dependencies, without silently checking the old whole allocation-setup bridge.
+
+PayloadOffsetsLocals identifies all four real byte-offset declarations with raw
+input fields498/566/570/590. Its actual trace retains the byte image and p binding;
+read-only lexical updates leave that image intact, so each observed value follows
+from the same input bytes. PayloadWorkspace now retains the four locals in a
+shared Context with metadata, copied image, heap/record geometry and p/len/pl.
+Context.memory_clock transfers its nonmemory facts while requiring the actual
+resulting input image; no memory-frame assertion is invented by that transfer.
+
+PayloadValidated joins the real four workspace stores and count4/fixed540validator
+to the main-derived state. Each rejected10/11/12outcome contradicts actual return;
+passing derives offsetWords0=540, raw le32(input,498)=540and every actual range/
+ordering fact. The real following payload continuation retains original copied
+bytes, all Context metadata/geometry/locals and the actual returned body run.
+No future funding, validated values, mapping or successful helper is a premise.
+The extra-data size guard, transaction array, remaining payload records and gas
+store still need actual-entry byte/ownership proofs.
+
+Validation: current-payload-validated-v2.log PASS1263jobs/permitted printed axioms,
+9.83s/MaxRSS1877572KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Components
+payload-offsets-v2 PASS709, payload-offset-locals-v1 PASS1256. Failed diagnostics
+unindexed. Index7915historical/currentmodules/15727facts,375current-reference
+modules; replacementclosure0/frozenmainunchanged; incremental policyPASS64719
+entries/2481733835bytes. No full verifier run or finite target K. Account11%weekly/
+0resetcredits/ordinaryallowed; five old untracked RLP files retained. Push each
+commit. Next extra-data guard and transaction-list allocation/decoding/image
+lifetime, fixed withdrawal count and remaining scalar/gas stores. Scratch
+covered-outcome/global quantitative target composition remain open. Overall40%,
+plausible30–50%.
+
 ## Real payload record and input image through its header/offset loads
 
 PayloadPrefixProgram now imports actual PayloadProgram and generic ProgramPrefix

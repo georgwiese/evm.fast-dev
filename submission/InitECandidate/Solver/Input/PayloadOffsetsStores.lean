@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.RequestOffsetsStores
 import InitECandidate.Solver.Input.PayloadOffsetsProgram
 
 namespace InitECandidate.Solver.Input.Payload

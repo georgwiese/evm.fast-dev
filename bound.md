@@ -146,7 +146,11 @@ Checked against the current Software AST:
   PayloadHeaderImage preserves copied bytes through both real header stores;
   PayloadWorkspace joins this back to main-derived payload entry with current
   metadata, p/len/pl bindings, separate136-byte record and actual offset body.
-  The later four workspace stores/validator/array writes/gas store remain open.
+  PayloadOffsetsLocals derives all four offset locals from the original copied
+  input and actual declarations. PayloadValidated now joins the real four
+  workspace stores/validator, deriving extra offset540and all four ordering/range
+  guards, preserving input bytes and the reusable PayloadWorkspace.Context.
+  Extra-data guard, array writes and later gas store remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -165,11 +169,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-payload-workspace-v1.log`, 1,254 jobs,
-permitted printed axioms only, 4.87 seconds, MaxRSS 1,876,448 KiB.
-Historical/current index: 7,913 modules /15,722 facts; 366 modules carry the
-current dependency reference. Incremental package policy passes at64,717entries/
-2,481,722,057bytes; historical copy/zero execution wrappers are not revalidated.
+Latest successful closure: `current-payload-validated-v2.log`, 1,263 jobs,
+permitted printed axioms only, 9.83 seconds, MaxRSS 1,877,572 KiB.
+Historical/current index: 7,915 modules /15,727 facts; 375 modules carry the
+current dependency reference. Incremental package policy passes at64,719entries/
+2,481,733,835bytes; historical copy/zero execution wrappers are not revalidated.
 These checks are not full verification.
 
 ## Remaining plan

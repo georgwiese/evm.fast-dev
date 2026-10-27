@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 7949,
+  "solver_modules": 7951,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -48,7 +48,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1409,
+    "Input": 1411,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -203,17 +203,17 @@
     "input_reachability": [
       {
         "module": "Input.Witness.BodyNormal",
-        "solver_dependency_count": 185,
+        "solver_dependency_count": 189,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.Witness.PrefixNormal",
-        "solver_dependency_count": 178,
+        "solver_dependency_count": 182,
         "imports_replacement_ast": false
       },
       {
         "module": "Input.RequestStoredGasFromHeader",
-        "solver_dependency_count": 157,
+        "solver_dependency_count": 161,
         "imports_replacement_ast": false
       },
       {

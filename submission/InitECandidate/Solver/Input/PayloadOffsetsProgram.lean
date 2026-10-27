@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.PayloadPrefixSetup
+import InitECandidate.Solver.Input.PayloadPrefixProgram
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -13,7 +13,7 @@ def guardCall : ProgHOL 64 := .call (some (none,none)) (ofString "ssz_check_offs
 def offsetContinuation : ProgHOL 64 := dropLeading 5 offsetBody
 
 theorem offset_body_shape : offsetBody=.seq storeExtra (.seq storeTransactions (.seq storeWithdrawals (.seq storeBalances (.seq guardCall offsetContinuation)))) := by
-  simp only [offsetBody,dropLeading,afterGuard,body,Scalar.payloadBody,Guest.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,
+  simp only [offsetBody,dropLeading,afterGuard,body,Scalar.payloadBody,Guest.Software.guestFn_decode_payload,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,Option.map_none,offsetContinuation,storeExtra,storeTransactions,storeWithdrawals,storeBalances,guardCall,guardArguments,
     Header.offsets,Scalar.plus,localVar]
 

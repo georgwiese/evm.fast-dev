@@ -1,23 +1,57 @@
+import InitECandidate.Solver.Input.CurrentStartup.PayloadOffsetsLocals
 import InitECandidate.Solver.Input.CurrentStartup.PayloadHeaderImage
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
+/-- Metadata and ownership geometry at a genuine payload stage. Memory
+contents enter through the copied image; every other field is unchanged by
+memory/clock-only effects. -/
+structure Context (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer record : BitVec 64) (length : Nat) : Prop where
+  code : OriginalCode.Installed current.code
+  shapes : OriginalExceptions.Installed current.eshapes
+  domain : current.memaddrs = InitE.ordinaryDomain
+  endian : current.be = false
+  image : Blob.HeapInput current input pointer
+  heap : NormalHeapEffects.AtLeast (pointer.toNat + input.length % 2^64 + 8) current
+  workspace : current.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64))
+  p : current.locals.lookup (ofString "p") = some (.val (.word (pointer + 62#64)))
+  len : current.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 length)))
+  pl : current.locals.lookup (ofString "pl") = some (.val (.word record))
+  extra : current.locals.lookup (ofString "o_extra") = some (.val (.word (Payload.offsetWords input 0)))
+  txs : current.locals.lookup (ofString "o_txs") = some (.val (.word (Payload.offsetWords input 1)))
+  wd : current.locals.lookup (ofString "o_wd") = some (.val (.word (Payload.offsetWords input 2)))
+  bal : current.locals.lookup (ofString "o_bal") = some (.val (.word (Payload.offsetWords input 3)))
+  lengthBound : input.length % 2^64 ≤ Guest.maxInputBytes
+  extent : 602 ≤ input.length % 2^64
+  lower : 2701134640 ≤ pointer.toNat
+  aligned : pointer.toNat % 8 = 0
+  room : pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016
+  minimum : 540 ≤ length
+  sliceUpper : length ≤ input.length % 2^64 - 62
+  sliceEq : length = Guest.GasLimit.le32 input 22 - 44
+  recordLower : pointer.toNat + input.length % 2^64 + 8 ≤ record.toNat
+  recordAligned : record.toNat % 8 = 0
+  recordRoom : record.toNat + 136 ≤ 2952790016
+
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ current post, ∃ pointer record : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,
-    OriginalCode.Installed current.code ∧ OriginalExceptions.Installed current.eshapes ∧
-    current.memaddrs = InitE.ordinaryDomain ∧ current.be = false ∧
-    Blob.HeapInput current input pointer ∧ NormalHeapEffects.AtLeast (pointer.toNat + input.length % 2^64 + 8) current ∧
-    current.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)) ∧
-    current.locals.lookup (ofString "p") = some (.val (.word (pointer + 62#64))) ∧
-    current.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 length))) ∧
-    current.locals.lookup (ofString "pl") = some (.val (.word record)) ∧
-    input.length % 2^64 ≤ Guest.maxInputBytes ∧ 602 ≤ input.length % 2^64 ∧
-    2701134640 ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧ pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016 ∧
-    540 ≤ length ∧ length ≤ input.length % 2^64 - 62 ∧ length = Guest.GasLimit.le32 input 22 - 44 ∧
-    pointer.toNat + input.length % 2^64 + 8 ≤ record.toNat ∧ record.toNat % 8 = 0 ∧ record.toNat + 136 ≤ 2952790016 ∧
+    Context input current pointer record length ∧
     evaluateHOLFiniteState current Payload.offsetBody = (some (.returned returned), post)
+
+/-- Transfer the retained context through real memory/clock-only effects;
+the copied image must be established for the actual resulting memory. -/
+theorem Context.memory_clock (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer record : BitVec 64) (length clock : Nat) (memory : BitVec 64 → HolWordLab 64)
+    (context : Context input source pointer record length)
+    (image : Blob.HeapInput {source with memory := memory, clock := clock} input pointer) :
+    Context input {source with memory := memory, clock := clock} pointer record length :=
+  ⟨context.code, context.shapes, context.domain, context.endian, image, context.heap, context.workspace,
+    context.p, context.len, context.pl, context.extra, context.txs, context.wd, context.bal, context.lengthBound,
+    context.extent, context.lower, context.aligned, context.room, context.minimum, context.sliceUpper, context.sliceEq,
+    context.recordLower, context.recordAligned, context.recordRoom⟩
 
 theorem offsets_frame (code) (installed : OriginalCode.Installed code) :
     GlobalEffects.Preserves (ofString "ssz_offs") code (CallPrefix.program PayloadCut.actions .skip) := by
@@ -46,9 +80,11 @@ theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached i
   have currentLen := (execution.keeps (ofString "len") (by
     intro action member
     exact List.all_eq_true.mp (show PayloadCut.actions.all (fun action => action.keeps (ofString "len")) = true from by decide) action member)).trans lenCell
-  exact ⟨current, inner, pointer, record, length, returned, currentCode, currentShapes,
+  obtain ⟨extra, txs, wd, bal⟩ := PayloadOffsetsLocals.reached input pointer extent retained currentP execution
+  exact ⟨current, inner, pointer, record, length, returned, ⟨currentCode, currentShapes,
     execution.runtime.1.trans domain, execution.runtime.2.1.trans endian, retained, currentHeap, currentWorkspace,
-    currentP, currentLen, recordCell, lengthBound, extent, lower, aligned, room, minimum, sliceUpper, sliceEq, recordLower, recordAligned, recordRoom, remaining⟩
+    currentP, currentLen, recordCell, extra, txs, wd, bal, lengthBound, extent, lower, aligned, room, minimum, sliceUpper, sliceEq,
+    recordLower, recordAligned, recordRoom⟩, remaining⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=
   entry_reached input (PayloadEntry.separated input word actual)
@@ -58,3 +94,5 @@ end InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace.offsets_frame
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace.entry_reached
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace.separated
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadWorkspace.Context.memory_clock

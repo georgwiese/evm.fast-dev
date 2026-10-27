@@ -2910,6 +2910,9 @@
     "submission/InitECandidate/Solver/Input/ScopedCallTrace.lean",
     "submission/InitECandidate/Solver/Input/ScopedContinuingData.lean",
     "submission/InitECandidate/Solver/Input/ScopedNoLoopControl.lean",
+    "submission/InitECandidate/Solver/Input/ScratchClear.lean",
+    "submission/InitECandidate/Solver/Input/ScratchConstructors.lean",
+    "submission/InitECandidate/Solver/Input/ScratchFrame.lean",
     "submission/InitECandidate/Solver/Input/SequenceChoice.lean",
     "submission/InitECandidate/Solver/Input/SequenceControl.lean",
     "submission/InitECandidate/Solver/Input/SequenceReturned.lean",
@@ -3118,6 +3121,8 @@
     "submission/InitECandidate/Solver/Input/ZeroShortCost.lean",
     "submission/InitECandidate/Solver/Input/ZeroShortLoops.lean",
     "submission/InitECandidate/Solver/Input/ZeroShortMemory.lean",
+    "submission/InitECandidate/Solver/Input/ZeroUnmapped.lean",
+    "submission/InitECandidate/Solver/Input/ZeroUnmappedCall.lean",
     "submission/InitECandidate/Solver/JumpCmpNearCost.lean",
     "submission/InitECandidate/Solver/JumpDest/Advance.lean",
     "submission/InitECandidate/Solver/JumpDest/Arithmetic.lean",
@@ -7843,8 +7848,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64605,
-  "package_bytes": 2480485979,
+  "package_entries": 64610,
+  "package_bytes": 2480511183,
   "claim": {
     "K": "infinity"
   },

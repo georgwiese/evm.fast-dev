@@ -23,7 +23,8 @@ theorem memory_prefix (input : Guest.InputBlob) (source post : PanSemStateFinite
     (normal : evaluateHOLFiniteState source body = (result,post)) :
     1 ≤ source.clock ∧ evaluateHOLFiniteState (memoryState source) afterMemory = (result,post) := by
   have positive : 1 ≤ source.clock := by
-    by_contra bad
+    by_cases positive : 1 ≤ source.clock
+    · exact positive
     have zero : source.clock = 0 := by omega
     obtain ⟨callee,called⟩ := nullary_environment source.code.lookup (ofString "mem_init") memoryBody (memory_code source.code entry.code)
     have timed := evaluateHOLFiniteState_call_clock_zero source (some (none,none)) (ofString "mem_init") [] [] memoryBody callee .one rfl called zero
@@ -37,16 +38,16 @@ theorem memory_prefix (input : Guest.InputBlob) (source post : PanSemStateFinite
   exact normal
 
 theorem memory_globals (source : PanSemStateFiniteExact 64 Guest.HostMemory) :
-    (memoryState source).globals.lookup (ofString "heap_ptr") = some (.val (.word 2713714688#64)) ∧
-    (memoryState source).globals.lookup (ofString "scratch_ptr") = some (.val (.word 2713714688#64)) ∧
-    (memoryState source).globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2701135872#64)) := by
+    (memoryState source).globals.lookup (ofString "heap_ptr") = some (.val (.word source.baseAddr)) ∧
+    (memoryState source).globals.lookup (ofString "scratch_ptr") = some (.val (.word 2701127680#64)) ∧
+    (memoryState source).globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2688618496#64)) := by
   simp [memoryState,memoryReady,setGlobalHOLFinite,HolFiniteMapExact.update,FUPDATE,
     show ofString "frame_mem_ptr" ≠ ofString "heap_ptr" by decide,show ofString "scratch_ptr" ≠ ofString "heap_ptr" by decide,
     show ofString "frame_mem_ptr" ≠ ofString "scratch_ptr" by decide]
 
 theorem memory_scalars (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (entry : Entry input source) :
     OriginalScalarGlobals.Scalars (memoryState source).globals :=
-  ((entry.scalars.update (ofString "heap_ptr") 2713714688#64).update (ofString "scratch_ptr") 2713714688#64).update (ofString "frame_mem_ptr") 2701135872#64
+  ((entry.scalars.update (ofString "heap_ptr") source.baseAddr).update (ofString "scratch_ptr") 2701127680#64).update (ofString "frame_mem_ptr") 2688618496#64
 
 theorem memory_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (key : MlS)
     (notHeap : key ≠ ofString "heap_ptr") (notScratch : key ≠ ofString "scratch_ptr") (notFrame : key ≠ ofString "frame_mem_ptr") :
@@ -60,9 +61,9 @@ theorem reached_memory (input : Guest.InputBlob) (outcome : HolOutcome) (events 
     (terminates : InitE.sourceBehaviour input = .terminate outcome events) :
     ∃ source target result actualOutcome,
       Entry input source ∧ 1 ≤ source.clock ∧
-      (memoryState source).globals.lookup (ofString "heap_ptr") = some (.val (.word 2713714688#64)) ∧
-      (memoryState source).globals.lookup (ofString "scratch_ptr") = some (.val (.word 2713714688#64)) ∧
-      (memoryState source).globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2701135872#64)) ∧
+      (memoryState source).globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 InitE.sourceBase))) ∧
+      (memoryState source).globals.lookup (ofString "scratch_ptr") = some (.val (.word 2701127680#64)) ∧
+      (memoryState source).globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2688618496#64)) ∧
       evaluateHOLFiniteState (memoryState source) afterMemory = (result,target) ∧
       (match result with
        | some (.finalFfi event) => actualOutcome = HolOutcome.ffiOutcome event
@@ -80,6 +81,7 @@ theorem reached_memory (input : Guest.InputBlob) (outcome : HolOutcome) (events 
       | error | timeOut | «break» | «continue» | exception identifier payload => cases classified
   obtain ⟨positive,tailRun⟩ := memory_prefix input source target entry result terminal run
   have globals := memory_globals source
+  rw [entry.base] at globals
   exact ⟨source,target,result,actualOutcome,entry,positive,globals.1,globals.2.1,globals.2.2,tailRun,classified,observation⟩
 
 end InitECandidate.Solver.Input.Main

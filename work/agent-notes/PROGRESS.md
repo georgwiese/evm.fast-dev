@@ -4,6 +4,55 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual scratch clears/constructors and genuine main initialization
+
+ZeroProgram now names the real Software memzero. ZeroUnmapped proves its first
+32-byte loop stops at timeout or the first unmapped ordinary store, then follows
+the actual aligned branch and i scope to rule out any body return. ZeroUnmappedCall
+installs actual function12 and rules out a normal ignored memzero continuation.
+No future mapped buffer/readability or oracle result is supplied.
+
+ScratchClear installs actual allocator8, derives room from its real return,
+derives rounded pointer≤current bounded scratch cursor and alignment, reconstructs
+the genuine caller continuation and invokes the actual failed clear. Source clock
+and allocator failure paths require no future completion premise. ScratchConstructors
+matches current msg_new_scratch function422, proves its body and a real scoped
+caller cannot return under current ordered/bounded arena cursors and domain.
+ScratchFrame matches current frame_new423 and both real marks6/9; it carries the
+same cursor facts through both exact snapshots to the actual280-byte allocation/
+clear and rules out a body return, without requiring a message read or mapped
+fresh frame. This remains conditional local control evidence: it does not yet
+classify all terminal outcomes as uncovered or establish whole-program EVM
+unreachability. Actual earlier startup/decoder arena preservation remains open.
+
+MainProgram/MainEntry/MainMemoryPrefix now follow current Software main812 and
+mem_init1. The genuine declaration pass proves67scalar globals (rather than old93),
+and sha_names no longer asserts the removed sha_accel global. Entry.base is derived
+from the real declaration frame. mem_init sets heap_ptr=@base, scratch_ptr=2701127680,
+frame_mem_ptr=2688618496. Every actual source termination reaches the computed
+memory prefix with its genuine initialized globals and literal remaining main
+execution. The old accelerated startup-prefix modules still require migration;
+this check does not revalidate them. SourceEntry, exception installation and actual
+declaration-global facts rechecked through these current roots.
+
+Cleanup: PureReturn states its CodeEnvironment/Model imports explicitly; ZeroEnvironment
+uses syntax/ABI rather than whole ZeroMemory; ZeroCall imports its memory proof
+explicitly. Actual arena allocator/mark syntax and remaining zero-loop shapes are
+retargeted to Software. Existing conditional mapped memzero caller rechecked.
+
+Validation: current-main-memory-prefix-v1.log PASS708jobs/permitted printed axioms,
+8.72s/MaxRSS1353688KiB,8GiBwhole-hostguard/twoslots/artifactcachefalse. Components:
+current-main-entry-v1 PASS707, current-scratch-frame-v2 PASS694, current-scratch-message-v1
+PASS692, current-scratch-clear-v3 PASS691, current-zero-unmapped-v4 PASS661. Failed
+diagnostics unindexed. Index7809historical-or-current modules/15346facts,
+179current-reference modules; inventory7843/replacement closure0/fixedlatestmain
+unchanged; incremental policy PASS64610entries/2480511183bytes. No full verification.
+Next actual startup/decoder arena preservation, scratch outcome classification,
+current heap/input-to-decoder lifetime and canonical offset/gas joins, then all
+remaining quantitative/target obligations. Keep the full finite-bound objective;
+no conditional NoReturn theorem substitutes for a uniform target K.
+Five unfinished RLP files preserved/untracked/unclaimed; account5%used/0reset credits.
+
 ## Complete actual input body/caller and current allocation room
 
 AllocationArithmetic, AllocationNormal, AllocationCall and AllocationCallNormal
@@ -144,6 +193,7 @@ zero reset credits, ordinary usage allowed. Push every commit to georg.
 
 | Commit | Checked result | Remaining limit |
 | --- | --- | --- |
+| ca9b24dc2 | Actual full input body/caller copied image and allocator room; current domain excludes scratch. | Main initialization and genuine scratch callers still needed at that checkpoint. |
 | b0ca826ff | Actual loop/suffix copied bytes and protected frame; real length read with arbitrary list sizes. | Whole allocator/input-body/caller join still needed at that checkpoint. |
 | 418e447ec | Whole current input-copy all-outcome source cost; stale dependencies removed and history separated from active plan. | Copy contents/caller reachability still needed at that checkpoint. |
 | 44d188c1b | Whole current header precheck ≤85body/86caller source ticks; actual signed small-count offset loops. | Offset guard semantics/global target composition open. |

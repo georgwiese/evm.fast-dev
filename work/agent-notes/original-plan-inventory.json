@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 7838,
+  "solver_modules": 7843,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -48,7 +48,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1302,
+    "Input": 1307,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -225,7 +225,7 @@
     "local_gas_accounting": [
       {
         "module": "GasBudget.StateChargeBudget",
-        "solver_dependency_count": 33,
+        "solver_dependency_count": 34,
         "imports_replacement_ast": false
       },
       {
@@ -235,19 +235,19 @@
       },
       {
         "module": "GasBudget.ChildError",
-        "solver_dependency_count": 38,
+        "solver_dependency_count": 39,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.ChildSuccess",
-        "solver_dependency_count": 42,
+        "solver_dependency_count": 43,
         "imports_replacement_ast": false
       }
     ],
     "original_root_initialization": [
       {
         "module": "GasBudget.RootMsgNormal",
-        "solver_dependency_count": 55,
+        "solver_dependency_count": 56,
         "imports_replacement_ast": false
       },
       {

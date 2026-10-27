@@ -1,4 +1,4 @@
-import InitECandidate.Solver.WitnessRadix.ZeroMemory
+import InitECandidate.Solver.WitnessRadix.ZeroProgram
 import InitECandidate.Solver.WitnessRadix.CodeEnvironment
 
 namespace InitECandidate.Solver.WitnessRadix.Zero

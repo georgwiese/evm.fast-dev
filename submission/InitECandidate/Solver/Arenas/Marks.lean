@@ -7,12 +7,12 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 def markName : Direction → String | .up => "frame_mem_mark" | .down => "scratch_mark"
 def markBody : Direction → ProgHOL 64
-  | .up => match Guest.guestFn_frame_mem_mark with | .function fn => progToHOL fn.body | _ => .skip
-  | .down => match Guest.guestFn_scratch_mark with | .function fn => progToHOL fn.body | _ => .skip
+  | .up => match Guest.Software.guestFn_frame_mem_mark with | .function fn => progToHOL fn.body | _ => .skip
+  | .down => match Guest.Software.guestFn_scratch_mark with | .function fn => progToHOL fn.body | _ => .skip
 
 theorem mark_body (direction : Direction) : markBody direction = .return (pointerExpression direction) := by
   cases direction <;>
-    simp only [markBody, Guest.guestFn_frame_mem_mark, Guest.guestFn_scratch_mark, progToHOL, expToHOL,
+    simp only [markBody, Guest.Software.guestFn_frame_mem_mark, Guest.Software.guestFn_scratch_mark, progToHOL, expToHOL,
       pointerExpression, pointerName]
 
 theorem mark_execute {F : Type} (source : PanSemStateFiniteExact 64 F) (direction : Direction) (pointer : BitVec 64)

@@ -48,12 +48,12 @@ def pTail (direction : Direction) : ProgHOL 64 :=
 def program (direction : Direction) : ProgHOL 64 :=
   .dec (ofString "p") .one (pointerExpression direction) (pTail direction)
 def body : Direction → ProgHOL 64
-  | .up => match Guest.guestFn_frame_mem_alloc with | .function fn => progToHOL fn.body | _ => .skip
-  | .down => match Guest.guestFn_scratch_alloc with | .function fn => progToHOL fn.body | _ => .skip
+  | .up => match Guest.Software.guestFn_frame_mem_alloc with | .function fn => progToHOL fn.body | _ => .skip
+  | .down => match Guest.Software.guestFn_scratch_alloc with | .function fn => progToHOL fn.body | _ => .skip
 
 theorem body_shape (direction : Direction) : body direction = program direction := by
   cases direction <;>
-    simp only [body, Guest.guestFn_frame_mem_alloc, Guest.guestFn_scratch_alloc, progToHOL, expToHOL,
+    simp only [body, Guest.Software.guestFn_frame_mem_alloc, Guest.Software.guestFn_scratch_alloc, progToHOL, expToHOL,
       shapeToHOL, List.map_cons, List.map_nil, Option.map_none, program, pTail, qTail, firstGuard,
       secondGuard, secondTest, trap, trapCode, assignment, pointerExpression, limitExpression,
       distanceExpression, pointerName, limitName, returnedExpression, roundExpression, localVar]

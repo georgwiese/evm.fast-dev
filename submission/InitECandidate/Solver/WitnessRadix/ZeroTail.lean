@@ -9,7 +9,7 @@ def tailBody : ProgHOL 64 := match loopTail with | .while _ code => code | _ => 
 
 theorem other_loop_shapes : loopBytes = .while (condition 8#64) byteBody ∧
     loopTail = .while (.cmp .lower (localVar "i") (localVar "n")) tailBody := by
-  simp only [loopBytes, loopTail, byteBody, tailBody, body, BuildProgram.loops, Guest.guestFn_memzero,
+  simp only [loopBytes, loopTail, byteBody, tailBody, body, BuildProgram.loops, Guest.Software.guestFn_memzero,
     progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, List.nil_append, List.cons_append,
     List.append_nil, List.getElem?_cons_zero, List.getElem?_cons_succ, Option.getD_some,
     condition, Copy32.condition, localVar, addConst]

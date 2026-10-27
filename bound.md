@@ -64,16 +64,26 @@ Checked against the current Software AST:
   alignment/endian/oracle invariants still need derivation from actual main.
 - Allocator/trap/input catalogues use actual Software function entries 2/0/24.
   Shared local-summary composition and fixed counter increments are generic.
+- The actual memzero body/ignored call cannot continue from an aligned clear of
+  at least32bytes below sourceBase. The genuine scratch allocation derives its
+  room/rounded pointer/alignment before this clear. Current msg_new_scratch and
+  frame_new (including both real cursor snapshots) cannot return under ordered
+  bounded arena cursors and the actual domain. These are conditional control
+  facts, not yet whole-path exclusion or covered-outcome classification.
+- Current main entry and its genuine mem_init prefix now build: main function
+  index812, 67 scalar declaration globals, heap=@base, scratch=2701127680 and
+  frame_mem=2688618496. Entry.base comes from the actual source declaration
+  frame. Every actual terminating source behavior reaches this computed prefix.
 - Replacement implementation/closed proofs/generators/harness were removed
   earlier. Another 65 closed stale generated modules were removed after rebase.
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-input-entry-domain-v1.log`, 1,032 jobs,
-permitted printed axioms only, 3.64 seconds, MaxRSS 1,310,368 KiB.
-Historical/current index: 7,804 modules /15,329 facts; 146 modules carry the
+Latest successful closure: `current-main-memory-prefix-v1.log`, 708 jobs,
+permitted printed axioms only, 8.72 seconds, MaxRSS 1,353,688 KiB.
+Historical/current index: 7,809 modules /15,346 facts; 179 modules carry the
 current dependency reference. Incremental Solver/package policy passes at
-64,605 entries /2,480,485,979 bytes.
+64,610 entries /2,480,511,183 bytes.
 These checks are not full verification.
 
 ## Remaining plan
@@ -96,6 +106,10 @@ These checks are not full verification.
   consequences before expanding the map/crypto migration. CurrentDomain now
   proves every ordinary address is at least sourceBase and that scalar stores
   below it fail immediately; no whole-path unreachability is claimed yet.
+  The initial arena cursors now follow from the real main/mem_init prefix.
+  Next transport those facts through actual startup/decoder calls and classify
+  scratch helper outcomes. NoReturn alone does not rule out covered terminal
+  FFI outcomes, so do not discard later EVM/map obligations on that basis.
   AllocationArithmetic/AllocationNormal/AllocationCall/AllocationCallNormal now
   use the actual 2,952,790,016 ceiling. Extended Expected/Global/Local variants
   and their old callers still require migration.

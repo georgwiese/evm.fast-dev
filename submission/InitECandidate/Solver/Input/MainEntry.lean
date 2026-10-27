@@ -23,6 +23,7 @@ structure Entry (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Gu
   shapes : OriginalExceptions.Installed source.eshapes
   scalars : OriginalScalarGlobals.Scalars source.globals
   zeros : ∀ key,key ∈ OriginalScalarGlobals.names → source.globals.lookup key = some (.val (.word 0#64))
+  base : source.baseAddr = BitVec.ofNat 64 InitE.sourceBase
   memory : source.memory = InitE.sourceMemory
   domain : source.memaddrs = InitE.ordinaryDomain
   shared : source.shMemaddrs = InitE.sharedDomain
@@ -62,6 +63,7 @@ theorem reached (input : Guest.InputBlob) (outcome : HolOutcome) (events : List 
     shapes := shapes
     scalars := OriginalScalarGlobals.declaration_scalars _ declared declarations
     zeros := OriginalScalarGlobals.declaration_pass _ declared declarations
+    base := congrArg (fun s => s.baseAddr) metadata
     memory := congrArg (fun s => s.memory) metadata
     domain := congrArg (fun s => s.memaddrs) metadata
     shared := congrArg (fun s => s.shMemaddrs) metadata

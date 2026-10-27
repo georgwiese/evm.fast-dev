@@ -13,7 +13,7 @@ theorem checked : DeclarationCode.zeroGlobalsCheck OriginalCode.program = true :
 
 set_option maxRecDepth 100000 in
 open scoped InitE.MetadataComputation InitE.NameComputation in
-theorem count : names.length = 93 := by decide_cbv
+theorem count : names.length = 67 := by decide_cbv
 
 def Scalars (globals : HolFiniteMapExact MlS (ValueHOL 64)) : Prop :=
   ∀ key,key ∈ names → ∃ word : BitVec 64,globals.lookup key = some (.val (.word word))
@@ -38,7 +38,7 @@ theorem Scalars.update {globals : HolFiniteMapExact MlS (ValueHOL 64)} (scalars 
 
 set_option maxRecDepth 100000 in
 open scoped InitE.MetadataComputation InitE.NameComputation in
-theorem sha_names : ofString "sha_st" ∈ names ∧ ofString "sha_pad" ∈ names ∧ ofString "sha_accel" ∈ names := by decide_cbv
+theorem sha_names : ofString "sha_st" ∈ names ∧ ofString "sha_pad" ∈ names := by decide_cbv
 
 set_option maxRecDepth 100000 in
 open scoped InitE.MetadataComputation InitE.NameComputation in

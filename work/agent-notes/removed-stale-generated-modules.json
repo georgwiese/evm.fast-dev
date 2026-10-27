@@ -1,0 +1,631 @@
+{
+  "reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+  "recovery_reference": "codex/pre-upstream-rebase-20261027",
+  "reason": "Upstream replaced compiled program; remove only the closed group of stale generated facts whose fixed imports no longer exist. Current-program compiler aggregates remain required and must be regenerated and checked.",
+  "removed_modules": [
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Chunk50",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Chunk50.lean",
+      "sha256": "b03c1d726687f6fb06881a7f35ed42cef0d591ca2fafbc997eb93b28b9982745",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.chunk50Safe"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Chunk51",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Chunk51.lean",
+      "sha256": "3849be06c547cecfac28113d3173bde96cba870d4772706d93a84fb829fc5965",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.chunk51Safe"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Fixed",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Fixed.lean",
+      "sha256": "cdc22fe2bd73698c8ff77b49a649d07537b2c9739581f1fc66f637929b2f6c1c",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.crepProgram_eq_outputs",
+        "InitECandidate.Solver.CrepStatic.fixedCrepCodeSafe",
+        "InitECandidate.Solver.CrepStatic.fixedSimplifiedCrepCodeSafe"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure814",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure814.lean",
+      "sha256": "51bb4d542c474f52cbf4969215f51e4f34224a161ad5119e5b33ba6dbe733a42",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling814"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure815",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure815.lean",
+      "sha256": "1051d3e1a4da8ff43d3cbc0f795ff7d9ac3279cd364ff0cb6124df1186b82a68",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling815"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure816",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure816.lean",
+      "sha256": "f09c5ff20ea183f042fb309d9d05690b6d681e14c96c3403f406578f96839e41",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling816"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure817",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure817.lean",
+      "sha256": "3475a406ab54a376d8a93a3a32ba74a88929ff811623b4bbe69ba7a74caf4a83",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling817"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure818",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure818.lean",
+      "sha256": "e9772165c3998f7ed266237ed82338302ff85e3ef31c8156ec26a28919f5528a",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling818"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure819",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure819.lean",
+      "sha256": "3b5a924f4697835ca35459b4b01384fa60b4e8b0c4b994d29c0693de281644cc",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling819"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure820",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure820.lean",
+      "sha256": "4819d51a4190500a12ed6c15b244582c5286efd1d4d3a1e3a5d08ce351ea2287",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling820"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure821",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure821.lean",
+      "sha256": "9bd3572d92f9dc9c3ced24790e9d3d12c7efb26f9475e41ea352ff932eb96787",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling821"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure822",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure822.lean",
+      "sha256": "6735783c41774b51551428255a1d7a8ff6dc42948211123ed35a820d88fe7282",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling822"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure823",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure823.lean",
+      "sha256": "9ff67fe258ab3856a77748fd4b3c937cdeb0f69ecacde88fd32d846b1d6a0787",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling823"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure824",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure824.lean",
+      "sha256": "42de1f3f0ca312da8447e7b4d4488f0b827d2eb752e059fee6a286c5d68cd805",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling824"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Procedure825",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Procedure825.lean",
+      "sha256": "ac99a95bda93904822a6923ab74f209391c7c98504378a4efa5018b444ec8c26",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.ceiling825"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.CrepStatic.Programs",
+      "path": "submission/InitECandidate/Solver/CrepStatic/Programs.lean",
+      "sha256": "9b69b1538d935799636d37bb712a50798e4e9056e7ac916cbfcd28a1ab56a5fd",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.CrepStatic.crepProgramSafe",
+        "InitECandidate.Solver.CrepStatic.crepCodeSafe"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Chunk51",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Chunk51.lean",
+      "sha256": "17aebc29da95b12033e6d961c02a872527432f9b3a80d62757c5852e9e323f51",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.paddedChunk51_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Chunk52",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Chunk52.lean",
+      "sha256": "bb86653722a93c35b8b3b0ab97ece0443645cfe03b626626edc103dd30c238af",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.paddedChunk52_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section878",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section878.lean",
+      "sha256": "6c4e81fd224c0de7020df968ef5db6db4acd7dce08792f801e34a4f9eabded1b",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded878_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section879",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section879.lean",
+      "sha256": "72ac9d64963d9f5997d109e80ec3295048d235eec332c621e9f80475320bdc49",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded879_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section880",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section880.lean",
+      "sha256": "6f34940e3ff77a08e3ae2dfe99d15999c6fd42b399379196c0394d4ff968752e",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded880_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section881",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section881.lean",
+      "sha256": "630d7368f271ad9746b6e817816f9b2b503b217e75e4b2a2b75847cc084e8d9e",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded881_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section882",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section882.lean",
+      "sha256": "21f99351f64f2eb859c8f45a590215143821713c1d8dea5cdb80257ac1305bcc",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded882_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section883",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section883.lean",
+      "sha256": "cf18f11e494fa2f1cfef4ff972819cce78b3f0739ec47194589ca28effc8c0b3",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded883_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section884",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section884.lean",
+      "sha256": "1b6b72e963e340bd209e4543a3a7f5d596044b561e542425222c0820fdcde4ea",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded884_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section885",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section885.lean",
+      "sha256": "dbd5ce81df8506f9bb01e8682ea088e50572bca76831f98dff8e9c1f8bef3283",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded885_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section886",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section886.lean",
+      "sha256": "89a7c6e66f944d7fe1dcfe2ae400efe37b6644df3e916d7a2d0e34ddeb4c554a",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded886_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section887",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section887.lean",
+      "sha256": "45946f248bf0a6ee31045524bf99be3c9a231d989c790a6ed16d3fa40f2ddd2c",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded887_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section888",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section888.lean",
+      "sha256": "b7b7b855b58d04117c7e64b9835bcfed6b8d538173ac45a1c5b7bb5e0a23f285",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded888_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.Padded.Section889",
+      "path": "submission/InitECandidate/Solver/LabBound/Padded/Section889.lean",
+      "sha256": "7c2de71a833302ca915674d0f29b85e3c3a5bafe3c2365f48e9856f66b78c723",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded889_fits"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.PaddedProgram",
+      "path": "submission/InitECandidate/Solver/LabBound/PaddedProgram.lean",
+      "sha256": "bd45132c6adcf8af27847a4674c2d928f52ec1b63d2ccfc113b4dfa866707157",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.fixedPaddedProgram_fits",
+        "InitECandidate.Solver.LabBound.fixedPaddedProgram_layout"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBound.PaddedRiscV",
+      "path": "submission/InitECandidate/Solver/LabBound/PaddedRiscV.lean",
+      "sha256": "6dacc3c3bcc8714921d49fbf91e416299c68580863e5493b14d7ef2a8905524d",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBound.padded_riscv"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.LabBoundTight.PaddedRiscV",
+      "path": "submission/InitECandidate/Solver/LabBoundTight/PaddedRiscV.lean",
+      "sha256": "e3b8b0e126b2cdae708c64983c935c0b3a942f0e376752d78d6440a75c77aae2",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.LabBoundTight.padded_riscv"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Chunk50",
+      "path": "submission/InitECandidate/Solver/StackStatic/Chunk50.lean",
+      "sha256": "b8dd32a90391a847a249374d4596b7c70957b809098324e38264e31f204c56de",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackStatic.rawChunk50Eligible",
+        "InitECandidate.Solver.StackStatic.allocChunk50Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Chunk51",
+      "path": "submission/InitECandidate/Solver/StackStatic/Chunk51.lean",
+      "sha256": "4ba748ca24954607ab5b353fb58bc359622cfb3b1e7bb0f98c19c5deb6400b4e",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackStatic.rawChunk51Eligible",
+        "InitECandidate.Solver.StackStatic.allocChunk51Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Fixed",
+      "path": "submission/InitECandidate/Solver/StackStatic/Fixed.lean",
+      "sha256": "618ee991ba284cc8cf42843c72cfde218efb865eeafcf189dd202cef51256e2e",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackStatic.rawProgram_eq_stack",
+        "InitECandidate.Solver.StackStatic.allocProgram_eq_stack",
+        "InitECandidate.Solver.StackStatic.fixedRawCodeSafe",
+        "InitECandidate.Solver.StackStatic.fixedAllocCodeSafe"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure878",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure878.lean",
+      "sha256": "d8e15f204a842db39192f5cfdab4814f79f0d86b7c4ea2d0d8f7fb5de3fea74c",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw878Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc878Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure879",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure879.lean",
+      "sha256": "a31624c4b917d3ce9fed085fde93cb5139b1779ce01ae8bd2ae30c61ef47d000",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw879Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc879Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure880",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure880.lean",
+      "sha256": "af083889ac87b37be4e1fbf230941d8967b380db9c1b7c846eba0f23c8e70290",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw880Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc880Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure881",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure881.lean",
+      "sha256": "0f33663c796e967f0e1e56b656e721e6eb4891c6a4035138f324a25b0f678298",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw881Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc881Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure882",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure882.lean",
+      "sha256": "54272bd8fdc141007b7b0b65aa33bb3ac5e781e4ba5f0d40c55769c931bf2bc2",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw882Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc882Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure883",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure883.lean",
+      "sha256": "dcdd646e9ec16cc45ae01562bc3ed9752212b271e3fcfc659b7eec67224b1394",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw883Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc883Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure884",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure884.lean",
+      "sha256": "d967af199d4c9e9cd230a9e2f8d3b69457c918a76dc63d22a8d22674b08ed225",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw884Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc884Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure885",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure885.lean",
+      "sha256": "46da111d4ddfd557670b8bcb01dc5b0c8083433ea8f27e78bf511acefce4cb7a",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw885Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc885Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure886",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure886.lean",
+      "sha256": "73c1dd56af1e47291fad2fe18aefe1449f6b86c89229129ad12f20b43570e704",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw886Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc886Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure887",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure887.lean",
+      "sha256": "e68f5c698f7899a205015ec31e135fa1c3afc7e3e245b024c3d8cf04115971cc",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw887Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc887Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure888",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure888.lean",
+      "sha256": "ed641aa42b4fefb73faf3a01cefb57babe44f197c7bf215ce4aad1576406f8b8",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw888Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc888Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Procedure889",
+      "path": "submission/InitECandidate/Solver/StackStatic/Procedure889.lean",
+      "sha256": "ad5b6b061e8003c1fd83f6f97ca6ccced1a1849bed687a4ba7b6eaa875113964",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackRemoveDirect.raw889Eligible",
+        "InitECandidate.Solver.StackRemoveDirect.alloc889Supported"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.StackStatic.Programs",
+      "path": "submission/InitECandidate/Solver/StackStatic/Programs.lean",
+      "sha256": "d3afa3301c1b417ea5aa450e1b0bb650bb6d661f39285a3541e37c7689f7760c",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.StackStatic.rawProgramEligible",
+        "InitECandidate.Solver.StackStatic.allocProgramSupported",
+        "InitECandidate.Solver.StackStatic.rawCodeSafe",
+        "InitECandidate.Solver.StackStatic.allocCodeSafe"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Chunk50",
+      "path": "submission/InitECandidate/Solver/WordStatic/Chunk50.lean",
+      "sha256": "19d28743aef8e1ce98ac6f10c675ef19710536eba581dc8b29eaafbc38745b57",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordStatic.chunk50Safe"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Chunk51",
+      "path": "submission/InitECandidate/Solver/WordStatic/Chunk51.lean",
+      "sha256": "966780c665330681922231a8f818763207392a142d3716f4827bf80f9a89a147",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordStatic.chunk51Safe"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Fixed",
+      "path": "submission/InitECandidate/Solver/WordStatic/Fixed.lean",
+      "sha256": "1765dcaed60885dc493cdb97d209ceb833cb094fb68d283a11cdd1ed3d001fa7",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordStatic.wordProgram_eq_outputs",
+        "InitECandidate.Solver.WordStatic.fixedWordCodeSafe"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure878",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure878.lean",
+      "sha256": "d1a5163610f229669c48fd546070ecae488bba0b9f32c7fac561beb532a7f36a",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling878",
+        "InitECandidate.Solver.WordToStackBound.noInstall878"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure879",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure879.lean",
+      "sha256": "962b0519f595287fa8e5f561f541995b4168cf36afd87959df1017dd749960fa",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling879",
+        "InitECandidate.Solver.WordToStackBound.noInstall879"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure880",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure880.lean",
+      "sha256": "1a5943aef8f8f37a7da6a8c600a6269ba0e1499c3f2a29e873b379b46b506e61",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling880",
+        "InitECandidate.Solver.WordToStackBound.noInstall880"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure881",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure881.lean",
+      "sha256": "dbe496783ecde30c006d125dfd24c18b5c2a26a613b88b7bad10a1f8ddffca46",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling881",
+        "InitECandidate.Solver.WordToStackBound.noInstall881"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure882",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure882.lean",
+      "sha256": "e914f89f4934913e9397b4f1f3c5299152331217e3648cf48c69bf69085cc0df",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling882",
+        "InitECandidate.Solver.WordToStackBound.noInstall882"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure883",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure883.lean",
+      "sha256": "4f8efce2383fbac98845b78676397e926589a7419a6c02a1a17d41f3d0195a3b",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling883",
+        "InitECandidate.Solver.WordToStackBound.noInstall883"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure884",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure884.lean",
+      "sha256": "85c485d389a67e0ddfac85a360ddef9d817015ec65559311157e2bc3e116658d",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling884",
+        "InitECandidate.Solver.WordToStackBound.noInstall884"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure885",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure885.lean",
+      "sha256": "238240107bfb97cacef0714bd0bea255d22bbf4dee9ed6fdafa3c7c90e584b39",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling885",
+        "InitECandidate.Solver.WordToStackBound.noInstall885"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure886",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure886.lean",
+      "sha256": "37acd312076d51ac474e62854fdfdee40b165b171430d0fff169523d5ff39c2c",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling886",
+        "InitECandidate.Solver.WordToStackBound.noInstall886"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure887",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure887.lean",
+      "sha256": "025cb9a01ed7c1e62579f1ce0bc8641d204c5b06aba400b5be92d087e62f0434",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling887",
+        "InitECandidate.Solver.WordToStackBound.noInstall887"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure888",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure888.lean",
+      "sha256": "80f9461ed2c2f29a57dcdc80ed7e9dc8719105a813f22b4f8569e0856a0f64c8",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling888",
+        "InitECandidate.Solver.WordToStackBound.noInstall888"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Procedure889",
+      "path": "submission/InitECandidate/Solver/WordStatic/Procedure889.lean",
+      "sha256": "41df67014eefdcf634c90ac0eb647107da8a1ffa0b99af46c2c96e8e9f58ceb8",
+      "reason": "Direct import of removed upstream proof module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordToStackBound.ceiling889",
+        "InitECandidate.Solver.WordToStackBound.noInstall889"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.WordStatic.Programs",
+      "path": "submission/InitECandidate/Solver/WordStatic/Programs.lean",
+      "sha256": "dcb38bf9429b8b9d2d77b43d6102618ad77c5f3c0e80dea140907387f91f0bcc",
+      "reason": "Depends on stale generated module",
+      "printed_facts": [
+        "InitECandidate.Solver.WordStatic.wordProgramSafe",
+        "InitECandidate.Solver.WordStatic.wordCodeSafe"
+      ]
+    }
+  ],
+  "retired_printed_facts": 103
+}

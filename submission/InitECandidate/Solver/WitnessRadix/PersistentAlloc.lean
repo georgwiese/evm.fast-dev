@@ -7,7 +7,7 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 
 def body : ProgHOL 64 := match Guest.guestFn_alloc with
   | .function fn => progToHOL fn.body | _ => .skip
-def heapEnd : BitVec 64 := 33806089496#64
+def heapEnd : BitVec 64 := 2952790016#64
 def rounded (pointer amount : BitVec 64) : BitVec 64 := (pointer + amount + 7#64) &&& (0#64 - 8#64)
 def post {F : Type} (source : PanSemStateFiniteExact 64 F) (pointer amount : BitVec 64) :
     PanSemStateFiniteExact 64 F :=

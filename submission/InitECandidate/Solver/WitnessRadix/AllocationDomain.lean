@@ -9,11 +9,11 @@ the fixed challenge source domain. -/
 theorem ordinary_mapped (pointer : BitVec 64)
     (lower : 2701131776 ≤ pointer.toNat) (upper : pointer.toNat < 33806089496)
     (aligned : pointer.toNat % 8 = 0) : InitE.ordinaryDomain pointer := by
-  change Flapjack.Compiler.Backend.StackRemove.addresses 2701131776#64 3888119715 pointer
+  change Flapjack.Compiler.Backend.StackRemove.addresses 2701131776#64 3888119741 pointer
   apply (Flapjack.Compiler.Backend.StackRemove.mem_addresses _ _ _).mpr
   let index := (pointer.toNat - 2701131776) / 8
   have number : pointer.toNat = 2701131776 + 8 * index := by dsimp [index]; omega
-  have bound : index < 3888119715 := by omega
+  have bound : index < 3888119741 := by omega
   refine ⟨index, bound, ?_⟩
   change pointer = 2701131776#64 + BitVec.ofNat 64 index * 8#64
   rw [← BitVec.ofNat_mul]

@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.ClockCost
-import InitECandidate.Solver.Input.ScalarScope
+import InitECandidate.Solver.Input.ScalarDeclaration
 
 namespace InitECandidate.Solver.Input.ClockCost
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

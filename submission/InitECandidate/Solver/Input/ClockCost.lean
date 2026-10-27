@@ -17,7 +17,7 @@ theorem of_quiet (code) (program : ProgHOL 64) (quiet : QuietClock.Preserves cod
 theorem mono (code) (program : ProgHOL 64) (small large : Nat) (priced : Bound code program small) (bounded : small ≤ large) :
     Bound code program large := by
   intro source installed
-  exact (priced source installed).trans bounded
+  exact Nat.le_trans (priced source installed) bounded
 
 theorem skip (code) : Bound code .skip 0 := of_quiet code _ (QuietClock.skip code)
 theorem assign (code) (name : MlS) (expression : ExpHOL 64) : Bound code (.assign .local name expression) 0 := of_quiet code _ (QuietClock.assign code name expression)
@@ -67,9 +67,9 @@ theorem conditional (code) (test : ExpHOL 64) (yes no : ProgHOL 64) (yesPrice no
         change source.clock - (if word = 0 then evaluateHOLFiniteState source no else evaluateHOLFiniteState source yes).2.clock ≤ max yesPrice noPrice
         by_cases zero : word = 0
         · rw [if_pos zero]
-          exact (right source installed).trans (Nat.le_max_right _ _)
+          exact Nat.le_trans (right source installed) (Nat.le_max_right _ _)
         · rw [if_neg zero]
-          exact (left source installed).trans (Nat.le_max_left _ _)
+          exact Nat.le_trans (left source installed) (Nat.le_max_left _ _)
 
 theorem declared (code) (name : MlS) (shape : ShapeHOL) (expression : ExpHOL 64) (body : ProgHOL 64) (price : Nat)
     (priced : Bound code body price) : Bound code (.dec name shape expression body) price := by

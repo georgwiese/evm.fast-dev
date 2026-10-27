@@ -1,25 +1,5 @@
 import InitECandidate.Solver.Input.HeapFrame
-import InitECandidate.Solver.WitnessRadix.ProgramPrefix
-
-namespace InitECandidate.Solver.Input.ScalarScope
-open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
-open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
-open WitnessRadix.ProgramPrefix
-
-/-- Actual scalar declaration and lexical restoration, abstracted before
-instantiating large symbolic post-states in decoder loop proofs. -/
-theorem declare_execute {F : Type} (source target : PanSemStateFiniteExact 64 F) (name : String)
-    (expression : ExpHOL 64) (word : BitVec 64) (body : ProgHOL 64) (result : Option (PanSemResultExact 64))
-    (read : eval source expression=some (.val (.word word)))
-    (run : evaluateHOLFiniteState (bind source name word) body=(result,target)) :
-    evaluateHOLFiniteState source (.dec (ofString name) .one expression body)=(result,restore source name target) := by
-  have setup : Executes source [.declare name expression] (bind source name word) (fun post=>restore source name post) :=
-    Executes.declare (restoreRest:=id) word read (Executes.done _)
-  have actual:=WitnessRadix.ProgramPrefix.execute setup body
-  rw [run] at actual
-  exact actual
-
-end InitECandidate.Solver.Input.ScalarScope
+import InitECandidate.Solver.Input.ScalarDeclaration
 
 namespace InitECandidate.Solver.Input.Blob
 open Flapjack PanSemStateFiniteExact WitnessRadix.QueryBranch
@@ -36,6 +16,5 @@ theorem HeapInput.restore (saved source : PanSemStateFiniteExact 64 Guest.HostMe
 
 end InitECandidate.Solver.Input.Blob
 
-#print axioms InitECandidate.Solver.Input.ScalarScope.declare_execute
 #print axioms InitECandidate.Solver.Input.Blob.HeapInput.bind
 #print axioms InitECandidate.Solver.Input.Blob.HeapInput.restore

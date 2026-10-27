@@ -1,4 +1,4 @@
-import Guest.Ast
+import Guest.SoftwareAst
 import InitE.NameComputation
 import InitECandidate.Solver.Input.DeclarationCode
 import InitECandidate.Solver.Input.EvaluationFields
@@ -6,7 +6,8 @@ import InitECandidate.Solver.Input.EvaluationFields
 namespace InitECandidate.Solver.Input.OriginalCode
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
-def program : List (DeclHOL 64) := Guest.guestAst.map declToHOL
+/-- The fixed software guest currently named by the challenge. -/
+def program : List (DeclHOL 64) := Guest.Software.guestAst.map declToHOL
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 2000000 in

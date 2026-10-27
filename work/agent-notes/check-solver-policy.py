@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Incremental local policy check; fixed sources rely on the prior policy pass.
+"""Incremental local policy check; not a fresh audit of fixed upstream sources.
 
 Does not run the full verifier, axiom audit, comparator or kernel replay.
 """
@@ -45,8 +45,9 @@ for path in sorted((root / 'InitECandidate/Solver').rglob('*.lean')):
         errors.append(f'{path}: {exc}')
 record = {
     'ok': not errors,
-    'scope': 'Incremental import/token check of all Solver files using verifier/check_submission.py imports and allowed modules; whole-tree entry/size checks; fixed files rely on prior full policy pass',
-    'prior_full_policy': 'logs/submission-policy.log',
+    'scope': 'Incremental import/token check of all Solver files using verifier/check_submission.py imports and allowed modules; whole-tree entry/size checks; not a fresh fixed-source policy or axiom audit',
+    'historical_prior_full_policy': 'logs/submission-policy.log',
+    'fixed_file_policy_revalidation_complete': False,
     'checked_files': checked, 'package_entries': len(files), 'package_bytes': total,
     'claim': policy.claim(root / 'claim.json'), 'errors': errors,
     'not_a_full_verification': True,

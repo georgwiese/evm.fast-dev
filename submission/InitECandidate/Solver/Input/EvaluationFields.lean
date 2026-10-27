@@ -1,5 +1,5 @@
 import Flapjack.Pancake.Semantics.PanProps.EvalInvariant
-import InitECandidate.Solver.Input.HeapFrame
+import Guest.Model
 
 namespace InitECandidate.Solver.Input
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

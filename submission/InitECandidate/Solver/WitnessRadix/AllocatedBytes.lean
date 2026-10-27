@@ -1,5 +1,5 @@
 import InitECandidate.Solver.WitnessRadix.AllocationDomain
-import InitECandidate.Solver.WitnessRadix.Keccak256Call
+import InitECandidate.Solver.WitnessRadix.CopyContext
 
 namespace InitECandidate.Solver.WitnessRadix.AllocatedBytes
 open Flapjack PanSemStateFiniteExact

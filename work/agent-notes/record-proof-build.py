@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('subdirectory')
@@ -16,6 +17,8 @@ parser.add_argument('logs', nargs='+')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
 notes = root / 'work/agent-notes'
+reference = subprocess.check_output(
+    ['git', 'merge-base', 'HEAD', 'origin/main'], cwd=root, text=True).strip()
 facts = {}
 allowed = {'propext', 'Classical.choice', 'Quot.sound'}
 for log_name in args.logs:
@@ -28,10 +31,12 @@ for log_name in args.logs:
             continue
         axioms = [a.strip() for a in axiom_text.split(',') if a.strip()]
         assert set(axioms) <= allowed, (name, axioms)
-        facts[name] = {'theorem': name, 'axioms': axioms, 'successful_log': path.name}
+        facts[name] = {'theorem': name, 'axioms': axioms, 'successful_log': path.name,
+                       'dependency_reference': reference}
     for name in re.findall(r"'([^']+)' does not depend on any axioms", log):
         if name.startswith('InitECandidate.Solver.'):
-            facts[name] = {'theorem': name, 'axioms': [], 'successful_log': path.name}
+            facts[name] = {'theorem': name, 'axioms': [], 'successful_log': path.name,
+                           'dependency_reference': reference}
 record_path = notes / 'proof-checks.json'
 record = json.loads(record_path.read_text())
 modules = {entry['path']: entry for entry in record['modules']}
@@ -43,7 +48,9 @@ for source in sorted((root / 'submission/InitECandidate/Solver' / args.subdirect
     if not names or not all(name in facts for name in names):
         continue
     added += rel not in modules
-    modules[rel] = {'path': rel, 'sha256': hashlib.sha256(source.read_bytes()).hexdigest()}
+    modules[rel] = {'path': rel, 'sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+                    'dependency_reference': reference,
+                    'successful_logs': sorted({facts[name]['successful_log'] for name in names})}
     for name in names:
         theorems[name] = facts[name]
 record['modules'] = sorted(modules.values(), key=lambda entry: entry['path'])

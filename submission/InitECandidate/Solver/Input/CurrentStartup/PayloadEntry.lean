@@ -5,6 +5,15 @@ namespace InitECandidate.Solver.Input.CurrentStartup.PayloadEntry
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
+/-- Live validated request bindings retained by subsequent decoder calls. -/
+structure CallerLocals (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer : BitVec 64) : Prop where
+  np : current.locals.lookup (ofString "np") = some (.val (.word (pointer + 18#64)))
+  nlen : current.locals.lookup (ofString "nlen") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16))))
+  vh : current.locals.lookup (ofString "o_vh") = some (.val (.word (Request.requestWords input 1)))
+  rq : current.locals.lookup (ofString "o_rq") = some (.val (.word (Request.requestWords input 2)))
+  valid : ∀ position < 3, Offsets.ValidAt 44#64 (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16)) (Request.requestWords input) position
+
 /-- Entry facts for the actual complete payload return, indexed by its states. -/
 def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer : BitVec 64) (length : Nat) (returned : ValueHOL 64) : Prop :=
@@ -23,7 +32,7 @@ def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Gue
       pointer.toNat + input.length % 2^64 + 8 ≤ statelessRecord.toNat ∧ statelessRecord.toNat % 8 = 0 ∧
       statelessRecord.toNat + 96 ≤ 2952790016 ∧
       caller.locals.lookup (ofString "si") = some (.val (.word statelessRecord)) ∧
-      NormalHeapEffects.AtLeast (statelessRecord.toNat + 96) entry ∧
+      NormalHeapEffects.AtLeast (statelessRecord.toNat + 96) entry ∧ CallerLocals input caller pointer ∧
       evalListHOLFinite caller (h := fun address => Classical.propDecidable (caller.memaddrs address)) Request.payloadArguments =
         some (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) ∧
       lookupCodeHOLFinite caller.code.lookup (ofString "decode_payload")
@@ -100,6 +109,14 @@ theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
     obtain ⟨callee, called, pCell, lenCell, bodyPost, value, bodyRun⟩ := Payload.callee_normal next inner Request.payloadArguments Request.afterPayload
       (pointer + 62#64) (BitVec.ofNat 64 (Guest.GasLimit.le32 input 22 - 44)) args
       (by rw [nextCode]; exact original_code source.code installed) positive (.val (.word word)) remaining
+    have nextNlen : next.locals.lookup (ofString "nlen") = some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le32 input 6 - 16)))) := by
+      rw [nextEq]
+      exact (bind_lookup_other _ "o_rq" "nlen" _ (by decide)).trans
+        ((bind_lookup_other _ "o_vh" "nlen" _ (by decide)).trans ((bind_lookup_other _ "o_pl" "nlen" _ (by decide)).trans nlen))
+    have nextRq : next.locals.lookup (ofString "o_rq") = some (.val (.word (Request.requestWords input 2))) := by
+      rw [nextEq]
+      exact bind_lookup_same _ _ _
+    have callerLocals : CallerLocals input next pointer := ⟨nextNp, nextNlen, nextVh, nextRq, valid⟩
     have nextSi : next.locals.lookup (ofString "si") = some (.val (.word record)) := by
       rw [nextEq]
       exact (bind_lookup_other _ "o_rq" "si" _ (by decide)).trans
@@ -125,7 +142,7 @@ theorem request_reached (input : Guest.InputBlob) (word : BitVec 64)
       exact ⟨cursor, (congrArg (fun globals => globals.lookup (ofString "heap_ptr")) nextGlobals).trans cell, low, high, cursorAligned⟩
     refine ⟨entry, bodyPost, pointer, Guest.GasLimit.le32 input 22 - 44, value, lengthBound, entryCode, entryShapes,
       nextDomain.trans domain, nextEndian.trans endian, entryBytes, entryHeap, ?_, lower, aligned, room, pCell, lenCell,
-      (by omega), (by omega), sliceUpper, rfl, after, next, callee, inner, .val (.word word), record, rfl, recordLower, recordAligned, recordRoom, nextSi, entryRecordHeap, args, called, callerRun⟩
+      (by omega), (by omega), sliceUpper, rfl, after, next, callee, inner, .val (.word word), record, rfl, recordLower, recordAligned, recordRoom, nextSi, entryRecordHeap, callerLocals, args, called, callerRun⟩
     exact (congrArg (fun globals => globals.lookup (ofString "ssz_offs")) nextGlobals).trans workspace
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64) (actual : MainSeparatedInput.StatelessRun input word) : Reached input :=

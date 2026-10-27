@@ -4,6 +4,32 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Real hash-count caller and shared request-context frames
+
+PayloadEntry.CallerLocals retains the actual np/nlen/o_vh/o_rqbindings and three
+offset guards. PayloadCallerReturn now shares a named Context, keeping those
+bindings and the real ssz_offs global through the complete payload body via the
+checked current global-effect theorem. Pure-call frames and memory/clock frames
+are shared, including an actual scalar stateless-record store rule. Its copied
+input/gas separation derives from original allocation geometry.
+
+RequestHashesProgram selects the actual store(si+0,pl), then the real nvh fixed-
+list call. HashCountReturn executes that store, preserves the separate physical
+gas word and resumes after the actual32-byte hash-count call. It derives count=
+(le32(input,58)-le32(input,22))/32and remainder0from actual validated offsets and
+normal return; cost≤66source clocks with no minimum clock or future room premise.
+No guest change. Request/witness/stateless/main joins and global target K remain.
+
+Validation: current-hash-count-return-v3.log PASS1371jobs/permitted printed axioms,
+8.06s/MaxRSS1931584KiB;8GiBwhole-hostguard/twoslots/cachefalse. Index7929modules/
+15767facts; inventory7966/replacementclosure0/frozenmainunchanged; incremental
+policy PASS64734entries/2481831635bytes. No full verification or global finite K.
+Account14%weekly/0resetcredits/ordinaryallowed. Overall40%, range30–50%.
+
+Next actual hash-pointer/count/header stores and decode_requests entry/body, then
+three witness-list calls and complete stateless/main return. Retain actual record
+cells and gas lifetime; prioritize earliest scratch covered-outcome analysis.
+
 ## Real payload caller resumption and stateless/payload record ownership
 
 RequestCut now retains the real post-allocation frontier beyond the96-byte

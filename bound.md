@@ -187,8 +187,13 @@ Checked against the current Software AST:
   record. PayloadCut/Endpoint retain the exact incoming payload heap cell.
   PayloadCallerReturn resumes the actual request continuation with real pl/si
   bindings, copied bytes, installed metadata, bounded heap and bounded physical
-  gas cell. It derives si+96≤pl and both records’ alignment/room. Remaining
-  request/witness/stateless/main returns and record lifetime remain open.
+  gas cell. It derives si+96≤pl and both records’ alignment/room. CallerLocals retains the real np/nlen/o_vh/o_rqand three offset guards;
+  the actual payload global frame retains ssz_offs. Shared request Context
+  frames cover pure calls and real scalar si-field stores while protecting the
+  copied input and separate gas cell. HashCountReturn now includes store(si,pl)
+  and the real32-byte hash-count call, deriving its quotient/remainder and
+  ≤66source-clock cost at original funding. Remaining request/witness/stateless/
+  main returns and record lifetime remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -207,10 +212,10 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-payload-caller-return-v1.log`, 1,369 jobs,
-permitted printed axioms only, 4.83 seconds /MaxRSS1,909,216KiB. Historical/current
-index:7,927modules/15,759facts. Incremental policy passes at64,732entries/
-2,481,813,901bytes. Old unselected whole-body/caller/image/trace helpers remain
+Latest successful closure: `current-hash-count-return-v3.log`, 1,371 jobs,
+permitted printed axioms only, 8.06 seconds /MaxRSS1,931,584KiB. Historical/current
+index:7,929modules/15,767facts. Incremental policy passes at64,734entries/
+2,481,831,635bytes. Old unselected whole-body/caller/image/trace helpers remain
 historical. These checks are not full verification.
 
 ## Remaining plan

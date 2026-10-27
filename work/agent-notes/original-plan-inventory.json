@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 7896,
+  "solver_modules": 7904,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 17,
@@ -48,7 +48,7 @@
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
     "Headers": 89,
-    "Input": 1360,
+    "Input": 1367,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -86,7 +86,7 @@
     "TargetClock": 1,
     "WeightedTrace": 1,
     "WitnessAllocationPlan": 1,
-    "WitnessRadix": 198,
+    "WitnessRadix": 199,
     "WordStatic": 862,
     "WordToStackBound": 48,
     "WordToWordBound": 1

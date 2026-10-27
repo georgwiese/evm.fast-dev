@@ -4,6 +4,65 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual normal startup host frame and bootstrapped decoder heap cursor
+
+NormalHostEffects proves conditional host preservation for resuming outcomes:
+normal fallthrough, return, break and continue. Terminal/error/exception/timeout
+paths have no host-frame assertion. NormalHostCall composes ordinary tail,
+ignored, local/global assigned and lexical scoped calls using the host state at
+their real returned bodies; NormalHostLoop handles actual loop control. No
+future helper success, allocation room, readable buffer or canonical oracle is
+assumed by these generic host rules.
+
+CurrentStartup/NormalHost checks real normal-return host frames for the closed
+28-helper startup graph. The trap_with case uses actual Trap.never_returns and
+is vacuous only for a real normal return; it does not assert that trapping output
+writes preserve host memory. [Generator/report](current-startup-normal-host-generation.json)
+record the fixed Software source hash, graph and generated source hash; Lean,
+not the scanner, validates the proofs. HostPrefix joins the actual13startup
+commands and genuine5-action setup to original host memory, current arenas,
+little endian and source oracle. reached_host retains complete source observation
+and startup stops. decoder_entry_data derives these fields at the actual returned
+decode_host_input entry from its real completed lexical trace.
+
+AllocationChecked.rounded_aligned_word proves literal alignment even if the
+preceding word addition wraps. checked_post_of_normal derives both real guard
+passes and exact post-state from an observed allocator return without an initial
+heap-end/no-wrap premise. reached_cursor also derives the incoming scalar heap
+cell from its genuine declaration read; it supplies a bounded aligned post-cursor
+without assuming either old or future cells. Natural room and monotonicity are
+not asserted under arbitrary incoming cursors. Existing bounded-entry room proof
+remains separate and unchanged.
+
+AllocationCursor lifts this result to an actual scalar allocation action using
+real installed alloc/trap entries and actual unary request binding. DecoderHeap
+uses main's second setup allocation, then transports its bounded aligned cursor
+through genuine memzero/si/err_code actions. Thus exact startup allocation totals
+are unnecessary for this input-entry invariant. decoder_entry_heap joins all
+host, oracle, endian, arena and heap prerequisites at the real decoder body entry.
+Internal precheck/input_blob transport and copied-image lifetime remain open.
+
+Memzero.any_key generalizes its generated all-outcome global frame to any selected
+key; the existing arena-specific API is retained as a wrapper. Its generator and
+manifest now reproduce that shared proof rather than duplicating it for heap_ptr.
+No fixed source/semantics/ROM/Proofs/Solution/claim bytes were changed.
+
+Validation: current-decoder-entry-heap-v1.log PASS372jobs/permitted printed axioms,
+3.49s/MaxRSS1451084KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Components:
+startup-normal-host-v1 PASS213, startup-host-prefix-v4 PASS359, allocation-checked-v2
+PASS136, allocation-cursor-v2 PASS371. Failed diagnostics unindexed. All generated
+source hashes match their reports. Index7869historical-or-current modules/15490facts,
+255current-reference modules; inventory7904/replacement closure0/frozen main unchanged;
+incremental policy 64,672 entries /2,481,059,647 bytes. No full verification claimed.
+
+Next internal precheck read-only host/heap frame, actual input_blob caller/copied
+image/decoder lifetime and canonical offset/gas joins. Then covered scratch
+classification and remaining global quantitative/target obligations. Normal host
+frames say nothing about terminal startup budgets or covered FFI classifications.
+Overall estimate remains40%, plausible30–50%; no uniform finite target K yet.
+Five unfinished pre-rebase RLP files preserved/untracked/unclaimed. Account7%
+weeklyused/0resetcredits/ordinary allowed. Push every commit to georg.
+
 ## Post-rebase dependency cleanup and genuine lexical decoder cut
 
 CallPrefix now imports LocalEffects instead of the unrelated ClockCostScopeLocals
@@ -47,9 +106,10 @@ or-current modules/15426facts;245current-reference modules. Inventory7896modules
 replacement closure0/fixedlatestmain unchanged. Incremental policy
 PASS64664entries/2480839957bytes. No full policy/axiom audit/comparator replay claimed.
 
-Next derive normal startup host/heap frontier facts, then join actual decoder
-input_blob/copy-image/decode_stateless_input lifetimes and genuine scratch
-covered-outcome classification. Conditional arena preservation or NoReturn still
+At that checkpoint, normal startup host/heap facts were still pending; the
+later checkpoint above now supplies the decoder entry prerequisites. Internal
+precheck/input_blob/copy-image/decode_stateless_input lifetime joins and genuine
+scratch covered-outcome classification remain open. Conditional arena preservation or NoReturn still
 does not discharge whole-path exclusion or a uniform finite target K.
 Overall effort remains40%, plausible30–50%; no global finite target bound yet.
 Five unfinished pre-rebase RLP files preserved/untracked/unclaimed. Account7%

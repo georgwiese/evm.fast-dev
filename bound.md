@@ -85,8 +85,14 @@ Checked against the current Software AST:
   whole source observations. It retains live out/z32/si/err_code bindings and
   preserves the full nonlocal observation on stopped paths. DecoderReturn proves
   the real rejection handler cannot fall through and extracts the actual checked
-  scalar decoder return from a completed prefix. Normal startup host/heap facts
-  and the internal decoder input/lifetime joins remain open.
+  scalar decoder return from a completed prefix. NormalHost now checks host
+  preservation at real returns for all28startup helpers, including a vacuous
+  trap-return case. HostPrefix derives original host input, byte order, source
+  oracle and arenas through actual startup/setup into the real decoder entry.
+  AllocationChecked derives bounded/aligned post-cursors from actual returns
+  without an initial heap bound or assumed heap cell. DecoderHeap applies this
+  to main's last setup allocation and carries it through memzero/declarations.
+  The internal decoder precheck/input_blob/image/lifetime joins remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   Existing clock-only interfaces are retained as projections of the stronger
@@ -98,11 +104,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-decoder-return-v5.log`, 354 jobs,
-permitted printed axioms only, 3.88 seconds, MaxRSS 1,476,300 KiB.
-Historical/current index: 7,861 modules /15,426 facts; 245 modules carry the
+Latest successful closure: `current-decoder-entry-heap-v1.log`, 372 jobs,
+permitted printed axioms only, 3.49 seconds, MaxRSS 1,451,084 KiB.
+Historical/current index: 7,869 modules /15,490 facts; 255 modules carry the
 current dependency reference. Incremental Solver/package policy passes at
-64,664 entries /2,480,839,957 bytes.
+64,672 entries /2,481,059,647 bytes.
 These checks are not full verification.
 
 ## Remaining plan
@@ -112,8 +118,9 @@ These checks are not full verification.
   modules; retain shared helpers needed by actual current-program proofs.
 - [x] Retarget core code installation, actual shared reads, current header cost
   and complete input-copy cost; clean their stale dependencies.
-- [ ] Derive the checked input body/caller's initial heap/oracle/alignment facts
-  from actual main and carry the image through its decoder lifetime. Port remaining HostLength/HostWords/
+- [ ] Carry main's now-derived host/oracle/heap/alignment facts through the
+  decoder's actual header precheck into input_blob; join its checked body/caller
+  and carry the resulting image through its decoder lifetime. Port remaining HostLength/HostWords/
   HostGas callers; old unconditional backing claims are stale. Close actual
   offset guard semantics/decoder reachability/gas.
 - [ ] Derive current main initialization, allocation geometry, memory ownership
@@ -129,8 +136,11 @@ These checks are not full verification.
   Their transport through the13startup calls now has an exact whole-main cut.
   The actual six-action decoder cut now retains its lexical scopes and both
   arena globals; successful continuation derives the actual scalar decoder return.
-  Next derive normal startup host/heap facts, join the decoder's actual input_blob
-  and decode_stateless_input calls to its copied image/lifetime, and classify
+  Host/heap input prerequisites now derive at the genuine decoder body entry.
+  The heap invariant is bootstrapped by the actual last setup allocation's second
+  guard and alignment mask; an exact normal-startup allocation total is not needed
+  for that invariant. Next transport these through the header precheck, join the
+  actual input_blob and decode_stateless_input calls/image/lifetime, and classify
   scratch helper outcomes. NoReturn alone does not rule out covered terminal
   FFI outcomes, so do not discard later EVM/map obligations on that basis.
   AllocationArithmetic/AllocationNormal/AllocationCall/AllocationCallNormal now

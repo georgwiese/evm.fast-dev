@@ -139,7 +139,7 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Memzero.lean",
-      "sha256": "6bf368f46d1ee23ce42b85ac10a3940229ec86f5082b7cb7cc7984a38beb0968"
+      "sha256": "5d3cf3a7a3e2c2f0a7df7dfdc5388d0cb70c66fbf3d04f9c18c62ebc54202670"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentStartup/Keccak256.lean",

@@ -171,6 +171,14 @@ end InitECandidate.Solver.Input.CurrentStartup
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.{module(name)}.preserves
 '''
+    if name == 'memzero':
+        text=text.replace('theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed code)',
+                          'theorem any_key (selected : MlS) (code)')
+        text=text.replace('(key cursor)', 'selected')
+        marker='\nend Memzero'
+        wrapper='\ntheorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed code) :\n    GlobalEffects.Preserves (key cursor) code (Code.body .memzero) :=\n  any_key (key cursor) code\n'
+        text=text.replace(marker, wrapper+marker)
+        text+='\n#print axioms InitECandidate.Solver.Input.CurrentStartup.Memzero.any_key\n'
     (folder/(module(name)+'.lean')).write_text(text)
 report={'source':'Guest/SoftwareAst.lean','source_sha256':hashlib.sha256(source.encode()).hexdigest(),
         'roots':roots,'extra_roots':extra_roots,'order':order,'closure_functions':len(order),'syntax_constructors':dict(constructors),

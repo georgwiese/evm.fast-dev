@@ -4,6 +4,17 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual request return resumes its stateless-input caller
+
+RequestCallerReturn rejoins the complete request decoder to the original
+scoped rq call and real afterRequests suffix. It retains the ten-field decoded
+record through an exact memory frame, current request/record ownership and
+allocation frontier, original input, and physical payload gas≤200000000.
+No successful future witness decode is assumed. Next: retain outer witness
+locals through earlier checked summaries, then derive the three witness slices.
+Validation: current-request-caller-v3.log PASS1406jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. No global K/full verification.
+
 ## All-outcome scratch clear and constructor source bounds
 
 ZeroUnmappedCost now checks the full first-loop result (including timeout's

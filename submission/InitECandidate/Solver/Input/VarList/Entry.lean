@@ -1,9 +1,10 @@
+import InitECandidate.Solver.PanDeclarations
+import InitECandidate.Solver.Input.HeaderGuards
 import InitECandidate.Solver.Input.VarList.Program
 
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
-open WitnessRadix.ProgramPrefix
 
 def emptyValue : ValueHOL 64 := .rStruct [.val (.word 0#64),.val (.word 0#64)]
 
@@ -75,10 +76,10 @@ theorem entry_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (inp
       have pRead : eval source (localVar "p")=some (.val (.word (pointer+BitVec.ofNat 64 start))) := by
         simpa [eval,localVar,evalHOLExact,toExact] using p
       have firstRead:=Scalar.flat_heap_le32 source input pointer (pointer+BitVec.ofNat 64 start) (localVar "p") [] start heap (by omega) pRead (by simp)
-      have setup : Executes source [.declare "first" firstExpression]
+      have setup : WitnessRadix.BuildEntry.Initializes source [("first", firstExpression)]
           (bind source "first" (BitVec.ofNat 64 (Guest.GasLimit.le32 input start))) (fun target=>restore source "first" target) :=
-        Executes.declare (restoreRest:=id) _ firstRead (Executes.done _)
-      exact WitnessRadix.ProgramPrefix.execute setup firstTail
+        WitnessRadix.BuildEntry.Initializes.step _ firstRead (.done _)
+      exact WitnessRadix.BuildEntry.declarations_execute setup firstTail
 
 end InitECandidate.Solver.Input.VarList
 

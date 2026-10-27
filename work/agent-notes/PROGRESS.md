@@ -4,6 +4,43 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Genuine variable-list guards and current allocator room
+
+VarList.Entry imports its real HeaderGuards/PanDeclarations dependencies. Entry
+and FirstGuards use generic BuildEntry declaration execution for their first/count
+locals instead of importing the allocator-bearing ProgramPrefix umbrella just
+for pure local scopes. The actual empty/length/first/count entry inversion and
+encoded-count facts now pass against Software with these explicit dependencies.
+
+CurrentStartup.VarListRoom.returned_room adds one checked clock unit to an
+observed returned body to fund guard inversion. It either exposes the genuine
+empty pair, or derives length≥4, positive count, first=4*count≤slice length and
+count≤actual limit, followed by the real scoped allocation. It reads the actual
+count*16 request, uses the existing scalar/aligned/bounded incoming heap from
+main and the real installed allocator/trap code, then inverts that observed
+allocation return. The conclusion is **array+16*count≤2952790016**, with the
+array cursor beyond the136-byte payload record. It assumes neither whole-array
+room nor future allocation/loop success. Its transaction projection applies this
+directly at the actual main-derived callee, preserving the real empty alternative.
+The allocated loop/returned tuple/record frame are not yet composed.
+
+Validation: current-varlist-room-v3.log PASS1279jobs/permitted printed axioms,
+4.67s/MaxRSS1873904KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Failed import/
+scope diagnostics unindexed. Index7919historical/currentmodules/15737facts,
+390current-reference modules; inventory7956/replacementclosure0/frozenmainunchanged;
+incremental policyPASS64724entries/2481753769bytes. No complete verifier or finite
+uniform target K. Account11%weekly/0resetcredits/ordinaryallowed. Five old untracked
+RLP files retained. Push each commit.
+
+Next check allocated-tail/loop/records against current syntax and factor the
+room inversion for reuse by normal summaries. Preserve the distinction between
+ordinary backing≤33806089496and actual allocator room≤2952790016. Incoming actual
+code/trap/heap prerequisites can be derived at the genuine transaction entry;
+static loop/record helpers must not assume future room/success. Then withdrawal
+count and gas stores. Also check earliest actual scratch calls and their covered
+terminal FFI/error consequences before expanding current map/crypto obligations.
+Overall40%, plausible30–50%; global weighted target composition remains open.
+
 ## Real transaction-list callee and heap frontier beyond payload record
 
 AllocationFrontier.after now retains the post-allocation frontier beyond the

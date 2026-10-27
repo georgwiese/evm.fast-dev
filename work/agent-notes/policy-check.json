@@ -2089,6 +2089,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/TrapWith.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/U256WsInit.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Udivmod.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/VarListRoom.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspacePointer.lean",
     "submission/InitECandidate/Solver/Input/DecCallFallthroughReturn.lean",
     "submission/InitECandidate/Solver/Input/DeclarationClock.lean",
@@ -7960,8 +7961,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64723,
-  "package_bytes": 2481747581,
+  "package_entries": 64724,
+  "package_bytes": 2481753769,
   "claim": {
     "K": "infinity"
   },

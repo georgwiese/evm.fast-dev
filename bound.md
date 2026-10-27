@@ -159,6 +159,11 @@ Checked against the current Software AST:
   real extra-data pointer/length stores. TransactionEntry joins these to the real
   installed variable-list callee, deriving p/len/lim and a contained transaction
   slice without a supplied list return, whole-array room or clock allowance.
+  VarListRoom now inverts the real returned list guards and allocator: empty
+  returns the actual empty pair; nonempty derives positive/aligned header/count
+  facts and array+16*count≤2952790016, beyond the payload record. One checked
+  clock unit funds guard inversion; all room/size facts concern original input
+  and heap. Allocated-loop/returned-record composition remains open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -177,11 +182,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-transaction-entry-v2.log`, 1,271 jobs,
-permitted printed axioms only, 4.65 seconds, MaxRSS 1,881,128 KiB.
-Historical/current index: 7,918 modules /15,735 facts; 382 modules carry the
-current dependency reference. Incremental package policy passes at64,723entries/
-2,481,747,581bytes; historical copy/zero/list runtime summaries are not revalidated.
+Latest successful closure: `current-varlist-room-v3.log`, 1,279 jobs,
+permitted printed axioms only, 4.67 seconds, MaxRSS 1,873,904 KiB.
+Historical/current index: 7,919 modules /15,737 facts; 390 modules carry the
+current dependency reference. Incremental policy passes at64,724entries/
+2,481,753,769bytes; historical copy/zero/list runtime summaries are not revalidated.
 These checks are not full verification.
 
 ## Remaining plan

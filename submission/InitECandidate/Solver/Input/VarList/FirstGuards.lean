@@ -3,7 +3,6 @@ import InitECandidate.Solver.Input.VarList.CountChecks
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
-open WitnessRadix.ProgramPrefix
 
 def counted (source : PanSemStateFiniteExact 64 Guest.HostMemory) (first : BitVec 64) := bind source "count" (countWord first)
 
@@ -30,9 +29,9 @@ theorem first_guards (source : PanSemStateFiniteExact 64 Guest.HostMemory) (firs
       else (none,source) :=
     Header.test_guard_execute source firstTest 21#64 _ (first_test_read source first length f n) failCode exceptionShape enough
   have countRead:=count_read source first f
-  have setup : Executes source [.declare "count" countExpression] (counted source first) (fun target=>restore source "count" target) :=
-    Executes.declare (restoreRest:=id) _ countRead (Executes.done _)
-  have declarationRun:=WitnessRadix.ProgramPrefix.execute setup (.seq countGuard allocationCall)
+  have setup : WitnessRadix.BuildEntry.Initializes source [("count", countExpression)] (counted source first) (fun target=>restore source "count" target) :=
+    WitnessRadix.BuildEntry.Initializes.step _ countRead (.done _)
+  have declarationRun:=WitnessRadix.BuildEntry.declarations_execute setup (.seq countGuard allocationCall)
   have countPresent : (counted source first).locals.lookup (ofString "count")=some (.val (.word (countWord first))) := bind_lookup_same _ _ _
   have limitPresent : (counted source first).locals.lookup (ofString "lim")=some (.val (.word limit)) :=
     (bind_lookup_other source "count" "lim" _ (by decide)).trans l
@@ -48,7 +47,7 @@ theorem first_guards (source : PanSemStateFiniteExact 64 Guest.HostMemory) (firs
     exact WitnessRadix.StateSteps.stopped_sequence source _ firstGuard _ _ firstRun (by change source.clock-1≤source.clock; omega)
   · simp only [if_neg bad] at firstRun ⊢
     rw [WitnessRadix.StateSteps.next_sequence source source firstGuard _ firstRun (Nat.le_refl _)]
-    change evaluateHOLFiniteState source (program [.declare "count" countExpression] (.seq countGuard allocationCall))=_
+    change evaluateHOLFiniteState source (WitnessRadix.BuildEntry.declarations [("count", countExpression)] (.seq countGuard allocationCall))=_
     rw [declarationRun]
     by_cases over : limit<countWord first
     · simp only [if_pos over] at countRun ⊢

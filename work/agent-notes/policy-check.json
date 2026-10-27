@@ -2005,6 +2005,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/AddrFromWords.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Alloc.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/AllocationCursor.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/AllocationFrontier.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Base.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Blake2Init.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/BlsConstsInit.lean",
@@ -2056,6 +2057,8 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/PrecheckHostFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PrecheckHostSszHeader.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Prefix.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RecordEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/RequestCut.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Ripemd160Init.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Secp256k1Init.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/SeparatedInput.lean",
@@ -2135,6 +2138,7 @@
     "submission/InitECandidate/Solver/Input/GlobalEffectsScoped.lean",
     "submission/InitECandidate/Solver/Input/GlobalFieldRead.lean",
     "submission/InitECandidate/Solver/Input/GlobalFieldStore.lean",
+    "submission/InitECandidate/Solver/Input/GuardActual.lean",
     "submission/InitECandidate/Solver/Input/GuardNormal.lean",
     "submission/InitECandidate/Solver/Input/GuardedCounter.lean",
     "submission/InitECandidate/Solver/Input/GuardedCounterLoop.lean",
@@ -2223,6 +2227,7 @@
     "submission/InitECandidate/Solver/Input/InitializerQuads.lean",
     "submission/InitECandidate/Solver/Input/InitializerWords.lean",
     "submission/InitECandidate/Solver/Input/InitializerZeroBuffer.lean",
+    "submission/InitECandidate/Solver/Input/InputImageFrame.lean",
     "submission/InitECandidate/Solver/Input/KnownBinaryException.lean",
     "submission/InitECandidate/Solver/Input/KnownBinaryPrefix.lean",
     "submission/InitECandidate/Solver/Input/KnownUnaryContinuing.lean",
@@ -7943,8 +7948,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64706,
-  "package_bytes": 2481661563,
+  "package_entries": 64711,
+  "package_bytes": 2481684464,
   "claim": {
     "K": "infinity"
   },

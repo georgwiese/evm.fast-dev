@@ -122,7 +122,13 @@ Checked against the current Software AST:
   clock with paid≤4derived from enclosing execution and input bytes intact through
   the first two workspace stores and validator. The witness offset is also
   derived between16and encodedlength−2. The second canonical offset and gas
-  connection remain open.
+  connection remain open. AllocationFrontier now derives the exact real scoped
+  allocation return and caller state. RequestCut exposes the live six actions
+  through the stateless record's chain-ID store; InputImageFrame retains copied
+  bytes across the observed scalar store without assuming its value read or
+  destination mapping. RecordEntry joins this to the whole-main stateless run,
+  retaining an aligned96-byte record beyond input+length+8and actual request-length
+  guard continuation. The request/payload offset44and gas remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -141,12 +147,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-canonical-header-v7.log`, 1,224 jobs,
-permitted printed axioms only, 7.52 seconds, MaxRSS 1,853,748 KiB.
-Historical/current index: 7,902 modules /15,691 facts; 337 modules carry the
-current dependency reference. Incremental Solver/package policy passes at
-64,706 entries /2,481,661,563 bytes; historical copy/zero execution wrappers
-are not revalidated.
+Latest successful closure: `current-record-entry-v1.log`, 1,233 jobs,
+permitted printed axioms only, 4.74 seconds, MaxRSS 1,850,840 KiB.
+Historical/current index: 7,907 modules /15,703 facts; 346 modules carry the
+current dependency reference. Incremental package policy passes at64,711entries/
+2,481,684,464bytes; historical copy/zero execution wrappers are not revalidated.
 These checks are not full verification.
 
 ## Remaining plan
@@ -162,7 +167,9 @@ These checks are not full verification.
   and later startup pointer frame are proved. Persistent heap ordering through
   actual startup/setup/precheck, including the real heap mark/release, now derives
   workspace/input separation at genuine stateless entry. Preserve the copied
-  image through remaining decoding writes; the first two stores/validator now pass.
+  image through remaining decoding writes; the first two workspace stores,
+  validator and fresh stateless record chain-ID store now pass. Derive actual
+  request-length bounds/offsets before the payload/gas join.
   Port remaining HostLength/HostWords/HostGas callers; old unconditional backing
   claims are stale. Close actual offset guards/decoded layouts/gas.
 - [ ] Derive current main initialization, allocation geometry, memory ownership

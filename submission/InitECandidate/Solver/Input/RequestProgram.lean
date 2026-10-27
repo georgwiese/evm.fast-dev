@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.HeaderFirstContainer
+import InitECandidate.Solver.Input.HeaderProgram
 import InitECandidate.Solver.Input.StoreScalar64
 
 namespace InitECandidate.Solver.Input.Request
@@ -28,7 +28,7 @@ theorem prefix_shape : prefixBody=.dec (ofString "o_npr") .one (.load .one Heade
       (.decCall (ofString "si") .one (ofString "alloc") [.const 96#64]
         (.seq chainStore (.dec (ofString "np") .one pointerExpression
           (.dec (ofString "nlen") .one lengthExpression (.seq lengthGuard requestBody)))))) := by
-  simp only [prefixBody,requestBody,Header.continuation,Header.afterHeader,Header.body,Guest.guestFn_decode_stateless_input,
+  simp only [prefixBody,requestBody,Header.continuation,Header.afterHeader,Header.body,Guest.Software.guestFn_decode_stateless_input,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Header.offsets,localVar,chainStore,
     Scalar.plus,Scalar.flat64,Scalar.flat32,Scalar.flatAddress,Scalar.shift,pointerExpression,lengthExpression,lengthGuard,lengthTest,
     List.nil_append,List.cons_append,List.append_nil]
@@ -37,7 +37,7 @@ theorem request_shape : requestBody=.dec (ofString "o_pl") .one (Scalar.flat32 (
     (.dec (ofString "o_vh") .one (Scalar.flat32 (localVar "np") [4])
       (.dec (ofString "o_rq") .one (Scalar.flat32 (localVar "np") [40])
         (.seq storePayload (.seq storeHashes (.seq storeRequests (.seq guardCall continuation)))))) := by
-  simp only [requestBody,prefixBody,Header.continuation,Header.afterHeader,Header.body,continuation,Guest.guestFn_decode_stateless_input,
+  simp only [requestBody,prefixBody,Header.continuation,Header.afterHeader,Header.body,continuation,Guest.Software.guestFn_decode_stateless_input,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Header.offsets,localVar,
     Scalar.plus,Scalar.flat32,Scalar.flatAddress,Scalar.shift,storePayload,storeHashes,storeRequests,guardCall,guardArguments,
     List.nil_append,List.cons_append,List.append_nil]

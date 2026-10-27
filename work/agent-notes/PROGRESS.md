@@ -4,6 +4,49 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual fresh stateless record and copied bytes at the request guard
+
+AllocationFrontier inverts the actual scoped allocation: the returned value is
+the current heap pointer, its natural request room derives from observed return,
+and the real caller state equals the current allocator post-state plus that
+binding. No future room, stored value, successful mapping or output-state premise
+is assumed. RequestCut reconstructs the literal six actions after the outer SSZ
+validator: two offset loads, alloc96, chain-ID store, np and nlen declarations.
+It exposes the real live lexical state/continuation and original nonlocal frame.
+The si binding remains the observed allocation's old cursor; it is aligned and
+has room for all96bytes above the incoming lower frontier.
+
+InputImageFrame.of_words transports byte images using only their physical
+backing-word frames. Its observed scalar-operation store theorem derives the
+actual scalar read/mapping from continuation, and preserves copied input from
+natural destination separation. RequestCut applies it to the real chain-ID store
+at record+88, after deriving the record frontier and allocation state. Both local
+setup declarations retain that image. RecordEntry joins this to the main-derived
+stateless run: actual request guard entry, exact original input bytes, current
+code/domain/endian/exception metadata, ssz_offs2701132528, bounded/aligned next heap,
+and aligned96-byte si record beyond inputpointer+encodedlength+8. No claim is made
+that the remaining request decoder has valid fields or preserves the image yet.
+
+GuardActual removes a caller-supplied minimum clock from generic real decoder
+rejection inversion. Checked clock extension excludes rejection on an observed
+return; its passing continuation uses the original state/clock. RequestProgram
+now uses actual Software decoder syntax and imports HeaderProgram directly;
+RequestFromHeader explicitly imports its used HeaderFirstContainer theorem.
+That older full request bridge is not revalidated at this checkpoint.
+
+Validation: current-record-entry-v1.log PASS1233jobs/permitted printed axioms,
+4.74s/MaxRSS1850840KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Roots include
+RecordEntry and GuardActual. Components current-allocation-frontier-v1 PASS373,
+current-request-record-cut-v2 PASS1228 and record-image-v6 PASS1232. Failed
+diagnostics unindexed. Index7907historical/currentmodules/15703facts,
+346current-reference modules; replacementclosure0/frozenmainunchanged. Incremental
+policyPASS64711entries/2481684464bytes; no complete verification or global target K.
+Account10%weekly/0resetcredits/ordinaryallowed; five old untracked RLP files retained.
+Push every commit. Next derive actual np/nlen, passing request-length guard and
+request offset44, then payload/gas and remaining copied-image lifetimes. Scratch
+classification/global quantitative target composition remain open. Estimate40%,
+plausible30–50%.
+
 ## Actual canonical first-container header and input-image dependency cleanup
 
 HeapInput is now independent of the historical BlobBytes execute proof. The old

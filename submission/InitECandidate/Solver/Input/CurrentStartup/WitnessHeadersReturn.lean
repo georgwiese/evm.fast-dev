@@ -12,6 +12,7 @@ structure Result (input : Guest.InputBlob) (source ready post : PanSemStateFinit
   lengthEq : length = input.length % 2^64 - 2 - Guest.GasLimit.le32 input 6 - Witness.offsetNat input (2 + Guest.GasLimit.le32 input 6) 2
   inside : start + length ≤ input.length % 2^64
   context : PayloadCallerReturn.Context input ready pointer statelessRecord record gasWord payloadLength
+  arrayAfter : max (record.toNat + 136) (requestRecord.toNat + 80) ≤ headers.toNat
   frame : LocalEffects.erase post = LocalEffects.erase ready
   heap : NormalHeapEffects.AtLeast (max (record.toNat + 136) (requestRecord.toNat + 80)) post
   heapExtent : NormalHeapEffects.AtLeast (headers.toNat + 16 * VarList.decodedCount input start length) post
@@ -34,6 +35,8 @@ structure Result (input : Guest.InputBlob) (source ready post : PanSemStateFinit
   returned : evaluateHOLFiniteState source Witness.headerCall = (some (.returned (.val (.word statelessRecord))), post)
   origin : ∃ original, WitnessCodesReturn.Result (decoderOrigin := decoderOrigin) input original source post pointer statelessRecord record gasWord requestRecord nodes codes
     payloadLength nodeStart nodeLength codeStart codeLength (.val (.word statelessRecord))
+  memory : ∀ query : BitVec 64, query.toNat < headers.toNat →
+    query ≠ statelessRecord + 72#64 → query ≠ statelessRecord + 80#64 → post.memory query = source.memory query
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source ready post, ∃ pointer statelessRecord record gasWord requestRecord nodes codes headers : BitVec 64,
@@ -137,11 +140,11 @@ theorem codes (input : Guest.InputBlob) (actual : WitnessCodesReturn.Reached (de
     exact heapExtent
   refine ⟨source, ready, post, pointer, statelessRecord, record, gasWord, requestRecord, nodeArray, codeArray, array,
     payloadLength, nodeStart, nodeLength, codeStart, codeLength, start, length,
-    ⟨rfl, rfl, inside, readyContext, ?_, heapFinal, finalExtent,
+    ⟨rfl, rfl, inside, readyContext, (by dsimp [floor, base] at arrayLower; omega), ?_, heapFinal, finalExtent,
       VarList.Records.of_memory ready post input pointer nodeArray nodeStart nodeLength memoryEq readyNodes,
       VarList.Records.of_memory ready post input pointer codeArray codeStart codeLength memoryEq readyCodes,
       VarList.Records.of_memory ready post input pointer array start length memoryEq readyHeaders,
-      data.nodeLengths, data.codeLengths, lengths, countLimit, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩⟩
+      data.nodeLengths, data.codeLengths, lengths, countLimit, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩⟩
   · rw [postEq]
     rfl
   · rw [memoryEq]
@@ -159,6 +162,9 @@ theorem codes (input : Guest.InputBlob) (actual : WitnessCodesReturn.Reached (de
     exact data.returned
   · rw [← valueEq]
     exact ⟨original, data⟩
+  · intro query before firstAway secondAway
+    rw [memoryEq]
+    exact (storeFrame query firstAway secondAway).trans (memory query before)
 
 theorem separated (input : Guest.InputBlob)
     (actual : MainSeparatedInput.RootRun input decoderOrigin)

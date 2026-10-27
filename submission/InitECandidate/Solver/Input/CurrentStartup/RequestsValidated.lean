@@ -27,7 +27,8 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   returned : evaluateHOLFiniteState current Requests.afterOffsets = (some (.returned value), post)
   endpoint : ∃ entry originalPost, RequestsEntry.Result (decoderOrigin := decoderOrigin) input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
     WitnessRadix.BackingLayout.control current = WitnessRadix.BackingLayout.control entry ∧
-    current.clock ≤ entry.clock ∧ entry.clock - current.clock ≤ 12 ∧ LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
+    current.clock ≤ entry.clock ∧ entry.clock - current.clock ≤ 12 ∧ LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock ∧
+    ∀ query : BitVec 64, query.toNat < 2701132528 ∨ 2701132528 + 40 ≤ query.toNat → current.memory query = entry.memory query
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer statelessRecord record gasWord : BitVec 64, ∃ payloadLength start size : Nat, ∃ value : ValueHOL 64,
@@ -95,7 +96,7 @@ theorem entry (input : Guest.InputBlob) (actual : RequestsEntry.Reached (decoder
       ⟨context, code ▸ data.code, shapes ▸ data.shapes, domain.trans data.domain, endian.trans data.endian, image, heap,
         currentWorkspace, (locals (ofString "p") (by decide)).trans data.p, (locals (ofString "len") (by decide)).trans data.len,
         data.inside, data.minimum, first, valid, cells, gasFrame.trans sourceGas, remaining,
-        source, post, data, control, forward, price, by rw [restored]; rfl, by rw [restored]; rfl⟩⟩
+        source, post, data, control, forward, price, by rw [restored]; rfl, by rw [restored]; rfl, memory⟩⟩
 
 theorem separated (input : Guest.InputBlob)
     (actual : MainSeparatedInput.RootRun input decoderOrigin)

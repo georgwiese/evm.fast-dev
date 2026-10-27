@@ -18,6 +18,7 @@ theorem source_shape : Request.afterRequests =
 
 structure Result (input : Guest.InputBlob) (source current post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer statelessRecord record gasWord requestRecord : BitVec 64) (payloadLength : Nat) (value : ValueHOL 64) : Prop where
+  prepared : current = Witness.prefixPrepared source input pointer (Guest.GasLimit.le32 input 6)
   context : PayloadCallerReturn.Context input current pointer statelessRecord record gasWord payloadLength
   heap : NormalHeapEffects.AtLeast (requestRecord.toNat + 80) current
   wp : current.locals.lookup (ofString "wp") = some (.val (.word (pointer + BitVec.ofNat 64 (2 + Guest.GasLimit.le32 input 6))))
@@ -74,7 +75,7 @@ theorem requests (input : Guest.InputBlob) (actual : RequestCallerReturn.Reached
       storedContext rfl ((kept "pl" (by decide) (by decide)).trans storedContext.pl)
       ((kept "si" (by decide) (by decide)).trans storedContext.si) request
     refine ⟨ready, current, inner, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, value,
-      ⟨currentContext, data.heap, wp, wlen, minimum, ?_, remaining, ⟨post, callerRun, ?_, ?_⟩, ⟨caller, source, post, counts, data, rfl⟩⟩⟩
+      ⟨rfl, currentContext, data.heap, wp, wlen, minimum, ?_, remaining, ⟨post, callerRun, ?_, ?_⟩, ⟨caller, source, post, counts, data, rfl⟩⟩⟩
     · change WitnessRadix.StoreWord.put source.memory (statelessRecord + 32#64) requestRecord (statelessRecord + 32#64) = _
       simp [WitnessRadix.StoreWord.put]
     · rw [restored]

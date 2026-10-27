@@ -26,7 +26,8 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   returned : evaluateHOLFiniteState current Witness.loadedBody = (some (.returned value), post)
   endpoint : ∃ caller originalPost, WitnessEntry.Result (decoderOrigin := decoderOrigin) input caller source originalPost
     pointer statelessRecord record gasWord requestRecord payloadLength value ∧
-    LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
+    LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock ∧
+    ∀ query : BitVec 64, query.toNat < 2701132528 ∨ 2701132528 + 24 ≤ query.toNat → current.memory query = source.memory query
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
@@ -81,7 +82,7 @@ theorem entry (input : Guest.InputBlob) (actual : WitnessEntry.Reached (decoderO
     refine ⟨source, current, inner, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, value,
       ⟨currentContext, heap, (locals (ofString "wp") (by decide)).trans data.wp,
         (locals (ofString "wlen") (by decide)).trans data.wlen, data.minimum, first, valid, cells,
-        requestCell, control, price, clock, remaining, ⟨caller, post, data, ?_, ?_⟩⟩⟩
+        requestCell, control, price, clock, remaining, ⟨caller, post, data, ?_, ?_, memory⟩⟩⟩
     · rw [restored]
       rfl
     · rw [restored]

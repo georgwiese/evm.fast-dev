@@ -28,7 +28,8 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   returned : evaluateHOLFiniteState current Requests.countCalls = (some (.returned value), post)
   endpoint : ∃ entry originalPost, RequestsEntry.Result (decoderOrigin := decoderOrigin) input caller entry originalPost pointer statelessRecord record gasWord payloadLength start size value ∧
     WitnessRadix.BackingLayout.control current = WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post entry requestRecord 80#64) ∧
-    current.clock ≤ entry.clock ∧ entry.clock - current.clock ≤ 13 ∧ LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock
+    current.clock ≤ entry.clock ∧ entry.clock - current.clock ≤ 13 ∧ LocalEffects.erase originalPost = LocalEffects.erase post ∧ originalPost.clock = post.clock ∧
+    ∀ query : BitVec 64, query.toNat < 2701132528 ∨ 2701132528 + 40 ≤ query.toNat → current.memory query = entry.memory query
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
@@ -60,12 +61,12 @@ theorem allocated (input : Guest.InputBlob) (actual : RequestsAllocation.Reached
     rw [postEq]
     have same := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.clock) restoration
     exact same
-  obtain ⟨entry, originalPost, original, originControl, prefixForward, prefixCost, originalFrame, originalClock⟩ := data.endpoint
+  obtain ⟨entry, originalPost, original, originControl, prefixForward, prefixCost, originalFrame, originalClock, prefixMemory⟩ := data.endpoint
   exact ⟨caller, current, innerPost, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, start, size, value,
     ⟨data.context, data.code, data.shapes, data.domain, data.endian,
       Blob.HeapInput.of_fields source current input pointer rfl rfl rfl data.image, data.heap, data.requestAfter,
       data.requestAligned, data.requestRoom, model, data.inside, data.minimum, data.first, data.valid, data.gasCell,
-      Prod.ext resumed rfl, entry, originalPost, original, originControl, prefixForward, prefixCost, originalFrame.trans frame, originalClock.trans clock⟩⟩
+      Prod.ext resumed rfl, entry, originalPost, original, originControl, prefixForward, prefixCost, originalFrame.trans frame, originalClock.trans clock, prefixMemory⟩⟩
 
 theorem separated (input : Guest.InputBlob)
     (actual : MainSeparatedInput.RootRun input decoderOrigin)

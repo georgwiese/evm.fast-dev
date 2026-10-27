@@ -4,6 +4,28 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual main loads now reach the bounded physical payload gas
+
+Request validation/allocation/counts retain their exact outside-memory frames;
+witness validation retains the corresponding24-byte workspace frame. Witness
+prefix/readonly-load models expose their exact prepared state. The final header
+result retains its allocation lower bound and memory below that array except
+the two genuine SI72/80stores. HashCountReturn retains its actual count-call
+memory frame. These are facts from existing executions, not extra hypotheses.
+
+CallerSiBase centralizes actual96-byte record field separation and genuine
+later scalar-store preservation. DecodedPayloadPointer follows the actual si+0
+store through all metadata/request/witness stages and the same rooted Snapshot.
+MainDecodedGas proves both the actual payload-pointer load and nested pl+88gas
+load at main's continuing decoder return, including real ordinary-domain mapping
+and gas≤200000000. Other SI fields and full payload transaction records remain
+open, as do reachable runtime and target composition. Program/claim unchanged.
+
+Validation: current-main-decoded-gas-v1.log PASS1459jobs; all printed axioms
+permitted,8GiBguard/twoslots/cachefalse. Index8001modules/15900facts; Solver8040;
+replacement closure0/fixed files unchanged. Incremental policy PASS64809entries/
+2482231548bytes. No full verification. Account20%weekly/0resetcredits.
+
 ## A selected stateless run now supplies physical facts at actual main continuation
 
 DecoderOrigin fixes a particular entry/post/pointer/word; its Frame preserves the

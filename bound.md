@@ -83,10 +83,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-main-decoded-state-v1.log`,1456jobs,
-permitted printed axioms only. Historical/current proof index:7998modules/
-15886facts; Solver inventory8037, replacement closure0, frozen main files
-unchanged. Incremental policy passes64806entries/2482210392bytes. These checks
+Latest successful selected closure: `current-main-decoded-gas-v1.log`,1459jobs,
+permitted printed axioms only. Historical/current proof index:8001modules/
+15900facts; Solver inventory8040, replacement closure0, frozen main files
+unchanged. Incremental policy passes64809entries/2482231548bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -97,7 +97,9 @@ remain historical until their current statements/dependencies are checked.
    and main's real afterDecoder continuation. DecoderOrigin/RootRun indices and
    proved scope/call frames make that relation explicit. Preserve this origin
    through further interfaces; do not identify arbitrary existential executions.
-   Materialize all concrete SI fields for hash/attempt argument loads. Carry the
+   The actual si+0 payload-pointer cell and its nested pl+88 gas load now check
+   at that continuation, with ordinary-domain mapping and gas≤200000000.
+   Materialize the remaining SI fields for hash/attempt argument loads. Carry the
    complete payload transaction-record image/count through its final stores;
    the gas-only Context is insufficient for transaction/hash loop bounds.
 2. Join request-root hashing to actual physical layouts and ownership; bound
@@ -125,7 +127,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:18%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:20%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

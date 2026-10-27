@@ -27,7 +27,7 @@ theorem headers (input : Guest.InputBlob) (actual : WitnessHeadersReturn.Reached
   obtain ⟨nodeOrigin, codeParentPost, nodeData, codeEndpoint⟩ := codeData.origin
   obtain ⟨loadOrigin, nodeParentPost, loadedData, nodeEndpoint⟩ := nodeData.origin
   obtain ⟨valOrigin, loadedParentPost, validatedData, loadedFrame, loadedClock⟩ := loadedData.endpoint
-  obtain ⟨witnessCaller, entryParentPost, entryData, entryFrame, entryClock⟩ := validatedData.endpoint
+  obtain ⟨witnessCaller, entryParentPost, entryData, entryFrame, entryClock, prefixMemory⟩ := validatedData.endpoint
   obtain ⟨prefixPost, prefixRun, prefixClock, prefixFrame⟩ := entryData.endpoint
   obtain ⟨caller, source, post, counts, requestData, witnessSource⟩ := entryData.origin
   obtain ⟨stored, context⟩ := requestData.context.stateless_store input source pointer statelessRecord record gasWord payloadLength 32

@@ -8,6 +8,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 structure Result (input : Guest.InputBlob) (source current post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer statelessRecord record gasWord requestRecord : BitVec 64) (payloadLength : Nat) (value : ValueHOL 64) : Prop where
+  prepared : current = Witness.loadedState source input (2 + Guest.GasLimit.le32 input 6)
   context : PayloadCallerReturn.Context input current pointer statelessRecord record gasWord payloadLength
   heap : NormalHeapEffects.AtLeast (requestRecord.toNat + 80) current
   wp : current.locals.lookup (ofString "wp") = some (.val (.word (pointer + BitVec.ofNat 64 (2 + Guest.GasLimit.le32 input 6))))
@@ -56,7 +57,7 @@ theorem validated (input : Guest.InputBlob) (actual : WitnessValidated.Reached (
       rcases member with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide)
   obtain ⟨w0, w1, w2⟩ := Witness.loaded_offset_locals source input (2 + Guest.GasLimit.le32 input 6)
   refine ⟨source, current, inner, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, value,
-    ⟨currentContext, data.heap, (locals "wp" (by decide)).trans data.wp,
+    ⟨rfl, currentContext, data.heap, (locals "wp" (by decide)).trans data.wp,
       (locals "wlen" (by decide)).trans data.wlen, w0, w1, w2, data.first, data.valid, data.requestCell,
       Prod.ext result rfl, ?_⟩⟩
   refine ⟨origin, post, data, ?_, ?_⟩

@@ -26,6 +26,8 @@ structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFinit
   arithmetic : ∀ index < 5, (counts index).toNat =
       (Requests.countSpan (Requests.offsetWord input start) (BitVec.ofNat 64 size) index).toNat / (Requests.elementSize index).toNat ∧
     (Requests.countSpan (Requests.offsetWord input start) (BitVec.ofNat 64 size) index).toNat % (Requests.elementSize index).toNat = 0
+  memory : ∀ query : BitVec 64, query.toNat < requestRecord.toNat →
+    (query.toNat < 2701132528 ∨ 2701132528 + 40 ≤ query.toNat) → post.memory query = entry.memory query
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller entry post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
@@ -65,7 +67,7 @@ theorem counts (input : Guest.InputBlob) (actual : RequestsCountsEntry.Reached (
       rfl
     have gasFrame := outside (record + 88#64) (Or.inl (by rw [gasNat]; have := data.requestAfter; omega))
     have suffixGas := gasFrame.trans data.gasCell
-    obtain ⟨entry, post, original, allocationControl, prefixForward, prefixPrice, frame, postClock⟩ := data.endpoint
+    obtain ⟨entry, post, original, allocationControl, prefixForward, prefixPrice, frame, postClock, prefixMemory⟩ := data.endpoint
     rw [valueEq] at original
     have lengthSmall : size < 2^64 := by
       have := data.inside
@@ -88,7 +90,7 @@ theorem counts (input : Guest.InputBlob) (actual : RequestsCountsEntry.Reached (
       exact same
     refine ⟨caller, entry, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, start, size, counts,
       ⟨original, full, Blob.HeapInput.of_fields suffixPost post input pointer memory.symm domain.symm endian.symm image,
-        ?_, data.requestAfter, data.requestAligned, data.requestRoom, rootControl.trans (control.trans allocationControl), ?_, ?_, ?_, ?_, arithmetic⟩⟩
+        ?_, data.requestAfter, data.requestAligned, data.requestRoom, rootControl.trans (control.trans allocationControl), ?_, ?_, ?_, ?_, arithmetic, ?_⟩⟩
     · obtain ⟨cursor, cell, low, high, aligned⟩ := suffixHeap
       exact ⟨cursor, (congrArg (fun table => table.lookup (ofString "heap_ptr")) rootGlobals).trans cell, low, high, aligned⟩
     · rw [memory]
@@ -100,6 +102,9 @@ theorem counts (input : Guest.InputBlob) (actual : RequestsCountsEntry.Reached (
     · intro index small
       rw [memory]
       exact cells index small
+    · intro query before outsideWorkspace
+      rw [memory]
+      exact (outside query (Or.inl before)).trans (prefixMemory query outsideWorkspace)
 
 theorem separated (input : Guest.InputBlob)
     (actual : MainSeparatedInput.RootRun input decoderOrigin)

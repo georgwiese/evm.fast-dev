@@ -19,7 +19,7 @@ witness state, through the true hash-count call's lexical restoration. -/
 theorem hash (input : Guest.InputBlob) (actual : HashMetadataReturned.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
   obtain ⟨hashSource, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, data⟩ := actual
   obtain ⟨source, count, hashData⟩ := data.hash
-  obtain ⟨caller, originalPost, stored, payload, storedRun, endpoint⟩ := hashData.origin
+  obtain ⟨caller, originalPost, stored, payload, storedRun, currentFrame, endpoint⟩ := hashData.origin
   have snapshot := data.header.of_frame (target := originalPost) (by rw [endpoint]; rfl) (by rw [endpoint]; rfl)
   exact ⟨caller, source, originalPost, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength,
     ⟨payload, snapshot⟩⟩

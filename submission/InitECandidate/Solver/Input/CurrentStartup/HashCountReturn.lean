@@ -18,6 +18,7 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   origin : ∃ caller originalPost stored,
     PayloadCallerReturn.Result (decoderOrigin := decoderOrigin) input caller source originalPost pointer statelessRecord record gasWord length value ∧
     evaluateHOLFiniteState source Request.payloadPointerStore = (none, stored) ∧
+    LocalEffects.erase current = LocalEffects.erase stored ∧
     originalPost = restore stored "nvh" post
 
 def Reached (input : Guest.InputBlob) : Prop :=
@@ -57,7 +58,7 @@ theorem payload (input : Guest.InputBlob) (actual : PayloadCallerReturn.Reached 
   rw [difference] at countEq countFits
   refine ⟨source, current, innerPost, pointer, statelessRecord, record, gasWord, count, length, value,
     ⟨storedContext.bind_frame input stored current pointer statelessRecord record gasWord length (ofString "nvh") (.val (.word count))
-      frame locals (by decide), ?_, countEq, countFits, price, clock, remaining, ⟨caller, post, stored, data, storedRun, postEq⟩⟩⟩
+      frame locals (by decide), ?_, countEq, countFits, price, clock, remaining, ⟨caller, post, stored, data, storedRun, frame, postEq⟩⟩⟩
   rw [locals]
   simp [HolFiniteMapExact.update, FUPDATE]
 

@@ -40,12 +40,7 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   payload : ∃ entry bodyPost callee parentPost parentValue,
     PayloadEntry.Result input entry bodyPost pointer length (.val (.word record)) ∧
     evaluateHOLFiniteState entry Payload.body = (some (.returned (.val (.word record))), bodyPost) ∧
-    entry = callEntryStateHOLFinite caller callee ∧
-    evalListHOLFinite caller (h := fun address => Classical.propDecidable (caller.memaddrs address)) Request.payloadArguments =
-      some (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) ∧
-    lookupCodeHOLFinite caller.code.lookup (ofString "decode_payload")
-      (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) = some (Payload.body, callee, .one) ∧
-    evaluateHOLFiniteState caller Request.continuation = (some (.returned parentValue), parentPost) ∧
+    PayloadEntry.Invocation input entry pointer length caller callee parentPost parentValue statelessRecord ∧
     current = CallNormal.continuationEntry caller bodyPost "pl" (.val (.word record))
 
 def Reached (input : Guest.InputBlob) : Prop :=
@@ -65,6 +60,8 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
     p, n, extent, minimum, sliceUpper, sliceEq, afterRun, invocation⟩ := original
   obtain ⟨caller, callee, parentPost, value, statelessRecord, entryEq, statelessLower, statelessAligned,
     statelessRoom, si, requestHeap, callerLocals, args, called, callerRun⟩ := invocation
+  have selected : PayloadEntry.Invocation input entry pointer length caller callee parentPost value statelessRecord :=
+    ⟨entryEq, statelessLower, statelessAligned, statelessRoom, si, requestHeap, callerLocals, args, called, callerRun⟩
   have positiveRun := callerRun
   rw [Request.payload_call_shape] at positiveRun
   have positive := CallNormal.normal_clock caller parentPost (ofString "pl") .one (ofString "decode_payload")
@@ -105,7 +102,7 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
     BitVec.ofNat 64 (Guest.GasLimit.le64 input 474), length, value,
     ⟨⟨currentCode, currentShapes, ?_, ?_, Blob.HeapInput.of_fields bodyPost current input pointer rfl rfl rfl image,
       heap, ?_, ?_, statelessLower, statelessAligned, statelessRoom, recordAfter, cursorAligned, recordRoom,
-      gasCell, gas, lower, aligned, lengthBound, sliceEq, ?_, currentWorkspace⟩, rfl, Prod.ext remaining rfl, ⟨entry, bodyPost, callee, parentPost, value, originalFacts, originalBodyRun, entryEq, args, called, callerRun, rfl⟩⟩⟩
+      gasCell, gas, lower, aligned, lengthBound, sliceEq, ?_, currentWorkspace⟩, rfl, Prod.ext remaining rfl, ⟨entry, bodyPost, callee, parentPost, value, originalFacts, originalBodyRun, selected, rfl⟩⟩⟩
   · change bodyPost.memaddrs = InitE.ordinaryDomain
     rw [fields.1, ← entryEq]
     exact domain

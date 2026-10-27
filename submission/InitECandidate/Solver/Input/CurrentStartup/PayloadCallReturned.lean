@@ -8,7 +8,8 @@ structure Result (input : Guest.InputBlob) (caller post : PanSemStateFiniteExact
     (pointer statelessRecord record gasWord requestRecord : BitVec 64) (payloadLength : Nat) : Prop where
   returned : evaluateHOLFiniteState caller Request.continuation = (some (.returned (.val (.word statelessRecord))), post)
   header : WitnessHeadersReturn.Snapshot input post pointer statelessRecord record gasWord requestRecord payloadLength
-  decoded : ∃ entry bodyPost, PayloadEntry.Result input entry bodyPost pointer payloadLength (.val (.word record))
+  decoded : ∃ entry bodyPost callee, PayloadEntry.Result input entry bodyPost pointer payloadLength (.val (.word record)) ∧
+    PayloadEntry.Invocation input entry pointer payloadLength caller callee post (.val (.word statelessRecord)) statelessRecord
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64, ∃ payloadLength : Nat,
@@ -18,7 +19,9 @@ def Reached (input : Guest.InputBlob) : Prop :=
 and return share this original enclosing call's exact physical post-state. -/
 theorem suffix (input : Guest.InputBlob) (actual : PayloadSuffixReturned.Reached input) : Reached input := by
   obtain ⟨caller, source, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, data⟩ := actual
-  obtain ⟨entry, bodyPost, callee, parentPost, parentValue, decoded, bodyRun, entryEq, args, called, parentRun, sourceEq⟩ := data.payload.payload
+  obtain ⟨entry, bodyPost, callee, parentPost, parentValue, decoded, bodyRun, selected, sourceEq⟩ := data.payload.payload
+  have invocation := selected
+  obtain ⟨entryEq, statelessLower, statelessAligned, statelessRoom, si, heap, locals, args, called, parentRun⟩ := selected
   have normal := parentRun
   rw [Request.payload_call_shape] at normal
   have positive := CallNormal.normal_clock caller parentPost (ofString "pl") .one (ofString "decode_payload")
@@ -34,14 +37,20 @@ theorem suffix (input : Guest.InputBlob) (actual : PayloadSuffixReturned.Reached
       (some (.returned (.val (.word statelessRecord))), restore caller "pl" post) := by
     rw [Request.payload_call_shape]
     exact resumed
+  have parentValueEq : parentValue = .val (.word statelessRecord) := by
+    have same := congrArg Prod.fst (parentRun.symm.trans computed)
+    cases same
+    rfl
   have parentEq : parentPost = restore caller "pl" post := congrArg Prod.snd (parentRun.symm.trans computed)
   have parentReturned : evaluateHOLFiniteState caller Request.continuation =
       (some (.returned (.val (.word statelessRecord))), parentPost) := by
     rw [parentEq]
     exact computed
   have snapshot := data.header.of_frame (target := parentPost) (by rw [parentEq]; rfl) (by rw [parentEq]; rfl)
-  exact ⟨caller, parentPost, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength,
-    ⟨parentReturned, snapshot, ⟨entry, bodyPost, decoded⟩⟩⟩
+  refine ⟨caller, parentPost, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength,
+    ⟨parentReturned, snapshot, ⟨entry, bodyPost, callee, decoded, ?_⟩⟩⟩
+  rw [← parentValueEq]
+  exact invocation
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     (actual : MainSeparatedInput.StatelessRun input word)

@@ -4,6 +4,26 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Shared invocation descriptor keeps the selected caller explicit
+
+PayloadEntry.Invocation factors the existing caller/callee/parent-post/ownership/
+ABI facts from the end of Result. PayloadCallerReturn and PayloadCallReturned
+retain that descriptor indexed by their same actual caller, callee and parent
+post rather than unrelated existential invocation data. This is proof-interface
+cleanup; no guest/semantics change. Validation: current-payload-invocation-v2.log
+PASS1452jobs/permitted printed axioms,8GiBguard/twoslots/cachefalse.
+
+Next origin-index step: stateless post-state selection must remain explicit
+through the stage chain. Plan is a DecoderOrigin(entry/post/pointer/word) and a
+rooted Run at that exact origin, with a nonlocal/clock endpoint relation carried
+from RecordEntry through PayloadEntry.Invocation and the existing result/endpoint
+chain. Parameterize affected stage models/theorems by that origin; keep generic
+Context/byte-list/math helpers independent. Then a final snapshot can be applied
+to the actual root chosen by main, rather than merely some normal run for the
+same input. Existing existential StatelessRun can remain as a compatibility
+wrapper, with a rooted entry theorem retaining its relation to the real host-call
+target. No such root selection equivalence is claimed yet.
+
 ## Witness snapshot reaches the original payload caller's actual post-state
 
 PayloadCallerReturn retains its actual full payload body return, call arguments,

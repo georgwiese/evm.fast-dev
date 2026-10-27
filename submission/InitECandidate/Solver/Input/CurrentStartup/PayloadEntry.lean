@@ -16,6 +16,23 @@ structure CallerLocals (input : Guest.InputBlob) (current : PanSemStateFiniteExa
   upper : Guest.GasLimit.le32 input 6 - 16 ≤ input.length % 2^64 - 18
   outer : OuterLocals input current pointer
 
+/-- Actual enclosing request invocation, with all caller ownership and ABI
+facts indexed by the same caller/callee/post states. -/
+def Invocation (input : Guest.InputBlob) (entry : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer : BitVec 64) (length : Nat) (caller : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (callee : HolFiniteMapExact MlS (ValueHOL 64)) (parentPost : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (parentValue : ValueHOL 64) (statelessRecord : BitVec 64) : Prop :=
+      entry = callEntryStateHOLFinite caller callee ∧
+      pointer.toNat + input.length % 2^64 + 8 ≤ statelessRecord.toNat ∧ statelessRecord.toNat % 8 = 0 ∧
+      statelessRecord.toNat + 96 ≤ 2952790016 ∧
+      caller.locals.lookup (ofString "si") = some (.val (.word statelessRecord)) ∧
+      NormalHeapEffects.AtLeast (statelessRecord.toNat + 96) entry ∧ CallerLocals input caller pointer ∧
+      evalListHOLFinite caller (h := fun address => Classical.propDecidable (caller.memaddrs address)) Request.payloadArguments =
+        some (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) ∧
+      lookupCodeHOLFinite caller.code.lookup (ofString "decode_payload")
+        (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) = some (Payload.body, callee, .one) ∧
+      evaluateHOLFiniteState caller Request.continuation = (some (.returned parentValue), parentPost)
+
 /-- Entry facts for the actual complete payload return, indexed by its states. -/
 def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer : BitVec 64) (length : Nat) (returned : ValueHOL 64) : Prop :=
@@ -30,16 +47,7 @@ def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Gue
     length = Guest.GasLimit.le32 input 22 - 44 ∧
     evaluateHOLFiniteState entry Payload.afterGuard = (some (.returned returned), post) ∧
     ∃ caller callee parentPost parentValue, ∃ statelessRecord : BitVec 64,
-      entry = callEntryStateHOLFinite caller callee ∧
-      pointer.toNat + input.length % 2^64 + 8 ≤ statelessRecord.toNat ∧ statelessRecord.toNat % 8 = 0 ∧
-      statelessRecord.toNat + 96 ≤ 2952790016 ∧
-      caller.locals.lookup (ofString "si") = some (.val (.word statelessRecord)) ∧
-      NormalHeapEffects.AtLeast (statelessRecord.toNat + 96) entry ∧ CallerLocals input caller pointer ∧
-      evalListHOLFinite caller (h := fun address => Classical.propDecidable (caller.memaddrs address)) Request.payloadArguments =
-        some (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) ∧
-      lookupCodeHOLFinite caller.code.lookup (ofString "decode_payload")
-        (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) = some (Payload.body, callee, .one) ∧
-      evaluateHOLFiniteState caller Request.continuation = (some (.returned parentValue), parentPost)
+      Invocation input entry pointer length caller callee parentPost parentValue statelessRecord
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ entry post, ∃ pointer : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,

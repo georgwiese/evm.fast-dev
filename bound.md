@@ -83,7 +83,7 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-witness-headers-v2.log`,1446jobs,
+Latest successful selected closure: `current-payload-call-returned-v2.log`,1452jobs,
 permitted printed axioms only. Historical/current proof index:7988modules/
 15864facts; Solver inventory8027, replacement closure0, frozen main files
 unchanged. Incremental policy passes64796entries/2482160162bytes. These checks
@@ -95,9 +95,11 @@ remain historical until their current statements/dependencies are checked.
 1. **Join these physical facts to the same complete decoder/main execution.**
    Existential stage facts alone do not identify an arbitrary main post-state.
    Preserve or parameterize original run endpoints while composing actual calls,
-   scopes and stores. WitnessEntry currently retains prefix execution but drops
-   its previous RequestCallerReturn.Result; restore that provenance as needed.
-   Earlier whole-stateless return also needs an explicit relation to the same
+   scopes and stores. WitnessEntry now retains its previous caller; the whole
+   Request.requestsCall, metadata stores and complete payload call now carry
+   the witness snapshot at the original payload caller's actual post-state.
+   Earlier request-offset/record/header and whole-stateless return still need
+   explicit provenance and a relation to the same
    main-derived source/post run. Carry the complete payload transaction-record
    image/count through its final stores; the gas-only Context is insufficient
    for transaction/hash loop bounds.

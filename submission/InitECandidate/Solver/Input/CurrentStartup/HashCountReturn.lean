@@ -14,6 +14,10 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   price : source.clock - current.clock ≤ 66
   clock : current.clock ≤ source.clock
   returned : evaluateHOLFiniteState current Request.afterHashCount = (some (.returned value), post)
+  origin : ∃ caller originalPost stored,
+    PayloadCallerReturn.Result input caller source originalPost pointer statelessRecord record gasWord length value ∧
+    evaluateHOLFiniteState source Request.payloadPointerStore = (none, stored) ∧
+    originalPost = restore stored "nvh" post
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer statelessRecord record gasWord count : BitVec 64, ∃ length : Nat, ∃ value : ValueHOL 64,
@@ -52,7 +56,7 @@ theorem payload (input : Guest.InputBlob) (actual : PayloadCallerReturn.Reached 
   rw [difference] at countEq countFits
   refine ⟨source, current, innerPost, pointer, statelessRecord, record, gasWord, count, length, value,
     ⟨storedContext.bind_frame input stored current pointer statelessRecord record gasWord length (ofString "nvh") (.val (.word count))
-      frame locals (by decide), ?_, countEq, countFits, price, clock, remaining⟩⟩
+      frame locals (by decide), ?_, countEq, countFits, price, clock, remaining, ⟨caller, post, stored, data, storedRun, postEq⟩⟩⟩
   rw [locals]
   simp [HolFiniteMapExact.update, FUPDATE]
 

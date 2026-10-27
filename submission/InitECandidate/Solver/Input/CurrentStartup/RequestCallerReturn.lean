@@ -18,7 +18,7 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   heap : NormalHeapEffects.AtLeast (requestRecord.toNat + 80) current
   decoded : ∃ entry bodyPost start size,
     RequestsReturned.Result input caller entry bodyPost pointer statelessRecord record gasWord requestRecord payloadLength start size counts ∧
-      current.memory = bodyPost.memory
+      current = CallNormal.continuationEntry caller bodyPost "rq" (.val (.word requestRecord))
   cells : ∀ index < 5, current.memory (requestRecord + BitVec.ofNat 64 (16 * index + 8)) = .word (counts index)
   locals : current.locals = caller.locals.update (ofString "rq", .val (.word requestRecord))
   returned : evaluateHOLFiniteState current Request.afterRequests = (some (.returned value), post)

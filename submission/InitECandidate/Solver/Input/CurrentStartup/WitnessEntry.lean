@@ -26,6 +26,9 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   returned : evaluateHOLFiniteState current Witness.offsetBody = (some (.returned value), post)
   endpoint : ∃ callerPost, evaluateHOLFiniteState source Witness.prefixBody = (some (.returned value), callerPost) ∧
     callerPost.clock = post.clock ∧ LocalEffects.erase callerPost = LocalEffects.erase post
+  origin : ∃ caller previous previousPost counts,
+    RequestCallerReturn.Result input caller previous previousPost pointer statelessRecord record gasWord requestRecord payloadLength counts value ∧
+    source = {previous with memory := WitnessRadix.StoreWord.put previous.memory (statelessRecord + 32#64) requestRecord}
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source current post, ∃ pointer statelessRecord record gasWord requestRecord : BitVec 64,
@@ -70,7 +73,7 @@ theorem requests (input : Guest.InputBlob) (actual : RequestCallerReturn.Reached
       storedContext rfl ((kept "pl" (by decide) (by decide)).trans storedContext.pl)
       ((kept "si" (by decide) (by decide)).trans storedContext.si) request
     refine ⟨ready, current, inner, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, value,
-      ⟨currentContext, data.heap, wp, wlen, minimum, ?_, remaining, ⟨post, callerRun, ?_, ?_⟩⟩⟩
+      ⟨currentContext, data.heap, wp, wlen, minimum, ?_, remaining, ⟨post, callerRun, ?_, ?_⟩, ⟨caller, source, post, counts, data, rfl⟩⟩⟩
     · change WitnessRadix.StoreWord.put source.memory (statelessRecord + 32#64) requestRecord (statelessRecord + 32#64) = _
       simp [WitnessRadix.StoreWord.put]
     · rw [restored]

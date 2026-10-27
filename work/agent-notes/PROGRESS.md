@@ -4,6 +4,43 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Witness snapshot reaches the original payload caller's actual post-state
+
+PayloadCallerReturn retains its actual full payload body return, call arguments,
+lookup, caller run and exact continuation-entry state. HashCountReturn retains
+its prior payload caller and real payload-pointer store/lexical endpoint.
+RequestsEntry retains its hash-count origin and all three actual metadata stores.
+HashMetadataReturned identifies the original hash suffix's actual target using
+the complete request call; PayloadSuffixReturned transports the witness snapshot
+through the true nvh restoration; PayloadCallReturned resumes the complete actual
+payload call and identifies its original caller target by deterministic evaluation.
+The witness records/input/gas snapshot now belongs to that same Request.continuation
+post-state. Earlier request-offset/record setup/header/full-stateless/main linkage
+and transaction-record lifetime remain open. No global finite K.
+
+Validation: current-payload-call-returned-v2.log PASS1452jobs/permitted printed
+axioms;8GiBguard/twoslots/cachefalse. No full verification. Account19%weekly/
+0resetcredits/ordinaryallowed. Overall40%, plausible30–50%.
+
+## Witness facts joined to the actual enclosing request call
+
+RequestCallerReturn.decoded now keeps its exact continuation-entry state rather
+than only its memory. WitnessEntry retains the previous RequestCallerReturn.Result
+and the exact rq-store state. WitnessRequestReturn rewinds header/code/node
+scopes, loaded offsets, validator and witness declarations to that same original
+request-caller post-state, with exact nonlocal/clock frame. WitnessSnapshot factors
+this physical observation and transports it only with proved frames.
+RequestCallReturned resumes the actual normally returned request callee and
+identifies its original enclosing call's actual target by deterministic evaluation;
+that complete Request.requestsCall returns Wordsi with the witness snapshot at
+its actual post-state. Earlier hash/payload/request-prefix and full-stateless/main
+run provenance still need composition; do not identify arbitrary existential
+stage states with those actual main endpoints.
+
+Validation: current-request-call-returned-v1.log PASS1449jobs/permitted printed
+axioms;8GiBguard/twoslots/cachefalse. No global finite K or full verification.
+Account18%weekly/0resetcredits/ordinaryallowed. Overall40%, plausible30–50%.
+
 ## All three actual witness lists through the final si return
 
 WitnessHeadersReturn joins the genuine final hd call, si+72/80stores and literal

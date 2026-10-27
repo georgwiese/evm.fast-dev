@@ -37,6 +37,16 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   context : Context input current pointer statelessRecord record gasWord length
   locals : current.locals = caller.locals.update (ofString "pl", .val (.word record))
   returned : evaluateHOLFiniteState current Request.afterPayload = (some (.returned value), post)
+  payload : ∃ entry bodyPost callee parentPost parentValue,
+    PayloadEntry.Result input entry bodyPost pointer length (.val (.word record)) ∧
+    evaluateHOLFiniteState entry Payload.body = (some (.returned (.val (.word record))), bodyPost) ∧
+    entry = callEntryStateHOLFinite caller callee ∧
+    evalListHOLFinite caller (h := fun address => Classical.propDecidable (caller.memaddrs address)) Request.payloadArguments =
+      some (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) ∧
+    lookupCodeHOLFinite caller.code.lookup (ofString "decode_payload")
+      (Payload.values (pointer + 62#64) (BitVec.ofNat 64 length)) = some (Payload.body, callee, .one) ∧
+    evaluateHOLFiniteState caller Request.continuation = (some (.returned parentValue), parentPost) ∧
+    current = CallNormal.continuationEntry caller bodyPost "pl" (.val (.word record))
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer statelessRecord record gasWord : BitVec 64, ∃ length : Nat, ∃ value : ValueHOL 64,
@@ -49,6 +59,8 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
   classical
   obtain ⟨entry, bodyPost, pointer, record, length, originHeap, original, bodyRun, image, gasCell, heap⟩ :=
     PayloadGasReturned.complete input actual
+  have originalFacts := original
+  have originalBodyRun := bodyRun
   obtain ⟨lengthBound, installed, shapes, domain, endian, entryImage, entryHeap, workspace, lower, aligned, room,
     p, n, extent, minimum, sliceUpper, sliceEq, afterRun, invocation⟩ := original
   obtain ⟨caller, callee, parentPost, value, statelessRecord, entryEq, statelessLower, statelessAligned,
@@ -93,7 +105,7 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
     BitVec.ofNat 64 (Guest.GasLimit.le64 input 474), length, value,
     ⟨⟨currentCode, currentShapes, ?_, ?_, Blob.HeapInput.of_fields bodyPost current input pointer rfl rfl rfl image,
       heap, ?_, ?_, statelessLower, statelessAligned, statelessRoom, recordAfter, cursorAligned, recordRoom,
-      gasCell, gas, lower, aligned, lengthBound, sliceEq, ?_, currentWorkspace⟩, rfl, Prod.ext remaining rfl⟩⟩
+      gasCell, gas, lower, aligned, lengthBound, sliceEq, ?_, currentWorkspace⟩, rfl, Prod.ext remaining rfl, ⟨entry, bodyPost, callee, parentPost, value, originalFacts, originalBodyRun, entryEq, args, called, callerRun, rfl⟩⟩⟩
   · change bodyPost.memaddrs = InitE.ordinaryDomain
     rw [fields.1, ← entryEq]
     exact domain

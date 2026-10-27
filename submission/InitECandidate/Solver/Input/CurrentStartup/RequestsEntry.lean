@@ -28,6 +28,12 @@ structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFinit
     lookupCodeHOLFinite caller.code.lookup (ofString "decode_requests")
       (Requests.values (pointer + BitVec.ofNat 64 start) (BitVec.ofNat 64 size)) = some (Requests.body, callee, .one) ∧
     evaluateHOLFiniteState caller Request.requestsCall = (some (.returned parentValue), parentPost)
+  history : ∃ origin hashSource hashPost count parentValue first second,
+    HashCountReturn.Result input origin hashSource hashPost pointer statelessRecord record gasWord count payloadLength parentValue ∧
+    evaluateHOLFiniteState caller Request.requestsCall = (some (.returned parentValue), hashPost) ∧
+    evaluateHOLFiniteState hashSource Request.hashPointerStore = (none, first) ∧
+    evaluateHOLFiniteState first Request.hashCountStore = (none, second) ∧
+    evaluateHOLFiniteState second Request.requestHeaderStore = (none, caller)
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller entry post, ∃ pointer statelessRecord record gasWord : BitVec 64, ∃ payloadLength start size : Nat, ∃ value : ValueHOL 64,
@@ -107,7 +113,9 @@ theorem hashes (input : Guest.InputBlob) (actual : HashCountReturn.Reached input
   exact ⟨caller, entry, bodyPost, pointer, statelessRecord, record, gasWord, payloadLength, start, size, returned,
     ⟨callerContext, callerContext.code, callerContext.shapes, callerContext.domain, callerContext.endian,
       Blob.HeapInput.of_fields caller entry input pointer rfl rfl rfl callerContext.image, callerContext.heap,
-      p, n, rfl, rfl, inside, by omega, remaining, callee, post, value, rfl, args, called, callerRun⟩⟩
+      p, n, rfl, rfl, inside, by omega, remaining,
+      ⟨callee, post, value, rfl, args, called, callerRun⟩,
+      ⟨origin, source, post, count, value, first, second, data, callerRun, firstRun, secondRun, thirdRun⟩⟩⟩
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     (actual : MainSeparatedInput.StatelessRun input word)

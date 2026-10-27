@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CurrentStartup.WitnessSlices
+import InitECandidate.Solver.Input.CurrentStartup.WitnessLive
 import InitECandidate.Solver.Input.CurrentStartup.ByteListCall
 import InitECandidate.Solver.Input.CurrentStartup.CallerPairStores
 
@@ -13,6 +14,7 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   inside : start + length ≤ input.length % 2^64
   context : PayloadCallerReturn.Context input current pointer statelessRecord record gasWord payloadLength
   heap : NormalHeapEffects.AtLeast (max (record.toNat + 136) (requestRecord.toNat + 80)) current
+  arrayAfter : max (record.toNat + 136) (requestRecord.toNat + 80) ≤ array.toNat
   heapExtent : NormalHeapEffects.AtLeast (array.toNat + 16 * VarList.decodedCount input start length) current
   records : VarList.Records current input pointer array start length
   lengths : ∀ index < VarList.decodedCount input start length,
@@ -21,6 +23,10 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   nodeCount : current.memory (statelessRecord + 48#64) = .word (BitVec.ofNat 64 (VarList.decodedCount input start length))
   locals : current.locals = source.locals.update (ofString "st0",
     BytesList.pairValue (VarList.decodedArray array length) (VarList.decodedCount input start length))
+  memory : ∀ query : BitVec 64, query.toNat < array.toNat →
+    query ≠ statelessRecord + 40#64 → query ≠ statelessRecord + 48#64 → current.memory query = source.memory query
+  price : source.clock - current.clock ≤ 2 * (length / 4) + 3
+  clock : current.clock ≤ source.clock
   returned : evaluateHOLFiniteState current Witness.codeCall = (some (.returned value), post)
   origin : ∃ original originalPost, WitnessLoaded.Result input original source originalPost
     pointer statelessRecord record gasWord requestRecord payloadLength value ∧ originalPost = restore source "st0" post
@@ -72,8 +78,25 @@ theorem loaded (input : Guest.InputBlob) (actual : WitnessLoaded.Reached input) 
   rw [Witness.arrays_shape.2.1, stores] at run
   exact ⟨source, current, inner, pointer, statelessRecord, record, gasWord, requestRecord, array,
     payloadLength, start, length, value,
-    ⟨rfl, rfl, inside, currentContext, heap, heapExtent, currentRecords, lengths, firstCell, secondCell, locals, run,
+    ⟨rfl, rfl, inside, currentContext, heap, arrayLower, heapExtent, currentRecords, lengths, firstCell, secondCell, locals,
+      (fun query before firstAway secondAway => (frame query firstAway secondAway).trans (memory query before)),
+      price, forward, run,
       ⟨original, post, data, endpoint⟩⟩⟩
+
+/-- The real st0 binding and its two stores leave all witness slice locals live. -/
+theorem Result.live {input : Guest.InputBlob} {source current post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer statelessRecord record gasWord requestRecord array : BitVec 64} {payloadLength start length : Nat} {value : ValueHOL 64}
+    (actual : Result input source current post pointer statelessRecord record gasWord requestRecord array payloadLength start length value) :
+    WitnessLive input current pointer := by
+  obtain ⟨original, originalPost, data, endpoint⟩ := actual.origin
+  have before : WitnessLive input source pointer := ⟨data.wp, data.wlen, data.w0, data.w1, data.w2⟩
+  apply before.preserved
+  intro name member
+  rw [actual.locals]
+  have different : ofString "st0" ≠ ofString name := by
+    simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+    rcases member with rfl | rfl | rfl | rfl | rfl <;> decide
+  simp [HolFiniteMapExact.update, FUPDATE, different]
 
 theorem separated (input : Guest.InputBlob) (word : BitVec 64)
     (actual : MainSeparatedInput.StatelessRun input word)
@@ -84,3 +107,5 @@ end InitECandidate.Solver.Input.CurrentStartup.WitnessNodesReturn
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessNodesReturn.loaded
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessNodesReturn.separated
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessNodesReturn.Result.live

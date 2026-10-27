@@ -2140,7 +2140,9 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/VarListData.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/VarListRoom.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WithdrawalReturn.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessCodesReturn.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessLive.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessLoaded.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessNodesReturn.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessSlices.lean",
@@ -8029,8 +8031,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64793,
-  "package_bytes": 2482134024,
+  "package_entries": 64795,
+  "package_bytes": 2482148697,
   "claim": {
     "K": "infinity"
   },

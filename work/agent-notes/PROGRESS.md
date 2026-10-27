@@ -4,6 +4,22 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Second real witness list preserves node records
+
+WitnessLive factors the five real witness-slice bindings; node-return summaries
+now retain them, array separation, old-word frame and exact caller source cost.
+WitnessSlices.arguments_between derives adjacent code/header list extents and
+literal ABI from actual validated range/order and outer containment.
+WitnessCodesReturn joins the real cd call and si+56/64stores: physical code
+records,65536-byte item limits, prior physical node records/1024-byte bounds,
+bounded frontier beyond the code array and after the node array, live slice
+locals, protected input/gas and original parent endpoint. The real next suffix
+is the header-list call. Header return/final stateless/main joins remain.
+
+Validation: current-witness-codes-v1.log PASS1445jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. No global finite K/full verification. Account18%
+weekly/0resetcredits/ordinaryallowed. Overall effort estimate remains40%(30–50%).
+
 ## First real witness list and both stateless-record output stores
 
 WitnessSlices derives the contained node-list slice and literal ABI from the

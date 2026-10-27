@@ -36,6 +36,29 @@ theorem node_arguments (input : Guest.InputBlob) (source current post : PanSemSt
   dsimp only [start] at values inside args ⊢
   exact ⟨by omega, args⟩
 
+/-- Adjacent validated witness subranges give the literal list-call ABI and
+input containment. The rule also applies to the final w2/wlen header slice. -/
+theorem arguments_between (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer : BitVec 64) (left right limit maximum : Nat) (leftName rightName : String)
+    (extent : 2 ≤ input.length % 2^64)
+    (outer : Guest.GasLimit.le32 input 6 ≤ input.length % 2^64 - 2)
+    (ordered : left ≤ right) (rightBound : right ≤ input.length % 2^64 - 2 - Guest.GasLimit.le32 input 6)
+    (wp : source.locals.lookup (ofString "wp") = some (.val (.word (pointer + BitVec.ofNat 64 (2 + Guest.GasLimit.le32 input 6)))))
+    (leftCell : source.locals.lookup (ofString leftName) = some (.val (.word (BitVec.ofNat 64 left))))
+    (rightCell : source.locals.lookup (ofString rightName) = some (.val (.word (BitVec.ofNat 64 right)))) :
+    2 + Guest.GasLimit.le32 input 6 + left + (right - left) ≤ input.length % 2^64 ∧
+      evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address))
+        (Witness.listArguments leftName rightName limit maximum) =
+      some (BytesList.values (pointer + BitVec.ofNat 64 (2 + Guest.GasLimit.le32 input 6 + left))
+        (BitVec.ofNat 64 (right - left)) (BitVec.ofNat 64 limit) (BitVec.ofNat 64 maximum)) := by
+  have small : left < 2^64 := by
+    have := Nat.mod_lt input.length (show 0 < 2^64 by decide)
+    omega
+  exact ⟨by omega, Witness.list_arguments source pointer (2 + Guest.GasLimit.le32 input 6) left right limit maximum
+    leftName rightName ordered small wp leftCell rightCell⟩
+
 end InitECandidate.Solver.Input.CurrentStartup.WitnessSlices
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessSlices.node_arguments
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessSlices.arguments_between

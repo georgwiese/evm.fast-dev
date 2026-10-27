@@ -19,6 +19,8 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (arrayAfter : pointer.toNat+input.length%2^64+8≤array.toNat)
     (room : array.toNat+4*length≤33806089496)
     (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word array)))
+    (arrayBound : array.toNat ≤ 2952790016)
+    (trapCode : source.code.lookup (ofString "trap_with") = some (Trap.formals, Trap.body, .one))
     (allocCode : source.code.lookup (ofString "alloc")=some (WitnessRadix.PersistentAlloc.formals,WitnessRadix.PersistentAlloc.body,.one))
     (failCode : source.code.lookup (ofString "ssz_fail")=some (SszFail.formals,SszFail.body,.one))
     (exceptionShape : source.eshapes.lookup (ofString "SszErr")=some .one)
@@ -41,7 +43,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,arguments,VarList.values,localVar,p,n,l]
   rw [body_shape] at run
   obtain ⟨next,innerPost,returned,valueEq,localsEq,nextClock,controls,nextHeap,oldMemory,clockLower,clockUpper,nextRun,postEq,records,countLimit⟩:=
-    VarList.caller_normal source post input pointer array limit start length heap inside domain lower aligned arrayAligned arrayAfter room heapGlobal allocCode
+    VarList.caller_normal source post input pointer array limit start length heap inside domain lower aligned arrayAligned arrayAfter room heapGlobal arrayBound trapCode allocCode
       failCode exceptionShape "r" arguments tail args varCode (by omega) value run
   have tupleEq : returned=pairValue (VarList.decodedArray array length) (VarList.decodedCount input start length) := by
     rw [valueEq]

@@ -1,4 +1,6 @@
-import InitECandidate.Solver.Input.Witness.OffsetsNormal
+import InitECandidate.Solver.Input.Witness.OffsetProgram
+import InitECandidate.Solver.Input.RequestOffsetsStores
+import InitECandidate.Solver.WitnessRadix.ProgramPrefix
 
 namespace InitECandidate.Solver.Input.Witness
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix WitnessRadix.AllocatedBytes

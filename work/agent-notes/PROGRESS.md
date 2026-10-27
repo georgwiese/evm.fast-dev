@@ -4,6 +4,27 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current witness offsets and arbitrary-clock byte-list returns
+
+WitnessValidated joins the real three workspace writes/offset validator to the
+main-derived witness entry: first offset12, all three validated ranges/order,
+actual loaded-body continuation, prefixcost≤8source ticks, exact control/endpoint
+frames, original input, bounded allocator frontier and preserved physical request
+and payload-gas cells. Shared CallerContextControl factors the nine-live-local
+control-frame transport. OffsetLoop imports PanControl explicitly; LoadedOffsets
+now imports only actual syntax, workspace read and declaration dependencies.
+
+BytesList.Program/OriginalCode now use current Software decode_bytes_list189.
+BodyNormal and CallerNormal pass the real bounded incoming heap and installed
+trap entry to the current variable-list allocator theorem. NormalAnyClock removes
+minimum-clock funding via checked clock padding: exact returned tuple/records,
+count/per-item limits, input/old-word frame, allocation/control and body source
+cost≤2*(sliceLength/4)+2for an actual normal return at any clock. The real three
+witness-list entry/return joins and their derived post-allocation frontier remain.
+
+Validation: current-bytes-list-normal-v2.log PASS1433jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. No global finite K or full verification.
+
 ## Real witness entry and dependency cleanup
 
 OuterLocals now retains actual p/len/o_wit plus validated input containment,

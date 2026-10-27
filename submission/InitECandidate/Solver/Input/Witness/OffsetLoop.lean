@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.Witness.OffsetStep
+import InitECandidate.Solver.PanControl
 import InitECandidate.Solver.Input.WhileActive
 
 namespace InitECandidate.Solver.Input.Witness

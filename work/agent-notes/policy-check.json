@@ -1871,6 +1871,7 @@
     "submission/InitECandidate/Solver/Input/BytesList/CallerTrace.lean",
     "submission/InitECandidate/Solver/Input/BytesList/Environment.lean",
     "submission/InitECandidate/Solver/Input/BytesList/Loop.lean",
+    "submission/InitECandidate/Solver/Input/BytesList/NormalAnyClock.lean",
     "submission/InitECandidate/Solver/Input/BytesList/OriginalCode.lean",
     "submission/InitECandidate/Solver/Input/BytesList/Program.lean",
     "submission/InitECandidate/Solver/Input/BytesList/Reads.lean",
@@ -2042,6 +2043,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/BlsPrecompilesInit.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Bn254Init.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Bswap64.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/CallerContextControl.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/CanonicalHeader.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/CanonicalRequest.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Code.lean",
@@ -2133,6 +2135,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/VarListRoom.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WithdrawalReturn.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessValidated.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspacePointer.lean",
     "submission/InitECandidate/Solver/Input/DecCallFallthroughReturn.lean",
     "submission/InitECandidate/Solver/Input/DeclarationClock.lean",
@@ -8017,8 +8020,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64781,
-  "package_bytes": 2482079127,
+  "package_entries": 64784,
+  "package_bytes": 2482093656,
   "claim": {
     "K": "infinity"
   },

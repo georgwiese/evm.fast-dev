@@ -5,7 +5,7 @@ namespace InitECandidate.Solver.Input.BytesList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_decode_bytes_list with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_decode_bytes_list with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL) := [(ofString "p",.one),(ofString "len",.one),(ofString "lim",.one),(ofString "maxb",.one)]
 def arguments : List (ExpHOL 64) := [localVar "p",localVar "len",localVar "lim"]
 def resultPointer : ExpHOL 64 := .rfield 0 (localVar "r")
@@ -26,7 +26,7 @@ def frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) := emptyLocalsHO
 def cell (array : BitVec 64) (index : Nat) : BitVec 64 := array+BitVec.ofNat 64 (16*index)+8#64
 
 theorem body_shape : body=.decCall (ofString "r") VarList.returnShape (ofString "ssz_split_var_list") arguments tail := by
-  simp only [body,Guest.guestFn_decode_bytes_list,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
+  simp only [body,Guest.Software.guestFn_decode_bytes_list,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
     VarList.returnShape,arguments,tail,initializedTail,loop,loopTest,loopBody,lengthGuard,lengthTest,lengthExpression,lengthAddress,
     resultPointer,resultCount,increment,returnArray,localVar]
 

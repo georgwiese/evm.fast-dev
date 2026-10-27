@@ -41,6 +41,13 @@ earlier speculative K guess, 10^14–10^18, is not proved or a target ceiling.
 
 Checked against the current Software AST:
 
+- WitnessValidated now joins the real three offset writes/validator with
+  first12, validated ranges/order, sourceprefixcost≤8and protected request/gas
+  cells. Current decode_bytes_list189 normal return/caller proofs and arbitrary
+  clock summary check: records/count/per-item limits, exact allocation/control,
+  input/old-word frame and body sourcecost≤2*(sliceLength/4)+2. The three actual
+  witness-list joins and final stateless/main return remain open.
+
 - Outer p/len/o_wit bindings now survive real record setup, request offsets,
   payload/count/request calls and all shared Context frames. WitnessEntry joins
   the request-pointer store and actual witness declarations/guard, deriving its

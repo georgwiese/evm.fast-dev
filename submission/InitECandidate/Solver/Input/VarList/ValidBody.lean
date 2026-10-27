@@ -4,7 +4,6 @@ import InitECandidate.Solver.Input.ScalarScope
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
-open WitnessRadix.ProgramPrefix
 
 def currentWord (input : Guest.InputBlob) (start index : Nat) : BitVec 64 :=
   BitVec.ofNat 64 (Guest.GasLimit.le32 input (start+4*index))

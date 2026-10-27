@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.VarList.RoomFromReturn
 import InitECandidate.Solver.Input.CurrentStartup.TransactionEntry
 import InitECandidate.Solver.Input.VarList.NormalEntry
 import InitECandidate.Solver.Input.VarList.EncodedCount
@@ -23,36 +24,10 @@ theorem returned_room (input : Guest.InputBlob) (source post : PanSemStateFinite
         0 < Guest.GasLimit.le32 input start / 4 ∧
         4 * (Guest.GasLimit.le32 input start / 4) = Guest.GasLimit.le32 input start ∧
         Guest.GasLimit.le32 input start ≤ length ∧ Guest.GasLimit.le32 input start / 4 ≤ limit.toNat ∧
-        array.toNat + 16 * (Guest.GasLimit.le32 input start / 4) ≤ 2952790016) := by
-  let padded : PanSemStateFiniteExact 64 Guest.HostMemory := {source with clock := source.clock + 1}
-  have paddedRun := panPropsEvaluateAddClockEq VarList.body source (some (.returned value)) post 1 ⟨actual, by simp⟩
-  rcases VarList.normal_entry padded {post with clock := post.clock + 1} input pointer limit start length image inside p n l
-    (CanonicalHeader.fail_code source.code installed) (shapes .SszErr) (by dsimp [padded]; omega) value paddedRun with empty | parsed
-  · exact Or.inl empty
-  · obtain ⟨minimum, countPositive, header, firstUpper, countBound, inner, allocationRun, restored⟩ := parsed
-    obtain ⟨array, heapCell, low, arrayBound, aligned⟩ := heap
-    let count := Guest.GasLimit.le32 input start / 4
-    let first := BitVec.ofNat 64 (Guest.GasLimit.le32 input start)
-    let entered := bind padded "first" first
-    let ready := VarList.counted entered first
-    let amount := BitVec.ofNat 64 (16 * count)
-    have countLocal : ready.locals.lookup (ofString "count") = some (.val (.word (BitVec.ofNat 64 count))) := by
-      have encoded : VarList.countWord first = BitVec.ofNat 64 count := VarList.count_encode input start
-      exact (bind_lookup_same entered "count" (VarList.countWord first)).trans
-        (congrArg (fun word : BitVec 64 => some (ValueHOL.val (HolWordLab.word word))) encoded)
-    have amountNat : amount.toNat = 16 * count := by
-      rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by have := Framing.le32_lt input start; dsimp [count]; omega)]
-    have read : eval ready VarList.allocationExpression = some (.val (.word amount)) := by
-      have actual := VarList.allocation_read ready (BitVec.ofNat 64 count) countLocal
-      simpa only [← BitVec.ofNat_mul, Nat.mul_comm count 16] using actual
-    have args : evalListHOLFinite ready (h := fun address => Classical.propDecidable (ready.memaddrs address)) [VarList.allocationExpression] =
-        some (WitnessRadix.PersistentAlloc.values amount) := by
-      simp only [eval] at read
-      simp [evalListHOLFinite, evalListHOLExact, read, WitnessRadix.PersistentAlloc.values]
-    obtain ⟨room, positive, after, remaining, frame⟩ := WitnessRadix.PersistentAlloc.call_normal ready inner "arr" [VarList.allocationExpression]
-      VarList.allocatedTail array amount args (allocation_entry source.code installed) (trap_entry source.code installed) heapCell arrayBound value allocationRun
-    rw [amountNat] at room
-    exact Or.inr ⟨array, heapCell, low, aligned, minimum, countPositive, header, firstUpper, countBound, room⟩
+        array.toNat + 16 * (Guest.GasLimit.le32 input start / 4) ≤ 2952790016) :=
+  VarList.room_from_return input source post pointer limit start length floor
+    (allocation_entry source.code installed) (trap_entry source.code installed)
+    (CanonicalHeader.fail_code source.code installed) (shapes .SszErr) heap image inside p n l value actual
 
 /-- Apply allocation inversion at the genuine main-derived transaction
 callee. Nonempty room is bounded by the real current allocator ceiling. -/

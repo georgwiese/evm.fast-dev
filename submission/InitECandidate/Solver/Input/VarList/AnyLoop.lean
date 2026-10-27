@@ -86,7 +86,7 @@ theorem any_loop (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : 
         na (iteration_index entry input plan index previous) np (iteration_previous entry input plan index previous) nf nn nc nextPrevious
         failCode exceptionShape (by rw [nextClock]; omega)
       have continued : evaluateHOLFiniteState source loop=evaluateHOLFiniteState next loop :=
-        active_unroll source next index plan.count countSmall active i c nonzero none bodyRun (by rw [nextClock])
+        active_unroll source next index plan.count countSmall active i c nonzero none bodyRun (by rw [nextClock]; exact Nat.le_refl _)
       rw [tailRun] at continued
       have finalClock : target.clock=source.clock-(paid+1) := by rw [clock,nextClock]; omega
       have headFrame : ArrayFrame source next input plan := by

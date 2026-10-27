@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.LocalWord
 import InitECandidate.Solver.Input.VarList.Checks
 
 namespace InitECandidate.Solver.Input.VarList

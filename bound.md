@@ -163,7 +163,11 @@ Checked against the current Software AST:
   returns the actual empty pair; nonempty derives positive/aligned header/count
   facts and array+16*count≤2952790016, beyond the payload record. One checked
   clock unit funds guard inversion; all room/size facts concern original input
-  and heap. Allocated-loop/returned-record composition remains open.
+  and heap. The allocation-room inversion is now a generic RoomFromReturn helper
+  outside the whole-main entry graph. Actual allocated-loop/tail proofs now pass:
+  all valid/error23outcomes, copied bytes, prior-memory frame and count-based
+  source-clock cost. Allocator/body/caller composition still needs the newly
+  derived semantic room; ordinary backing geometry alone is insufficient.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -182,11 +186,11 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-varlist-room-v3.log`, 1,279 jobs,
-permitted printed axioms only, 4.67 seconds, MaxRSS 1,873,904 KiB.
-Historical/current index: 7,919 modules /15,737 facts; 390 modules carry the
-current dependency reference. Incremental policy passes at64,724entries/
-2,481,753,769bytes; historical copy/zero/list runtime summaries are not revalidated.
+Latest successful closure: `current-varlist-allocated-tail-v4.log`, 1,305 jobs,
+permitted printed axioms only, 14.05 seconds, MaxRSS 1,638,508 KiB.
+Historical/current index: 7,921 modules /15,738 facts; 416 modules carry the
+current dependency reference. Incremental policy passes at64,726entries/
+2,481,756,902bytes; historical copy/zero/list body/caller summaries are not revalidated.
 These checks are not full verification.
 
 ## Remaining plan

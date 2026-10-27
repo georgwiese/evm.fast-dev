@@ -4,6 +4,47 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current allocated-list loop/tail and reusable allocation-room inversion
+
+VarList.StepProgram's literal checks now use Software. The real dynamic offset
+reads, record stores, valid/error bodies, arbitrary remaining loop rounds, final
+length cell and pair return all pass through AllocatedTail. The theorem retains
+copied input, the exact prior-memory/array frame, control and source-clock price
+≤count+1for that already-allocated tail, with real SszErr23alternatives. It does
+not claim that the allocator has enough room from ordinary backing alone.
+A missing reflexive clock inequality in AnyLoop is now closed explicitly.
+
+LocalWord extracts the unchanged generic Request.local_word lookup from the
+unrelated request-offset store module; old consumers retain that namespace/API.
+OffsetRead/StepStores import its two-module Solver closure explicitly. AllocatedTail
+uses generic PanDeclarations for its i/prev scopes and drops the unused allocator
+prefix namespace; ValidBody/FaultBody drop the same unused namespace. The room
+inversion moves to VarList.RoomFromReturn with explicit real allocator/trap/fail
+entries, exception shape and current bounded heap. CurrentStartup.VarListRoom is
+now the genuine-entry wrapper. The generic105-module closure imports no Current-
+Startup module, so body/caller proofs can reuse it without the whole-main graph.
+[Cleanup manifest](current-varlist-loop-cleanup-20261027.json) records these sources.
+
+Validation: current-varlist-allocated-tail-v4.log PASS1305jobs/permitted printed
+axioms,14.05s/MaxRSS1638508KiB;8GiBwhole-hostguard/twoslots/artifactcachefalse. Both
+AllocatedTail and CurrentStartup.VarListRoom are selected, checking the moved
+lookup/room proofs and the existing main join together. Failed diagnostics
+unindexed. Index7921historical/currentmodules/15738facts,416current-reference
+modules; inventory7958/replacementclosure0/frozenmainunchanged; incremental policy
+PASS64726entries/2481756902bytes. No full verification or finite global K.
+Account12%weekly/0resetcredits/ordinaryallowed. Five old untracked RLP files retained.
+Push each commit.
+
+Next make the actual allocator execution API require its real ≤2952790016request
+room separately from Plan.arrayRoom's ≤33806089496ordinary mapping bound. Derive
+that semantic room from RoomFromReturn in nonempty normal body/caller summaries,
+using actual incoming heap bound and trap code (both available at TransactionEntry).
+Retain empty-list handling and remove padded-clock assumptions through the proved
+clock-shift theorem. Old whole-body/caller/trace helpers are not claimed checked.
+Then real returned records/array frame to payload continuation, withdrawal count
+and gas stores; scratch covered-outcome classification/global target work remain.
+Overall estimate40%, plausible30–50%.
+
 ## Genuine variable-list guards and current allocator room
 
 VarList.Entry imports its real HeaderGuards/PanDeclarations dependencies. Entry

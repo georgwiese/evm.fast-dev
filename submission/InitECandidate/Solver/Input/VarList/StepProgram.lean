@@ -25,7 +25,7 @@ def increment : ProgHOL 64 := .assign .local (ofString "i") (.op .add [localVar 
 def step : ProgHOL 64 := .seq recordGuard (.seq priorLengthStore (.seq rowPointerStore (.seq savePrevious increment)))
 
 theorem loop_body_shape : loopBody=.dec (ofString "o") .one offsetExpression step := by
-  simp only [loopBody,loop,allocatedTail,firstTail,body,Payload.dropLeading,Guest.guestFn_ssz_split_var_list,
+  simp only [loopBody,loop,allocatedTail,firstTail,body,Payload.dropLeading,Guest.Software.guestFn_ssz_split_var_list,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,offsetExpression,offsetStride,Scalar.paired32,
     Scalar.pairedAddress,Scalar.shift,step,recordGuard,recordTest,priorLengthStore,hasPrevious,priorLengthAddress,
     priorLengthExpression,rowPointerStore,rowPointerAddress,rowPointerExpression,savePrevious,increment,localVar,
@@ -36,7 +36,7 @@ def finalAddress : ExpHOL 64 := .op .add [localVar "arr",
 def finalExpression : ExpHOL 64 := .op .sub [localVar "len",localVar "prev"]
 
 theorem final_store_shape : finalLengthStore=.store finalAddress finalExpression := by
-  simp only [finalLengthStore,afterLoop,allocatedTail,firstTail,body,Payload.dropLeading,Guest.guestFn_ssz_split_var_list,
+  simp only [finalLengthStore,afterLoop,allocatedTail,firstTail,body,Payload.dropLeading,Guest.Software.guestFn_ssz_split_var_list,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,finalAddress,finalExpression,localVar]
 
 end InitECandidate.Solver.Input.VarList

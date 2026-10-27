@@ -3,7 +3,6 @@ import InitECandidate.Solver.Input.VarList.ValidBody
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
-open WitnessRadix.ProgramPrefix
 
 def failedIteration (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (plan : Plan input) (index : Nat) :=
   restore source "o" (emptyLocalsHOLFinite {bind source "o" (currentWord input plan.start index) with clock:=source.clock-1})

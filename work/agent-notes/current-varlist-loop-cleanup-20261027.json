@@ -1,0 +1,13 @@
+{
+  "previous_revision": "39d13f3a9e9355cf6813f5e8831fbee3199a40f5",
+  "scope": "Generic local lookup and allocation-room inversion are separate from whole-main entry and old full-decoder bridges.",
+  "local_word_solver_closure": 2,
+  "room_from_return_solver_closure": 105,
+  "room_from_return_imports_current_startup": false,
+  "sources": {
+    "submission/InitECandidate/Solver/Input/LocalWord.lean": "68967b7da8399166c922ffb1b3ef5d14177b91ad2689b647bd578bafa0d140b3",
+    "submission/InitECandidate/Solver/Input/VarList/RoomFromReturn.lean": "efb262b41d4965dfd48688d22f0b0963c1730a797ea7fe0761198ddc28afd2ab",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/VarListRoom.lean": "31699cbeb3bc17958542054eec8051b1c175d95ace660ed9ec4e449be7530360",
+    "submission/InitECandidate/Solver/Input/VarList/AllocatedTail.lean": "2b97e93c287801274fbffe697f9b83de22b126e859e336430bd4275cb777bd52"
+  }
+}

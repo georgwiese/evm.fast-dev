@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.Requests.Program
+import InitECandidate.Solver.Input.LocalWord
 
 namespace InitECandidate.Solver.Input.Requests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix WitnessRadix.AllocatedBytes

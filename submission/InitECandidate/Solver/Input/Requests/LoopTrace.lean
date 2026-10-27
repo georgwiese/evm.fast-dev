@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.Requests.OffsetLoop
+import InitECandidate.Solver.Input.ScalarDeclaration
 import InitECandidate.Solver.Input.Requests.Entry
 import InitECandidate.Solver.Input.TerminatingPaddedSequence
 

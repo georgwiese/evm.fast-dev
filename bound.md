@@ -199,7 +199,12 @@ Checked against the current Software AST:
   Requests.Program uses actual Software/index188and drops the old whole-runtime
   proof umbrella (Solver closure359→64). Shared non-timeout helpers drop unused
   padded/exhaustion dependencies (10→2/11→3), keeping APIs with direct clock-zero
-  arguments. The actual request offset loop/allocator/output remain open.
+  arguments. RequestsValidated now checks its actual five-word loop and validator,
+  retaining original input, all five physical workspace words and actual
+  first20/order/range guards, installed metadata/heap/p/len, protected gas cell
+  and original request endpoint. Shared WhileActive uses explicit evaluator/
+  state dependencies; loop/step helpers import only their real lookup/control/
+  declaration rules. Actual80-byte allocation, fixed counts/output remain open.
 - CallPrefix drops the unrelated ClockCostScopeLocals umbrella; its transitive
   Solver closure falls from155to7modules. The trace closure falls158to10.
   HeapScope now imports actual Software AST and minimal generic return/state
@@ -218,10 +223,10 @@ Checked against the current Software AST:
   Other old-program proofs remain historical until their current dependencies
   and statements pass real checks.
 
-Latest successful closure: `current-requests-entry-v5.log`, 1,378 jobs,
-permitted printed axioms only, 5.06 seconds /MaxRSS1,913,712KiB. Historical/current
-index:7,931modules/15,770facts. Incremental policy passes at64,736entries/
-2,481,843,040bytes. Old unselected whole-body/caller/image/trace helpers remain
+Latest successful closure: `current-requests-validated-v2.log`, 1,384 jobs,
+permitted printed axioms only, 4.83 seconds /MaxRSS1,925,656KiB. Historical/current
+index:7,932modules/15,772facts. Incremental policy passes at64,737entries/
+2,481,850,402bytes. Old unselected whole-body/caller/image/trace helpers remain
 historical. These checks are not full verification.
 
 ## Remaining plan

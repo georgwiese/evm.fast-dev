@@ -4,6 +4,38 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current five-offset loop/validator and protected payload gas cell
+
+Requests.OffsetStep/OffsetLoop/LoopTrace now check the actual five scratch-word
+writes, byte correspondence, full outside-memory/control frame and loop price.
+OffsetStep imports LocalWord explicitly; OffsetLoop imports PanControl and closes
+its reflexive clock bound explicitly. LoopTrace imports its pure declaration rule.
+WhileActive replaces the unused scalar input/heap scope import with Guest.Model,
+StateSteps and the evaluator equations, preserving the real while-resumption API.
+OffsetsTrace's literal selector now uses Software.
+
+RequestsValidated joins this to the real main-derived request entry at its
+original clock: actual first20offset and all five range/order guards, physical
+workspace cells, original input, installed metadata, bounded post-payload heap,
+live p/len and actual allocator continuation. Workspace writes preserve the
+separate payload gas cell by the derived record/input/workspace geometry. It
+also retains the original request callee endpoint/frame for full return joins.
+No new readability, future time, allocation room or successful-call assumptions.
+
+Validation: current-requests-validated-v2.log PASS1384jobs/permitted printed
+axioms,4.83s/MaxRSS1925656KiB;8GiBwhole-hostguard/twoslots/cachefalse. Index7932/
+15772facts; inventory7969/replacementclosure0/frozenmainunchanged; incremental
+policy PASS64737entries/2481850402bytes. Failed logs unindexed; no full verification
+or global finite K. Account15%weekly/0resets/ordinaryallowed; disk60%.
+Overall40%, plausible30–50%.
+
+Next derive the actual80-byte request allocation room/frontier from its normal
+return, retain pure five offset loads and five fixed counts/output, then request
+resumption/witness lists/stateless/main. Physical tx records/count at complete
+payload return are still needed for the later tx loop; current Context retains
+the actual bounded gas but not the full payload image. Scratch coverage remains
+prioritized before map/crypto migration and weighted target-bound composition.
+
 ## Actual request decoder entry and dependency cleanup
 
 RequestRequestsProgram selects the genuine three stores after nvh and the

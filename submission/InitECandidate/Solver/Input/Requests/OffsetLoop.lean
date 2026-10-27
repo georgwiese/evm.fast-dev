@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.Requests.OffsetStep
 import InitECandidate.Solver.Input.WhileActive
+import InitECandidate.Solver.PanControl
 
 namespace InitECandidate.Solver.Input.Requests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix WitnessRadix.AllocatedBytes
@@ -60,7 +61,7 @@ theorem offset_loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory
     obtain ⟨target,tailRun,clock,control,targetHeap,targetI,otherLocals,targetCells,targetFrame⟩:=ih next (index+1) (by omega)
       nextHeap nextWp nextI offsets domain nextCells
       (by rw [nextClock];omega)
-    have unfoldLoop:=while_active source next offsetTest offsetStep none test (by omega) stepRun (by rw [nextClock])
+    have unfoldLoop:=while_active source next offsetTest offsetStep none test (by omega) stepRun (by rw [nextClock]; exact Nat.le_refl _)
     have actual : evaluateHOLFiniteState source offsetLoop=(none,target):=unfoldLoop.trans tailRun
     refine ⟨target,actual,?_,control,targetHeap,targetI,?_,targetCells,?_⟩
     · rw [nextClock] at clock

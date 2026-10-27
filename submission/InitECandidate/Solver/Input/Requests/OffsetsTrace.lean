@@ -8,7 +8,7 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 def afterOffsets : ProgHOL 64 := match offsetTail with | .seq _ rest => rest | _ => .skip
 
 theorem offset_tail_shape : offsetTail = .seq offsetGuard afterOffsets := by
-  simp only [offsetTail,afterOffsets,body,Guest.guestFn_decode_requests,progToHOL,offsetGuard,offsetArguments,Header.offsets,localVar,
+  simp only [offsetTail,afterOffsets,body,Guest.Software.guestFn_decode_requests,progToHOL,offsetGuard,offsetArguments,Header.offsets,localVar,
     expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 
 /-- Actual request offsets on all non-timeout outcomes: the five real scratch

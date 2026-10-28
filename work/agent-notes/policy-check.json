@@ -2451,6 +2451,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspaceFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspacePointer.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/ArrayAllocation.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/CellGeometry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Compare.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Cursor.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Branch.lean",
@@ -2484,6 +2485,7 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/Image.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/ImageFacts.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/KeyBits.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/KeyCopy.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/KeyRead.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewArraysProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewCall.lean",
@@ -2522,6 +2524,7 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/SeekStep.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/SeekTrace.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/Update.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Set/UpdateImage.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/SlotGeometry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Workspace.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Memory.lean",
@@ -8525,8 +8528,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65304,
-  "package_bytes": 2484433745,
+  "package_entries": 65307,
+  "package_bytes": 2484455424,
   "claim": {
     "K": "infinity"
   },

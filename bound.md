@@ -124,8 +124,12 @@ that comparison. Its actual failed-equality path computes the genuine first
 mismatch and reaches the unchanged new-leaf call with strict split, parent
 edge and retained t/key/value/other caller bindings within546source ticks,
 or stops earlier. The actual equal-key branch writes its reached leaf value
-and returns0 at any body clock. Preservation of the complete image after
-that write and fresh-node insertion remains to prove. Shared image facts
+and returns0 at any body clock. The complete image now survives that real
+write: header, node bits/edges, every leaf key and the value-membership
+predicate are preserved using nonaliasing derived from actual array geometry.
+Actual aligned32-byte key copying now costs2caller ticks and derives both
+its exact four-word memory update and the copied physical key bytes.
+Fresh-node insertion remains to prove. Shared image facts
 derive fresh indices and two available nodes from the actual processed-count
 and sufficient-capacity facts, rather than future successful allocations.
 
@@ -177,10 +181,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-comparison-difference-update-v1.log`,2227jobs,
-permitted printed axioms only. Historical/current proof index:8476modules/
-17151facts; inventory8520modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65304entries/2484433745bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-real-key-copy-v2.log`,889jobs,
+permitted printed axioms only. Historical/current proof index:8479modules/
+17164facts; inventory8523modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65307entries/2484455424bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

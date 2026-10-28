@@ -3386,3 +3386,19 @@ writes and full insertion invariant; builder iteration/workspace separation,
 later main paths and target composition. Overall estimate40%, plausible30–50%.
 Five old unfinished RLP files preserved untracked. Account16%weekly used,
 zero reset credits, ordinary usage allowed.
+
+## Actual equal-key image preservation and aligned key copy
+
+The current htab_set equal-key branch now preserves the complete physical
+Patricia image after its actual value store, including leaf-value membership.
+Constructor-derived nonwrapping cell geometry rules out header/key/other-node
+aliasing; internal left cells cannot alias the updated leaf value cell.
+The actual aligned32-byte memcpy call costs2source ticks on every outcome;
+real normal execution derives its own funding, exact four-word writes and
+copied query bytes. Current caller alignment/order must still be derived.
+
+Validation: current-patricia-real-key-copy-v2.log PASS889jobs, permitted printed
+axioms only. Index8479modules/17164facts, inventory8523/replacement closure0,
+fixed files unchanged; incremental policy65307entries/2484455424bytes PASS.
+No global finite target K/full verification. Usage17%weekly/0resetcredits.
+Next: actual fresh leaf/internal writes and complete insertion preservation.

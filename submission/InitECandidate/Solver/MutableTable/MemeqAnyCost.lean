@@ -1,6 +1,6 @@
 import InitECandidate.Solver.MutableTable.MemeqAnyProgram
 import InitECandidate.Solver.Input.ClockCostCurrent
-import InitECandidate.Solver.Input.LocalEffectsLoop
+import InitECandidate.Solver.Input.MemeqReadOnly
 
 namespace InitECandidate.Solver.MutableTable.MemeqAny
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -35,17 +35,6 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (bind_lookup_other source "i" "n" 0#64 (by decide)).trans lengthCell,by decide⟩
   exact Input.ClockCost.declared_current source "i" (.const 0#64) 0#64 _ 128 rfl (inside.cost entered valid)
 
-set_option maxRecDepth 100000 in
-theorem readonly (code) : Input.LocalEffects.Preserves code Memeq32.body := by
-  simp only [Memeq32.body,Guest.guestFn_memeq,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
-  repeat first
-    | apply Input.LocalEffects.declared
-    | apply Input.LocalEffects.sequence
-    | apply Input.LocalEffects.conditional
-    | apply Input.LocalEffects.loop
-    | exact Input.LocalEffects.assign code _ _
-    | exact Input.LocalEffects.returned code _
-    | exact Input.LocalEffects.skip code
 
 end InitECandidate.Solver.MutableTable.MemeqAny
 

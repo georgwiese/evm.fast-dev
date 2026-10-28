@@ -111,6 +111,14 @@ search and either stop within257ticks or reach the unchanged new-leaf caller
 with the actual strict split, parent edge and all three outer restorations.
 The search cannot return htab_set on its own; no successful allocation is
 assumed to expose this continuation.
+A shared physical insertion-only table image now carries the actual header,
+geometry, fresh-index range, routing, leaf keys and caller-specific leaf-value
+predicate. Its empty base is derived from the genuine constructor; read-only
+frames retain it. Current memeq13 costs≤4body/5caller source ticks and its real
+normal result identifies byte-key equality at arbitrary alignment. Actual
+htab_set's first two mapped loads and scoped lookup now retain the complete
+image and reach the original continuation with empty0 or a genuine routed leaf.
+Comparison ABI/frame cleanup reduces this comparison's Solver closure93→55.
 
 Checked against current Software syntax and declaration entries:
 
@@ -160,10 +168,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-reached-insertion-allocation-v1.log`,2208jobs,
-permitted printed axioms only. Historical/current proof index:8464modules/
-17125facts; inventory8508modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65292entries/2484374528bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-set-first-lookup-v2.log`,2208jobs,
+permitted printed axioms only. Historical/current proof index:8469modules/
+17134facts; inventory8513modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65297entries/2484398674bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

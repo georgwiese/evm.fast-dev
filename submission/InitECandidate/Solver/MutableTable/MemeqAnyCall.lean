@@ -1,19 +1,11 @@
 import InitECandidate.Solver.MutableTable.MemeqAnyCost
 import InitECandidate.Solver.MutableTable.MemeqByteRuntime.Environment
 import InitECandidate.Solver.Input.ClockCostCurrentScoped
-import InitECandidate.Solver.Input.OriginalCode
-import InitECandidate.Solver.Input.OriginalEntry
+import InitECandidate.Solver.Input.MemeqCode
 
 namespace InitECandidate.Solver.MutableTable.MemeqAny
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
-
-set_option maxRecDepth 100000 in
-theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
-    code.lookup (ofString "memeq")=some (Memeq32.formals,Memeq32.body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 13 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_memeq) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,Memeq32.body,Memeq32.formals,
-    Guest.guestFn_memeq,Guest.Software.guestFn_memeq,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 /-- Any actual operand expressions, including failed or wrongly shaped
 reads, are covered. A valid original call has the literal32 length and a

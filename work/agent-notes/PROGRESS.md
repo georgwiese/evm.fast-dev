@@ -3321,3 +3321,36 @@ join, leaf/internal writes and preserved insertion image, workspace separation,
 later main paths and target composition. Overall estimate40%, plausible30–50%.
 Five old unfinished RLP files preserved untracked. Account16%weekly used, zero
 reset credits, ordinary usage allowed.
+
+
+## Constructor-derived table image and actual set first lookup — 2026-10-28
+
+The shared current insertion-only table image carries the actual11header
+fields, array geometry, fresh-index range, root/count/node bounds, routed
+node image, real leaf-byte views and caller-specific leaf-value membership.
+The genuine constructor establishes its empty base without initialized-array
+contents. Actual read-only frames retain the image. Per-call node capacity
+remains an explicit availability fact to derive from the builder iteration.
+
+Current Software memeq13 is checked against its actual unchanged ABI/body.
+Physical32-byte operands give≤4body/5caller source ticks at arbitrary
+alignment; a real normal return identifies byte-key equality and retains the
+full physical frame. Clock padding only inverts that actual normal run.
+htab_set's real first two mapped header loads and lookup call now reach the
+original continuation with empty0 or a real leaf/query route, retaining the
+image and exact klen/stride/leaf lexical restorations on all outcomes.
+
+Cleanup extracts the current comparison ABI and syntactic physical frame
+from general dictionary-cost imports while retaining their existing APIs.
+Compare Solver import closure93→55. Existing general-comparison and current
+main/header/root/database callers replay after the change.
+
+Validation: current-patricia-set-first-lookup-v2.log PASS2208jobs, permitted
+printed axioms only. Index8469modules/17134facts; inventory8513, replacement
+AST reverse closure0, fixed files unchanged. Incremental policy PASS65297
+entries/2484398674bytes; no full verification, claim infinity, no global K.
+Actual insertion still has to preserve the image after writes. Next: complete
+comparison/difference caller join and real leaf/internal updates, builder
+iteration/workspace separation, later main paths and target composition.
+Overall estimate40%, plausible30–50%. Five old unfinished RLP files preserved
+untracked. Account16%weekly used, zero reset credits, ordinary usage allowed.

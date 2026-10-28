@@ -4,6 +4,29 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Same-decoder payload state, real byte regions and complete final phase
+
+PayloadDecodedBudget derives the raw540-byte arena, actual withdrawal count
+and44-byte extent, and real balance pointer/length/arena from the same decoder's
+validated offsets and copied input. It assumes no sixteen-withdrawal schema
+maximum. PayloadState and shared actual-call transport retain the complete
+physical decoded image through current static field prefixes, extra data and
+balance hashing. Literal source expressions and original function bytes stay
+unchanged. Static memory/cost pipelines share current FixedRecord proofs.
+
+Extra data has actual caller source cost≤270. The complete final phase has
+source cost≤5*balanceBytes+8325, including its three scalar fields, balance hash,
+actual nineteen-field container and saved-mark release. Its protected-memory
+frame also checks, including the actual n=19 activity-mask bound. The actual
+parent dynamic allocations and transaction/withdrawal phase joins remain open.
+
+Validation: current-payload-extra-final-memory-v4.log PASS1450jobs/permitted
+printed axioms only, covering all eight new modules and selected dependencies.
+8GiBguard/twoslots/cachefalse. Index8155modules/16505facts; inventory8194,
+replacement closure0, frozen main unchanged. Incremental policy64963entries/
+2483120226bytes PASS. Account32%weekly,0resetcredits; ordinary usage allowed.
+No global finite target K or full verification; claim infinity.
+
 ## Actual current transaction/withdrawal loops and minimal shared arithmetic
 
 The current transaction loop has all observed non-timeout source cost at most

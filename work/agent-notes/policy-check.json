@@ -2091,9 +2091,17 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytesMemory.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytesReturn.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytesScopeMemory.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PayloadBalance.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PayloadDecodedBudget.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PayloadExtra.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PayloadFinalCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PayloadFinalMemory.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PayloadHeap.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PayloadProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PayloadScopes.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PayloadState.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PayloadStateCalls.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PayloadStaticMemory.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PayloadStaticProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PayloadStaticStep.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PayloadTransactionCost.lean",
@@ -8191,8 +8199,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64955,
-  "package_bytes": 2483070781,
+  "package_entries": 64963,
+  "package_bytes": 2483120226,
   "claim": {
     "K": "infinity"
   },

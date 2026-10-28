@@ -1,12 +1,10 @@
+import InitECandidate.Solver.Headers.StoreSyntax
 import InitECandidate.Solver.Headers.FieldState
 import InitECandidate.Solver.Headers.StoreNormalFrame
 
 namespace InitECandidate.Solver.Headers
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
-
-def storeAddress (offset : Nat) : ExpHOL 64 := .op .add [.var .local (ofString "h"),.const (BitVec.ofNat 64 offset)]
-def storeProgram (offset : Nat) (value : StoreValue) : ProgHOL 64 := .store (storeAddress offset) value.expression
 
 /-- One actual original output-header scalar/tuple store retains the full
 current field state. Word count comes from the reached helper slot type;

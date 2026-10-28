@@ -4,6 +4,37 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete literal current header field-pipeline source bound
+
+The unchanged decode_header208 afterAllocation pipeline now costs≤92*payloadBytes
++455 source ticks on every outcome, given its reached physical field-entry
+state. Each real encoded row is decoded at most twice; all five helper bodies,
+actual callers, checked local shapes, guard choices, stores and restorations
+are included. Normal fragments retain input/records, initialized arenas, real
+output allocation/heap and active local types. The whole header parser/allocator
+to field-state connection and complete header body cost remain open.
+
+The common helper interface prices every stopped outcome and supplies each
+real typed return, full nonlocal frame, actual child clock and true continuation.
+Actual assigned calls retain the same physical state and derive their new value.
+Header stores obtain their real flattened word count from reached slot shapes;
+the bounded genuine writes preserve all input bytes and record cells.
+
+Cleanup isolates shared helper/slot/store/pipeline syntax, static obligations,
+step identities and four-word shape facts from old mapped-arena costs and
+serializer code. Historical compatibility modules/imports remain available;
+scalar carrier facts are shared instead of duplicated. No executable changes.
+
+Validation: current-header-field-pipeline-main-v3.log PASS2030jobs, including
+main/root/header entry, all current helpers, field-state/store/scope frames,
+static price aggregation and complete literal field pipeline; permitted printed
+axioms. Index8313modules/16783facts; inventory8356/replacement closure0/frozen
+main unchanged. Incremental policy65133entries/2483706121bytes PASS.
+No global finite target K/full verification; claim infinity. Next: derive the
+field-entry state from actual complete parsing/count/allocation, whole header
+all-outcome cost and later callers/target-step composition.
+8GiBguard/twoslots/cachefalse; account7%weekly/0resetcredits/ordinary usage allowed.
+
 ## Current four-word byte conversion and complete u256 header field
 
 The literal Software u256_from_be80 body costs≤max(4,length) source ticks on

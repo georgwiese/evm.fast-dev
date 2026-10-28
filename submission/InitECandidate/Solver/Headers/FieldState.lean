@@ -1,14 +1,10 @@
 import InitECandidate.Solver.Headers.StoreValue
+import InitECandidate.Solver.Headers.HelperCall
+import InitECandidate.Solver.Headers.SlotNames
 
 namespace InitECandidate.Solver.Headers
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix
-
-def Slot.text : Slot→String | .f=>"f" | .d=>"d" | .w=>"w" | .tsf=>"tsf" | .ex=>"ex" | .bg=>"bg"
-theorem Slot.of_text (slot : Slot) : ofString slot.text=slot.name := by cases slot <;> rfl
-theorem Slot.not_array (slot : Slot) : slot.name≠ofString "arr" := by cases slot <;> decide
-theorem Slot.not_header (slot : Slot) : slot.name≠ofString "h" := by cases slot <;> decide
-theorem Slot.not_current (slot : Slot) : slot.name≠ofString "is_current" := by cases slot <;> decide
 
 /-- Current original field-pipeline data and active helper locals. Physical
 input/record/header extents and the true21/23 branch bit are explicit; no

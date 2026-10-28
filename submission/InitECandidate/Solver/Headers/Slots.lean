@@ -1,4 +1,6 @@
-import InitECandidate.Solver.Headers.HelperCall
+import Guest.Model
+import InitECandidate.Solver.Input.WordTupleFour
+import InitECandidate.Solver.Input.ScalarWordShape
 import InitECandidate.Solver.Input.ScalarPairShape
 
 namespace InitECandidate.Solver.Headers
@@ -54,11 +56,11 @@ theorem Slots.store_value (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   obtain ⟨value,cell,shape⟩ := slots slot member
   refine ⟨value,cell,?_⟩
   cases slot
-  · obtain ⟨word,rfl⟩ := Input.RlpWrite.U256Value.scalar_word value shape
+  · obtain ⟨word,rfl⟩ := Input.scalar_word_of_shape value shape
     simp [Input.ScalarPair.tuple,Input.RlpWrite.U256Value.tuple,flattenHOL,Slot.words]
   · obtain ⟨words,rfl⟩ := Input.RlpWrite.U256Value.of_shape value shape
     simp [Input.ScalarPair.tuple,Input.RlpWrite.U256Value.tuple,flattenHOL,Slot.words]
-  · obtain ⟨word,rfl⟩ := Input.RlpWrite.U256Value.scalar_word value shape
+  · obtain ⟨word,rfl⟩ := Input.scalar_word_of_shape value shape
     simp [Input.ScalarPair.tuple,Input.RlpWrite.U256Value.tuple,flattenHOL,Slot.words]
   · obtain ⟨left,right,rfl⟩ := Input.ScalarPair.of_shape value shape
     simp [Input.ScalarPair.tuple,Input.RlpWrite.U256Value.tuple,flattenHOL,Slot.words]

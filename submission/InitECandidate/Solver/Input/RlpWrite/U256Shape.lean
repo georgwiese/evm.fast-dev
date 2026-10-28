@@ -1,14 +1,11 @@
-import InitECandidate.Solver.Input.RlpWrite.U256Value
+import InitECandidate.Solver.Input.WordTupleFour
+import InitECandidate.Solver.Input.ScalarWordShape
 
 namespace InitECandidate.Solver.Input.RlpWrite.U256Value
 open Flapjack Flapjack.Pancake.PanLang
 
-theorem scalar_word (value : ValueHOL 64) (shape : shapeOfHOLExact value = .one) :
-    ∃ word : BitVec 64, value = .val (.word word) := by
-  cases value with
-  | val payload => cases payload with | word word => exact ⟨word, rfl⟩
-  | rStruct fields => simp only [shapeOfHOLExact] at shape; cases shape
-  | nStruct name fields => simp only [shapeOfHOLExact] at shape; cases shape
+theorem scalar_word (value : ValueHOL 64) (shape : shapeOfHOLExact value=.one) :
+    ∃ word : BitVec 64,value=.val (.word word) := Input.scalar_word_of_shape value shape
 
 /-- The exact source carrier has only word leaves. A genuinely checked
 four-scalar shape therefore supplies four actual words, without a separate

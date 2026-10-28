@@ -5,10 +5,6 @@ namespace InitECandidate.Solver.Headers
 open Flapjack PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-theorem Slots.tail (source : PanSemStateFiniteExact 64 Guest.HostMemory) (slot : Slot) (active : List Slot)
-    (slots : Slots source (slot::active)) : Slots source active :=
-  fun chosen member=>slots chosen (List.mem_cons_of_mem slot member)
-
 theorem FieldState.drop_slot (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer array header cursor limit current : BitVec 64) (bytes cutoff : Nat) (items : List Rlp.ListItem) (slot : Slot) (active : List Slot)
     (state : FieldState source pointer array header cursor limit current bytes cutoff items (slot::active)) :

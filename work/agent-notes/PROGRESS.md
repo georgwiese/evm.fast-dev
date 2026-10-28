@@ -4,6 +4,33 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual internal RLP validator source body/caller bound
+
+The unchanged _rlp_validate_items_body now costs≤14*(length+1) source ticks;
+its real uncaught caller adds one. All outcomes, exhausted clocks, actual
+setup declarations, parser/allocator failures and final return are included.
+Entry uses the real initialized scratch2701127680/frame2688618496 and ordinary
+domain plus a nonwrapping input extent. No mapped scratch, allocation room,
+future successful parse or assumed input bytes are supplied.
+
+A continuing body either advances its real position within a fixed end or
+finishes the list. Its actual nested push cannot continue: the checked allocator
+return is a word, the literal raw-rec first store is below ordinary memory,
+and the caller's existing after-word is retained. A physical natural rank
+prices the loop, reusing the checked byte parser and13-tick body allowance.
+The old hypothetical mapped-arena validator remains conditional and unused.
+Shared ArenaState.of_frame transports real arena facts through pure scopes.
+
+Validation: current-rlp-actual-body-caller-main-check-v1.log PASS1883jobs,
+including current main/root/header connection after shared-helper cleanup;
+permitted printed axioms only. Index8223modules/16652facts; inventory8262,
+replacement closure0/frozen main unchanged. Incremental policy65033entries/
+2483403489bytes PASS. 8GiBguard/twoslots/cachefalse,
+disk61%, account3%weekly/0resetcredits/ordinary usage allowed. No global finite
+target K/full verification; claim infinity.
+Next: internal normal memory/arena frame, real caught release wrapper and
+whole header/source paths, then target-step compilation/global literal K.
+
 ## Current RLP byte parser, validator step and real variable scratch store
 
 The actual current rlp_item_header body/caller cost≤10/11 source ticks;

@@ -2205,6 +2205,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/Alloc.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/AllocationCursor.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/AllocationFrontier.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/ArenaFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Base.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Blake2Init.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/BlsConstsInit.lean",
@@ -6040,6 +6041,13 @@
     "submission/InitECandidate/Solver/Rlp/ByteAgreementFrame.lean",
     "submission/InitECandidate/Solver/Rlp/ByteAgreementSubspan.lean",
     "submission/InitECandidate/Solver/Rlp/CanonicalReturn.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentValidation/AfterHeader.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentValidation/CallCost.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentValidation/Cost.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentValidation/Loop.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentValidation/Push.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentValidation/State.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentValidation/Step.lean",
     "submission/InitECandidate/Solver/Rlp/DecodeCallFrame.lean",
     "submission/InitECandidate/Solver/Rlp/DecodeCallNormal.lean",
     "submission/InitECandidate/Solver/Rlp/DecodeCost.lean",
@@ -8259,8 +8267,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65024,
-  "package_bytes": 2483372784,
+  "package_entries": 65033,
+  "package_bytes": 2483403489,
   "claim": {
     "K": "infinity"
   },

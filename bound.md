@@ -84,16 +84,16 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-rlp-validator-step-variable-store-v8.log`,752jobs,
-permitted printed axioms only. Historical/current proof index:8215modules/
-16637facts; Solver inventory8254, replacement closure0, frozen main files
-unchanged. Incremental policy passes65024entries/2483372784bytes. These checks
+Latest successful selected closure: `current-rlp-actual-body-caller-main-check-v1.log`,1883jobs,
+permitted printed axioms only. Historical/current proof index:8223modules/
+16652facts; Solver inventory8262, replacement closure0, frozen main files
+unchanged. Incremental policy passes65033entries/2483403489bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
-## Remaining work, in order
+## Checked source stages and remaining work, in order
 
-1. **Use the complete actual payload image to join current hashing.** RootRun
+1. **Checked: actual decoder image and hash-entry derivation.** RootRun
    selects the same decoder post-state at main, with actual SI0/8/16/24/32 and
    mapped hash argument loads. ReturnedImage now retains raw/extra/transaction/
    withdrawal/balance cells and real offset/count arithmetic, including complete
@@ -108,7 +108,7 @@ remain historical until their current statements/dependencies are checked.
    room derives encodedLength≤251655056. Each request list derives its actual
    physical byte extent and count≤134217728; all five share one exact encoded
    byte budget and total count≤(requestSize-20)/68.
-2. **Finish the actual payload/request-root hash joins.** Current helper source
+2. **Checked source hash bodies/callers; target cost remains open.** Current helper source
    costs are checked on all relevant outcomes (same actual non-timeout execution
    where required), without future success, mapped-input or allocator-room
    premises. Complete Merkle body/caller≤88*n+4*budget+48/49 for n,limit≤2^budget,
@@ -194,11 +194,15 @@ remain historical until their current statements/dependencies are checked.
    caller word cannot continue below ordinary memory. Parser Solver import
    closures drop251→56 (HeaderCost) and243→48 (ReadLengthCall); an unrelated
    serializer/U256 carrier import is removed.
-   Next: whole validator under the actual below-domain scratch state. The old
-   Rlp.Validation.Arena.lower assumes frame memory≥2701131776, false for the
-   current initialized2688618496. Retain those old theorems as conditional;
-   derive the current flat-list transitions and failed nested push separately.
-   Then current header bounds, normal frames and actual later callers. Recheck old
+   Complete current internal-validator body/caller now cost≤14*(length+1)
+   /14*(length+1)+1 under actual initialized scratch/frame/domain facts and
+   nonwrapping input extent. Real continuing parses advance inside a fixed end
+   or finish; a nested push cannot continue after its actual first scratch
+   store. Setup declarations, failed parses/allocations, stopped paths and
+   exhausted clocks are included. The old Rlp.Validation.Arena.lower assumption
+   remains unused and false for actual initialization.
+   Next: normal internal-validator memory/arena frame, actual caught release
+   wrapper, whole current header bounds and later callers. Recheck old
    limits against encodedLength+16*txCount≤251655056 and txCount≤12582752.
    Treat digest/output values generically when they do not affect runtime.
    Review dominant copy/zero and empty-progressive slack before the final K.
@@ -225,7 +229,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:2%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:3%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

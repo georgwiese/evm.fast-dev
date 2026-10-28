@@ -4,6 +4,28 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual root allocation and whole-source hash-entry split now check
+
+RootEntry cuts the unchanged main immediately after its actual32-byte root
+allocation. It derives real room/alignment, source heap cursor, target post-heap,
+SI/root caller locals, actual two-argument hash ABI and output-after-decoded-record
+separation. The complete ReturnedImage moves with a proved memory/heap interval;
+the selected decoder Snapshot stays at its original state, since allocation
+actually changes globals. Both real arenas/domain/code/endian survive.
+
+RootCut proves all-outcome root-prefix sourcecost≤2 and arena preservation. Its
+actual execution split reaches RootEntry.Ready or retains the original stopped
+root-allocation prefix. It refines MainDecodedState and whole source observations,
+keeping earlier stops, final result, source clocks and FFI event equality. No
+normal-hash result or future clock/room hypothesis is introduced. Global runtime
+and target work remain open. Next: SSZ hash workspace globals and current hash
+loop/memory-frame composition.
+
+Validation: current-hash-root-cut-v1.log PASS1508jobs/permitted printed axioms;
+8GiBguard/twoslots/cachefalse. Index8025modules/15986facts; Solver8064; replacement
+closure0/fixed files unchanged; incremental policy PASS64833entries/2482297160bytes.
+Account22%weekly/0resetcredits. Claim infinity; no full verification.
+
 ## Current supporting hash helpers now have checked all-outcome source costs
 
 Copy32Program/loop-shape proofs now refer to actual Software.memcpy; its code entry

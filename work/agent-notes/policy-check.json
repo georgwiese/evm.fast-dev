@@ -2036,6 +2036,8 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/MerkleizeProgressive.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MixInLength.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytes.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/RootCut.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/RootEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Sha256Pair.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/StraightCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/AddrFromWords.lean",
@@ -8067,8 +8069,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64831,
-  "package_bytes": 2482279722,
+  "package_entries": 64833,
+  "package_bytes": 2482297160,
   "claim": {
     "K": "infinity"
   },

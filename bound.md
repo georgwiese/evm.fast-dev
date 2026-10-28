@@ -83,10 +83,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-hash-leaf-cost-v1.log`,1179jobs,
-permitted printed axioms only. Historical/current proof index:8023modules/
-15976facts; Solver inventory8062, replacement closure0, frozen main files
-unchanged. Incremental policy passes64831entries/2482279722bytes. These checks
+Latest successful selected closure: `current-hash-root-cut-v1.log`,1508jobs,
+permitted printed axioms only. Historical/current proof index:8025modules/
+15986facts; Solver inventory8064, replacement closure0, frozen main files
+unchanged. Incremental policy passes64833entries/2482297160bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 

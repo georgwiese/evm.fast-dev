@@ -33,14 +33,14 @@ theorem after_byte_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
   simp only [number]
   split_ifs with singleCase shortStringCase longStringCase shortListCase
   · rw [single_shape]
-    exact (Input.ClockCost.returned source.code _ source rfl).trans (by decide)
+    exact Nat.le_trans (Input.ClockCost.returned source.code _ source rfl) (by decide)
   · rw [short_string_shape]
-    exact (Input.ClockCost.returned source.code _ source rfl).trans (by decide)
+    exact Nat.le_trans (Input.ClockCost.returned source.code _ source rfl) (by decide)
   · rw [long_string_shape]
     exact long_case_price source pointer (BitVec.ofNat 64 byte.toNat) 183#64 "ll" "n" (byte.toNat-183) pointerCell byteCell (by decide)
       (BitVec.ofNat_sub_ofNat_of_le byte.toNat 183 (by omega) (by omega)) (by omega) installed
   · rw [short_list_shape]
-    exact (Input.ClockCost.returned source.code _ source rfl).trans (by decide)
+    exact Nat.le_trans (Input.ClockCost.returned source.code _ source rfl) (by decide)
   · rw [long_list_shape]
     exact long_case_price source pointer (BitVec.ofNat 64 byte.toNat) 247#64 "ll2" "n2" (byte.toNat-247) pointerCell byteCell (by decide)
       (BitVec.ofNat_sub_ofNat_of_le byte.toNat 247 (by omega) (by omega)) (by omega) installed

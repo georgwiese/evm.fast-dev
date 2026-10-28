@@ -4,6 +4,30 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual item/full decoder and list-to-slices source bounds
+
+Current item body costs≤46*length+10, complete decoder≤46*length+12
+and ordinary complete-decoder caller≤46*length+13 source ticks. All outcomes
+are included under actual initialized arenas and a nonwrapping input extent.
+Normal item returns derive their real four-word value, positive contained
+total, binary kind and complete nonlocal frame. Full decode derives exact
+input consumption; its real scoped caller preserves the same value/state,
+real child clock, actual later continuation and lexical restoration.
+
+Current list-to-slices body costs≤57*length+3, including actual count,
+allocation, bounded unchecked second pass and both record stores. It assumes
+no future successful allocation or array. Its normal array/record model is
+still open for current main. Unchecked parser syntax now checks actual Software.
+Shared item/full-decode/slices syntax and item value facts are separated from
+historical mapped-arena clients, whose compatibility imports remain available.
+
+Validation: current-rlp-item-decode-slices-v1.log PASS819jobs/permitted printed
+axioms. Index8257modules/16722facts; inventory8297/replacement closure0/frozen
+main unchanged. Incremental policy65070entries/2483545733bytes PASS.
+No global finite target K/full verification; claim infinity. Next: actual
+header prefix and normal slice records, field/header bounds and later callers.
+8GiBguard/twoslots/cachefalse; account5%weekly/0resetcredits/ordinary usage allowed.
+
 ## Shared actual arena contract separated from initialization implementation
 
 The same four-field ArenaState contract now lives in its own minimal module.

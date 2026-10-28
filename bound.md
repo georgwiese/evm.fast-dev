@@ -36,6 +36,13 @@ Best overall effort estimate: **40%, plausible30–50%**, relative to current ma
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
+Latest checked step: actual item/full decode bodies≤46*length+10/+12,
+full-decode caller≤46*length+13, list-to-slices body≤57*length+3 source ticks.
+Real item/full-decoder normal returns retain the complete nonlocal frame;
+full decode consumes its entire input. Shared syntax/value facts are isolated
+from historical mapped-arena proofs. Selected819-job build passed; current
+normal slice-array records/header composition remain open.
+
 Checked against current Software syntax and declaration entries:
 
 - Actual installed code, main declaration/mem_init, ordinary memory domain,

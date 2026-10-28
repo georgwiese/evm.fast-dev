@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Rlp.ItemProgram
+import InitECandidate.Solver.Rlp.ItemSyntax
 import InitECandidate.Solver.Input.SequenceChoice
 
 namespace InitECandidate.Solver.Rlp.Item

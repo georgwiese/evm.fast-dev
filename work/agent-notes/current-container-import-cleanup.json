@@ -1,0 +1,24 @@
+{
+  "reference_head": "d96506fe18a8a233b723fd09eb8a5b05ca2d2853",
+  "comparisons": [
+    {
+      "historical_root": "InitECandidate.Solver.Input.PContainerProgram",
+      "current_root": "InitECandidate.Solver.Input.CurrentHash.PContainerProgram",
+      "historical_solver_closure": 613,
+      "current_solver_closure": 9
+    },
+    {
+      "historical_root": "InitECandidate.Solver.Input.PContainerBitLoop",
+      "current_root": "InitECandidate.Solver.Input.CurrentHash.PContainerBitLoop",
+      "historical_solver_closure": 614,
+      "current_solver_closure": 40
+    },
+    {
+      "historical_root": "InitECandidate.Solver.Input.PContainerSuffixCost",
+      "current_root": "InitECandidate.Solver.Input.CurrentHash.PContainerSuffixCost",
+      "historical_solver_closure": 616,
+      "current_solver_closure": 128
+    }
+  ],
+  "scope": "Static Solver import closures in this checkout; historical runtime proofs are not claimed current. No full verification claim."
+}

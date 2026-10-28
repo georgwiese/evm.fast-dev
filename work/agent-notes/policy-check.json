@@ -2019,6 +2019,9 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/Effects.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/FixedHashCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/FixedMemoryCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordProgram.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordSteps.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/HashPrefix.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/HtrBdep.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/HtrBexit.lean",
@@ -2051,7 +2054,10 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/MerkleizeProgressive.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MixInLength.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PBytesCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PContainerBitLoop.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PContainerCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PContainerProgram.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PContainerSuffixCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PListCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytes.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytesCallCost.lean",
@@ -8108,8 +8114,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64872,
-  "package_bytes": 2482552138,
+  "package_entries": 64878,
+  "package_bytes": 2482592679,
   "claim": {
     "K": "infinity"
   },

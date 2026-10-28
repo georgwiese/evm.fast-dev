@@ -4,6 +4,37 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current container and six fixed-record hash costs check
+
+The actual activity-bit loop uses the shared signed-counter theorem:≤n-index
+source ticks for nonnegative n<2^63, including failed byte reads/stores. The
+clear/bit-loop/software-SHA/release suffix costs≤n+44. Complete actual
+progressive-container body/caller≤89*n+3168/3169 for n≤134217728 on the same
+observed non-timeout execution. Real mark/64-byte allocation failures are
+included; no future success, mapped pointer, workspace or heap room is assumed.
+
+Current fixed-record proofs compose each real scalar/vector/copy field and its
+actual Merkle/release suffix. Same observed non-timeout body prices check:
+withdrawal758, deposit1425, wdreq880, cons1144, bdep1279, bexit734; actual
+ordinary callers add1. Their pointer and returned temporary bindings come from
+the same execution. No old accelerator or geometry assumptions are needed for
+these costs. Physical metadata lifetimes and target straight-line work remain
+separate open obligations.
+
+Cleanup adds byte stores to the shared LocalPrefix structural theorem and
+removes ByteStoreLocal's duplicate proof. Current container syntax/bit-loop/
+suffix Solver import closures shrink613→9/614→40/616→128; the exact static
+comparison is current-container-import-cleanup.json. Historical consumers remain
+unselected; their old runtime proofs are not claimed current.
+
+Validation: current-container-record-complete-v1.log PASS1634jobs/permitted
+printed axioms only, including current Invocation, PBytes, byte callers and SHA
+output memory frame.8GiBguard/twoslots/cachefalse; disk61%. Proof index8070modules/
+16171facts; Solver inventory8109, replacement closure0, frozen main files
+unchanged. Incremental policy64878entries/2482592679bytes PASS. No global finite
+target K, no full verification; claim infinity. Next: actual request-list
+selection/loops and complete physical payload/request-root composition.
+
 ## Progressive list/byte wrappers and shared ABI cleanup
 
 Current PListCost checks the complete real progressive/mix/return body and its

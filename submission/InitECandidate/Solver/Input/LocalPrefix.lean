@@ -13,6 +13,7 @@ inductive LocalPrefix (key : MlS) : ProgHOL 64 → Prop where
   | globalAssign (name : MlS) (expression : ExpHOL 64) :
       LocalPrefix key (.assign .global name expression)
   | store (address value : ExpHOL 64) : LocalPrefix key (.store address value)
+  | storeByte (address value : ExpHOL 64) : LocalPrefix key (.storeByte address value)
   | call (destination : Option MlS) (function : MlS) (arguments : List (ExpHOL 64))
       (other : ∀ name, destination = some name → key ≠ name) :
       LocalPrefix key (.call (some (destination.map (fun name => (.local, name)), none)) function arguments)
@@ -70,6 +71,9 @@ theorem LocalPrefix.summary_full {F : Type} {key : MlS} {program : ProgHOL 64}
       · split <;> simp
       · simp
     · simp
+  | storeByte address value =>
+    rw [evaluateHOLFiniteState_storeByte]
+    repeat' first | split | simp
   | call destination function arguments other =>
     rw [evaluateHOLFiniteState_call]
     split

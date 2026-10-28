@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-progressive-wrapper-complete-v1.log`,1627jobs,
-permitted printed axioms only. Historical/current proof index:8063modules/
-16142facts; Solver inventory8103, replacement closure0, frozen main files
-unchanged. Incremental policy passes64872entries/2482552138bytes. These checks
+Latest successful selected closure: `current-container-record-complete-v1.log`,1634jobs,
+permitted printed axioms only. Historical/current proof index:8070modules/
+16171facts; Solver inventory8109, replacement closure0, frozen main files
+unchanged. Incremental policy passes64878entries/2482592679bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -118,8 +118,13 @@ remain historical until their current statements/dependencies are checked.
    actual n≤134217728 and the same non-timeout observation, deriving≤15rounds
    and actual fold count. Progressive list body/caller costs≤88*n+3168/3169; progressive-byte
    body/caller≤packPrice(n)+88*ceil(n/32)+3172/3173 now check, with exact
-   packing return and observed errors included. Container wrapper, full
-   request-hash composition and real ownership/resource frames remain open.
+   packing return and observed errors included. Container body/caller≤89*n+3168/3169 and six fixed-record hashes now
+   check without mapped-pointer/workspace/heap-room/success assumptions. Fixed
+   record body prices: withdrawal758, deposit1425, wdreq880, cons1144, bdep1279,
+   bexit734. Request-list dispatch/loops, full request-hash composition and real
+   ownership/resource frames remain open. Container syntax/bit-loop/suffix import
+   closures shrink613→9/614→40/616→128Solver modules. Shared local-prefix
+   soundness now handles byte stores; ByteStoreLocal reuses it.
    Current sha256_pair now has a checked syntax certificate: it preserves all
    globals, spends0body source ticks and at most1caller tick on all outcomes.
    Its1,022-line generated effect proof is now50lines, using shared structural

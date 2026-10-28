@@ -7,10 +7,8 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix.Query
 /-- Actual ordinary byte stores retain every current caller binding on
 continuation and cannot escape as return, break or continue. -/
 theorem byte_store_local {F : Type} (key : MlS) (address value : ExpHOL 64) (source : PanSemStateFiniteExact 64 F) :
-    LocalSummary key (.storeByte address value) source := by
-  unfold LocalSummary
-  rw [evaluateHOLFiniteState_storeByte]
-  repeat' first | split | simp
+    LocalSummary key (.storeByte address value) source :=
+  (LocalPrefix.storeByte address value).summary_full source
 
 /-- A normal ordinary byte store advances no current caller counter. -/
 theorem CounterFlow.byte_store (key : MlS) (address value : ExpHOL 64) : Advances key 0 (.storeByte address value) := by

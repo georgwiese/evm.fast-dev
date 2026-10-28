@@ -49,14 +49,14 @@ theorem Rows.frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
 theorem Rows.above (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (array pointer : BitVec 64) (bytes : Nat) (items : List Rlp.ListItem) (rows : Rows source array pointer bytes items)
     (cursor : Nat) (below : cursor≤array.toNat) (domain : target.memaddrs=source.memaddrs)
-    (memory : Rlp.Validation.Above source target cursor) : Rows target array pointer bytes items :=
-  rows.frame source target array pointer bytes items domain (fun query lower upper=>memory query (below.trans lower))
+    (memory : ∀ query : BitVec 64,cursor≤query.toNat → target.memory query=source.memory query) : Rows target array pointer bytes items :=
+  rows.frame source target array pointer bytes items domain (fun query lower upper=>memory query (Nat.le_trans below lower))
 
 theorem Rows.earlier (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (array pointer : BitVec 64) (bytes : Nat) (items : List Rlp.ListItem) (rows : Rows source array pointer bytes items)
     (frontier : Nat) (before : array.toNat+16*items.length≤frontier) (domain : target.memaddrs=source.memaddrs)
     (memory : ∀ query : BitVec 64,query.toNat<frontier→target.memory query=source.memory query) : Rows target array pointer bytes items :=
-  rows.frame source target array pointer bytes items domain (fun query lower upper=>memory query (upper.trans_le before))
+  rows.frame source target array pointer bytes items domain (fun query lower upper=>memory query (Nat.lt_of_lt_of_le upper before))
 
 /-- Current row cells alone supply both real argument words and all input
 range bounds required for an actual original path/value item call. -/

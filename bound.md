@@ -664,3 +664,29 @@ Permitted printed axioms only. Index8614modules/17437facts; inventory8659,
 replacement closure0/fixed files unchanged. Incremental policy PASS65449
 entries/2485021520bytes. Usage25%weekly/0resetcredits. No global finite target
 K/full verification. Continue actual MPT decode-step/control composition.
+
+## Current caught-parser prefix and real recursive decoder cuts
+
+The actual MPT resolve/decode caught parser now costs≤46*inputLength+14
+source ticks on all outcomes. Genuine continuation derives the real parsed
+tuple, complete physical frame, caller bindings and original suffix, at a
+price≤46*inputLength+13. The real MPT handler cannot manufacture normal
+fallthrough; no mapped-scratch/old validation arena is required.
+
+A shared selected-global arena frame proves that actual compact conversion
+and node constructors retain main's low scratch/frame cursors despite their
+persistent heap updates. The extension path costs≤2ticks and cannot return
+a recursive record. The branch's real persistent node constructor,176-byte
+clear and scratch suffix cost≤231ticks; its genuine constructor return still
+cannot enable the recursive frame. Failure guards and all allocator/store
+outcomes remain explicit. The new nullary ABI bridge is shared by the cuts
+and cost proofs. Physical witness-row helpers now use their equivalent
+pointwise memory frame without importing the old validation proof graph.
+
+Validation: current-mpt-parse-cuts-and-rows-v4.log PASS2558jobs including
+current parse prefix, constructor/global frames, branch costs/cuts, row
+images and actual main state_init entry. Permitted printed axioms only.
+Index8622modules/17455facts; inventory8667/replacement closure0/fixed files
+unchanged. Incremental policy PASS65457entries/2485048948bytes. Usage25%
+weekly/0resetcredits. No global finite target K/full verification. Next:
+current leaf/two-item path and complete witness-decoder loop composition.

@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-payload-extra-final-memory-v4.log`,1450jobs,
-permitted printed axioms only. Historical/current proof index:8155modules/
-16505facts; Solver inventory8194, replacement closure0, frozen main files
-unchanged. Incremental policy passes64963entries/2483120226bytes. These checks
+Latest successful selected closure: `current-payload-whole-caller-v1.log`,1475jobs,
+permitted printed axioms only. Historical/current proof index:8174modules/
+16554facts; Solver inventory8213, replacement closure0, frozen main files
+unchanged. Incremental policy passes64982entries/2483211493bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -144,46 +144,36 @@ remain historical until their current statements/dependencies are checked.
    proofs remain unclaimed. These are normal memory frames plus separate
    all-outcome costs, not a proof that hashing succeeds or that errors are covered.
 
-   Still open: derive every actual parent count/read/byte total from the same
-   complete payload and request decoder images, and transport them across the
-   parent hashes. Join actual root/payload/request allocations and outputs to
-   those frames and compose whole current payload/request-root costs, including
-   earlier stopped alternatives. Recheck old layout limits against actual
-   encodedLength+16*txCount≤251655056, txCount≤12582752 and totalTxBytes≤251655056.
-   The payload now has minimal current syntax/scope interfaces, exact fixed-field
-   source prices1668/84/162, and a complete normal heap-restoration proof
-   through both dynamic loops and actual m2 releases. Literal raw+0 expressions
-   are retained; source argument equivalence does not price compiled target work.
-   Current transaction loop source allowance is5*actual total bytes+3303*count;
-   the withdrawal loop costs760*count, including all observed non-timeout
-   failures. Both complete normal loops preserve protected metadata and the
-   actual entering heap. Transaction rows, input arenas, counts and the shared
-   byte budget derive from the real decoder records and parent allocation
-   geometry. Remaining parent joins still need to construct their entry states.
-   The complete payload state now carries the same decoded image through real
-   static field prefixes, the actual extra-data list and balance calls. Its real
-   validated offsets derive raw540, withdrawal and balance input arenas and
-   count/length bounds, without a sixteen-withdrawal premise. Extra-data caller
-   cost≤270; the complete final scalar/balance/nineteen-field container/release
-   phase costs≤5*balanceBytes+8325 and has its protected-memory frame. The
-   actual parent dynamic allocations and phase joins remain open.
-   Full request fields now reach the actual root callee; their list extents,
-   individual count bounds and shared byte/count budgets check. Actual parent
-   request syntax, normal heap restoration and all five list ABIs now check.
-   Their checked list-price sum≤13*(requestSize-20)+15870 uses the shared
-   input budget. Complete actual htr_requests now has body/caller source cost
-   ≤13*(requestSize-20)+19488/19489, including failed allocations and all
-   observed non-timeout outcomes. Every real continuing list call derives the
-   next complete RQ image and restored heap before later reads. Its actual
-   allocation return derives the fresh160-byte chunk extent, persistent room
-   and next bounded/aligned frontier. Remaining caller/root entry obligations
-   are the real decoder image, installed code/domain, workspaces and frontier;
-   no future helper success or extra temporary room is assumed. The complete
-   parent requests body and actual caller also preserve any earlier protected
-   metadata word outside their output/length chunk and restore entering heap
-   on the same normal return. Materialize
-   further SI witness fields at the real caller that needs them. Treat digest/output values generically when their values do not
-   affect runtime. Review dominant copy/zero and empty-progressive slack later.
+   The complete current payload body and real two-word caller now have source
+   allowance5*totalTxBytes+3391*txCount+848*withdrawalCount+5*balanceBytes+
+   16695/16696. This includes the actual initial raw load, outer mark/608-byte
+   chunk allocation, static fields, extra-data list, transaction declarations/
+   mark/root allocation/loop/list/release, assigned withdrawal root allocation,
+   withdrawal loop/list/release, balance hash, nineteen-field container and
+   final release. Each real normal prefix derives the next complete physical
+   payload and heap before later field reads. Failed allocations and all
+   observed non-timeout outcomes remain included. Validated offsets derive
+   real raw/withdrawal/balance arenas and counts, without a sixteen-withdrawal
+   premise or any future successful hash/extra temporary room. Whole payload
+   heap restoration and component protected-memory frames check; the whole
+   generic parent protected-memory composition remains open. Literal raw+0
+   expressions are retained, and their compiled target work remains unpriced.
+
+   Full request fields reach the actual root callee. Its five list extents,
+   counts and shared byte budget, actual160-byte chunk allocation, complete
+   source body/caller cost13*(requestSize-20)+19488/19489, and whole protected
+   memory/heap caller frame check. Actual normal prefixes supply each next RQ
+   image; failed allocations and observed non-timeout outcomes are included.
+
+   Still open: derive both parent caller entry contracts at their actual root
+   call sites, finish the complete payload protected-memory frame and retain
+   actual SI/RQ/payload data across the root's calls. Compose whole current
+   request-root cost and memory frames, including all earlier stopped paths.
+   Materialize further SI witness fields at their real callers. Recheck old
+   limits against encodedLength+16*txCount≤251655056 and txCount≤12582752.
+   Treat digest/output values generically when they do not affect runtime.
+   Review dominant copy/zero and empty-progressive slack before the final K.
+
 3. Prioritize actual early scratch access and its covered-outcome consequences
    before expanding map/crypto/EVM migration. Main's scratch pointers are below
    sourceBase2701131776 and outside ordinary memory. NoReturn alone does not
@@ -206,7 +196,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:32%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:33%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

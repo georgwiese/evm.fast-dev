@@ -3,7 +3,7 @@ import InitECandidate.Solver.Input.AssignedCallNormal
 namespace InitECandidate.Solver.Input.CallNormal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
-theorem local_data (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (name function : MlS) (arguments : List (ExpHOL 64))
+theorem local_data {F : Type} (source post : PanSemStateFiniteExact 64 F) (name function : MlS) (arguments : List (ExpHOL 64))
     (normal : evaluateHOLFiniteState source (.call (some (some (.local, name), none)) function arguments) = (none, post)) :
     1 ≤ source.clock ∧ ∃ values body callee returnShape target returned,
       evalListHOLFinite source (h := fun query => Classical.propDecidable (source.memaddrs query)) arguments = some values ∧

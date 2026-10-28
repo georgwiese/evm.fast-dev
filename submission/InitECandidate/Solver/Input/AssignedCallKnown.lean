@@ -5,7 +5,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
 /-- A genuinely continuing assigned call with known current arguments
 and code derives its actual callee execution and exact caller restoration. -/
-theorem local_known (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (name function : MlS)
+theorem local_known {F : Type} (source target : PanSemStateFiniteExact 64 F) (name function : MlS)
     (arguments : List (ExpHOL 64)) (values : List (ValueHOL 64)) (body : ProgHOL 64)
     (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
     (argsRead : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some values)

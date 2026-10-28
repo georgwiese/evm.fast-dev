@@ -4,6 +4,36 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual current htr_payload body and two-word caller source bound
+
+Whole payload body allowance is5*actual total transaction bytes+3391*actual
+transaction count+848*actual withdrawal count+5*actual balance bytes+16695;
+the real two-word caller adds one. This joins the literal initial raw load,
+outer mark/608-byte chunk allocation, static fields, extra list, transaction
+snapshot/root allocation/loop/list/release, actual ordinary assigned withdrawal
+roots allocation, withdrawal loop/list/release, balance, nineteen-field container
+and final release. Each same real normal prefix supplies its next complete
+decoded image, caller locals and heap; earlier failed allocations and all
+observed non-timeout stops remain included. Entry obligations still need to be
+derived at the actual root caller. No successful future hash or extra temporary
+allocation room is assumed. This is source call/loop work, not target steps.
+
+Shared state/cursor/list transport keeps the same decoded payload through both
+dynamic phases. Saved cursor geometry comes from the real earlier mark. Generic
+assigned-call facts now work for any FFI state, removing a stale hidden Guest
+import. Pure local-frame transport uses the existing direct decoded frame
+instead of rebuilding interval ownership. Explicit scalar declaration states
+keep the final checks small; failed/guard-stopped diagnostic logs were not
+indexed. Complete generic payload protected-memory composition and root joins
+remain open, alongside target straight-line and global covered-path work.
+
+Validation: current-payload-whole-caller-v1.log PASS1475jobs/permitted printed
+axioms only, covering all19newmodules and selected dependencies. 8GiBguard/
+twoslots/cachefalse, disk61%. Index8174modules/16554facts; inventory8213,
+replacement closure0, frozen main unchanged. Incremental policy64982entries/
+2483211493bytes PASS. Account33%weekly,0resetcredits; ordinary usage allowed.
+No global finite target K or full verification; claim infinity.
+
 ## Same-decoder payload state, real byte regions and complete final phase
 
 PayloadDecodedBudget derives the raw540-byte arena, actual withdrawal count

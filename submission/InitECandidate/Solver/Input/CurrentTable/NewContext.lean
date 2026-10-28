@@ -44,6 +44,7 @@ Patricia header, separated arrays and advanced heap. -/
 structure Returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap cap stp pad : BitVec 64) : Prop where
   geometry : Geometry heap cap
   tableAligned : heap.toNat%8=0
+  capLower : 2≤cap.toNat
   arena : CurrentStartup.ArenaState post
   environment : CurrentKeccak.Hash.Environment post stp pad
   heapCell : post.globals.lookup (ofString "heap_ptr")=some (.val (.word (endPointer heap cap)))
@@ -69,7 +70,7 @@ theorem Returned.reanchor {source origin post : PanSemStateFiniteExact 64 Guest.
   change origin.be=source.be at endian
   change origin.eshapes=source.eshapes at shapes
   change origin.code=source.code at code
-  exact ⟨ready.geometry,ready.tableAligned,ready.arena,ready.environment,ready.heapCell,ready.heapAfter,ready.fields,
+  exact ⟨ready.geometry,ready.tableAligned,ready.capLower,ready.arena,ready.environment,ready.heapCell,ready.heapAfter,ready.fields,
     by intro query before; exact (ready.earlier query before).trans (congrFun memory query).symm,
     by intro key different; exact (ready.globals key different).trans (congrArg (fun table=>table.lookup key) globals).symm,
     ready.metadata.1.trans domain.symm,ready.metadata.2.1.trans endian.symm,ready.metadata.2.2.1.trans shapes.symm,ready.metadata.2.2.2.trans code.symm⟩
@@ -109,7 +110,7 @@ theorem Context.returned {source post : PanSemStateFiniteExact 64 Guest.HostMemo
     have c:=geometry.nodesBefore
     have d:=geometry.orderBefore
     omega
-  exact ⟨answer,geometry,ready.heapAligned,nextArena,environment,by rw [globals]; exact finish_heap source heap cap,afterHeap,
+  exact ⟨answer,geometry,ready.heapAligned,ready.capLower,nextArena,environment,by rw [globals]; exact finish_heap source heap cap,afterHeap,
     by intro entry member; rw [memory]; exact finish_field source heap cap entry member,
     by intro query before; rw [memory]; exact finish_before source heap cap query tableArena before,kept,metadata⟩
 

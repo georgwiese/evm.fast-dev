@@ -3211,3 +3211,32 @@ Next: current node allocation/leaf/internal construction and insertion image,
 workspace separation, remaining main paths and uniform target composition.
 Overall estimate40%, plausible30–50%. Five old unfinished RLP files preserved
 untracked. Account14%weekly used, zero reset credits, ordinary usage allowed.
+
+
+## Actual node allocation, available slots and key-bit observations — 2026-10-28
+
+The current htab_new_node122 empty-free-list/no-growth path executes at any
+body clock, including0, returning the genuine next index and changing only
+its increment at table+64. Its classified scoped caller costs≤1source tick
+or supplies that same result/single-word physical frame and original
+continuation. The real table constructor now retains its actual capacity≥2,
+so its returned metadata derives the first allocator context directly.
+Availability after later insertions remains an obligation.
+
+One shared slot geometry maps all real available32-byte key/node and8-byte
+order slots, including reserved zero slots, without initialized-content
+premises. The actual find-leaf branch mask/test now observes physical query
+bytes in current most-significant-first order; shifts/modulo/aligned slot
+calculations are checked against actual word expressions. These facts are
+local ingredients, not a preserved insertion image or global database bound.
+
+Validation: current-patricia-allocator-slots-key-read-v3.log PASS2199jobs,
+permitted printed axioms only, including constructor/main/header/root/lookup
+and first-difference callers. Index8453modules/17100facts; inventory8497,
+replacement AST reverse closure0, fixed files unchanged. Incremental policy
+PASS65280entries/2484309843bytes; no full verification, claim infinity and no
+global target K. Next: actual branch/path semantics, leaf/internal writes and
+insertion invariant; workspace separation, later main paths and target-step
+composition. Overall estimate40%, plausible30–50%. Five old unfinished RLP
+files preserved untracked. Account15%weekly used, zero reset credits, ordinary
+usage allowed.

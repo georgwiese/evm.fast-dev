@@ -2477,6 +2477,7 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Entry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Program.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/KeyBits.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/KeyRead.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewArraysProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewCall.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewCompleteCost.lean",
@@ -2487,6 +2488,10 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/NewGeometry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewKeysEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewMemory.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewNode/Call.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewNode/Context.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewNode/NoGrow.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewNode/Program.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewNodesEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewOrderEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewPrefix.lean",
@@ -2496,6 +2501,7 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildCapacity.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildConstructor.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildSyntax.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/SlotGeometry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Workspace.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Memory.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Price.lean",
@@ -8496,8 +8502,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65273,
-  "package_bytes": 2484278265,
+  "package_entries": 65280,
+  "package_bytes": 2484309843,
   "claim": {
     "K": "infinity"
   },

@@ -43,7 +43,7 @@ with its real24-round permutation and full workspace/output memory frame.
 Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
 covering both allocations and all decode/hash/link loops. Actual normal/scoped
 returns supply the real arrays, advanced physical context and protected input.
-Selected1889-job current main/root/table and find-leaf helper replay passed. The
+Selected2199-job current main/root/table and find-leaf helper replay passed. The
 actual first three initializer calls derive Keccak state2701132160 and pad2701132360;
 these globals survive startup, decoding and the31-helper root graph. Real decoded
 witness images supply the header rows and full caller context. Header returns
@@ -87,6 +87,15 @@ returned word and original continuation within289source ticks. Actual byte
 loads, zero prefixes and every normal/returned loop path are checked. The
 insertion history/tree-order connection remains open. Shared counter/local-flow
 interfaces now admit actual early returns while preserving existing APIs.
+
+Current htab_new_node122's actual empty-free-list/no-growth path returns the
+real next index and writes only its increment, at every body clock including0.
+It costs0body/1scoped caller source ticks. The genuine constructor return now
+retains its real capacity≥2 and derives this first allocator context. Shared
+slot geometry maps all available real keys/nodes/order slots, without assuming
+initialized contents. The actual find-leaf key test now observes the real
+most-significant-first key bit from physical bytes. Insertion history still
+must derive node availability and preserve the full tree/keys after updates.
 
 Checked against current Software syntax and declaration entries:
 
@@ -136,10 +145,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-first-diff-complete-caller-v1.log`,1889jobs,
-permitted printed axioms only. Historical/current proof index:8447modules/
-17081facts; inventory8491modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65273entries/2484278265bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-allocator-slots-key-read-v3.log`,2199jobs,
+permitted printed axioms only. Historical/current proof index:8453modules/
+17100facts; inventory8497modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65280entries/2484309843bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order
@@ -301,7 +310,7 @@ build evidence, not complete verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:14%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:15%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

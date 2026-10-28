@@ -607,3 +607,29 @@ replacement closure0/fixed files unchanged. Incremental policy PASS65438
 entries/2484982671bytes.
 No global finite target K/full verification. Usage24%weekly/0resetcredits.
 Next: actual state_init and bounded witness-decoder control flow.
+
+## MPT/RLP cleanup and current bounded root lookup
+
+Moved the identical full-RLP Complete contract into DecodeProgram and reused
+it in the current decoder. Existing MPT step/root/state syntax now names
+Guest.Software declarations and their actual indices. Removed broad account,
+old database and gas-catalogue imports from these syntax/failure helpers; the
+root ABI imports its finite-code bridge explicitly. The current decoder reuses
+these helpers instead of maintaining a second set of syntax modules.
+
+The actual extension/branch frame suffixes cannot return normally: their
+real88-byte scratch allocation is followed by an unmapped store at offset8.
+Each suffix costs≤2source ticks, without assuming allocation success. This
+is a local cut; full decoder paths must still derive its arena at that point.
+The real root comparison handles missing/wrongly shaped empty-root globals
+without an extra entry premise. Combining it with the current database gives
+a270-tick actual root prefix or a genuine≤1024-byte node witness at the
+original continuation, with physical/caller frames retained.
+
+Validation: current-witness-root-lookup-v1.log PASS2553jobs including the
+shared syntax/scratch/string/root and complete current main prefix. Permitted
+printed axioms only. Index8607modules/17427facts; inventory8652/replacement
+closure0/fixed files unchanged. Incremental policy PASS65442entries/
+2484995980bytes. Earlier exploratory old-library builds exposed stale imports
+and were not indexed. No global finite target K or full verification claimed.
+Usage24%weekly/0resetcredits. Continue actual state_init and witness decoding.

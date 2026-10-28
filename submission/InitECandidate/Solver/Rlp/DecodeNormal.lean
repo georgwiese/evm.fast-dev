@@ -5,11 +5,6 @@ namespace InitECandidate.Solver.Rlp.Decode
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def Complete (pointer length : BitVec 64) (value : ValueHOL 64) : Prop :=
-  ∃ header payload flag,value=Item.result pointer header payload flag ∧ header.toNat≤9 ∧
-    1≤header.toNat+payload.toNat ∧ header.toNat+payload.toNat=length.toNat ∧
-    (flag=0#64 ∨ flag=1#64) ∧ (flag=1#64 → 1≤header.toNat)
-
 theorem after_item_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)
     (answer : ValueHOL 64) (valid : Item.Valid pointer length.toNat answer)
     (lengthCell : source.locals.lookup (ofString "len")=some (.val (.word length)))

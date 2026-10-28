@@ -1,4 +1,6 @@
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.Input.OriginalCode
+import InitECandidate.Solver.Input.OriginalEntry
+import InitECandidate.Solver.PanState
 import InitECandidate.Solver.Input.NoReturnScoped
 import InitECandidate.Solver.Input.NoNamedException
 import InitECandidate.Solver.Input.ClockCostCall
@@ -8,17 +10,17 @@ namespace InitECandidate.Solver.Mpt.Fail
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_mpt_fail with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_mpt_fail with | .function fn => progToHOL fn.body | _ => .skip
 def formals : List (MlS × ShapeHOL) := [(ofString "code", .one)]
 theorem body_shape : body = .seq (.raise (ofString "MptErr") (localVar "code")) (.return (.const 0#64)) := by
-  simp only [body, Guest.guestFn_mpt_fail, progToHOL, expToHOL, localVar]
+  simp only [body, Guest.Software.guestFn_mpt_fail, progToHOL, expToHOL, localVar]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "mpt_fail") = some (formals, body, .one) := by
-  have checked := Input.OriginalCode.indexed code installed 222 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_mpt_fail) (by rfl)
+  have checked := Input.OriginalCode.indexed code installed 220 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_mpt_fail) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry, declToHOL, funDeclToHOL, body, formals,
-    Guest.guestFn_mpt_fail, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
+    Guest.Software.guestFn_mpt_fail, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
 
 theorem never_returns : Input.NoReturn.Never body := by
   rw [body_shape]

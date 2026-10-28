@@ -1,5 +1,5 @@
-import InitECandidate.Solver.Mpt.AccountDecodeProgram
-import InitECandidate.Solver.Rlp.DecodeNormal
+import InitECandidate.Solver.Rlp.DecodeProgram
+import InitECandidate.Solver.Rlp.ItemSyntax
 
 namespace InitECandidate.Solver.Mpt.WitnessStep
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -9,9 +9,9 @@ inductive Kind where | resolve | decode
   deriving DecidableEq
 
 def original : Kind→Decl (BitVec 64)
-  | .resolve=>Guest.guestFn__resolve_step | .decode=>Guest.guestFn__decode_step
+  | .resolve=>Guest.Software.guestFn__resolve_step | .decode=>Guest.Software.guestFn__decode_step
 def name : Kind→String | .resolve=>"_resolve_step" | .decode=>"_decode_step"
-def index : Kind→Nat | .resolve=>236 | .decode=>237
+def index : Kind→Nat | .resolve=>234 | .decode=>235
 def resultShape : Kind→ShapeHOL | .resolve=>Rlp.Item.resultShape | .decode=>.comb [.one,.one]
 def body (kind : Kind) : ProgHOL 64 := match original kind with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL) := [(ofString "db",.one),(ofString "p",.one),(ofString "n",.one)]
@@ -31,14 +31,14 @@ theorem body_shape (kind : Kind) : body kind=
     .dec (ofString "it") Rlp.Item.resultShape (.rstruct [.const 0#64,.const 0#64,.const 0#64,.const 0#64])
       (.dec (ofString "e") .one (.const 0#64) (.seq (caught kind) (afterRlp kind))) := by
   cases kind <;> simp only [body,original,afterRlp,caught,rlpName,arguments,handler,Rlp.Item.resultShape,localVar,
-    Guest.guestFn__resolve_step,Guest.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+    Guest.Software.guestFn__resolve_step,Guest.Software.guestFn__decode_step,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 
 set_option maxRecDepth 100000 in
 theorem original_code (kind : Kind) (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString (name kind))=some (formals,body kind,resultShape kind) := by
   have checked:=Input.OriginalCode.indexed code installed (index kind) (GasBudget.OriginalCodeEnvironment.originalEntry (original kind)) (by cases kind <;> rfl)
   cases kind <;> simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,original,name,resultShape,Rlp.Item.resultShape,
-    Guest.guestFn__resolve_step,Guest.guestFn__decode_step,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn__resolve_step,Guest.Software.guestFn__decode_step,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem rlp_code (kind : Kind) (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString (rlpName kind))=some (Rlp.Header.formals,rlpBody kind,Rlp.Item.resultShape) := by
@@ -52,7 +52,7 @@ theorem parsed_valid (kind : Kind) (pointer length : BitVec 64) (answer : ValueH
   | resolve=>exact actual
   | decode=>
     obtain ⟨header,payload,flag,value,small,positive,extent,binary,listHeader⟩:=actual
-    exact ⟨header,payload,flag,value,small,positive,extent.le,binary,listHeader⟩
+    exact ⟨header,payload,flag,value,small,positive,Nat.le_of_eq extent,binary,listHeader⟩
 
 end InitECandidate.Solver.Mpt.WitnessStep
 

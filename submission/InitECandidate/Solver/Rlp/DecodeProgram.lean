@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Rlp.ItemSyntax
+import InitECandidate.Solver.Rlp.ItemValueSyntax
 
 namespace InitECandidate.Solver.Rlp.Decode
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -12,6 +13,12 @@ def afterItem : ProgHOL 64 := .seq
 theorem body_shape : body=.decCall (ofString "it") Item.resultShape (ofString "rlp_item") arguments afterItem := by
   simp only [body,arguments,afterItem,Item.resultShape,Header.fail,localVar,Guest.Software.guestFn_rlp_decode_fully,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+
+def Complete (pointer length : BitVec 64) (value : ValueHOL 64) : Prop :=
+  ∃ header payload flag,value=Item.result pointer header payload flag ∧ header.toNat≤9 ∧
+    1≤header.toNat+payload.toNat ∧ header.toNat+payload.toNat=length.toNat ∧
+    (flag=0#64 ∨ flag=1#64) ∧ (flag=1#64 → 1≤header.toNat)
+
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :

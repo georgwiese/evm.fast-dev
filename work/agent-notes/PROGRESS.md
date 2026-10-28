@@ -4,6 +4,33 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete current header decoder body/caller source bound
+
+Whole unchanged Software decode_header208 body/caller cost≤195*length+473/+474
+source ticks on every outcome. Real complete RLP parsing, kind/count rejection,
+slice counting/allocation/records, actual248-byte allocation and full typed
+field pipeline are composed. Only initial current arenas, real bounded aligned
+heap cursor and input-before-heap geometry are premises. Every later parser
+value, record model, count and allocation room is derived from its same actual
+normal return. No future success or mapped scratch is assumed.
+
+The actual canonical count/allocation entry now establishes the complete
+physical field-state invariant. Its fresh output allocation protects prior
+input/records through every field. Count-check traces are generalized to arbitrary
+exception metadata; the literal rejected branch spends no source ticks even
+when its exception metadata is invalid. Historical narrower wrappers remain.
+Arithmetic normalization is separated from the large source syntax to avoid
+unnecessary evaluator unfolding during elaboration.
+
+Validation: current-header-complete-cost-entry-v6.log PASS957jobs/permitted
+printed axioms, including earlier actual normal field-entry return. Index8319
+modules/16792facts; inventory8362/replacement closure0/frozen main unchanged.
+Incremental policy65139entries/2483727940bytes PASS.
+No global finite target K/full verification; claim infinity. Next: normal header
+return/value/earlier-memory frame and actual header-validation/Keccak loop;
+later current paths and global target-step composition remain open.
+8GiBguard/twoslots/cachefalse; account7%weekly/0resetcredits/ordinary usage allowed.
+
 ## Complete literal current header field-pipeline source bound
 
 The unchanged decode_header208 afterAllocation pipeline now costs≤92*payloadBytes

@@ -61,9 +61,8 @@ theorem counted_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (arr
 
 /-- Every original header field-count scope either stops without spending a
 source tick or reaches the real allocation with a count of21 or23. -/
-theorem list_count_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (array count : BitVec 64)
+theorem list_count_trace_any (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (array count : BitVec 64)
     (listCell : source.locals.lookup (ofString "lst")=some (Rlp.Slices.result array count))
-    (shape : source.eshapes.lookup (ofString "HdrErr")=some .one)
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterList=(result,post)) :
     source.clock-post.clock≤0 ∨ (count=21#64 ∨ count=23#64) ∧ ∃ inner,
       evaluateHOLFiniteState (counted (declared source array count) count) afterCount=(result,inner) ∧
@@ -74,11 +73,20 @@ theorem list_count_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemo
   have actual : evaluateHOLFiniteState (declared source array count) afterCurrent=(result,middle) := Prod.ext actualResult rfl
   have endpoint : post=restoreDeclared source array count middle := (congrArg Prod.snd run).symm
   have cells := declared_cells source array count
-  rcases count_trace (declared source array count) middle count cells.2.1 cells.2.2 shape result actual with stopped|reached
+  rcases count_trace_any (declared source array count) middle count cells.2.1 cells.2.2 result actual with stopped|reached
   · have finalClock : post.clock=middle.clock := by rw [endpoint]; rfl
     change source.clock-middle.clock≤0 at stopped
     exact Or.inl (by omega)
   · exact Or.inr ⟨reached.1,middle,reached.2,endpoint⟩
+
+theorem list_count_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (array count : BitVec 64)
+    (listCell : source.locals.lookup (ofString "lst")=some (Rlp.Slices.result array count))
+    (shape : source.eshapes.lookup (ofString "HdrErr")=some .one)
+    (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterList=(result,post)) :
+    source.clock-post.clock≤0 ∨ (count=21#64 ∨ count=23#64) ∧ ∃ inner,
+      evaluateHOLFiniteState (counted (declared source array count) count) afterCount=(result,inner) ∧
+      post=restoreDeclared source array count inner :=
+  list_count_trace_any source post array count listCell result run
 
 end InitECandidate.Solver.Headers.Decode
 
@@ -87,3 +95,5 @@ end InitECandidate.Solver.Headers.Decode
 #print axioms InitECandidate.Solver.Headers.Decode.counted_cells
 #print axioms InitECandidate.Solver.Headers.Decode.counted_frame
 #print axioms InitECandidate.Solver.Headers.Decode.list_count_trace
+
+#print axioms InitECandidate.Solver.Headers.Decode.list_count_trace_any

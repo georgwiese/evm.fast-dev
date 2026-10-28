@@ -36,12 +36,12 @@ Best overall effort estimate: **40%, plausible30–50%**, relative to current ma
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
-Latest checked step: complete literal current header-field extraction costs
-≤92*payloadBytes+455 source ticks on all outcomes from its reached field state.
-Real typed helper returns, assignments, bounded stores, scopes and protected
-input/record frames are included. Selected2030-job main/root/header replay
-passed. Parser/count/allocation-to-field-state composition and whole header
-body, later current source paths and target-step composition remain open.
+Latest checked step: whole unchanged decode_header208 body/caller costs
+≤195*inputLength+473/+474 source ticks on all outcomes, composing actual RLP,
+records, count/allocation and complete fields. Later values/room are derived
+from the same actual returns. Selected957-job cost/normal-entry replay passed.
+Normal header value/earlier-memory frame, actual header-validation/Keccak loop,
+later current source paths and target-step composition remain open.
 
 Checked against current Software syntax and declaration entries:
 

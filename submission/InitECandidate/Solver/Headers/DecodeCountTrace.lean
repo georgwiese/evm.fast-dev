@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Headers.DecodeCountSyntax
+import InitECandidate.Solver.Input.PureGuardNormal
 import InitECandidate.Solver.WitnessRadix.BindingLookup
 
 namespace InitECandidate.Solver.Headers.Decode
@@ -10,10 +11,9 @@ def counted (source : PanSemStateFiniteExact 64 Guest.HostMemory) (count : BitVe
 
 /-- Actual count dispatch reaches the original248-byte allocation only for
 21 or23 fields, with its actual is_current assignment and no source tick. -/
-theorem count_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (count : BitVec 64)
+theorem count_trace_any (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (count : BitVec 64)
     (countCell : source.locals.lookup (ofString "n")=some (.val (.word count)))
     (currentCell : source.locals.lookup (ofString "is_current")=some (.val (.word 0#64)))
-    (shape : source.eshapes.lookup (ofString "HdrErr")=some .one)
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterCurrent=(result,post)) :
     source.clock-post.clock≤0 ∨ (count=21#64 ∨ count=23#64) ∧ evaluateHOLFiniteState (counted source count) afterCount=(result,post) := by
   have dispatch : evaluateHOLFiniteState source countGuard=
@@ -32,13 +32,28 @@ theorem count_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     · rw [if_neg (not_not_intro parent)] at run
       exact Or.inr ⟨Or.inl parent,by simpa only [counted,if_neg current] using run⟩
     · rw [if_pos parent] at run
-      have raised : evaluateHOLFiniteState source (.raise (ofString "HdrErr") (.const 11#64))=
-          (some (.exception (ofString "HdrErr") (.val (.word 11#64))),emptyLocalsHOLFinite source) := by
-        simp [evaluateHOLFiniteState_raise,shape,evalHOLExact,shapeOfHOLExact,sizeOfShapeWithContextHOL]
-      rw [raised] at run
-      have endpoint : source.clock=post.clock := congrArg (fun output=>output.2.clock) run
-      exact Or.inl (by omega)
+      have quiet:=Input.QuietClock.raised source.code (ofString "HdrErr") (.const 11#64) source rfl
+      have stops:=Input.raise_ne_none source (ofString "HdrErr") (.const 11#64)
+      generalize evaluated : evaluateHOLFiniteState source (.raise (ofString "HdrErr") (.const 11#64))=output at run quiet stops
+      obtain ⟨answer,middle⟩:=output
+      cases answer with
+      | none=>exact (stops rfl).elim
+      | some outcome=>
+        have endpoint:=congrArg (fun output=>output.2.clock) run
+        change middle.clock=post.clock at endpoint
+        change middle.clock=source.clock at quiet
+        exact Or.inl (by omega)
+
+theorem count_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (count : BitVec 64)
+    (countCell : source.locals.lookup (ofString "n")=some (.val (.word count)))
+    (currentCell : source.locals.lookup (ofString "is_current")=some (.val (.word 0#64)))
+    (shape : source.eshapes.lookup (ofString "HdrErr")=some .one)
+    (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterCurrent=(result,post)) :
+    source.clock-post.clock≤0 ∨ (count=21#64 ∨ count=23#64) ∧ evaluateHOLFiniteState (counted source count) afterCount=(result,post) :=
+  count_trace_any source post count countCell currentCell result run
 
 end InitECandidate.Solver.Headers.Decode
 
 #print axioms InitECandidate.Solver.Headers.Decode.count_trace
+
+#print axioms InitECandidate.Solver.Headers.Decode.count_trace_any

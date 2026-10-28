@@ -18,12 +18,11 @@ theorem allocation_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (listCell : source.locals.lookup (ofString "lst")=some (Rlp.Slices.result array count))
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
     (bounded : pointer.toNat≤2952790016) (installed : Input.OriginalCode.Installed source.code)
-    (shape : source.eshapes.lookup (ofString "HdrErr")=some .one)
     (result : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterList=(result,post)) :
     source.clock-post.clock≤2 ∨ (count=21#64 ∨ count=23#64) ∧ 1≤source.clock ∧ pointer.toNat+248≤2952790016 ∧ ∃ inner,
       evaluateHOLFiniteState (allocationEntry source array count pointer) afterAllocation=(result,inner) ∧
       post=restoreDeclared source array count (restore (counted (declared source array count) count) "h" inner) := by
-  rcases list_count_trace source post array count listCell shape result run with stopped|reached
+  rcases list_count_trace_any source post array count listCell result run with stopped|reached
   · exact Or.inl (by omega)
   · obtain ⟨countValid,middle,remaining,endpoint⟩ := reached
     let current:=counted (declared source array count) count

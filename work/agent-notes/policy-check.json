@@ -1728,9 +1728,14 @@
     "submission/InitECandidate/Solver/GuestWork/ZeroProgram.lean",
     "submission/InitECandidate/Solver/GuestWork/ZeroStoreProgram.lean",
     "submission/InitECandidate/Solver/HashEnvironmentFrame.lean",
+    "submission/InitECandidate/Solver/Headers/CurrentDecode/AfterKindCost.lean",
+    "submission/InitECandidate/Solver/Headers/CurrentDecode/AfterListCost.lean",
+    "submission/InitECandidate/Solver/Headers/CurrentDecode/AfterTopCost.lean",
     "submission/InitECandidate/Solver/Headers/CurrentDecode/Allocation.lean",
     "submission/InitECandidate/Solver/Headers/CurrentDecode/AllocationReturned.lean",
+    "submission/InitECandidate/Solver/Headers/CurrentDecode/Cost.lean",
     "submission/InitECandidate/Solver/Headers/CurrentDecode/Entry.lean",
+    "submission/InitECandidate/Solver/Headers/CurrentDecode/InitialState.lean",
     "submission/InitECandidate/Solver/Headers/CurrentDecode/List.lean",
     "submission/InitECandidate/Solver/Headers/CurrentDecode/Top.lean",
     "submission/InitECandidate/Solver/Headers/CurrentFieldCost.lean",
@@ -6121,6 +6126,7 @@
     "submission/InitECandidate/Solver/Rlp/CurrentSlicesCall.lean",
     "submission/InitECandidate/Solver/Rlp/CurrentSlicesCost.lean",
     "submission/InitECandidate/Solver/Rlp/CurrentSlicesMemory.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentSlicesReachedCost.lean",
     "submission/InitECandidate/Solver/Rlp/CurrentValidation/AfterHeader.lean",
     "submission/InitECandidate/Solver/Rlp/CurrentValidation/CallCost.lean",
     "submission/InitECandidate/Solver/Rlp/CurrentValidation/Cost.lean",
@@ -8361,8 +8367,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65133,
-  "package_bytes": 2483706121,
+  "package_entries": 65139,
+  "package_bytes": 2483727940,
   "claim": {
     "K": "infinity"
   },

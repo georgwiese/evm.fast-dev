@@ -2575,6 +2575,11 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildConstructor.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildSyntax.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeFrames.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NodeLookup/Call.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NodeLookup/Cost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NodeLookup/Program.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NodeLookup/Returned.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NodeLookup/RowsRead.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeStores.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Routing.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/CallCost.lean",
@@ -2647,6 +2652,7 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseContext.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseData.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseLookup.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseReturned.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/Databases.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/GasFrame.lean",
@@ -8648,8 +8654,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65431,
-  "package_bytes": 2484959471,
+  "package_entries": 65438,
+  "package_bytes": 2484982671,
   "claim": {
     "K": "infinity"
   },

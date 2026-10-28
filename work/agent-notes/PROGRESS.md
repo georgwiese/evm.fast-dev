@@ -3673,3 +3673,22 @@ prefix to state_init. Permitted printed axioms only. Index8598modules/
 17410facts; inventory8643/replacement closure0/fixed files unchanged. No
 global finite target K/full verification. Usage23%weekly/0resetcredits.
 Next: current nodedb_lookup record-length contract and state_init/decode path.
+
+## Current database wrapper and genuine bounded witness lookup
+
+The unchanged nodedb_lookup228 now costs≤264source body ticks/265caller
+ticks, with all actual present/absent descriptor reads and lexical restores.
+A real normal return is absent or gives exactly the pointer and length of
+a decoded record stored in the matching current Patricia table. Main's
+state_init cut now retains the matching node/code witness images alongside
+both physical database results, rather than unrelated existential arrays.
+The shared database caller contract derives the found slice's mapped extent,
+input boundaries and actual per-record length limit (1024for nodes,65536for
+code). It assumes no query bytes, successful lookup or future decoder run.
+
+Validation: current-main-database-lookup-contract-v2.log PASS2538jobs.
+Printed axioms permitted only. Index8604modules/17419facts; inventory8649,
+replacement closure0/fixed files unchanged. Incremental policy PASS65438
+entries/2484982671bytes.
+No global finite target K/full verification. Usage24%weekly/0resetcredits.
+Next: actual state_init and bounded witness-decoder control flow.

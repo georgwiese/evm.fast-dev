@@ -10,6 +10,8 @@ def HasTables (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64 Gue
     (pointer si record gasWord : BitVec 64) (boundary : Nat) : Prop :=
   Data input current pointer si record gasWord boundary ∧
   ∃ nodeSource codeSource nodeArray nodeStart nodeLength codeArray codeStart codeLength nodeTable nodeCap codeTable codeCap nodeUpper codeUpper,
+    CurrentStartup.WitnessArrays.Image input current pointer si nodeArray nodeStart nodeLength boundary 40 1024 (2^31) ∧
+    CurrentStartup.WitnessArrays.Image input current pointer si codeArray codeStart codeLength boundary 56 65536 (2^31) ∧
     CurrentTable.NodeBuild.Returned {databaseData input nodeArray pointer nodeStart nodeLength boundary 1024 with upper:=nodeUpper} nodeSource current nodeTable nodeCap ∧
     CurrentTable.NodeBuild.Returned {databaseData input codeArray pointer codeStart codeLength boundary 65536 with upper:=codeUpper} codeSource current codeTable codeCap ∧
     current.locals.lookup (ofString "nodedb")=some (.val (.word nodeTable)) ∧
@@ -33,10 +35,10 @@ theorem to_state_init {input : Guest.InputBlob} {source post : PanSemStateFinite
     rcases databases_trace nodeData outcome nodeRun with stopped|reached
     · exact Or.inl (by rw [postClock]; omega)
     · obtain ⟨first,current,inner,nodeArray,nodeStart,nodeLength,codeArray,codeStart,codeLength,nodeTable,nodeCap,codeTable,codeCap,nodeUpper,codeUpper,
-        currentData,nodeResult,codeResult,nodeCell,codeCell,forward,price,continued,endpoint⟩ := reached
+        currentData,nodeImage,codeImage,nodeResult,codeResult,nodeCell,codeCell,forward,price,continued,endpoint⟩ := reached
       have tables : HasTables input current pointer si record gasWord boundary :=
         ⟨currentData,nodeSource,first,nodeArray,nodeStart,nodeLength,codeArray,codeStart,codeLength,nodeTable,nodeCap,codeTable,codeCap,nodeUpper,codeUpper,
-          nodeResult,codeResult,nodeCell,codeCell⟩
+          nodeImage,codeImage,nodeResult,codeResult,nodeCell,codeCell⟩
       have clock : nodePost.clock=inner.clock := by rw [endpoint]; rfl
       have frame : LocalEffects.erase nodePost=LocalEffects.erase inner := by rw [endpoint]; rfl
       exact Or.inr ⟨current,inner,tables,by omega,by omega,continued,postClock.trans clock,postFrame.trans frame⟩

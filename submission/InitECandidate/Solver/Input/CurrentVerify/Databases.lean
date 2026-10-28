@@ -16,6 +16,8 @@ theorem databases_trace {input : Guest.InputBlob} {source post : PanSemStateFini
     source.clock-post.clock≤3323240764 ∨
     ∃ first current inner nodeArray nodeStart nodeLength codeArray codeStart codeLength nodeTable nodeCap codeTable codeCap nodeUpper codeUpper,
       Data input current pointer si record gasWord boundary ∧
+      CurrentStartup.WitnessArrays.Image input current pointer si nodeArray nodeStart nodeLength boundary 40 1024 (2^31) ∧
+      CurrentStartup.WitnessArrays.Image input current pointer si codeArray codeStart codeLength boundary 56 65536 (2^31) ∧
       CurrentTable.NodeBuild.Returned {databaseData input nodeArray pointer nodeStart nodeLength boundary 1024 with upper:=nodeUpper} source current nodeTable nodeCap ∧
       CurrentTable.NodeBuild.Returned {databaseData input codeArray pointer codeStart codeLength boundary 65536 with upper:=codeUpper} first current codeTable codeCap ∧
       current.locals.lookup (ofString "nodedb")=some (.val (.word nodeTable)) ∧
@@ -46,10 +48,16 @@ theorem databases_trace {input : Guest.InputBlob} {source post : PanSemStateFini
         have bound := data.recordInside
         omega
       have nextNode := nodeResult.after_builder codeResult (by change 2701134824≤2701134824; omega) nodeLower nodeEnd
+      have nextNodeImage := nodeImage.of_interval (by decide) (by
+        intro query low high
+        exact nextNode.input.words query low (by change query.toNat<nodeUpper; omega))
+      have nextCodeImage := codeImage.of_interval (by decide) (by
+        intro query low high
+        exact codeResult.input.words query low (by change query.toNat<codeUpper; omega))
       have currentNode : current.locals.lookup (ofString "nodedb")=some (.val (.word nodeTable)) :=
         (codeLocals (ofString "nodedb") (by decide)).trans nodeCell
       exact Or.inr ⟨first,current,inner,nodeArray,nodeStart,nodeLength,codeArray,codeStart,codeLength,nodeTable,nodeCap,codeTable,codeCap,nodeUpper,codeUpper,
-        currentData,nextNode,codeResult,currentNode,codeCell,by omega,by omega,continued,by rw [endpoint,restored]⟩
+        currentData,nextNodeImage,nextCodeImage,nextNode,codeResult,currentNode,codeCell,by omega,by omega,continued,by rw [endpoint,restored]⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 

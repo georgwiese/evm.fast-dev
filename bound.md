@@ -132,6 +132,15 @@ its exact four-word memory update and the copied physical key bytes.
 Fresh-node insertion remains to prove. Shared image facts
 derive fresh indices and two available nodes from the actual processed-count
 and sufficient-capacity facts, rather than future successful allocations.
+Both original node constructors and scoped callers now check: current
+htab_new_leaf123 costs≤3body/4caller source ticks, including the genuine
+no-grow allocator,32-byte copy and six node/order/count stores;
+htab_new_internal124 costs≤1body/2caller ticks for its allocator and four
+real stores. Normal runs derive their own paid clocks and exact memory
+update; all stopped outcomes are included. The actual image supplies their
+physical header/array facts. Query alignment and its position before the
+table remain ownership obligations for the database caller. Fresh insertion
+must still preserve the full image after original edge/root rewiring.
 
 Checked against current Software syntax and declaration entries:
 
@@ -181,10 +190,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-real-key-copy-v2.log`,889jobs,
-permitted printed axioms only. Historical/current proof index:8479modules/
-17164facts; inventory8523modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65307entries/2484455424bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-real-node-callers-v1.log`,920jobs,
+permitted printed axioms only. Historical/current proof index:8490modules/
+17186facts; inventory8534modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65320entries/2484517567bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

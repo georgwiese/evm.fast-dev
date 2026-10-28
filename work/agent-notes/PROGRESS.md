@@ -3402,3 +3402,21 @@ axioms only. Index8479modules/17164facts, inventory8523/replacement closure0,
 fixed files unchanged; incremental policy65307entries/2484455424bytes PASS.
 No global finite target K/full verification. Usage17%weekly/0resetcredits.
 Next: actual fresh leaf/internal writes and complete insertion preservation.
+
+## Original fresh leaf/internal constructors and real scoped callers
+
+Actual htab_new_leaf123 now costs≤3body/4caller source ticks, including the
+real no-grow node call,32-byte key copy and six leaf/order/count stores.
+Actual htab_new_internal124 costs≤1body/2caller ticks and performs its real
+four stores. Normal runs derive paid clocks and exact memory writes; stopped
+outcomes are included. Both classified callers retain original continuations.
+The current image derives mapped slots/header fields; query alignment and
+query-before-table order must still come from the real database caller.
+Shared node-address/store and key-copy-frame helpers avoid repeating those
+physical arguments across the two original constructors. No source changes.
+
+Validation: current-patricia-real-node-callers-v1.log PASS920jobs, permitted
+printed axioms only. Index8490modules/17186facts; inventory8534/replacement
+closure0/fixed files unchanged; incremental policy65320entries/2484517567bytes
+PASS. No global finite target K/full verification. Usage17%weekly/0resetcredits.
+Next: preserve full physical/routing image through actual fresh insertion.

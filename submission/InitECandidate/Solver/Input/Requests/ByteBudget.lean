@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.Requests.BodyTrace
+import InitECandidate.Solver.Input.Requests.ImageLayout
 
 namespace InitECandidate.Solver.Input.Requests
 open Flapjack PanSemStateFiniteExact

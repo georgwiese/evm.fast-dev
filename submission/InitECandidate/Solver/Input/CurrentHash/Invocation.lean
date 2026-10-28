@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.CurrentHash.WorkspaceEffects
 import InitECandidate.Solver.Input.CurrentStartup.MainDecodedRequest
+import InitECandidate.Solver.Input.CurrentStartup.DecodedRequestsImage
 import InitECandidate.Solver.Input.NonTimeoutSequenceCall
 
 namespace InitECandidate.Solver.Input.CurrentHash.Invocation
@@ -61,6 +62,8 @@ structure Data (input : Guest.InputBlob) (state : PanSemStateFiniteExact 64 Gues
   hashCount : state.memory (siRecord + 16#64) = .word (BitVec.ofNat 64 ((Guest.GasLimit.le32 input 58 - Guest.GasLimit.le32 input 22) / 32))
   header : state.memory (siRecord + 24#64) = .word (pointer + 18#64 + 8#64)
   requests : state.memory (siRecord + 32#64) = .word requestRecord
+  requestImage : ∃ requestStart requestSize counts,
+    Requests.DecodedImage input state pointer requestRecord requestStart requestSize counts
 
 theorem at_callee {input : Guest.InputBlob} {decoded current : PanSemStateFiniteExact 64 Guest.HostMemory}
     {origin : CurrentStartup.DecoderOrigin} {record gasWord requestRecord root array : BitVec 64} {payloadLength start size : Nat}
@@ -71,6 +74,9 @@ theorem at_callee {input : Guest.InputBlob} {decoded current : PanSemStateFinite
     Data input (callEntryStateHOLFinite current callee) origin.pointer origin.word record requestRecord root array payloadLength start size := by
   have siCell := ready.snapshot.payload_cell
   obtain ⟨hashPointer, hashCount, header, requests⟩ := ready.snapshot.request_fields
+  obtain ⟨requestStart,requestSize,counts,requestImage⟩ := ready.snapshot.requests_image
+  have actualRequestImage : Requests.DecodedImage input (callEntryStateHOLFinite current callee) origin.pointer requestRecord requestStart requestSize counts :=
+    requestImage.of_memory (by intro index inside; exact ⟨congrFun ready.memory _,congrFun ready.memory _⟩)
   obtain ⟨headerSource, headerReady, headerPost, nodes, codes, headers, nodeStart, nodeLength, codeStart, codeLength,
     headerStart, headerLength, data, frame, clock⟩ := ready.snapshot
   have siArena : AllocatedBytes.Arena origin.word 96 :=
@@ -84,7 +90,7 @@ theorem at_callee {input : Guest.InputBlob} {decoded current : PanSemStateFinite
     omega
   refine ⟨workspace.at_callee callee, ⟨ready.arena.scratch, ready.arena.frame, ready.arena.domain, ready.arena.code⟩, ready.payload.of_frame rfl, ready.heap, si, out,
     siArena, data.context.statelessAligned, ⟨rootLower, by have := ready.room; omega⟩,
-    ready.aligned, ready.rootAfter, ready.arrayBefore, ?_, ?_, ?_, ?_, ?_⟩
+    ready.aligned, ready.rootAfter, ready.arrayBefore, ?_, ?_, ?_, ?_, ?_, ⟨requestStart,requestSize,counts,actualRequestImage⟩⟩
   all_goals change current.memory _ = _; rw [ready.memory]
   · exact siCell
   · exact hashPointer

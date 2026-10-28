@@ -84,10 +84,11 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-request-list-memory-v1.log`,1295jobs,
-permitted printed axioms only. Historical/current proof index:8119modules/
-16371facts; Solver inventory8158, replacement closure0, frozen main files
-unchanged. Incremental policy passes64927entries/2482925552bytes. These checks
+Latest successful selected closure: `current-request-image-at-root-v2.log`,1519jobs,
+and `current-decoded-request-budget-v3.log`,1078jobs,
+permitted printed axioms only. Historical/current proof index:8123modules/
+16384facts; Solver inventory8162, replacement closure0, frozen main files
+unchanged. Incremental policy passes64931entries/2482941352bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -102,6 +103,12 @@ remain historical until their current statements/dependencies are checked.
    reach the same hash caller, with mapped/aligned extents and copied-input
    separation. All five arena/workspace globals now survive current hash calls. Invocation
    joins the actual ABI and full physical payload/SI/root data to that same callee.
+   The same callee now also receives the complete actual request image: all ten
+   physical pointer/count fields, exact start/size, validated offsets, quotient/
+   remainder counts, real input/RQ arenas and allocation ordering. Its persistent
+   room derives encodedLength≤251655056. Each request list derives its actual
+   physical byte extent and count≤134217728; all five share one exact encoded
+   byte budget and total count≤(requestSize-20)/68.
 2. **Finish the actual payload/request-root hash joins.** Current helper source
    costs are checked on all relevant outcomes (same actual non-timeout execution
    where required), without future success, mapped-input or allocator-room
@@ -144,8 +151,9 @@ remain historical until their current statements/dependencies are checked.
    those frames and compose whole current payload/request-root costs, including
    earlier stopped alternatives. Recheck old layout limits against actual
    encodedLength+16*txCount≤251655056, txCount≤12582752 and totalTxBytes≤251655056.
-   Materialize further SI witness/RQ physical fields at the real caller that
-   needs them. Treat digest/output values generically when their values do not
+   Full request fields now reach the actual root callee; their list extents,
+   individual count bounds and shared byte/count budgets check. Materialize
+   further SI witness fields at the real caller that needs them. Treat digest/output values generically when their values do not
    affect runtime. Review dominant copy/zero and empty-progressive slack later.
 3. Prioritize actual early scratch access and its covered-outcome consequences
    before expanding map/crypto/EVM migration. Main's scratch pointers are below

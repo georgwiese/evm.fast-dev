@@ -4,6 +4,36 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Same-decoder complete request image and shared byte budget reach root callee
+
+RequestsReturned now retains its already proved first/valid offset facts.
+DecodedRequestsImage derives the full ten physical RQ fields, actual slice and
+count arithmetic from that same returned decoder; proves request/SI store
+separation; and transports the image through the real witness prefix to the
+exact main snapshot. Invocation.Data now carries it through the actual root
+allocation and into the same actual root hasher callee. Persistent allocation
+ordering derives encodedLength≤251655056, input lower/arena, aligned80-byte RQ
+and its position after copied input. No decoder validity/counts are assumed.
+
+Requests.ImageLayout shares the existing Image/Layout definitions and memory
+transport. ByteBudget imports that minimal interface, reducing its static Solver
+closure227→103; current-request-byte-budget-import-cleanup.json records the
+comparison. DecodedBudget derives each actual list's complete physical input
+extent and count≤134217728, plus the shared exact five-list byte budget and
+sum(counts)≤(requestSize-20)/68. Whole parent hash composition still remains.
+
+Validation: current-request-image-at-root-v2.log PASS1519jobs and
+current-decoded-request-budget-v3.log PASS1078jobs; permitted printed axioms only,
+8GiBguard/twoslots/cachefalse, disk61%. Index8123modules/16384facts; inventory8162,
+replacement closure0, frozen main unchanged. Account30%weekly,0resetcredits;
+ordinary usage allowed. Incremental policy64931entries/2482941352bytes PASS.
+No global finite target K or full verification; claim infinity. An exploratory selection of historical Requests.BodyTrace also hit
+unchanged obsolete KeccakOracle accelerator identifiers and a historical
+Requests.Setup code-entry mismatch (current-request-image-layout-v1.log FAIL).
+Those modules remain historical/unclaimed; only the successful current/minimal
+closures above are indexed. The shared-definition extraction preserves their
+public definition names; their old proofs were not otherwise edited.
+
 ## Complete actual selected request-list memory and heap caller frame checks
 
 RequestListMemoryStep joins actual input record/output slot arenas to the

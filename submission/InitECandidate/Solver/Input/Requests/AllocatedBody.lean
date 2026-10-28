@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.Requests.ImageLayout
 import InitECandidate.Solver.Input.Requests.CountsBody
 import InitECandidate.Solver.Input.Requests.PreparedLocals
 import InitECandidate.Solver.Input.Requests.SetupReached
@@ -5,14 +6,6 @@ import InitECandidate.Solver.Input.Requests.SetupReached
 namespace InitECandidate.Solver.Input.Requests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix WitnessRadix.AllocatedBytes
 open Flapjack.Basis.Pure.MlString QueryBranch
-
-/-- Physical original request arrays and their actual element counts. -/
-structure Image (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer cursor total : BitVec 64) (words counts : Nat → BitVec 64) : Prop where
-  cells : ∀ index < 5,source.memory (cursor + BitVec.ofNat 64 (16*index)) = .word (pointer + words index) ∧
-    source.memory (cursor + BitVec.ofNat 64 (16*index+8)) = .word (counts index)
-  arithmetic : ∀ index < 5,(counts index).toNat = (countSpan words total index).toNat / (elementSize index).toNat ∧
-    (countSpan words total index).toNat % (elementSize index).toNat = 0
-
 
 private theorem normal_frontier (source post ready innerPost : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
     (blob pointer cursor total : BitVec 64) (start : Nat)

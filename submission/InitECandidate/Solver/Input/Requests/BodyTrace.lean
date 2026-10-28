@@ -4,10 +4,6 @@ namespace InitECandidate.Solver.Input.Requests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix WitnessRadix.AllocatedBytes
 open Flapjack.Basis.Pure.MlString QueryBranch
 
-structure Layout (words : Nat → BitVec 64) (total : BitVec 64) : Prop where
-  first : words 0 = 20#64
-  valid : ∀ index < 5,Offsets.ValidAt 20#64 total words index
-
 /-- Entire original request body after its minimum-length guard, including
 all offset/list rejections. The bound348 is a source call/loop bound, and the
 normal return exposes the real request image, validated input layout, exact

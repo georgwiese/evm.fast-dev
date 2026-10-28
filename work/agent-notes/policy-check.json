@@ -2152,6 +2152,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecodeStatelessInput.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecodedPayloadPointer.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecodedRequestFields.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/DecodedRequestsImage.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecodedTransactions.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecoderHeap.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/DecoderInput.lean",
@@ -3039,7 +3040,10 @@
     "submission/InitECandidate/Solver/Input/Requests/CountProgram.lean",
     "submission/InitECandidate/Solver/Input/Requests/CountsBody.lean",
     "submission/InitECandidate/Solver/Input/Requests/CountsTrace.lean",
+    "submission/InitECandidate/Solver/Input/Requests/DecodedBudget.lean",
+    "submission/InitECandidate/Solver/Input/Requests/DecodedImage.lean",
     "submission/InitECandidate/Solver/Input/Requests/Entry.lean",
+    "submission/InitECandidate/Solver/Input/Requests/ImageLayout.lean",
     "submission/InitECandidate/Solver/Input/Requests/LayoutProgram.lean",
     "submission/InitECandidate/Solver/Input/Requests/LoopTrace.lean",
     "submission/InitECandidate/Solver/Input/Requests/OffsetLocals.lean",
@@ -8163,8 +8167,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64927,
-  "package_bytes": 2482925552,
+  "package_entries": 64931,
+  "package_bytes": 2482941352,
   "claim": {
     "K": "infinity"
   },

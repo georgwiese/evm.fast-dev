@@ -3440,3 +3440,23 @@ printed axioms only. Index8506modules/17223facts; inventory8550/replacement
 closure0/fixed files unchanged; incremental policy65336entries/2484589681bytes
 PASS. No global finite target K/full verification. Usage18%weekly/0resetcredits.
 Next: actual nonempty splice writes, full set invariant and builder loop.
+
+## Complete original current htab_set body/caller cost
+
+The entire unchanged32-byte-key htab_set126 now costs≤815source body ticks
+and≤816ordinary caller ticks, given its reached physical image, two available
+indices and actual aligned earlier query bytes. Lookup, memeq, first mismatch,
+second search, leaf/internal construction and every original rewiring outcome
+are included. The real leaf return derives the second allocator's metadata;
+no future successful allocation or source-clock funding is supplied. The
+original rewiring block is straight-line/0source ticks, failed-comparison tail
+≤552, nonempty post-lookup≤557, empty post-lookup≤4. The actual empty call
+cannot fall through to comparison. These source clocks omit static target work.
+Nonempty fresh insertion still must preserve the physical image for iteration;
+query ownership, complete builder/main and uniform target K remain open.
+
+Validation: current-patricia-entire-insertion-caller-cost-v1.log PASS946jobs,
+permitted printed axioms only. Index8516modules/17236facts; inventory8560/
+replacement closure0/fixed files unchanged; incremental policy65346entries/
+2484626057bytes PASS. No global finite target K/full verification. Usage18%
+weekly/0resetcredits. Next: actual nonempty rewiring image and builder loop.

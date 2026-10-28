@@ -7,6 +7,12 @@ open Flapjack PanSemStateFiniteExact WitnessRadix
 def model (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table cap node bit : BitVec 64) :=
   stored (New.putField source table 64 (node+1#64)) (New.nodesPointer table cap) node bit
 
+theorem model_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (table cap node bit : BitVec 64)
+    (frame : LocalEffects.erase target = LocalEffects.erase source) :
+    LocalEffects.erase (model target table cap node bit) = LocalEffects.erase (model source table cap node bit) := by
+  exact node_frame _ _ _ node bit 24 (node_frame _ _ _ node 0#64 16
+    (node_frame _ _ _ node 0#64 8 (node_frame _ _ _ node 0#64 0 (header_frame source target table (node+1#64) 64 frame))))
+
 theorem stored_header (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table cap node bit : BitVec 64)
     (geometry : New.Geometry table cap) (inside : node.toNat ≤ cap.toNat) (field : Nat) (small : field < 88) :
     (stored source (New.nodesPointer table cap) node bit).memory (table+BitVec.ofNat 64 field) = source.memory (table+BitVec.ofNat 64 field) := by

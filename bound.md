@@ -153,6 +153,17 @@ the actual image and earlier lookup/search route. Connecting the nonempty
 original rewiring stores to that image remains open. Thin state-projection
 and frame-transport helpers avoid expanding entire nested store states;
 the complete first-image check now takes about2.5seconds instead of timing out.
+The complete unchanged current32-byte-key htab_set126 now costs≤815body/
+816ordinary-caller source ticks, from its actual physical insertion image,
+two available indices and earlier aligned query buffer. This includes actual
+lookup, comparison, first mismatch, second search, both constructors and all
+parent/child/root rewiring outcomes. The real leaf return derives the second
+allocator entry; the original rewiring block has0source ticks on every outcome.
+The failed-comparison tail costs≤552, nonempty post-lookup≤557; empty
+post-lookup≤4. A failed empty insertion cannot fall through to comparison.
+This is a complete per-insertion helper bound, not yet a whole-builder/global
+bound: nonempty fresh insertion must still preserve the physical image for
+the next builder iteration, and actual query-buffer ownership remains open.
 
 Checked against current Software syntax and declaration entries:
 
@@ -202,10 +213,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-first-insertion-image-v9.log`,907jobs,
-permitted printed axioms only. Historical/current proof index:8506modules/
-17223facts; inventory8550modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65336entries/2484589681bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-entire-insertion-caller-cost-v1.log`,946jobs,
+permitted printed axioms only. Historical/current proof index:8516modules/
+17236facts; inventory8560modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65346entries/2484626057bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

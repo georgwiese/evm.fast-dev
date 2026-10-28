@@ -45,6 +45,12 @@ theorem node_before (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table
     omega
   simp only [putNode,StoreWord.put,if_neg away]
 
+theorem node_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base node value : BitVec 64) (offset : Nat)
+    (frame : LocalEffects.erase target = LocalEffects.erase source) :
+    LocalEffects.erase (putNode target base node offset value) = LocalEffects.erase (putNode source base node offset value) := by
+  have kept := congrArg (fun state => LocalEffects.erase (putNode state base node offset value)) frame
+  exact kept
+
 end InitECandidate.Solver.Input.CurrentTable
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.node_header

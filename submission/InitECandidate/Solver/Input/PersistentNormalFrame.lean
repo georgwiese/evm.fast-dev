@@ -65,9 +65,26 @@ theorem PersistentNormalFrame.of_erase (source target source' target' : PanSemSt
     rw [targetMemory,sourceMemory]
     exact frame.memory query before
 
+/-- Later fresh writes may change memory while retaining the actual
+allocator frontier and every other runtime field. -/
+theorem PersistentNormalFrame.after_memory (source middle target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (heap : BitVec 64) (frame : PersistentNormalFrame source middle heap)
+    (runtime : MemoryMetadata.erase target=MemoryMetadata.erase middle)
+    (memory : ∀ query : BitVec 64,query.toNat<heap.toNat→target.memory query=middle.memory query) :
+    PersistentNormalFrame source target heap := by
+  have globals:=congrArg PanSemStateFiniteExact.globals runtime
+  change target.globals=middle.globals at globals
+  have metadata:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with globals:=source.globals}) runtime
+  change MemoryMetadata.erase {target with globals:=source.globals}=MemoryMetadata.erase {middle with globals:=source.globals} at metadata
+  obtain ⟨next,cell,arena,bounded,aligned,grows⟩:=frame.nextHeap
+  exact ⟨⟨next,by rw [globals]; exact cell,arena,bounded,aligned,grows⟩,metadata.trans frame.metadata,
+    by intro key other; rw [globals]; exact frame.globals key other,
+    fun query before=>(memory query before).trans (frame.memory query before)⟩
+
 end InitECandidate.Solver.Input
 
 #print axioms InitECandidate.Solver.Input.PersistentNormalFrame.refl
 #print axioms InitECandidate.Solver.Input.PersistentNormalFrame.current_arena
 #print axioms InitECandidate.Solver.Input.PersistentNormalFrame.trans
 #print axioms InitECandidate.Solver.Input.PersistentNormalFrame.of_erase
+#print axioms InitECandidate.Solver.Input.PersistentNormalFrame.after_memory

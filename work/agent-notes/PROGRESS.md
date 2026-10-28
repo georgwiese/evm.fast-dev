@@ -3870,3 +3870,28 @@ Usage28%weekly/0resetcredits. Next: normal MPT leaf/step/root/state-init memory
 composition, then later main and uniform target steps. Older unused pre-rebase
 normal-frame callers still need porting or removal; this is selected current
 proof validation, not a successful build of the entire historical Solver tree.
+
+
+## Complete current MPT decode-step normal frame
+
+The unchanged _decode_step235 now derives its complete normal persistent
+frame from the same actual parser/slice/compact/leaf execution. It preserves
+all earlier words, all nonheap globals and complete nonmemory runtime state,
+with a genuinely advanced bounded/aligned heap. Actual leaf allocation and
+both parent-encoding stores stay inside their real fresh node. Source p/n,
+compact and value arguments are derived through their actual scoped callers.
+
+The real returned pair names zero or a node at/above the entering heap and
+below the persistent ceiling; an arbitrary returned word is not assumed fresh.
+This numeric result will protect earlier input from later root-cache stores.
+Actual two-item selection excludes normal branch/extension scratch records.
+Shared frames now also compose later fresh writes without assuming immutable
+memory. Scalar constructor frames retain their actual allocated node region.
+
+Validation: current-step-frame-main-regression-v1.log PASS2655jobs, including
+new complete normal decode-step frame and current header/main/state-init costs
+and global frames. Printed axioms permitted only. Index8654modules/17564facts;
+inventory8699/replacement closure0/fixed files unchanged. No global finite
+target K/full verification; claim infinity. Usage28%weekly/0resetcredits.
+Next: actual normal witness loop/wrappers/root, followed by state_init's earlier
+input/returned-heap frame and continued main/target composition.

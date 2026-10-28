@@ -3420,3 +3420,23 @@ printed axioms only. Index8490modules/17186facts; inventory8534/replacement
 closure0/fixed files unchanged; incremental policy65320entries/2484517567bytes
 PASS. No global finite target K/full verification. Usage17%weekly/0resetcredits.
 Next: preserve full physical/routing image through actual fresh insertion.
+
+## Actual first insertion image and fresh splice model
+
+The original empty htab_set branch now either stops within4source ticks or
+returns0 with the full genuine nonempty table image after its real leaf call
+and root store. Fresh leaf writes protect earlier input, nodes and other key
+slots; exact fresh cells, count and next metadata check. Actual internal-node
+writes also protect old nodes/keys and unrelated metadata. The pure two-node
+splice preserves routing and increasing bits; its freshness, prefix/mismatch
+and extended valid-index range come from the actual image and lookup/search
+route. Nonempty original rewiring still must establish that physical image.
+Shared byte-store/frame/projection helpers keep those arguments small; the
+first-image proof checks in about2.5seconds after avoiding eager expansion of
+nested store states, rather than increasing its elaboration allowance.
+
+Validation: current-patricia-first-insertion-image-v9.log PASS907jobs, permitted
+printed axioms only. Index8506modules/17223facts; inventory8550/replacement
+closure0/fixed files unchanged; incremental policy65336entries/2484589681bytes
+PASS. No global finite target K/full verification. Usage18%weekly/0resetcredits.
+Next: actual nonempty splice writes, full set invariant and builder loop.

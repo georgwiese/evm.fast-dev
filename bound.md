@@ -141,6 +141,18 @@ update; all stopped outcomes are included. The actual image supplies their
 physical header/array facts. Query alignment and its position before the
 table remain ownership obligations for the database caller. Fresh insertion
 must still preserve the full image after original edge/root rewiring.
+The actual empty-table insertion now either stops within4source ticks or
+returns0 with the full genuine nonempty table image, after the real leaf
+constructor and original root store. Fresh leaf writes preserve all earlier
+input, nodes and other physical key slots; its actual parent/value/position/
+marker/order cells and updated count/next metadata check. Internal-node
+writes likewise retain prior nodes, keys and unrelated header fields.
+The pure two-node splice preserves routing/increasing bits; its freshness,
+least-mismatch/common-prefix and extended valid-index range are derived from
+the actual image and earlier lookup/search route. Connecting the nonempty
+original rewiring stores to that image remains open. Thin state-projection
+and frame-transport helpers avoid expanding entire nested store states;
+the complete first-image check now takes about2.5seconds instead of timing out.
 
 Checked against current Software syntax and declaration entries:
 
@@ -190,10 +202,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-real-node-callers-v1.log`,920jobs,
-permitted printed axioms only. Historical/current proof index:8490modules/
-17186facts; inventory8534modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65320entries/2484517567bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-first-insertion-image-v9.log`,907jobs,
+permitted printed axioms only. Historical/current proof index:8506modules/
+17223facts; inventory8550modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65336entries/2484589681bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

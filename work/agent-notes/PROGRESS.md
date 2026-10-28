@@ -4,6 +4,26 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual container memory and heap caller frame checks
+
+Current PContainerBitMemory checks the real activity byte store and bounded
+normal loop for n≤256, fitting its32-byte mask. PContainerMemorySuffix joins
+actual act/i scopes, clear, bit loop, software SHA output and release. Only the
+actual output expression is located for SHA; digest/input mapping is not a
+memory premise. PContainerMemory joins the same actual64-byte allocation,
+progressive call, complete marked body and real three-word caller. Metadata
+survives and entering heap is restored; persistent room comes from its actual
+allocation. The physical input extent and field count remain explicit parent
+obligations. Actual current parents use19 and5 fields; their joins remain open.
+The wider all-outcome source-cost theorem is unchanged.
+
+Validation: current-container-memory-v1.log PASS1274jobs/permitted printed axioms
+only;8GiBguard/twoslots/cachefalse, disk61%. Index8116modules/16358facts;
+inventory8155, replacement closure0, frozen main unchanged. Account30%weekly,
+0resetcredits; ordinary usage allowed. Incremental policy64924entries/
+2482901273bytes PASS. No global finite target K or full verification; claim
+infinity. Next: request-list and complete payload/root joins.
+
 ## Actual progressive list/byte wrappers and shared output caller frame check
 
 WordTripleLookup and MemoryOutputCall share checked last-output binding and

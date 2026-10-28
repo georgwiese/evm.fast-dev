@@ -36,12 +36,12 @@ Best overall effort estimate: **40%, plausible30–50%**, relative to current ma
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
-Latest checked step: current header21/23 dispatch and actual248-byte allocation
-reach field extraction at≤103*length+18 source ticks, retaining the real input
-records. Actual uint/bytes/raw field helpers cost≤46*rowLength+11 source ticks
-and retain all nonlocal fields on normal returns. Selected900-job build passed.
-Word/u256 fields, complete header/stopped-path composition, later source paths
-and target-step composition remain open.
+Latest checked step: real field values, physical selected-record reads and
+current word-field body≤46*itemLength+20 source ticks on all outcomes, with
+complete normal nonlocal frame. Shared value/ABI/record/word-loop interfaces
+avoid historical mapped-arena cost imports. Selected912-job build passed.
+Current u256 conversion/field, field-pipeline state/cost, complete header paths,
+later source paths and target-step composition remain open.
 
 Checked against current Software syntax and declaration entries:
 

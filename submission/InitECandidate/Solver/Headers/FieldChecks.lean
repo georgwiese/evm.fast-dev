@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Headers.FieldResult
+import InitECandidate.Solver.Headers.FieldResultSyntax
 
 namespace InitECandidate.Solver.Headers.Field
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

@@ -46,7 +46,8 @@ theorem loop_expression_cost (code) (counter captured : MlS) (snapshot : ValueHO
       simp [evalHOLFinite, evalHOLExact, currentCell, expressionRead, wordCmpHOL, BitVec.lt_def,
         BitVec.toNat_ofNat, lengthMod]
     have active : current.toNat < length := by
-      by_contra inactive
+      apply Classical.byContradiction
+      intro inactive
       rw [if_neg inactive] at read
       have equal : observed = 0#64 := by simpa only [Option.some.injEq, ValueHOL.val.injEq, HolWordLab.word.injEq] using actual.symm.trans read
       exact nonzero equal

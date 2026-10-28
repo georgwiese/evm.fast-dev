@@ -4,6 +4,31 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual field values/record reads and current word-field body/frame
+
+Normal uint/bytes/raw fields now derive their actual contained string slice
+and precise scalar/pair return value from the real item parser and kind check.
+The literal width/maximum checks and physical selected-row arguments check
+without importing historical mapped-arena costs. Actual hdr_word_field204
+uses the real uint result; its literal guard caps the byte loop at8ticks.
+Whole word-field body costs≤46*selectedItemLength+20 source ticks on every
+outcome. Normal returns retain all nonlocal state. No future field result,
+byte mapping, allocation room or loop run is assumed.
+
+Cleanup splits pure record-index lookup from old scratch-footprint transport,
+field value/check syntax from historical frame costs, the field ABI from
+old cost imports, and the word-loop bound from its mapped-arena caller.
+The generic snapshot-counter proof now uses core classical contradiction,
+removing its accidental dependence on a transitive tactic import. Public
+compatibility modules retain historical definitions and conditional theorems.
+
+Validation: current-header-word-frame-v1.log PASS912jobs/permitted printed
+axioms. Index8288modules/16746facts; inventory8328/replacement closure0/frozen
+main unchanged. Incremental policy65102entries/2483628887bytes PASS.
+No global finite target K/full verification; claim infinity. Next: current
+u256 field/conversion, field state/pipeline, complete header and later paths.
+8GiBguard/twoslots/cachefalse; account6%weekly/0resetcredits/ordinary usage allowed.
+
 ## Current header field entry, three field bodies and full normal frames
 
 Real current header returns now reach the unchanged field pipeline only after

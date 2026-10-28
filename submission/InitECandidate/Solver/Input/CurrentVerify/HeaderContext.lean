@@ -38,6 +38,7 @@ theorem header_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteE
       Headers.CurrentValidate.Returned (bind source "pl" record) target (VarList.decodedArray array length) heap
         (BitVec.ofNat 64 (VarList.decodedCount input start length)) 2701132160#64 2701132360#64 nextHeap
         (VarList.recordPointer input pointer start) (VarList.recordLength input start length (VarList.decodedCount input start length)) 2701134640 boundary ∧
+      (bind source "pl" record).globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
       evaluateHOLFiniteState (CallNormal.continuationEntry (bind source "pl" record) target "vh"
         (Headers.CurrentValidate.result heap (Headers.CurrentValidate.hashesPointer heap (BitVec.ofNat 64 (VarList.decodedCount input start length))))) afterHeaders=(outcome,inner) ∧
       post=restore source "pl" (restore (bind source "pl" record) "vh" inner) := by
@@ -52,7 +53,7 @@ theorem header_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteE
     change source.clock-headerPost.clock≤51528323 at stopped
     exact Or.inl (by rw [clock]; exact stopped)
   · obtain ⟨target,nextHeap,inner,returned,continued,restored⟩:=reached
-    exact Or.inr ⟨array,start,length,heap,target,nextHeap,inner,returned,continued,by rw [endpoint,restored]⟩
+    exact Or.inr ⟨array,start,length,heap,target,nextHeap,inner,returned,context.heapCell,continued,by rw [endpoint,restored]⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 

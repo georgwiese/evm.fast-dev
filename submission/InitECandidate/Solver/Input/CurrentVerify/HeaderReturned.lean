@@ -43,6 +43,30 @@ theorem after_headers_data {input : Guest.InputBlob} {source target : PanSemStat
     nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
     nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩
 
+/-- The actual reached after-header continuation has main's full physical
+inputs. Both the validator's paid clock and the final original lexical
+restoration are retained on every enclosing outcome. -/
+theorem header_data_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤51528323 ∨ ∃ current inner,
+      Data input current pointer si record gasWord boundary ∧ current.clock≤source.clock ∧
+      source.clock-current.clock≤51528323 ∧
+      evaluateHOLFiniteState current afterHeaders=(outcome,inner) ∧ post.clock=inner.clock ∧
+      LocalEffects.erase post=LocalEffects.erase inner := by
+  rcases header_trace data outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨array,start,length,heap,target,nextHeap,inner,returned,heapCell,continued,endpoint⟩:=reached
+    have nextSi := (bind_lookup_other source "pl" "si" record (by decide)).trans data.siLocal
+    have entryData := data.of_frame (post:=bind source "pl" record) rfl nextSi
+    have nextData := after_headers_data entryData heapCell returned
+    let current := CallNormal.continuationEntry (bind source "pl" record) target "vh"
+      (Headers.CurrentValidate.result heap (Headers.CurrentValidate.hashesPointer heap (BitVec.ofNat 64 (VarList.decodedCount input start length))))
+    exact Or.inr ⟨current,inner,nextData,returned.forward,returned.cost,continued,by rw [endpoint]; rfl,by rw [endpoint]; rfl⟩
+
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_headers_data
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.header_data_trace

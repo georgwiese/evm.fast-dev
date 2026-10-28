@@ -3006,3 +3006,31 @@ Next: the actual post-header gas/database/state path, then whole current source
 and target-step composition. Overall estimate remains40%, plausible30–50%.
 Five old unfinished RLP files preserved untracked. Account10%weekly used,
 zero reset credits, ordinary usage allowed.
+
+## Actual header/gas prefix reaches the current Patricia database — 2026-10-28
+
+The actual run_attempt either stops within51528390source ticks or reaches
+the first nodedb_build call with full current SI/payload/gas/Keccak/witness
+input data. This retains all outcomes and actual lexical action/continuation
+frames. The current gas check includes gas-used/gas-limit guards and the
+software udiv/udivmod call chain (≤66body ticks, complete prefix≤67). Its
+constant1024divisor derives a full nonlocal frame, including short-clock
+timeouts. Neither a successful check nor a future helper outcome is assumed.
+
+The current decoded node image supplies its true two-word ABI and strict
+count<2^31 from actual record extent/current heap ceiling. Reused only the
+literally unchanged capacity loop:≤30ticks, sufficient power2^bits,
+2≤bits≤32, capacity≤4*count+4, full state frame and actual allocation tail.
+The current Patricia htab_new has four allocations/no clearing loop and
+costs≤8body ticks on all outcomes. Its insertion/tree proof remains open.
+Cleanup removed the redundant intermediate gas-only prefix module before
+committing; generic current-call frame/constant-operand adapters are shared.
+
+Validation: current-patricia-new-main-entry-capacity-v1.log PASS2143jobs,
+permitted printed axioms only. Index8397modules/16958facts, inventory8441modules,
+replacement AST reverse closure0, fixed files unchanged. Incremental policy
+PASS65221entries/2484059426bytes; no full verifier claim, claim infinity, no
+global target K. Next: real Patricia initialization/insertions, remaining
+current main/source paths and target-step composition. Overall estimate40%,
+plausible30–50%. Five old unfinished RLP files preserved untracked.
+Account11%weekly used, zero reset credits, ordinary usage allowed.

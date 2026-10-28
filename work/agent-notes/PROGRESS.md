@@ -4,6 +4,34 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete current Merkle buffer/dense/extension/output memory frame checks
+
+The actual outer body derives half=cur/2 and its j=0 inner entry. Every real
+pair output stays in the same temporary buffer; normal iteration derives the
+next half count and preserves the buffer pointer. The whole normal shrinking
+dense loop preserves a protected word outside that buffer, without old SHA
+state/accelerator or mapped SHA-input premises. All globals, including the heap
+pointer, survive the dense phase on every outcome.
+
+MerkleSuffixMemory joins the same actual dense, extension, output copy and
+release returns. MerkleBufferMemory adds the real input copy, padding clear and
+cur declaration. A protected metadata word stays unchanged outside the actual
+temporary buffer and final32-byte output. Physical copy/zero arenas and current
+counter/depth inputs are explicit; actual buffer allocation room and depth-prefix
+joins, and whole helper heap restoration, still need closing.
+
+Cleanup gives HeapScopeCost the real Software mark/release entries and minimal
+imports. Solver closures: heap scope225→22, copy-return252→114, heap-return227→27;
+static comparison is current-heap-import-cleanup.json. ScopedCallNormal imports
+its actual HostMemory type directly. Existing normal release/copy-return/heap
+frames recheck without pulling obsolete table/EVM proofs into this closure.
+
+Validation: current-merkle-buffer-memory-v2.log PASS1162jobs/permitted printed
+axioms only, including HeapReleaseReturn and ScopedCallNormal.8GiBguard/twoslots/
+cachefalse; disk61%. Index8086modules/16237facts; inventory8125, replacement
+closure0, fixed main unchanged; incremental policy64894entries/2482692432bytes
+PASS. No global finite target K or full verification; claim infinity.
+
 ## Actual packing image and Merkle pair-loop memory frames check
 
 PackBytesMemory.Returned retains the exact returned(buffer,ceil(n/32)) tuple,

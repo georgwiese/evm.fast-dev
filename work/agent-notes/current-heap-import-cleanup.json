@@ -1,0 +1,21 @@
+{
+  "previous_head": "7ca92916b12526f691956b845d22ca45bd95a8d7",
+  "comparisons": [
+    {
+      "root": "InitECandidate.Solver.Input.HeapScopeCost",
+      "previous_solver_closure": 225,
+      "current_solver_closure": 22
+    },
+    {
+      "root": "InitECandidate.Solver.Input.CopyReturnMemory",
+      "previous_solver_closure": 252,
+      "current_solver_closure": 114
+    },
+    {
+      "root": "InitECandidate.Solver.Input.HeapReleaseReturn",
+      "previous_solver_closure": 227,
+      "current_solver_closure": 27
+    }
+  ],
+  "scope": "Static Solver import closures; changed imports restored to previous HEAD for old comparison. No full verification claim."
+}

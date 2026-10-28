@@ -84,11 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-pack-frame-complete-v1.log`,1222jobs;
-`current-merkle-pair-memory-v2.log`,733jobs,
-permitted printed axioms only. Historical/current proof index:8083modules/
-16223facts; Solver inventory8122, replacement closure0, frozen main files
-unchanged. Incremental policy passes64891entries/2482668495bytes. These checks
+Latest successful selected closure: `current-merkle-buffer-memory-v2.log`,1162jobs,
+permitted printed axioms only. Historical/current proof index:8086modules/
+16237facts; Solver inventory8125, replacement closure0, frozen main files
+unchanged. Incremental policy passes64894entries/2482692432bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -144,7 +143,13 @@ remain historical until their current statements/dependencies are checked.
    call-free-loop certificate proves actual copy/zero preserve every global.
    Actual dense/extension pair loops now preserve protected words using their
    real output slots and current counters, without SHA-input mapping or old
-   workspace assumptions. Whole-hash frames remain open. Large
+   workspace assumptions. Complete current buffer copy/clear/shrinking dense/
+   extension/output/release now preserves protected words outside its actual
+   temporary buffer and final32-byte output, on the same normal return. Heap
+   mark/release/copy-return frames also recheck with real Software/minimal
+   imports (heap scope225→22, copy-return252→114, heap-return227→27Solver
+   modules). Actual allocation/depth joins, whole-Merkle heap restoration and
+   whole-hash frames remain open. Large
    straight-line target work remains open; old accelerator Workspace/entry/cost
    proofs are not current. Older hash layouts
    also pin a134217728-byte budget, so check/relax those limits using current

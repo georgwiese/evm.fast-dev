@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CallResume
+import Guest.Model
 
 namespace InitECandidate.Solver.Input.CallNormal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

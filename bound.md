@@ -84,10 +84,11 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-root-main-cost-frame-v5.log`,1802jobs,
-permitted printed axioms only. Historical/current proof index:8199modules/
-16615facts; Solver inventory8238, replacement closure0, frozen main files
-unchanged. Incremental policy passes65007entries/2483319736bytes. These checks
+Latest successful selected closure: `current-main-root-witness-images-v1.log`,1807jobs
+and `current-witness-array-arguments-v3.log`,1464jobs,
+permitted printed axioms only. Historical/current proof index:8205modules/
+16622facts; Solver inventory8244, replacement closure0, frozen main files
+unchanged. Incremental policy passes65013entries/2483341403bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -175,8 +176,13 @@ remain historical until their current statements/dependencies are checked.
    normal body and main caller protect earlier memory outside their actual
    output/length chunk and restore entering heap. These are source costs and
    normal frames, not target steps or covered-terminal classification.
-   Next: transport actual main metadata/arenas across the normal root return
-   and materialize SI witness fields at their real stateless-verification callers. Recheck old
+   Main's actual normal root return now also carries all three original
+   witness record arrays and all six physical SI40/48/56/64/72/80 fields,
+   with exact slices, lengths and headercount≤256. The actual pre-root heap
+   bounds their extents; one shared image/frame and argument-load proof handles
+   all three arrays, including empty arrays. Initialized scratch/frame cursors,
+   domain, workspace and persistent frontier also survive that same return.
+   Next: actual verification-wrapper/header entry, bounds and covered paths. Recheck old
    limits against encodedLength+16*txCount≤251655056 and txCount≤12582752.
    Treat digest/output values generically when they do not affect runtime.
    Review dominant copy/zero and empty-progressive slack before the final K.
@@ -203,7 +209,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:1%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:2%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

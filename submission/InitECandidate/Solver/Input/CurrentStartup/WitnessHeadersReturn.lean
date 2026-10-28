@@ -37,6 +37,8 @@ structure Result (input : Guest.InputBlob) (source ready post : PanSemStateFinit
     payloadLength nodeStart nodeLength codeStart codeLength (.val (.word statelessRecord))
   memory : ∀ query : BitVec 64, query.toNat < headers.toNat →
     query ≠ statelessRecord + 72#64 → query ≠ statelessRecord + 80#64 → post.memory query = source.memory query
+  nodesBefore : nodes.toNat + 16 * VarList.decodedCount input nodeStart nodeLength ≤ headers.toNat
+  codesBefore : codes.toNat + 16 * VarList.decodedCount input codeStart codeLength ≤ headers.toNat
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ source ready post, ∃ pointer statelessRecord record gasWord requestRecord nodes codes headers : BitVec 64,
@@ -144,7 +146,7 @@ theorem codes (input : Guest.InputBlob) (actual : WitnessCodesReturn.Reached (de
       VarList.Records.of_memory ready post input pointer nodeArray nodeStart nodeLength memoryEq readyNodes,
       VarList.Records.of_memory ready post input pointer codeArray codeStart codeLength memoryEq readyCodes,
       VarList.Records.of_memory ready post input pointer array start length memoryEq readyHeaders,
-      data.nodeLengths, data.codeLengths, lengths, countLimit, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩⟩
+      data.nodeLengths, data.codeLengths, lengths, countLimit, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, nodesBefore, codesBefore⟩⟩
   · rw [postEq]
     rfl
   · rw [memoryEq]

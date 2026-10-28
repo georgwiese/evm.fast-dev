@@ -39,6 +39,7 @@ structure Ready (input : Guest.InputBlob) (decoded current : PanSemStateFiniteEx
   little : current.be = false
   si : current.locals.lookup (ofString "si") = some (.val (.word origin.word))
   rootLocal : current.locals.lookup (ofString "root") = some (.val (.word root))
+  enteringHeap : decoded.globals.lookup (ofString "heap_ptr") = some (.val (.word root))
   rootAfter : max (record.toNat + 136) (requestRecord.toNat + 80) ≤ root.toNat
   arrayBefore : array.toNat + 16 * VarList.decodedCount input start size ≤ root.toNat
   aligned : root.toNat % 8 = 0
@@ -97,7 +98,7 @@ theorem allocated {input : Guest.InputBlob} {source decoded current : PanSemStat
     rw [stateEq]
     exact decoder.runtime.2.1.trans initial.little
   refine ⟨origin, record, gasWord, requestRecord, root, array, payloadLength, start, size,
-    ⟨run, snapshot, currentPayload, currentArena, little, siCurrent, rootCurrent, rootAfter, arrayBefore,
+    ⟨run, snapshot, currentPayload, currentArena, little, siCurrent, rootCurrent, heapCell, rootAfter, arrayBefore,
       aligned, room, currentHeap, memory, ?_, ?_⟩⟩
   · rw [stateEq]
     rfl

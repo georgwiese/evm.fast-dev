@@ -4,6 +4,27 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual main root return retains all three witness arrays
+
+The same decoder now supplies all six physical SI witness pointer/count fields,
+complete node/code/header records, validated item lengths1024/65536/1024 and
+headercount≤256 after main's actual normal root call. The original decoder
+heap is identified with its actual root allocation, bounding the three earlier
+array extents. The final witness result retains the already-proved node/code
+ordering instead of discarding it. One shared WitnessArrays.Image and interval
+frame transports all three arrays; one argument-load proof handles both SI
+loads, including empty arrays. RootReturned retains the actual initialized
+scratch/frame arenas, workspace and entering persistent frontier.
+
+Validation: current-main-root-witness-images-v1.log PASS1807jobs and
+current-witness-array-arguments-v3.log PASS1464jobs, permitted printed axioms
+only. Index8205modules/16622facts; inventory8244, replacement closure0 and
+frozen main unchanged. Incremental policy65013entries/2483341403bytes PASS.
+Account2%weekly,0resetcredits, ordinary usage allowed.
+Source source-cost/normal-frame proofs remain distinct from target-step and
+covered-outcome work. No global finite target K/full verification; claim infinity.
+Next: minimal current verification wrappers, actual header caller and scratch path.
+
 ## Complete actual current root body and main caller cost/memory
 
 The unchanged htr_new_payload_request now has a complete source allowance:

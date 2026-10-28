@@ -481,3 +481,30 @@ unchanged. Incremental policy65393entries/2484826770bytes PASS. Generator
 check-only replay passes and now tracks all eight root-frame keys. No global
 finite target K/full verification. Usage21%weekly/0resetcredits. Next: actual
 hash/set/counter iteration and complete current node/code database builders.
+
+## Complete actual database insertion loop and aggregate-byte allowance
+
+The original current nodedb_build227 insertion loop now has a checked
+all-outcome bound that sums actual row lengths. Every real continuing row
+hashes its decoded witness, preserves the complete physical Patricia image,
+performs unchanged htab_set and increments its actual counter. It costs
+44*floor(rowLength/136)+1506body ticks; with its real loop tick the allowance
+is44*floor(rowLength/136)+1507. Actual normal iterations derive the next
+image with count≤processed and leaf values restricted to genuine decoded
+record addresses. Stopped/failed/short-clock outcomes are covered.
+
+The actual table-constructor return initializes this invariant without
+interpreting any uninitialized slot as a live node. The original entire
+post-constructor tableTail is priced by the sum; normal loop exits retain
+all decoded rows, input, heap/globals and table image. A checked floor-sum
+reduction gives≤44*floor(totalPayloadBytes/136)+1507*recordCount, rather than
+multiplying each item's maximum size by a separate maximum count. The real
+decoded-record byte-budget theorem supplies that aggregate byte allowance.
+Full capacity/constructor/body/caller composition and normal builder return
+remain next, followed by later current source paths and uniform target K.
+
+Validation: current-builder-loop-initialized-v2.log PASS1518jobs, including
+the whole weighted loop, aggregate-byte bound and actual constructor-loop
+state. Only permitted printed axioms. Index8569modules/17369facts; inventory
+8614/replacement closure0/fixed files unchanged. No global finite target K
+or full verification. Usage22%weekly/0resetcredits.

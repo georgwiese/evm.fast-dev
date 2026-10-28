@@ -30,7 +30,7 @@ theorem scoped_frame_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have actual:=ClockCost.scoped_reached_current source name resultShape (ofString "rlp_list_to_slices") expressions (Header.values pointer length) body continuation callee resultShape (57*length.toNat+3) tailPrice args called price ?_
   · omega
   · intro target value normal checked
-    obtain ⟨items,count,model,countEq,countBound,valueEq,records,room,nextArena,globals,frame,cost⟩:=body_normal (callEntryStateHOLFinite source callee) target pointer length heap pointerLocal lengthLocal (arena.of_frame rfl) heapGlobal heapBound before sizeBound value normal
+    obtain ⟨items,count,model,countEq,countBound,valueEq,records,room,nextArena,globals,frame,metadata,cost⟩:=body_normal (callEntryStateHOLFinite source callee) target pointer length heap pointerLocal lengthLocal (arena.of_frame rfl) heapGlobal heapBound before sizeBound value normal
     have fields:=evaluation_fields (callEntryStateHOLFinite source callee) target body (some (.returned value)) normal
     rw [valueEq]
     exact tail target items count model countEq countBound records room nextArena fields.1 fields.2.1 globals

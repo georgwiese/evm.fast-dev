@@ -45,7 +45,7 @@ theorem list_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have args : evalListHOLFinite topState (h:=fun query=>Classical.propDecidable (topState.memaddrs query)) listArguments=some (Rlp.Header.values (pointer+header) payload) := by
     simp [listArguments,Rlp.Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,topCell,Rlp.Item.result]
   rw [after_top_shape.2] at remaining
-  obtain ⟨funded,sliced,items,count,inner,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,actualForward,slicePrice,continued,restored⟩:=
+  obtain ⟨funded,sliced,items,count,inner,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,metadata,actualForward,slicePrice,continued,restored⟩:=
     Rlp.CurrentSlices.scoped_normal topState middle (pointer+header) payload heap (arena.of_frame rfl) heapGlobal heapBound (by rw [number]; omega) (by omega) "lst" listArguments afterList args value remaining
   change sliced.clock≤clock at actualForward
   refine ⟨header,payload,clock,sliced,items,count,inner,complete,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,?_,?_,continued,?_⟩

@@ -3,13 +3,13 @@ import InitECandidate.Solver.WitnessRadix.Addressing
 import InitECandidate.Solver.Input.ByteStoreFrame
 import InitECandidate.Solver.Input.ContinuingDeclarationEntry
 import InitECandidate.Solver.Input.AssignNormal
+import InitECandidate.Solver.Input.MemoryMetadata
 
 namespace InitECandidate.Solver.Mpt.KeyToNibbles
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def writeMetadata (source : PanSemStateFiniteExact 64 Guest.HostMemory) :=
-  emptyLocalsHOLFinite {source with clock:=0,memory:=fun _=>.word 0#64}
+abbrev writeMetadata := Input.MemoryMetadata.erase
 
 /-- Only the backing words of the actual byte output may change. -/
 structure SpanFrame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (out : BitVec 64) (length : Nat) : Prop where

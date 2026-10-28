@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.NodeConstructorProgram
-import InitECandidate.Solver.PanFieldStoresFrame
+import InitECandidate.Solver.PanFieldStores
+import InitECandidate.Solver.WitnessRadix.PersistentAlloc
 
 namespace InitECandidate.Solver.Mpt.NodeConstructor
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -26,7 +27,7 @@ theorem scalar_tail_shape (kind : Kind) (scalar : kind≠.branch) (words : Strin
     tail kind=FieldStores.program "nd" "" (fields kind words) (.return (QueryBranch.localVar "nd")) := by
   cases kind <;> try exact (scalar rfl).elim
   all_goals simp only [tail,body,original,fields,FieldStores.program,FieldStores.address,FieldStores.Value.expression,QueryBranch.addConst,QueryBranch.localVar,
-    Guest.guestFn_node_new_hashed,Guest.guestFn_node_new_leaf,Guest.guestFn_node_new_ext,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+    Guest.Software.guestFn_node_new_hashed,Guest.Software.guestFn_node_new_leaf,Guest.Software.guestFn_node_new_ext,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
 
 theorem fields_ready (kind : Kind) (source : PanSemStateFiniteExact 64 Guest.HostMemory) (words : String→BitVec 64)
     (inputs : Inputs kind source words) : ∀ field∈fields kind words,field.value.Ready source "" 0#64 := by

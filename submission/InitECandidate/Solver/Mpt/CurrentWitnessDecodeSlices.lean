@@ -82,7 +82,7 @@ theorem current_slices_zero (source : PanSemStateFiniteExact 64 Guest.HostMemory
     (arena : CurrentStartup.ArenaState source) : ReturnFacts.Returns source slicesCall ZeroResult := by
   intro post value normal
   rw [slices_shape] at normal
-  obtain ⟨positive,target,items,count,inner,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,clock,price,continued,restored⟩:=
+  obtain ⟨positive,target,items,count,inner,model,countEq,countBound,records,room,nextArena,domain,endian,globals,frame,metadata,clock,price,continued,restored⟩:=
     Rlp.CurrentSlices.scoped_normal source post (pointer+header) payload heap arena heapCell heapBound before (by omega)
       "sl" slicesArguments afterSlices (slices_arguments_read source pointer header payload flag itemCell) value normal
   have image:=current_slice_image source target (pointer+header) payload heap count items heapArena aligned before small

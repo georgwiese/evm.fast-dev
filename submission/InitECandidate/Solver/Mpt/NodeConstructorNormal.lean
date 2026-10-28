@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.NodeConstructorFields
 import InitECandidate.Solver.Mpt.NodeConstructorCost
 import InitECandidate.Solver.WitnessRadix.AllocationCallNormal
+import InitECandidate.Solver.WitnessRadix.AllocatedBytes
 
 namespace InitECandidate.Solver.Mpt.NodeConstructor
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -13,10 +14,10 @@ theorem scalar_normal (kind : Kind) (scalar : kind≠.branch)
     (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) (words : String→BitVec 64)
     (inputs : Inputs kind source words) (domain : source.memaddrs=InitE.ordinaryDomain)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (arena : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0)
+    (arena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),target)) :
-    value=.val (.word heap) ∧ AllocatedBytes.Arena heap (bytes kind) ∧ 1≤source.clock ∧
+    value=.val (.word heap) ∧ heap.toNat+bytes kind≤2952790016 ∧ AllocatedBytes.Arena heap (bytes kind) ∧ 1≤source.clock ∧
     emptyLocalsHOLFinite target=emptyLocalsHOLFinite
       {PersistentAlloc.post {source with clock:=source.clock-1} heap (BitVec.ofNat 64 (bytes kind)) with
         memory:=WordWrites.write source.memory (FieldStores.writes heap (fields kind words))} := by
@@ -26,9 +27,9 @@ theorem scalar_normal (kind : Kind) (scalar : kind≠.branch)
   rw [allocation_shape] at normal
   obtain ⟨room,positive,inner,tailRun,endpoint⟩:=PersistentAlloc.call_normal source target "nd" [.const (BitVec.ofNat 64 (bytes kind))] (tail kind)
     heap (BitVec.ofNat 64 (bytes kind)) args (PersistentAlloc.original_code source.code installed) (Input.Trap.original_code source.code installed)
-    heapCell (by have upper:=arena.upper; omega) value normal
+    heapCell heapBound value normal
   rw [amountNumber] at room
-  have nodeArena : AllocatedBytes.Arena heap (bytes kind):=⟨arena.lower,room⟩
+  have nodeArena : AllocatedBytes.Arena heap (bytes kind):=⟨arena.lower,by omega⟩
   let ready:=QueryBranch.bind (PersistentAlloc.post {source with clock:=source.clock-1} heap (BitVec.ofNat 64 (bytes kind))) "nd" heap
   have currentInputs:=inputs_allocation kind source words heap (BitVec.ofNat 64 (bytes kind)) inputs
   have currentNode : ready.locals.lookup (ofString "nd")=some (.val (.word heap)):=QueryBranch.bind_lookup_same _ _ _
@@ -42,7 +43,7 @@ theorem scalar_normal (kind : Kind) (scalar : kind≠.branch)
       (QueryBranch.localVar "nd")=some (.val (.word heap)) := by
     simp [QueryBranch.eval,QueryBranch.localVar,evalHOLExact,toExact,currentNode]
   have valueEq : value=.val (.word heap):=Option.some.inj (read.symm.trans expected)
-  refine ⟨valueEq,nodeArena,positive,?_⟩
+  refine ⟨valueEq,room,nodeArena,positive,?_⟩
   rw [endpoint,innerEq]
   rfl
 
@@ -52,20 +53,25 @@ theorem scalar_normal_frame (kind : Kind) (scalar : kind≠.branch)
     (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) (words : String→BitVec 64)
     (inputs : Inputs kind source words) (domain : source.memaddrs=InitE.ordinaryDomain)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (arena : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0)
+    (arena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),target)) :
     ∀ query : BitVec 64,query.toNat<heap.toNat ∨ heap.toNat+bytes kind≤query.toNat→target.memory query=source.memory query := by
-  obtain ⟨valueEq,nodeArena,positive,frame⟩:=scalar_normal kind scalar source target heap words inputs domain heapCell arena aligned installed value normal
+  obtain ⟨valueEq,room,nodeArena,positive,frame⟩:=scalar_normal kind scalar source target heap words inputs domain heapCell arena heapBound aligned installed value normal
   have memory:=congrArg PanSemStateFiniteExact.memory frame
   change target.memory=WordWrites.write source.memory (FieldStores.writes heap (fields kind words)) at memory
-  let region : MutableTable.MemoryRegion.Region:=⟨heap.toNat,bytes kind⟩
-  have valid : MutableTable.MemoryRegion.Valid region:=⟨nodeArena.lower,nodeArena.upper,aligned⟩
   intro query outside
   rw [memory]
-  have pointerEq : MutableTable.MemoryRegion.pointer region=heap:=by simp [MutableTable.MemoryRegion.pointer,region]
-  rw [←pointerEq]
-  exact FieldStores.writes_outside source.memory region valid (fields kind words) (fun field inside=>(fields_geometry kind words field inside).1) query outside
+  apply WordWrites.write_away
+  intro member
+  simp only [FieldStores.writes,List.map_map,Function.comp_def] at member
+  obtain ⟨field,inFields,same⟩:=List.mem_map.mp member
+  have small:=(fields_geometry kind words field inFields).1
+  have number : (heap+BitVec.ofNat 64 field.offset).toNat=heap.toNat+field.offset :=
+    byteAddress_toNat heap field.offset (by have upper:=nodeArena.upper; omega)
+  have equal:=congrArg BitVec.toNat same
+  rw [number] at equal
+  omega
 
 end InitECandidate.Solver.Mpt.NodeConstructor
 

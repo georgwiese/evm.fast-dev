@@ -787,3 +787,33 @@ replacement closure0/fixed files unchanged. Incremental policy PASS65477entries/
 2485266398bytes. Usage27%weekly/0resetcredits. No global finite target K/full
 verification; claim infinity. Continue actual normal memory/heap frames and
 later main/target-step composition.
+
+
+## Shared normal persistent frames and complete slice runtime preservation
+
+A shared PersistentNormalFrame retains the genuinely advanced bounded/aligned
+heap, all nonheap globals, complete nonmemory runtime metadata and every word
+before the entering heap. It composes at actual intermediate frontiers and
+survives real call-entry/caller-local/lexical restoration. Current scalar node
+constructors and compact conversion now supply this frame from their own
+normal allocations. Scalar constructor room is retained explicitly; the
+persistent heap ceiling is a real entry fact, separate from ordinary-domain
+readability. Node-field proofs no longer import the old hashmap memory-region
+graph. Compact writing reuses the shared physical metadata erasure.
+
+The current RLP slice converter now retains its complete runtime metadata
+through the actual first pass, allocation, record-writing second pass and
+scoped caller. A shared memory-effect rule allows those record writes while
+retaining globals, FFI and all other metadata. Existing header/MPT callers
+retain their cost/record contracts, with the stronger metadata available.
+A real normal converter return now supplies the same persistent frame.
+
+Validation: current-persistent-slices-node-main-v1.log PASS2649jobs, including
+current normal node/compact/slice frames, full header/MPT/state-init/main prefix
+and globals. Printed axioms permitted only; generator --check PASS.
+Index8648modules/17550facts; inventory8693/replacement closure0/fixed files
+unchanged. Incremental policy PASS65483entries/2485291692bytes. No global finite target K/full verification; claim infinity.
+Usage28%weekly/0resetcredits. Next: normal MPT leaf/step/root/state-init memory
+composition, then later main and uniform target steps. Older unused pre-rebase
+normal-frame callers still need porting or removal; this is selected current
+proof validation, not a successful build of the entire historical Solver tree.

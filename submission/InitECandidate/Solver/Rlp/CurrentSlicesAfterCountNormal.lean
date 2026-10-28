@@ -2,6 +2,7 @@ import InitECandidate.Solver.Rlp.SlicesAfterAllocNormal
 import InitECandidate.Solver.WitnessRadix.AllocationCost
 import InitECandidate.Solver.WitnessRadix.AllocationNormal
 import InitECandidate.Solver.Input.ScopedCallNormal
+import InitECandidate.Solver.Rlp.CurrentSlicesMetadata
 
 namespace InitECandidate.Solver.Rlp.CurrentSlices
 open Slices
@@ -23,7 +24,8 @@ theorem after_count_normal (source target : PanSemStateFiniteExact 64 Guest.Host
     (normal : evaluateHOLFiniteState source afterCount=(some (.returned value),target)) :
     heap.toNat+16*count.toNat≤2952790016 ∧ value=result heap count ∧ Records target.memory heap pointer items ∧
       target.globals=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap (count*16#64)))) ∧
-      Window source target heap.toNat (heap.toNat+16*count.toNat) := by
+      Window source target heap.toNat (heap.toNat+16*count.toNat) ∧
+      Input.MemoryMetadata.erase target=Input.MemoryMetadata.erase (PersistentAlloc.post source heap (count*16#64)) := by
   have countBound := ListItems.count_le source pointer length.toNat items model
   rw [←countEq] at countBound
   have product : (count*16#64).toNat=16*count.toNat := by
@@ -43,6 +45,10 @@ theorem after_count_normal (source target : PanSemStateFiniteExact 64 Guest.Host
   rw [answerEq,callerFrame] at continuation
   rw [product] at room
   let ready := bind (PersistentAlloc.post {source with clock:=source.clock-1} heap (count*16#64)) "arr" heap
+  change evaluateHOLFiniteState ready afterAlloc=(some (.returned value),inner) at continuation
+  have runtime:=after_alloc_metadata source.code installed ready rfl
+  rw [continuation] at runtime
+  change Input.MemoryMetadata.erase inner=Input.MemoryMetadata.erase ready at runtime
   have readyPointer : ready.locals.lookup (ofString "p")=some (.val (.word pointer)) :=
     (bind_lookup_other _ "arr" "p" _ (by decide)).trans pointerCell
   have readyCount : ready.locals.lookup (ofString "count")=some (.val (.word count)) :=
@@ -50,7 +56,7 @@ theorem after_count_normal (source target : PanSemStateFiniteExact 64 Guest.Host
   have readyItems := ListItems.transport source ready pointer length.toNat items model length.isLt (by intro offset inside; rfl)
   obtain ⟨answer,records,globals,frame⟩ := after_alloc_normal ready inner pointer length heap count items readyPointer (bind_lookup_same _ _ _) readyCount
     readyItems countEq before (by omega) installed value continuation
-  refine ⟨room,answer,?_,?_,?_⟩
+  refine ⟨room,answer,?_,?_,?_,?_⟩
   · rw [restored]
     exact records
   · rw [restored]
@@ -58,6 +64,8 @@ theorem after_count_normal (source target : PanSemStateFiniteExact 64 Guest.Host
   · intro query outside
     rw [restored]
     exact frame query outside
+  · rw [restored]
+    exact runtime
 
 end InitECandidate.Solver.Rlp.CurrentSlices
 

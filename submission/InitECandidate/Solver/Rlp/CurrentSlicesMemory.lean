@@ -25,7 +25,9 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
       value=Slices.result heap count ∧ Records target.memory heap pointer items ∧ heap.toNat+16*count.toNat≤2952790016 ∧
       CurrentStartup.ArenaState target ∧
       target.globals=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap (count*16#64)))) ∧
-      Window source target heap.toNat (heap.toNat+16*count.toNat) ∧ source.clock-target.clock≤57*length.toNat+3 := by
+      Window source target heap.toNat (heap.toNat+16*count.toNat) ∧
+      MemoryMetadata.erase target=MemoryMetadata.erase (PersistentAlloc.post source heap (count*16#64)) ∧
+      source.clock-target.clock≤57*length.toNat+3 := by
   have fits : pointer.toNat+length.toNat<2^64 := by have h:=heap.isLt; omega
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (Header.values pointer length) := by
     simp [arguments,Header.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,pointerCell,lengthCell]
@@ -37,7 +39,7 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (bind_lookup_other _ "count" "p" _ (by decide)).trans pointerCell
   have readyCount : ready.locals.lookup (ofString "count")=some (.val (.word count)) := bind_lookup_same _ _ _
   have readyItems:=ListItems.transport source ready pointer length.toNat items itemModel length.isLt (by intro offset inside; rfl)
-  obtain ⟨room,answer,records,globals,frame⟩ := after_count_normal ready inner pointer length heap count items readyPointer readyCount readyItems countEq heapGlobal heapBound before sizeBound arena.code value continuation
+  obtain ⟨room,answer,records,globals,frame,metadata⟩ := after_count_normal ready inner pointer length heap count items readyPointer readyCount readyItems countEq heapGlobal heapBound before sizeBound arena.code value continuation
   have fields:=evaluation_fields ready inner afterCount (some (.returned value)) continuation
   have inputFrame:=Window.bytes_before ready inner heap.toNat (heap.toNat+16*count.toNat) pointer length frame before fits fields.1 fields.2.1
   have innerItems:=ListItems.transport ready inner pointer length.toNat items readyItems length.isLt inputFrame
@@ -57,11 +59,13 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   rw [←countEq] at countBound
   have priced:=body_cost source pointer length pointerCell lengthCell arena fits arena.code
   rw [normal] at priced
-  refine ⟨items,count,finalItems,countEq,countBound,answer,?_,room,finalArena,finalGlobals,?_,priced⟩
+  refine ⟨items,count,finalItems,countEq,countBound,answer,?_,room,finalArena,finalGlobals,?_,?_,priced⟩
   · rw [restored]; exact records
   · intro query outside
     rw [restored]
     exact frame query outside
+  · rw [restored]
+    exact metadata
 
 end InitECandidate.Solver.Rlp.CurrentSlices
 

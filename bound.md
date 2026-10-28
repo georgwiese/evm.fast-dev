@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-marked-hash-heap-v1.log`,1180jobs,
-permitted printed axioms only. Historical/current proof index:8088modules/
-16256facts; Solver inventory8127, replacement closure0, frozen main files
-unchanged. Incremental policy passes64896entries/2482711872bytes. These checks
+Latest successful selected closure: `current-merkle-complete-frame-v1.log`,1226jobs,
+permitted printed axioms only. Historical/current proof index:8090modules/
+16266facts; Solver inventory8129, replacement closure0, frozen main files
+unchanged. Incremental policy passes64898entries/2482734199bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -153,9 +153,13 @@ remain historical until their current statements/dependencies are checked.
    certificates instantiate current nonempty Merkle, all six fixed records,
    progressive hashing and progressive byte/container/request-list bodies:
    every actual normal return restores the entering heap exactly, without
-   numeric/capacity/workspace/mapping/room premises. Actual allocation/depth
-   memory joins, empty-Merkle/full-byte-list heap composition and whole-hash
-   frames remain open. Large
+   numeric/capacity/workspace/mapping/room premises. Complete actual Merkle
+   body and caller now retain the protected metadata word and entering heap,
+   including actual log/max depths, the empty zero-table copy, normal allocation
+   room and full buffer suffix. Context contains the real code/domain, zero
+   table and incoming persistent cursor; source n/limit and physical arenas
+   remain explicit call-entry facts. Full-byte-list/progressive/fixed-record/
+   payload/request-root memory composition remains open. Large
    straight-line target work remains open; old accelerator Workspace/entry/cost
    proofs are not current. Older hash layouts
    also pin a134217728-byte budget, so check/relax those limits using current

@@ -4,6 +4,29 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual Merkle memory and heap caller frame checks
+
+MerkleAllocationMemory derives persistent cursor+32*capacity room from the same
+real allocation return, then establishes the aligned temporary arena and exact
+caller locals for copy/clear/dense/extension/output. The actual size declaration
+and heap_mark scope preserve the protected metadata word; final normal return
+restores the entering heap. No future successful allocation or room is assumed.
+
+MerkleMemory joins the real logarithm/max prefix, including its actual minimal
+count/limit depths and lexical restoration. The empty-tree branch copies the
+real zero-table slot without modifying heap. The complete body and its actual
+four-word caller retain both protected memory and entering heap. Real source
+n/limit bounds, input/output arenas, ordinary domain, zero table and persistent
+cursor facts are explicit entry obligations; their eventual parent/root joins
+remain necessary. Source code and all error-path cost bounds remain unchanged.
+
+Validation: current-merkle-complete-frame-v1.log PASS1226jobs/permitted printed
+axioms only;8GiBguard/twoslots/cachefalse, disk61%. Index8090modules/16266facts;
+inventory8129, replacement closure0, frozen main unchanged; incremental policy
+64898entries/2482734199bytes PASS. No global finite target K or full verification;
+claim infinity. Next: whole byte/progressive/fixed-record memory composition and
+real payload/request-root ownership/resource joins.
+
 ## Shared actual saved-mark restoration checks on current hash bodies
 
 SavedHeapReturn inverts the real normal heap_release assignment, deriving its

@@ -4,6 +4,29 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual list-count source body/caller and normal input frame
+
+Whole current rlp_list_count body/caller cost≤46*length/+1 source ticks,
+including the actual counter/offset declarations, each real parsed item,
+two increments and final return, on all outcomes. Each continuing iteration
+pays from its actual consumed bytes, so one input byte budget covers the loop.
+Actual positive item size derives both increments without word wrap.
+
+Real normal returns derive a word count≤original length and preserve every
+nonlocal field. Actual ignored and scoped callers keep that same count and
+pure caller state. Continuation pricing uses only the real count return;
+no future allocation room or successful parser is supplied. Literal current
+syntax and pure assignment proofs are shared with historical clients, whose
+mapped-arena contracts remain unclaimed for current main.
+
+Validation: current-rlp-list-count-caller-v1.log PASS864jobs/permitted printed
+axioms. Index8240modules/16688facts; inventory8279/replacement closure0/frozen
+main unchanged. Incremental policy65051entries/2483475170bytes PASS.
+No global finite target K/full verification; claim infinity.
+Next: simplify the shared arena interface imports, then current item/slice/header
+costs and normal frames, later actual paths and global target-step composition.
+8GiBguard/twoslots/cachefalse; account4%weekly/0resetcredits/ordinary usage allowed.
+
 ## Current item-total source bound and actual consumed-byte caller budget
 
 Complete current rlp_item_total costs≤14*inputLength+30 source ticks on all

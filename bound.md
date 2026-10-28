@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-rlp-item-total-caller-budget-v2.log`,854jobs,
-permitted printed axioms only. Historical/current proof index:8231modules/
-16670facts; Solver inventory8270, replacement closure0, frozen main files
-unchanged. Incremental policy passes65041entries/2483444662bytes. These checks
+Latest successful selected closure: `current-rlp-list-count-caller-v1.log`,864jobs,
+permitted printed axioms only. Historical/current proof index:8240modules/
+16688facts; Solver inventory8279, replacement closure0, frozen main files
+unchanged. Incremental policy passes65051entries/2483475170bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -213,8 +213,13 @@ remain historical until their current statements/dependencies are checked.
    scoped caller supplies that same byte advance, exact resumed caller and
    cost≤14*consumedBytes+31. Flat byte-string continuations cost zero source
    ticks. Shared current syntax is separated from legacy mapped-arena costs.
-   Next: current list-count byte-budget composition, then item/slice/header
-   bounds and actual later callers. Recheck old
+   Complete current list-count body/caller now cost≤46*length/+1, sharing
+   one actual byte budget. Real normal returns derive count≤length and a
+   complete nonlocal frame; ignored and scoped callers retain that same
+   actual count/state. The actual positive item size justifies both counter
+   increments without wrap. Literal syntax and assignment proofs are shared
+   with historical clients; their mapped-arena contracts remain unclaimed.
+   Next: current item/slice/header bounds and actual later callers. Recheck old
    limits against encodedLength+16*txCount≤251655056 and txCount≤12582752.
    Treat digest/output values generically when they do not affect runtime.
    Review dominant copy/zero and empty-progressive slack before the final K.

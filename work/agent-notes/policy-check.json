@@ -2011,6 +2011,9 @@
     "submission/InitECandidate/Solver/Input/CurrentDomain.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/AllocatorCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Base.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/BytesCallCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/BytesListCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/BytesVectorCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/CeilLog2.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Code.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Effects.lean",
@@ -8092,8 +8095,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64856,
-  "package_bytes": 2482449969,
+  "package_entries": 64859,
+  "package_bytes": 2482482437,
   "claim": {
     "K": "infinity"
   },

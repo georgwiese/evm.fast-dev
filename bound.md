@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-pack-complete-cost-v2.log`,1603jobs,
-permitted printed axioms only. Historical/current proof index:8048modules/
-16082facts; Solver inventory8087, replacement closure0, frozen main files
-unchanged. Incremental policy passes64856entries/2482449969bytes. These checks
+Latest successful selected closure: `current-byte-hash-callers-v2.log`,1608jobs,
+permitted printed axioms only. Historical/current proof index:8051modules/
+16100facts; Solver inventory8090, replacement closure0, frozen main files
+unchanged. Incremental policy passes64859entries/2482482437bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -112,8 +112,10 @@ remain historical until their current statements/dependencies are checked.
    actual n,limit≤2^budget, budget<58 and the same non-timeout observation.
    Actual packing body/caller and exact returned ceil(n/32) tuple now check
    without room/mapping/success hypotheses. Its minimal syntax import closure
-   shrinks593→27Solver modules. Byte/progressive helpers and full request-hash
-   composition remain open.
+   shrinks593→27Solver modules. Complete current byte-list/vector bodies and real ABI callers now compose
+   packing, current Merkle, release and length mix, including the actual short
+   vector branch. Progressive helpers and full request-hash composition remain
+   open, together with ownership/resource frames at their real callers.
    Current sha256_pair now has a checked syntax certificate: it preserves all
    globals, spends0body source ticks and at most1caller tick on all outcomes.
    Its1,022-line generated effect proof is now50lines, using shared structural

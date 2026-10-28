@@ -4,6 +4,28 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete current byte-list/vector hash bodies and callers now check
+
+BytesListCost composes the actual mark, packing, real returned tuple, Merkle,
+release and length mix. Body/caller sourcecost≤packPrice(n)+88*ceil(n/32)+4*budget+
+99/100. Actual chunks and list limit must fit2^budget, budget<58. BytesVectorCost
+checks both its literal≤32byte early-return branch and long packed-Merkle phase;
+body/caller sourcecost≤packPrice(n)+88*ceil(n/32)+4*budget+52/53. All actual
+non-timeout observations include failed reads/stores/allocations and traps.
+
+A small shared BytesCallCost ABI selects exactly the current vector/list Software
+entry and supplies p/n/out plus the list limit to that same callee. These bounds
+require no heap pointer/room, mapped input/output, accelerator/global workspace,
+successful hashing or future funding. Source ticks still omit straight-line
+target work. Global finite K and full root-hash composition remain open.
+
+Validation: current-byte-hash-callers-v2.log PASS1608jobs/permitted printed
+axioms;8GiBguard/twoslots/cachefalse. Index8051modules/16100facts; Solver8090;
+replacement closure0/fixed files unchanged; incremental policy PASS64859entries/
+2482482437bytes. Account24%weekly/0resetcredits. Claim infinity; no full verification.
+Next: current progressive hashing, list/container composition and physical-memory
+frames for complete payload/request-root hashing.
+
 ## Actual byte packing cost and returned chunk count now check
 
 PackBytesProgram now uses the actual Software entry and minimal code/scalar/arena

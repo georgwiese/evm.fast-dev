@@ -3540,3 +3540,29 @@ current-mpt-main-workspace-v1.log PASS1600jobs. Permitted printed axioms only.
 Index8554modules/17343facts; inventory8599/replacement closure0/fixed files
 unchanged. No global finite target K/full verification. Usage20%weekly,
 0resetcredits. Next: carry derived MPT separation into actual builder loop.
+
+## Actual input/MPT frontier through the reached database caller
+
+The copied input, decoded SI/payload/request/witness images and all actual
+main/root/header continuations now retain the stronger derived lower
+frontier2701134824. The real MPT hash pointer2701134768 survives the complete
+31-helper root graph, verification wrappers, header validation and gas-limit
+prefix to the first actual database child. This follows the current startup
+proof; the first-three SSZ-only frontier remains unchanged in its older API.
+
+New shared frames preserve a complete Patricia image through writes below
+its actual table and name the actual32bytes of any mapped query buffer.
+Thus the real witness hash cannot corrupt the later table or decoded input.
+General witness-to-physical-row extraction now serves headers/nodes/codes;
+the old header-only interface is a thin wrapper. Original database loop
+syntax/live-state and both real hash/insertion argument reads check, with
+real hash cost44*(rowLength/136)+690. Whole insertion-loop cost/normal return,
+main completion and uniform target-step composition remain open.
+
+Validation: current-mpt-input-frontier-v4.log PASS2201jobs;
+current-builder-row-reads-v1.log PASS932jobs. Permitted printed axioms only.
+Index8561modules/17354facts; inventory8606/replacement closure0/fixed files
+unchanged. Incremental policy65393entries/2484826770bytes PASS. Generator
+check-only replay passes and now tracks all eight root-frame keys. No global
+finite target K/full verification. Usage21%weekly/0resetcredits. Next: actual
+hash/set/counter iteration and complete current node/code database builders.

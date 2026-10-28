@@ -36,7 +36,7 @@ theorem first_offset (input : Guest.InputBlob) (source post : PanSemStateFiniteE
     (pCell : source.locals.lookup (ofString "p") = some (.val (.word pointer)))
     (lenCell : source.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 (input.length % 2^64)))))
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
-    (lower : 2701134640 ≤ pointer.toNat) (aligned : pointer.toNat % 8 = 0)
+    (lower : 2701134824 ≤ pointer.toNat) (aligned : pointer.toNat % 8 = 0)
     (room : pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016)
     (value : ValueHOL 64)
     (actual : evaluateHOLFiniteState source (Code.body .decode_stateless_input) = (some (.returned value), post)) :
@@ -72,7 +72,7 @@ theorem outer_reached (input : Guest.InputBlob) (source post : PanSemStateFinite
     (pCell : source.locals.lookup (ofString "p") = some (.val (.word pointer)))
     (lenCell : source.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 (input.length % 2^64)))))
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
-    (lower : 2701134640 ≤ pointer.toNat) (aligned : pointer.toNat % 8 = 0)
+    (lower : 2701134824 ≤ pointer.toNat) (aligned : pointer.toNat % 8 = 0)
     (room : pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016)
     (value : ValueHOL 64)
     (actual : evaluateHOLFiniteState source (Code.body .decode_stateless_input) = (some (.returned value), post)) :

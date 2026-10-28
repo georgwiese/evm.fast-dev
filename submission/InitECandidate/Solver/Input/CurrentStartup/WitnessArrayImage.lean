@@ -11,9 +11,9 @@ structure Image (input : Guest.InputBlob) (state : PanSemStateFiniteExact 64 Gue
     (pointer si array : BitVec 64) (start length boundary offset itemLimit countLimit : Nat) : Prop where
   siArena : AllocatedBytes.Arena si 96
   siAligned : si.toNat%8=0
-  siLower : 2701134640≤si.toNat
+  siLower : 2701134824≤si.toNat
   siBefore : si.toNat+96≤boundary
-  inputLower : 2701134640≤pointer.toNat
+  inputLower : 2701134824≤pointer.toNat
   inside : start+length≤input.length%2^64
   before : array.toNat+16*VarList.decodedCount input start length≤boundary
   records : VarList.Records state input pointer array start length
@@ -29,7 +29,7 @@ theorem Image.of_interval {input : Guest.InputBlob} {source post : PanSemStateFi
     {pointer si array : BitVec 64} {start length boundary offset itemLimit countLimit : Nat}
     (data : Image input source pointer si array start length boundary offset itemLimit countLimit)
     (offsetBound : offset+8<96)
-    (memory : ∀ query : BitVec 64,2701134640≤query.toNat → query.toNat<boundary → post.memory query=source.memory query) :
+    (memory : ∀ query : BitVec 64,2701134824≤query.toNat → query.toNat<boundary → post.memory query=source.memory query) :
     Image input post pointer si array start length boundary offset itemLimit countLimit := by
   have records : VarList.Records post input pointer array start length := by
     rcases data.records with empty|⟨plan,pointerEq,arrayEq,startEq,lengthEq,countEq,complete,valid⟩

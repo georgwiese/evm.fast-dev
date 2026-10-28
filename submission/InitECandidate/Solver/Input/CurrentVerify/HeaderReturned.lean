@@ -12,7 +12,7 @@ theorem after_headers_data {input : Guest.InputBlob} {source target : PanSemStat
     {pointer si record gasWord array heap count nextHeap : BitVec 64} {pointers lengths : Nat→BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
     (sourceHeap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (returned : Headers.CurrentValidate.Returned source target array heap count 2701132160#64 2701132360#64 nextHeap pointers lengths 2701134640 boundary) :
+    (returned : Headers.CurrentValidate.Returned source target array heap count 2701132160#64 2701132360#64 nextHeap pointers lengths 2701134824 boundary) :
     Data input (CallNormal.continuationEntry source target "vh" (Headers.CurrentValidate.result heap (Headers.CurrentValidate.hashesPointer heap count)))
       pointer si record gasWord boundary := by
   let ready:=CallNormal.continuationEntry source target "vh" (Headers.CurrentValidate.result heap (Headers.CurrentValidate.hashesPointer heap count))
@@ -30,7 +30,7 @@ theorem after_headers_data {input : Guest.InputBlob} {source target : PanSemStat
   have siLocal : ready.locals.lookup (ofString "si")=some (.val (.word si)) :=
     (CallNormal.continuation_lookup_other source target "vh" "si" _ (by decide)).trans data.siLocal
   obtain ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,nodeImage,codeImage,headerImage⟩:=data.witnesses
-  have memory (query : BitVec 64) (low : 2701134640≤query.toNat) (high : query.toNat<boundary) : ready.memory query=source.memory query :=
+  have memory (query : BitVec 64) (low : 2701134824≤query.toNat) (high : query.toNat<boundary) : ready.memory query=source.memory query :=
     returned.input.words query low high
   have siFrame : ready.memory si=source.memory si := memory si nodeImage.siLower (by have h:=nodeImage.siBefore; omega)
   have gasNumber : (record+88#64).toNat=record.toNat+88 := byteAddress_toNat record 88 (by have h:=data.recordArena.upper; omega)
@@ -38,7 +38,7 @@ theorem after_headers_data {input : Guest.InputBlob} {source target : PanSemStat
     apply memory
     · rw [gasNumber]; have h:=data.recordInside.1; omega
     · rw [gasNumber]; have h:=data.recordInside.2; omega
-  exact ⟨arena,little,environment,nextHeapData,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
+  exact ⟨arena,little,environment,(returned.globals (ofString "mpt_hash_scratch") (by decide)).trans data.mptHash,nextHeapData,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
     siFrame.trans data.payloadCell,gasFrame.trans data.gasCell,data.gasBound,
     nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
     nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩

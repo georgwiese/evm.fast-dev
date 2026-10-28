@@ -27,7 +27,7 @@ structure Context (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64
   bal : current.locals.lookup (ofString "o_bal") = some (.val (.word (Payload.offsetWords input 3)))
   lengthBound : input.length % 2^64 ≤ Guest.maxInputBytes
   extent : 602 ≤ input.length % 2^64
-  lower : 2701134640 ≤ pointer.toNat
+  lower : 2701134824 ≤ pointer.toNat
   aligned : pointer.toNat % 8 = 0
   room : pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016
   minimum : 540 ≤ length

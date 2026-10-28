@@ -7,7 +7,7 @@ open Flapjack.Basis.Pure.MlString
 /-- The complete physical payload image belongs to the same actual decoder
 run selected by main, including all hash fields and original transaction rows. -/
 theorem payload_image {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701134640 source)
+    (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701134824 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
     (execution : CallPrefix.Execution source DecoderPrefix.actions target)
     (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) :

@@ -18,7 +18,7 @@ structure DecodedImage (input : Guest.InputBlob) (source : PanSemStateFiniteExac
   cursorArena : AllocatedBytes.Arena cursor 80
   cursorAligned : cursor.toNat%8=0
   cursorRoom : cursor.toNat+80≤2952790016
-  inputLower : 2701134640≤blob.toNat
+  inputLower : 2701134824≤blob.toNat
   cursorAfterInput : blob.toNat+input.length%2^64+8≤cursor.toNat
 
 theorem DecodedImage.of_memory {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}

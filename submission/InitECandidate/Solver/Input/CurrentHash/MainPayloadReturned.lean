@@ -17,8 +17,8 @@ theorem main_payload_cells {input : Guest.InputBlob} {decoded current post : Pan
   obtain ⟨headerSource,headerReady,headerPost,nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,
     headerStart,headerLength,data,frame,clock⟩ := ready.snapshot
   have memory:=LocalEffects.memory_of_erase headerPost decoded frame
-  have siLower : 2701134640≤origin.word.toNat := by have a:=data.context.pointerLower; have b:=data.context.statelessLower; omega
-  have recordLower : 2701134640≤record.toNat := by have h:=data.context.recordAfter; omega
+  have siLower : 2701134824≤origin.word.toNat := by have a:=data.context.pointerLower; have b:=data.context.statelessLower; omega
+  have recordLower : 2701134824≤record.toNat := by have h:=data.context.recordAfter; omega
   have siArena : AllocatedBytes.Arena origin.word 96 := ⟨by omega,by have h:=data.context.statelessRoom; omega⟩
   have recordArena : AllocatedBytes.Arena record 136 := ⟨by omega,by have h:=data.context.recordRoom; omega⟩
   have siFrame:=main_earlier_memory ready workspace actual origin.word siLower (by have a:=data.context.recordAfter; have b:=ready.rootAfter; omega)

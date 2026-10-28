@@ -6,7 +6,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
 /-- These are exactly the global cells used by the current verification
 input contract. Block-hash and EVM globals may change independently. -/
-def dataGlobals : List MlS := [ofString "scratch_ptr",ofString "frame_mem_ptr",ofString "heap_ptr",ofString "keccak_st",ofString "keccak_pad"]
+def dataGlobals : List MlS := [ofString "scratch_ptr",ofString "frame_mem_ptr",ofString "heap_ptr",ofString "keccak_st",ofString "keccak_pad",ofString "mpt_hash_scratch"]
 
 theorem Data.with_globals {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
@@ -25,9 +25,9 @@ theorem Data.with_globals {input : Guest.InputBlob} {source : PanSemStateFiniteE
   have nextHeap : NormalHeapEffects.AtLeast (boundary+32) {source with globals:=globals} :=
     ⟨heap,(kept _ (by simp [dataGlobals])).trans cell,lower,upper,aligned⟩
   obtain ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,nodeImage,codeImage,headerImage⟩:=data.witnesses
-  have memory (query : BitVec 64) (_low : 2701134640≤query.toNat) (_high : query.toNat<boundary) :
+  have memory (query : BitVec 64) (_low : 2701134824≤query.toNat) (_high : query.toNat<boundary) :
       ({source with globals:=globals} : PanSemStateFiniteExact 64 Guest.HostMemory).memory query=source.memory query := rfl
-  exact ⟨arena,data.little,environment,nextHeap,data.siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
+  exact ⟨arena,data.little,environment,(kept _ (by simp [dataGlobals])).trans data.mptHash,nextHeap,data.siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
     data.payloadCell,data.gasCell,data.gasBound,nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
     nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩
 

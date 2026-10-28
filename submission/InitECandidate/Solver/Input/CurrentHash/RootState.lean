@@ -43,7 +43,7 @@ theorem State.output_away (state : State input source blob si record rq root arr
   omega
 
 theorem State.input_bounds (state : State input source blob si record rq root array ch cursor length start size) :
-    input.length%2^64≤251655056 ∧ AllocatedBytes.Arena blob (input.length%2^64) ∧ 2701134640≤blob.toNat := by
+    input.length%2^64≤251655056 ∧ AllocatedBytes.Arena blob (input.length%2^64) ∧ 2701134824≤blob.toNat := by
   obtain ⟨requestStart,requestSize,counts,requests⟩ := state.data.requestImage
   exact ⟨requests.inputBound,requests.inputArena,requests.inputLower⟩
 

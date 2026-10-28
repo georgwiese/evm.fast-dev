@@ -25,7 +25,7 @@ theorem Data.of_frame (data : Data input source blob si record rq root array len
   have cell (name : String) : post.globals.lookup (ofString name)=source.globals.lookup (ofString name) := congrArg (fun table=>table.lookup (ofString name)) globals
   have workspace : WorkspaceEntry.Workspace post := ⟨installed,domain.trans data.workspace.domain,endian.trans data.workspace.little,
     (cell "ssz_offs").trans data.workspace.offsets,(cell "ssz_len_chunk").trans data.workspace.chunk,(cell "zero_hashes").trans data.workspace.zeros,
-    (cell "keccak_st").trans data.workspace.keccakState,(cell "keccak_pad").trans data.workspace.keccakPad,
+    (cell "keccak_st").trans data.workspace.keccakState,(cell "keccak_pad").trans data.workspace.keccakPad,(cell "mpt_hash_scratch").trans data.workspace.mptHash,
     data.workspace.chunkArena,data.workspace.zeroArena,data.workspace.chunkAligned,data.workspace.zeroAligned⟩
   have arena : CurrentStartup.ArenaState post := ⟨(cell "scratch_ptr").trans data.arena.scratch,(cell "frame_mem_ptr").trans data.arena.frame,workspace.domain,installed⟩
   obtain ⟨cursor,heap,lower,bounded,aligned⟩ := data.heap
@@ -51,11 +51,11 @@ theorem Data.of_interval (data : Data input source blob si record rq root array 
     (workspace : WorkspaceEntry.Workspace post) (arena : CurrentStartup.ArenaState post) (heap : NormalHeapEffects.AtLeast (root.toNat+32) post)
     (siLocal : post.locals.lookup (ofString "si")=some (.val (.word si))) (outLocal : post.locals.lookup (ofString "out")=some (.val (.word root)))
     (boundary : Nat) (afterRoot : root.toNat+32≤boundary)
-    (memory : ∀ query : BitVec 64,2701134640≤query.toNat → query.toNat<boundary → post.memory query=source.memory query) :
+    (memory : ∀ query : BitVec 64,2701134824≤query.toNat → query.toNat<boundary → post.memory query=source.memory query) :
     Data input post blob si record rq root array length start size := by
   obtain ⟨requestStart,requestSize,counts,requests⟩ := data.requestImage
-  have siLower : 2701134640≤si.toNat := by have a:=requests.inputLower; have b:=data.siAfterInput; omega
-  have recordLower : 2701134640≤record.toNat := by have h:=data.payloadAfterSI; omega
+  have siLower : 2701134824≤si.toNat := by have a:=requests.inputLower; have b:=data.siAfterInput; omega
+  have recordLower : 2701134824≤record.toNat := by have h:=data.payloadAfterSI; omega
   have siFrame (offset : Nat) (inside : offset<96) : post.memory (si+BitVec.ofNat 64 offset)=source.memory (si+BitVec.ofNat 64 offset) := by
     have number : (si+BitVec.ofNat 64 offset).toNat=si.toNat+offset := byteAddress_toNat si offset (by have h:=data.siArena.upper; omega)
     apply memory

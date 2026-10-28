@@ -14,7 +14,7 @@ theorem main_earlier_memory
     (ready : RootEntry.Ready input decoded current origin record gasWord rq root array length start size)
     (workspace : WorkspaceEntry.Workspace current)
     (actual : evaluateHOLFiniteState current (.call (some (none,none)) (ofString "htr_new_payload_request") RootEntry.arguments)=(none,post))
-    (query : BitVec 64) (lower : 2701134640≤query.toNat) (before : query.toNat<root.toNat) :
+    (query : BitVec 64) (lower : 2701134824≤query.toNat) (before : query.toNat<root.toNat) :
     post.memory query=decoded.memory query := by
   obtain ⟨cursor,heap,afterRoot,bounded,aligned⟩ := ready.heap
   have away : CopyGeneral.Away root query 32 :=

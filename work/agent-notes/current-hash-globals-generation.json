@@ -71,7 +71,8 @@
     "frame_mem_ptr",
     "ssz_offs",
     "ssz_len_chunk",
-    "zero_hashes"
+    "zero_hashes",
+    "mpt_hash_scratch"
   ],
   "scope": "Generator/scanner output; not proof validation, timing or a whole-program bound.",
   "generated_sources": [
@@ -81,11 +82,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Base.lean",
-      "sha256": "b14e5fabaa53d474b2ec62abebb8511ae14aa75fc0137f9253feb16b82229ca5"
+      "sha256": "a78e539791ad094637f996c5641a7155a10c58da83788d04c71a81863989ecc2"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/SharedEffects.lean",
-      "sha256": "69faa9a5927ebd51fea45320243a23f49b0e17d762b44e2f321c05d309c6b9fc"
+      "sha256": "f57b834b348ae82cfb5ff0dba75a5fb748589731f399db6629407244a20acd02"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Effects.lean",

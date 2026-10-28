@@ -19,7 +19,7 @@ def Reached (input : Guest.InputBlob) (word : BitVec 64) : Prop :=
     Blob.HeapInput current input pointer ∧
     NormalHeapEffects.AtLeast (pointer.toNat + input.length % 2^64 + 8) current ∧
     current.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)) ∧
-    2701134640 ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧
+    2701134824 ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧
     pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016 ∧
     pointer.toNat + input.length % 2^64 + 8 ≤ record.toNat ∧ record.toNat % 8 = 0 ∧
     record.toNat + 96 ≤ 2952790016 ∧ NormalHeapEffects.AtLeast (record.toNat + 96) current ∧ current.locals.lookup (ofString "si") = some (.val (.word record)) ∧

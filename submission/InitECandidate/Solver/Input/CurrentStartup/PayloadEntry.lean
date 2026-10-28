@@ -42,7 +42,7 @@ def Result (input : Guest.InputBlob) (entry post : PanSemStateFiniteExact 64 Gue
     OriginalExceptions.Installed entry.eshapes ∧ entry.memaddrs = InitE.ordinaryDomain ∧ entry.be = false ∧
     Blob.HeapInput entry input pointer ∧ NormalHeapEffects.AtLeast (pointer.toNat + input.length % 2^64 + 8) entry ∧
     entry.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)) ∧
-    2701134640 ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧ pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016 ∧
+    2701134824 ≤ pointer.toNat ∧ pointer.toNat % 8 = 0 ∧ pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016 ∧
     entry.locals.lookup (ofString "p") = some (.val (.word (pointer + 62#64))) ∧
     entry.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 length))) ∧
     602 ≤ input.length % 2^64 ∧ 540 ≤ length ∧ length ≤ input.length % 2^64 - 62 ∧

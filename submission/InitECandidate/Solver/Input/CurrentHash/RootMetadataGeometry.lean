@@ -7,10 +7,10 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 variable {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
 variable {blob si record rq root array ch cursor : BitVec 64} {length start size : Nat}
 
-theorem metadata_chunk_away (query : BitVec 64) (lower : 2701134640≤query.toNat) : CopyGeneral.Away WorkspaceEntry.chunkPointer query 32 :=
-  CopyGeneral.Away.before WorkspaceEntry.chunkPointer query 32 2701134640 (by decide) (by decide) lower
+theorem metadata_chunk_away (query : BitVec 64) (lower : 2701134824≤query.toNat) : CopyGeneral.Away WorkspaceEntry.chunkPointer query 32 :=
+  CopyGeneral.Away.before WorkspaceEntry.chunkPointer query 32 2701134824 (by decide) (by decide) lower
 
-theorem State.record_lower (state : State input source blob si record rq root array ch cursor length start size) : 2701134640≤record.toNat := by
+theorem State.record_lower (state : State input source blob si record rq root array ch cursor length start size) : 2701134824≤record.toNat := by
   have a:=state.input_bounds.2.2; have b:=state.data.siAfterInput; have c:=state.data.payloadAfterSI
   omega
 

@@ -14,7 +14,7 @@ theorem header_context {input : Guest.InputBlob} {source : PanSemStateFiniteExac
     (image : CurrentStartup.WitnessArrays.Image input source pointer si array start length boundary 72 1024 256) :
     ∃ heap,Headers.CurrentValidate.Context source (VarList.decodedArray array length) heap
       (BitVec.ofNat 64 (VarList.decodedCount input start length)) 2701132160#64 2701132360#64
-      (VarList.recordPointer input pointer start) (VarList.recordLength input start length (VarList.decodedCount input start length)) 2701134640 boundary := by
+      (VarList.recordPointer input pointer start) (VarList.recordLength input start length (VarList.decodedCount input start length)) 2701134824 boundary := by
   have small : VarList.decodedCount input start length<2^64 := by have h:=image.countBound; omega
   have countNumber : (BitVec.ofNat 64 (VarList.decodedCount input start length)).toNat=VarList.decodedCount input start length := by
     rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt small]
@@ -37,7 +37,7 @@ theorem header_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteE
     source.clock-post.clock≤51528323 ∨ ∃ array start length heap target nextHeap inner,
       Headers.CurrentValidate.Returned (bind source "pl" record) target (VarList.decodedArray array length) heap
         (BitVec.ofNat 64 (VarList.decodedCount input start length)) 2701132160#64 2701132360#64 nextHeap
-        (VarList.recordPointer input pointer start) (VarList.recordLength input start length (VarList.decodedCount input start length)) 2701134640 boundary ∧
+        (VarList.recordPointer input pointer start) (VarList.recordLength input start length (VarList.decodedCount input start length)) 2701134824 boundary ∧
       (bind source "pl" record).globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
       evaluateHOLFiniteState (CallNormal.continuationEntry (bind source "pl" record) target "vh"
         (Headers.CurrentValidate.result heap (Headers.CurrentValidate.hashesPointer heap (BitVec.ofNat 64 (VarList.decodedCount input start length))))) afterHeaders=(outcome,inner) ∧
@@ -48,7 +48,7 @@ theorem header_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteE
   change evaluateHOLFiniteState (bind source "pl" record) (.decCall (ofString "vh") Headers.Validate.resultShape (ofString "validate_headers") headerArguments afterHeaders)=(outcome,headerPost) at called
   rcases Headers.CurrentValidate.scoped_trace (bind source "pl" record) headerPost (VarList.decodedArray array length) heap
     (BitVec.ofNat 64 (VarList.decodedCount input start length)) 2701132160#64 2701132360#64 (VarList.recordPointer input pointer start)
-    (VarList.recordLength input start length (VarList.decodedCount input start length)) 2701134640 boundary context "vh" headerArguments afterHeaders args outcome called with stopped|reached
+    (VarList.recordLength input start length (VarList.decodedCount input start length)) 2701134824 boundary context "vh" headerArguments afterHeaders args outcome called with stopped|reached
   · have clock : post.clock=headerPost.clock := by rw [endpoint]; rfl
     change source.clock-headerPost.clock≤51528323 at stopped
     exact Or.inl (by rw [clock]; exact stopped)

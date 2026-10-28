@@ -32,7 +32,7 @@ theorem allocated {input : Guest.InputBlob} {source target : PanSemStateFiniteEx
   have installed : OriginalCode.Installed entry.code := by rw [code]; exact data.workspace.code
   have workspace : WorkspaceEntry.Workspace entry := ⟨installed,domain.trans data.workspace.domain,endian.trans data.workspace.little,
     (cell "ssz_offs" (by decide)).trans data.workspace.offsets,(cell "ssz_len_chunk" (by decide)).trans data.workspace.chunk,(cell "zero_hashes" (by decide)).trans data.workspace.zeros,
-    (cell "keccak_st" (by decide)).trans data.workspace.keccakState,(cell "keccak_pad" (by decide)).trans data.workspace.keccakPad,
+    (cell "keccak_st" (by decide)).trans data.workspace.keccakState,(cell "keccak_pad" (by decide)).trans data.workspace.keccakPad,(cell "mpt_hash_scratch" (by decide)).trans data.workspace.mptHash,
     data.workspace.chunkArena,data.workspace.zeroArena,data.workspace.chunkAligned,data.workspace.zeroAligned⟩
   have arena : CurrentStartup.ArenaState entry := ⟨(cell "scratch_ptr" (by decide)).trans data.arena.scratch,(cell "frame_mem_ptr" (by decide)).trans data.arena.frame,workspace.domain,installed⟩
   have heap : entry.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded cursor 128#64))) := by

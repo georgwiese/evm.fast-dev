@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CurrentStartup.MptInitialized
 import InitECandidate.Solver.Input.CurrentStartup.SeparatedInput
 
 namespace InitECandidate.Solver.Input.CurrentStartup.MainDecodedRoot
@@ -7,7 +8,7 @@ open Flapjack.Basis.Pure.MlString
 /-- An actual continuing main decoder prefix selects this particular
 stateless run and preserves its exact physical post-state and clock. -/
 theorem current {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701134640 source)
+    (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701134824 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
     (execution : CallPrefix.Execution source DecoderPrefix.actions target) :
     ∃ origin : DecoderOrigin, MainSeparatedInput.RootRun input origin ∧
@@ -15,7 +16,7 @@ theorem current {input : Guest.InputBlob} {source target : PanSemStateFiniteExac
       LocalEffects.erase target = LocalEffects.erase origin.post ∧ target.clock = origin.post.clock := by
   obtain ⟨before, setup, positive, callee, decoderPost, word, entry, cursor, called, returned, binding⟩ :=
     DecoderPrefix.decoder_entry_heap initial execution
-  have lower := StartupHeap.setup_lower 2701134640 initial.arena.code heap setup
+  have lower := StartupHeap.setup_lower 2701134824 initial.arena.code heap setup
   have cell := (setup.globals (ofString "ssz_offs") (MainSeparatedInput.setup_offsets source.code initial.arena.code)).trans offsets
   obtain ⟨origin, actual, wordEq, frame, clock⟩ := MainSeparatedInput.stateless_run_root input
     (callEntryStateHOLFinite before callee) decoderPost entry lower cell word returned
@@ -44,7 +45,7 @@ def Cut (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.Host
 
 theorem cut (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (result : Option (PanSemResultExact 64)) (initial : HostState input source)
-    (heap : NormalHeapEffects.AtLeast 2701134640 source)
+    (heap : NormalHeapEffects.AtLeast 2701134824 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
     (actual : evaluateHOLFiniteState source afterStartup = (result, post)) : Cut input source result post := by
   rcases DecoderPrefix.split_execution source post result initial.arena actual with continued | stopped
@@ -74,7 +75,7 @@ theorem reached (input : Guest.InputBlob) (outcome : HolOutcome) (events : List 
   rcases startup with continued | stopped
   · obtain ⟨middle, startupRun, initial, actual⟩ := continued
     exact Or.inl ⟨middle, startupRun, initial, cut input middle target result initial
-      (StartupHeap.main_lower input origin middle entry startupRun)
+      ((MptWorkspace.main_cells input origin middle entry startupRun).2)
       (EarlyWorkspace.main_offsets input origin middle entry startupRun) actual⟩
   · exact Or.inr stopped
 

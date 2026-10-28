@@ -6,7 +6,14 @@ It does not alter the guest or certify generated proofs by itself.
 """
 from pathlib import Path
 from collections import Counter
-import hashlib,json,re
+import hashlib,json,re,sys
+
+CHECK_ONLY = "--check" in sys.argv
+def emit(path, text):
+    if CHECK_ONLY:
+        assert path.read_text().strip() == text.strip(), f"Generated source differs: {path}"
+    else:
+        path.write_text(text)
 
 ROOT=Path(__file__).resolve().parents[2]
 source=(ROOT/'Guest/SoftwareAst.lean').read_text()
@@ -94,8 +101,8 @@ end InitECandidate.Solver.Input.CurrentHash
 
 #print axioms InitECandidate.Solver.Input.CurrentHash.Code.installed
 '''
-(folder/'Code.lean').write_text(code)
-(folder/'Base.lean').write_text('import InitECandidate.Solver.Input.CurrentHash.Code\nimport InitECandidate.Solver.Input.CurrentStartup.Base\n\nnamespace InitECandidate.Solver.Input.CurrentHash\nopen Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact\nopen Flapjack.Basis.Pure.MlString\n\n/-- Fixed globals retained by the actual request-hash closure on every outcome. -/\ninductive Cursor where | scratch | frame | offsets | lengthChunk | zeroHashes | keccakState | keccakPad\n\ndef key : Cursor → MlS\n  | .scratch => ofString "scratch_ptr"\n  | .frame => ofString "frame_mem_ptr"\n  | .offsets => ofString "ssz_offs"\n  | .lengthChunk => ofString "ssz_len_chunk"\n  | .zeroHashes => ofString "zero_hashes"\n  | .keccakState => ofString "keccak_st"\n  | .keccakPad => ofString "keccak_pad"\n\nend InitECandidate.Solver.Input.CurrentHash\n')
+emit(folder/'Code.lean', code)
+emit(folder/'Base.lean', 'import InitECandidate.Solver.Input.CurrentHash.Code\nimport InitECandidate.Solver.Input.CurrentStartup.Base\n\nnamespace InitECandidate.Solver.Input.CurrentHash\nopen Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact\nopen Flapjack.Basis.Pure.MlString\n\n/-- Fixed globals retained by the actual request-hash closure on every outcome. -/\ninductive Cursor where | scratch | frame | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | mptHash\n\ndef key : Cursor → MlS\n  | .scratch => ofString "scratch_ptr"\n  | .frame => ofString "frame_mem_ptr"\n  | .offsets => ofString "ssz_offs"\n  | .lengthChunk => ofString "ssz_len_chunk"\n  | .zeroHashes => ofString "zero_hashes"\n  | .keccakState => ofString "keccak_st"\n  | .keccakPad => ofString "keccak_pad"\n  | .mptHash => ofString "mpt_hash_scratch"\n\nend InitECandidate.Solver.Input.CurrentHash\n')
 # Reuse checked startup effects for arena, SSZ and Keccak workspace keys.
 shared_text = 'import InitECandidate.Solver.Input.CurrentHash.Base\nimport InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame\n'
 shared_text += ''.join('import InitECandidate.Solver.Input.CurrentStartup.'+module(n)+'\n' for n in order if n in shared)
@@ -115,11 +122,12 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | zeroHashes => exact CurrentStartup.OffsetsFrame.{n} code installed .zeroHashes
   | keccakState => exact CurrentStartup.OffsetsFrame.{n} code installed .keccakState
   | keccakPad => exact CurrentStartup.OffsetsFrame.{n} code installed .keccakPad
+  | mptHash => exact CurrentStartup.WorkspaceFrameCore.{n} code installed .mptHash
 end {owner}
 '''
 shared_text += '\nend SharedEffects\nend InitECandidate.Solver.Input.CurrentHash\n'
 shared_text += ''.join('\n#print axioms InitECandidate.Solver.Input.CurrentHash.SharedEffects.'+module(n)+'.preserves\n' for n in order if n in shared)
-(folder/'SharedEffects.lean').write_text(shared_text)
+emit(folder/'SharedEffects.lean', shared_text)
 constructors=Counter();assignments=Counter()
 def proof(tree):
     if isinstance(tree,str):
@@ -209,14 +217,15 @@ end InitECandidate.Solver.Input.CurrentHash
         wrapper=f"\ntheorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed code) :\n    GlobalEffects.Preserves (key cursor) code (Code.body .{name}) :=\n  any_key (key cursor) code"+('' if name == 'memzero' else ' installed')+'\n'
         text=text.replace(marker, wrapper+marker)
         text+=f'\n#print axioms InitECandidate.Solver.Input.CurrentHash.{module(name)}.any_key\n'
-    (folder/(module(name)+'.lean')).write_text(text)
+    emit(folder/(module(name)+'.lean'), text)
 report={'source':'Guest/SoftwareAst.lean','source_sha256':hashlib.sha256(source.encode()).hexdigest(),
         'roots':roots,'extra_roots':extra_roots,'order':order,'closure_functions':len(order),'syntax_constructors':dict(constructors),
         'global_assignment_names':dict(assignments),'reused_startup_functions':sorted(set(order)&shared),'acyclic_scan':True,'lean_build_required':True,
         'retained_handwritten_functions':['sha256_pair'],
-        'preserved_globals':['scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad'],
+        'preserved_globals':['scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad','mpt_hash_scratch'],
         'scope':'Generator/scanner output; not proof validation, timing or a whole-program bound.'}
-(ROOT/'work/agent-notes/current-hash-globals-generation.json').write_text(json.dumps(report,indent=2)+'\n')
+if not CHECK_ONLY:
+    (ROOT/'work/agent-notes/current-hash-globals-generation.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps({k:v for k,v in report.items() if k not in ('order','syntax_constructors')}))
 aggregate=''.join('import '+provider(n)+'\n' for n in roots+extra_roots)
 aggregate+='\n'+header+'''
@@ -239,8 +248,9 @@ end InitECandidate.Solver.Input.CurrentHash
 #print axioms InitECandidate.Solver.Input.CurrentHash.Effects.body_preserves
 #print axioms InitECandidate.Solver.Input.CurrentHash.Effects.call_preserves
 '''
-(folder/'Effects.lean').write_text(aggregate)
+emit(folder/'Effects.lean', aggregate)
 report['generated_sources']=[{'path':str((folder/file).relative_to(ROOT)),
     'sha256':hashlib.sha256((folder/file).read_bytes()).hexdigest()}
     for file in ['Code.lean','Base.lean','SharedEffects.lean','Effects.lean']+[module(n)+'.lean' for n in order if n not in shared]]
-(ROOT/'work/agent-notes/current-hash-globals-generation.json').write_text(json.dumps(report,indent=2)+'\n')
+if not CHECK_ONLY:
+    (ROOT/'work/agent-notes/current-hash-globals-generation.json').write_text(json.dumps(report,indent=2)+'\n')

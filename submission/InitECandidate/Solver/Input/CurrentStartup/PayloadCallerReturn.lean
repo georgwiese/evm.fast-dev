@@ -26,7 +26,7 @@ structure Context (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64
   recordRoom : record.toNat + 136 ≤ 2952790016
   gasCell : current.memory (record + 88#64) = .word gasWord
   gasBound : gasWord.toNat ≤ 200000000
-  pointerLower : 2701134640 ≤ pointer.toNat
+  pointerLower : 2701134824 ≤ pointer.toNat
   pointerAligned : pointer.toNat % 8 = 0
   inputBound : input.length % 2^64 ≤ Guest.maxInputBytes
   slice : length = Guest.GasLimit.le32 input 22 - 44

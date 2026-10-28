@@ -35,7 +35,7 @@ theorem WitnessHeadersReturn.Snapshot.witness_images
   have domain : headerPost.memaddrs=InitE.ordinaryDomain := readyDomain.trans data.context.domain
   have siArena : AllocatedBytes.Arena si 96 := ⟨by have a:=data.context.pointerLower; have b:=data.context.statelessLower; omega,
     by have h:=data.context.statelessRoom; omega⟩
-  have siLower : 2701134640≤si.toNat := by have a:=data.context.pointerLower; have b:=data.context.statelessLower; omega
+  have siLower : 2701134824≤si.toNat := by have a:=data.context.pointerLower; have b:=data.context.statelessLower; omega
   have siBefore : si.toNat+96≤frontier.toNat := by have a:=data.context.recordAfter; have b:=data.arrayAfter; omega
   have fields:=data.witness_fields
   have nodeCount : VarList.decodedCount input nodeStart nodeLength≤2^31 := by

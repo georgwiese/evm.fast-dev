@@ -36,7 +36,8 @@ theorem constant_stride_cost (code) (counter marker : MlS) (body : ProgHOL 64) (
         some (.val (.word (if current.toNat<length then 1#64 else 0#64))) := by
       simp [evalHOLFinite,evalHOLExact,toExact,currentCell,wordCmpHOL,holAsmSignedLess,number,currentSmall,lengthSmall]
     have active : current.toNat<length := by
-      by_contra inactive
+      apply Classical.byContradiction
+      intro inactive
       rw [if_neg inactive] at read
       have zero : observed=0#64 := by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans read
       exact nonzero zero
@@ -58,7 +59,7 @@ theorem constant_stride_cost (code) (counter marker : MlS) (body : ProgHOL 64) (
     have nextRank : rank output.2=(length-(current.toNat+stride))/stride:=by
       simp only [rank,counterWord,nextCell,Option.getD_some,valueWord,nextNumber]
     have difference : length-current.toNat=(length-(current.toNat+stride))+stride:=by omega
-    refine ⟨⟨current+BitVec.ofNat 64 stride,nextCell,by rw [nextNumber]; omega,by rw [nextNumber]; exact Nat.dvd_add currentAligned (dvd_refl stride)⟩,?_⟩
+    refine ⟨⟨current+BitVec.ofNat 64 stride,nextCell,by rw [nextNumber]; omega,by rw [nextNumber]; exact Nat.dvd_add currentAligned (Nat.dvd_refl stride)⟩,?_⟩
     rw [nextRank,rankEq,difference,Nat.add_div_right _ positive]
     omega
   have cost:=ClockCost.ranked_loop code _ body price invariant rank priced progress source installed ⟨word,cell,initial,wordAligned⟩

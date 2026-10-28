@@ -55,7 +55,7 @@ theorem loop_normal_exit (test : ExpHOL 64) (body : ProgHOL 64)
                   | finalFfi event=>cases normal
             · rw [if_neg nonzero] at normal
               have endpoint : current=post:=congrArg Prod.snd normal
-              have zero : word=0#64:=by simpa using not_ne_iff.mp nonzero
+              have zero : word=0#64:=Classical.byContradiction nonzero
               simpa only [endpoint,zero] using read
   exact auxiliary source.clock source rfl run
 

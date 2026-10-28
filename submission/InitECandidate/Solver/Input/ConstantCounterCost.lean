@@ -34,7 +34,8 @@ theorem constant_loop_cost (code) (counter marker : MlS) (body : ProgHOL 64) (pr
       simp [evalHOLFinite,evalHOLExact,toExact,currentCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,
         Flapjack.Compiler.Encoders.Asm.holAsmSignedLess,lengthNumber,currentSmall,lengthSmall]
     have active : current.toNat<length := by
-      by_contra inactive
+      apply Classical.byContradiction
+      intro inactive
       rw [if_neg inactive] at read
       have zero : observed=0#64 := by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans read
       exact nonzero zero

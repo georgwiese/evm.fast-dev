@@ -4,6 +4,29 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual software Keccak source-clock bound
+
+The actual Software keccak_f1600 index90 permutation costs≤24source ticks
+on all outcomes, from its literal24-round loop. No accelerated FFI body is
+substituted. Actual absorb_block91 costs≤42body/43caller ticks (17lanes plus
+that permutation), and whole keccak25692 costs≤44*(bytes/136)+689body ticks,
+plus1ordinary caller. Only the real byte-count local, byte-count+136<2^64
+and installed actual code are premises. Normal block exit derives the actual
+remainder<136 before padding; failed pointer reads/mapping/stores are priced.
+Straight-line target instruction work remains a separate open obligation.
+
+Cleanup shares a small leading-declaration cost lemma; actual syntax and ABI
+are separated from old Keccak oracle proof imports. Three old generic loop
+helpers now use core classical/Nat facts instead of relying on accidental
+transitive Mathlib imports; statements/semantics unchanged.
+
+Validation: current-keccak-complete-cost-v7.log PASS730jobs/permitted printed
+axioms. Index8335modules/16830facts; inventory8378/replacement closure0/frozen
+main unchanged. Incremental policy65156entries/2483801516bytes PASS.
+No global finite target K/full verification; claim infinity.
+Next: actual Keccak write frame and current validate_headers loop, then later
+current paths and uniform target-step composition. Usage8%weekly/0resetcredits.
+
 ## Current header return, memory frame and caller trace
 
 The complete unchanged decode_header208 now derives its actual returned

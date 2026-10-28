@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.CurrentStartup.Effects
 import InitECandidate.Solver.Input.MainMemoryPrefix
+import InitECandidate.Solver.Input.CurrentStartup.ArenaState
 
 namespace InitECandidate.Solver.Input.CurrentStartup
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -51,14 +52,6 @@ theorem prefix_preserves (cursor : Cursor) (code) (installed : OriginalCode.Inst
   | cons routine rest ih =>
     exact GlobalEffects.sequence (key cursor) code _ _
       (Effects.call_preserves cursor code installed routine (some none) []) ih
-
-/-- The two real startup cursors, actual code and actual source memory domain.
-This predicate is established by main's declaration and mem_init execution. -/
-structure ArenaState (state : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
-  scratch : state.globals.lookup (ofString "scratch_ptr") = some (.val (.word 2701127680#64))
-  frame : state.globals.lookup (ofString "frame_mem_ptr") = some (.val (.word 2688618496#64))
-  domain : state.memaddrs = InitE.ordinaryDomain
-  code : OriginalCode.Installed state.code
 
 theorem prefix_state (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (result : Option (PanSemResultExact 64)) (initial : ArenaState source)

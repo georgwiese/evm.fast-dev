@@ -4,6 +4,23 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Shared actual arena contract separated from initialization implementation
+
+The same four-field ArenaState contract now lives in its own minimal module.
+The actual main startup trace still establishes it; consumers no longer import
+all initialization implementations to use its cursor/domain/code facts.
+ArenaFrame Solver closure97→10, current list-count caller245→175 and current
+public validator caller229→159. Public names and all four fields are preserved;
+no program, memory layout, execution, hypothesis or bound changes.
+
+Validation: current-arena-interface-main-list-cleanup-v1.log PASS1910jobs,
+including actual main decoder/root/verification/header connection and the whole
+current list-count caller; permitted printed axioms only. Index8241modules/
+16688facts; inventory8281 includes one pending item-syntax extraction. Replacement
+closure0/frozen main unchanged. No global finite target K/full verification;
+claim infinity. Next: current item/slice/header bounds and actual later callers.
+8GiBguard/twoslots/cachefalse; account4%weekly/0resetcredits/ordinary usage allowed.
+
 ## Complete actual list-count source body/caller and normal input frame
 
 Whole current rlp_list_count body/caller cost≤46*length/+1 source ticks,

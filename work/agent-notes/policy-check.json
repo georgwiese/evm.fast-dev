@@ -2206,6 +2206,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/AllocationCursor.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/AllocationFrontier.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/ArenaFrame.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/ArenaState.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Base.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Blake2Init.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/BlsConstsInit.lean",
@@ -6117,6 +6118,7 @@
     "submission/InitECandidate/Solver/Rlp/ItemProgram.lean",
     "submission/InitECandidate/Solver/Rlp/ItemShortFrame.lean",
     "submission/InitECandidate/Solver/Rlp/ItemShortNormal.lean",
+    "submission/InitECandidate/Solver/Rlp/ItemSyntax.lean",
     "submission/InitECandidate/Solver/Rlp/ItemTotal.lean",
     "submission/InitECandidate/Solver/Rlp/ItemTotalCall.lean",
     "submission/InitECandidate/Solver/Rlp/ItemTotalCallEncoding.lean",
@@ -8284,8 +8286,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65051,
-  "package_bytes": 2483475170,
+  "package_entries": 65053,
+  "package_bytes": 2483475792,
   "claim": {
     "K": "infinity"
   },

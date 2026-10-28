@@ -23,15 +23,15 @@ def returnBranch : ProgHOL 64 := match loopBody with | .ite _ _ (.ite _ _ no)=>n
 def modeTest (mode : BitVec 64) : ExpHOL 64 := .cmp .equal (localVar "mode") (.const mode)
 
 set_option maxRecDepth 100000 in
-/-- Literal original238's seven real initial declarations and its actual
+/-- Literal current236's seven real initial declarations and its actual
 explicit-stack loop/return suffix. No alternative executable is introduced. -/
 theorem header_shape : body=WitnessRadix.ProgramPrefix.program initialActions (.seq (.while condition loopBody) footer) := by
-  simp only [body,Guest.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+  simp only [body,Guest.Software.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     WitnessRadix.ProgramPrefix.program,initialActions,afterLocals,dropDeclarations,loopBody,condition,footer,localVar]
 
 set_option maxRecDepth 100000 in
 theorem mode_shape : loopBody=.ite (modeTest 1#64) decodeBranch (.ite (modeTest 2#64) resolveBranch returnBranch) := by
-  simp only [loopBody,afterLocals,dropDeclarations,body,Guest.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+  simp only [loopBody,afterLocals,dropDeclarations,body,Guest.Software.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     decodeBranch,resolveBranch,returnBranch,modeTest,localVar]
 
 end InitECandidate.Solver.Mpt.WitnessCore

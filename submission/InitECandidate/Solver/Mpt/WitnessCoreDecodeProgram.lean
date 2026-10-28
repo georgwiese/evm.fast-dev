@@ -21,16 +21,16 @@ def pushMode : ProgHOL 64:=.assign .local (ofString "mode") (.const 2#64)
 set_option maxRecDepth 100000
 theorem decode_shape : decodeBranch=.decCall (ofString "d") (.comb [.one,.one]) (ofString "_decode_step") decodeArguments afterDecode := by
   simp only [decodeBranch,loopBody,afterLocals,dropDeclarations,body,decodeArguments,afterDecode,callRest,localVar,
-    Guest.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+    Guest.Software.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 theorem after_decode_shape : afterDecode=.ite (.cmp .equal (decodeField 0) (.const 0#64)) decodeTerminal decodePush := by
   simp only [afterDecode,decodeBranch,decodeTerminal,decodePush,loopBody,afterLocals,dropDeclarations,body,decodeField,callRest,yesBranch,noBranch,localVar,
-    Guest.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+    Guest.Software.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 theorem terminal_shape : decodeTerminal=.seq (.assign .local (ofString "result") (decodeField 1)) (.assign .local (ofString "mode") (.const 0#64)) := by
   simp only [decodeTerminal,afterDecode,decodeBranch,loopBody,afterLocals,dropDeclarations,body,decodeField,callRest,yesBranch,localVar,
-    Guest.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+    Guest.Software.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 theorem push_shape : decodePush=.seq pushLink (.seq pushTop (.seq pushSlot pushMode)) := by
   simp only [decodePush,afterDecode,decodeBranch,loopBody,afterLocals,dropDeclarations,body,decodeField,callRest,noBranch,pushLink,pushTop,pushStageTest,pushSlot,pushMode,localVar,
-    Guest.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
+    Guest.Software.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 
 end InitECandidate.Solver.Mpt.WitnessCore
 

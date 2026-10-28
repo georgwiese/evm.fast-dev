@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.WitnessDecodeLookupProgram
 import InitECandidate.Solver.Input.Copy32Bound
 import InitECandidate.Solver.Input.ClockCostScopedReached
+import InitECandidate.Solver.Input.ClockCostCurrentConditional
 import InitECandidate.Solver.WitnessRadix.AllocationCost
 
 namespace InitECandidate.Solver.Mpt.WitnessDecodeRoot
@@ -16,7 +17,7 @@ def cacheGuard : ProgHOL 64 := .ite (.cmp .notEqual (localVar "nd") (.const 0#64
 set_option maxRecDepth 100000 in
 theorem suffix_shape : afterMaterialize = .seq cacheGuard (.return (localVar "nd")) := by
   simp only [afterMaterialize,materializeCall,afterLookup,lookupCall,afterCompare,body,
-    Guest.guestFn_decode_witness_to_mpt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    Guest.Software.guestFn_decode_witness_to_mpt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     cacheGuard,cacheAllocated,rootCopy,rootCache,localVar,addConst]
   rfl
 

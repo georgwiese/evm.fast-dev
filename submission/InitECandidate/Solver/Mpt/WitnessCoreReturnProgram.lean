@@ -63,7 +63,7 @@ local macro "witness_core_return_shape" : tactic =>
     branchAfterOccupancy,branchIndexChoice,branchAdvance,branchFinish,branchValueCall,afterBranchValue,
     branchValueBody,branchValueWrites,branchFinishTail,branchMetadata,branchChildAddress,branchOccupancyWrite,
     branchValueArguments,returnBranch,loopBody,afterLocals,dropDeclarations,body,
-    localVar,Guest.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,
+    localVar,Guest.Software.guestFn__decode_witness_node_body,progToHOL,expToHOL,shapeToHOL,List.map_cons,
     List.map_nil,Option.map_some,Option.map_none])
 
 set_option maxRecDepth 100000

@@ -3795,3 +3795,23 @@ fixed files unchanged. Incremental policy PASS65467entries/2485107882bytes.
 Overall estimate45%, plausible35–55%, relative to rebased main. No global
 finite target K/full verification; claim infinity. Usage26%weekly/0resetcredits.
 Continue actual witness loop/wrappers/state_init and later main/target work.
+
+
+## Complete unchanged witness/root/state initialization source bounds
+
+Actual witness core236 costs≤200223, MPT catch237≤200225, scratch/catch
+wrapper238≤200229, whole root decoder239≤200544 and state_init320≤200624
+body source ticks on all outcomes at their derived actual entries. The real
+first decode's normal result forces empty-stack return mode and one final
+exit iteration. Matching real lookup images supply any materialized witness;
+workspace writes protect these images, and genuine allocation derives room.
+The initializer suffix uses all eight actual Patricia constructors and remaining
+allocations for78ticks, including20/32/52-byte keys. Shared syntax imports no
+longer drag in old registry/hashmap runtime proofs. No program/claim change.
+
+Validation: current-state-init-complete-v2.log PASS2637jobs/permitted printed
+axioms; index8639modules/17491facts. Inventory8684/replacement closure0/fixed
+files unchanged. Incremental policy PASS65474entries/2485159760bytes.
+No global finite target K/full verification; infinity claim unchanged.
+Estimate45%, plausible35–55%, relative to rebased main. Usage27%weekly/
+0resetcredits. Continue actual post-state_init main/frame/target composition.

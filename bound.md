@@ -36,7 +36,16 @@ Best overall effort estimate: **45%, plausible35–55%**, relative to current ma
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
-Latest checked steps: unchanged decode_header208 costs≤195*inputLength+473
+The current input/header/gas/two-database prefix is connected to the real
+state_init call. Whole current witness materialization now costs≤200229body
+source ticks; root decoding≤200544, and complete state_init≤200624 from its
+derived matching witness/table/heap entry. All are all-outcome source-clock
+bounds. Actual post-state frames for continuing main, later main execution,
+and the uniform target-step theorem remain open.
+
+## Earlier checked milestones, in order
+
+Unchanged decode_header208 costs≤195*inputLength+473
 body/+474caller source ticks and derives its real fresh header/earlier-memory
 frame. Actual software keccak25692 costs≤44*(bytes/136)+689body/+690caller ticks,
 with its real24-round permutation and full workspace/output memory frame.
@@ -718,3 +727,38 @@ fixed files unchanged. Incremental policy PASS65467entries/2485107882bytes.
 No global finite target K/full verification. Usage26%weekly/0resetcredits.
 Next: compose the actual witness-body loop and wrappers, then state_init and
 later current main paths, followed by uniform target-step composition.
+
+
+## Complete current witness materialization, root decoding and state_init
+
+The actual _decode_witness_node_body236 costs≤n/4+195*n+287≤200223source
+ticks. A genuine normal first decode returns flag zero and sets mode to zero
+while retaining top=0; the next iteration disables go. The allowance charges
+that final iteration once, instead of multiplying the decode allowance by a
+separate large stack bound. Exceptions, bad shapes and short clocks remain
+covered. Actual wrapper237 costs≤200225; scratch/catch wrapper238≤200229.
+
+Current decode_witness_to_mpt239 now costs≤200544body source ticks, from
+its matching real decoded witness/table images. Actual lookup derives any
+present at-most1024-byte input; absence fails at the genuine guard. The real
+32-byte hash cache copy and persistent allocation suffix are included.
+
+Complete state_init320 now costs≤200624body source ticks at its actual
+main-derived StateInitInputs. Workspace allocation supplies its own40-byte
+room; the three actual stores protect earlier witness/table images, and the
+real root caller uses the advanced aligned bounded heap. All eight actual
+Patricia table constructors, with20/32/52-byte keys, plus the remaining block,
+key-scratch and journal allocations cost≤78suffix ticks. No old hashmap is
+substituted. Syntax helpers now share current Software declarations/formals
+without importing the old witness registry/table runtime graph. Copy32 pricing
+uses the core Nat order API explicitly after that import cleanup.
+
+Validation: current-state-init-complete-v2.log PASS2637jobs, including actual
+main/state_init entry, full decoder/root and constructor suffix. Printed
+axioms permitted only. Index8639modules/17491facts; inventory8684/replacement
+closure0/fixed files unchanged. Incremental policy PASS65474entries/
+2485159760bytes. Overall estimate remains45%, plausible35–55%, relative to
+rebased main; these are local source-cost milestones. No global finite target
+K/full verification; claim infinity. Usage27%weekly/0resetcredits.
+Next: actual continued main after state_init, its physical/input/global frames,
+later execution and uniform target-step composition.

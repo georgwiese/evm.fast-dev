@@ -7,7 +7,7 @@ namespace InitECandidate.Solver.Mpt.WitnessCore
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-/-- Original238's literal loop body has no escaping caller return,
+/-- Current236's literal loop body has no escaping caller return,
 break or continue, and preserves db on normal continuation. Helper calls
 may still fail or trap; no assumption about their termination is used. -/
 theorem loop_body_prefix : Input.LocalPrefix (ofString "db") loopBody := by

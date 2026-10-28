@@ -68,7 +68,7 @@ theorem loop_flow (code) (test : ExpHOL 64) (body : ProgHOL 64) (stride : Nat)
       block.advance block.summary reads (ClockCost.of_quiet code body block.quiet) source installed valid
     have rank : CounterFlow.strideRank stride 32 source ≤ 32/stride :=
       Nat.div_le_div_right (Nat.sub_le _ _)
-    simpa only [Nat.zero_add, Nat.one_mul] using price.trans (by simpa only [Nat.zero_add, Nat.one_mul] using rank)
+    simpa only [Nat.zero_add, Nat.one_mul] using Nat.le_trans price (by simpa only [Nat.zero_add, Nat.one_mul] using rank)
   · intro source post installed valid run
     exact CounterFlow.stride_loop_normal code test body stride 32 positive (by decide)
       block.advance block.summary reads source post installed valid run

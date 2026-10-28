@@ -12,10 +12,10 @@ def afterMaterialize : ProgHOL 64 := match materializeCall with | .decCall _ _ _
 def materializeArguments : List (ExpHOL 64) := [localVar "db",.rfield 1 (localVar "r"),.rfield 2 (localVar "r")]
 
 set_option maxRecDepth 100000 in
-/-- Original241's real missing-node guard and unchanged materializer call. -/
+/-- Current239's real missing-node guard and unchanged materializer call. -/
 theorem lookup_tail_shape : afterLookup=.seq missingGuard materializeCall ∧
     materializeCall=.decCall (ofString "nd") .one (ofString "_decode_witness_node") materializeArguments afterMaterialize := by
-  simp only [afterLookup,lookupCall,afterCompare,body,Guest.guestFn_decode_witness_to_mpt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+  simp only [afterLookup,lookupCall,afterCompare,body,Guest.Software.guestFn_decode_witness_to_mpt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     missingGuard,missingTest,missingCall,materializeCall,materializeArguments,afterMaterialize,localVar]
   trivial
 

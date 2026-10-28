@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 8328,
+  "solver_modules": 8336,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 18,
@@ -47,8 +47,8 @@
     "GasBudget": 677,
     "GuestWork": 45,
     "HashEnvironmentFrame": 1,
-    "Headers": 107,
-    "Input": 1716,
+    "Headers": 110,
+    "Input": 1721,
     "JumpCmpNearCost": 1,
     "JumpDest": 13,
     "JumpNearCost": 1,
@@ -230,7 +230,7 @@
       },
       {
         "module": "GasBudget.ForwardSites",
-        "solver_dependency_count": 145,
+        "solver_dependency_count": 146,
         "imports_replacement_ast": false
       },
       {
@@ -264,22 +264,22 @@
     "abstract_global_accounting": [
       {
         "module": "GasBudget.BlockAccounting",
-        "solver_dependency_count": 142,
+        "solver_dependency_count": 143,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.MergeBudget",
-        "solver_dependency_count": 150,
+        "solver_dependency_count": 151,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.NestedDecay",
-        "solver_dependency_count": 149,
+        "solver_dependency_count": 150,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.StorageDebt",
-        "solver_dependency_count": 139,
+        "solver_dependency_count": 140,
         "imports_replacement_ast": false
       }
     ],

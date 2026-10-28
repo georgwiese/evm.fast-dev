@@ -4,6 +4,36 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current four-word byte conversion and complete u256 header field
+
+The literal Software u256_from_be80 body costs≤max(4,length) source ticks on
+every outcome with its real byte-count local. Its slow byte loop uses the
+actual counter; its fast branch makes four actual bswap64 calls. Literal
+bswap6418 is quiet/readonly and installed entries check. Both whole conversion
+branches preserve every nonlocal field, including stopped and timeout paths.
+
+Actual hdr_u256_field205 uses the real unsigned field slice and its own32-byte
+guard. Its body costs≤46*selectedItemLength+45 source ticks on every outcome;
+normal returns retain all nonlocal state. All five actual header field kinds
+now have current source body costs and complete normal nonlocal frames.
+Whole field-pipeline/header composition remains open; these are not target K.
+
+Cleanup isolates four-word carrier/ABI facts from serializer implementation
+while keeping its historical public namespace/import compatibility. The carrier
+read theorem is FFI-polymorphic. A duplicate CounterFlow.declared theorem was
+removed from its compatibility module; the existing shared proof supplies the
+same interface. Actual conversion syntax no longer imports the large arithmetic
+catalogue. No executable program or fixed semantics/proofs were changed.
+
+Validation: current-header-u256-frame-main-v1.log PASS2005jobs, including main/
+root/header connection, field entry, word/u256 fields and conversion frames;
+permitted printed axioms. Index8296modules/16764facts; inventory8336/replacement
+closure0/frozen main unchanged. Incremental policy65111entries/2483655630bytes PASS.
+No global finite target K/full verification; claim infinity. Next: current
+five-kind helper interface, protected field-pipeline state/cost and complete
+header paths, then later source paths and target-step composition.
+8GiBguard/twoslots/cachefalse; account6%weekly/0resetcredits/ordinary usage allowed.
+
 ## Actual field values/record reads and current word-field body/frame
 
 Normal uint/bytes/raw fields now derive their actual contained string slice

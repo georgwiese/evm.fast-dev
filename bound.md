@@ -36,12 +36,12 @@ Best overall effort estimate: **40%, plausible30–50%**, relative to current ma
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
-Latest checked step: real field values, physical selected-record reads and
-current word-field body≤46*itemLength+20 source ticks on all outcomes, with
-complete normal nonlocal frame. Shared value/ABI/record/word-loop interfaces
-avoid historical mapped-arena cost imports. Selected912-job build passed.
-Current u256 conversion/field, field-pipeline state/cost, complete header paths,
-later source paths and target-step composition remain open.
+Latest checked step: actual u256_from_be≤max(4,length) source ticks with whole
+readonly frame; actual u256 header field≤46*itemLength+45 source ticks with
+complete normal frame. All five header field kinds now have current body costs
+and normal frames. Selected2005-job main/root/header replay passed. Complete
+field-pipeline/header and stopped-path composition, later current source paths
+and target-step composition remain open.
 
 Checked against current Software syntax and declaration entries:
 

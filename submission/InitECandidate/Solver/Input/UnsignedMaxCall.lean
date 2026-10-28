@@ -4,14 +4,14 @@ namespace InitECandidate.Solver.Input.UnsignedMax
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_max with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_max with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL) := [(ofString "a",.one),(ofString "b",.one)]
 def test : ExpHOL 64 := .cmp .lower (localVar "b") (localVar "a")
 def guard : ProgHOL 64 := .ite test (.return (localVar "a")) .skip
 def selected (a b : BitVec 64) := if b.toNat<a.toNat then a else b
 
 theorem body_shape : body=.seq guard (.return (localVar "b")) := by
-  simp only [body,Guest.guestFn_max,progToHOL,expToHOL,guard,test,localVar]
+  simp only [body,Guest.Software.guestFn_max,progToHOL,expToHOL,guard,test,localVar]
 
 theorem selected_number (a b : BitVec 64) : (selected a b).toNat=max a.toNat b.toNat := by
   by_cases greater : b.toNat<a.toNat
@@ -43,8 +43,8 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b : Bit
     exact returnB
 
 theorem original_code (code) (installed : OriginalCode.Installed code) : code.lookup (ofString "max")=some (formals,body,.one) := by
-  have checked := OriginalCode.indexed code installed 27 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_max) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_max,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+  have checked := OriginalCode.indexed code installed 27 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_max) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_max,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 def values (a b : BitVec 64) : List (ValueHOL 64) := [.val (.word a),.val (.word b)]
 def rawLocals (a b : BitVec 64) (name : MlS) : Option (ValueHOL 64) :=

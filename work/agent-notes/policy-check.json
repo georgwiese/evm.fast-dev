@@ -2013,6 +2013,8 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/CeilLog2.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Code.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Effects.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/FixedHashCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/FixedMemoryCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/HashPrefix.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/HtrBdep.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/HtrBexit.lean",
@@ -2034,6 +2036,9 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/Log2Cost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Max.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MemoryCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/MerkleDenseCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/MerklePairLoops.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/MerkleSuffixCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Merkleize.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MerkleizeProgressive.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MixInLength.lean",
@@ -8076,8 +8081,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64840,
-  "package_bytes": 2482359849,
+  "package_entries": 64845,
+  "package_bytes": 2482396617,
   "claim": {
     "K": "infinity"
   },

@@ -4,6 +4,35 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current Merkle dense and extension suffix costs now check
+
+CounterLoopCost now shares one checked rank/progress proof between unsigned and
+nonnegative signed comparisons; the previous unsigned API remains. Actual Software
+Merkle pair loops instantiate the signed case. Each dense/extension iteration
+costs at most2source ticks, including failed SHA argument/memory operations and
+partial executions. The halving outer loop telescopes to3*(capacity-1), avoiding
+an extra logarithmic multiplier. No input/output mapping, workspace, future
+success or incoming-clock lower bound is required for these loop cost theorems.
+
+FixedMemoryCost prices actual literal-length zero/copy calls including failed
+pointer expressions and malformed arguments. FixedHashCost composes real length
+mixing at46body/47caller and u64root at53body/54caller source ticks. MerkleSuffixCost
+checks actual selected suffix syntax, prices output copy/release at43 and composes
+whole dense/extension/output work≤3*(cur-1)+2*(target-depth)+43 on all outcomes.
+These source tick counts still omit large straight-line target work.
+
+MerkleProgram now imports current code instead of the obsolete SHA accelerator
+closure and uses the checked actual Software declaration entry. UnsignedMax uses
+Software, CeilLog2Call explicitly imports its unary ABI lemma, and the complete
+current depth-prefix trace rechecks. Actual buffer allocation/fill and complete
+request-hash composition remain open; ordinary-domain arena extent must never be
+substituted for the smaller persistent allocator limit.
+
+Validation: current-merkle-suffix-cost-v1.log PASS1588jobs/permitted printed
+axioms;8GiBguard/twoslots/cachefalse. Index8037modules/16050facts; Solver8076;
+replacement closure0/fixed files unchanged. Account24%weekly/0resetcredits.
+No global finite target K; claim infinity; no full verification.
+
 ## Actual hash callee data and software SHA memory frame now check
 
 CurrentHash's shared effects bridge reuses8startup helper proofs for all five

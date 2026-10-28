@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CeilLog2Body
+import InitECandidate.Solver.Input.PureReturn
 import InitECandidate.Solver.Input.TerminatingPaddedScopeArgs
 
 namespace InitECandidate.Solver.Input.CeilLog2

@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-hash-physical-entry-v3.log`,1540jobs,
-permitted printed axioms only. Historical/current proof index:8032modules/
-16023facts; Solver inventory8071, replacement closure0, frozen main files
-unchanged. Incremental policy passes64840entries/2482359849bytes. These checks
+Latest successful selected closure: `current-merkle-suffix-cost-v1.log`,1588jobs,
+permitted printed axioms only. Historical/current proof index:8037modules/
+16050facts; Solver inventory8076, replacement closure0, frozen main files
+unchanged. Incremental policy passes64845entries/2482396617bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -103,6 +103,11 @@ remain historical until their current statements/dependencies are checked.
    separation. All five arena/workspace globals now survive current hash calls. Invocation
    joins the actual ABI and full physical payload/SI/root data to that same callee.
 2. Bound actual request-root hashing on all relevant outcomes, including errors.
+   Actual Merkle pair loops now cost≤2ticks/pair; halving dense work≤3*(cur-1),
+   full dense/extension/output suffix≤3*(cur-1)+2*(target-depth)+43, on all
+   outcomes. Fixed memory calls, length mixing and u64roots also compose.
+   Current depth-prefix/maximum entries recheck with minimal Software imports.
+   Buffer allocation/fill and the full request-hash composition remain open.
    Current sha256_pair now has a checked syntax certificate: it preserves all
    globals, spends0body source ticks and at most1caller tick on all outcomes.
    Its1,022-line generated effect proof is now50lines, using shared structural
@@ -137,7 +142,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:23%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:24%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

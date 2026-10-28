@@ -4,6 +4,29 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual software permutation/block write frames and globals
+
+The actual permutation writes only its25state words. The scalar width of each
+actual store follows from the same checked local declarations/assignments;
+a reusable scalar-local invariant includes loops, timeouts and lexical exits.
+Actual ABI inversion establishes those local types inside the real caller.
+Both aligned/unaligned absorb loops derive the real eight-byte index and protect
+every word outside the state region; the subsequent real software permutation
+call retains that frame. No cryptographic output/oracle relation is assumed.
+
+The full actual keccak256, block absorber and permutation preserve every global
+on every outcome. This includes the real heap and workspace pointer bindings.
+A thin generic word-operation result lemma derives scalar stored values from
+the successful expression read. Actual immutable evaluator fields remain exact.
+
+Validation: current-keccak-absorb-frame-call-v4.log PASS758jobs/permitted printed
+axioms. Index8342modules/16845facts; inventory8385/replacement closure0/frozen
+main unchanged. Incremental policy65163entries/2483837480bytes PASS.
+No global finite target K/full verification; claim infinity.
+Next: whole-hash memory frame through actual block/padding/output phases,
+real current startup workspace geometry and actual header validation loop;
+later current paths and uniform target-step composition remain open.
+
 ## Complete actual software Keccak source-clock bound
 
 The actual Software keccak_f1600 index90 permutation costs≤24source ticks

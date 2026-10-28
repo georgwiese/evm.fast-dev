@@ -3838,11 +3838,27 @@
       "sha256": "9d5d99968f028a2530bfee21993b728877436492bd5e63b7162e4733dd5bb2f8"
     },
     {
+      "path": "submission/InitECandidate/Solver/CurrentKeccak/AbsorbCall.lean",
+      "sha256": "f659d353772d50e6c2d14f6f6814cbec138266aefb5ea566411a7fae189e5e86",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-keccak-absorb-frame-call-v4.log"
+      ]
+    },
+    {
       "path": "submission/InitECandidate/Solver/CurrentKeccak/AbsorbCost.lean",
       "sha256": "e173d2de20e3e4bbfb20a0ebea6549b908937f6f80500619eceb7039cbc1211a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CurrentKeccak/AbsorbMemory.lean",
+      "sha256": "35bc8b4aad9552cbcd5f43a3237fb6f0214035a1582c985b681fb5a4799737fd",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -3850,7 +3866,7 @@
       "sha256": "248509002624c9367767114e124f243412fdce6c8c6a4a57686f374cf9fb8a12",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -3858,7 +3874,7 @@
       "sha256": "5f91ee8f19e20be44883b3ddada0d1012e71c30a3010ca0214d2cdb0f14f5de0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -3866,7 +3882,15 @@
       "sha256": "4d9e8bbb2f4a27903f1c65e95f2f64dfe4f67210ad9ff59327863155d2092300",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CurrentKeccak/Globals.lean",
+      "sha256": "aaf5ea226bbe3b557b5f09d53f599b5e6f0336623308f5d1373b88b3f7368518",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -3874,7 +3898,7 @@
       "sha256": "e45951b90a1f8c8863e780a12eaa055caaa7a8e83c615df2b1410f10314ed22b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -3882,7 +3906,7 @@
       "sha256": "273992cd6ed22a363f12cef642d5803cb2e8f1bb7313fff8cc708f9ce27ab84f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -3890,7 +3914,15 @@
       "sha256": "bd0709577ab88cfc9ea3a16b95477836d09ff68e621f6fc88c275bbfc6f25878",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CurrentKeccak/PermutationCall.lean",
+      "sha256": "a05b4df34476c0409d25906e2105129f0293912c9fd3bc8ee717af26c3b038f9",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -3898,7 +3930,15 @@
       "sha256": "f94ed8de9021f16cbd05c2aaf4e7613887d3937a955570cc18aab1363fff2dc6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/CurrentKeccak/PermutationMemory.lean",
+      "sha256": "514057c9434126ad6082c5443ffe0eba4b7e1ebda72f9de140397c06631f4cee",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -3906,7 +3946,7 @@
       "sha256": "640af2f9ea0770ab3334a3ceda0f967d24fa98424e13649fc3ac43d505d13f7d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -7998,7 +8038,7 @@
       "sha256": "79f1a5e4b225d1ca066cd6d67ed4a96e63de0a681570b786fc9abafb677887f8",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8034,7 +8074,7 @@
       "sha256": "71c11b862cb13e8d8285b2dd2baf588779ff1531c13a8b7c096cbee3f05381a9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8046,7 +8086,7 @@
       "sha256": "3ec134fad85179f54f7a0c46a7315af43072a953ebd2557c14850aaa94fc1c41",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8226,7 +8266,7 @@
       "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8318,7 +8358,7 @@
       "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8390,7 +8430,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8398,7 +8438,7 @@
       "sha256": "b78c0e8958555759c52e490f3d442c91d7f8184ab35c4afc42b201968acbfb16",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8406,7 +8446,7 @@
       "sha256": "2490111d3cd6ca47e6229a3cda6e1479623298d8a6fb2ea4ed1524804c43fc7a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8414,7 +8454,7 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8446,7 +8486,7 @@
       "sha256": "d046f37e3506bbb7a82cf411bbcbfe665f26170a6ba17a6a949b07225d0dbef3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8454,7 +8494,7 @@
       "sha256": "9359e4bd871b493d4cf5783f21e7aaee390e96028ab930bf648b8d30b9bf4696",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8462,7 +8502,7 @@
       "sha256": "aa083d3126062d601ec6931187a300503c0b05cd799729fc1e2fa15117975633",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8486,7 +8526,7 @@
       "sha256": "0ccb23656f25fed27209cc0afb3aba632f83b20052f384c3e35d9b18ed32a26f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8522,7 +8562,7 @@
       "sha256": "a216a35096856e7f5f2f90ddd9a79f012451c267220837ab976ce6faae2ae805",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8546,7 +8586,7 @@
       "sha256": "a403d9ce13fa875e09a6aa39b5e15fc0f9604b3e2b848d704c54dba677d111cb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8554,7 +8594,7 @@
       "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8562,7 +8602,7 @@
       "sha256": "a104d50eab575fb6b5ab5802b4dad79c7080ea0272b427cbeadcaedd450716f5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8570,7 +8610,7 @@
       "sha256": "4bcaede2c3d999ea8adb63513d843a8036ca6b9edcfbc385755001a1ca83f711",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8626,7 +8666,7 @@
       "sha256": "1eb07f5c3941a2b8603af74db218bd709d26eea7f0872020e5decc48bf2bf823",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8634,7 +8674,7 @@
       "sha256": "de7656e70326691892474fe034d55cccf6c8effc13e9cf093b4d6c548caccd11",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8670,7 +8710,7 @@
       "sha256": "e5ce44152899b92041c50a9667f37e6bfafc5aa1cda296812ffc2ce22b09a3f2",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8690,7 +8730,7 @@
       "sha256": "be27b17e5063db02a582b5d6b169a1a2b25dd5dde872a056b677dbeccda60766",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8698,7 +8738,7 @@
       "sha256": "14664ccba936fd00ae074bc29f1af693660bb9346feefd38fd643e629eedb022",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8886,7 +8926,7 @@
       "sha256": "2d70769efa026d1cd81a2ee7f6d1385187fc5b8c9401d8ae6299483d7ba0267e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8906,7 +8946,7 @@
       "sha256": "80ef11e18ea17feb523e6c7240129eb2a27ecec2c6f790050bfaaaf8fdff56fb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8914,7 +8954,7 @@
       "sha256": "f1e3b0a3e9d05250576a34bf1ae4728e409ab4fec1bd242c4fd71155394d3018",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -8934,7 +8974,7 @@
       "sha256": "fa1ec9c84791f032358fb22c28171e9c0c9bf2b13703e8af2f00c0ab309ae18b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -11714,7 +11754,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -11746,7 +11786,7 @@
       "sha256": "600dc6235c9b4736a0172ff7a25f0292da1cf053d021a5c2e8c78f97f8105ee0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -11790,7 +11830,7 @@
       "sha256": "33ed90c3932c7504426b5025443ebde0efb549cf9f3f03a24f55c7c520801f7d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -11998,7 +12038,7 @@
       "sha256": "9ca4139dd862e577e73f9912173bbb5f9f0367204daefba180c601954b4a5210",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-field-pipeline-main-v3.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12006,7 +12046,7 @@
       "sha256": "409b91300b3db67803e63711a3fb26e1671ff96f9daf5473e4f0ef0b87dde350",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-field-pipeline-main-v3.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12014,7 +12054,7 @@
       "sha256": "2b0ef6de12fe3829f654012d2538e67529eddc5bd1c263f445653e6a78240ebd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-field-pipeline-main-v3.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12022,7 +12062,7 @@
       "sha256": "0ff3b8164f1f11b50c3259764bd60bb6d19786a08a39e82e233476c365d15b1c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-field-pipeline-main-v3.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12046,7 +12086,7 @@
       "sha256": "8e139798a7664a1132147ff62bae7f2b4fa03d28534f31d241c607ecc42afaba",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-field-pipeline-main-v3.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12462,7 +12502,7 @@
       "sha256": "e0635f61a2a219e042fbb9b8c1a6d7dc1765e40364b7c36881e4d6575ca0b35a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12478,7 +12518,7 @@
       "sha256": "fd6e8402cfc84466c8287b43bfd210e12f22dc8e91d92abfea71e479143dd984",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12486,7 +12526,7 @@
       "sha256": "32d384b0a1c20ee8afba2faf869a6deb2107548e0801e5b7ab7c2fb7f121067c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12638,7 +12678,7 @@
       "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12646,7 +12686,7 @@
       "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12654,7 +12694,7 @@
       "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12670,7 +12710,7 @@
       "sha256": "1d2bdcae27c9816657057947e766783f3eac37fdf80316bd5a33d2f11fb403db",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12682,7 +12722,7 @@
       "sha256": "c73b9d6a36d7eead87a9a4d6403b7e1d85eb4b11fbdc1e62990069e4cc4762f7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12698,7 +12738,7 @@
       "sha256": "20173bfc0be92fd55a429fd1ea073813938aaf677579072bb7ba14ea82993fae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12714,7 +12754,7 @@
       "sha256": "aff2f3d110719386f24ea8507edd5a087d84a8fcdd9f650264b78fc189b9b401",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12738,7 +12778,7 @@
       "sha256": "27839c59c55ee37e25bcc4a9e5220f44b831895587ed9312c7ef9a2ee223ae72",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12746,7 +12786,7 @@
       "sha256": "a939bf07d9c61421f2e469ef087a0d32bad4d4c2afae3c629ead64d07016386b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12754,7 +12794,7 @@
       "sha256": "8a15b62df4d5519e39db92e038aa29b0eae6b5a41c6776fdaca6e69eefb2f2c9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12762,7 +12802,7 @@
       "sha256": "d44f1627a4df64f26ad35579993307127df21abce1ae13f05863505283c1891f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -12774,7 +12814,7 @@
       "sha256": "9b23b5b4e0ff8a89cfa2a840588ef19924b6ff46b002c57eecb97ff56569f555",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-field-pipeline-main-v3.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -13630,7 +13670,7 @@
       "sha256": "ce4d5eda711c91b6a9978ec1e285db574923a0781ee6d2f1771f8cd4a482ea5b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-field-pipeline-main-v3.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -13866,7 +13906,7 @@
       "sha256": "1f29d1109ed9c9d8fc33520ceddad0e2ba6422a6a3d57a5bac30ab4b93dc4bb0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -13922,7 +13962,7 @@
       "sha256": "21e58e40b3615b0e5cd9ad90bc30098f39f1b0102c532cef8967b78932651bfb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -13942,7 +13982,7 @@
       "sha256": "fad3ab84b3f9f5d52dbbdd9b5036589ee9581e83737dbcc1fe51d17467ec5545",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -13950,7 +13990,7 @@
       "sha256": "a6323616fd27823d3760970d46210d5a076a0bedb08e3a4664ac8b4bcdd4cad4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -14018,7 +14058,7 @@
       "sha256": "444b58e3f4c9b086dade918533a469c8c2ce06d0ca52050f3fbdf863a789b7fa",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -14178,6 +14218,14 @@
       ]
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/OperationResult.lean",
+      "sha256": "73f27344cc8047e6e0f4c66c91e7256867e23dac6389b5b7e6e2cfc8beed82f3",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-keccak-absorb-frame-call-v4.log"
+      ]
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/OriginalArenaGlobals.lean",
       "sha256": "f5c1e13b24168fdf57d0fdeb4ce9d75245c065e7cecc80ec79e20de2bf309542",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
@@ -14190,7 +14238,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -15226,7 +15274,7 @@
       "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -15266,7 +15314,7 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -15274,7 +15322,7 @@
       "sha256": "fd4b142862a214c56d86b7276616e6852aee03f89dd4b3769e3b72d6415db4d0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -15830,7 +15878,7 @@
       "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16146,7 +16194,7 @@
       "sha256": "0cf468044f98e9590269ea4be1a5f6268d785ae23101054ad5cf0aa9684841fe",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16286,7 +16334,7 @@
       "sha256": "cf94fbd836d99c3e614c47a97141c362d6bcee1b31bddd11e91dbcd3b711ca40",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16310,7 +16358,15 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/ScalarLocals.lean",
+      "sha256": "7b0af8f4e8c401c70322a7e65188455c0e7ba0622cf2b0e2bb5514cff2e2a764",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16366,7 +16422,7 @@
       "sha256": "b6ed6106e1df94f39c381807a0732623e6f8be03b9cad72264fd79977a50e81f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16382,7 +16438,7 @@
       "sha256": "e98fac5b82b234d17223697c1b06702de2be95ab7ed1682e8847b9d5e3ee305f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16546,7 +16602,7 @@
       "sha256": "4f1e9b801540e7bbd98f41af0f7295c1461c8ef2c53fdf5a40d8e14b4a64076f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16698,7 +16754,7 @@
       "sha256": "df9cb8cb34dbfe1d4b192b2167f59c22978e936923ab59714260a27b6eeb5c13",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16778,7 +16834,7 @@
       "sha256": "68a12b38808faaaf77d5dbffc969ce883716ace344764f9a22077fd19ac97211",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16802,7 +16858,7 @@
       "sha256": "8415e12f98227a88ff182bfde6b8233492b69f004d01ee879242baa9db03c8b5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16902,7 +16958,7 @@
       "sha256": "4450f713a9fcc64fb1f5a12664d971aea9327d9984a7cc4a381bc15d284b69c7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -16910,7 +16966,7 @@
       "sha256": "9049c70243bdf689fb9548a82de10265db97c602e5a2bc3cc20d81dfa01f4259",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -17766,7 +17822,7 @@
       "sha256": "cc790bc048559bb7cd10523bafed3f61236552f5e3c7414bb4ae2bde9500617a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-header-complete-frame-call-v1.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -17802,7 +17858,7 @@
       "sha256": "a7cfe374c278163f0af0aad1ac737fa4f4d6268d106aa4d136299a1b1e9f9d3a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -17818,7 +17874,7 @@
       "sha256": "95a3c4d4ac1f6e595652abb0091d64a8460107b35dbb15b9db11542d61caed5b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -17826,7 +17882,7 @@
       "sha256": "f7c18aeaeead141fecc9ceeb8be5e44317a0198b26f0359216ab1feb2a5f4e35",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -17834,7 +17890,7 @@
       "sha256": "0259ca0264f655e4d6cf2f629c908a63a143fdb94fb8b12dbcdf9fccd8566e11",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -27842,7 +27898,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -32926,7 +32982,7 @@
       "sha256": "499a7062f31ec74e4568f2533ae4aa29bac2c8aa419be8aa4fdb6f87eb2a510e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33094,7 +33150,7 @@
       "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33102,7 +33158,7 @@
       "sha256": "02071e2394e8a909552d0d29cc091e76ecb5a43b2909b69ab4dd731d1a5bf044",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33126,7 +33182,7 @@
       "sha256": "437ded0bbc2dbeea0eb5909575a2895a32e0335a9ce8bed077dc09d9cfa06016",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33134,7 +33190,7 @@
       "sha256": "40fce38b23cfb2246214da156ede18d95ef9bb9f5e66ada5a2ce6cdba4ccf1ce",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33142,7 +33198,7 @@
       "sha256": "355b873f0b8ccbc72cb2b20a46e2d1b47111fc2fee90b546a4295073e1db8b52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33170,7 +33226,7 @@
       "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33178,7 +33234,7 @@
       "sha256": "9bf469db054912ee33f4aed500be2e85029f2a7f6c5476b0bf0dbe31b8104c4e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33186,7 +33242,7 @@
       "sha256": "5f4f94c543c77f028eccb5e14d46cb47a84e9495bf8a4208605eb2db6c2e6b1d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33194,7 +33250,7 @@
       "sha256": "a0de5ea30c7795fb5332b93cacd4dd90d63e15da12c167a40d23f356ba067a9a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33202,7 +33258,7 @@
       "sha256": "da45009935dfa9cbab0514a1517be821503768a952cb1377b5eb02b6cca7c229",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33210,7 +33266,7 @@
       "sha256": "7e6a3a0a18e079fbdaf302eb726e96997a66c8618d00bdefd26805ef663b504c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33218,7 +33274,7 @@
       "sha256": "a8b0233748e0f03e90e628b79d3215046558dc40d2e9f89691cca80f462e4427",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33226,7 +33282,7 @@
       "sha256": "6e5ac25c2f99e8ffbcbc7044ccf9e92173523e851534130d22521b7032ad521e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33234,7 +33290,7 @@
       "sha256": "20faa123672a458c7b2275fc4263ee1834eea1d7ea21946e1a030b0fffab0cbe",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33242,7 +33298,7 @@
       "sha256": "be37cf170b6e9a242bd3dd80eec72b548717c29974fb6072f6aa620120278d0a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33250,7 +33306,7 @@
       "sha256": "6760d66a0555e60fa210403fb24f65cee97d7a10953f30e23a24495b94ad9c47",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33258,7 +33314,7 @@
       "sha256": "e2f9ec59685a1f69d92b0889a17ac23654dc04999b98b4a72e2ce5c4ab95189a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33278,7 +33334,7 @@
       "sha256": "832b514beaabd38cf1255c01ca18fa7ac669ccd94587c67675317aa3bf6e6478",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33286,7 +33342,7 @@
       "sha256": "c86aaa98cb40110454a66ab9cf6e28429e25b02d0c3fb2825b6ed997b05d54c3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33294,7 +33350,7 @@
       "sha256": "d0e3bfb76862423368d30674b138427e06e4695339119a0369ae7d07a156cf2c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33306,7 +33362,7 @@
       "sha256": "fc743bf3e5927a7104aa44050be7c9e5814fea88481499be913ab577365a85cb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33318,7 +33374,7 @@
       "sha256": "e0563280b246c8b81be243957ee904589af035808a20fbc0a1f57aeba15d6d32",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33326,7 +33382,7 @@
       "sha256": "528147b74b9e00f94b94612c9a58dfff5608df348eb9657f361ead7931a5af37",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33334,7 +33390,7 @@
       "sha256": "ce7e858cc7f3e554a1c15b3b8055ca0a2ac2d29313cc6e347db6b044f9284840",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33354,7 +33410,7 @@
       "sha256": "5eaccdc98fffd5ef0f28a2a9491fce077aff1ae63573d51e12b41b63ba96a68a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33370,7 +33426,7 @@
       "sha256": "93e2ae99142cb3adb31b9fd255a7b53fff8e09972b9d39c62ce295918d82e4e9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33382,7 +33438,7 @@
       "sha256": "7bc8de4401a0cf169e01e6bd409e6a9317a107f30a0c1f465b53b10ef92b19ca",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33410,7 +33466,7 @@
       "sha256": "dc2f4178b60f395476701aad1e144172f55cac92fad9aa3d30f75af36234cc14",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33430,7 +33486,7 @@
       "sha256": "babf783081e24e2e1427660b43c0732e9e34a791f0b5c641034c7727c9889aff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33446,7 +33502,7 @@
       "sha256": "7ba65fa9a88c2c4d97ef54e99a05b930559bf73aece6a749ceecac8d298764cd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33454,7 +33510,7 @@
       "sha256": "4f031eb1eb80c368101802103cdc7e5c6fb39283f6fdb2a94f3abd5bc9f482d9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33462,7 +33518,7 @@
       "sha256": "fb325e7ae6ca4664082a424ac7591dcc2d4202469558475b717e3e9cb308dff3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33470,7 +33526,7 @@
       "sha256": "9364d37cec80d77dfaaa07b6b087a641c028a5b6ca8bc68bb36c12f89d30c14d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33478,7 +33534,7 @@
       "sha256": "89dc173fc43c00c73f44635e501a282f3553d1e361e5efe12487b5946e7a5acb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33710,7 +33766,7 @@
       "sha256": "00496c0a1c173eb32d8df0463c59b14de29c7328603a98dc6b0c112fbb93934c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33718,7 +33774,7 @@
       "sha256": "c6fdc8a09e4996d2da0b16a6a0440a2fd69ee375557bb530b76a1f8448514a52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33726,7 +33782,7 @@
       "sha256": "afd581628da544649c453743c68b58e6b4ca94482d391efb1ffb14781ce68394",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33734,7 +33790,7 @@
       "sha256": "2fff59466ce3299a8761387286fc7c63f313eee4a1255155cce0053d4ed1776a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33742,7 +33798,7 @@
       "sha256": "ec1bf723f03a1ac0bfe94da02c09ce084671bd3fdccd0ada35781ed1e1d902e0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33754,7 +33810,7 @@
       "sha256": "2941b3ac83ce909b1a8068ce503772b29ea52a43f11c608f4f0a7abe48b4744b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33762,7 +33818,7 @@
       "sha256": "6ab96ace982f411c854278c50e9b95392fef23147aced50f944fc2eb92a55d11",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33770,7 +33826,7 @@
       "sha256": "e43d813f36d73b97ba1da6d69ba3606285c1de8ee703a7a3b6d49c8f1b04f06a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33798,7 +33854,7 @@
       "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33810,7 +33866,7 @@
       "sha256": "28e77a3f74ebcea4b2b99d9994fdef0f8ba6e9826549224c94bd947df61f1612",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33850,7 +33906,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33858,7 +33914,7 @@
       "sha256": "751b89698479201e036a489982de317a96f8cc9901949acc630acdac40624387",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33934,7 +33990,7 @@
       "sha256": "18293761d3208f32f393fd4b61cdd264e8a2c459a854ba9ab19a7805a5fe68ff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33942,7 +33998,7 @@
       "sha256": "ad93b859ea4ff36f33ef1e17afb91976d4a5a58818be76b60a7451b19df94c65",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33950,7 +34006,7 @@
       "sha256": "733106c9b8bbc99ede453052fe54fb84dfff7b672fbf3eb496f2a0690b286d8e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33962,7 +34018,7 @@
       "sha256": "104f957ee6467f61139e398592cea612344885923e9a992c512316efabe50b88",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33970,7 +34026,7 @@
       "sha256": "92872572aa1f39f32cd5a4e57370329dc6d3edfa5875e3e76c6cab1b7dc746c3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33978,7 +34034,7 @@
       "sha256": "e24e77f84db7341fc326c851ad3cd01e54972f09455b3ea9bac2f7bd97ac0899",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33986,7 +34042,7 @@
       "sha256": "d7663a88ec03e5cfacdece50f7dee0f3fdc36bfc4d0617bd58ca0a80f3a5e0db",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -33994,7 +34050,7 @@
       "sha256": "57e6912df0f6cf725c11c97d389c2878501d34a593bf833e6faa65e708b9e13e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -34002,7 +34058,7 @@
       "sha256": "8fc0158739fb92cc287445dab75cfea34fe246426a836bf90e35e99fa5e59497",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -34010,7 +34066,7 @@
       "sha256": "5702251447817d53b5f46531dcc0c042b5f4d1bbb1ce1725bf94d5bee6aac1de",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -34018,7 +34074,7 @@
       "sha256": "ed75627b8cf895b6cd5cee9eaf393508abf3eb5cac71e8c7a6c9b5b9a01ad5d9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -34026,7 +34082,7 @@
       "sha256": "58fc406782a1ac8ef245301cbf7ab995059281eb301ce663bc09d39430e1a2a5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -34034,7 +34090,7 @@
       "sha256": "b1f7cb89f3d01228047e6baa46b176e9393d93a84c49eb9cb3b735b689fb13ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -34050,7 +34106,7 @@
       "sha256": "e521ffe5733615cbbbb0b5fc42121f5f4074d920552c89927bb8c38394f6249f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -34070,7 +34126,7 @@
       "sha256": "0ea789f749d3c6a40789d71aead10eef5a11b478f4f0f2615f7dae3cd1019ffd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -34078,7 +34134,7 @@
       "sha256": "58aaf5113da81e01cfc85f1d940a36b379c6ad9178d5ffd9378e7c36a1d77c45",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-keccak-complete-cost-v7.log"
+        "current-keccak-absorb-frame-call-v4.log"
       ]
     },
     {
@@ -84586,7 +84642,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84596,7 +84652,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84606,7 +84662,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84616,7 +84672,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84626,7 +84682,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84636,7 +84692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84646,7 +84702,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84656,7 +84712,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84666,7 +84722,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84676,7 +84732,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84686,7 +84742,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84695,7 +84751,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84704,7 +84760,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84714,7 +84770,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84724,7 +84780,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84734,7 +84790,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84743,7 +84799,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84753,7 +84809,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84781,7 +84837,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84791,7 +84847,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84801,7 +84857,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84811,7 +84867,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84821,7 +84877,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84831,7 +84887,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84841,7 +84897,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84851,7 +84907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84869,7 +84925,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84878,7 +84934,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84888,7 +84944,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84898,7 +84954,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84908,7 +84964,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84936,7 +84992,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84946,7 +85002,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84956,7 +85012,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84966,7 +85022,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84976,7 +85032,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84984,7 +85040,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84993,7 +85049,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85029,7 +85085,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85039,7 +85095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85049,7 +85105,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85059,7 +85115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85069,7 +85125,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85079,7 +85135,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85088,7 +85144,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85098,7 +85154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85108,7 +85164,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85118,7 +85174,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85128,7 +85184,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85138,7 +85194,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85147,7 +85203,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85215,7 +85271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85225,7 +85281,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85235,7 +85291,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85245,7 +85301,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85255,7 +85311,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85265,7 +85321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85275,7 +85331,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85285,7 +85341,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85295,7 +85351,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85304,7 +85360,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85314,7 +85370,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85324,7 +85380,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85334,7 +85390,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85344,7 +85400,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85354,7 +85410,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85364,7 +85420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85374,7 +85430,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85384,7 +85440,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85394,7 +85450,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85404,7 +85460,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85490,7 +85546,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85500,7 +85556,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85510,7 +85566,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85520,7 +85576,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85860,7 +85916,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85870,7 +85926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85880,7 +85936,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85890,7 +85946,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85898,7 +85954,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85906,7 +85962,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85916,7 +85972,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85926,7 +85982,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85936,7 +85992,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85946,7 +86002,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -85956,7 +86012,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86017,7 +86073,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86025,7 +86081,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86035,7 +86091,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86045,7 +86101,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86055,7 +86111,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86065,7 +86121,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86075,7 +86131,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86085,7 +86141,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86095,7 +86151,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86105,7 +86161,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86114,7 +86170,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86123,7 +86179,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86133,7 +86189,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86143,7 +86199,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86153,7 +86209,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86163,7 +86219,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86173,7 +86229,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86183,7 +86239,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86193,7 +86249,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86203,7 +86259,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86213,7 +86269,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86223,7 +86279,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86233,7 +86289,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86243,7 +86299,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86282,7 +86338,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86380,7 +86436,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86388,7 +86444,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86398,7 +86454,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86408,7 +86464,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86418,7 +86474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86428,7 +86484,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86438,7 +86494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86448,7 +86504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86457,7 +86513,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86465,7 +86521,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86475,7 +86531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86485,7 +86541,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86493,7 +86549,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86501,7 +86557,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86511,7 +86567,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86521,7 +86577,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86531,7 +86587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86541,7 +86597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86551,7 +86607,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86561,7 +86617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86571,7 +86627,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86581,7 +86637,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86591,7 +86647,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86601,7 +86657,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86611,7 +86667,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86621,7 +86677,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86631,7 +86687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86640,7 +86696,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89426,7 +89482,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89894,7 +89950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89904,7 +89960,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90528,7 +90584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91648,7 +91704,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91658,7 +91714,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95933,7 +95989,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95943,7 +95999,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95953,7 +96009,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95963,7 +96019,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95972,7 +96028,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95981,7 +96037,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95990,7 +96046,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96036,7 +96092,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96046,7 +96102,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96055,7 +96111,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96064,7 +96120,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96074,7 +96130,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96084,7 +96140,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96094,7 +96150,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96130,7 +96186,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96150,7 +96206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96816,7 +96872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96826,7 +96882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96836,7 +96892,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96846,7 +96902,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96892,7 +96948,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96902,7 +96958,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98385,7 +98441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98395,7 +98451,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102209,7 +102265,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103222,7 +103278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103232,7 +103288,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103242,7 +103298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103252,7 +103308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103262,7 +103318,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103272,7 +103328,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103282,7 +103338,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103554,7 +103610,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103564,7 +103620,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103679,7 +103735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103689,7 +103745,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104397,7 +104453,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104407,7 +104463,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -104969,7 +105025,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107410,7 +107466,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107697,7 +107753,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107879,7 +107935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107889,7 +107945,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107899,7 +107955,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107909,7 +107965,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107919,7 +107975,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107929,7 +107985,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107939,7 +107995,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107949,7 +108005,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107957,7 +108013,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107965,7 +108021,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107975,7 +108031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107984,7 +108040,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107994,7 +108050,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108004,7 +108060,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108023,7 +108079,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108033,7 +108089,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108282,7 +108338,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108292,7 +108348,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108302,7 +108358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108312,7 +108368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108322,7 +108378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108332,7 +108388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108342,7 +108398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108352,7 +108408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108362,7 +108418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108372,7 +108428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108382,7 +108438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108392,7 +108448,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108402,7 +108458,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108412,7 +108468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108422,7 +108478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108432,7 +108488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108442,7 +108498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108452,7 +108508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108462,7 +108518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108687,7 +108743,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108695,7 +108751,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108732,7 +108788,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108742,7 +108798,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108752,7 +108808,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108762,7 +108818,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109097,7 +109153,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109907,7 +109963,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109917,7 +109973,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109927,7 +109983,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109937,7 +109993,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109947,7 +110003,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109957,7 +110013,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110002,7 +110058,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110011,7 +110067,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112162,7 +112218,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112495,7 +112551,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112732,7 +112788,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112742,7 +112798,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116428,7 +116484,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116838,7 +116894,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116848,7 +116904,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116858,7 +116914,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119201,7 +119257,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119211,7 +119267,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119221,7 +119277,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119231,7 +119287,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119241,7 +119297,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119251,7 +119307,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119917,7 +119973,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -120234,7 +120290,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -120418,7 +120474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121303,7 +121359,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121313,7 +121369,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121323,7 +121379,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121333,7 +121389,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121343,7 +121399,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121353,7 +121409,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121363,7 +121419,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121373,7 +121429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121381,7 +121437,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121391,7 +121447,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121401,7 +121457,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121411,7 +121467,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121421,7 +121477,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121431,7 +121487,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121441,7 +121497,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121450,7 +121506,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121460,7 +121516,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121480,7 +121536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -122547,7 +122603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -122887,7 +122943,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -122897,7 +122953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -125299,7 +125355,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -135125,7 +135181,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -135135,7 +135191,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -137298,7 +137354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -137308,7 +137364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139207,7 +139263,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139217,7 +139273,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139227,7 +139283,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139247,7 +139303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139425,7 +139481,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139435,7 +139491,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139445,7 +139501,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139455,7 +139511,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139465,7 +139521,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139475,7 +139531,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -139485,7 +139541,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -140327,7 +140383,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -141281,7 +141337,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -141291,7 +141347,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -141301,7 +141357,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -141311,7 +141367,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -147371,7 +147427,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -148842,7 +148898,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -149829,7 +149885,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -150240,7 +150296,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -150250,7 +150306,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -150260,7 +150316,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -154508,7 +154564,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -154518,7 +154574,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -154528,7 +154584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -154538,7 +154594,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -154548,7 +154604,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156601,7 +156657,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156611,7 +156667,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156621,7 +156677,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156631,7 +156687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156641,7 +156697,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156651,7 +156707,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156661,7 +156717,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156671,7 +156727,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156681,7 +156737,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156691,7 +156747,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156701,7 +156757,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156711,7 +156767,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156721,7 +156777,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156731,7 +156787,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -156741,7 +156797,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157247,7 +157303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157257,7 +157313,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157267,7 +157323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157277,7 +157333,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157287,7 +157343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157297,7 +157353,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157307,7 +157363,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157317,7 +157373,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157327,7 +157383,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157337,7 +157393,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157347,7 +157403,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157357,7 +157413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157367,7 +157423,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157377,7 +157433,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157386,7 +157442,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -157395,7 +157451,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -163349,7 +163405,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-complete-frame-call-v1.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -170692,7 +170748,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-header-field-pipeline-main-v3.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -171829,7 +171885,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -176890,7 +176946,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -176900,7 +176956,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -177329,7 +177385,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -182956,7 +183012,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184624,7 +184680,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184634,7 +184690,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184644,7 +184700,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184654,7 +184710,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184664,7 +184720,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184674,7 +184730,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184684,7 +184740,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184694,7 +184750,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184704,7 +184760,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184714,7 +184770,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184724,7 +184780,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184734,7 +184790,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184744,7 +184800,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184754,7 +184810,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184764,7 +184820,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184774,7 +184830,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184784,7 +184840,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184794,7 +184850,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184804,7 +184860,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184814,7 +184870,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184824,7 +184880,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184834,7 +184890,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184844,7 +184900,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184854,7 +184910,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184864,7 +184920,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184874,7 +184930,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184884,7 +184940,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184894,7 +184950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -184904,7 +184960,157 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-keccak-complete-cost-v7.log",
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.Absorb.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.Absorb.call_memory",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.Absorb.body_memory",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.permutation_globals",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.absorb_globals",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.hash_globals",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.Permutation.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.Permutation.call_memory",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.Permutation.round_words",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.Permutation.round_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.CurrentKeccak.Permutation.body_memory",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.operation_word_result",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ScalarLocals.assign",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ScalarLocals.declared",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.ScalarLocals.loop",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-keccak-absorb-frame-call-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

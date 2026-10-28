@@ -3034,3 +3034,39 @@ global target K. Next: real Patricia initialization/insertions, remaining
 current main/source paths and target-step composition. Overall estimate40%,
 plausible30–50%. Five old unfinished RLP files preserved untracked.
 Account11%weekly used, zero reset credits, ordinary usage allowed.
+
+## Current Patricia constructor: complete cost/return/layout — 2026-10-28
+
+Actual htab_new now has a reached-entry bound≤5source body ticks for32-byte
+keys, an actual bounded/aligned current heap and capacity≥2. This includes
+all four allocation calls, allocation traps/timeouts, minimum-capacity/stride
+declarations and all11metadata stores. Each request's room is derived at that
+same actual call. A normal return derives4paid ticks, the real table pointer,
+all four request-room facts and the exact canonical nonlocal state.
+
+The constructor writes exactly11fields: keylen32,stride32,capacity,emptycount0,
+keys/nodes/order pointers,emptyroot0,nextnode1,free0,nodecapacity. The same
+returned state protects every word before the fresh table. Actual physical
+layout is88metadata bytes plus two32*(capacity+1)arrays and one8*(capacity+1)
+array; the reserved zero slots and all real rounded allocation frontiers are
+retained. Sourceheap≥2701131776/end≤2952790016 imply capacity≤3495251; when
+the real capacity loop's power/sufficiency facts are supplied this yields
+bits≤21 and builder count≤1048575. Array/field proof is actual Software code,
+not the former hash-map layout. Insertion/tree invariants remain open.
+
+Cleanup: shared one actual array-allocation/pointer-store proof across all
+three arrays. Strengthened the common scoped-call/allocator trace to classify
+stopped outcomes as unable to return from the enclosing function, retaining
+the former numeric API as a compatibility projection. This prevents a cheap
+stopped alternative from replacing a real returned constructor state.
+
+Validation: current-patricia-constructor-geometry-main-v7.log PASS2160jobs,
+permitted printed axioms only; all modified helper/main dependencies replayed.
+Index8412modules/16988facts; inventory8456modules, replacement AST reverse
+closure0, fixed files unchanged. Incremental policy PASS65236entries/
+2484122431bytes; no full verifier claim. Claim infinity, no global target K.
+Next: current constructor normal caller/workspace frame into node-builder
+loop; actual Patricia find/insert tree invariants, remaining current main
+paths and target-step composition. Overall estimate40%, plausible30–50%.
+Five old unfinished RLP files preserved untracked. Account12%weekly used,
+zero reset credits, ordinary usage allowed.

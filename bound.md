@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-merkle-suffix-cost-v1.log`,1588jobs,
-permitted printed axioms only. Historical/current proof index:8037modules/
-16050facts; Solver inventory8076, replacement closure0, frozen main files
-unchanged. Incremental policy passes64845entries/2482396617bytes. These checks
+Latest successful selected closure: `current-merkle-complete-cost-v1.log`,1596jobs,
+permitted printed axioms only. Historical/current proof index:8043modules/
+16068facts; Solver inventory8082, replacement closure0, frozen main files
+unchanged. Incremental policy passes64851entries/2482426152bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -107,7 +107,10 @@ remain historical until their current statements/dependencies are checked.
    full dense/extension/output suffix≤3*(cur-1)+2*(target-depth)+43, on all
    outcomes. Fixed memory calls, length mixing and u64roots also compose.
    Current depth-prefix/maximum entries recheck with minimal Software imports.
-   Buffer allocation/fill and the full request-hash composition remain open.
+   Actual allocation/fill now includes all failed/partial paths without heap-room
+   premises. Complete current Merkle body/caller cost≤88*n+4*budget+48/49 for
+   actual n,limit≤2^budget, budget<58 and the same non-timeout observation.
+   Pack/byte/progressive helpers and full request-hash composition remain open.
    Current sha256_pair now has a checked syntax certificate: it preserves all
    globals, spends0body source ticks and at most1caller tick on all outcomes.
    Its1,022-line generated effect proof is now50lines, using shared structural

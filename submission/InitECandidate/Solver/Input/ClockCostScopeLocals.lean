@@ -1,6 +1,6 @@
 import InitECandidate.Solver.Input.ClockCostScopedReached
 import InitECandidate.Solver.Input.LocalEffectsCall
-import InitECandidate.Solver.Input.RlpWrite.U256Shape
+import InitECandidate.Solver.Input.ScalarShape
 
 namespace InitECandidate.Solver.Input.ClockCost
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -38,7 +38,7 @@ theorem scalar_scope_current (source : PanSemStateFiniteExact 64 Guest.HostMemor
         (priced (callEntryStateHOLFinite source callee) rfl)
       intro target returned run checked
       have typed : shapeOfHOLExact returned=.one:=(shapeEqHOL_eq_true _ _).mp (Bool.and_eq_true_iff.mp checked).1
-      obtain ⟨word,rfl⟩:=RlpWrite.U256Value.scalar_word returned typed
+      obtain ⟨word,rfl⟩:=ScalarShape.word returned typed
       exact tail target word ((evaluation_fields (callEntryStateHOLFinite source callee) target body (some (.returned (.val (.word word)))) run).2.2.2)
 
 theorem scalar_declaration_current (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : MlS)
@@ -54,7 +54,7 @@ theorem scalar_declaration_current (source : PanSemStateFiniteExact 64 Guest.Hos
     split
     · rename_i checked
       have typed : shapeOfHOLExact value=.one:=((shapeEqHOL_eq_true _ _).mp checked).symm
-      obtain ⟨word,rfl⟩:=RlpWrite.U256Value.scalar_word value typed
+      obtain ⟨word,rfl⟩:=ScalarShape.word value typed
       exact tail word
     · simp
 

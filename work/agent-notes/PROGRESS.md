@@ -4,6 +4,35 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete current software Merkle body and caller costs now check
+
+MerkleBufferCost checks the actual copy/clear/cur-declaration prefix and retains
+its six caller locals through the same actual normal calls. Complete buffer fill,
+dense tree, extension/output/release work costs≤44*capacity+2*(target-depth)+42.
+MerkleAllocationCost includes both real heap_mark and persistent allocation,
+including their failed/partial paths, reaching≤44*2^depth+2*(target-depth)+45.
+These current-state theorems require no heap pointer, room, mapped arena, workspace,
+successful hash or incoming-clock lower bound. ScalarScope's continuation contract
+is invoked only after an actual checked scalar return reinstalls caller locals.
+
+MerkleBodyCost combines the actual current depth prefix, least-covering capacity,
+empty early return and complete nonempty phase. Every actual non-timeout body
+outcome costs≤88*n+4*budget+48 when actual n,limit≤2^budget and budget<58. The real
+four-word caller costs≤88*n+4*budget+49, including errors/traps/FFI. The surrounding
+observation supplies non-timeout; successful Merkle return is not assumed. Large
+straight-line target work and complete request-root composition remain open.
+
+Cleanup extracts the shared scalar-shape lemma from serialization into a minimal
+module, dropping ClockCostScopeLocals' obsolete RLP dependency. It also moves the
+unchanged four-word Merkle ABI proof into a small shared environment module; the
+historical old cost module imports that ABI rather than redefining it. That old
+accelerator-dependent runtime proof remains historical/unselected.
+
+Validation: current-merkle-complete-cost-v1.log PASS1596jobs/permitted printed
+axioms;8GiBguard/twoslots/cachefalse. Index8043modules/16068facts; account24%weekly/
+0resetcredits. No global finite target K; claim infinity; no full verification.
+Next: actual pack_bytes and byte/progressive hash composition with decoded bounds.
+
 ## Current Merkle dense and extension suffix costs now check
 
 CounterLoopCost now shares one checked rank/progress proof between unsigned and

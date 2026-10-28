@@ -2050,6 +2050,9 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/Merkleize.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MerkleizeProgressive.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MixInLength.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PBytesCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PContainerProgram.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PListCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytes.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytesCallCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytesCost.lean",
@@ -8105,8 +8108,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64869,
-  "package_bytes": 2482529559,
+  "package_entries": 64872,
+  "package_bytes": 2482552138,
   "claim": {
     "K": "infinity"
   },

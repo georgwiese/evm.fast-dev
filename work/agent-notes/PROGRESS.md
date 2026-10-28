@@ -4,6 +4,26 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Progressive list/byte wrappers and shared ABI cleanup
+
+Current PListCost checks the complete real progressive/mix/return body and its
+four-word caller:≤88*n+3168/3169 for n≤134217728. PBytesCost composes mark,
+packing, that exact returned pointer/count, progressive list and release:
+body/caller≤packPrice(n)+88*ceil(n/32)+3172/3173. The byte length must satisfy
+n+64<2^64 and actual packed count≤134217728. All same observed non-timeout
+outcomes, including allocation failures and traps, are covered without
+successful hashing, memory mapping, workspace or future funding assumptions.
+
+Cleanup reuses the existing arbitrary-name three-word ABI theorem for the
+common p/n/out signature. Its generic API is retained for existing consumers;
+current progressive and byte wrappers share this specialization.
+
+Validation: current-progressive-wrapper-complete-v1.log PASS1627jobs, permitted
+printed axioms only;8GiBguard/twoslots/cachefalse. Proof index8063modules/
+16142facts. Account26%weekly,0resetcredits, ordinary usage allowed. No global
+finite target K or full verification; claim infinity. Next: current container
+wrapper, fixed record hashes and complete actual payload/request-root joins.
+
 ## Complete current progressive hashing body and caller now check
 
 The actual geometric step uses its real capped count, Merkle limit4^k, pointer

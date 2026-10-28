@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-progressive-complete-cost-v1.log`,1623jobs,
-permitted printed axioms only. Historical/current proof index:8061modules/
-16131facts; Solver inventory8100, replacement closure0, frozen main files
-unchanged. Incremental policy passes64869entries/2482529559bytes. These checks
+Latest successful selected closure: `current-progressive-wrapper-complete-v1.log`,1627jobs,
+permitted printed axioms only. Historical/current proof index:8063modules/
+16142facts; Solver inventory8103, replacement closure0, frozen main files
+unchanged. Incremental policy passes64872entries/2482552138bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -116,7 +116,9 @@ remain historical until their current statements/dependencies are checked.
    packing, current Merkle, release and length mix, including the actual short
    vector branch. Complete current progressive body/caller now costs≤88*n+3120/3121 for
    actual n≤134217728 and the same non-timeout observation, deriving≤15rounds
-   and actual fold count. Progressive list/byte/container wrappers, full
+   and actual fold count. Progressive list body/caller costs≤88*n+3168/3169; progressive-byte
+   body/caller≤packPrice(n)+88*ceil(n/32)+3172/3173 now check, with exact
+   packing return and observed errors included. Container wrapper, full
    request-hash composition and real ownership/resource frames remain open.
    Current sha256_pair now has a checked syntax certificate: it preserves all
    globals, spends0body source ticks and at most1caller tick on all outcomes.
@@ -152,7 +154,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:25%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:26%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

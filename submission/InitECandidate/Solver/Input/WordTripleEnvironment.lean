@@ -30,3 +30,23 @@ theorem word_triple_environment (table : MlS→Option (List (MlS×ShapeHOL)×Pro
 end InitECandidate.Solver.Input
 
 #print axioms InitECandidate.Solver.Input.word_triple_environment
+
+namespace InitECandidate.Solver.Input.CallNormal
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+
+def tripleValues (p n out : BitVec 64) : List (ValueHOL 64) :=
+  [.val (.word p), .val (.word n), .val (.word out)]
+
+/-- The common p/n/out ABI specializes the arbitrary-name three-word interface. -/
+theorem triple_environment (codeFn : MlS → Option (List (MlS × ShapeHOL) × ProgHOL 64 × ShapeHOL))
+    (function : MlS) (body : ProgHOL 64) (p n out : BitVec 64)
+    (code : codeFn function = some ([(ofString "p", .one), (ofString "n", .one), (ofString "out", .one)], body, .one)) :
+    ∃ callee : HolFiniteMapExact MlS (ValueHOL 64), lookupCodeHOLFinite codeFn function (tripleValues p n out) = some (body, callee, .one) ∧
+      callee.lookup (ofString "p") = some (.val (.word p)) ∧ callee.lookup (ofString "n") = some (.val (.word n)) ∧ callee.lookup (ofString "out") = some (.val (.word out)) :=
+  word_triple_environment codeFn function (ofString "p") (ofString "n") (ofString "out") body .one p n out
+    (by decide) (by decide) (by decide) code
+
+end InitECandidate.Solver.Input.CallNormal
+
+#print axioms InitECandidate.Solver.Input.CallNormal.triple_environment

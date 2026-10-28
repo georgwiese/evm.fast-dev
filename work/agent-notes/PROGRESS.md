@@ -3128,3 +3128,26 @@ Patricia insertion invariant, raw witness/Keccak scratch separation, remaining
 current main paths and uniform target composition. Overall estimate40%,
 plausible30–50%. Five old unfinished RLP files preserved untracked.
 Account12%weekly used, zero reset credits, ordinary usage allowed.
+
+
+## Actual normal Patricia lookup caller and genuine empty base — 2026-10-28
+
+The actual find-leaf loop exits with zero or a real mapped leaf at bit256.
+Its scoped caller carries that same result, full physical memory/global
+frame and exact continuation, including all earlier stopped outcomes. A
+genuine htab_new return supplies the vacuous empty node image and real table
+header/alignment, without assuming initialized node contents or future calls.
+Insertion history still has to establish/preserve the image after updates.
+
+Cleanup added shared actual break/continue-aware normal loop exit and
+NoReturn conditional helpers; constructor workspace now retains the actual
+table alignment through source-frame re-anchoring.
+
+Validation: current-patricia-find-normal-caller-empty-base-v4.log PASS2181jobs,
+permitted printed axioms only. Index8433modules/17039facts, inventory8477,
+replacement AST reverse closure0, fixed files unchanged. Incremental policy
+PASS65258entries/2484208525bytes; no full verification or global target K,
+claim infinity. Next: actual first-difference semantics and insertion image,
+workspace separation, remaining main paths and uniform target composition.
+Overall estimate40%, plausible30–50%. Five old unfinished RLP files preserved
+untracked. Account13%weekly used, zero reset credits, ordinary usage allowed.

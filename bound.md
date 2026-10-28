@@ -43,7 +43,7 @@ with its real24-round permutation and full workspace/output memory frame.
 Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
 covering both allocations and all decode/hash/link loops. Actual normal/scoped
 returns supply the real arrays, advanced physical context and protected input.
-Selected2208-job current main/root/table and find-leaf helper replay passed. The
+Selected2227-job current main/root/table and find-leaf helper replay passed. The
 actual first three initializer calls derive Keccak state2701132160 and pad2701132360;
 these globals survive startup, decoding and the31-helper root graph. Real decoded
 witness images supply the header rows and full caller context. Header returns
@@ -119,6 +119,15 @@ normal result identifies byte-key equality at arbitrary alignment. Actual
 htab_set's first two mapped loads and scoped lookup now retain the complete
 image and reach the original continuation with empty0 or a genuine routed leaf.
 Comparison ABI/frame cleanup reduces this comparison's Solver closure93→55.
+The real nonempty continuation now reads the actual leaf key and performs
+that comparison. Its actual failed-equality path computes the genuine first
+mismatch and reaches the unchanged new-leaf call with strict split, parent
+edge and retained t/key/value/other caller bindings within546source ticks,
+or stops earlier. The actual equal-key branch writes its reached leaf value
+and returns0 at any body clock. Preservation of the complete image after
+that write and fresh-node insertion remains to prove. Shared image facts
+derive fresh indices and two available nodes from the actual processed-count
+and sufficient-capacity facts, rather than future successful allocations.
 
 Checked against current Software syntax and declaration entries:
 
@@ -168,10 +177,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-set-first-lookup-v2.log`,2208jobs,
-permitted printed axioms only. Historical/current proof index:8469modules/
-17134facts; inventory8513modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65297entries/2484398674bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-comparison-difference-update-v1.log`,2227jobs,
+permitted printed axioms only. Historical/current proof index:8476modules/
+17151facts; inventory8520modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65304entries/2484433745bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

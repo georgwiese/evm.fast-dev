@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CurrentTable.Set.SeekEntry
+import InitECandidate.Solver.Input.CurrentTable.Set.SeekLocals
 import InitECandidate.Solver.Input.CurrentTable.FindLeaf.Context
 
 namespace InitECandidate.Solver.Input.CurrentTable.Set
@@ -24,6 +25,8 @@ theorem seek_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (source.clock-post.clock ≤ 257 ∧ ∀ value,outcome ≠ some (.returned value)) ∨
       ∃ target inner node parent,SeekState source target base node parent pointer difference ∧ valid node ∧ difference < bits node ∧
         Route bits left right query node leaf ∧ ParentLink valid bits left right query root node parent difference ∧
+        (∀ name : String,ofString "nodes" ≠ ofString name → ofString "p" ≠ ofString name → ofString "n" ≠ ofString name →
+          target.locals.lookup (ofString name) = source.locals.lookup (ofString name)) ∧
         target.clock ≤ source.clock ∧ source.clock-target.clock ≤ 257 ∧
         evaluateHOLFiniteState target newLeafCall = (outcome,inner) ∧ post = restoreSeek source base inner := by
   let initial := rootEntry source base root
@@ -45,10 +48,17 @@ theorem seek_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     have completed : evaluateHOLFiniteState initial seek = (none,target) := loopRun
     obtain ⟨node,parent,state,member,strict,suffix,parentLink⟩ :=
       seek_finished_strict context.image model ready marked differenceInside view first completed
+    have kept (name : String) (notBase : ofString "nodes" ≠ ofString name)
+        (notParent : ofString "p" ≠ ofString name) (notNode : ofString "n" ≠ ofString name) :
+        target.locals.lookup (ofString name) = source.locals.lookup (ofString name) :=
+      (seek_local context.image model ready marked (by omega) view name notParent notNode completed).trans
+        ((bind_lookup_other (parentEntry source base) "n" name root notNode).trans
+          ((bind_lookup_other (nodesEntry source base) "p" name 0#64 notParent).trans
+            (bind_lookup_other source "nodes" name base notBase)))
     have observed := congrArg Prod.fst run
     have endpoint := congrArg Prod.snd run
     dsimp only at observed endpoint
-    exact Or.inr ⟨target,(evaluateHOLFiniteState target newLeafCall).2,node,parent,state,member,strict,suffix,parentLink,forward,price,
+    exact Or.inr ⟨target,(evaluateHOLFiniteState target newLeafCall).2,node,parent,state,member,strict,suffix,parentLink,kept,forward,price,
       Prod.ext observed rfl,endpoint.symm⟩
   | some result =>
     have observed := congrArg Prod.fst run

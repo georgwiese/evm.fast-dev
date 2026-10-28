@@ -3354,3 +3354,35 @@ comparison/difference caller join and real leaf/internal updates, builder
 iteration/workspace separation, later main paths and target composition.
 Overall estimate40%, plausible30–50%. Five old unfinished RLP files preserved
 untracked. Account16%weekly used, zero reset credits, ordinary usage allowed.
+
+
+## Actual comparison/difference/search connection and existing-value write — 2026-10-28
+
+The actual nonempty set continuation loads its genuine key-array pointer,
+skips the real empty guard and compares the reached leaf's actual bytes.
+Its real failed-equality continuation skips the update branch, computes the
+genuine first mismatch and runs the checked second search. It stops within
+546source ticks or reaches the original new-leaf call with the strict split,
+parent edge, suffix route and all real t/key/value/klen/stride/leaf/keys locals.
+The equal-key branch performs its actual mapped leaf-value store and returns0
+at every body clock, spending no source call/loop tick. Complete image
+preservation after this write and fresh-node insertion remains open.
+
+Shared local contracts retain the actual caller bindings through helper
+returns. The search now explicitly proves preservation of every local except
+its n/p assignments, including restoration of temporary b, and its reached
+allocation interface retains those facts. Shared image facts provide node
+slot/range checks, fresh indices and two available node indices from the
+actual processed-entry count and sufficient capacity, without future success.
+Comparison reuses the shared slot/range proof rather than repeating it.
+
+Validation: current-patricia-comparison-difference-update-v1.log PASS2227jobs,
+permitted printed axioms only, with current lookup/first-difference/allocator
+callers and main/root/database. Index8476modules/17151facts; inventory8520,
+replacement AST reverse closure0, fixed files unchanged. Incremental policy
+PASS65304entries/2484433745bytes; no full verification, claim infinity and no
+global target K. Next: actual update/image preservation, fresh leaf/internal
+writes and full insertion invariant; builder iteration/workspace separation,
+later main paths and target composition. Overall estimate40%, plausible30–50%.
+Five old unfinished RLP files preserved untracked. Account16%weekly used,
+zero reset credits, ordinary usage allowed.

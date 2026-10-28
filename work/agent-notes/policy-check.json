@@ -6041,6 +6041,9 @@
     "submission/InitECandidate/Solver/Rlp/ByteAgreementFrame.lean",
     "submission/InitECandidate/Solver/Rlp/ByteAgreementSubspan.lean",
     "submission/InitECandidate/Solver/Rlp/CanonicalReturn.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentItemTotalCall.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentItemTotalCost.lean",
+    "submission/InitECandidate/Solver/Rlp/CurrentItemTotalMemory.lean",
     "submission/InitECandidate/Solver/Rlp/CurrentValidation/AfterHeader.lean",
     "submission/InitECandidate/Solver/Rlp/CurrentValidation/CallCost.lean",
     "submission/InitECandidate/Solver/Rlp/CurrentValidation/Cost.lean",
@@ -6114,6 +6117,7 @@
     "submission/InitECandidate/Solver/Rlp/ItemTotalEncoding.lean",
     "submission/InitECandidate/Solver/Rlp/ItemTotalFrame.lean",
     "submission/InitECandidate/Solver/Rlp/ItemTotalNormal.lean",
+    "submission/InitECandidate/Solver/Rlp/ItemTotalProgram.lean",
     "submission/InitECandidate/Solver/Rlp/ItemValue.lean",
     "submission/InitECandidate/Solver/Rlp/ListCountAdvance.lean",
     "submission/InitECandidate/Solver/Rlp/ListCountBody.lean",
@@ -8271,8 +8275,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65037,
-  "package_bytes": 2483427465,
+  "package_entries": 65041,
+  "package_bytes": 2483444662,
   "claim": {
     "K": "infinity"
   },

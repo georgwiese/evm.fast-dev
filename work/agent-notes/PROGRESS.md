@@ -4,6 +4,30 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current item-total source bound and actual consumed-byte caller budget
+
+Complete current rlp_item_total costs≤14*inputLength+30 source ticks on all
+outcomes under actual initialized arenas and a nonwrapping input extent.
+A normal result derives its actual positive consumed-byte word≤inputLength,
+complete nonlocal frame and cost≤14*consumedBytes+30. The real scoped caller
+supplies that same byte advance, exact resumed caller, lexical restoration
+and cost≤14*consumedBytes+31. Flat byte-string continuations cost zero source
+ticks. List iterations can now share their actual input byte budget.
+
+Cleanup separates ItemTotalProgram's actual current syntax/ABI/argument facts
+from legacy mapped-arena costs, preserving the public syntax names. The old
+conditional cost module remains historical and unclaimed for current main.
+The current proofs use the checked public validator and actual header result;
+no mapped scratch, future successful parser or allocator room is supplied.
+
+Validation: current-rlp-item-total-caller-budget-v2.log PASS854jobs/permitted
+printed axioms. Index8231modules/16670facts; inventory8270/replacement closure0/
+frozen main unchanged. Incremental policy65041entries/2483444662bytes PASS.
+No global finite target K/full verification; claim infinity.
+Next: current list-count shared byte-budget proof, then complete item/slice/header
+and actual later source paths. 8GiBguard/twoslots/cachefalse; account4%weekly,
+0resetcredits, ordinary usage allowed.
+
 ## Complete actual public RLP validator cost and normal memory/arena frame
 
 The public unchanged rlp_validate_items body/caller now cost≤14*(length+1)+4

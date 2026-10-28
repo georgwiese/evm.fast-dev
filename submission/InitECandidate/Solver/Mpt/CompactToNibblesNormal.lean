@@ -17,10 +17,10 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 length))))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
-    (heapArena : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0)
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
-    1≤length ∧ AllocatedBytes.Arena heap (2*length) ∧ ∃ nibbles : Nat,∃ leaf : BitVec 64,
+    1≤length ∧ heap.toNat+2*length≤2952790016 ∧ AllocatedBytes.Arena heap (2*length) ∧ ∃ nibbles : Nat,∃ leaf : BitVec 64,
       nibbles≤2*length ∧ (leaf=0#64 ∨ leaf=1#64) ∧ value=output heap nibbles leaf ∧
       KeyToNibbles.writeMetadata target=KeyToNibbles.writeMetadata (PersistentAlloc.post source heap (BitVec.ofNat 64 (2*length))) ∧
       ∀ query : BitVec 64,query.toNat<heap.toNat ∨ heap.toNat+2*length≤query.toNat→target.memory query=source.memory query := by
@@ -41,9 +41,9 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   rw [allocation_shape] at allocation
   obtain ⟨room,funded,last,afterRun,innerEq⟩:=PersistentAlloc.call_normal current inner "out" [amount] afterAllocation heap request args
-    (PersistentAlloc.original_code source.code installed) (Input.Trap.original_code source.code installed) heapCell (by have upper:=heapArena.upper; omega) value allocation
+    (PersistentAlloc.original_code source.code installed) (Input.Trap.original_code source.code installed) heapCell heapBound value allocation
   rw [amountNumber] at room
-  have freshArena : AllocatedBytes.Arena heap (2*length):=⟨heapArena.lower,room⟩
+  have freshArena : AllocatedBytes.Arena heap (2*length):=⟨heapArena.lower,by omega⟩
   let allocated:=PersistentAlloc.post {current with clock:=current.clock-1} heap request
   let ready:=QueryBranch.bind allocated "out" heap
   have readyPointer : ready.locals.lookup (ofString "p")=some (.val (.word pointer)):=
@@ -71,7 +71,7 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     change (restoreStack inner).memory=last.memory
     rw [restoredMemory,innerEq]
     rfl
-  refine ⟨positive,freshArena,nibbles,_,extent,leafBinary,valueEq,finalFields.trans afterFields,?_⟩
+  refine ⟨positive,room,freshArena,nibbles,_,extent,leafBinary,valueEq,finalFields.trans afterFields,?_⟩
   intro query outside
   rw [finalMemory]
   exact memory query outside

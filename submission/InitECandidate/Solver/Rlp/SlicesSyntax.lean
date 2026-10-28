@@ -17,6 +17,7 @@ def stores : ProgHOL 64 := .seq (.store cell (.op .add [localVar "p",localVar "o
   (.seq (.store (.op .add [localVar "arr",.panop .mul [localVar "i",.const 16#64],.const 8#64]) (localVar "total")) advances)
 def loopBody : ProgHOL 64 := .decCall (ofString "total") .one (ofString "rlp_item_total_unchecked") [.op .add [localVar "p",localVar "off"]] stores
 def resultShape : ShapeHOL := .comb [.one,.one]
+def result (array count : BitVec 64) : ValueHOL 64 := .rStruct [.val (.word array),.val (.word count)]
 def returnArray : ProgHOL 64 := .return (.rstruct [localVar "arr",localVar "count"])
 def allocationArguments : List (ExpHOL 64) := [.panop .mul [localVar "count",.const 16#64]]
 

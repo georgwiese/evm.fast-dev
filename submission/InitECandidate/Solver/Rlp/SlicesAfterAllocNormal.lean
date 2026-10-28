@@ -6,7 +6,6 @@ namespace InitECandidate.Solver.Rlp.Slices
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def result (array count : BitVec 64) : ValueHOL 64 := .rStruct [.val (.word array),.val (.word count)]
 def seeded (source : PanSemStateFiniteExact 64 Guest.HostMemory) := bind (bind source "i" 0#64) "off" 0#64
 
 theorem after_alloc_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)

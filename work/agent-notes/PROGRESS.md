@@ -3775,3 +3775,23 @@ Index8622modules/17455facts; inventory8667/replacement closure0/fixed files
 unchanged. Incremental policy PASS65457entries/2485048948bytes. Usage25%
 weekly/0resetcredits. No global finite target K/full verification. Next:
 current leaf/two-item path and complete witness-decoder loop composition.
+
+
+## Complete unchanged current MPT decode step
+
+Current _decode_step235 costs≤n/4+195*n+284body source ticks for n≤1024 at
+its actual current heap/arena entry. Parsing, real allocated slice records,
+compact/path/value calls, leaf constructor/stores and branch/extension cuts
+are connected through their same actual executions. All normal returns have
+flag zero, which will exclude recursive-frame work in the enclosing loop.
+No future allocation success is assumed. Shared slice-result syntax and
+key-byte span imports were cleaned up; actual persistent room is retained
+separately from ordinary-domain bounds.
+
+Validation: current-mpt-step-main-regression-v1.log PASS2590jobs, including
+actual main/state_init entry and the new decode-step path/permitted printed
+axioms; index8632modules/17477facts. Inventory8677/replacement closure0/
+fixed files unchanged. Incremental policy PASS65467entries/2485107882bytes.
+Overall estimate45%, plausible35–55%, relative to rebased main. No global
+finite target K/full verification; claim infinity. Usage26%weekly/0resetcredits.
+Continue actual witness loop/wrappers/state_init and later main/target work.

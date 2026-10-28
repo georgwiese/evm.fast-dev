@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.CompactToNibblesByteTrace
 import InitECandidate.Solver.Mpt.FailGuard
 import InitECandidate.Solver.Input.SequenceReturned
+import InitECandidate.Solver.Input.NormalDeclarationEntry
 
 namespace InitECandidate.Solver.Mpt.CompactToNibbles
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -25,12 +26,14 @@ theorem normal_allocation_entry (source target : PanSemStateFiniteExact 64 Guest
   obtain ⟨middle,guardRun,continued,localFrame⟩:=guardSafe.normal_continue source target afterGuard value normal
   obtain ⟨test,middleEq⟩:=Fail.guard_normal source middle zeroTest [.const 5#64] installed guardRun
   have positive : 1≤length:=by
-    by_contra bad
-    have zero : length=0:=by omega
-    have actual : eval source zeroTest=some (.val (.word 1#64)):=by
-      simp [eval,zeroTest,evalHOLExact,localVar,toExact,lengthCell,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-    have impossible : (1#64 : BitVec 64)=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans test
-    exact (by decide : (1#64 : BitVec 64)≠0#64) impossible
+    by_cases positive : 1≤length
+    · exact positive
+    · exfalso
+      have zero : length=0:=by omega
+      have actual : eval source zeroTest=some (.val (.word 1#64)):=by
+        simp [eval,zeroTest,evalHOLExact,localVar,toExact,lengthCell,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+      have impossible : (1#64 : BitVec 64)=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans test
+      exact (by decide : (1#64 : BitVec 64)≠0#64) impossible
   rw [middleEq,byte_shape] at continued
   obtain ⟨declared,innerByte,read,checked,byteRun,endpoint⟩:=Input.CallNormal.declaration_normal_entry source target "c0" .one (.loadByte (localVar "p")) afterByte value continued
   cases loaded : @panMemLoadByteHOL 64 _ source.memory source.memaddrs (fun query=>Classical.propDecidable (source.memaddrs query)) source.be pointer with

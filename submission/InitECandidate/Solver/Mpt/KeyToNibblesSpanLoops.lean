@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Mpt.KeyToNibblesWriteFrame
 import InitECandidate.Solver.Mpt.KeyToNibblesAnyLoops
 import InitECandidate.Solver.Input.SequenceReturned
+import InitECandidate.Solver.Input.ReturnNormal
 
 namespace InitECandidate.Solver.Mpt.KeyToNibbles
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -29,10 +30,12 @@ theorem loop_span_frame (test : ExpHOL 64) (loopBody : ProgHOL 64) (stride lengt
   obtain ⟨index,iCell,nCell,inside⟩:=counter
   have expected:=reads current index iCell nCell inside
   have active : index.toNat+stride≤length:=by
-    by_contra inactive
-    rw [if_neg inactive] at expected
-    have zero : observed=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans expected
-    exact nonzero zero
+    by_cases active : index.toNat+stride≤length
+    · exact active
+    · exfalso
+      rw [if_neg active] at expected
+      have zero : observed=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans expected
+      exact nonzero zero
   obtain ⟨bodyFrame,nextOut⟩:=writes.normal (decClockHOLFinite current) post out index (2*length) (by omega) currentOut iCell bodyRun
   have kept : SpanFrame current post out (2*length):=⟨bodyFrame.fields,bodyFrame.memory⟩
   have transition:=(Input.CounterFlow.stride_transition test loopBody stride length positive small advance summary reads current currentCounter observed actual nonzero).2 funded

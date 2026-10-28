@@ -32,7 +32,7 @@ needed. **Do not read CLAUDE.md.** Fixed definitions govern stale prose.
 ## Current status — 2026-10-28
 
 **No global finite target K yet.** Claim infinity; no full verification claimed.
-Best overall effort estimate: **40%, plausible30–50%**, relative to current main.
+Best overall effort estimate: **45%, plausible35–55%**, relative to current main.
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
@@ -690,3 +690,31 @@ Index8622modules/17455facts; inventory8667/replacement closure0/fixed files
 unchanged. Incremental policy PASS65457entries/2485048948bytes. Usage25%
 weekly/0resetcredits. No global finite target K/full verification. Next:
 current leaf/two-item path and complete witness-decoder loop composition.
+
+
+## Complete current MPT decode step and physical slice connection
+
+The unchanged Software _decode_step235 now costs at most
+`n/4+195*n+284` body source ticks for a genuine at-most1024-byte witness
+before the current bounded aligned heap. Its actual caught RLP parser, list
+conversion, physical array records, compact-path allocation, second item,
+leaf allocation/stores, failure guards and recursive-frame cutoffs are included.
+Every genuine normal result has flag zero; extension/branch records cannot
+return at main's real scratch/domain configuration. This is the needed local
+control fact for bounding the surrounding explicit-stack decoder loop, not yet
+a bound for that loop or the whole program.
+
+The converter's own successful return supplies the actual count, item sequence,
+allocated rows and next heap. Compact normal returns now retain actual request
+room and require the persistent heap ceiling explicitly; ordinary-domain
+readability does not imply allocator funding. Removed the old hashmap-region
+import from key-byte span proofs, made scope/address imports explicit, and
+moved the identical pure slice result into its shared syntax module.
+
+Validation: current-mpt-step-main-regression-v1.log PASS2590jobs, including
+actual main/state_init entry and the new decode-step path; all printed axioms
+permitted. Index8632modules/17477facts; inventory8677/replacement closure0/
+fixed files unchanged. Incremental policy PASS65467entries/2485107882bytes.
+No global finite target K/full verification. Usage26%weekly/0resetcredits.
+Next: compose the actual witness-body loop and wrappers, then state_init and
+later current main paths, followed by uniform target-step composition.

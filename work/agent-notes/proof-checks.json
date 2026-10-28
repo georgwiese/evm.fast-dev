@@ -275,15 +275,27 @@
     },
     {
       "path": "submission/InitECandidate/Solver/ClockPadding.lean",
-      "sha256": "5b836df9933f0117d66f927d9ef46d40c0c98aa65f2433ce3a7aa6bff490707d"
+      "sha256": "5b836df9933f0117d66f927d9ef46d40c0c98aa65f2433ce3a7aa6bff490707d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/ClockPaddingFull.lean",
-      "sha256": "e328b23fef1e0490f6e1e54744ea71a561c1bec4f04cf868acd85681ddd0bce0"
+      "sha256": "e328b23fef1e0490f6e1e54744ea71a561c1bec4f04cf868acd85681ddd0bce0",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/ClockStutter.lean",
-      "sha256": "91f9968d579c2cfc845be4e1ee9d97c5563e44f436bf373d417a52b77fbc8864"
+      "sha256": "91f9968d579c2cfc845be4e1ee9d97c5563e44f436bf373d417a52b77fbc8864",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/ConstCost.lean",
@@ -7486,7 +7498,7 @@
       "sha256": "c89873f80b286042480c2e40028b6b105363d2a7e0afb00c95c6f7ebb662f62f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -7494,7 +7506,7 @@
       "sha256": "71c11b862cb13e8d8285b2dd2baf588779ff1531c13a8b7c096cbee3f05381a9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -7506,7 +7518,7 @@
       "sha256": "3ec134fad85179f54f7a0c46a7315af43072a953ebd2557c14850aaa94fc1c41",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -7682,7 +7694,7 @@
       "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -7774,7 +7786,7 @@
       "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -7838,7 +7850,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -7854,7 +7866,7 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -7907,7 +7919,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCurrentLoop.lean",
-      "sha256": "070e3e1080c8b9157a04b057df2d5326cfa3a3638ae816a154f271c0ccbaaa63"
+      "sha256": "070e3e1080c8b9157a04b057df2d5326cfa3a3638ae816a154f271c0ccbaaa63",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ClockCostCurrentScoped.lean",
@@ -7942,7 +7958,7 @@
       "sha256": "a216a35096856e7f5f2f90ddd9a79f012451c267220837ab976ce6faae2ae805",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -8066,7 +8082,7 @@
       "sha256": "8ae2a850a258075a5b6398a65b0aea1913b7eaf74f5fd63f250084212c3d0ade",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -8219,7 +8235,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CopyZeroMemoryNormal.lean",
-      "sha256": "386bfac58ad3122b406048cc2e2aa02d284d2206315f30bacf097a1c5e4e1a06"
+      "sha256": "45eaa3a90a3c65097bf39ac2e508c4243339e157648e0ea52e03c896eb0163c2",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CoreDecodeCallNibblesNormal.lean",
@@ -8286,7 +8306,7 @@
       "sha256": "07942d45f6f8f52f636c9e8f73e0b6bd13a4ab98dc0bd3abf454ebfb208acb3f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -8302,7 +8322,7 @@
       "sha256": "80ef11e18ea17feb523e6c7240129eb2a27ecec2c6f790050bfaaaf8fdff56fb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -8310,7 +8330,7 @@
       "sha256": "f1e3b0a3e9d05250576a34bf1ae4728e409ab4fec1bd242c4fd71155394d3018",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -8386,7 +8406,7 @@
       "sha256": "287cb170550306814ab06103cfaf1ed13394750d47fdf5ed7d99265a892ffb66",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -8911,10 +8931,10 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Sha256Memory.lean",
-      "sha256": "705f72d3e90f1884436e425ef257a2612ba1ab306f0f8ac7ab302aa3ca1e3e4d",
+      "sha256": "a1496a6ebdb31a6be3f7f765886a7341cd64b1433aa82fb77cd56c5ceb55df6d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -8922,7 +8942,7 @@
       "sha256": "0f99c562e8bd7be6b7951c3eb6d9746002c5e2534065638ad8743067a50c1caa",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -8939,6 +8959,14 @@
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
         "current-request-list-caller-v1.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/U64Memory.lean",
+      "sha256": "ff67190f25c2d86fe417a426ce6817956da7462df75fd46b9d73dc1381b0488c",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -9106,7 +9134,7 @@
       "sha256": "e4c070f14089725c4e20214d25ac71cd308c280a31df543f3fe40203500711d0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10058,7 +10086,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10126,7 +10154,7 @@
       "sha256": "33ed90c3932c7504426b5025443ebde0efb549cf9f3f03a24f55c7c520801f7d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10334,7 +10362,7 @@
       "sha256": "9ca4139dd862e577e73f9912173bbb5f9f0367204daefba180c601954b4a5210",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10342,7 +10370,7 @@
       "sha256": "409b91300b3db67803e63711a3fb26e1671ff96f9daf5473e4f0ef0b87dde350",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10350,7 +10378,7 @@
       "sha256": "2b0ef6de12fe3829f654012d2538e67529eddc5bd1c263f445653e6a78240ebd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10358,7 +10386,7 @@
       "sha256": "0ff3b8164f1f11b50c3259764bd60bb6d19786a08a39e82e233476c365d15b1c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10374,7 +10402,7 @@
       "sha256": "4140a5743a2f8327876c0d51a23ec7e4cbc047d5ebf7595ed4d5f54e27e1b975",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10382,7 +10410,7 @@
       "sha256": "8e139798a7664a1132147ff62bae7f2b4fa03d28534f31d241c607ecc42afaba",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10390,7 +10418,7 @@
       "sha256": "b6d42abc9ba34c5df098bf20880c8058e3e5f40ae53fa8c34ea2dafd9436d064",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10774,7 +10802,7 @@
       "sha256": "e0635f61a2a219e042fbb9b8c1a6d7dc1765e40364b7c36881e4d6575ca0b35a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10786,7 +10814,7 @@
       "sha256": "fd6e8402cfc84466c8287b43bfd210e12f22dc8e91d92abfea71e479143dd984",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10794,7 +10822,7 @@
       "sha256": "32d384b0a1c20ee8afba2faf869a6deb2107548e0801e5b7ab7c2fb7f121067c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10942,7 +10970,7 @@
       "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10950,7 +10978,7 @@
       "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10958,7 +10986,7 @@
       "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10982,7 +11010,7 @@
       "sha256": "c73b9d6a36d7eead87a9a4d6403b7e1d85eb4b11fbdc1e62990069e4cc4762f7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -10998,7 +11026,7 @@
       "sha256": "20173bfc0be92fd55a429fd1ea073813938aaf677579072bb7ba14ea82993fae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -11014,7 +11042,7 @@
       "sha256": "aff2f3d110719386f24ea8507edd5a087d84a8fcdd9f650264b78fc189b9b401",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -11058,7 +11086,7 @@
       "sha256": "9b23b5b4e0ff8a89cfa2a840588ef19924b6ff46b002c57eecb97ff56569f555",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -11887,7 +11915,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/MemoryBoundedLoop.lean",
-      "sha256": "357dcc75a32859d35656d236ae605443f4a60a162b9456bd3fe992a017ced754"
+      "sha256": "e101c764f7104b901a03b376d79af48803b46304327bab05e8a5d3e42449df8b",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/MemoryConstantLoop.lean",
@@ -11898,7 +11930,7 @@
       "sha256": "23c3eea772ef1290765ed0a696e50c212832a78fcd5401bfed081c1ed82316ea",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -11906,7 +11938,7 @@
       "sha256": "ce4d5eda711c91b6a9978ec1e285db574923a0781ee6d2f1771f8cd4a482ea5b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -12118,7 +12150,7 @@
       "sha256": "1f29d1109ed9c9d8fc33520ceddad0e2ba6422a6a3d57a5bac30ab4b93dc4bb0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -12170,7 +12202,7 @@
       "sha256": "21e58e40b3615b0e5cd9ad90bc30098f39f1b0102c532cef8967b78932651bfb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -12190,7 +12222,7 @@
       "sha256": "fad3ab84b3f9f5d52dbbdd9b5036589ee9581e83737dbcc1fe51d17467ec5545",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -12198,7 +12230,7 @@
       "sha256": "a6323616fd27823d3760970d46210d5a076a0bedb08e3a4664ac8b4bcdd4cad4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -12266,7 +12298,7 @@
       "sha256": "444b58e3f4c9b086dade918533a469c8c2ce06d0ca52050f3fbdf863a789b7fa",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -12438,7 +12470,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -13474,7 +13506,7 @@
       "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -13510,7 +13542,7 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -13518,7 +13550,7 @@
       "sha256": "fd4b142862a214c56d86b7276616e6852aee03f89dd4b3769e3b72d6415db4d0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -14034,7 +14066,7 @@
       "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -14494,7 +14526,7 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -14678,7 +14710,7 @@
       "sha256": "4f1e9b801540e7bbd98f41af0f7295c1461c8ef2c53fdf5a40d8e14b4a64076f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -14826,7 +14858,7 @@
       "sha256": "df9cb8cb34dbfe1d4b192b2167f59c22978e936923ab59714260a27b6eeb5c13",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -14898,7 +14930,7 @@
       "sha256": "189fde30af1efc3ebd8c0c4025792488efc865f85b0d07786983e40ec3d75106",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -14906,7 +14938,7 @@
       "sha256": "68a12b38808faaaf77d5dbffc969ce883716ace344764f9a22077fd19ac97211",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -14930,7 +14962,7 @@
       "sha256": "8415e12f98227a88ff182bfde6b8233492b69f004d01ee879242baa9db03c8b5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -14938,7 +14970,7 @@
       "sha256": "4f41b7191eaa1c271cbf8694f0955a0ccb09f36883ce8b9db82e0d83208f70da",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -15030,7 +15062,7 @@
       "sha256": "4450f713a9fcc64fb1f5a12664d971aea9327d9984a7cc4a381bc15d284b69c7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -15038,7 +15070,7 @@
       "sha256": "9049c70243bdf689fb9548a82de10265db97c602e5a2bc3cc20d81dfa01f4259",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -15834,7 +15866,7 @@
       "sha256": "13747d7cb56ef98501b63d6f67cb10f055849531aa57e69c18d74fe1aa00d348",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -15846,7 +15878,7 @@
       "sha256": "cc790bc048559bb7cd10523bafed3f61236552f5e3c7414bb4ae2bde9500617a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-container-record-complete-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -15866,7 +15898,7 @@
       "sha256": "383ea041122511ecf4b192599c7449eef3222fa5f713733420cf2c73e52028a0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -15898,12 +15930,16 @@
       "sha256": "0259ca0264f655e4d6cf2f629c908a63a143fdb94fb8b12dbcdf9fccd8566e11",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ZeroByteMemory.lean",
-      "sha256": "66cefd07c661ece7b1f418ea2ed3fd4dead99de5fe404c7c663a00da7ba5b5fb"
+      "sha256": "8c5e86221f93b1414b6a7764e1207a00498a3e8038db3484c31627c633fdfefe",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ZeroLiteralCallCost.lean",
@@ -15915,11 +15951,19 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ZeroShortLoops.lean",
-      "sha256": "cf625bba35646b9ebb8857320b69ba9d020525c89762dcf2943dc3d1bc2821e1"
+      "sha256": "f13451b5ab0f8ee9606c5526e8c11fa33ae52c20c2d9ac51dcab603d76a0ea97",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ZeroShortMemory.lean",
-      "sha256": "71e6a6c49172e3dbaddee77fe3a4018304eb7c341266429137911976da663606"
+      "sha256": "c63c126e9e0aa0fbcc72ac4786f866e47d143a91a47a3d6541b7e74c23677e10",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/Input/ZeroUnmapped.lean",
@@ -25894,7 +25938,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30342,7 +30386,7 @@
       "sha256": "499a7062f31ec74e4568f2533ae4aa29bac2c8aa419be8aa4fdb6f87eb2a510e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30350,7 +30394,7 @@
       "sha256": "ee9bb64eb3798d686940c1640c3244848a8a84b46a5fc38050302f0a954fe15d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30363,10 +30407,10 @@
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/AllocatedBytes.lean",
-      "sha256": "dcc8d5c4031038b360a9e4670dc4c211050f0867df603633d6e0aadfb3c4be91",
+      "sha256": "171c2f5e12ec2af53161728555b9fdab36f930e37fce74c594b74f223a6c2ec4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "software-core-cleanup-v2.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30422,7 +30466,7 @@
       "sha256": "bc418c84679717e18c5a28b41d81ff91e3d04c9c9552ff20ab59d46e4831e4e7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30502,7 +30546,7 @@
       "sha256": "0a0ed2723ddd4337e71c7b6f3a9e4fea82225b3f383b343e2012bee77371b073",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30510,7 +30554,7 @@
       "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30518,7 +30562,7 @@
       "sha256": "02071e2394e8a909552d0d29cc091e76ecb5a43b2909b69ab4dd731d1a5bf044",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30542,7 +30586,7 @@
       "sha256": "437ded0bbc2dbeea0eb5909575a2895a32e0335a9ce8bed077dc09d9cfa06016",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30550,7 +30594,7 @@
       "sha256": "40fce38b23cfb2246214da156ede18d95ef9bb9f5e66ada5a2ce6cdba4ccf1ce",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30558,7 +30602,7 @@
       "sha256": "355b873f0b8ccbc72cb2b20a46e2d1b47111fc2fee90b546a4295073e1db8b52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30586,7 +30630,7 @@
       "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30594,7 +30638,7 @@
       "sha256": "9bf469db054912ee33f4aed500be2e85029f2a7f6c5476b0bf0dbe31b8104c4e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30602,7 +30646,7 @@
       "sha256": "5f4f94c543c77f028eccb5e14d46cb47a84e9495bf8a4208605eb2db6c2e6b1d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30610,7 +30654,7 @@
       "sha256": "a0de5ea30c7795fb5332b93cacd4dd90d63e15da12c167a40d23f356ba067a9a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30618,7 +30662,7 @@
       "sha256": "da45009935dfa9cbab0514a1517be821503768a952cb1377b5eb02b6cca7c229",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30626,7 +30670,7 @@
       "sha256": "7e6a3a0a18e079fbdaf302eb726e96997a66c8618d00bdefd26805ef663b504c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30634,7 +30678,7 @@
       "sha256": "a8b0233748e0f03e90e628b79d3215046558dc40d2e9f89691cca80f462e4427",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30642,7 +30686,7 @@
       "sha256": "6e5ac25c2f99e8ffbcbc7044ccf9e92173523e851534130d22521b7032ad521e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30650,7 +30694,7 @@
       "sha256": "20faa123672a458c7b2275fc4263ee1834eea1d7ea21946e1a030b0fffab0cbe",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30658,7 +30702,7 @@
       "sha256": "be37cf170b6e9a242bd3dd80eec72b548717c29974fb6072f6aa620120278d0a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30666,7 +30710,7 @@
       "sha256": "6760d66a0555e60fa210403fb24f65cee97d7a10953f30e23a24495b94ad9c47",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30674,12 +30718,16 @@
       "sha256": "e2f9ec59685a1f69d92b0889a17ac23654dc04999b98b4a72e2ce5c4ab95189a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyAwayIntervals.lean",
-      "sha256": "16f55776c3e26e0a253e6f771c7303d3fb6ff0791b39d29e64c4ce2fcd25f10e"
+      "sha256": "769740c25909a1e9a9215574ab250f1556ef1ba21badbc5a10fd1f6f98a53665",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyByteAway.lean",
@@ -30690,7 +30738,7 @@
       "sha256": "832b514beaabd38cf1255c01ca18fa7ac669ccd94587c67675317aa3bf6e6478",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30698,7 +30746,7 @@
       "sha256": "c86aaa98cb40110454a66ab9cf6e28429e25b02d0c3fb2825b6ed997b05d54c3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30706,7 +30754,7 @@
       "sha256": "d0e3bfb76862423368d30674b138427e06e4695339119a0369ae7d07a156cf2c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30718,7 +30766,7 @@
       "sha256": "fc743bf3e5927a7104aa44050be7c9e5814fea88481499be913ab577365a85cb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30730,7 +30778,7 @@
       "sha256": "e0563280b246c8b81be243957ee904589af035808a20fbc0a1f57aeba15d6d32",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30738,7 +30786,7 @@
       "sha256": "528147b74b9e00f94b94612c9a58dfff5608df348eb9657f361ead7931a5af37",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30746,7 +30794,7 @@
       "sha256": "ce7e858cc7f3e554a1c15b3b8055ca0a2ac2d29313cc6e347db6b044f9284840",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30766,19 +30814,23 @@
       "sha256": "5eaccdc98fffd5ef0f28a2a9491fce077aff1ae63573d51e12b41b63ba96a68a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyGeneralCall.lean",
-      "sha256": "c86de0edc122ebcffc28c1569523ecafbf895d8000d375e82f6cbb0e542c1776"
+      "sha256": "c86de0edc122ebcffc28c1569523ecafbf895d8000d375e82f6cbb0e542c1776",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyGeneralCode.lean",
       "sha256": "93e2ae99142cb3adb31b9fd255a7b53fff8e09972b9d39c62ce295918d82e4e9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30790,16 +30842,24 @@
       "sha256": "7bc8de4401a0cf169e01e6bd409e6a9317a107f30a0c1f465b53b10ef92b19ca",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyGeneralMemory.lean",
-      "sha256": "78569ffc5284a01f02ed2c0c960c08655ed2cec3483db16aa0e15eb1bdee6681"
+      "sha256": "78569ffc5284a01f02ed2c0c960c08655ed2cec3483db16aa0e15eb1bdee6681",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyGeneralMemoryResult.lean",
-      "sha256": "b1409922b329e25cfb634493e6d98396830ea240c9042fdbd7ee088299cc3e29"
+      "sha256": "b1409922b329e25cfb634493e6d98396830ea240c9042fdbd7ee088299cc3e29",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyGeneralRegionAgreement.lean",
@@ -30810,12 +30870,16 @@
       "sha256": "dc2f4178b60f395476701aad1e144172f55cac92fad9aa3d30f75af36234cc14",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyNormalCall.lean",
-      "sha256": "548fccaf752dc35bf6845ceda2b56db08d5e402b07764d103e00480ee1c7aa74"
+      "sha256": "548fccaf752dc35bf6845ceda2b56db08d5e402b07764d103e00480ee1c7aa74",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/CopyRegionAgreement.lean",
@@ -30826,7 +30890,7 @@
       "sha256": "babf783081e24e2e1427660b43c0732e9e34a791f0b5c641034c7727c9889aff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30842,7 +30906,7 @@
       "sha256": "7ba65fa9a88c2c4d97ef54e99a05b930559bf73aece6a749ceecac8d298764cd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30850,7 +30914,7 @@
       "sha256": "4f031eb1eb80c368101802103cdc7e5c6fb39283f6fdb2a94f3abd5bc9f482d9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30858,7 +30922,7 @@
       "sha256": "fb325e7ae6ca4664082a424ac7591dcc2d4202469558475b717e3e9cb308dff3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30866,7 +30930,7 @@
       "sha256": "9364d37cec80d77dfaaa07b6b087a641c028a5b6ca8bc68bb36c12f89d30c14d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -30874,7 +30938,7 @@
       "sha256": "89dc173fc43c00c73f44635e501a282f3553d1e361e5efe12487b5946e7a5acb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31106,7 +31170,7 @@
       "sha256": "00496c0a1c173eb32d8df0463c59b14de29c7328603a98dc6b0c112fbb93934c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31114,7 +31178,7 @@
       "sha256": "c6fdc8a09e4996d2da0b16a6a0440a2fd69ee375557bb530b76a1f8448514a52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31122,7 +31186,7 @@
       "sha256": "afd581628da544649c453743c68b58e6b4ca94482d391efb1ffb14781ce68394",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31130,7 +31194,7 @@
       "sha256": "2fff59466ce3299a8761387286fc7c63f313eee4a1255155cce0053d4ed1776a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31138,7 +31202,7 @@
       "sha256": "ec1bf723f03a1ac0bfe94da02c09ce084671bd3fdccd0ada35781ed1e1d902e0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31150,7 +31214,7 @@
       "sha256": "2941b3ac83ce909b1a8068ce503772b29ea52a43f11c608f4f0a7abe48b4744b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31158,7 +31222,7 @@
       "sha256": "6ab96ace982f411c854278c50e9b95392fef23147aced50f944fc2eb92a55d11",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31166,7 +31230,7 @@
       "sha256": "e43d813f36d73b97ba1da6d69ba3606285c1de8ee703a7a3b6d49c8f1b04f06a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31194,7 +31258,7 @@
       "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31206,7 +31270,7 @@
       "sha256": "28e77a3f74ebcea4b2b99d9994fdef0f8ba6e9826549224c94bd947df61f1612",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31246,7 +31310,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31254,7 +31318,7 @@
       "sha256": "751b89698479201e036a489982de317a96f8cc9901949acc630acdac40624387",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31330,7 +31394,7 @@
       "sha256": "18293761d3208f32f393fd4b61cdd264e8a2c459a854ba9ab19a7805a5fe68ff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31338,7 +31402,7 @@
       "sha256": "ad93b859ea4ff36f33ef1e17afb91976d4a5a58818be76b60a7451b19df94c65",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31346,7 +31410,7 @@
       "sha256": "733106c9b8bbc99ede453052fe54fb84dfff7b672fbf3eb496f2a0690b286d8e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31358,7 +31422,7 @@
       "sha256": "104f957ee6467f61139e398592cea612344885923e9a992c512316efabe50b88",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31366,7 +31430,7 @@
       "sha256": "92872572aa1f39f32cd5a4e57370329dc6d3edfa5875e3e76c6cab1b7dc746c3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-memory-prefix-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31374,19 +31438,23 @@
       "sha256": "e24e77f84db7341fc326c851ad3cd01e54972f09455b3ea9bac2f7bd97ac0899",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/ZeroCost.lean",
-      "sha256": "27f8f33244a50dd11aaba85aa27189b0c45a3b56b97c821a28d1bd5a092f0d48"
+      "sha256": "d7663a88ec03e5cfacdece50f7dee0f3fdc36bfc4d0617bd58ca0a80f3a5e0db",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/ZeroEnvironment.lean",
       "sha256": "57e6912df0f6cf725c11c97d389c2878501d34a593bf833e6faa65e708b9e13e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31394,7 +31462,7 @@
       "sha256": "8fc0158739fb92cc287445dab75cfea34fe246426a836bf90e35e99fa5e59497",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-memory-prefix-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31402,7 +31470,7 @@
       "sha256": "5702251447817d53b5f46531dcc0c042b5f4d1bbb1ce1725bf94d5bee6aac1de",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-memory-prefix-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31410,7 +31478,7 @@
       "sha256": "ed75627b8cf895b6cd5cee9eaf393508abf3eb5cac71e8c7a6c9b5b9a01ad5d9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31418,7 +31486,7 @@
       "sha256": "58fc406782a1ac8ef245301cbf7ab995059281eb301ce663bc09d39430e1a2a5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-memory-prefix-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31426,19 +31494,23 @@
       "sha256": "b1f7cb89f3d01228047e6baa46b176e9393d93a84c49eb9cb3b735b689fb13ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-memory-prefix-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/ZeroNormal.lean",
-      "sha256": "34b7d0b7dc58d9980c76abc92f2c8028cd0bd73825ab89a93a1949934c95217d"
+      "sha256": "34b7d0b7dc58d9980c76abc92f2c8028cd0bd73825ab89a93a1949934c95217d",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-hash-memory-primitives-v4.log"
+      ]
     },
     {
       "path": "submission/InitECandidate/Solver/WitnessRadix/ZeroProgram.lean",
       "sha256": "e521ffe5733615cbbbb0b5fc42121f5f4074d920552c89927bb8c38394f6249f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31458,7 +31530,7 @@
       "sha256": "0ea789f749d3c6a40789d71aead10eef5a11b478f4f0f2615f7dae3cd1019ffd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-memory-prefix-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -31466,7 +31538,7 @@
       "sha256": "58aaf5113da81e01cfc85f1d940a36b379c6ad9178d5ffd9378e7c36a1d77c45",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-request-list-caller-v1.log"
+        "current-hash-memory-primitives-v4.log"
       ]
     },
     {
@@ -81974,7 +82046,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81984,7 +82056,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -81994,7 +82066,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82004,7 +82076,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82014,7 +82086,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82024,7 +82096,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82034,7 +82106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82044,7 +82116,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82054,7 +82126,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82064,7 +82136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82074,7 +82146,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82083,7 +82155,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82092,7 +82164,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82102,7 +82174,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82112,7 +82184,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82122,7 +82194,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82131,7 +82203,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82141,7 +82213,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82169,7 +82241,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82179,7 +82251,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82189,7 +82261,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82199,7 +82271,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82209,7 +82281,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82219,7 +82291,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82229,7 +82301,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82239,7 +82311,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82257,7 +82329,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82266,7 +82338,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82276,7 +82348,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82286,7 +82358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82296,7 +82368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82324,7 +82396,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82334,7 +82406,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82344,7 +82416,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82354,7 +82426,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82364,7 +82436,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82372,7 +82444,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82381,7 +82453,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82417,7 +82489,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82427,7 +82499,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82437,7 +82509,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82447,7 +82519,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82457,7 +82529,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82467,7 +82539,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82476,7 +82548,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82486,7 +82558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82496,7 +82568,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82506,7 +82578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82516,7 +82588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82526,7 +82598,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82535,7 +82607,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82603,7 +82675,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82613,7 +82685,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82623,7 +82695,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82633,7 +82705,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82643,7 +82715,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82653,7 +82725,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82663,7 +82735,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82673,7 +82745,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82683,7 +82755,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82692,7 +82764,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82702,7 +82774,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82712,7 +82784,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82722,7 +82794,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82732,7 +82804,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82742,7 +82814,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82752,7 +82824,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82762,7 +82834,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82772,7 +82844,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82782,7 +82854,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82792,7 +82864,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82878,7 +82950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82888,7 +82960,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82898,7 +82970,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -82908,7 +82980,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83248,7 +83320,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83258,7 +83330,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83268,7 +83340,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83278,7 +83350,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83286,7 +83358,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83294,7 +83366,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83304,7 +83376,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83314,7 +83386,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83324,7 +83396,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83334,7 +83406,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83344,7 +83416,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83405,7 +83477,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83413,7 +83485,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83423,7 +83495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83433,7 +83505,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83443,7 +83515,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83453,7 +83525,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83463,7 +83535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83473,7 +83545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83483,7 +83555,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83493,7 +83565,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83502,7 +83574,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83511,7 +83583,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83521,7 +83593,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83531,7 +83603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83541,7 +83613,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83551,7 +83623,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83561,7 +83633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83571,7 +83643,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83581,7 +83653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83591,7 +83663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83601,7 +83673,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83611,7 +83683,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83621,7 +83693,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83631,7 +83703,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83641,7 +83713,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_memory_away",
@@ -83650,7 +83723,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.call_control",
@@ -83658,7 +83732,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.environment",
@@ -83667,7 +83742,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83677,7 +83752,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.word_walk_memory",
@@ -83686,7 +83762,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.prefix_memory_away",
@@ -83695,7 +83772,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.suffix_memory_away",
@@ -83704,7 +83782,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory_away",
@@ -83713,7 +83792,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.byte_walk_be",
@@ -83722,7 +83802,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.word_walk_be",
@@ -83731,7 +83812,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.core_memory",
@@ -83740,7 +83822,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.resultMemory_away",
@@ -83749,14 +83832,15 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyContext.control_of_frame",
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83764,7 +83848,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83774,7 +83858,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83784,7 +83868,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83794,7 +83878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83804,7 +83888,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83814,7 +83898,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83824,7 +83908,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83833,7 +83917,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83841,7 +83925,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83851,7 +83935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83861,7 +83945,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83869,7 +83953,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83877,7 +83961,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83887,7 +83971,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83897,7 +83981,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83907,7 +83991,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83917,7 +84001,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83927,7 +84011,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83937,7 +84021,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83947,7 +84031,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83957,7 +84041,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83967,7 +84051,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83977,7 +84061,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83987,7 +84071,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -83997,7 +84081,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84007,7 +84091,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84016,7 +84100,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84557,7 +84641,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84566,7 +84650,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84575,7 +84659,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84584,7 +84668,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84593,7 +84677,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84602,7 +84686,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84612,7 +84696,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -84622,7 +84706,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "software-core-cleanup-v2.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -86802,7 +86886,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87270,7 +87354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87280,7 +87364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87904,7 +87988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93302,7 +93386,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93312,7 +93396,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93322,7 +93406,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93332,7 +93416,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93341,7 +93425,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93350,7 +93434,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93359,7 +93443,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93368,7 +93452,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93377,7 +93461,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93386,7 +93470,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93395,7 +93479,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93405,7 +93489,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93415,7 +93499,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93424,7 +93508,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93433,7 +93517,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93443,7 +93527,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93453,7 +93537,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93463,7 +93547,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93499,7 +93583,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93519,7 +93603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-memory-prefix-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94184,7 +94268,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94194,7 +94278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94204,7 +94288,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94214,7 +94298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94260,7 +94344,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94270,7 +94354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95753,7 +95837,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95763,7 +95847,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99557,7 +99641,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.no_clock_stutter",
@@ -99566,7 +99651,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-node-rlp-begin-graph-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.ignored_callee_return",
@@ -99575,7 +99661,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100588,7 +100674,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100598,7 +100684,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100608,7 +100694,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100618,7 +100704,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100628,7 +100714,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100638,7 +100724,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100648,7 +100734,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100920,7 +101006,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101044,7 +101130,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101054,7 +101140,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101163,7 +101249,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.WarmPrecompiles.initial_price",
@@ -101761,7 +101848,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101771,7 +101858,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102333,7 +102420,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -102392,7 +102479,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.refund_normal",
@@ -103329,7 +103417,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.GasBudget.Journal.Append.set_tail_shape",
@@ -104770,7 +104859,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105056,7 +105145,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105237,7 +105326,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105247,7 +105336,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105257,7 +105346,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105267,7 +105356,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105277,7 +105366,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105287,7 +105376,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105297,7 +105386,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105307,7 +105396,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105315,7 +105404,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105323,7 +105412,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105333,7 +105422,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105342,7 +105431,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105352,7 +105441,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105362,7 +105451,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105637,7 +105726,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105647,7 +105736,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105657,7 +105746,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105667,7 +105756,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105677,7 +105766,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105687,7 +105776,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105697,7 +105786,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105727,7 +105816,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105737,7 +105826,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105747,7 +105836,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105757,7 +105846,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105767,7 +105856,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105777,7 +105866,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105787,7 +105876,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105797,7 +105886,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105807,7 +105896,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105817,7 +105906,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106042,7 +106131,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106050,7 +106139,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106087,7 +106176,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106097,7 +106186,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106107,7 +106196,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106117,7 +106206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106449,7 +106538,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107252,7 +107341,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107262,7 +107351,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107272,7 +107361,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107282,7 +107371,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107292,7 +107381,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -107302,7 +107391,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109502,7 +109591,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -109835,7 +109924,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110072,7 +110161,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110082,7 +110171,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113473,7 +113562,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.scoped_none",
@@ -116445,7 +116535,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116455,7 +116545,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116465,7 +116555,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116475,7 +116565,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116485,7 +116575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116495,7 +116585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117139,7 +117229,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118469,7 +118559,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118479,7 +118569,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118489,7 +118579,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118499,7 +118589,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118509,7 +118599,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118519,7 +118609,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118529,7 +118619,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118539,7 +118629,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118547,7 +118637,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118557,7 +118647,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118567,7 +118657,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118577,7 +118667,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118587,7 +118677,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118597,7 +118687,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118607,7 +118697,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118616,7 +118706,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118626,7 +118716,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118646,7 +118736,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118656,7 +118746,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -118666,7 +118756,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -120001,7 +120091,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.Zero.call_cost",
@@ -120010,7 +120101,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.CallNormal.continuation_lookup_same",
@@ -121111,7 +121203,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.WitnessRadix.CopyGeneral.Away.after",
@@ -121119,7 +121212,8 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Mpt.AccountDecode.ignored_leaf_size",
@@ -122401,7 +122495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -132227,7 +132321,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -132237,7 +132331,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136301,7 +136395,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136311,7 +136405,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136321,7 +136415,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136341,7 +136435,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136519,7 +136613,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136529,7 +136623,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136539,7 +136633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136549,7 +136643,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136559,7 +136653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136569,7 +136663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136579,7 +136673,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -136616,7 +136710,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ZeroShort.Model.normal",
@@ -136625,7 +136720,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ZeroShort.byte_model",
@@ -136634,7 +136730,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ZeroShort.tail_model",
@@ -136643,7 +136740,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.HeapScope.release_return_heap",
@@ -137416,7 +137514,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138323,7 +138421,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.MemoryAt.zero_normal",
@@ -138332,7 +138431,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.MemoryAt.foreign_current",
@@ -138368,7 +138468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138378,7 +138478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138388,7 +138488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138398,7 +138498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138444,7 +138544,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138454,7 +138554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138464,7 +138564,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138483,7 +138583,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138493,7 +138593,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138503,7 +138603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138513,7 +138613,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138521,7 +138621,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -138993,7 +139093,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Merkle.output_memory",
@@ -139479,7 +139580,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ZeroByteFlow.byte_memory",
@@ -139488,7 +139590,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ZeroByteFlow.tail_memory",
@@ -139497,7 +139600,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ZeroShort.Model.memory",
@@ -139506,7 +139610,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ZeroShort.unaligned_body_memory",
@@ -139515,7 +139620,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.ZeroShort.call_memory",
@@ -139524,7 +139630,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "trie-indexed-updated-normal-v2.log"
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.FixedHash.after_steps_memory",
@@ -142917,7 +143024,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -143390,7 +143497,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -146813,7 +146920,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -160326,7 +160433,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167198,7 +167305,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167668,7 +167775,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167678,7 +167785,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -167688,7 +167795,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -168805,7 +168912,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -171577,7 +171684,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -171897,7 +172004,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173176,7 +173283,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173186,7 +173293,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173196,7 +173303,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173206,7 +173313,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173216,7 +173323,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173226,7 +173333,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173236,7 +173343,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173744,7 +173851,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173754,7 +173861,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173764,7 +173871,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173774,7 +173881,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173824,7 +173931,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173834,7 +173941,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173844,7 +173951,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173854,7 +173961,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-container-record-complete-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173864,7 +173971,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -173874,7 +173981,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -175041,7 +175148,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-request-list-caller-v1.log",
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -175593,6 +175700,66 @@
         "Quot.sound"
       ],
       "successful_log": "current-request-list-caller-v1.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHash.U64Memory.source_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHash.U64Memory.Params.after_call",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHash.U64Memory.after_zero_memory",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHash.U64Memory.body_memory",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHash.U64Memory.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-hash-memory-primitives-v4.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentHash.U64Memory.call_memory",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-hash-memory-primitives-v4.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

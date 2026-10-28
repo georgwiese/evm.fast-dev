@@ -2085,6 +2085,7 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/Sha256Pair.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/SharedEffects.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/StraightCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/U64Memory.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/WorkspaceEffects.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/WorkspaceEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/AddrFromWords.lean",
@@ -8121,8 +8122,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64885,
-  "package_bytes": 2482631547,
+  "package_entries": 64886,
+  "package_bytes": 2482638885,
   "claim": {
     "K": "infinity"
   },

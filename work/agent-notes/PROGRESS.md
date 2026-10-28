@@ -4,6 +4,30 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current memory primitives and scalar-root output frame check
+
+U64Memory checks actual scalar-root zero32/copy8/return syntax and its two-word
+caller. On the same genuine normal return it preserves every word outside the
+32-byte output. Physical input8/output32 arenas and output alignment are entry
+facts, while both helper continuations and caller locals come from that run.
+The current copy, aligned-zero and unaligned short-zero memory frames also
+recheck; no future successful callee outcome is supplied.
+
+Cleanup replaces ZeroCost's broad original-code umbrella with the real Software
+entry and minimal interfaces, drops an unused copy cost/short-zero cost import,
+and makes missing direct dependencies explicit. Solver import closures shrink:
+copy/zero246→96, short-zero266→119, ZeroCost231→49. Static comparison is in
+current-memory-import-cleanup.json. Shared three-word ABI removes the duplicate
+SHA caller environment proof. MemoryBoundedLoop uses its explicit current
+comparison case instead of relying on a transitively imported tactic.
+
+Validation: current-hash-memory-primitives-v4.log PASS765jobs/permitted printed
+axioms only;8GiBguard/twoslots/cachefalse. Index8078modules/16204facts; inventory
+8117, replacement closure0 and fixed main files unchanged. Incremental policy
+64886entries/2482638885bytes PASS. No global finite target K or full verification;
+claim infinity. Next: actual packing return derives persistent allocation room
+and metadata frame, then complete current SSZ hash ownership composition.
+
 ## Complete current request-list dispatch, loop, body and caller check
 
 The actual five tests charge exactly one selected fixed-record hash. The

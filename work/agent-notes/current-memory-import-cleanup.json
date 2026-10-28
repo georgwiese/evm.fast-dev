@@ -1,0 +1,21 @@
+{
+  "previous_head": "cfaea56c3aeae8a60daff52d197abc1a6f1fbee6",
+  "comparisons": [
+    {
+      "root": "InitECandidate.Solver.Input.CopyZeroMemoryNormal",
+      "previous_solver_closure": 246,
+      "current_solver_closure": 96
+    },
+    {
+      "root": "InitECandidate.Solver.Input.ZeroShortMemory",
+      "previous_solver_closure": 266,
+      "current_solver_closure": 119
+    },
+    {
+      "root": "InitECandidate.Solver.WitnessRadix.ZeroCost",
+      "previous_solver_closure": 231,
+      "current_solver_closure": 49
+    }
+  ],
+  "scope": "Static Solver import closures, with changed source imports restored to previous HEAD for the historical comparison; no full verification claim."
+}

@@ -1,4 +1,5 @@
 import InitECandidate.Solver.WitnessRadix.AllocatedBytes
+import InitECandidate.Solver.WitnessRadix.CopyGeneralMemory
 
 namespace InitECandidate.Solver.WitnessRadix.CopyGeneral
 open Flapjack PanSemStateFiniteExact

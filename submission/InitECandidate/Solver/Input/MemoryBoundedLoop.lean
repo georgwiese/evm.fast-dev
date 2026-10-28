@@ -33,10 +33,11 @@ theorem bounded_counter_loop_normal (code) (counter marker : MlS) (test : ExpHOL
     obtain ⟨currentReady,⟨index,indexBound,indexCell⟩,memory⟩ := actual
     have expected := readTest current currentReady index indexBound indexCell
     have active : index+stride≤length := by
-      by_contra inactive
-      rw [if_neg inactive] at expected
+      by_cases active : index+stride≤length
+      · exact active
+      rw [if_neg active] at expected
       have zero : word=0#64 := by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
-      exact nonzero zero
+      exact False.elim (nonzero zero)
     have next := stepFrame (decClockHOLFinite current) installed (decClock current currentReady) index active indexCell target bodyRun
     have nextCell : target.locals.lookup counter=some (.val (.word (BitVec.ofNat 64 (index+stride)))) := by
       simpa only [BitVec.ofNat_add] using advance (decClockHOLFinite current) target (BitVec.ofNat 64 index) indexCell bodyRun

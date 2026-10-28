@@ -1,6 +1,6 @@
 import InitECandidate.Solver.Input.CurrentHash.Sha256Pair
 import InitECandidate.Solver.Input.ByteOutputFrame
-import InitECandidate.Solver.WitnessRadix.CodeEnvironment
+import InitECandidate.Solver.Input.WordTripleEnvironment
 
 namespace InitECandidate.Solver.Input.CurrentHash.Sha256Memory
 set_option maxRecDepth 100000
@@ -32,27 +32,15 @@ theorem environment (code) (installed : OriginalCode.Installed code) (a b out : 
       lookupCodeHOLFinite code.lookup (Code.name .sha256_pair) (values a b out) =
         some (Code.body .sha256_pair, callee, Code.shape .sha256_pair) ∧
       callee.lookup (ofString "out") = some (.val (.word out)) := by
-  have entry := Code.installed code installed .sha256_pair
-  let raw : MlS → Option (ValueHOL 64) := fun name =>
-    if name = ofString "out" then some (.val (.word out))
-    else if name = ofString "input_b" then some (.val (.word b))
-    else if name = ofString "input_a" then some (.val (.word a)) else none
-  have lookup : lookupCodeHOLExact code.lookup (Code.name .sha256_pair) (values a b out) =
-      some (Code.body .sha256_pair, raw, Code.shape .sha256_pair) := by
-    have formals : Code.formals .sha256_pair = [(ofString "input_a", .one), (ofString "input_b", .one), (ofString "out", .one)] := by
-      simp only [Code.formals, Code.entry, Code.declaration, GasBudget.OriginalCodeEnvironment.originalEntry,
-        declToHOL, funDeclToHOL, Guest.Software.guestFn_sha256_pair, paramToHOL, shapeToHOL, List.map_cons, List.map_nil]
-    have valid : ((Code.formals .sha256_pair).map Prod.fst).Nodup ∧
-        (Code.formals .sha256_pair).length = (values a b out).length ∧
-        ((Code.formals .sha256_pair).zip (values a b out)).all (fun pair => shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2)) = true := by
-      rw [formals]
-      refine ⟨by decide, rfl, ?_⟩
-      simp [values, shapeEqHOL, shapeOfHOLExact]
-    simp only [lookupCodeHOLExact, entry]
-    rw [if_pos valid, formals]
-    rfl
-  obtain ⟨callee, called, locals⟩ := CodeEnvironment.finite_lookup code.lookup _ _ _ _ _ lookup
-  exact ⟨callee, called, by rw [locals]; simp [raw, FUPDATE]⟩
+  have entry : code.lookup (Code.name .sha256_pair) =
+      some ([(ofString "input_a",.one),(ofString "input_b",.one),(ofString "out",.one)], Code.body .sha256_pair, Code.shape .sha256_pair) := by
+    simpa only [Code.formals,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+      declToHOL,funDeclToHOL,Guest.Software.guestFn_sha256_pair,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+      using Code.installed code installed .sha256_pair
+  obtain ⟨callee,called,_,_,output⟩ := word_triple_environment code.lookup (Code.name .sha256_pair)
+    (ofString "input_a") (ofString "input_b") (ofString "out") (Code.body .sha256_pair) (Code.shape .sha256_pair) a b out
+    (by decide) (by decide) (by decide) entry
+  exact ⟨callee,called,output⟩
 
 /-- The real normally continuing ignored caller inherits the memory frame.
 The actual ABI identifies the output local in that same callee invocation. -/

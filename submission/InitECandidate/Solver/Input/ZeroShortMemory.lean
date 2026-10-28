@@ -1,5 +1,4 @@
 import InitECandidate.Solver.Input.ZeroByteMemory
-import InitECandidate.Solver.Input.ZeroShortCost
 import InitECandidate.Solver.Input.CopyZeroMemoryNormal
 
 namespace InitECandidate.Solver.Input.ZeroShort

@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.MemoryNormal
 import InitECandidate.Solver.WitnessRadix.CopyNormalCall
-import InitECandidate.Solver.WitnessRadix.CopyGeneralCost
+import InitECandidate.Solver.WitnessRadix.CopyGeneralCode
+import InitECandidate.Solver.WitnessRadix.AllocatedBytes
 import InitECandidate.Solver.WitnessRadix.ZeroNormal
 import InitECandidate.Solver.WitnessRadix.ZeroCost
 

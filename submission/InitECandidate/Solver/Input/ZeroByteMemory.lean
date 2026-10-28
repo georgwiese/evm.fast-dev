@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.ZeroShortLoops
+import InitECandidate.Solver.WitnessRadix.CopyGeneralMemory
 import InitECandidate.Solver.Input.StoreMemoryAway
 import InitECandidate.Solver.Input.MemoryContinue
 import InitECandidate.Solver.Input.MemoryBoundedLoop

@@ -1,5 +1,6 @@
 import InitECandidate.Solver.WitnessRadix.ZeroCall
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.Input.OriginalEntry
+import InitECandidate.Solver.Input.OriginalCode
 
 namespace InitECandidate.Solver.WitnessRadix.Zero
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -8,9 +9,9 @@ open Flapjack.Basis.Pure.MlString
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "memzero")=some (formals,body,.one) := by
-  have checked := Input.OriginalCode.indexed code installed 12 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_memzero) (by rfl)
+  have checked := Input.OriginalCode.indexed code installed 12 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_memzero) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,formals,
-    Guest.guestFn_memzero,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_memzero,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 /-- Current mapped/aligned geometry gives an all-outcome source-clock
 bound. Insufficient clocks stop within their initial budget; with enough

@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-request-list-caller-v1.log`,1171jobs,
-permitted printed axioms only. Historical/current proof index:8077modules/
-16198facts; Solver inventory8116, replacement closure0, frozen main files
-unchanged. Incremental policy passes64885entries/2482631547bytes. These checks
+Latest successful selected closure: `current-hash-memory-primitives-v4.log`,765jobs,
+permitted printed axioms only. Historical/current proof index:8078modules/
+16204facts; Solver inventory8117, replacement closure0, frozen main files
+unchanged. Incremental policy passes64886entries/2482638885bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -132,7 +132,11 @@ remain historical until their current statements/dependencies are checked.
    globals, spends0body source ticks and at most1caller tick on all outcomes.
    Its1,022-line generated effect proof is now50lines, using shared structural
    soundness. Its checked output-memory frame now preserves every word outside its32output
-   bytes on every body outcome, with real normal-caller ABI transport. Large
+   bytes on every body outcome, with real normal-caller ABI transport. Scalar-root
+   zero/copy/return now preserves words outside its actual32-byte output, with
+   real caller transport. Aligned copy/zero and unaligned short-zero memory
+   frames recheck with minimal actual Software imports (copy/zero closure246→96,
+   short-zero266→119, ZeroCost231→49). Packing/whole-hash frames remain open. Large
    straight-line target work remains open; old accelerator Workspace/entry/cost
    proofs are not current. Older hash layouts
    also pin a134217728-byte budget, so check/relax those limits using current

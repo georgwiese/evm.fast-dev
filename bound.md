@@ -43,7 +43,7 @@ with its real24-round permutation and full workspace/output memory frame.
 Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
 covering both allocations and all decode/hash/link loops. Actual normal/scoped
 returns supply the real arrays, advanced physical context and protected input.
-Selected2206-job current main/root/table and find-leaf helper replay passed. The
+Selected2208-job current main/root/table and find-leaf helper replay passed. The
 actual first three initializer calls derive Keccak state2701132160 and pad2701132360;
 these globals survive startup, decoding and the31-helper root graph. Real decoded
 witness images supply the header rows and full caller context. Header returns
@@ -106,6 +106,11 @@ with the actual d/p/key locals and original parent update. Normal exits
 retain the real parent edge, route to the earlier lookup leaf and b≥d;
 that earlier actual first mismatch strengthens it to b>d. Lookup and
 insertion share only a thin physical cursor, with their own real guards.
+Its real post-difference header reads/declarations now initialize that same
+search and either stop within257ticks or reach the unchanged new-leaf caller
+with the actual strict split, parent edge and all three outer restorations.
+The search cannot return htab_set on its own; no successful allocation is
+assumed to expose this continuation.
 
 Checked against current Software syntax and declaration entries:
 
@@ -155,10 +160,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-shared-cursor-search-bound-v1.log`,2206jobs,
-permitted printed axioms only. Historical/current proof index:8461modules/
-17121facts; inventory8505modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65289entries/2484362643bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-reached-insertion-allocation-v1.log`,2208jobs,
+permitted printed axioms only. Historical/current proof index:8464modules/
+17125facts; inventory8508modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65292entries/2484374528bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order
@@ -320,7 +325,7 @@ build evidence, not complete verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:15%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:16%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

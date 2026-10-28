@@ -3297,3 +3297,27 @@ new leaf/internal writes, preserved tree/key image; workspace separation,
 later main paths and target composition. Overall estimate40%, plausible30–50%.
 Five old unfinished RLP files preserved untracked. Account15%weekly used,
 zero reset credits, ordinary usage allowed.
+
+
+## Actual post-difference phase reaches the original insertion call — 2026-10-28
+
+The real htab_set nodes/p/n declarations and mapped header reads initialize
+the same checked second search, retaining its actual d/query locals. The
+post-difference phase either stops within257source ticks or reaches the
+unchanged new-leaf caller with the real strict split, parent edge, suffix
+route and physical cursor. All three enclosing lexical restorations remain
+explicit. An actual stopped search cannot return from htab_set, so it cannot
+substitute for an enclosing normal return. No successful future node/leaf
+allocation is supplied. The earlier lookup/comparison/difference phase and
+subsequent insertion writes still have to join this interface.
+
+Validation: current-patricia-reached-insertion-allocation-v1.log PASS2208jobs,
+permitted printed axioms only, with actual lookup/first-difference/allocator
+callers and current main/root/database. Index8464modules/17125facts;
+inventory8508, replacement AST reverse closure0, fixed files unchanged.
+Incremental policy PASS65292entries/2484374528bytes; no full verification,
+claim infinity, no global target K. Next: real byte comparison/earlier caller
+join, leaf/internal writes and preserved insertion image, workspace separation,
+later main paths and target composition. Overall estimate40%, plausible30–50%.
+Five old unfinished RLP files preserved untracked. Account16%weekly used, zero
+reset credits, ordinary usage allowed.

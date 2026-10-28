@@ -2507,8 +2507,11 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildSyntax.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Routing.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/Program.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Set/SeekControl.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Set/SeekEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/SeekLoop.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/SeekStep.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Set/SeekTrace.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/SlotGeometry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Workspace.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Memory.lean",
@@ -8510,8 +8513,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65289,
-  "package_bytes": 2484362643,
+  "package_entries": 65292,
+  "package_bytes": 2484374528,
   "claim": {
     "K": "infinity"
   },

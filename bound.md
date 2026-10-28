@@ -84,11 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected checks: `current-parent-requests-entry-v1.log`,1273jobs;
-`current-parent-requests-budget-v1.log`,1246jobs; allocation scope283jobs,
-permitted printed axioms only. Historical/current proof index:8127modules/
-16397facts; Solver inventory8166, replacement closure0, frozen main files
-unchanged. Incremental policy passes64935entries/2482954487bytes. These checks
+Latest successful selected closure: `current-parent-requests-cost-v2.log`,1396jobs,
+permitted printed axioms only. Historical/current proof index:8131modules/
+16410facts; Solver inventory8170, replacement closure0, frozen main files
+unchanged. Incremental policy passes64939entries/2482976892bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -154,11 +153,15 @@ remain historical until their current statements/dependencies are checked.
    Full request fields now reach the actual root callee; their list extents,
    individual count bounds and shared byte/count budgets check. Actual parent
    request syntax, normal heap restoration and all five list ABIs now check.
-   Their checked list-price sum≤13*(requestSize-20)+15870 is proved from the
-   shared input budget; joining those allowances to the whole actual parent
-   execution remains open. Shared allocation-scope cost now passes actual room/
-   cursor/nonlocal return facts to its same continuation while charging failed
-   allocations. Materialize
+   Their checked list-price sum≤13*(requestSize-20)+15870 uses the shared
+   input budget. Complete actual htr_requests now has body/caller source cost
+   ≤13*(requestSize-20)+19488/19489, including failed allocations and all
+   observed non-timeout outcomes. Every real continuing list call derives the
+   next complete RQ image and restored heap before later reads. Its actual
+   allocation return derives the fresh160-byte chunk extent, persistent room
+   and next bounded/aligned frontier. Remaining caller/root entry obligations
+   are the real decoder image, installed code/domain, workspaces and frontier;
+   no future helper success or extra temporary room is assumed. Materialize
    further SI witness fields at the real caller that needs them. Treat digest/output values generically when their values do not
    affect runtime. Review dominant copy/zero and empty-progressive slack later.
 3. Prioritize actual early scratch access and its covered-outcome consequences

@@ -4,6 +4,30 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual htr_requests body and caller source cost checks
+
+RequestsState derives each real list call's protected RQ-field frame, restored
+heap, current workspace/code/domain facts and next complete decoded image.
+RequestsPipelineCost composes those same actual normal prefixes, all five
+selected list costs and the five-field container/release tail. Failed helper
+paths stop inside their own bound; later field reads are never assumed.
+
+RequestsAllocation derives the actual160-byte chunk arena, room and next heap
+from AllocationScopeCost's same real return/nonlocal frame. RequestsCost joins
+that allocation and actual outer mark/restoration. Complete current htr_requests
+body/caller source cost is≤13*(requestSize-20)+19488/19489 on the same actual
+non-timeout outcome. Entry obligations remain the real decoded image, installed
+code/domain, initialized workspaces and actual frontier. No future successful
+hash, additional allocator room or output/input data contents are assumed.
+This is a source call/loop bound, not a formal target-step bound.
+
+Validation: current-parent-requests-cost-v2.log PASS1396jobs/permitted printed
+axioms only;8GiBguard/twoslots/cachefalse, disk61%. Index8131modules/16410facts;
+inventory8170, replacement closure0, frozen main unchanged. Incremental policy
+64939entries/2482976892bytes PASS. Account31%weekly,0resetcredits; ordinary usage
+allowed. No global finite target K or full verification; claim infinity.
+Next: parent request protected memory/caller frame, payload and root composition.
+
 ## Actual parent request syntax/arguments and shared price budget check
 
 RequestsProgram matches the whole current htr_requests source: five literal

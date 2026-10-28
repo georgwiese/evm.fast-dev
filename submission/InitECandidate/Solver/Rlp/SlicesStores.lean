@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Rlp.SlicesProgram
+import InitECandidate.Solver.Rlp.SlicesLoopProgram
 import InitECandidate.Solver.Input.WordStoreNormal
 import InitECandidate.Solver.Input.AssignNormal
 

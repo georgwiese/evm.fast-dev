@@ -50,7 +50,7 @@ theorem scoped_observed (source post : PanSemStateFiniteExact 64 Guest.HostMemor
   obtain ⟨positive,target,answer,inner,bodyRun,checked,continuationRun,restored⟩ :=
     Input.CallNormal.scoped_normal source post name .one (ofString "rlp_read_length") arguments _ body continuation callee .one args called returned normal
   have typed : shapeOfHOLExact answer=.one := (shapeEqHOL_eq_true _ _).mp (Bool.and_eq_true_iff.mp checked).1
-  obtain ⟨payload,answerEq⟩ := Input.RlpWrite.U256Value.scalar_word answer typed
+  obtain ⟨payload,answerEq⟩ := Input.scalar_word_of_shape answer typed
   subst answer
   have fields := readonly source.code installed (callEntryStateHOLFinite source callee) rfl
   rw [bodyRun] at fields

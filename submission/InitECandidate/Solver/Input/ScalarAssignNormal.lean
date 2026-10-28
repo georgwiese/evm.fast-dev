@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.AssignNormal
-import InitECandidate.Solver.Input.RlpWrite.U256Shape
+import InitECandidate.Solver.Input.ScalarWordShape
 
 namespace InitECandidate.Solver.Input
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -23,7 +23,7 @@ theorem scalar_assign_none {F : Type} (source post : PanSemStateFiniteExact 64 F
       have typed : shapeOfHOLExact value = .one := by
         apply (shapeEqHOL_eq_true _ _).mp
         simpa [isValidValueHOLExact, lookupKvarHOLExact, toExact, present, shapeOfHOLExact] using valid
-      obtain ⟨word, valueEq⟩ := RlpWrite.U256Value.scalar_word value typed
+      obtain ⟨word, valueEq⟩ := scalar_word_of_shape value typed
       subst value
       have postEq := congrArg Prod.snd normal
       exact ⟨word, read, postEq.symm⟩

@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Rlp.SlicesStoreFrame
 import InitECandidate.Solver.Rlp.UncheckedCall
+import InitECandidate.Solver.WitnessRadix.RestoreLookup
 
 namespace InitECandidate.Solver.Rlp.Slices
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

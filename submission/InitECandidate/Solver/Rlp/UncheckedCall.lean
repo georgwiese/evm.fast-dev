@@ -31,7 +31,7 @@ theorem environment (table : MlS → Option (List (MlS × ShapeHOL) × ProgHOL 6
 
 set_option maxRecDepth 10000 in
 theorem readonly (code) (installed : Input.OriginalCode.Installed code) : Input.LocalEffects.Preserves code body := by
-  simp only [body,Guest.guestFn_rlp_item_total_unchecked,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+  simp only [body,Guest.Software.guestFn_rlp_item_total_unchecked,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
   repeat first
     | apply Input.LocalEffects.sequence
     | apply Input.LocalEffects.declared

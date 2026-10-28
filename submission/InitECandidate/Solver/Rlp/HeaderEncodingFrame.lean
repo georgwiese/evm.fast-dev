@@ -29,7 +29,7 @@ theorem Encoded.transport (source target : PanSemStateFiniteExact 64 Guest.HostM
     Encoded target pointer header payload flag := by
   obtain ⟨loaded,first,encoding⟩ := encoded
   have firstEq : ReadLength.byte source pointer=ReadLength.byte target pointer := by
-    simpa using bytes 0#64 (by simp)
+    simpa only [BitVec.add_zero] using bytes 0#64 (by change 0<max 1 header.toNat; omega)
   have firstAfter : ReadLength.byte target pointer=some loaded := firstEq.symm.trans first
   refine ⟨loaded,firstAfter,?_⟩
   dsimp only at encoding ⊢

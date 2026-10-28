@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Rlp.ReadLengthProgram
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 import InitECandidate.Solver.Input.ScalarAssignNormal
 import InitECandidate.Solver.Input.LoopNormal
 

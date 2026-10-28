@@ -4,6 +4,36 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual validated items, physical slice records and header list prefix
+
+Real list-count returns now derive an ordered encoding sequence covering the
+entire input and its exact count, with a complete nonlocal frame. Current
+list-to-slices returns derive the same sequence, exact stored pointer/length
+records, allocator room at2952790016, actual heap update and preserved arenas.
+Memory outside the fresh array is unchanged; input provenance survives both
+actual passes. The real scoped caller retains all these facts, its real clock,
+later continuation and lexical restoration. No mapped scratch/cutoff is needed.
+
+The literal current decode_header at index208 now has a thin shared syntax
+module. Its real normal prefix derives a complete top-level list, passes the
+kind check, and reaches the genuine slice records before field extraction.
+This consumed prefix costs≤103*length+17 source ticks. Whole decode_header and
+all stopped-prefix/header field paths still need composition; this is not K.
+
+Cleanup removes scalar assignment's serializer import (Solver closure124→8),
+uses the shared scalar carrier fact in reader observations, gives byte-reader
+and slice-restoration proofs their direct binding imports, and isolates the
+pure input-byte window theorem from historical arena updates. Existing legacy
+compatibility interfaces remain; no runtime program/semantics is changed.
+
+Validation: current-rlp-records-main-replay-v1.log PASS1966jobs and
+current-header-list-prefix-v2.log PASS884jobs/permitted printed axioms.
+Index8270modules/16734facts; inventory8310/replacement closure0/frozen main
+unchanged. Incremental policy65084entries/2483589862bytes PASS.
+No global finite target K/full verification; claim infinity. Next: actual
+21/23 header count/allocation, field pipeline and later current callers.
+8GiBguard/twoslots/cachefalse; account5%weekly/0resetcredits/ordinary usage allowed.
+
 ## Actual item/full decoder and list-to-slices source bounds
 
 Current item body costs≤46*length+10, complete decoder≤46*length+12

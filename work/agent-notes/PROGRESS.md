@@ -4,6 +4,30 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual selected request-list memory and heap caller frame checks
+
+RequestListMemoryStep joins actual input record/output slot arenas to the
+selected fixed-record call and transports the real heap/context. The five
+literal dispatch branches and final increment compose without assuming future
+record success. RequestListMemoryLoop retains the actual decoded kind/p/n/size,
+protected metadata/current heap and derived next indices through every normal
+iteration. Its workspace-global certificate covers the actual loop.
+
+RequestListMemory joins the real root-array allocation (including its extra32
+bytes), actual i scope, loop, final progressive list/release and saved mark.
+Its real five-word caller inherits both memory and entering-heap frames.
+Persistent room comes from this same allocation; actual count, complete physical
+record extent, output/workspaces/current-heap facts remain parent obligations.
+bound.md now consolidates the completed helper work and states the remaining
+whole payload/request-root and actual decoder-image joins directly.
+
+Validation: current-request-list-memory-v1.log PASS1295jobs/permitted printed
+axioms only;8GiBguard/twoslots/cachefalse, disk61%. Index8119modules/16371facts;
+inventory8158, replacement closure0, frozen main unchanged. Incremental policy
+64927entries/2482925552bytes PASS. Account30%weekly,0resetcredits; ordinary usage
+allowed. No global finite target K or full verification; claim infinity.
+Next: same-decoder full request/payload images at parent hash entries and joins.
+
 ## Complete actual container memory and heap caller frame checks
 
 Current PContainerBitMemory checks the real activity byte store and bounded

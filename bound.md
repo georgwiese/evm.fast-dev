@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-container-memory-v1.log`,1274jobs,
-permitted printed axioms only. Historical/current proof index:8116modules/
-16358facts; Solver inventory8155, replacement closure0, frozen main files
-unchanged. Incremental policy passes64924entries/2482901273bytes. These checks
+Latest successful selected closure: `current-request-list-memory-v1.log`,1295jobs,
+permitted printed axioms only. Historical/current proof index:8119modules/
+16371facts; Solver inventory8158, replacement closure0, frozen main files
+unchanged. Incremental policy passes64927entries/2482925552bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -102,98 +102,51 @@ remain historical until their current statements/dependencies are checked.
    reach the same hash caller, with mapped/aligned extents and copied-input
    separation. All five arena/workspace globals now survive current hash calls. Invocation
    joins the actual ABI and full physical payload/SI/root data to that same callee.
-2. Bound actual request-root hashing on all relevant outcomes, including errors.
-   Actual Merkle pair loops now cost≤2ticks/pair; halving dense work≤3*(cur-1),
-   full dense/extension/output suffix≤3*(cur-1)+2*(target-depth)+43, on all
-   outcomes. Fixed memory calls, length mixing and u64roots also compose.
-   Current depth-prefix/maximum entries recheck with minimal Software imports.
-   Actual allocation/fill now includes all failed/partial paths without heap-room
-   premises. Complete current Merkle body/caller cost≤88*n+4*budget+48/49 for
-   actual n,limit≤2^budget, budget<58 and the same non-timeout observation.
-   Actual packing body/caller and exact returned ceil(n/32) tuple now check
-   without room/mapping/success hypotheses. Its minimal syntax import closure
-   shrinks593→27Solver modules. Complete current byte-list/vector bodies and real ABI callers now compose
-   packing, current Merkle, release and length mix, including the actual short
-   vector branch. Complete current byte-list/vector normal memory and heap frames
-   now compose their actual packing allocation, Merkle call, release and list
-   length mix. The real three/four-word callers inherit both frames; temporary
-   room is derived from their actual pack return, with no old accelerator or
-   temporary-room premise. Complete current progressive body/caller now costs≤88*n+3120/3121 for
-   actual n≤134217728 and the same non-timeout observation, deriving≤15rounds
-   and actual fold count. Progressive list body/caller costs≤88*n+3168/3169; progressive-byte
-   body/caller≤packPrice(n)+88*ceil(n/32)+3172/3173 now check, with exact
-   packing return and observed errors included. Container body/caller≤89*n+3168/3169 and six fixed-record hashes now
-   check without mapped-pointer/workspace/heap-room/success assumptions. Fixed
-   record body prices: withdrawal758, deposit1425, wdreq880, cons1144, bdep1279,
-   bexit734. Complete actual request-list dispatch/loop/body/caller now checks: body
-   ≤(selectedRecordPrice+90)*n+3173, caller adds1, actual n≤134217728 and fixed
-   selected record size. No mapping/heap-room/workspace/success premises. Full
-   payload/request-root composition and real ownership/resource frames remain
-   open. Container syntax/bit-loop/suffix import
-   closures shrink613→9/614→40/616→128Solver modules. Shared local-prefix
-   soundness now handles byte stores; ByteStoreLocal reuses it.
-   Current sha256_pair now has a checked syntax certificate: it preserves all
-   globals, spends0body source ticks and at most1caller tick on all outcomes.
-   Its1,022-line generated effect proof is now50lines, using shared structural
-   soundness. Its checked output-memory frame now preserves every word outside its32output
-   bytes on every body outcome, with real normal-caller ABI transport. Scalar-root
-   zero/copy/return now preserves words outside its actual32-byte output, with
-   real caller transport. Aligned copy/zero and unaligned short-zero memory
-   frames recheck with minimal actual Software imports (copy/zero closure246→96,
-   short-zero266→119, ZeroCost231→49). Packing now derives its actual returned tuple, persistent request room, next
-   aligned/monotone/bounded heap and protected word below the real cursor. No
-   allocator-room premise or old134217728-byte packing cap is used. Shared
-   actual padding arguments serve both cost and frame proofs. A structural
-   call-free-loop certificate proves actual copy/zero preserve every global.
-   Actual dense/extension pair loops now preserve protected words using their
-   real output slots and current counters, without SHA-input mapping or old
-   workspace assumptions. Complete current buffer copy/clear/shrinking dense/
-   extension/output/release now preserves protected words outside its actual
-   temporary buffer and final32-byte output, on the same normal return. Heap
-   mark/release/copy-return frames also recheck with real Software/minimal
-   imports (heap scope225→22, copy-return252→114, heap-return227→27Solver
-   modules). Shared SavedHeapReturn derives actual final-release assignment
-   validity instead of assuming an intermediate heap cell. Its structural
-   certificates instantiate current nonempty Merkle, all six fixed records,
-   progressive hashing and progressive byte/container/request-list bodies:
-   every actual normal return restores the entering heap exactly, without
-   numeric/capacity/workspace/mapping/room premises. Complete actual Merkle
-   body and caller now retain the protected metadata word and entering heap,
-   including actual log/max depths, the empty zero-table copy, normal allocation
-   room and full buffer suffix. Context contains the real code/domain, zero
-   table and incoming persistent cursor; source n/limit and physical arenas
-   remain explicit call-entry facts. Full-byte-list/progressive/fixed-record/
-   payload/request-root memory composition remains open. Complete actual container
-   body/caller memory and heap frames now check, including the real64-byte
-   allocation, progressive call, activity clear/bit loop, output SHA and release.
-   The memory proof requires n≤256 for its32-byte activity mask; actual callers
-   use19 and5 fields, to be joined at those parents. Its broad failure cost
-   theorem remains unchanged. Complete actual progressive
-   list/byte wrapper memory and heap frames now check, with real ABI callers,
-   packed tuple/count and arbitrary length word. Shared last-output ABI/caller
-   reasoning serves software SHA and length mixing, retaining all previous
-   theorem interfaces and removing duplicate inversion. Complete actual progressive
-   body/caller memory and heap frames now check: real768/32-byte allocations,
-   capped geometric rounds, actual terminal round, accumulator clear/fold and
-   final output/release. Shared normal allocation inversion derives real room
-   and next context for the same continuation. The fold memory proof needs only
-   its actual accumulator output, with no SHA-input mapping/digest premise.
-   All six actual fixed-record
-   bodies/callers now preserve metadata and restore their entering heap. Their
-   field extents come from the physical record/chunk arenas; the same allocation
-   derives temporary chunk room. Field pipeline local preservation is shared
-   by cost and memory proofs. Both actual byte-vector
-   branches and byte-list now restore the entering heap on normal return, including
-   the list length mix after release. Actual st_le32/st_le64 and length mixing
-   preserve words outside their real output/length chunk. Shared byte-store
-   syntax checking now handles a bare pointer directly. Large
-   straight-line target work remains open; old accelerator Workspace/entry/cost
-   proofs are not current. Older hash layouts
-   also pin a134217728-byte budget, so check/relax those limits using current
-   physical resource facts. Reuse other hash/serialization proofs only after
-   checking syntax, indices, imports and all entry premises. Materialize remaining
-   witness SI fields at the caller that needs them. Treat chain/output values
-   generically when their numeric contents do not affect runtime.
+2. **Finish the actual payload/request-root hash joins.** Current helper source
+   costs are checked on all relevant outcomes (same actual non-timeout execution
+   where required), without future success, mapped-input or allocator-room
+   premises. Complete Merkle body/caller≤88*n+4*budget+48/49 for n,limit≤2^budget,
+   budget<58. Packing derives its exact returned(buffer,ceil(n/32)) tuple and
+   costs packPrice(n), n+64<2^64. Byte list/vector bodies/callers compose packing,
+   Merkle, release and mix, including the actual short vector branch. Progressive
+   body/caller≤88*n+3120/3121 for n≤134217728, deriving≤15actual rounds and real
+   fold count. Progressive list≤88*n+3168/3169; progressive bytes≤packPrice(n)+
+   88*ceil(n/32)+3172/3173; container≤89*n+3168/3169. Fixed-record body prices:
+   withdrawal758, deposit1425, wdreq880, cons1144, bdep1279, bexit734; caller+1.
+   Actual selected request-list body≤(recordPrice+90)*n+3173; caller+1.
+
+   Normal memory and heap frames now check for complete Merkle, packing, byte
+   list/vector, progressive hash/list/bytes, all six fixed records, container
+   and selected request-list, with real ABI callers and lexical restoration.
+   Actual returned allocations derive persistent room, mapped temporary arenas
+   and next aligned/bounded heap; ordinary-domain extent is never substituted
+   for allocation room. Physical input/output/workspace/current-heap/count facts
+   remain explicit call-entry obligations. Container memory needs n≤256 for its
+   32-byte activity mask; actual parents use19 and5, still to be joined there.
+   Request-list frames include all five literal tests, the selected record hash,
+   real input/output slots, counter advance, root-array allocation and final
+   progressive list/release. Earlier metadata survives outside the actual output,
+   length chunk and temporary buffers; normal whole-helper returns restore heap.
+   Software SHA's checked body writes only32output bytes, preserves all globals,
+   costs0body/1caller source tick, and needs no SHA-input mapping/digest premise
+   for its memory frame. Its straight-line **target** work remains open.
+
+   Cleanup shares source argument/ABI/output-call, saved-mark, allocation-context,
+   field pipeline and actual copy/zero effect proofs. Minimal current Software
+   imports replace obsolete accelerator closures; the replacement implementation
+   and65stale generated modules were removed earlier. Historical unselected
+   proofs remain unclaimed. These are normal memory frames plus separate
+   all-outcome costs, not a proof that hashing succeeds or that errors are covered.
+
+   Still open: derive every actual parent count/read/byte total from the same
+   complete payload and request decoder images, and transport them across the
+   parent hashes. Join actual root/payload/request allocations and outputs to
+   those frames and compose whole current payload/request-root costs, including
+   earlier stopped alternatives. Recheck old layout limits against actual
+   encodedLength+16*txCount≤251655056, txCount≤12582752 and totalTxBytes≤251655056.
+   Materialize further SI witness/RQ physical fields at the real caller that
+   needs them. Treat digest/output values generically when their values do not
+   affect runtime. Review dominant copy/zero and empty-progressive slack later.
 3. Prioritize actual early scratch access and its covered-outcome consequences
    before expanding map/crypto/EVM migration. Main's scratch pointers are below
    sourceBase2701131776 and outside ordinary memory. NoReturn alone does not

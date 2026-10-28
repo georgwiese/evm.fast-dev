@@ -2492,6 +2492,15 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Entry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/MemoryKey.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Program.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Get/Call.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Get/CompareReturned.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Get/Cost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Get/Program.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Get/ReadOnly.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Get/Returned.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Get/Setup.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Get/TailCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Get/ValueRead.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Image.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/ImageCells.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/ImageFacts.lean",
@@ -8639,8 +8648,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65421,
-  "package_bytes": 2484923123,
+  "package_entries": 65431,
+  "package_bytes": 2484959471,
   "claim": {
     "K": "infinity"
   },

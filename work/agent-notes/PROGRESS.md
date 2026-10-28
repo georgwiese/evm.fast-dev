@@ -3649,3 +3649,27 @@ only. Index8589modules/17396facts; inventory8634/replacement closure0/fixed
 files unchanged. No global finite target K/full verification. Usage23%weekly,
 0resetcredits. Next: current state_init/decode-witness lookup and later actual
 payload/header/EVM source paths, then uniform target-step composition.
+
+## Complete current Patricia lookup cost, normal result and actual caller
+
+The unchanged htab_get120 now costs≤263source body ticks and≤264caller
+ticks from an actual32-byte Patricia image. Its actual find-leaf call,
+three mapped header loads, four-tick memeq and both result branches are
+included, at arbitrary incoming clocks. No mapped/aligned/query-byte-content
+premise is required: unreadable query arguments stop within the same bound.
+
+A genuine normal body/caller return is exactly the absent pair or a present
+pair whose word belongs to the caller's stored-leaf-value predicate. The
+value is read from the actual selected leaf's mapped physical node cell;
+its real32-byte query comparison need not be assumed true or successful.
+The complete physical state is preserved on all outcomes. Actual lexical
+header/comparison scopes and original caller continuations are retained.
+This links subsequent nodedb_lookup/MPT decoding to genuine decoded witness
+records, rather than arbitrary word addresses or a previous hash-map model.
+
+Validation: current-patricia-get-real-caller-v1.log PASS2532jobs, including
+the lookup cost/value/readonly/caller proofs and unchanged full current main
+prefix to state_init. Permitted printed axioms only. Index8598modules/
+17410facts; inventory8643/replacement closure0/fixed files unchanged. No
+global finite target K/full verification. Usage23%weekly/0resetcredits.
+Next: current nodedb_lookup record-length contract and state_init/decode path.

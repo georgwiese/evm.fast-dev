@@ -148,6 +148,10 @@ def proof(tree):
 
 for name in order:
     if name in shared: continue
+    if name == 'sha256_pair':
+        # Kept as a compact handwritten application of checked StraightBody syntax.
+        assert (folder/'Sha256Pair.lean').exists()
+        continue
     imports=['InitECandidate.Solver.Input.CurrentHash.Base']+[
         provider(child) for child in functions[name]['calls']]
     text=''.join('import '+p+'\n' for p in imports)+'\n'+header+f'''
@@ -185,6 +189,7 @@ end InitECandidate.Solver.Input.CurrentHash
 report={'source':'Guest/SoftwareAst.lean','source_sha256':hashlib.sha256(source.encode()).hexdigest(),
         'roots':roots,'extra_roots':extra_roots,'order':order,'closure_functions':len(order),'syntax_constructors':dict(constructors),
         'global_assignment_names':dict(assignments),'reused_startup_functions':sorted(set(order)&shared),'acyclic_scan':True,'lean_build_required':True,
+        'retained_handwritten_functions':['sha256_pair'],
         'scope':'Generator/scanner output; not proof validation, timing or a whole-program bound.'}
 (ROOT/'work/agent-notes/current-hash-globals-generation.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps({k:v for k,v in report.items() if k not in ('order','syntax_constructors')}))

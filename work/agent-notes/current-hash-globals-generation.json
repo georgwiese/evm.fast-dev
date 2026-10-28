@@ -87,7 +87,8 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Sha256Pair.lean",
-      "sha256": "5117afcd247dc3a2db79e25be4ded38011d76cce4c43cc93bdc6016e5ee8bf0e"
+      "sha256": "0f99c562e8bd7be6b7951c3eb6d9746002c5e2534065638ad8743067a50c1caa",
+      "kind": "retained_handwritten_checked_syntax"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Merkleize.lean",
@@ -169,5 +170,8 @@
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrNewPayloadRequest.lean",
       "sha256": "74a138886ec375286571ce252b44f54e757a7bca27dc84b727e115cb5fd96318"
     }
+  ],
+  "retained_handwritten_functions": [
+    "sha256_pair"
   ]
 }

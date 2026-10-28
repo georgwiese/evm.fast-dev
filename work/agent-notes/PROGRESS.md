@@ -4,6 +4,29 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Software SHA pair: compact checked syntax and all-outcome source pricing
+
+StraightBody.accepts recognizes fixed syntax without calls, loops, source ticks
+or global writes. Its structural soundness theorem proves both QuietClock and
+arbitrary-key GlobalEffects on every actual outcome, including memory/expression
+errors. Recursive proof is kernel checked; no native evaluation/axiom or successful
+read premise. A byte-store clock lemma covers the actual final digest stores.
+
+CurrentHash.Sha256Pair now reduces the actual Software declaration through its
+current Code entry and checks that syntax. It preserves all globals, retains the
+old arena-preserves interface, spends0body source ticks and at most1caller tick
+for real tail/ignored/local-result calls on all outcomes. The helper shrinks
+1022→50lines. This does not price the expanded straight-line target instructions
+or prove its output-memory frame. The generator now retains this compact module;
+cleanup manifest records previous/current bytes and successful selected closure.
+
+Validation: current-sha-pair-clock-v4.log PASS378jobs, including actual hash-prefix
+arena/observation closure; permitted printed axioms. Earlier full payload selected
+closure remains current-full-payload-image-v2.log PASS1480jobs. Index8019modules/
+15961facts; Solver8058; replacement closure0/fixed files unchanged; incremental
+policy PASS64827entries/2482266477bytes.8GiBguard/twoslots/cachefalse; disk60%;
+account22%weekly/0resetcredits. No global target K; claim infinity; no full verification.
+
 ## Complete payload hash data now reaches main's selected decoder post-state
 
 RemainingImage proves every one of the actual eleven final literal field values,

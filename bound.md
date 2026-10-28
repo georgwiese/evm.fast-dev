@@ -83,10 +83,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-full-payload-image-v2.log`,1480jobs,
-permitted printed axioms only. Historical/current proof index:8018modules/
-15954facts; Solver inventory8057, replacement closure0, frozen main files
-unchanged. Incremental policy passes64826entries/2482309152bytes. These checks
+Latest successful selected closure: `current-sha-pair-clock-v4.log`,378jobs,
+permitted printed axioms only. Historical/current proof index:8019modules/
+15961facts; Solver inventory8058, replacement closure0, frozen main files
+unchanged. Incremental policy passes64827entries/2482266477bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -100,9 +100,11 @@ remain historical until their current statements/dependencies are checked.
    251655056, txCount≤12582752 and total transaction bytes≤251655056. Carry real
    workspace globals, heap/root allocation and ownership into the hash entry.
 2. Bound actual request-root hashing on all relevant outcomes, including errors.
-   Current sha256_pair is expanded software syntax with no helper calls; old
-   accelerator Workspace/entry/cost proofs are not current. Separate source
-   call/loop ticks from its large straight-line target work. Older hash layouts
+   Current sha256_pair now has a checked syntax certificate: it preserves all
+   globals, spends0body source ticks and at most1caller tick on all outcomes.
+   Its1,022-line generated effect proof is now50lines, using shared structural
+   soundness. Its output-memory frame and large straight-line target work still
+   need checking; old accelerator Workspace/entry/cost proofs are not current. Older hash layouts
    also pin a134217728-byte budget, so check/relax those limits using current
    physical resource facts. Reuse other hash/serialization proofs only after
    checking syntax, indices, imports and all entry premises. Materialize remaining
@@ -130,7 +132,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:21%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:22%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

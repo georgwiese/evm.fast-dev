@@ -1,0 +1,9 @@
+{
+  "source": "submission/InitECandidate/Solver/Input/CurrentHash/Sha256Pair.lean",
+  "previous_sha256": "5117afcd247dc3a2db79e25be4ded38011d76cce4c43cc93bdc6016e5ee8bf0e",
+  "previous_lines": 1022,
+  "current_sha256": "0f99c562e8bd7be6b7951c3eb6d9746002c5e2534065638ad8743067a50c1caa",
+  "current_lines": 50,
+  "reason": "Shared checked syntax replaces the expanded global-effect proof and adds all-outcome source clock/call bounds. Target work remains separate.",
+  "validation": "current-sha-pair-clock-v4.log (selected closure, permitted printed axioms; not full verification)"
+}

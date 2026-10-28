@@ -3171,6 +3171,7 @@
     "submission/InitECandidate/Solver/Input/StoreScalar.lean",
     "submission/InitECandidate/Solver/Input/StoreScalar64.lean",
     "submission/InitECandidate/Solver/Input/StoreWordsNormal.lean",
+    "submission/InitECandidate/Solver/Input/StraightBody.lean",
     "submission/InitECandidate/Solver/Input/StructureFieldCells.lean",
     "submission/InitECandidate/Solver/Input/StructureFieldFrame.lean",
     "submission/InitECandidate/Solver/Input/StructureFields.lean",
@@ -8062,8 +8063,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64826,
-  "package_bytes": 2482309152,
+  "package_entries": 64827,
+  "package_bytes": 2482266477,
   "claim": {
     "K": "infinity"
   },

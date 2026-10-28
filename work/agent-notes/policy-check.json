@@ -2024,6 +2024,10 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/FixedHashCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/FixedMemoryCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordMemory.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordMemoryGeometry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordMemorySteps.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordPipeline.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/FixedRecordSteps.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/HashPrefix.lean",
@@ -2047,6 +2051,7 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/Log2Cost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MarkedHeap.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Max.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/MemoryContextTransport.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MemoryCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MemoryGlobals.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MerkleAllocationCost.lean",
@@ -8143,8 +8148,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64907,
-  "package_bytes": 2482797966,
+  "package_entries": 64912,
+  "package_bytes": 2482821531,
   "claim": {
     "K": "infinity"
   },

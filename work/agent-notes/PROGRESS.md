@@ -4,6 +4,28 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## All six complete actual fixed-record memory and heap caller frames check
+
+FixedRecordMemorySteps shares actual u64/copy/vector call frames and sequential
+field composition. Record lengths and real allocated chunk extents derive each
+field's input/output arena and alignment. FixedRecordMemory joins those fields
+to the final actual Merkle/release, initial mark and real two-word callers. The
+same normal allocation derives persistent room and next aligned heap; no old
+accelerator or reserved temporary-room premise is retained. Earlier metadata
+and entering heap survive every genuine normal record return.
+
+Cleanup moves pipeline_prefix into FixedRecordPipeline so runtime and memory
+proofs share it. MemoryContextTransport reuses the checked current helper graph
+to transport workspace/code/domain facts alongside each actual heap frame.
+
+Validation: current-fixed-record-memory-v2.log PASS1282jobs, including existing
+FixedRecordCost after the cleanup; permitted printed axioms only.8GiBguard/
+twoslots/cachefalse, disk61%. Index8104modules/16318facts; inventory8143,
+replacement closure0, frozen main unchanged. Account29%weekly,0resetcredits;
+ordinary usage allowed. Incremental policy64912entries/2482821531bytes PASS.
+No global finite target K or full verification; claim infinity. Next: actual
+progressive loop/fold/whole-body memory joins.
+
 ## Complete actual byte list/vector memory and heap caller frames check
 
 PackBytesScopeMemory inverts the same actual scoped pack call, derives its real

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CurrentHash.FixedRecordPipeline
 import InitECandidate.Solver.Input.CurrentHash.FixedRecordSteps
 import InitECandidate.Solver.Input.CurrentHash.MerkleCallCost
 import InitECandidate.Solver.Input.CurrentHash.StraightCost
@@ -12,12 +13,6 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
 def Kind.tailPrice (kind : Kind) := 88*kind.count+4*kind.depth+50
 def Kind.price (kind : Kind) := (kind.steps.map Step.price).sum+kind.tailPrice+3
-
-theorem pipeline_prefix (key : MlS) (inputName : String) (steps : List Step) :
-    LocalPrefix key (pipeline inputName steps .skip) := by
-  induction steps with
-  | nil => exact .skip
-  | cons step rest ih => exact .seq (.call none _ _ (by intro name impossible; cases impossible)) ih
 
 theorem after_steps_cost (kind : Kind) (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (ch out : BitVec 64)
     (installed : OriginalCode.Installed source.code)

@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-byte-call-memory-v2.log`,1257jobs,
-permitted printed axioms only. Historical/current proof index:8099modules/
-16306facts; Solver inventory8138, replacement closure0, frozen main files
-unchanged. Incremental policy passes64907entries/2482797966bytes. These checks
+Latest successful selected closure: `current-fixed-record-memory-v2.log`,1282jobs,
+permitted printed axioms only. Historical/current proof index:8104modules/
+16318facts; Solver inventory8143, replacement closure0, frozen main files
+unchanged. Incremental policy passes64912entries/2482821531bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -163,7 +163,11 @@ remain historical until their current statements/dependencies are checked.
    room and full buffer suffix. Context contains the real code/domain, zero
    table and incoming persistent cursor; source n/limit and physical arenas
    remain explicit call-entry facts. Full-byte-list/progressive/fixed-record/
-   payload/request-root memory composition remains open. Both actual byte-vector
+   payload/request-root memory composition remains open. All six actual fixed-record
+   bodies/callers now preserve metadata and restore their entering heap. Their
+   field extents come from the physical record/chunk arenas; the same allocation
+   derives temporary chunk room. Field pipeline local preservation is shared
+   by cost and memory proofs. Both actual byte-vector
    branches and byte-list now restore the entering heap on normal return, including
    the list length mix after release. Actual st_le32/st_le64 and length mixing
    preserve words outside their real output/length chunk. Shared byte-store

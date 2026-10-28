@@ -181,6 +181,15 @@ earlier parent link, including the right-edge alternative. Count room is an
 explicit current-counter obligation. Real scoped constructor/splice execution
 must still transport this image into the same caller post-state before the
 builder induction can use it; this is not yet a whole-builder bound.
+The full original htab_set body and real ignored-result caller now supply
+that builder invariant on every actual normal return. Empty, equal-key and
+fresh-key paths all return0, retain a complete physical image with at most
+one additional leaf, preserve all nonmemory physical fields and protect every
+earlier input word. Caller locals are restored. The failed-comparison proof
+uses the same actual mismatch/search/constructor/splice execution, not an
+independent successful insertion. The matching815body/816caller all-outcome
+cost still checks. Actual builder iteration, query-workspace ownership from
+main and later source/target composition remain open.
 
 Checked against current Software syntax and declaration entries:
 
@@ -230,10 +239,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-complete-fresh-image-v2.log`,970jobs,
-permitted printed axioms only. Historical/current proof index:8539modules/
-17283facts; inventory8583modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65369entries/2484728466bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-entire-insertion-real-caller-v2.log`,981jobs,
+permitted printed axioms only. Historical/current proof index:8550modules/
+17296facts; inventory8594modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65380entries/2484769018bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

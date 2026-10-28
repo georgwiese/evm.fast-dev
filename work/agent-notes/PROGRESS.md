@@ -3496,3 +3496,23 @@ value-update image. Index8539modules/17283facts; inventory8583/replacement
 closure0/fixed files unchanged; incremental policy65369entries/2484728466bytes
 PASS. Usage19%weekly/0resetcredits. Next: real fresh caller image transport,
 then full insertion return and actual builder loop.
+
+## Complete original insertion normal return and actual builder caller
+
+The entire actual htab_set body and ignored-result caller now return a full
+physical table image on every real normal return. Empty, equal-key and fresh
+branches all return0; the result adds at most one leaf, preserves all physical
+fields except memory/locals/clock and protects every earlier input word. The
+ordinary caller also restores its full local map. Actual failed comparison,
+first mismatch, strict second search, both constructors and original splice
+are one execution with exact scope restoration. No future successful run or
+funding is supplied. Matching815body/816caller all-outcome cost still checks.
+Actual database iteration, main's MPT-query workspace ownership and remaining
+source/target composition are open; no global finite target K/full verification.
+
+Validation: current-patricia-entire-insertion-real-caller-v2.log PASS981jobs,
+permitted printed axioms only. Index8550modules/17296facts; inventory8594/
+replacement closure0/fixed files unchanged; incremental policy65380entries/
+2484769018bytes PASS. Usage20%weekly/0resetcredits. Next: current builder loop
+and actual startup MPT scratch/input separation, without assuming a stronger
+copied-input frontier or reusing stale pre-rebase initializer constants.

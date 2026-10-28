@@ -36,6 +36,27 @@ theorem SpliceLocals.with_nodes {source : PanSemStateFiniteExact 64 Guest.HostMe
     (bind_lookup_other _ "nodes" "key" base (by decide)).trans locals.keyCell,
     (bind_lookup_other _ "nodes" "d" base (by decide)).trans locals.differenceCell⟩
 
+theorem SpliceLocals.from_scoped (source leafTarget internalTarget : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (table base node parent leaf internal pointer : BitVec 64) (difference : Nat)
+    (tableCell : source.locals.lookup (ofString "t") = some (.val (.word table)))
+    (nodesCell : source.locals.lookup (ofString "nodes") = some (.val (.word base)))
+    (nodeCell : source.locals.lookup (ofString "n") = some (.val (.word node)))
+    (parentCell : source.locals.lookup (ofString "p") = some (.val (.word parent)))
+    (keyCell : source.locals.lookup (ofString "key") = some (.val (.word pointer)))
+    (differenceCell : source.locals.lookup (ofString "d") = some (.val (.word (BitVec.ofNat 64 difference)))) :
+    SpliceLocals (CallNormal.continuationEntry (CallNormal.continuationEntry source leafTarget "nl" (.val (.word leaf)))
+      internalTarget "ni" (.val (.word internal))) table base node parent leaf internal pointer difference := by
+  let first := CallNormal.continuationEntry source leafTarget "nl" (.val (.word leaf))
+  have kept (name : String) (notLeaf : ofString "nl" ≠ ofString name) (notInternal : ofString "ni" ≠ ofString name) :=
+    (CallNormal.continuation_lookup_other first internalTarget "ni" name (.val (.word internal)) notInternal).trans
+      (CallNormal.continuation_lookup_other source leafTarget "nl" name (.val (.word leaf)) notLeaf)
+  exact ⟨(kept "t" (by decide) (by decide)).trans tableCell,(kept "nodes" (by decide) (by decide)).trans nodesCell,
+    (kept "n" (by decide) (by decide)).trans nodeCell,(kept "p" (by decide) (by decide)).trans parentCell,
+    (CallNormal.continuation_lookup_other first internalTarget "ni" "nl" (.val (.word internal)) (by decide)).trans
+      (CallNormal.continuation_lookup_same source leafTarget "nl" (.val (.word leaf))),
+    CallNormal.continuation_lookup_same first internalTarget "ni" (.val (.word internal)),
+    (kept "key" (by decide) (by decide)).trans keyCell,(kept "d" (by decide) (by decide)).trans differenceCell⟩
+
 theorem named_node_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base node : BitVec 64) (name : String) (offset : Nat)
     (baseCell : source.locals.lookup (ofString "nodes") = some (.val (.word base)))
     (nodeCell : source.locals.lookup (ofString name) = some (.val (.word node))) :

@@ -4,6 +4,32 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual Keccak memory frame and caller
+
+The whole unchanged Software keccak25692 now protects every word outside its
+actual200-byte state,136-byte padding and32-byte output buffers. The proof
+exposes every real normal zero/copy/block/pad-byte/final-absorb/output prefix;
+the actual block exit derives the short remaining input extent. Both output
+branches derive their real store/copy widths. A normal caller retains caller
+locals, current workspace, immutable fields and every global, including heap.
+No cryptographic output oracle or future successful execution is supplied.
+
+Current entry conditions are actual installed code/domain, workspace globals/
+allocated geometry/alignment, physical input/output extents and typed arguments.
+Connecting the actual startup workspace values and retaining them through main
+is still separate; no global finite bound is claimed from this helper theorem.
+Shared phase frames carry genuine current environment/local data, avoiding
+repeated assumptions about later padding or allocator outcomes.
+
+Validation: current-keccak-complete-frame-call-v1.log PASS1046jobs/permitted
+printed axioms, including current full header cost/return/caller. Index8349
+modules/16859facts; inventory8392/replacement closure0/frozen main unchanged.
+Incremental policy65170entries/2483874589bytes PASS.
+No global finite target K/full verification; claim infinity. Next: derive
+actual startup workspace geometry, real current validate_headers allocation/
+loop/caller costs, later current paths and uniform target-step composition.
+Usage9%weekly/0resetcredits;8GiBguard/twoslots/cachefalse.
+
 ## Actual software permutation/block write frames and globals
 
 The actual permutation writes only its25state words. The scalar width of each

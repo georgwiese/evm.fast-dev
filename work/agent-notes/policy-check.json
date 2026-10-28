@@ -958,10 +958,17 @@
     "submission/InitECandidate/Solver/CurrentKeccak/AbsorbMemory.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/AbsorbSyntax.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/BlocksCost.lean",
+    "submission/InitECandidate/Solver/CurrentKeccak/BlocksMemory.lean",
+    "submission/InitECandidate/Solver/CurrentKeccak/Call.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/Cost.lean",
+    "submission/InitECandidate/Solver/CurrentKeccak/Environment.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/Globals.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/HashSyntax.lean",
+    "submission/InitECandidate/Solver/CurrentKeccak/Memory.lean",
+    "submission/InitECandidate/Solver/CurrentKeccak/MemoryFrame.lean",
+    "submission/InitECandidate/Solver/CurrentKeccak/OutputMemory.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/PaddingCost.lean",
+    "submission/InitECandidate/Solver/CurrentKeccak/PaddingMemory.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/PaddingSyntax.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/PermutationCall.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/PermutationCost.lean",
@@ -8390,8 +8397,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65163,
-  "package_bytes": 2483837480,
+  "package_entries": 65170,
+  "package_bytes": 2483874589,
   "claim": {
     "K": "infinity"
   },

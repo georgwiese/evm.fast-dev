@@ -38,7 +38,7 @@ theorem absorb_globals (key : MlS) (code) (installed : OriginalCode.Installed co
         (Permutation.original_code code installed) (permutation_globals key code)
     · exact GlobalEffects.returned key code _
 
-private theorem zero_globals (key : MlS) (code) : GlobalEffects.Preserves key code Zero.body := by
+theorem zero_globals (key : MlS) (code) : GlobalEffects.Preserves key code Zero.body := by
   simp only [Zero.body,Guest.Software.guestFn_memzero,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
   repeat first
     | exact GlobalEffects.skip key code
@@ -51,7 +51,7 @@ private theorem zero_globals (key : MlS) (code) : GlobalEffects.Preserves key co
     | exact GlobalEffects.byte_store key code _ _
     | exact GlobalEffects.returned key code _
 
-private theorem copy_globals (key : MlS) (code) : GlobalEffects.Preserves key code Copy32.body := by
+theorem copy_globals (key : MlS) (code) : GlobalEffects.Preserves key code Copy32.body := by
   simp only [Copy32.body,Guest.Software.guestFn_memcpy,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
   repeat first
     | exact GlobalEffects.skip key code

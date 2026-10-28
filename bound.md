@@ -36,12 +36,15 @@ Best overall effort estimate: **40%, plausible30–50%**, relative to current ma
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
-Latest checked step: whole unchanged decode_header208 body/caller costs
-≤195*inputLength+473/+474 source ticks on all outcomes, composing actual RLP,
-records, count/allocation and complete fields. Later values/room are derived
-from the same actual returns. Selected957-job cost/normal-entry replay passed.
-Normal header value/earlier-memory frame, actual header-validation/Keccak loop,
-later current source paths and target-step composition remain open.
+Latest checked steps: unchanged decode_header208 costs≤195*inputLength+473
+body/+474caller source ticks on all outcomes. Genuine returns derive their
+fresh248-byte record,≤616heap growth and preservation of all earlier memory.
+Actual software keccak25692 costs≤44*(bytes/136)+689body/+690caller source ticks;
+its whole normal caller preserves every global and all memory outside its
+200-byte state,136-byte pad and32-byte output. The actual24-round permutation
+is used. Selected1046-job header/Keccak cost/frame/caller replay passed.
+Actual startup Keccak workspace transport, repeated header-validation loop,
+later current source paths and uniform target-step composition remain open.
 
 Checked against current Software syntax and declaration entries:
 
@@ -91,13 +94,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-arena-interface-main-list-cleanup-v1.log`,1910jobs,
-permitted printed axioms only. Historical/current proof index:8241modules/
-16688facts; Solver inventory8281, replacement closure0, frozen main files
-unchanged. Incremental policy passes65051entries/2483475170bytes. These checks
-are not a whole candidate build or full verification. Unselected old proofs
-remain historical until their current statements/dependencies are checked.
-
+Latest successful selected closure: `current-keccak-complete-frame-call-v1.log`,1046jobs,
+permitted printed axioms only. Historical/current proof index:8349modules/
+16859facts; inventory8392modules, replacement AST reverseclosure0, fixed files
+unchanged. This is helper-build evidence, not complete verification.
 ## Checked source stages and remaining work, in order
 
 1. **Checked: actual decoder image and hash-entry derivation.** RootRun

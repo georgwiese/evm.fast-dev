@@ -4,6 +4,27 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current header return, memory frame and caller trace
+
+The complete unchanged decode_header208 now derives its actual returned
+248-byte record, real allocation room/alignment, initialized arenas and exact
+next heap from genuine normal execution. It preserves all memory below its
+entering heap, every other global, the memory domain and byte order. Successful
+heap growth is at most616bytes (368slice records+248header).
+
+The literal field pipeline carries both fallthrough and returned frames,
+including lexical restoration and actual assigned helper values. Its caller
+trace covers every stopped outcome or supplies that genuine fresh header,
+forward clock, paid cost and original continuation. No later successful decode,
+physical record, scratch mapping or allocation funding is assumed.
+
+Validation: current-header-complete-frame-call-v1.log PASS962jobs/permitted
+printed axioms. Index8325modules/16801facts; inventory8368/replacement closure0/
+frozen main unchanged. Incremental policy65145entries/2483766552bytes PASS.
+No global finite target K/full verification; infinity
+claim unchanged. Next: current Keccak software permutation/block/fullhash and
+the actual header-validation loop; later current paths/target composition open.
+
 ## Complete current header decoder body/caller source bound
 
 Whole unchanged Software decode_header208 body/caller cost≤195*length+473/+474

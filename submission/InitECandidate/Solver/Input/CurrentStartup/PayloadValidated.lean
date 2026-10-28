@@ -9,6 +9,7 @@ open Flapjack.Basis.Pure.MlString
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ current post, ∃ pointer record : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,
     PayloadWorkspace.Context input current pointer record length ∧
+    current.memory record = .word (pointer + 62#64) ∧
     Guest.GasLimit.le32 input 498 = 540 ∧ Payload.offsetWords input 0 = 540#64 ∧
     (∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position) ∧
     evaluateHOLFiniteState current Payload.offsetContinuation = (some (.returned returned), post) ∧
@@ -18,7 +19,7 @@ def Reached (input : Guest.InputBlob) : Prop :=
 validator. Its writes retain the original copied bytes and record geometry;
 normal return rules out each actual rejection outcome. -/
 theorem workspace_reached (input : Guest.InputBlob) (actual : PayloadWorkspace.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
-  obtain ⟨source, post, pointer, record, length, value, context, actual, endpoint⟩ := actual
+  obtain ⟨source, post, pointer, record, length, value, context, raw, actual, endpoint⟩ := actual
   rcases Payload.offsets_trace source post input pointer 2701132528#64 (BitVec.ofNat 64 length) context.image context.workspace
     context.extra context.txs context.wd context.bal context.domain context.aligned (by decide) (by have := context.room; omega)
     (by decide) (by change 2701132528 + 64 ≤ pointer.toNat; have := context.lower; omega) context.len
@@ -34,7 +35,24 @@ theorem workspace_reached (input : Guest.InputBlob) (actual : PayloadWorkspace.R
     have nextContext : PayloadWorkspace.Context input next pointer record length := by
       rw [fields] at image ⊢
       exact PayloadWorkspace.Context.memory_clock input source pointer record length next.clock next.memory context image
-    exact ⟨next, post, pointer, record, length, value, nextContext, number, first, valid, remaining, endpoint⟩
+    have rawFrame : next.memory record = source.memory record := by
+      have away (offset : Nat) (small : offset ≤ 24) : record ≠ 2701132528#64 + BitVec.ofNat 64 offset := by
+        intro same
+        have natural := congrArg BitVec.toNat same
+        have encoded : (2701132528#64 + BitVec.ofNat 64 offset).toNat = 2701132528 + offset := by
+          have offsetNumber : (BitVec.ofNat 64 offset).toNat = offset := by
+            rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+          rw [BitVec.toNat_add_of_lt (by rw [offsetNumber]; change 2701132528 + offset < 2^64; omega), offsetNumber]
+          rfl
+        rw [encoded] at natural
+        have := context.lower
+        have := context.recordLower
+        omega
+      rw [nextEq]
+      simp only [Payload.offsetsStored, Payload.withdrawalsStored, Payload.transactionsStored, Payload.extraStored,
+        WitnessRadix.StoreWord.put, if_neg (away 24 (by decide)), if_neg (away 16 (by decide)),
+        if_neg (away 8 (by decide)), if_neg (by simpa using away 0 (by decide))]
+    exact ⟨next, post, pointer, record, length, value, nextContext, rawFrame.trans raw, number, first, valid, remaining, endpoint⟩
 
 theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=
   workspace_reached input (PayloadWorkspace.separated input actual)

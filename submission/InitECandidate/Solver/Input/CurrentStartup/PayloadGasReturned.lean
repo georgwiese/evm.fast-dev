@@ -31,7 +31,7 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
   have postEq := (congrArg Prod.snd same).symm
   dsimp only at postEq
   have before : Payload.TransactionImage input source pointer record array start size :=
-    ⟨data.startEq, data.sizeEq, data.inside, data.arrayAfter, data.heapExtent, data.records, data.txs, data.txCount⟩
+    ⟨data.startEq, data.sizeEq, data.inside, data.arrayAfter, data.heapExtent, data.records, data.txs, data.txCount, data.hashPrefix⟩
   have transactions := before.after_remaining (BitVec.ofNat 64 length) (Payload.offsetWords input 2)
     (Payload.offsetWords input 3) count (by have := context.recordRoom; omega)
   refine ⟨source, post, pointer, record, value, data.returned, valueEq, ?_, ?_, ?_, ?_,

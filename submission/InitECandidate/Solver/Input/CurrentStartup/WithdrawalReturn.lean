@@ -11,6 +11,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 structure Result (input : Guest.InputBlob) (source current post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer record array count : BitVec 64) (length start size : Nat) (value : ValueHOL 64) : Prop where
   context : PayloadWorkspace.Context input current pointer record length
+  hashPrefix : Payload.PrefixImage input current pointer record
   valid : ∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position
   nwd : current.locals.lookup (ofString "nwd") = some (.val (.word count))
   txs : current.memory (record + 32#64) = .word (VarList.decodedArray array size)
@@ -111,12 +112,15 @@ theorem transaction (input : Guest.InputBlob) (actual : TransactionReturn.Reache
         show ofString "nwd" ≠ ofString "o_extra" from by decide, show ofString "nwd" ≠ ofString "o_txs" from by decide,
         show ofString "nwd" ≠ ofString "o_wd" from by decide, show ofString "nwd" ≠ ofString "o_bal" from by decide]
   have memory : current.memory = stored.memory := by rw [currentEq]
+  have firstPrefix := data.hashPrefix.store_after 32 records (by decide) (by decide) (by have := data.context.recordRoom; omega)
+  have storedPrefix := firstPrefix.store_after 40 transactionCount (by decide) (by decide) (by have := data.context.recordRoom; omega)
+  have hashPrefix : Payload.PrefixImage input current pointer record := storedPrefix.of_frame frozen
   have extent : NormalHeapEffects.AtLeast (array.toNat + 16 * VarList.decodedCount input start size) current := by
     obtain ⟨cursor, cell, low, high, aligned⟩ := data.heapExtent
     rw [currentEq]
     exact ⟨cursor, cell, low, high, aligned⟩
   refine ⟨source, current, innerPost, pointer, record, array, count, length, start, size, value,
-    ⟨currentContext, data.valid, ?_, ?_, ?_, data.arrayAfter, extent, VarList.Records.of_memory stored current input pointer array start size memory storedRecords,
+    ⟨currentContext, hashPrefix, data.valid, ?_, ?_, ?_, data.arrayAfter, extent, VarList.Records.of_memory stored current input pointer array start size memory storedRecords,
     data.startEq, data.sizeEq, data.inside, (arithmetic (by decide)).1, (arithmetic (by decide)).2, price, clock, remaining,
     PayloadEntry.Endpoint.of_frame input post innerPost pointer record length value data.endpoint (by rw [postEq]; rfl) (by rw [postEq]; rfl)⟩⟩
   · rw [locals]

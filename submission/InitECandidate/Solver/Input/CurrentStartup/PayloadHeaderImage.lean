@@ -14,7 +14,9 @@ theorem input_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     (room : pointer.toNat + input.length % 2^64 + 8 ≤ 2952790016)
     (pCell : source.locals.lookup (ofString "p") = some (.val (.word (pointer + 62#64))))
     (lenCell : source.locals.lookup (ofString "len") = some (.val (.word (BitVec.ofNat 64 length))))
-    (actual : CallPrefix.Execution source actions target) : Blob.HeapInput target input pointer := by
+    (actual : CallPrefix.Execution source actions target) : Blob.HeapInput target input pointer ∧
+      ∀ record : BitVec 64, target.locals.lookup (ofString "pl") = some (.val (.word record)) →
+        target.memory record = .word (pointer + 62#64) := by
   cases actual with
   | @step _ allocatedState _ _ _ allocated rest =>
     obtain ⟨record, cell, low, recordAligned, recordRoom, stateEq⟩ := allocation_frontier (ofString "pl") 136#64 _ installed heap allocated
@@ -60,6 +62,24 @@ theorem input_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
         have headerBytes : Blob.HeapInput headerState input pointer := Blob.HeapInput.word_store_separate pointerState headerState input pointer
           (record + 8#64) (BitVec.ofNat 64 length) (Scalar.plus (localVar "pl") 8) (localVar "len") pointerBytes aligned (by omega)
           (Or.inr (by rw [addressNumber]; omega)) readNextAddress readLength lengthNormal
+        obtain ⟨lengthMapped, headerEq⟩ := Input.word_store_normal pointerState headerState _ _ (record + 8#64)
+          (BitVec.ofNat 64 length) readNextAddress readLength lengthNormal
+        have headerPl : headerState.locals.lookup (ofString "pl") = some (.val (.word record)) := by
+          rw [headerEq, pointerEq]
+          exact recordCell
+        have finalPl : target.locals.lookup (ofString "pl") = some (.val (.word record)) :=
+          (remainder.keeps (ofString "pl") (by
+            intro action member
+            simp only [List.mem_cons, List.not_mem_nil, or_false] at member
+            rcases member with rfl | rfl | rfl | rfl <;> decide)).trans headerPl
+        have raw : headerState.memory record = .word (pointer + 62#64) := by
+          have away : record ≠ record + 8#64 := by
+            intro same
+            have natural := congrArg BitVec.toNat same
+            rw [addressNumber] at natural
+            omega
+          rw [headerEq, pointerEq]
+          simp [WitnessRadix.StoreWord.put, away]
         cases remainder with
         | step extra rest =>
           cases rest with
@@ -73,7 +93,12 @@ theorem input_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
                 cases wd
                 cases txs
                 cases extra
-                exact headerBytes
+                refine ⟨headerBytes, ?_⟩
+                intro selected selectedPl
+                have same : selected = record :=
+                  HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (selectedPl.symm.trans finalPl)))
+                subst selected
+                exact raw
 
 end InitECandidate.Solver.Input.CurrentStartup.PayloadCut
 

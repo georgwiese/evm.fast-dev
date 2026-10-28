@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.VarList.RecordsFrame
 import InitECandidate.Solver.Input.NormalHeapEffects
 import InitECandidate.Solver.Input.LocalEffects
+import InitECandidate.Solver.Input.PayloadPrefixImage
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -18,6 +19,7 @@ structure TransactionImage (input : Guest.InputBlob) (state : PanSemStateFiniteE
   records : VarList.Records state input pointer array start size
   txs : state.memory (record + 32#64) = .word (VarList.decodedArray array size)
   count : state.memory (record + 40#64) = .word (BitVec.ofNat 64 (VarList.decodedCount input start size))
+  hashPrefix : PrefixImage input state pointer record
 
 theorem TransactionImage.of_frame {input : Guest.InputBlob}
     {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
@@ -30,7 +32,7 @@ theorem TransactionImage.of_frame {input : Guest.InputBlob}
   change target.memory = source.memory at memory
   change target.globals = source.globals at globals
   refine ⟨data.startEq, data.sizeEq, data.inside, data.arrayAfter, ?_,
-    VarList.Records.of_memory source target input pointer array start size memory data.records, ?_, ?_⟩
+    VarList.Records.of_memory source target input pointer array start size memory data.records, ?_, ?_, data.hashPrefix.of_frame frame⟩
   · obtain ⟨cursor, cell, low, high, aligned⟩ := data.heapExtent
     exact ⟨cursor, (congrArg (fun table => table.lookup (ofString "heap_ptr")) globals).trans cell, low, high, aligned⟩
   · rw [memory]

@@ -4,6 +4,26 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Early payload hash fields now survive with the complete transaction image
+
+PayloadCut.input_frame also retains the actual raw-pointer cell selected by its
+real PLbinding. PayloadWorkspace/Validated/Extra carry that cell, including the
+four low SSZ workspace writes. TransactionEntry now uses the checked exact two
+extra-data stores instead of separately observing and reconstructing both stores;
+its real prepared state supplies Payload.PrefixImage(raw0/extra16/length24/≤32).
+
+VarListData, TransactionReturn and WithdrawalReturn preserve that prefix through
+the actual list call and PL32/40stores. PrefixImage.store_after/fields_after prove
+that transaction and final payload writes cannot change it. TransactionImage now
+retains the prefix; existing interval/return/request/witness transports carry it
+to the same actual main state. Remaining hash inputs include the withdrawal and
+balance fields; no global runtime K is claimed.
+
+Validation: current-payload-prefix-image-v3.log PASS1477jobs/permitted axioms;
+8GiBguard/twoslots/cachefalse. Index8015modules/15940facts; Solver8054; replacement
+closure0/fixed files unchanged; incremental policy PASS64823entries/2482293970bytes.
+Account21%weekly/0resetcredits. Claim infinity; no full verification.
+
 ## Complete transaction records now survive to actual main, with tighter resource bounds
 
 VarListData derives the actual allocation end for its complete returned array;

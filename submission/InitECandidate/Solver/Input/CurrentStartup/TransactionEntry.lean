@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.CurrentStartup.PayloadStoreFrame
 import InitECandidate.Solver.Input.PayloadTransactionsProgram
+import InitECandidate.Solver.Input.PayloadExtraImage
 
 namespace InitECandidate.Solver.Input.CurrentStartup.TransactionEntry
 variable {decoderOrigin : DecoderOrigin}
@@ -9,6 +10,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller entry post, ∃ pointer record : BitVec 64, ∃ length start size : Nat, ∃ returned : ValueHOL 64,
     PayloadWorkspace.Context input caller pointer record length ∧
+    Payload.PrefixImage input caller pointer record ∧
     (∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position) ∧
     OriginalCode.Installed entry.code ∧ OriginalExceptions.Installed entry.eshapes ∧
     entry.memaddrs = InitE.ordinaryDomain ∧ entry.be = false ∧ entry.globals = caller.globals ∧
@@ -40,20 +42,25 @@ theorem original_code (code) (installed : OriginalCode.Installed code) :
 return then exposes the genuine transaction-list callee and a contained slice;
 no whole-array allocation room or future list return is assumed. -/
 theorem extra_reached (input : Guest.InputBlob) (actual : PayloadExtra.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
-  obtain ⟨source, post, pointer, record, length, value, context, first, valid, extraBound, actual, endpoint⟩ := actual
-  rw [Payload.transactions_shape.1] at actual
-  have safePointer : LocalPrefix (ofString "pl") Payload.extraPointerStore := .store _ _
-  obtain ⟨firstState, firstRun, remaining, pl⟩ := safePointer.normal_continue source post (.seq Payload.extraLengthStore Payload.transactionCall) value actual
-  have readRecord : eval source (localVar "pl") = some (.val (.word record)) := by
-    simpa [eval, localVar, evalHOLExact, toExact] using context.pl
-  have firstAddress := Scalar.plus_read source (localVar "pl") record 16 readRecord
-  have firstContext := PayloadWorkspace.Context.op_store input source firstState pointer record length 16 _ .add _ context (by decide) firstAddress firstRun
-  have safeLength : LocalPrefix (ofString "pl") Payload.extraLengthStore := .store _ _
-  obtain ⟨current, secondRun, remaining, pl⟩ := safeLength.normal_continue firstState post Payload.transactionCall value remaining
-  have readNextRecord : eval firstState (localVar "pl") = some (.val (.word record)) := by
-    simpa [eval, localVar, evalHOLExact, toExact] using firstContext.pl
-  have secondAddress := Scalar.plus_read firstState (localVar "pl") record 24 readNextRecord
-  have currentContext := PayloadWorkspace.Context.op_store input firstState current pointer record length 24 _ .sub _ firstContext (by decide) secondAddress secondRun
+  obtain ⟨source, post, pointer, record, length, value, context, rawCell, first, valid, extraBound, actual, endpoint⟩ := actual
+  have lower : 540 ≤ Guest.GasLimit.le32 input 566 := by
+    have bound := (valid 1 (by decide)).1
+    change 540 ≤ (BitVec.ofNat 64 (Guest.GasLimit.le32 input 566)).toNat at bound
+    rw [Request.le32_number input 566 (by decide)] at bound
+    exact bound
+  have extraNumeric : Guest.GasLimit.le32 input 566 - 540 ≤ 32 := by
+    change (BitVec.ofNat 64 (Guest.GasLimit.le32 input 566)).toNat - 540 ≤ 32 at extraBound
+    rwa [Request.le32_number input 566 (by decide)] at extraBound
+  have extraCell : source.locals.lookup (ofString "o_extra") = some (.val (.word 540#64)) := by
+    rw [context.extra, first]
+  obtain ⟨stores, bytes⟩ := Payload.extra_stores source input pointer record context.image context.p context.pl
+    extraCell context.txs lower context.domain context.aligned context.recordAligned
+    (by have := context.lower; omega) context.recordLower (by have := context.recordRoom; omega)
+  let current := Payload.extraStoredPayload source input pointer record
+  have remaining : evaluateHOLFiniteState current Payload.transactionCall = (some (.returned value), post) := stores.symm.trans actual
+  have currentContext : PayloadWorkspace.Context input current pointer record length :=
+    PayloadWorkspace.Context.memory_clock input source pointer record length source.clock current.memory context bytes
+  have hashPrefix := Payload.extra_stored_image source input pointer record (by have := context.recordRoom; omega) rawCell extraNumeric
   have secondValid := valid 2 (by decide)
   have ordered := secondValid.2.2 (by decide)
   change (BitVec.ofNat 64 (Guest.GasLimit.le32 input 566)).toNat ≤ (BitVec.ofNat 64 (Guest.GasLimit.le32 input 570)).toNat at ordered
@@ -79,7 +86,7 @@ theorem extra_reached (input : Guest.InputBlob) (actual : PayloadExtra.Reached (
   have entryShapes : OriginalExceptions.Installed entry.eshapes := currentContext.shapes
   have image : Blob.HeapInput entry input pointer := Blob.HeapInput.of_fields current entry input pointer rfl rfl rfl currentContext.image
   exact ⟨current, entry, bodyPost, pointer, record, length, 62 + Guest.GasLimit.le32 input 566,
-    Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566, returned, currentContext, valid, entryCode, entryShapes,
+    Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566, returned, currentContext, hashPrefix, valid, entryCode, entryShapes,
     currentContext.domain, currentContext.endian, rfl, image, currentContext.recordHeap, pCell, lenCell, limCell, rfl, rfl, sliceUpper, bodyRun, callee, post, value, rfl, args, called, callerRun, endpoint⟩
 
 theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=

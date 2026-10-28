@@ -41,6 +41,7 @@ structure Context (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ current post, ∃ pointer record : BitVec 64, ∃ length : Nat, ∃ returned : ValueHOL 64,
     Context input current pointer record length ∧
+    current.memory record = .word (pointer + 62#64) ∧
     evaluateHOLFiniteState current Payload.offsetBody = (some (.returned returned), post) ∧
     PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length returned
 
@@ -92,7 +93,9 @@ theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached (
     PayloadCut.reached source post _ installed heap returned actual
   obtain ⟨record, originHeap, recordLower, recordAligned, recordRoom, recordCell, recordHeap⟩ := PayloadCut.record_pointer _ installed heap execution
   have endpoint : PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length returned := ⟨source, post, originalEntry, originHeap, rfl, rfl⟩
-  have retained := PayloadCut.input_frame input pointer length installed heap image aligned room pCell lenCell execution
+  have header := PayloadCut.input_frame input pointer length installed heap image aligned room pCell lenCell execution
+  have retained := header.1
+  have raw := header.2 record recordCell
   have currentCode : OriginalCode.Installed current.code := by rw [execution.runtime.2.2.2.1]; exact installed
   have currentShapes : OriginalExceptions.Installed current.eshapes := by rw [execution.runtime.2.2.1]; exact shapes
   have currentWorkspace := (execution.globals (ofString "ssz_offs") (offsets_frame source.code installed)).trans workspace
@@ -106,7 +109,7 @@ theorem entry_reached (input : Guest.InputBlob) (actual : PayloadEntry.Reached (
   exact ⟨current, inner, pointer, record, length, returned, ⟨currentCode, currentShapes,
     execution.runtime.1.trans domain, execution.runtime.2.1.trans endian, retained, currentHeap, currentWorkspace,
     currentP, currentLen, recordCell, extra, txs, wd, bal, lengthBound, extent, lower, aligned, room, minimum, sliceUpper, sliceEq,
-    recordLower, recordAligned, recordRoom, recordHeap⟩, remaining,
+    recordLower, recordAligned, recordRoom, recordHeap⟩, raw, remaining,
     PayloadEntry.Endpoint.of_frame input post inner pointer record length returned endpoint frame clock⟩
 
 theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=

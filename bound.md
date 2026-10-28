@@ -83,10 +83,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-main-decoded-transactions-v1.log`,1473jobs,
-permitted printed axioms only. Historical/current proof index:8012modules/
-15935facts; Solver inventory8051, replacement closure0, frozen main files
-unchanged. Incremental policy passes64820entries/2482282734bytes. These checks
+Latest successful selected closure: `current-payload-prefix-image-v3.log`,1477jobs,
+permitted printed axioms only. Historical/current proof index:8015modules/
+15940facts; Solver inventory8054, replacement closure0, frozen main files
+unchanged. Incremental policy passes64823entries/2482293970bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -105,8 +105,9 @@ remain historical until their current statements/dependencies are checked.
    output cells. The full transaction image now survives final payload stores,
    request allocation/counts and witness calls to that same main state. Real
    persistent room derives encodedLength+16*txCount≤251655056, txCount≤12582752
-   and total transaction bytes≤251655056. Materialize remaining witness SI and
-   nontransaction payload fields needed by hashing. Treat chain/output values
+   and total transaction bytes≤251655056. Its raw pointer and bounded extra-data
+   cells now survive with the same transaction image. Materialize remaining
+   witness SI and withdrawal/balance payload fields needed by hashing. Treat chain/output values
    generically when their numeric contents do not affect a runtime bound.
 2. Join request-root hashing to actual physical layouts and ownership; bound
    its current helpers on all relevant outcomes, including failures. Reuse old

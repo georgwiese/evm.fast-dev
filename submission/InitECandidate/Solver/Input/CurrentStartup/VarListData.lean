@@ -12,6 +12,7 @@ so that later proofs can resume the actual payload continuation. -/
 structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer record array : BitVec 64) (length start size : Nat) (value : ValueHOL 64) : Prop where
   context : PayloadWorkspace.Context input caller pointer record length
+  hashPrefix : Payload.PrefixImage input caller pointer record
   valid : ∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position
   heapCell : entry.globals.lookup (ofString "heap_ptr") = some (.val (.word array))
   recordBefore : record.toNat + 136 ≤ array.toNat
@@ -47,7 +48,7 @@ def Reached (input : Guest.InputBlob) : Prop :=
     Result (decoderOrigin := decoderOrigin) input caller entry post pointer record array length start size value
 
 theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached (decoderOrigin := decoderOrigin) input) : Reached (decoderOrigin := decoderOrigin) input := by
-  obtain ⟨caller, entry, post, pointer, record, length, start, size, value, context, valid, installed, shapes, domain, endian,
+  obtain ⟨caller, entry, post, pointer, record, length, start, size, value, context, hashPrefix, valid, installed, shapes, domain, endian,
     globals, image, heap, p, n, l, startEq, sizeEq, inside, returned, invocation⟩ := actual
   obtain ⟨array, cell, low, high, aligned⟩ := heap
   have afterInput : pointer.toNat + input.length % 2^64 + 8 ≤ array.toNat := by have := context.recordLower; omega
@@ -95,7 +96,7 @@ theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached
     obtain ⟨cursor, cursorCell, cursorLow, cursorHigh, cursorAligned⟩ := heapExtent
     exact ⟨cursor, cursorCell, by omega, cursorHigh, cursorAligned⟩
   exact ⟨caller, entry, post, pointer, record, array, length, start, size, value,
-    ⟨context, valid, cell, low, aligned, high, startEq, sizeEq, inside, returned, tuple, bytes, records, memory, control, heapExtent, postHeap, price, clock, invocation⟩⟩
+    ⟨context, hashPrefix, valid, cell, low, aligned, high, startEq, sizeEq, inside, returned, tuple, bytes, records, memory, control, heapExtent, postHeap, price, clock, invocation⟩⟩
 
 theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=
   transaction input (TransactionEntry.separated input actual)

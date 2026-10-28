@@ -9,6 +9,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer record array : BitVec 64) (length start size : Nat) (value : ValueHOL 64) : Prop where
   context : PayloadWorkspace.Context input current pointer record length
+  hashPrefix : Payload.PrefixImage input current pointer record
   valid : ∀ position < 4, Offsets.ValidAt 540#64 (BitVec.ofNat 64 length) (Payload.offsetWords input) position
   txs : current.locals.lookup (ofString "txs") = some
     (VarList.pairValue (VarList.decodedArray array size) (VarList.decodedCount input start size))
@@ -92,9 +93,16 @@ theorem returned (input : Guest.InputBlob) (actual : VarListData.Reached (decode
       (locals (ofString "o_txs") (by decide)).trans old.txs, (locals (ofString "o_wd") (by decide)).trans old.wd,
       (locals (ofString "o_bal") (by decide)).trans old.bal, old.lengthBound, old.extent, old.lower, old.aligned, old.room,
       old.minimum, old.sliceUpper, old.sliceEq, old.recordLower, old.recordAligned, old.recordRoom, heap⟩
+  have hashPrefix : Payload.PrefixImage input current pointer record := by
+    apply data.hashPrefix.of_memory (by have := data.context.recordRoom; omega)
+    intro query lower upper
+    have saved := data.memory query (by have := data.recordBefore; omega)
+    change bodyPost.memory query = caller.memory query
+    rw [entryEq] at saved
+    exact saved
   have entryClock : entry.clock = caller.clock - 1 := by rw [entryEq]; rfl
   refine ⟨caller, current, (evaluateHOLFiniteState current Payload.afterTransactions).2, pointer, record, array,
-    length, start, size, value, ⟨context, data.valid, ?_, data.recordBefore, data.heapExtent, VarList.Records.of_memory bodyPost current input pointer array start size rfl data.records,
+    length, start, size, value, ⟨context, hashPrefix, data.valid, ?_, data.recordBefore, data.heapExtent, VarList.Records.of_memory bodyPost current input pointer array start size rfl data.records,
     data.startEq, data.sizeEq, data.inside, ?_, ?_, ?_, Prod.ext resumed rfl,
     PayloadEntry.Endpoint.of_frame input parentPost _ pointer record length value endpoint (by rw [parentEq]; rfl) (by rw [parentEq]; rfl)⟩⟩
   · change (caller.locals.update (ofString "txs", tuple)).lookup (ofString "txs") = _

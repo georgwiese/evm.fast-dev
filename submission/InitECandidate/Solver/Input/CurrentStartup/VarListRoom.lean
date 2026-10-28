@@ -39,7 +39,7 @@ theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached
         record.toNat + 136 ≤ array.toNat ∧ array.toNat % 8 = 0 ∧
         0 < Guest.GasLimit.le32 input start / 4 ∧
         array.toNat + 16 * (Guest.GasLimit.le32 input start / 4) ≤ 2952790016) := by
-  obtain ⟨caller, entry, post, pointer, record, size, start, length, value, context, valid, installed, shapes, domain, endian,
+  obtain ⟨caller, entry, post, pointer, record, size, start, length, value, context, hashPrefix, valid, installed, shapes, domain, endian,
     globals, image, heap, p, n, l, startEq, lengthEq, inside, returned, invocation⟩ := actual
   rcases returned_room input entry post pointer 9223372036854775807#64 start length (record.toNat + 136)
     installed shapes heap image inside p n l value returned with empty | allocated

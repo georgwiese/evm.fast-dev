@@ -23,7 +23,7 @@ theorem TransactionImage.of_interval {input : Guest.InputBlob}
     have encoded : (BitVec.ofNat 64 offset).toNat = offset := by
       rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
     rw [BitVec.toNat_add_of_lt (by rw [encoded]; omega), encoded]
-  refine ⟨data.startEq, data.sizeEq, data.inside, data.arrayAfter, heap, ?_, ?_, ?_⟩
+  refine ⟨data.startEq, data.sizeEq, data.inside, data.arrayAfter, heap, ?_, ?_, ?_, ?_⟩
   · apply VarList.Records.of_interval source target input pointer array start size boundary data.records before
     intro query lower upper
     exact memory query (by have := data.arrayAfter; omega) upper
@@ -31,6 +31,10 @@ theorem TransactionImage.of_interval {input : Guest.InputBlob}
       (by rw [number 32 (by decide)]; have := data.arrayAfter; omega)).trans data.txs
   · exact (memory (record + 40#64) (by rw [number 40 (by decide)]; omega)
       (by rw [number 40 (by decide)]; have := data.arrayAfter; omega)).trans data.count
+
+  · apply data.hashPrefix.of_memory (by omega)
+    intro query lower upper
+    exact memory query lower (by have := data.arrayAfter; omega)
 
 /-- A real earlier SI-field write cannot touch payload transaction data. -/
 theorem TransactionImage.store_before {input : Guest.InputBlob}

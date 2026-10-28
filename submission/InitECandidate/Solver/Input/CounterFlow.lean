@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.LocalPrefix
+import InitECandidate.Solver.Input.LocalFlow
 import Guest.Model
 import InitECandidate.Solver.Input.NoneControl
 import InitECandidate.Solver.Input.CallResume
@@ -22,6 +22,12 @@ theorem preserved (key : MlS) (program : ProgHOL 64) (safe : LocalPrefix key pro
   unfold LocalSummary at summary
   rw [run] at summary
   simpa only [BitVec.add_zero] using (summary.1 rfl).trans cell
+
+/-- Fallthrough preservation also holds for prefixes with real early returns. -/
+theorem flow_preserved (key : MlS) (program : ProgHOL 64) (safe : LocalFlow key program) :
+    Advances key 0 program := by
+  intro source post word cell run
+  simpa only [BitVec.add_zero] using (safe.none_preserves source post run).trans cell
 
 theorem increment (key : MlS) : Advances key 1 (.assign .local key (.op .add [.var .local key, .const 1#64])) := by
   intro source post word cell run
@@ -162,3 +168,5 @@ end InitECandidate.Solver.Input.CounterFlow
 #print axioms InitECandidate.Solver.Input.CounterFlow.declared
 
 #print axioms InitECandidate.Solver.Input.CounterFlow.increment_by
+
+#print axioms InitECandidate.Solver.Input.CounterFlow.flow_preserved

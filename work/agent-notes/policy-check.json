@@ -2463,6 +2463,13 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Model.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Program.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Step.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/BitFacts.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/BitLoopNormal.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/ByteStepNormal.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/CallCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Cost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Program.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/KeyBits.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewArraysProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewCall.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewCompleteCost.lean",
@@ -8482,8 +8489,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65258,
-  "package_bytes": 2484208525,
+  "package_entries": 65266,
+  "package_bytes": 2484243110,
   "claim": {
     "K": "infinity"
   },

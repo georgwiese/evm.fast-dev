@@ -3151,3 +3151,35 @@ claim infinity. Next: actual first-difference semantics and insertion image,
 workspace separation, remaining main paths and uniform target composition.
 Overall estimate40%, plausible30–50%. Five old unfinished RLP files preserved
 untracked. Account13%weekly used, zero reset credits, ordinary usage allowed.
+
+
+## Current first-difference costs and real byte-scan progress — 2026-10-28
+
+Actual htab_first_diff118 body costs≤9*keyLength and its scoped caller
+≤9*keyLength+1, giving288/289source ticks for actual32-byte keys. These
+all-outcome bounds include failed reads, early returns and short clocks; no
+key contents, byte mappings or future successful scan is a pricing premise.
+Actual full nonlocal read-only effects and caller frame check as well.
+
+A genuinely continuing bit step skipped a zero digit and advanced its actual
+j counter. Falling through the full signed0..8bit loop forces its byte xor
+to zero; the actual outer step therefore continues only on a zero byte xor.
+Current key mathematics uses most-significant-first bits, including complete
+key separation, least mismatch uniqueness/marker and preceding byte agreement.
+The full source return-to-least-mismatch and insertion image are still open.
+
+Cleanup extends shared LocalFlow to actual loops with early returns and
+factors one counter rank proof over a preserved optional local snapshot.
+Existing no-return counter APIs remain compatibility projections; captured
+expression loops now reuse that rank proof instead of duplicating it. Shared
+fallthrough counter preservation also handles early-return prefixes. Actual
+current main/root and existing lookup callers replay after these changes.
+
+Validation: current-first-diff-bit-cost-v7.log PASS1882jobs, permitted printed
+axioms only. Index8440modules/17064facts; inventory8484, replacement AST reverse
+closure0 and fixed files unchanged. Incremental policy PASS65266entries/
+2484243110bytes; no full verification or global target K, claim infinity.
+Next: source least-difference semantics and actual insertion image, workspace
+separation, remaining main paths and uniform target composition. Overall
+estimate40%, plausible30–50%. Five old unfinished RLP files preserved untracked.
+Account14%weekly used, zero reset credits, ordinary usage allowed.

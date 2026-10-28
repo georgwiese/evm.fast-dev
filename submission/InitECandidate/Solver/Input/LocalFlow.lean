@@ -12,6 +12,7 @@ inductive LocalFlow (key : MlS) : ProgHOL 64 → Prop where
   | ite (test : ExpHOL 64) {yes no} (left : LocalFlow key yes) (right : LocalFlow key no) : LocalFlow key (.ite test yes no)
   | dec (name : MlS) (shape : ShapeHOL) (expression : ExpHOL 64) {body}
       (other : key ≠ name) (tail : LocalFlow key body) : LocalFlow key (.dec name shape expression body)
+  | loop (test : ExpHOL 64) {body} (safe : LocalFlow key body) : LocalFlow key (.while test body)
   | decCall (name : MlS) (shape : ShapeHOL) (function : MlS) (arguments : List (ExpHOL 64)) {body}
       (other : key ≠ name) (tail : LocalFlow key body) : LocalFlow key (.decCall name shape function arguments body)
 
@@ -20,6 +21,59 @@ def FlowSummary {F : Type} (key : MlS) (program : ProgHOL 64) (source : PanSemSt
     (evaluateHOLFiniteState source program).2.locals.lookup key = source.locals.lookup key) ∧
   (evaluateHOLFiniteState source program).1 ≠ some .break ∧
   (evaluateHOLFiniteState source program).1 ≠ some .continue
+
+/-- Actual while evaluation preserves a tracked local on fallthrough even
+when a body may return from its enclosing function. -/
+theorem while_flow_summary {F : Type} (key : MlS) (condition : ExpHOL 64) (body : ProgHOL 64)
+    (bodySummary : ∀ source : PanSemStateFiniteExact 64 F, FlowSummary key body source)
+    (source : PanSemStateFiniteExact 64 F) : FlowSummary key (.while condition body) source := by
+  classical
+  generalize rankEq : source.clock = rank
+  induction rank using Nat.strongRecOn generalizing source with
+  | ind rank ih =>
+    unfold FlowSummary
+    rw [evaluateHOLFiniteState_while_total]
+    cases read : @evalHOLFinite 64 F _ source (fun address => Classical.propDecidable (source.memaddrs address)) condition with
+    | none => simp
+    | some value =>
+      cases value with
+      | rStruct fields => simp
+      | nStruct name fields => simp
+      | val payload =>
+        cases payload with
+        | word word =>
+          simp only
+          by_cases active : word ≠ 0
+          · rw [if_pos active]
+            by_cases zero : source.clock = 0
+            · simp [zero]
+            · rw [if_neg zero]
+              let entry := decClockHOLFinite source
+              have info := bodySummary entry
+              unfold FlowSummary at info
+              have clock := evaluateHOLFiniteState_clock_le entry body
+              generalize bodyRun : evaluateHOLFiniteState entry body = output at info clock ⊢
+              obtain ⟨result, next⟩ := output
+              have nextClock : next.clock ≤ entry.clock := clock
+              rw [WitnessRadix.StateSteps.fixed_clock entry next result nextClock]
+              cases result with
+              | none =>
+                have smaller : next.clock < rank := by
+                  change next.clock ≤ source.clock - 1 at nextClock
+                  omega
+                have tail := ih next.clock smaller next rfl
+                exact ⟨fun normal => (tail.1 normal).trans (info.1 rfl), tail.2⟩
+              | some result =>
+                cases result with
+                | «break» => exact False.elim (info.2.1 rfl)
+                | «continue» => exact False.elim (info.2.2 rfl)
+                | returned value => simp
+                | error => simp
+                | timeOut => simp
+                | exception identifier payload => simp
+                | finalFfi event => simp
+          · rw [if_neg active]
+            simp
 
 private theorem set_other {F : Type} (source : PanSemStateFiniteExact 64 F) (key name : MlS)
     (value : ValueHOL 64) (other : key ≠ name) :
@@ -87,6 +141,8 @@ theorem LocalFlow.summary {F : Type} {key : MlS} {program : ProgHOL 64}
             ((info.1 normal).trans (set_other source key name value other))
         · exact info.2
       · simp
+  | loop test safe ih =>
+    exact while_flow_summary key test _ ih source
   | decCall name shape function arguments other tail tailIH =>
     rw [evaluateHOLFiniteState_decCall_fixClockRewrite]
     split
@@ -138,3 +194,5 @@ end InitECandidate.Solver.Input
 #print axioms InitECandidate.Solver.Input.LocalFlow.summary
 #print axioms InitECandidate.Solver.Input.LocalFlow.none_preserves
 #print axioms InitECandidate.Solver.Input.LocalFlow.no_continue
+
+#print axioms InitECandidate.Solver.Input.while_flow_summary

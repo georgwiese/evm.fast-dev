@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CounterFlow
+import InitECandidate.Solver.Input.LocalFlow
 import InitECandidate.Solver.Input.ClockCostLoop
 
 namespace InitECandidate.Solver.Input.CounterFlow
@@ -11,26 +12,26 @@ def counterWord (source : PanSemStateFiniteExact 64 Guest.HostMemory) (key : MlS
 /-- Actual unsigned local-counter loops: preserve their real limit, advance
 one word without wrapping, and charge the actual bounded body at each tick.
 All outcomes are covered; no completed loop trace is a premise. -/
-theorem loop_cost_test (code) (counter limit : MlS) (test : ExpHOL 64) (body : ProgHOL 64) (price length : Nat)
+theorem loop_snapshot_cost (code) (counter limit : MlS) (snapshot : Option (ValueHOL 64)) (test : ExpHOL 64) (body : ProgHOL 64) (price length : Nat)
     (lengthBound : length < 2^64)
     (testReads : ∀ state : PanSemStateFiniteExact 64 Guest.HostMemory, ∀ current : BitVec 64,
       state.locals.lookup counter = some (.val (.word current)) →
-      state.locals.lookup limit = some (.val (.word (BitVec.ofNat 64 length))) → current.toNat ≤ length →
+      state.locals.lookup limit = snapshot → current.toNat ≤ length →
       evalHOLFinite state (h := fun address => Classical.propDecidable (state.memaddrs address)) test =
         some (.val (.word (if current.toNat < length then 1#64 else 0#64))))
     (priced : ClockCost.Bound code body price)
-    (advance : Advances counter 1 body) (safe : LocalPrefix limit body)
+    (advance : Advances counter 1 body) (safe : LocalFlow limit body)
     (source : PanSemStateFiniteExact 64 Guest.HostMemory) (word : BitVec 64)
     (installed : source.code = code)
     (counterCell : source.locals.lookup counter = some (.val (.word word)))
-    (limitCell : source.locals.lookup limit = some (.val (.word (BitVec.ofNat 64 length))))
+    (limitCell : source.locals.lookup limit = snapshot)
     (initial : word.toNat ≤ length) :
     source.clock - (evaluateHOLFiniteState source (.while test body)).2.clock ≤
       (price + 1) * (length - word.toNat) := by
   classical
   let invariant := fun state : PanSemStateFiniteExact 64 Guest.HostMemory =>
     ∃ current : BitVec 64, state.locals.lookup counter = some (.val (.word current)) ∧
-      state.locals.lookup limit = some (.val (.word (BitVec.ofNat 64 length))) ∧ current.toNat ≤ length
+      state.locals.lookup limit = snapshot ∧ current.toNat ≤ length
   let rank := fun state : PanSemStateFiniteExact 64 Guest.HostMemory => length - (counterWord state counter).toNat
   have progress : ∀ state : PanSemStateFiniteExact 64 Guest.HostMemory,
       state.code = code → invariant state → ∀ observed : BitVec 64,
@@ -55,12 +56,12 @@ theorem loop_cost_test (code) (counter limit : MlS) (test : ExpHOL 64) (body : P
     dsimp only
     intro continuing
     let output := evaluateHOLFiniteState (decClockHOLFinite state) body
-    have summary := safe.summary_full (decClockHOLFinite state)
-    unfold LocalSummary at summary
+    have summary := safe.summary (decClockHOLFinite state)
+    unfold FlowSummary at summary
     have normal : output.1 = none := by
       rcases continuing with normal | continued
       · exact normal
-      · exact (summary.2.2.2 continued).elim
+      · exact (summary.2.2 continued).elim
     have run : evaluateHOLFiniteState (decClockHOLFinite state) body = (none, output.2) := Prod.ext normal rfl
     have nextCell := advance (decClockHOLFinite state) output.2 current currentCell run
     have nextLimit := (summary.1 normal).trans lengthCell
@@ -75,6 +76,27 @@ theorem loop_cost_test (code) (counter limit : MlS) (test : ExpHOL 64) (body : P
   have bounded := ClockCost.ranked_loop code _ body price invariant rank priced progress source installed
     ⟨word, counterCell, limitCell, initial⟩
   simpa only [rank, counterWord, counterCell, Option.getD_some, valueWord] using bounded
+
+/-- Compatibility interface for a preserved scalar limit and no early return. -/
+theorem loop_cost_test (code) (counter limit : MlS) (test : ExpHOL 64) (body : ProgHOL 64) (price length : Nat)
+    (lengthBound : length < 2^64)
+    (testReads : ∀ state : PanSemStateFiniteExact 64 Guest.HostMemory, ∀ current : BitVec 64,
+      state.locals.lookup counter = some (.val (.word current)) →
+      state.locals.lookup limit = some (.val (.word (BitVec.ofNat 64 length))) → current.toNat ≤ length →
+      evalHOLFinite state (h := fun address => Classical.propDecidable (state.memaddrs address)) test =
+        some (.val (.word (if current.toNat < length then 1#64 else 0#64))))
+    (priced : ClockCost.Bound code body price)
+    (advance : Advances counter 1 body) (safe : LocalPrefix limit body)
+    (source : PanSemStateFiniteExact 64 Guest.HostMemory) (word : BitVec 64)
+    (installed : source.code = code)
+    (counterCell : source.locals.lookup counter = some (.val (.word word)))
+    (limitCell : source.locals.lookup limit = some (.val (.word (BitVec.ofNat 64 length))))
+    (initial : word.toNat ≤ length) :
+    source.clock - (evaluateHOLFiniteState source (.while test body)).2.clock ≤
+      (price + 1) * (length - word.toNat) := by
+  exact loop_snapshot_cost code counter limit (some (.val (.word (BitVec.ofNat 64 length))))
+    test body price length lengthBound testReads priced advance (.base safe)
+    source word installed counterCell limitCell initial
 
 /-- Unsigned counter comparison, sharing the same checked rank proof. -/
 theorem loop_cost (code) (counter limit : MlS) (body : ProgHOL 64) (price length : Nat)
@@ -135,3 +157,5 @@ end InitECandidate.Solver.Input.CounterFlow
 
 #print axioms InitECandidate.Solver.Input.CounterFlow.loop_cost_test
 #print axioms InitECandidate.Solver.Input.CounterFlow.signed_loop_cost
+
+#print axioms InitECandidate.Solver.Input.CounterFlow.loop_snapshot_cost

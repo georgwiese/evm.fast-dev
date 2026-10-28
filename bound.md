@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-rlp-actual-body-caller-main-check-v1.log`,1883jobs,
-permitted printed axioms only. Historical/current proof index:8223modules/
-16652facts; Solver inventory8262, replacement closure0, frozen main files
-unchanged. Incremental policy passes65033entries/2483403489bytes. These checks
+Latest successful selected closure: `current-rlp-public-body-caller-frame-v1.log`,848jobs,
+permitted printed axioms only. Historical/current proof index:8227modules/
+16662facts; Solver inventory8266, replacement closure0, frozen main files
+unchanged. Incremental policy passes65037entries/2483427465bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -201,8 +201,14 @@ remain historical until their current statements/dependencies are checked.
    store. Setup declarations, failed parses/allocations, stopped paths and
    exhausted clocks are included. The old Rlp.Validation.Arena.lower assumption
    remains unused and false for actual initialization.
-   Next: normal internal-validator memory/arena frame, actual caught release
-   wrapper, whole current header bounds and later callers. Recheck old
+   Normal internal and public-validator bodies return zero and preserve all
+   nonlocal state, including memory, globals and real arenas. Actual caught
+   failure handling cannot turn an internal failure into normal continuation.
+   The complete public saved-mark/caught-release wrapper and actual caller
+   now cost≤14*(length+1)+4/+5, and the normal ignored caller has the same
+   complete nonlocal frame. Shared caught-call inversion is FFI-state-generic.
+   Next: current item/list parser bounds and frames, then whole header bounds
+   and actual later callers. Recheck old
    limits against encodedLength+16*txCount≤251655056 and txCount≤12582752.
    Treat digest/output values generically when they do not affect runtime.
    Review dominant copy/zero and empty-progressive slack before the final K.

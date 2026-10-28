@@ -6,13 +6,13 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 /-- When the actual exception handler cannot fall through, a normal caught
 ignored call must come from the real callee return. No exception-shape fact
 or successful future callee execution is assumed. -/
-theorem ignored_caught_stops (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem ignored_caught_stops {F : Type} (source post : PanSemStateFiniteExact 64 F)
     (function : MlS) (arguments : List (ExpHOL 64)) (values : List (ValueHOL 64))
     (body : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
     (identifier parameter : MlS) (handler : ProgHOL 64)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some values)
     (called : lookupCodeHOLFinite source.code.lookup function values=some (body,callee,shape))
-    (stops : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,(evaluateHOLFiniteState current handler).1≠none)
+    (stops : ∀ current : PanSemStateFiniteExact 64 F,(evaluateHOLFiniteState current handler).1≠none)
     (normal : evaluateHOLFiniteState source (.call (some (none,some (identifier,parameter,handler))) function arguments)=(none,post)) :
     1≤source.clock ∧ ∃ target value,
       evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body=(some (.returned value),target) ∧

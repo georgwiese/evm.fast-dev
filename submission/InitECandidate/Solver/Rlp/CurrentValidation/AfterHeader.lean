@@ -21,7 +21,7 @@ theorem choose_none (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (afterCell : source.locals.lookup (ofString "after")=some (.val (.word (position+header+payload))))
     (positive : 1≤header.toNat+payload.toNat) (extent : header.toNat+payload.toNat≤(ending-position).toNat)
     (normal : evaluateHOLFiniteState source Validation.choose=(none,target)) :
-    ∃ next,State target next ending 1#64 ∧ position.toNat<next.toNat := by
+    ∃ next,State target next ending 1#64 ∧ position.toNat<next.toNat ∧ LocalEffects.erase target=LocalEffects.erase source := by
   rw [choose_evaluate source header payload flag hCell] at normal
   by_cases zero : flag=0#64
   · rw [if_neg (not_not_intro zero)] at normal
@@ -37,7 +37,7 @@ theorem choose_none (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     change evaluateHOLFiniteState source Validation.move=(none,bind source "pos" (position+header+payload)) at assigned
     have same : target=bind source "pos" (position+header+payload) := (Prod.mk.inj (normal.symm.trans assigned)).2
     rw [same]
-    exact ⟨position+header+payload,data.moved _ (by rw [nextNumber]; omega),by rw [nextNumber]; omega⟩
+    exact ⟨position+header+payload,data.moved _ (by rw [nextNumber]; omega),(by rw [nextNumber]; omega),rfl⟩
   · rw [if_pos zero] at normal
     exact False.elim (push_not_none source target data.arena (position+header+payload) afterCell normal)
 
@@ -48,7 +48,7 @@ theorem after_header_none (source target : PanSemStateFiniteExact 64 Guest.HostM
     (hCell : source.locals.lookup (ofString "h")=some (Header.result header payload flag))
     (positive : 1≤header.toNat+payload.toNat) (extent : header.toNat+payload.toNat≤(ending-position).toNat)
     (normal : evaluateHOLFiniteState source Validation.afterHeader=(none,target)) :
-    ∃ next,State target next ending 1#64 ∧ position.toNat<next.toNat := by
+    ∃ next,State target next ending 1#64 ∧ position.toNat<next.toNat ∧ LocalEffects.erase target=LocalEffects.erase source := by
   have payloadRead : eval source (.op .add [localVar "pos",.rfield 0 (localVar "h")])=some (.val (.word (position+header))) := by
     simp [eval,evalHOLExact,evalListHOLExact,localVar,toExact,data.positionCell,hCell,Header.result,valueIsWord,valueWord,wordOpHOL,wordOp]
   unfold Validation.afterHeader at normal
@@ -66,12 +66,14 @@ theorem after_header_none (source target : PanSemStateFiniteExact 64 Guest.HostM
   have afterHeader : afterState.locals.lookup (ofString "h")=some (Header.result header payload flag) :=
     (bind_lookup_other payloadState "after" "h" (position+header+payload) (by decide)).trans payloadHeader
   have afterCell : afterState.locals.lookup (ofString "after")=some (.val (.word (position+header+payload))) := bind_lookup_same payloadState "after" (position+header+payload)
-  obtain ⟨next,nextData,advances⟩ := choose_none afterState afterInner position ending header payload flag afterData afterHeader afterCell positive extent afterRun
+  obtain ⟨next,nextData,advances,frame⟩ := choose_none afterState afterInner position ending header payload flag afterData afterHeader afterCell positive extent afterRun
   have first:=nextData.restored payloadState "after" (by decide)
   rw [←afterRestore] at first
   have final:=first.restored source "payload" (by decide)
   rw [←payloadRestore] at final
-  exact ⟨next,final,advances⟩
+  refine ⟨next,final,advances,?_⟩
+  rw [payloadRestore,afterRestore]
+  exact frame
 
 end InitECandidate.Solver.Rlp.CurrentValidation
 

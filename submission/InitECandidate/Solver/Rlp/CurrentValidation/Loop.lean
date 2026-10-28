@@ -53,7 +53,7 @@ theorem loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (positio
       have noContinue:=(Validation.loop_body_prefix.summary_full (decClockHOLFinite current)).2.2.2
       have actualNone : (evaluateHOLFiniteState (decClockHOLFinite current) Validation.loopBody).1=none := continuing.resolve_right noContinue
       have currentData:=data.at_clock (current.clock-1)
-      obtain ⟨next,nextGo,nextData,smaller⟩ := loop_body_none (decClockHOLFinite current) (evaluateHOLFiniteState (decClockHOLFinite current) Validation.loopBody).2
+      obtain ⟨next,nextGo,nextData,smaller,frame⟩ := loop_body_none (decClockHOLFinite current) (evaluateHOLFiniteState (decClockHOLFinite current) Validation.loopBody).2
         position ending currentData (Prod.ext actualNone rfl)
       refine ⟨⟨next,nextGo,nextData⟩,?_⟩
       rw [nextData.rank_eq,data.rank_eq]

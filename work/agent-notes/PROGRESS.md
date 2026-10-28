@@ -4,6 +4,31 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual public RLP validator cost and normal memory/arena frame
+
+The public unchanged rlp_validate_items body/caller now cost≤14*(length+1)+4
+/+5 source ticks, including actual saved mark, caught RLP-error release/raise,
+normal release/return and every stopped outcome. The internal and public bodies
+return zero and preserve all nonlocal state on real normal returns. The actual
+ignored public caller supplies that same complete memory/global/arena/heap frame.
+No later successful parser or extra allocation room is assumed.
+
+Continuing step proofs retain their exact nonlocal frame. Generic loop-invariant
+composition carries it through actual normal exits and all four local scopes.
+The real handler cannot fall through or return, so caught normal calls derive
+the same internal body return. Release reinstalls the actual unchanged entering
+cursor. Scratch mark/release syntax uses current Software; shared caught-call
+inversion works for any FFI state, removing an accidental Guest import.
+
+Validation: current-rlp-public-body-caller-frame-v1.log PASS848jobs/permitted
+printed axioms. Index8227modules/16662facts; inventory8266/replacement closure0/
+frozen main unchanged. Incremental policy65037entries/2483427465bytes PASS.
+No global finite target K/full verification; claim infinity.
+Next: isolate shared current item/list syntax from old mapped-arena contracts,
+then current item/list/header bounds and normal frames, actual later paths and
+target compilation/global literal K. Resource guard8GiB/twoslots/cachefalse;
+account3%weekly,0resetcredits, ordinary usage allowed.
+
 ## Complete actual internal RLP validator source body/caller bound
 
 The unchanged _rlp_validate_items_body now costs≤14*(length+1) source ticks;

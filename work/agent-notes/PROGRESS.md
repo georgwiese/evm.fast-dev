@@ -3622,3 +3622,30 @@ complete body/literal decoded-input cost, actual normal result/caller frames
 and existing main node trace. Permitted printed axioms only. Index8578modules/
 17383facts; inventory8623/replacement closure0/fixed files unchanged. No global
 finite target K/full verification. Usage22%weekly/0resetcredits.
+
+## Both real databases and complete main prefix to state_init
+
+The actual node/code scoped callers now cost≤1661620382source ticks apiece
+or resume the original continuation with their genuine physical tables and
+complete decoded SI/payload/gas/witness context. Every caller's other locals
+are retained. Normal results protect all previously allocated memory up to
+the actual incoming heap, rather than just main's older root boundary.
+A finite-interval Patricia frame and complete prior-result transport prove
+that building the code database preserves the already built node database.
+Shared header/node/leaf image assembly now lives once in ImageCells; the
+older lower-frontier frame reuses it instead of duplicating that proof.
+
+The exact original two-call sequence costs≤3323240764source prefix ticks or
+reaches state_init with both images and real nodedb/codedb locals. Composing
+the actual header/gas prefix gives≤3374769154source ticks from run_attempt
+entry to state_init, or a genuine earlier stop with the original outcome.
+The actual afterCodes continuation, final clock and full nonlocal observation
+are retained. No future database/state/EVM completion is supplied.
+
+Validation: current-main-to-state-init-v1.log PASS2519jobs, with both database
+calls, current main/header/decoder path, exact finite-region image frames,
+normal caller data and prior-database preservation. Permitted printed axioms
+only. Index8589modules/17396facts; inventory8634/replacement closure0/fixed
+files unchanged. No global finite target K/full verification. Usage23%weekly,
+0resetcredits. Next: current state_init/decode-witness lookup and later actual
+payload/header/EVM source paths, then uniform target-step composition.

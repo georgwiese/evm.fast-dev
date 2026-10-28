@@ -1,4 +1,5 @@
-import InitECandidate.Solver.Input.ProgressiveProgram
+import InitECandidate.Solver.Input.CurrentHash.ProgressiveProgram
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 
 namespace InitECandidate.Solver.Input.Progressive
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

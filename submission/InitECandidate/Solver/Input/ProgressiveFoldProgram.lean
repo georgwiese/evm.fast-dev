@@ -1,5 +1,7 @@
-import InitECandidate.Solver.Input.ProgressiveProgram
+import InitECandidate.Solver.Input.CurrentHash.ProgressiveProgram
+import InitECandidate.Solver.Input.CurrentHash.Sha256Pair
 import InitECandidate.Solver.Input.AssignNormal
+import InitECandidate.Solver.Input.NoneControl
 
 namespace InitECandidate.Solver.Input.Progressive
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -34,7 +36,7 @@ theorem fold_shape : foldLoop=.while foldTest foldStep ∧
     afterFold=.seq (.call (some (none,none)) (ofString "memcpy") outputArguments)
       (.seq (.call (some (none,none)) (ofString "heap_release") [localVar "mark"]) (.return (.const 0#64))) := by
   simp only [foldLoop,foldStep,afterMark,afterRoots,afterAcc,afterK,afterOff,loopAndSuffix,afterLoop,afterZeroAcc,afterFold,
-    loop,BuildProgram.loops,body,Guest.guestFn_merkleize_progressive,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    loop,BuildProgram.loops,body,Guest.Software.guestFn_merkleize_progressive,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     List.append_nil,List.nil_append,List.cons_append,List.getElem?_cons_zero,List.getElem?_cons_succ,Option.getD_some,Option.map_none,
     foldTest,decrement,decrementExpression,foldArguments,zeroArguments,outputArguments,localVar]
   exact ⟨True.intro,True.intro,True.intro,True.intro,True.intro,True.intro⟩
@@ -46,8 +48,9 @@ theorem fold_other (key : MlS) (different : key≠ofString "k") : LocalPrefix ke
 theorem fold_globals (key : MlS) (code) (installed : OriginalCode.Installed code) : GlobalEffects.Preserves key code foldStep := by
   rw [fold_shape.2.1]
   exact GlobalEffects.sequence key code _ _ (GlobalEffects.assign key code _ _)
-    (GlobalEffects.call_body key code (some none) (ofString "sha256_pair") foldArguments ShaFixedCost.pairFormals ShaFixedCost.pairBody .one
-      (ShaFixedCost.pair_code code installed) (ShaFixedCost.pair_globals key code installed))
+    (GlobalEffects.call_body key code (some none) (ofString "sha256_pair") foldArguments
+      (CurrentHash.Code.formals .sha256_pair) (CurrentHash.Code.body .sha256_pair) (CurrentHash.Code.shape .sha256_pair)
+      (CurrentHash.Code.installed code installed .sha256_pair) (CurrentHash.Sha256Pair.any_key key code))
 
 theorem decrement_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (k : Nat) (positive : 0<k) (small : k<2^64)
     (round : source.locals.lookup (ofString "k")=some (.val (.word (BitVec.ofNat 64 k)))) :

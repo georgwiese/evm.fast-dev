@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CurrentHash.ProgressiveEntry
 import InitECandidate.Solver.Input.ProgressiveUpdates
 import InitECandidate.Solver.Input.MerkleCallHeap
 
@@ -24,20 +25,6 @@ structure Geometry (p roots cursor zeros : BitVec 64) (n : Nat) : Prop where
   temporary : AllocatedBytes.Arena cursor (64*n+32)
   aligned : cursor.toNat%8=0
   tableArena : AllocatedBytes.Arena zeros 2048
-
-theorem pair_entry_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (n off size : Nat) :
-    CeilLog2.frozen (pairEntry source n off size)=CeilLog2.frozen source ∧ (pairEntry source n off size).clock=source.clock :=
-  capped_frame (bind source "cnt" (BitVec.ofNat 64 (n-off))) size (n-off)
-
-theorem pair_entry_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (n off size : Nat) (name : String)
-    (different : ofString "cnt"≠ofString name) :
-    (pairEntry source n off size).locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
-  (capped_other (bind source "cnt" (BitVec.ofNat 64 (n-off))) size (n-off) name different).trans
-    (bind_lookup_other source "cnt" name (BitVec.ofNat 64 (n-off)) different)
-
-theorem pair_entry_count (source : PanSemStateFiniteExact 64 Guest.HostMemory) (n off size : Nat) :
-    (pairEntry source n off size).locals.lookup (ofString "cnt")=some (.val (.word (BitVec.ofNat 64 (min size (n-off))))) :=
-  capped_count (bind source "cnt" (BitVec.ofNat 64 (n-off))) size (n-off) (bind_lookup_same _ _ _)
 
 theorem RoundState.pair (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p roots cursor zeros stp accel : BitVec 64) (n k : Nat)
     (actual : RoundState source p roots cursor zeros stp accel n k) :

@@ -1,0 +1,30 @@
+{
+  "previous_head": "9b76123b0351e197397b2a40c3c9f64058ae3935",
+  "comparisons": [
+    {
+      "old_root": "InitECandidate.Solver.Input.ProgressiveBudget",
+      "current_root": "InitECandidate.Solver.Input.ProgressiveBudget",
+      "old_solver_closure": 562,
+      "current_solver_closure": 1
+    },
+    {
+      "old_root": "InitECandidate.Solver.Input.ProgressiveProgram",
+      "current_root": "InitECandidate.Solver.Input.CurrentHash.ProgressiveProgram",
+      "old_solver_closure": 568,
+      "current_solver_closure": 35
+    },
+    {
+      "old_root": "InitECandidate.Solver.Input.ProgressiveUpdates",
+      "current_root": "InitECandidate.Solver.Input.ProgressiveUpdates",
+      "old_solver_closure": 570,
+      "current_solver_closure": 37
+    },
+    {
+      "old_root": "InitECandidate.Solver.Input.ProgressiveFoldProgram",
+      "current_root": "InitECandidate.Solver.Input.ProgressiveFoldProgram",
+      "old_solver_closure": 569,
+      "current_solver_closure": 62
+    }
+  ],
+  "scope": "Static Solver import closures with the six changed historical modules restored to previous HEAD for the old comparison; no runtime/full-verification claim."
+}

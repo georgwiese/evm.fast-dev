@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-byte-hash-callers-v2.log`,1608jobs,
-permitted printed axioms only. Historical/current proof index:8051modules/
-16100facts; Solver inventory8090, replacement closure0, frozen main files
-unchanged. Incremental policy passes64859entries/2482482437bytes. These checks
+Latest successful selected closure: `current-progressive-complete-cost-v1.log`,1623jobs,
+permitted printed axioms only. Historical/current proof index:8061modules/
+16131facts; Solver inventory8100, replacement closure0, frozen main files
+unchanged. Incremental policy passes64869entries/2482529559bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -114,8 +114,10 @@ remain historical until their current statements/dependencies are checked.
    without room/mapping/success hypotheses. Its minimal syntax import closure
    shrinks593→27Solver modules. Complete current byte-list/vector bodies and real ABI callers now compose
    packing, current Merkle, release and length mix, including the actual short
-   vector branch. Progressive helpers and full request-hash composition remain
-   open, together with ownership/resource frames at their real callers.
+   vector branch. Complete current progressive body/caller now costs≤88*n+3120/3121 for
+   actual n≤134217728 and the same non-timeout observation, deriving≤15rounds
+   and actual fold count. Progressive list/byte/container wrappers, full
+   request-hash composition and real ownership/resource frames remain open.
    Current sha256_pair now has a checked syntax certificate: it preserves all
    globals, spends0body source ticks and at most1caller tick on all outcomes.
    Its1,022-line generated effect proof is now50lines, using shared structural
@@ -150,7 +152,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:24%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:25%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

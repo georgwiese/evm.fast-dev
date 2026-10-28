@@ -4,6 +4,36 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete current progressive hashing body and caller now check
+
+The actual geometric step uses its real capped count, Merkle limit4^k, pointer
+expressions and three counter updates. Continuing executions derive precisely
+the next round, without heap/mapping/workspace premises. Actual n≤134217728
+implies at most15rounds. A potential88*(n-off)+200*(15-k) pays each round and its
+actual consumed chunks; the normal loop supplies the terminal fold count.
+
+The current fold spends≤2ticks/root on every outcome. Its clear/fold/output/release
+suffix costs≤2*k+85. Actual constant declarations establish round0; all three
+real mark/roots/acc allocation scopes include failed and partial paths. Complete
+current progressive body/caller cost≤88*n+3120/3121 for the same observed
+non-timeout execution. No successful hash, allocator room, mapped arena, obsolete
+accelerator state or future funding is assumed. Target straight-line work and
+whole request/payload composition remain open.
+
+Cleanup separates current syntax, pure cap/update/counter facts and ABI from the
+historical accelerator-dependent frames. Old wrappers retain their names/imports
+for historical consumers; their old runtime proofs are not claimed current.
+Solver import closures: pure geometric budget562→1, current program568→35,
+updates570→37, fold program569→62 (old comparison restores six changed sources
+to previous HEAD). ObserveDeclaration shares actual arbitrary-outcome scalar
+scope inversion and lexical restoration.
+
+Validation: current-progressive-complete-cost-v1.log PASS1623jobs/permitted printed
+axioms;8GiBguard/twoslots/cachefalse. Index8061modules/16131facts; account25%weekly/
+0resetcredits. No global finite target K; claim infinity; no full verification.
+Next: progressive list/byte/container wrappers, physical memory frames and complete
+actual payload/request-root hashing.
+
 ## Complete current byte-list/vector hash bodies and callers now check
 
 BytesListCost composes the actual mark, packing, real returned tuple, Merkle,

@@ -43,7 +43,7 @@ with its real24-round permutation and full workspace/output memory frame.
 Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
 covering both allocations and all decode/hash/link loops. Actual normal/scoped
 returns supply the real arrays, advanced physical context and protected input.
-Selected2198-job current main/root/table and find-leaf helper replay passed. The
+Selected2206-job current main/root/table and find-leaf helper replay passed. The
 actual first three initializer calls derive Keccak state2701132160 and pad2701132360;
 these globals survive startup, decoding and the31-helper root graph. Real decoded
 witness images supply the header rows and full caller context. Header returns
@@ -101,6 +101,11 @@ model proves common-prefix preservation and excludes insertion stopping at
 a bit equal to the real first mismatch. Actual htab_set126 entry/search
 syntax is checked. Insertion history still must establish/preserve this
 routing model, node availability and full physical keys after updates.
+The real insertion second-search step and loop now check:≤257source ticks,
+with the actual d/p/key locals and original parent update. Normal exits
+retain the real parent edge, route to the earlier lookup leaf and b≥d;
+that earlier actual first mismatch strengthens it to b>d. Lookup and
+insertion share only a thin physical cursor, with their own real guards.
 
 Checked against current Software syntax and declaration entries:
 
@@ -150,10 +155,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-routes-set-syntax-v1.log`,2198jobs,
-permitted printed axioms only. Historical/current proof index:8458modules/
-17113facts; inventory8502modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65286entries/2484340197bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-shared-cursor-search-bound-v1.log`,2206jobs,
+permitted printed axioms only. Historical/current proof index:8461modules/
+17121facts; inventory8505modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65289entries/2484362643bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

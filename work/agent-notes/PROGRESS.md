@@ -3269,3 +3269,31 @@ Next: real second-search cursor/exit and insertion writes/image, workspace
 separation, remaining main paths and target composition. Overall estimate40%,
 plausible30–50%. Five old unfinished RLP files preserved untracked. Account15%
 weekly used, zero reset credits, ordinary usage allowed.
+
+
+## Actual insertion second search, cost and strict exit — 2026-10-28
+
+The unchanged htab_set126 second-search step now executes with its actual
+d/p/key locals. At b≥d it breaks; otherwise it records the real parent and
+selects the same physical query-directed child as the earlier lookup. Exact
+binding restoration, current header/node reads and short-clock loop outcomes
+are included. The whole search costs≤257source ticks. A real normal exit
+retains the actual parent edge, earlier lookup suffix route, node image and
+b≥d; the genuine earlier first mismatch makes this b>d. This supplies the
+strict split ordering needed for the subsequent new node links.
+
+Cleanup shares one physical n/nodes cursor between lookup and insertion.
+The functions retain their own real locals/guards; insertion is not required
+to have the other function's keybits binding. Actual setup into this search,
+leaf/internal writes and preserved insertion image remain to connect.
+
+Validation: current-patricia-shared-cursor-search-bound-v1.log PASS2206jobs,
+permitted printed axioms only, with existing lookup/first-difference/allocator
+callers, constructor/database/current main and root. Index8461modules/17121
+facts; inventory8505, replacement AST reverse closure0, fixed files unchanged.
+Incremental policy PASS65289entries/2484362643bytes; no full verification,
+claim infinity, no global target K. Next: actual insertion search entry and
+new leaf/internal writes, preserved tree/key image; workspace separation,
+later main paths and target composition. Overall estimate40%, plausible30–50%.
+Five old unfinished RLP files preserved untracked. Account15%weekly used,
+zero reset credits, ordinary usage allowed.

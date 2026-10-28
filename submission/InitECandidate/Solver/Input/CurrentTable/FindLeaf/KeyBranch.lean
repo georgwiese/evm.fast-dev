@@ -1,15 +1,20 @@
 import InitECandidate.Solver.Input.CurrentTable.FindLeaf.Step
 import InitECandidate.Solver.Input.CurrentTable.KeyRead
+import InitECandidate.Solver.Input.CurrentTable.Cursor
 
 namespace InitECandidate.Solver.Input.CurrentTable.FindLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
+theorem State.cursor {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base node : BitVec 64}
+    (ready : State origin source base node) : Cursor origin source base node :=
+  ⟨ready.frame,ready.nodeCell,ready.baseCell⟩
+
 /-- With real physical query bytes, the actual internal branch chooses its
 zero/one child according to the current most-significant-first key bit. -/
 theorem branch_execute {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base node : BitVec 64}
     {valid : BitVec 64 → Prop} {bits : BitVec 64 → Nat} {left right : BitVec 64 → BitVec 64}
-    (image : Nodes origin base valid bits left right) (ready : State origin source base node)
+    (image : Nodes origin base valid bits left right) (ready : Cursor origin source base node)
     (member : valid node) (internal : bits node < 256) (pointer : BitVec 64) (query : KeyBits.Key)
     (keyCell : source.locals.lookup (ofString "key") = some (.val (.word pointer)))
     (bitCell : source.locals.lookup (ofString "b") = some (.val (.word (BitVec.ofNat 64 (bits node)))))
@@ -53,7 +58,7 @@ theorem step_execute {origin source : PanSemStateFiniteExact 64 Guest.HostMemory
   have state := ready.with_bit (BitVec.ofNat 64 (bits node))
   have afterRun := after_bit_execute entered (bits node) (image.bitBound node member) (bind_lookup_same _ _ _) state.bitsCell
   rw [if_neg (show bits node ≠ 256 from by omega)] at afterRun
-  have branchRun := branch_execute image state member internal pointer query
+  have branchRun := branch_execute image state.cursor member internal pointer query
     ((bind_lookup_other source "b" "key" _ (by decide)).trans keyCell) (bind_lookup_same _ _ _) (view.of_frame rfl)
   have run : evaluateHOLFiniteState entered afterBit = (none,bind entered "n" child) := afterRun.trans branchRun
   have actual := ScalarScope.declare_execute source (bind entered "n" child) "b" (.load .one (address 24))

@@ -1,11 +1,7 @@
 import InitECandidate.Solver.Input.CurrentHash.Base
-import InitECandidate.Solver.Input.CurrentStartup.Alloc
+import InitECandidate.Solver.Input.CurrentHash.SharedEffects
 import InitECandidate.Solver.Input.CurrentHash.CeilLog2
-import InitECandidate.Solver.Input.CurrentStartup.HeapMark
-import InitECandidate.Solver.Input.CurrentStartup.HeapRelease
 import InitECandidate.Solver.Input.CurrentHash.Max
-import InitECandidate.Solver.Input.CurrentStartup.Memcpy
-import InitECandidate.Solver.Input.CurrentStartup.Memzero
 import InitECandidate.Solver.Input.CurrentHash.Sha256Pair
 
 namespace InitECandidate.Solver.Input.CurrentHash
@@ -31,20 +27,20 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   (GlobalEffects.conditional (key cursor) code _ _ _
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.call_body (key cursor) code (some none) (Code.name .memcpy) _ (Code.formals .memcpy) (Code.body .memcpy) (Code.shape .memcpy)
-  (Code.installed code installed .memcpy) (CurrentStartup.Memcpy.preserves cursor code installed))
+  (Code.installed code installed .memcpy) (SharedEffects.Memcpy.preserves cursor code installed))
   (GlobalEffects.returned (key cursor) code _))
   (GlobalEffects.skip (key cursor) code))
   (GlobalEffects.scoped_body (key cursor) code _ _ (Code.name .heap_mark) _ _ (Code.formals .heap_mark) (Code.body .heap_mark) (Code.shape .heap_mark)
-  (Code.installed code installed .heap_mark) (CurrentStartup.HeapMark.preserves cursor code installed)
+  (Code.installed code installed .heap_mark) (SharedEffects.HeapMark.preserves cursor code installed)
   (GlobalEffects.declared (key cursor) code _ _ _ _
   (GlobalEffects.scoped_body (key cursor) code _ _ (Code.name .alloc) _ _ (Code.formals .alloc) (Code.body .alloc) (Code.shape .alloc)
-  (Code.installed code installed .alloc) (CurrentStartup.Alloc.preserves cursor code installed)
+  (Code.installed code installed .alloc) (SharedEffects.Alloc.preserves cursor code installed)
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.call_body (key cursor) code (some none) (Code.name .memcpy) _ (Code.formals .memcpy) (Code.body .memcpy) (Code.shape .memcpy)
-  (Code.installed code installed .memcpy) (CurrentStartup.Memcpy.preserves cursor code installed))
+  (Code.installed code installed .memcpy) (SharedEffects.Memcpy.preserves cursor code installed))
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.call_body (key cursor) code (some none) (Code.name .memzero) _ (Code.formals .memzero) (Code.body .memzero) (Code.shape .memzero)
-  (Code.installed code installed .memzero) (CurrentStartup.Memzero.preserves cursor code installed))
+  (Code.installed code installed .memzero) (SharedEffects.Memzero.preserves cursor code installed))
   (GlobalEffects.declared (key cursor) code _ _ _ _
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.loop (key cursor) code _ _
@@ -66,10 +62,10 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   (GlobalEffects.assign (key cursor) code _ _)))
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.call_body (key cursor) code (some none) (Code.name .memcpy) _ (Code.formals .memcpy) (Code.body .memcpy) (Code.shape .memcpy)
-  (Code.installed code installed .memcpy) (CurrentStartup.Memcpy.preserves cursor code installed))
+  (Code.installed code installed .memcpy) (SharedEffects.Memcpy.preserves cursor code installed))
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.call_body (key cursor) code (some none) (Code.name .heap_release) _ (Code.formals .heap_release) (Code.body .heap_release) (Code.shape .heap_release)
-  (Code.installed code installed .heap_release) (CurrentStartup.HeapRelease.preserves cursor code installed))
+  (Code.installed code installed .heap_release) (SharedEffects.HeapRelease.preserves cursor code installed))
   (GlobalEffects.returned (key cursor) code _))))))))))))))))
 
 end Merkleize

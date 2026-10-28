@@ -1,0 +1,78 @@
+import InitECandidate.Solver.Input.CurrentHash.Sha256Pair
+import InitECandidate.Solver.Input.ByteOutputFrame
+import InitECandidate.Solver.WitnessRadix.CodeEnvironment
+
+namespace InitECandidate.Solver.Input.CurrentHash.Sha256Memory
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix
+
+-- The expanded software pair's only writes are its32output bytes.
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem supported : ByteOutputFrame.accepts (ofString "out") 32 (Code.body .sha256_pair) = true := by
+  simp only [Code.body, Code.entry, Code.declaration, GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL, funDeclToHOL, Guest.Software.guestFn_sha256_pair, progToHOL, expToHOL,
+    shapeToHOL, List.map_cons, List.map_nil, Option.map_some, Option.map_none]
+  rfl
+
+/-- Every body outcome preserves words outside the output. There are no
+mutable SHA globals, accelerator buffers or successful-read premises. -/
+theorem body_memory (source : PanSemStateFiniteExact 64 Guest.HostMemory) (out query : BitVec 64)
+    (cell : source.locals.lookup (ofString "out") = some (.val (.word out)))
+    (away : ∀ offset : Nat, offset < 32 → query ≠ panByteAlignHOL (width := 64) (out + BitVec.ofNat 64 offset)) :
+    (evaluateHOLFiniteState source (Code.body .sha256_pair)).2.memory query = source.memory query :=
+  (ByteOutputFrame.sound (ofString "out") 32 (Code.body .sha256_pair) supported out query away source cell).1
+
+def values (a b out : BitVec 64) : List (ValueHOL 64) := [.val (.word a), .val (.word b), .val (.word out)]
+
+theorem environment (code) (installed : OriginalCode.Installed code) (a b out : BitVec 64) :
+    ∃ callee : HolFiniteMapExact MlS (ValueHOL 64),
+      lookupCodeHOLFinite code.lookup (Code.name .sha256_pair) (values a b out) =
+        some (Code.body .sha256_pair, callee, Code.shape .sha256_pair) ∧
+      callee.lookup (ofString "out") = some (.val (.word out)) := by
+  have entry := Code.installed code installed .sha256_pair
+  let raw : MlS → Option (ValueHOL 64) := fun name =>
+    if name = ofString "out" then some (.val (.word out))
+    else if name = ofString "input_b" then some (.val (.word b))
+    else if name = ofString "input_a" then some (.val (.word a)) else none
+  have lookup : lookupCodeHOLExact code.lookup (Code.name .sha256_pair) (values a b out) =
+      some (Code.body .sha256_pair, raw, Code.shape .sha256_pair) := by
+    have formals : Code.formals .sha256_pair = [(ofString "input_a", .one), (ofString "input_b", .one), (ofString "out", .one)] := by
+      simp only [Code.formals, Code.entry, Code.declaration, GasBudget.OriginalCodeEnvironment.originalEntry,
+        declToHOL, funDeclToHOL, Guest.Software.guestFn_sha256_pair, paramToHOL, shapeToHOL, List.map_cons, List.map_nil]
+    have valid : ((Code.formals .sha256_pair).map Prod.fst).Nodup ∧
+        (Code.formals .sha256_pair).length = (values a b out).length ∧
+        ((Code.formals .sha256_pair).zip (values a b out)).all (fun pair => shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2)) = true := by
+      rw [formals]
+      refine ⟨by decide, rfl, ?_⟩
+      simp [values, shapeEqHOL, shapeOfHOLExact]
+    simp only [lookupCodeHOLExact, entry]
+    rw [if_pos valid, formals]
+    rfl
+  obtain ⟨callee, called, locals⟩ := CodeEnvironment.finite_lookup code.lookup _ _ _ _ _ lookup
+  exact ⟨callee, called, by rw [locals]; simp [raw, FUPDATE]⟩
+
+/-- The real normally continuing ignored caller inherits the memory frame.
+The actual ABI identifies the output local in that same callee invocation. -/
+theorem call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (a b out query : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) arguments = some (values a b out))
+    (away : ∀ offset : Nat, offset < 32 → query ≠ panByteAlignHOL (width := 64) (out + BitVec.ofNat 64 offset))
+    (actual : evaluateHOLFiniteState source (.call (some (none, none)) (Code.name .sha256_pair) arguments) = (none, post)) :
+    post.memory query = source.memory query := by
+  obtain ⟨callee, called, output⟩ := environment source.code installed a b out
+  exact MemoryAt.call_normal source post (Code.name .sha256_pair) arguments (values a b out)
+    (Code.body .sha256_pair) callee (Code.shape .sha256_pair) query args called
+    (by intro target value returned
+        have same := body_memory (callEntryStateHOLFinite source callee) out query output away
+        rw [returned] at same
+        exact same) actual
+
+end InitECandidate.Solver.Input.CurrentHash.Sha256Memory
+
+#print axioms InitECandidate.Solver.Input.CurrentHash.Sha256Memory.supported
+#print axioms InitECandidate.Solver.Input.CurrentHash.Sha256Memory.body_memory
+#print axioms InitECandidate.Solver.Input.CurrentHash.Sha256Memory.environment
+#print axioms InitECandidate.Solver.Input.CurrentHash.Sha256Memory.call_memory

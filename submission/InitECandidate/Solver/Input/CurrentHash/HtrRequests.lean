@@ -1,7 +1,5 @@
 import InitECandidate.Solver.Input.CurrentHash.Base
-import InitECandidate.Solver.Input.CurrentStartup.Alloc
-import InitECandidate.Solver.Input.CurrentStartup.HeapMark
-import InitECandidate.Solver.Input.CurrentStartup.HeapRelease
+import InitECandidate.Solver.Input.CurrentHash.SharedEffects
 import InitECandidate.Solver.Input.CurrentHash.HtrPcontainer
 import InitECandidate.Solver.Input.CurrentHash.HtrRequestList
 
@@ -19,9 +17,9 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
     declToHOL, funDeclToHOL, Guest.Software.guestFn_htr_requests, progToHOL, expToHOL,
     shapeToHOL, List.map_cons, List.map_nil, Option.map_some, Option.map_none]
   exact (GlobalEffects.scoped_body (key cursor) code _ _ (Code.name .heap_mark) _ _ (Code.formals .heap_mark) (Code.body .heap_mark) (Code.shape .heap_mark)
-  (Code.installed code installed .heap_mark) (CurrentStartup.HeapMark.preserves cursor code installed)
+  (Code.installed code installed .heap_mark) (SharedEffects.HeapMark.preserves cursor code installed)
   (GlobalEffects.scoped_body (key cursor) code _ _ (Code.name .alloc) _ _ (Code.formals .alloc) (Code.body .alloc) (Code.shape .alloc)
-  (Code.installed code installed .alloc) (CurrentStartup.Alloc.preserves cursor code installed)
+  (Code.installed code installed .alloc) (SharedEffects.Alloc.preserves cursor code installed)
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.call_body (key cursor) code (some none) (Code.name .htr_request_list) _ (Code.formals .htr_request_list) (Code.body .htr_request_list) (Code.shape .htr_request_list)
   (Code.installed code installed .htr_request_list) (HtrRequestList.preserves cursor code installed))
@@ -42,7 +40,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   (Code.installed code installed .htr_pcontainer) (HtrPcontainer.preserves cursor code installed))
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.call_body (key cursor) code (some none) (Code.name .heap_release) _ (Code.formals .heap_release) (Code.body .heap_release) (Code.shape .heap_release)
-  (Code.installed code installed .heap_release) (CurrentStartup.HeapRelease.preserves cursor code installed))
+  (Code.installed code installed .heap_release) (SharedEffects.HeapRelease.preserves cursor code installed))
   (GlobalEffects.returned (key cursor) code _))))))))))
 
 end HtrRequests

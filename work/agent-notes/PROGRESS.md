@@ -4,6 +4,33 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual hash callee data and software SHA memory frame now check
+
+CurrentHash's shared effects bridge reuses8startup helper proofs for all five
+retained globals: scratch/frame cursors and offsets/length-chunk/zero-hash pointers.
+The complete31-helper body/caller closure now preserves all five on every outcome.
+Workspace.after_body/after_call carry the real installed code/domain/endian and
+workspace extents, without successful future hashes or memory-read premises.
+
+Invocation identifies the actual two-word request-hash ABI and callee. From the
+same RootEntry.Ready it carries full payload image, SI0/8/16/24/32physical cells,
+mapped/aligned SI/root arenas and real heap/root/array separation. A non-timeout
+observation of the enclosing unchanged main suffix derives funding and the same
+callee's non-timeout execution; no unrelated existential invocation is substituted.
+
+ByteOutputFrame has a compact checked syntax recognizer and structural all-outcome
+memory-frame theorem for stable-local byte-output bodies. Sha256Memory checks the
+expanded current Software.sha256_pair: only its32output bytes can change memory.
+Its actual normal caller inherits that frame through the same ABI. No SHA global
+state, accelerator buffer, input mapping or successful-read assumption is needed.
+This replaces the old accelerator-dependent frame for current hash composition;
+large straight-line target work remains open.
+
+Validation: current-hash-physical-entry-v3.log PASS1540jobs/permitted printed
+axioms;8GiBguard/twoslots/cachefalse. Index8032modules/16023facts. No global finite
+target K; claim infinity, no full verification. Account23%weekly/0resetcredits.
+Next: compose current byte/hash helper and loop costs with actual resource bounds.
+
 ## Real SSZ workspaces now reach the whole-source hash caller
 
 A single three-key OffsetsFrame proof now preserves offsets, length-chunk and

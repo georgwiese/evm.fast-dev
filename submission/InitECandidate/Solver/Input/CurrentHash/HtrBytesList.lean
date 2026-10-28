@@ -1,6 +1,5 @@
 import InitECandidate.Solver.Input.CurrentHash.Base
-import InitECandidate.Solver.Input.CurrentStartup.HeapMark
-import InitECandidate.Solver.Input.CurrentStartup.HeapRelease
+import InitECandidate.Solver.Input.CurrentHash.SharedEffects
 import InitECandidate.Solver.Input.CurrentHash.Merkleize
 import InitECandidate.Solver.Input.CurrentHash.MixInLength
 import InitECandidate.Solver.Input.CurrentHash.PackBytes
@@ -19,7 +18,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
     declToHOL, funDeclToHOL, Guest.Software.guestFn_htr_bytes_list, progToHOL, expToHOL,
     shapeToHOL, List.map_cons, List.map_nil, Option.map_some, Option.map_none]
   exact (GlobalEffects.scoped_body (key cursor) code _ _ (Code.name .heap_mark) _ _ (Code.formals .heap_mark) (Code.body .heap_mark) (Code.shape .heap_mark)
-  (Code.installed code installed .heap_mark) (CurrentStartup.HeapMark.preserves cursor code installed)
+  (Code.installed code installed .heap_mark) (SharedEffects.HeapMark.preserves cursor code installed)
   (GlobalEffects.scoped_body (key cursor) code _ _ (Code.name .pack_bytes) _ _ (Code.formals .pack_bytes) (Code.body .pack_bytes) (Code.shape .pack_bytes)
   (Code.installed code installed .pack_bytes) (PackBytes.preserves cursor code installed)
   (GlobalEffects.sequence (key cursor) code _ _
@@ -27,7 +26,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   (Code.installed code installed .merkleize) (Merkleize.preserves cursor code installed))
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.call_body (key cursor) code (some none) (Code.name .heap_release) _ (Code.formals .heap_release) (Code.body .heap_release) (Code.shape .heap_release)
-  (Code.installed code installed .heap_release) (CurrentStartup.HeapRelease.preserves cursor code installed))
+  (Code.installed code installed .heap_release) (SharedEffects.HeapRelease.preserves cursor code installed))
   (GlobalEffects.sequence (key cursor) code _ _
   (GlobalEffects.call_body (key cursor) code (some none) (Code.name .mix_in_length) _ (Code.formals .mix_in_length) (Code.body .mix_in_length) (Code.shape .mix_in_length)
   (Code.installed code installed .mix_in_length) (MixInLength.preserves cursor code installed))

@@ -59,10 +59,10 @@ folder.mkdir(exist_ok=True)
 startup_code=(ROOT/'submission/InitECandidate/Solver/Input/CurrentStartup/Code.lean').read_text()
 shared=set(re.findall(r'  \| \.(\w+) => Guest\.Software\.guestFn_',startup_code))
 def provider(name):
-    return ('InitECandidate.Solver.Input.CurrentStartup.' if name in shared else
-            'InitECandidate.Solver.Input.CurrentHash.')+module(name)
+    return ('InitECandidate.Solver.Input.CurrentHash.SharedEffects' if name in shared else
+            'InitECandidate.Solver.Input.CurrentHash.'+module(name))
 def theorem_owner(name):
-    return ('CurrentStartup.' if name in shared else '')+module(name)
+    return ('SharedEffects.' if name in shared else '')+module(name)
 
 header='''namespace InitECandidate.Solver.Input.CurrentHash
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -95,7 +95,29 @@ end InitECandidate.Solver.Input.CurrentHash
 #print axioms InitECandidate.Solver.Input.CurrentHash.Code.installed
 '''
 (folder/'Code.lean').write_text(code)
-(folder/'Base.lean').write_text('import InitECandidate.Solver.Input.CurrentHash.Code\nimport InitECandidate.Solver.Input.CurrentStartup.Base\n\nnamespace InitECandidate.Solver.Input.CurrentHash\nabbrev Cursor := CurrentStartup.Cursor\nabbrev key := CurrentStartup.key\nend InitECandidate.Solver.Input.CurrentHash\n')
+(folder/'Base.lean').write_text('import InitECandidate.Solver.Input.CurrentHash.Code\nimport InitECandidate.Solver.Input.CurrentStartup.Base\n\nnamespace InitECandidate.Solver.Input.CurrentHash\nopen Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact\nopen Flapjack.Basis.Pure.MlString\n\n/-- Fixed globals retained by the actual request-hash closure on every outcome. -/\ninductive Cursor where | scratch | frame | offsets | lengthChunk | zeroHashes\n\ndef key : Cursor → MlS\n  | .scratch => ofString "scratch_ptr"\n  | .frame => ofString "frame_mem_ptr"\n  | .offsets => ofString "ssz_offs"\n  | .lengthChunk => ofString "ssz_len_chunk"\n  | .zeroHashes => ofString "zero_hashes"\n\nend InitECandidate.Solver.Input.CurrentHash\n')
+# Reuse already checked startup effects for both arena and SSZ workspace keys.
+shared_text = 'import InitECandidate.Solver.Input.CurrentHash.Base\nimport InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame\n'
+shared_text += ''.join('import InitECandidate.Solver.Input.CurrentStartup.'+module(n)+'\n' for n in order if n in shared)
+shared_text += '\n'+header+'\nnamespace SharedEffects\n'
+for n in order:
+    if n not in shared: continue
+    owner=module(n)
+    shared_text += f'''
+namespace {owner}
+theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed code) :
+    GlobalEffects.Preserves (key cursor) code (Code.body .{n}) := by
+  cases cursor with
+  | scratch => exact CurrentStartup.{owner}.preserves .scratch code installed
+  | frame => exact CurrentStartup.{owner}.preserves .frame code installed
+  | offsets => exact CurrentStartup.OffsetsFrame.{n} code installed .offsets
+  | lengthChunk => exact CurrentStartup.OffsetsFrame.{n} code installed .lengthChunk
+  | zeroHashes => exact CurrentStartup.OffsetsFrame.{n} code installed .zeroHashes
+end {owner}
+'''
+shared_text += '\nend SharedEffects\nend InitECandidate.Solver.Input.CurrentHash\n'
+shared_text += ''.join('\n#print axioms InitECandidate.Solver.Input.CurrentHash.SharedEffects.'+module(n)+'.preserves\n' for n in order if n in shared)
+(folder/'SharedEffects.lean').write_text(shared_text)
 constructors=Counter();assignments=Counter()
 def proof(tree):
     if isinstance(tree,str):
@@ -121,7 +143,7 @@ def proof(tree):
         if vs[1]=='VarKind.local':return f'(GlobalEffects.assign {common} _ _)'
         assert vs[1]=='VarKind.global',vs
         target=json.loads(vs[2]);assignments[target]+=1
-        assert target not in ('scratch_ptr','frame_mem_ptr'),target
+        assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes'),target
         return f'(GlobalEffects.global_other {common} _ _ (by cases cursor <;> decide))'
     if head in ('Prog.call','Prog.decCall'):
         callee=json.loads(vs[2] if head=='Prog.call' else vs[3])
@@ -135,7 +157,7 @@ def proof(tree):
         assert info.count('none')>=1,info
         if 'VarKind.global' in info:
             target=json.loads(info[info.index('VarKind.global')+2] if info[info.index('VarKind.global')+1]==',' else info[info.index('VarKind.global')+1])
-            assert target not in ('scratch_ptr','frame_mem_ptr'),target
+            assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes'),target
             return (f'(GlobalEffects.global_call_body {common} _ (Code.name .{callee}) _ '
                     f'(Code.formals .{callee}) (Code.body .{callee}) (Code.shape .{callee})\n'
                     f'  (by cases cursor <;> decide) {entry} {pure})')
@@ -152,8 +174,8 @@ for name in order:
         # Kept as a compact handwritten application of checked StraightBody syntax.
         assert (folder/'Sha256Pair.lean').exists()
         continue
-    imports=['InitECandidate.Solver.Input.CurrentHash.Base']+[
-        provider(child) for child in functions[name]['calls']]
+    imports=list(dict.fromkeys(['InitECandidate.Solver.Input.CurrentHash.Base']+[
+        provider(child) for child in functions[name]['calls']]))
     text=''.join('import '+p+'\n' for p in imports)+'\n'+header+f'''
 namespace {module(name)}
 -- Generated from actual fixed syntax. Lean must check this compositional proof.
@@ -190,6 +212,7 @@ report={'source':'Guest/SoftwareAst.lean','source_sha256':hashlib.sha256(source.
         'roots':roots,'extra_roots':extra_roots,'order':order,'closure_functions':len(order),'syntax_constructors':dict(constructors),
         'global_assignment_names':dict(assignments),'reused_startup_functions':sorted(set(order)&shared),'acyclic_scan':True,'lean_build_required':True,
         'retained_handwritten_functions':['sha256_pair'],
+        'preserved_globals':['scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes'],
         'scope':'Generator/scanner output; not proof validation, timing or a whole-program bound.'}
 (ROOT/'work/agent-notes/current-hash-globals-generation.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps({k:v for k,v in report.items() if k not in ('order','syntax_constructors')}))
@@ -217,5 +240,5 @@ end InitECandidate.Solver.Input.CurrentHash
 (folder/'Effects.lean').write_text(aggregate)
 report['generated_sources']=[{'path':str((folder/file).relative_to(ROOT)),
     'sha256':hashlib.sha256((folder/file).read_bytes()).hexdigest()}
-    for file in ['Code.lean','Base.lean','Effects.lean']+[module(n)+'.lean' for n in order if n not in shared]]
+    for file in ['Code.lean','Base.lean','SharedEffects.lean','Effects.lean']+[module(n)+'.lean' for n in order if n not in shared]]
 (ROOT/'work/agent-notes/current-hash-globals-generation.json').write_text(json.dumps(report,indent=2)+'\n')

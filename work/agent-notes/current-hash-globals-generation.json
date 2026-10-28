@@ -40,15 +40,15 @@
   ],
   "closure_functions": 31,
   "syntax_constructors": {
-    "Prog.dec": 45,
-    "Prog.seq": 619,
+    "Prog.dec": 20,
+    "Prog.seq": 131,
     "Prog.while": 10,
-    "Prog.assign": 470,
-    "Prog.return": 26,
+    "Prog.assign": 14,
+    "Prog.return": 25,
     "Prog.ite": 9,
-    "Prog.storeByte": 33,
     "Prog.decCall": 39,
-    "Prog.call": 113
+    "Prog.call": 113,
+    "Prog.storeByte": 1
   },
   "global_assignment_names": {},
   "reused_startup_functions": [
@@ -63,6 +63,16 @@
   ],
   "acyclic_scan": true,
   "lean_build_required": true,
+  "retained_handwritten_functions": [
+    "sha256_pair"
+  ],
+  "preserved_globals": [
+    "scratch_ptr",
+    "frame_mem_ptr",
+    "ssz_offs",
+    "ssz_len_chunk",
+    "zero_hashes"
+  ],
   "scope": "Generator/scanner output; not proof validation, timing or a whole-program bound.",
   "generated_sources": [
     {
@@ -71,11 +81,15 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Base.lean",
-      "sha256": "f407e87ddc1be873d9b3cd0848d009fdfb272af7b41a5d131b5f3c95b497da7b"
+      "sha256": "b14e5fabaa53d474b2ec62abebb8511ae14aa75fc0137f9253feb16b82229ca5"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentHash/SharedEffects.lean",
+      "sha256": "69faa9a5927ebd51fea45320243a23f49b0e17d762b44e2f321c05d309c6b9fc"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Effects.lean",
-      "sha256": "88765401ca780244794648916f471aef3ff2e01109b3fcb59c440720188fd63f"
+      "sha256": "c42e8db176d85b15af90a1dfc5d657add09ddd10ff0406bdc156985524d119e4"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/CeilLog2.lean",
@@ -87,32 +101,31 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Sha256Pair.lean",
-      "sha256": "0f99c562e8bd7be6b7951c3eb6d9746002c5e2534065638ad8743067a50c1caa",
-      "kind": "retained_handwritten_checked_syntax"
+      "sha256": "0f99c562e8bd7be6b7951c3eb6d9746002c5e2534065638ad8743067a50c1caa"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Merkleize.lean",
-      "sha256": "4bf87877b1379ca27ad40ec3695604d21f45791e3a822ff08627c087824498fa"
+      "sha256": "4630cfebe9a1836916c24babca7513020e54d1159fbcb7502ff3a223041d09f4"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/MixInLength.lean",
-      "sha256": "ed57b09c9b226b987228f44f51aba246b31b47ef0f91f5fc087d3275a2f8e0d2"
+      "sha256": "3df059c9be2b08da96ac63d734096198278caa0c7c6475fb937ce14d8d56cb90"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/PackBytes.lean",
-      "sha256": "934971ccc1f9c2ca7b4bfdcbec21aac81273f4fbadcb10299ba07fbfbaffee18"
+      "sha256": "920649003d227b85a842c81dc44a0f3b114ccbb84a9ea50ba7666bce7126b734"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrBytesList.lean",
-      "sha256": "70901159a5eef8a3e2923d8d710ebe1731e21ec4b397b4fde17c1f7cb402e326"
+      "sha256": "2596f970f848a5caeb4ee36ba1c71445f327e2ade243124f092a6fe8bb46f225"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrBytesVector.lean",
-      "sha256": "a30602a8bdf37edc3b01c089e502422928e03e741660ca20eda8c1481e479c94"
+      "sha256": "45d16f6991e9400a57c52cb5530256ae5d03c6028d6b196c655412c6e4b71216"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/MerkleizeProgressive.lean",
-      "sha256": "0d2b4105d4b106ae80cf8ca991a98da6b36a56364f3245a63795cffc2ab6caf0"
+      "sha256": "268b0777d3b85df4af19109a722498bdf295b760b0f7095535a2157ac693a549"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrPlistChunks.lean",
@@ -120,58 +133,55 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrPbytes.lean",
-      "sha256": "230825fe13883f347db2ef7ec66fcb8c273b7eb1172024fc60ad8bc4577b5f67"
+      "sha256": "6fd2ce2ede180a9933e83f09fb4a7755629f7717b92f61decb24d7bd1ef1c676"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrPcontainer.lean",
-      "sha256": "f51aaafd380cf8e23026ee0b9ea3b3054d666abe5053db87ab68d9a8ee3b10d9"
+      "sha256": "96e7b306cb90c08d1d0b060c30e089e7a9904f2d06adf2f42cbba7732a92e626"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrU64At.lean",
-      "sha256": "bddc29677e9785b80fe2671432de2308e84234df80a3e0b9ff042ba4fa2c1ba2"
+      "sha256": "e3ab0e7c568c2f5cc3d051225886157980ec908ee5658fb2582f98efdd36d1e4"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrWithdrawal.lean",
-      "sha256": "342635ae7189e7ba58d359f82155eccecda1876647c00fa6b9b0cd843f204131"
+      "sha256": "d2d42652def0cfa0940b194dadef2b11a6f0cc7d1e528e49ccd49b02be2d551a"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrPayload.lean",
-      "sha256": "b4bbafbf313cf7ad885b3e1c550ca8d9cd65ab0e5c80e7d95f38a92526ae0e00"
+      "sha256": "9ce7133f330cd315a256c39e8e518071108cfe7da395a761ceec84d5db029590"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrBdep.lean",
-      "sha256": "ee12cebcc96b455b7e4887d990c5d38e162f7e75f333e20ef7a524b9e95b1cb8"
+      "sha256": "430c2c8f42b7605adffdbf597763a8c9e34ca6935b45166ccf04a474ace07ae2"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrBexit.lean",
-      "sha256": "8525e0dddde254d1fb52046532feed54cbd97769ce848da98940f4366f12bac9"
+      "sha256": "d588ab9d1e781705d9bff6454710550abe8a6559867792c9efd32e0b1a8a1058"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrCons.lean",
-      "sha256": "7e054b1f3798215d5e9796600eab6b913c74d208c20631102caa0dff9460abbb"
+      "sha256": "fa8b006676d727f1ff7be92d706456edb0561e3668346ec58204057d152b2f52"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrDeposit.lean",
-      "sha256": "52132356bc734c412d8026c4309dac42043e1feaacacfbfa536a141c2a605728"
+      "sha256": "b345adcd7ea777a02301690734ae3d7fe17eb34d3ffe12e55554c64d44de2684"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrWdreq.lean",
-      "sha256": "28a5293ec00e0723e6c4c0088593000b6c1e445f95fa4b1c0a1bb17eb8dfe62f"
+      "sha256": "87df05da41a1bceef62f0b8f126d9d273be11089dfd735998706db6fd6044456"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrRequestList.lean",
-      "sha256": "713939057744d7764db5e5bb6686ad08758648ed0cc51f6e624a7cb07402825f"
+      "sha256": "8fcf77f9602e5379b3c14b0e8494909fc27f925e3a87a010bbc25e49072ea9e8"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrRequests.lean",
-      "sha256": "32a00134a0d839e2d931317365a4cdbcbd7868099d3792a73ceff503f9c3b2e7"
+      "sha256": "a80c9daff14ce5a7e402429c125285a81069aa8d5e7f75b46c6fc23156ef0997"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/HtrNewPayloadRequest.lean",
-      "sha256": "74a138886ec375286571ce252b44f54e757a7bca27dc84b727e115cb5fd96318"
+      "sha256": "0f0f37468f5cf2bc50e491e4ec466e83097eceade362f0152f04136bcc850fbc"
     }
-  ],
-  "retained_handwritten_functions": [
-    "sha256_pair"
   ]
 }

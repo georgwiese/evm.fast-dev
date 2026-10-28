@@ -41,8 +41,9 @@ Checked against current Software syntax and declaration entries:
 - Actual installed code, main declaration/mem_init, ordinary memory domain,
   and scratch/frame initialization. Main/startup/decoder cuts retain actual
   lexical execution, stopped alternatives, clocks and nonlocal/FFI observations.
-  The closed31-helper request-hash graph preserves both arenas on all outcomes,
-  reusing8startup helper proofs; its actual main cut also checks.
+  The closed31-helper request-hash graph preserves both arenas and all three
+  SSZ workspace globals on all outcomes, reusing8startup helper proofs. The
+  actual reached callee has full physical payload/SI/root data and real ABI.
 - Whole header precheck: all outcomes cost≤85body/86caller source ticks.
   Whole input_blob: all outcomes cost≤134217728body/134217729caller source ticks.
   Actual copying derives host presence, mapped stores, original bytes and exact
@@ -83,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-hash-workspace-entry-v2.log`,1510jobs,
-permitted printed axioms only. Historical/current proof index:8027modules/
-16001facts; Solver inventory8066, replacement closure0, frozen main files
-unchanged. Incremental policy passes64835entries/2482330954bytes. These checks
+Latest successful selected closure: `current-hash-physical-entry-v3.log`,1540jobs,
+permitted printed axioms only. Historical/current proof index:8032modules/
+16023facts; Solver inventory8071, replacement closure0, frozen main files
+unchanged. Incremental policy passes64840entries/2482359849bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -99,13 +100,16 @@ remain historical until their current statements/dependencies are checked.
    transaction-record lifetime. Actual room derives encodedLength+16*txCount≤
    251655056, txCount≤12582752 and total transaction bytes≤251655056. Actual root allocation and all three initialized SSZ workspace pointers now
    reach the same hash caller, with mapped/aligned extents and copied-input
-   separation. Retain these globals through current hash calls and join the ABI.
+   separation. All five arena/workspace globals now survive current hash calls. Invocation
+   joins the actual ABI and full physical payload/SI/root data to that same callee.
 2. Bound actual request-root hashing on all relevant outcomes, including errors.
    Current sha256_pair now has a checked syntax certificate: it preserves all
    globals, spends0body source ticks and at most1caller tick on all outcomes.
    Its1,022-line generated effect proof is now50lines, using shared structural
-   soundness. Its output-memory frame and large straight-line target work still
-   need checking; old accelerator Workspace/entry/cost proofs are not current. Older hash layouts
+   soundness. Its checked output-memory frame now preserves every word outside its32output
+   bytes on every body outcome, with real normal-caller ABI transport. Large
+   straight-line target work remains open; old accelerator Workspace/entry/cost
+   proofs are not current. Older hash layouts
    also pin a134217728-byte budget, so check/relax those limits using current
    physical resource facts. Reuse other hash/serialization proofs only after
    checking syntax, indices, imports and all entry premises. Materialize remaining

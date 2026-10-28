@@ -9,18 +9,18 @@ namespace Effects
 theorem body_preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed code) (routine : Code.Routine) :
     GlobalEffects.Preserves (key cursor) code (Code.body routine) := by
   cases routine with
-  | trap_with => exact CurrentStartup.TrapWith.preserves cursor code installed
-  | alloc => exact CurrentStartup.Alloc.preserves cursor code installed
-  | heap_mark => exact CurrentStartup.HeapMark.preserves cursor code installed
-  | heap_release => exact CurrentStartup.HeapRelease.preserves cursor code installed
+  | trap_with => exact SharedEffects.TrapWith.preserves cursor code installed
+  | alloc => exact SharedEffects.Alloc.preserves cursor code installed
+  | heap_mark => exact SharedEffects.HeapMark.preserves cursor code installed
+  | heap_release => exact SharedEffects.HeapRelease.preserves cursor code installed
   | ceil_log2 => exact CeilLog2.preserves cursor code installed
   | max => exact Max.preserves cursor code installed
-  | memcpy => exact CurrentStartup.Memcpy.preserves cursor code installed
-  | memzero => exact CurrentStartup.Memzero.preserves cursor code installed
+  | memcpy => exact SharedEffects.Memcpy.preserves cursor code installed
+  | memzero => exact SharedEffects.Memzero.preserves cursor code installed
   | sha256_pair => exact Sha256Pair.preserves cursor code installed
   | merkleize => exact Merkleize.preserves cursor code installed
-  | st_le32 => exact CurrentStartup.StLe32.preserves cursor code installed
-  | st_le64 => exact CurrentStartup.StLe64.preserves cursor code installed
+  | st_le32 => exact SharedEffects.StLe32.preserves cursor code installed
+  | st_le64 => exact SharedEffects.StLe64.preserves cursor code installed
   | mix_in_length => exact MixInLength.preserves cursor code installed
   | pack_bytes => exact PackBytes.preserves cursor code installed
   | htr_bytes_list => exact HtrBytesList.preserves cursor code installed

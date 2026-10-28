@@ -4,6 +4,26 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual parent requests protected-memory and heap caller frame checks
+
+RequestsMemoryPipeline retains any earlier protected word through the same real
+five list calls and final five-field container/release. Each continuing call
+also supplies the next actual decoded image using RequestsState.after_list.
+RequestsMemory joins the actual parent allocation, outer mark and both lexical
+restorations. The whole current parent body and real two-word caller preserve
+metadata outside their actual output/length chunk and restore entering heap.
+Real decoded image, initialized workspace, frontier/separation and protected
+query facts remain explicit call-entry obligations. No future helper success
+or additional temporary room is assumed.
+
+Validation: current-parent-requests-memory-v1.log PASS1401jobs/permitted printed
+axioms only;8GiBguard/twoslots/cachefalse, disk61%. Index8133modules/16418facts;
+inventory8172, replacement closure0, frozen main unchanged. Incremental policy
+64941entries/2482989783bytes PASS. Account31%weekly,0resetcredits; ordinary usage
+allowed. No global finite target K or full verification; claim infinity.
+Next: current payload static fields/transaction and withdrawal loops, complete
+payload/root costs and memory joins, then actual main/scratch covered paths.
+
 ## Complete actual htr_requests body and caller source cost checks
 
 RequestsState derives each real list call's protected RQ-field frame, restored

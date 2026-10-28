@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-parent-requests-cost-v2.log`,1396jobs,
-permitted printed axioms only. Historical/current proof index:8131modules/
-16410facts; Solver inventory8170, replacement closure0, frozen main files
-unchanged. Incremental policy passes64939entries/2482976892bytes. These checks
+Latest successful selected closure: `current-parent-requests-memory-v1.log`,1401jobs,
+permitted printed axioms only. Historical/current proof index:8133modules/
+16418facts; Solver inventory8172, replacement closure0, frozen main files
+unchanged. Incremental policy passes64941entries/2482989783bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -161,7 +161,10 @@ remain historical until their current statements/dependencies are checked.
    allocation return derives the fresh160-byte chunk extent, persistent room
    and next bounded/aligned frontier. Remaining caller/root entry obligations
    are the real decoder image, installed code/domain, workspaces and frontier;
-   no future helper success or extra temporary room is assumed. Materialize
+   no future helper success or extra temporary room is assumed. The complete
+   parent requests body and actual caller also preserve any earlier protected
+   metadata word outside their output/length chunk and restore entering heap
+   on the same normal return. Materialize
    further SI witness fields at the real caller that needs them. Treat digest/output values generically when their values do not
    affect runtime. Review dominant copy/zero and empty-progressive slack later.
 3. Prioritize actual early scratch access and its covered-outcome consequences

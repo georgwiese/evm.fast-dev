@@ -1,27 +1,11 @@
 import InitECandidate.Solver.Input.VarList.RecordCells
+import InitECandidate.Solver.Input.VarList.PrefixSum
 
 namespace InitECandidate.Solver.Input.VarList
 open Flapjack PanSemStateFiniteExact
 
-def sumPrefix (size : Nat→Nat) : Nat→Nat
-  | 0=>0
-  | index+1=>sumPrefix size index+size index
 def recordOffset (input : Guest.InputBlob) (start length count index : Nat) : Nat :=
   if index<count then (currentWord input start index).toNat else length
-
-theorem prefix_telescope (offset size : Nat→Nat) (count : Nat)
-    (ordered : ∀ index<count,offset index≤offset (index+1))
-    (difference : ∀ index<count,size index=offset (index+1)-offset index) :
-    ∀ index≤count,sumPrefix size index+offset 0=offset index := by
-  intro index inside
-  induction index with
-  | zero=>simp [sumPrefix]
-  | succ index ih=>
-    have prev:=ih (by omega)
-    have increasing:=ordered index (by omega)
-    have delta:=difference index (by omega)
-    simp only [sumPrefix]
-    omega
 
 /-- The actual decoded adjacent-word differences telescope. Aggregate payload
 bytes are bounded once, rather than charging the whole slice for every item. -/
@@ -78,5 +62,4 @@ theorem Records.size_bounds (source : PanSemStateFiniteExact 64 Guest.HostMemory
 
 end InitECandidate.Solver.Input.VarList
 
-#print axioms InitECandidate.Solver.Input.VarList.prefix_telescope
 #print axioms InitECandidate.Solver.Input.VarList.Records.size_bounds

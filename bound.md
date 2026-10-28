@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-payload-heap-v1.log`,1158jobs,
-permitted printed axioms only. Historical/current proof index:8138modules/
-16441facts; Solver inventory8177, replacement closure0, frozen main files
-unchanged. Incremental policy passes64946entries/2483015611bytes. These checks
+Latest successful selected closure: `current-payload-transaction-entry-v1.log`,1391jobs,
+permitted printed axioms only. Historical/current proof index:8147modules/
+16471facts; Solver inventory8186, replacement closure0, frozen main files
+unchanged. Incremental policy passes64955entries/2483070781bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -154,6 +154,12 @@ remain historical until their current statements/dependencies are checked.
    source prices1668/84/162, and a complete normal heap-restoration proof
    through both dynamic loops and actual m2 releases. Literal raw+0 expressions
    are retained; source argument equivalence does not price compiled target work.
+   Current transaction loop source allowance is5*actual total bytes+3303*count;
+   the withdrawal loop costs760*count, including all observed non-timeout
+   failures. Both complete normal loops preserve protected metadata and the
+   actual entering heap. Transaction rows, input arenas, counts and the shared
+   byte budget derive from the real decoder records and parent allocation
+   geometry. Remaining parent joins still need to construct their entry states.
    Full request fields now reach the actual root callee; their list extents,
    individual count bounds and shared byte/count budgets check. Actual parent
    request syntax, normal heap restoration and all five list ABIs now check.

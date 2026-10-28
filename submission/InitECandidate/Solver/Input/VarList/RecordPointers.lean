@@ -54,21 +54,7 @@ theorem Records.pointer_reads (source : PanSemStateFiniteExact 64 Guest.HostMemo
     rw [address]
     exact heap _ (by omega)
 
-theorem sum_prefix_mono (size : Nat→Nat) (lower upper : Nat) (inside : lower≤upper) :
-    sumPrefix size lower≤sumPrefix size upper := by
-  induction upper with
-  | zero=>
-    have eq : lower=0 := by omega
-    subst lower
-    exact Nat.le_refl _
-  | succ upper ih=>
-    by_cases same : lower=upper+1
-    · rw [same]
-    · have previous:=ih (by omega)
-      simp only [sumPrefix]
-      omega
 
 end InitECandidate.Solver.Input.VarList
 
 #print axioms InitECandidate.Solver.Input.VarList.Records.pointer_reads
-#print axioms InitECandidate.Solver.Input.VarList.sum_prefix_mono

@@ -4,6 +4,40 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual current transaction/withdrawal loops and minimal shared arithmetic
+
+The current transaction loop has all observed non-timeout source cost at most
+5*sum(actual transaction lengths)+3303*actual count. Each real continuing hash
+preserves every physical decoded row and the initialized workspace and restores
+the entering heap; actual increments supply the next bounded index. The complete
+normal loop also preserves arbitrary earlier metadata outside actual roots and
+length workspace. TransactionEntry derives the row image, each actual item arena,
+count/length bounds and shared byte budget from the same normal decoder records
+and real parent root-array geometry. Whole payload allocation/phase joins remain.
+
+The literal withdrawal loop costs760ticks per actual record, including its call
+and loop tick and all observed non-timeout failures. Its complete normal memory
+frame checks against the actual44-byte records and32-byte root slots.
+
+Cleanup moves unchanged public prefix-sum and array/pointer facts into minimal
+modules, preserving their names. Geometry no longer needs the old Keccak wrapper;
+new current cost arithmetic no longer imports the whole decoder record proof.
+current-varlist-shared-import-cleanup.json records the static Solver closures.
+The unselected historical ConstructorData wrapper remains unclaimed/current
+crypto migration work; its hash-buffer proof body was not changed.
+
+Validation: current-payload-withdrawal-cost-v1.log PASS1152jobs,
+current-payload-transaction-round-v1.log PASS1285jobs,
+current-payload-transaction-step-v1.log PASS1286jobs,
+current-payload-transaction-cost-v2.log PASS1377jobs,
+current-payload-transaction-memory-v1.log PASS1379jobs,
+current-payload-withdrawal-memory-v1.log PASS1287jobs,
+current-payload-transaction-entry-v1.log PASS1391jobs. Permitted printed axioms
+only;8GiBguard/twoslots/cachefalse, disk61%. Index8147modules/16471facts;
+inventory8186, replacement closure0, frozen main unchanged. Incremental policy
+64955entries/2483070781bytes PASS. Account32%weekly,0resetcredits; ordinary usage
+allowed. No global finite target K or full verification; claim infinity.
+
 ## Current payload syntax, shared fixed-field costs and complete heap restoration
 
 PayloadProgram/Scopes match the actual current htr_payload, including the

@@ -1,0 +1,9 @@
+{
+  "source": "submission/InitECandidate/Solver/Input/PackBytesProgram.lean",
+  "old_sha256": "2fd9124ef647e49304a90a656c3bc3000d2c3a1fb609a0e39bcafcce3bf71200",
+  "current_sha256": "9f6ec60910e11cc7f6d74b37a47f01f0296846390e5ec3f5cd8fe66fdd7892a1",
+  "old_solver_closure_same_other_sources": 593,
+  "current_solver_closure": 27,
+  "selected_successful_log": "current-pack-complete-cost-v2.log",
+  "scope": "Static import closure with only this module overridden to HEAD for the old comparison; no runtime or full verification claim."
+}

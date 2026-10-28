@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.ClockCostCurrentScoped
+import InitECandidate.Solver.Input.CallResume
 import InitECandidate.Solver.Input.NonTimeoutScopedCall
 
 namespace InitECandidate.Solver.Input.ClockCost

@@ -4,6 +4,32 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual byte packing cost and returned chunk count now check
+
+PackBytesProgram now uses the actual Software entry and minimal code/scalar/arena
+imports, reducing its Solver import closure593→27 with all other sources held
+current. A generic n+31<2^64 chunk-read theorem replaces the old128MiB restriction;
+the historical API remains a projection. Its two-word ABI moved to a small shared
+module; historical old runtime code imports it rather than redefining the proof.
+
+PackBytesCost proves every body outcome costs at most copyPrice(n)+zeroPrice(pad)+4,
+where actual padding≤31. This is≤copyPrice(n)+41. No input mapping, heap pointer,
+room, future success or clock lower bound is supplied. PackBytesReturn inverts the
+same real declarations, checked scalar allocation, copy/zero continuations and
+literal return to derive the actual tuple(buffer,ceil(n/32)). Its ordinary caller
+and scoped continuation contracts use that exact returned tuple, on all outcomes
+or the same observed non-timeout parent outcome as appropriate.
+
+A shared scalar-scope non-timeout composition also checks without the old RLP
+import. ClockCostTerminatingScoped now directly imports its continuation-state
+interface instead of relying on an accidental transitive import.
+
+Validation: current-pack-complete-cost-v2.log PASS1603jobs/permitted printed
+axioms;8GiBguard/twoslots/cachefalse. Index8048modules/16082facts; account24%weekly/
+0resetcredits. No global finite target K; claim infinity; no full verification.
+Next: byte-list/vector composition using actual packed counts, then progressive
+hashing and complete root-hash ownership/resource composition.
+
 ## Complete current software Merkle body and caller costs now check
 
 MerkleBufferCost checks the actual copy/clear/cur-declaration prefix and retains

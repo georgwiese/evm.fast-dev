@@ -1,10 +1,12 @@
-import InitECandidate.Solver.Input.ProgressiveCallCost
+import InitECandidate.Solver.Input.CurrentHash.Code
+import InitECandidate.Solver.Input.ScalarDeclaration
+import InitECandidate.Solver.WitnessRadix.AllocatedArena
 
 namespace InitECandidate.Solver.Input.PackBytes
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_pack_bytes with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_pack_bytes with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL) := [(ofString "p",.one),(ofString "n",.one)]
 def returnShape : ShapeHOL := .comb [.one,.one]
 def afterCount : ProgHOL 64 := match body with | .dec _ _ _ tail=>tail | _=>.skip
@@ -28,17 +30,18 @@ theorem body_shape : body=.dec (ofString "count") .one countExpression afterCoun
     afterCount=.decCall (ofString "buf") .one (ofString "alloc") [amountExpression] afterBuffer ∧
     afterBuffer=.seq (.call (some (none,none)) (ofString "memcpy") copyArguments) afterCopy ∧
     afterCopy=.seq (.call (some (none,none)) (ofString "memzero") zeroArguments) (.return (.rstruct [localVar "buf",localVar "count"])) := by
-  simp only [body,afterCount,afterBuffer,afterCopy,Guest.guestFn_pack_bytes,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+  simp only [body,afterCount,afterBuffer,afterCopy,Guest.Software.guestFn_pack_bytes,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     countExpression,amountExpression,copyArguments,zeroArguments,localVar,Option.map_none]
   exact ⟨True.intro,True.intro,True.intro,True.intro⟩
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : OriginalCode.Installed code) : code.lookup (ofString "pack_bytes")=some (formals,body,returnShape) := by
-  have checked := OriginalCode.indexed code installed 181 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_pack_bytes) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,returnShape,Guest.guestFn_pack_bytes,
+  have checked := CurrentHash.Code.installed code installed .pack_bytes
+  simpa only [CurrentHash.Code.name, CurrentHash.Code.formals, CurrentHash.Code.body, CurrentHash.Code.shape,
+    CurrentHash.Code.entry, CurrentHash.Code.declaration, GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,returnShape,Guest.Software.guestFn_pack_bytes,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
-theorem count_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (n : Nat) (small : n≤134217728)
+theorem count_read_bounded (source : PanSemStateFiniteExact 64 Guest.HostMemory) (n : Nat) (small : n+31<2^64)
     (count : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 n)))) :
     eval source countExpression=some (.val (.word (BitVec.ofNat 64 (chunks n)))) := by
   have number : (BitVec.ofNat 64 (n+31)).toNat=n+31 := by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
@@ -47,6 +50,12 @@ theorem count_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (n : Na
     simp only [BitVec.toNat_ushiftRight,number,chunks,Nat.shiftRight_eq_div_pow,BitVec.toNat_ofNat]
     omega
   simp [eval,countExpression,localVar,evalHOLExact,evalListHOLExact,toExact,count,valueIsWord,valueWord,wordOpHOL,wordOp,wordShiftHOL,←BitVec.ofNat_add,shift]
+
+/-- Historical small-input API is a projection of the actual word bound. -/
+theorem count_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (n : Nat) (small : n≤134217728)
+    (count : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 n)))) :
+    eval source countExpression=some (.val (.word (BitVec.ofNat 64 (chunks n)))) :=
+  count_read_bounded source n (by omega) count
 
 /-- The actual padding tail is inside the allocated count*32 arena; an
 aligned tail has word-multiple length, while every tail is at most31bytes. -/
@@ -70,3 +79,5 @@ end InitECandidate.Solver.Input.PackBytes
 #print axioms InitECandidate.Solver.Input.PackBytes.original_code
 #print axioms InitECandidate.Solver.Input.PackBytes.count_read
 #print axioms InitECandidate.Solver.Input.PackBytes.padding_geometry
+
+#print axioms InitECandidate.Solver.Input.PackBytes.count_read_bounded

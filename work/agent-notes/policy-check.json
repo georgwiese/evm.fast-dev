@@ -1941,6 +1941,7 @@
     "submission/InitECandidate/Solver/Input/ClockCostGuardReached.lean",
     "submission/InitECandidate/Solver/Input/ClockCostLoop.lean",
     "submission/InitECandidate/Solver/Input/ClockCostPotentialLoop.lean",
+    "submission/InitECandidate/Solver/Input/ClockCostScalarTerminating.lean",
     "submission/InitECandidate/Solver/Input/ClockCostScopeLocals.lean",
     "submission/InitECandidate/Solver/Input/ClockCostScoped.lean",
     "submission/InitECandidate/Solver/Input/ClockCostScopedReached.lean",
@@ -2047,6 +2048,9 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/MerkleizeProgressive.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MixInLength.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/PackBytes.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PackBytesCallCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PackBytesCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/PackBytesReturn.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/RootCut.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/RootEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Sha256Memory.lean",
@@ -2709,6 +2713,7 @@
     "submission/InitECandidate/Solver/Input/PackBytesAllocation.lean",
     "submission/InitECandidate/Solver/Input/PackBytesBodyCost.lean",
     "submission/InitECandidate/Solver/Input/PackBytesCallCost.lean",
+    "submission/InitECandidate/Solver/Input/PackBytesEnvironment.lean",
     "submission/InitECandidate/Solver/Input/PackBytesGlobals.lean",
     "submission/InitECandidate/Solver/Input/PackBytesMemory.lean",
     "submission/InitECandidate/Solver/Input/PackBytesNormal.lean",
@@ -8087,8 +8092,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64851,
-  "package_bytes": 2482426152,
+  "package_entries": 64856,
+  "package_bytes": 2482449969,
   "claim": {
     "K": "infinity"
   },

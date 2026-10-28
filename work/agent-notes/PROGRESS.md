@@ -4,6 +4,34 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current header field entry, three field bodies and full normal frames
+
+Real current header returns now reach the unchanged field pipeline only after
+the genuine21/23 count dispatch and248-byte allocation. Actual room at the
+current2952790016 heap limit is derived from that same successful allocation;
+no future allocation is assumed. Field-entry memory retains the real parsed
+records and its consumed prefix costs≤103*length+18 source ticks. Count and
+allocation trace proofs include all stopped alternatives locally; whole header
+all-outcome cost composition remains open.
+
+Actual uint/bytes/raw field helper bodies and installed entries203/206/207
+check against current Software. Each costs≤46*selectedRowLength+11 source
+ticks on every outcome under actual initialized arenas and row extent. Every
+normal body retains the entire nonlocal state. Literal guard tails are shared,
+quiet and readonly. A reusable real item-caller interface derives its actual
+contained result and canonical caller state before pricing continuations.
+
+Cleanup separates literal count/field syntax and pure tail effects from old
+mapped-arena costs; existing compatibility imports are retained. Count bindings
+and normal dispatch now replay with minimal current imports. No program change.
+
+Validation: current-header-field-frame-v2.log PASS900jobs/permitted printed
+axioms. Index8280modules/16743facts; inventory8320/replacement closure0/frozen
+main unchanged. Incremental policy65094entries/2483616967bytes PASS.
+No global finite target K/full verification. Next: real field return values,
+word/u256 fields, current field-pipeline state/cost and complete header paths.
+8GiBguard/twoslots/cachefalse; account5%weekly/0resetcredits/ordinary usage allowed.
+
 ## Actual validated items, physical slice records and header list prefix
 
 Real list-count returns now derive an ordered encoding sequence covering the

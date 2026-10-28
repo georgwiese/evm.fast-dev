@@ -1,4 +1,5 @@
-import InitECandidate.Solver.Headers.DecodeCountProgram
+import InitECandidate.Solver.Headers.DecodeCountSyntax
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 
 namespace InitECandidate.Solver.Headers.Decode
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

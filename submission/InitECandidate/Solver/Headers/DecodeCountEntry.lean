@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Headers.DecodeCountTrace
+import InitECandidate.Solver.Rlp.SlicesAfterAllocNormal
 
 namespace InitECandidate.Solver.Headers.Decode
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

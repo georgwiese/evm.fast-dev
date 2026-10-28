@@ -1,30 +1,9 @@
+import InitECandidate.Solver.Headers.FieldTailEffects
 import InitECandidate.Solver.Headers.FieldProgram
 
 namespace InitECandidate.Solver.Headers.Field
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
-
-theorem after_item_quiet (code) (kind : Kind) : Input.QuietClock.Preserves code kind.afterItem := by
-  cases kind <;> simp only [Kind.afterItem,Kind.body,Kind.declaration,
-    Guest.guestFn_hdr_uint_field,Guest.guestFn_hdr_bytes_field,Guest.guestFn_hdr_raw_field,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
-  all_goals repeat first
-    | apply Input.QuietClock.sequence
-    | apply Input.QuietClock.conditional
-    | exact Input.QuietClock.skip code
-    | exact Input.QuietClock.raised code _ _
-    | exact Input.QuietClock.returned code _
-
-/-- Every actual field-helper tail only reads memory and checks/returns
-values, including on HdrErr and malformed-expression paths. -/
-theorem after_item_readonly (code) (kind : Kind) : Input.LocalEffects.Preserves code kind.afterItem := by
-  cases kind <;> simp only [Kind.afterItem,Kind.body,Kind.declaration,
-    Guest.guestFn_hdr_uint_field,Guest.guestFn_hdr_bytes_field,Guest.guestFn_hdr_raw_field,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
-  all_goals repeat first
-    | apply Input.LocalEffects.sequence
-    | apply Input.LocalEffects.conditional
-    | exact Input.LocalEffects.skip code
-    | exact Input.LocalEffects.raised code _ _
-    | exact Input.LocalEffects.returned code _
 
 /-- The complete original uint/bytes/raw field body spends only its real
 item-decoding caller clock. Its selected row length is current input data. -/

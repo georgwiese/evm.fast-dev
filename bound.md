@@ -36,12 +36,12 @@ Best overall effort estimate: **40%, plausible30–50%**, relative to current ma
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
-Latest checked step: exact validated list items/count, real slice records,
-actual allocation/heap update and memory frame; current decode_header's normal
-list prefix reaches those records at≤103*length+17 source ticks. Shared scalar
-assignment imports reduced124→8 Solver modules. Main connection replay1966jobs
-and header-prefix884jobs passed. Whole header/stopped-path composition remains
-open, followed by later current source paths and target-step composition.
+Latest checked step: current header21/23 dispatch and actual248-byte allocation
+reach field extraction at≤103*length+18 source ticks, retaining the real input
+records. Actual uint/bytes/raw field helpers cost≤46*rowLength+11 source ticks
+and retain all nonlocal fields on normal returns. Selected900-job build passed.
+Word/u256 fields, complete header/stopped-path composition, later source paths
+and target-step composition remain open.
 
 Checked against current Software syntax and declaration entries:
 

@@ -16,6 +16,7 @@ theorem Workspace.after_body {source post : PanSemStateFiniteExact 64 Guest.Host
   have fields := evaluation_fields source post _ result actual
   refine ⟨?_, fields.1.trans data.domain, fields.2.1.trans data.little,
     (kept .offsets).trans data.offsets, (kept .lengthChunk).trans data.chunk, (kept .zeroHashes).trans data.zeros,
+    (kept .keccakState).trans data.keccakState,(kept .keccakPad).trans data.keccakPad,
     data.chunkArena, data.zeroArena, data.chunkAligned, data.zeroAligned⟩
   rw [fields.2.2.2]
   exact data.code
@@ -34,6 +35,7 @@ theorem Workspace.after_call {source post : PanSemStateFiniteExact 64 Guest.Host
   have fields := evaluation_fields source post _ result actual
   refine ⟨?_, fields.1.trans data.domain, fields.2.1.trans data.little,
     (kept .offsets).trans data.offsets, (kept .lengthChunk).trans data.chunk, (kept .zeroHashes).trans data.zeros,
+    (kept .keccakState).trans data.keccakState,(kept .keccakPad).trans data.keccakPad,
     data.chunkArena, data.zeroArena, data.chunkAligned, data.zeroAligned⟩
   rw [fields.2.2.2]
   exact data.code

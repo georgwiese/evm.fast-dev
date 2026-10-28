@@ -1809,6 +1809,7 @@
     "submission/InitECandidate/Solver/Headers/CurrentValidate/Nonlocal.lean",
     "submission/InitECandidate/Solver/Headers/CurrentValidate/Returned.lean",
     "submission/InitECandidate/Solver/Headers/CurrentValidate/Round.lean",
+    "submission/InitECandidate/Solver/Headers/CurrentValidate/RowsFromImage.lean",
     "submission/InitECandidate/Solver/Headers/CurrentValidate/Store.lean",
     "submission/InitECandidate/Solver/Headers/CurrentValidate/Transport.lean",
     "submission/InitECandidate/Solver/Headers/CurrentWordCost.lean",
@@ -2366,6 +2367,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/KeccakAbsorbBlock.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/KeccakF1600.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/KeccakInit.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/KeccakWorkspace.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/MainCopiedInput.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/MainDecodedGas.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/MainDecodedPayload.lean",
@@ -2451,9 +2453,11 @@
     "submission/InitECandidate/Solver/Input/CurrentU256/Price.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Program.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Swap.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/HeaderContext.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/HeaderEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/HeaderProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/HeaderReached.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/HeaderReturned.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/MainEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/MainRootTrace.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/RunAttempt.lean",
@@ -8428,8 +8432,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65202,
-  "package_bytes": 2483983435,
+  "package_entries": 65206,
+  "package_bytes": 2484008072,
   "claim": {
     "K": "infinity"
   },

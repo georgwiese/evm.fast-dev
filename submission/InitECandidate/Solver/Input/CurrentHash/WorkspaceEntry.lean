@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.CurrentHash.RootCut
-import InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame
+import InitECandidate.Solver.Input.CurrentStartup.KeccakWorkspace
 
 namespace InitECandidate.Solver.Input.CurrentHash.WorkspaceEntry
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -8,9 +8,8 @@ open Flapjack.Basis.Pure.MlString WitnessRadix
 abbrev chunkPointer : BitVec 64 := 2701132496#64
 abbrev zeroPointer : BitVec 64 := 2701132592#64
 
-/-- Current software hashing needs the real length chunk and zero-hash table;
-there is no accelerator workspace assumption. Their digest bytes are irrelevant
-to this physical ownership contract. -/
+/-- Actual initialized hashing workspaces, including the Keccak pointers
+needed by the following header-validation phase. Digest bytes are unrestricted. -/
 structure Workspace (state : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
   code : OriginalCode.Installed state.code
   domain : state.memaddrs = InitE.ordinaryDomain
@@ -18,6 +17,8 @@ structure Workspace (state : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop 
   offsets : state.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64))
   chunk : state.globals.lookup (ofString "ssz_len_chunk") = some (.val (.word chunkPointer))
   zeros : state.globals.lookup (ofString "zero_hashes") = some (.val (.word zeroPointer))
+  keccakState : state.globals.lookup (ofString "keccak_st") = some (.val (.word 2701132160#64))
+  keccakPad : state.globals.lookup (ofString "keccak_pad") = some (.val (.word 2701132360#64))
   chunkArena : AllocatedBytes.Arena chunkPointer 32
   zeroArena : AllocatedBytes.Arena zeroPointer 2048
   chunkAligned : chunkPointer.toNat % 8 = 0
@@ -32,19 +33,24 @@ theorem main {input : Guest.InputBlob}
     (decoder : CallPrefix.Execution source CurrentStartup.DecoderPrefix.actions decoded)
     (root : CallPrefix.Execution decoded RootEntry.actions current) : Workspace current := by
   have cells := CurrentStartup.WorkspaceFrame.main_cells entry startup decoder root
+  have keccak := CurrentStartup.WorkspaceFrame.main_keccak_cells entry startup decoder root
   have code : OriginalCode.Installed current.code := by
     rw [root.runtime.2.2.2.1, decoder.runtime.2.2.2.1]
     exact initial.arena.code
   have domain : current.memaddrs = InitE.ordinaryDomain := root.runtime.1.trans (decoder.runtime.1.trans initial.arena.domain)
   have little : current.be = false := root.runtime.2.1.trans (decoder.runtime.2.1.trans initial.little)
-  exact ⟨code, domain, little, cells.1, cells.2.1, cells.2.2,
+  exact ⟨code, domain, little, cells.1, cells.2.1, cells.2.2,keccak.1,keccak.2,
     ⟨by decide, by decide⟩, ⟨by decide, by decide⟩, by decide, by decide⟩
 
 theorem Workspace.at_callee {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     (data : Workspace source) (callee : HolFiniteMapExact MlS (ValueHOL 64)) :
     Workspace (callEntryStateHOLFinite source callee) :=
-  ⟨data.code, data.domain, data.little, data.offsets, data.chunk, data.zeros,
+  ⟨data.code, data.domain, data.little, data.offsets, data.chunk, data.zeros,data.keccakState,data.keccakPad,
     data.chunkArena, data.zeroArena, data.chunkAligned, data.zeroAligned⟩
+
+theorem Workspace.keccak_environment {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (data : Workspace source) : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64 :=
+  ⟨data.code,data.domain,data.keccakState,data.keccakPad,⟨by decide,by decide⟩,⟨by decide,by decide⟩,by decide,by decide⟩
 
 /-- Both concrete workspaces are entirely below the same copied input used
 by the actual root-hash caller. -/
@@ -98,3 +104,5 @@ end InitECandidate.Solver.Input.CurrentHash.WorkspaceEntry
 #print axioms InitECandidate.Solver.Input.CurrentHash.WorkspaceEntry.input_separation
 #print axioms InitECandidate.Solver.Input.CurrentHash.WorkspaceEntry.refine
 #print axioms InitECandidate.Solver.Input.CurrentHash.WorkspaceEntry.reached
+
+#print axioms InitECandidate.Solver.Input.CurrentHash.WorkspaceEntry.Workspace.keccak_environment

@@ -43,9 +43,12 @@ with its real24-round permutation and full workspace/output memory frame.
 Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
 covering both allocations and all decode/hash/link loops. Actual normal/scoped
 returns supply the real arrays, advanced physical context and protected input.
-Selected2131-job current main/root/header and helper replay passed. Startup
-Keccak workspace transport/header-row entry from main, later current source
-paths and uniform target-step composition remain open.
+Selected2125-job current main/root/header entry and return replay passed. The
+actual first three initializer calls derive Keccak state2701132160 and pad2701132360;
+these globals survive startup, decoding and the31-helper root graph. Real decoded
+witness images supply the header rows and full caller context. Header returns
+retain SI/payload/gas, all witness images and the advanced heap. Later current
+source paths and uniform target-step composition remain open.
 
 Checked against current Software syntax and declaration entries:
 
@@ -95,9 +98,9 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-header-validation-complete-caller-main-v2.log`,2131jobs,
-permitted printed axioms only. Historical/current proof index:8379modules/
-16920facts; inventory8423modules, replacement AST reverseclosure0, fixed files
+Latest successful selected closure: `current-main-header-context-returned-v1.log`,2125jobs,
+permitted printed axioms only. Historical/current proof index:8383modules/
+16928facts; inventory8427modules, replacement AST reverseclosure0, fixed files
 unchanged. Incremental policy65202entries/2483983435bytes PASS. This is helper
 build evidence, not complete verification.
 

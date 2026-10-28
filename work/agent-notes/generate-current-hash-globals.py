@@ -95,8 +95,8 @@ end InitECandidate.Solver.Input.CurrentHash
 #print axioms InitECandidate.Solver.Input.CurrentHash.Code.installed
 '''
 (folder/'Code.lean').write_text(code)
-(folder/'Base.lean').write_text('import InitECandidate.Solver.Input.CurrentHash.Code\nimport InitECandidate.Solver.Input.CurrentStartup.Base\n\nnamespace InitECandidate.Solver.Input.CurrentHash\nopen Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact\nopen Flapjack.Basis.Pure.MlString\n\n/-- Fixed globals retained by the actual request-hash closure on every outcome. -/\ninductive Cursor where | scratch | frame | offsets | lengthChunk | zeroHashes\n\ndef key : Cursor → MlS\n  | .scratch => ofString "scratch_ptr"\n  | .frame => ofString "frame_mem_ptr"\n  | .offsets => ofString "ssz_offs"\n  | .lengthChunk => ofString "ssz_len_chunk"\n  | .zeroHashes => ofString "zero_hashes"\n\nend InitECandidate.Solver.Input.CurrentHash\n')
-# Reuse already checked startup effects for both arena and SSZ workspace keys.
+(folder/'Base.lean').write_text('import InitECandidate.Solver.Input.CurrentHash.Code\nimport InitECandidate.Solver.Input.CurrentStartup.Base\n\nnamespace InitECandidate.Solver.Input.CurrentHash\nopen Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact\nopen Flapjack.Basis.Pure.MlString\n\n/-- Fixed globals retained by the actual request-hash closure on every outcome. -/\ninductive Cursor where | scratch | frame | offsets | lengthChunk | zeroHashes | keccakState | keccakPad\n\ndef key : Cursor → MlS\n  | .scratch => ofString "scratch_ptr"\n  | .frame => ofString "frame_mem_ptr"\n  | .offsets => ofString "ssz_offs"\n  | .lengthChunk => ofString "ssz_len_chunk"\n  | .zeroHashes => ofString "zero_hashes"\n  | .keccakState => ofString "keccak_st"\n  | .keccakPad => ofString "keccak_pad"\n\nend InitECandidate.Solver.Input.CurrentHash\n')
+# Reuse checked startup effects for arena, SSZ and Keccak workspace keys.
 shared_text = 'import InitECandidate.Solver.Input.CurrentHash.Base\nimport InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame\n'
 shared_text += ''.join('import InitECandidate.Solver.Input.CurrentStartup.'+module(n)+'\n' for n in order if n in shared)
 shared_text += '\n'+header+'\nnamespace SharedEffects\n'
@@ -113,6 +113,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | offsets => exact CurrentStartup.OffsetsFrame.{n} code installed .offsets
   | lengthChunk => exact CurrentStartup.OffsetsFrame.{n} code installed .lengthChunk
   | zeroHashes => exact CurrentStartup.OffsetsFrame.{n} code installed .zeroHashes
+  | keccakState => exact CurrentStartup.OffsetsFrame.{n} code installed .keccakState
+  | keccakPad => exact CurrentStartup.OffsetsFrame.{n} code installed .keccakPad
 end {owner}
 '''
 shared_text += '\nend SharedEffects\nend InitECandidate.Solver.Input.CurrentHash\n'
@@ -143,7 +145,7 @@ def proof(tree):
         if vs[1]=='VarKind.local':return f'(GlobalEffects.assign {common} _ _)'
         assert vs[1]=='VarKind.global',vs
         target=json.loads(vs[2]);assignments[target]+=1
-        assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes'),target
+        assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad'),target
         return f'(GlobalEffects.global_other {common} _ _ (by cases cursor <;> decide))'
     if head in ('Prog.call','Prog.decCall'):
         callee=json.loads(vs[2] if head=='Prog.call' else vs[3])
@@ -157,7 +159,7 @@ def proof(tree):
         assert info.count('none')>=1,info
         if 'VarKind.global' in info:
             target=json.loads(info[info.index('VarKind.global')+2] if info[info.index('VarKind.global')+1]==',' else info[info.index('VarKind.global')+1])
-            assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes'),target
+            assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad'),target
             return (f'(GlobalEffects.global_call_body {common} _ (Code.name .{callee}) _ '
                     f'(Code.formals .{callee}) (Code.body .{callee}) (Code.shape .{callee})\n'
                     f'  (by cases cursor <;> decide) {entry} {pure})')
@@ -212,7 +214,7 @@ report={'source':'Guest/SoftwareAst.lean','source_sha256':hashlib.sha256(source.
         'roots':roots,'extra_roots':extra_roots,'order':order,'closure_functions':len(order),'syntax_constructors':dict(constructors),
         'global_assignment_names':dict(assignments),'reused_startup_functions':sorted(set(order)&shared),'acyclic_scan':True,'lean_build_required':True,
         'retained_handwritten_functions':['sha256_pair'],
-        'preserved_globals':['scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes'],
+        'preserved_globals':['scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad'],
         'scope':'Generator/scanner output; not proof validation, timing or a whole-program bound.'}
 (ROOT/'work/agent-notes/current-hash-globals-generation.json').write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps({k:v for k,v in report.items() if k not in ('order','syntax_constructors')}))

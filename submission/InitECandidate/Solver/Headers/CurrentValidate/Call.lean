@@ -14,6 +14,7 @@ structure Returned (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   allocations : Geometry heap count
   input : HashInput.Frame source target lower upper
   globals : HeapGlobals source target
+  metadata : target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.eshapes=source.eshapes ∧ target.code=source.code
   forward : target.clock≤source.clock
   cost : source.clock-target.clock≤51528323
 
@@ -41,7 +42,7 @@ theorem scoped_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   · obtain ⟨target,value,inner,funded,bodyRun,checked,forward,cost,continued,endpoint⟩:=reached
     obtain ⟨answer,small,allocations,nextHeap,next,afterHeap,frame,globals⟩:=ready.returned entry target array heap count stp pad pointers lengths lower upper arrayCell countCell value bodyRun
     rw [answer] at continued
-    exact Or.inr ⟨target,nextHeap,inner,⟨next,afterHeap,small,allocations,⟨frame.words⟩,globals,forward,cost⟩,continued,endpoint⟩
+    exact Or.inr ⟨target,nextHeap,inner,⟨next,afterHeap,small,allocations,⟨frame.words⟩,globals,evaluation_fields entry target body (some (.returned value)) bodyRun,forward,cost⟩,continued,endpoint⟩
 
 /-- Actual enclosing returns must pass through the same genuine validator
 return, rather than merely satisfying the stopped-cost alternative. -/
@@ -67,7 +68,7 @@ theorem scoped_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemor
   change source.clock-1-target.clock≤51528322 at price
   change target.clock≤source.clock-1 at forward
   rw [answer] at continued
-  exact ⟨target,nextHeap,inner,⟨next,afterHeap,small,allocations,⟨frame.words⟩,globals,(by omega),(by omega)⟩,continued,endpoint⟩
+  exact ⟨target,nextHeap,inner,⟨next,afterHeap,small,allocations,⟨frame.words⟩,globals,evaluation_fields entry target body (some (.returned value)) bodyRun,(by omega),(by omega)⟩,continued,endpoint⟩
 
 end InitECandidate.Solver.Headers.CurrentValidate
 

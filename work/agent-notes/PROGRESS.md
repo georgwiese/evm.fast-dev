@@ -2986,3 +2986,23 @@ and [task history](BOUND-HISTORY-PRE-CLEANUP-20261027.md).
 [Archive hashes](rebase-cleanup-history.json) establish exact preservation.
 Old target indices/local contracts are not current whole-program progress
 without checking their statements and dependencies.
+
+## Current main supplies the whole header context — 2026-10-28
+
+The actual first three initializer calls derive the current software Keccak
+state2701132160 and pad2701132360. Extended the shared startup/root global
+frames to carry both cells alongside the existing SSZ workspace; no replacement
+implementation or old accelerated Keccak environment is used. Real decoded
+witness images establish all validator rows, lengths and entry geometry at
+main's actual caller. A genuine scoped header return preserves SI/payload/gas
+and all three witness images, with the actual advanced heap and Keccak context.
+
+Validation: current-main-header-context-returned-v1.log PASS2125jobs, permitted
+printed axioms only. Index8383modules/16928facts; inventory8427modules,
+replacement AST reverse closure0, fixed files unchanged. Incremental policy
+PASS65206entries/2484008072bytes; no full verifier claim. Generators syntax
+checked without regenerating cleaned imports. Claim infinity, no global K.
+Next: the actual post-header gas/database/state path, then whole current source
+and target-step composition. Overall estimate remains40%, plausible30–50%.
+Five old unfinished RLP files preserved untracked. Account10%weekly used,
+zero reset credits, ordinary usage allowed.

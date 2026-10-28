@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-payload-whole-caller-memory-v1.log`,1489jobs,
-permitted printed axioms only. Historical/current proof index:8183modules/
-16574facts; Solver inventory8222, replacement closure0, frozen main files
-unchanged. Incremental policy passes64991entries/2483258806bytes. These checks
+Latest successful selected closure: `current-root-main-cost-frame-v5.log`,1802jobs,
+permitted printed axioms only. Historical/current proof index:8199modules/
+16615facts; Solver inventory8238, replacement closure0, frozen main files
+unchanged. Incremental policy passes65007entries/2483319736bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -166,11 +166,17 @@ remain historical until their current statements/dependencies are checked.
    memory/heap caller frame check. Actual normal prefixes supply each next RQ
    image; failed allocations and observed non-timeout outcomes are included.
 
-   Still open: derive both parent caller entry contracts at their actual root
-   call sites and retain actual SI/RQ/payload data across the root's calls.
-   Compose whole current
-   request-root cost and memory frames, including all earlier stopped paths.
-   Materialize further SI witness fields at their real callers. Recheck old
+   The complete actual root body/caller now compose the four child calls,
+   real saved mark/128-byte chunk allocation, Merkle and release. Both child
+   entry contracts derive from the same decoder state and actual root
+   allocation; normal prefixes preserve all complete SI/RQ/payload images.
+   Body allowance is the four caller prices plus413; the actual main caller
+   adds one. Every observed non-timeout stopped prefix is included. The whole
+   normal body and main caller protect earlier memory outside their actual
+   output/length chunk and restore entering heap. These are source costs and
+   normal frames, not target steps or covered-terminal classification.
+   Next: transport actual main metadata/arenas across the normal root return
+   and materialize SI witness fields at their real stateless-verification callers. Recheck old
    limits against encodedLength+16*txCount≤251655056 and txCount≤12582752.
    Treat digest/output values generically when they do not affect runtime.
    Review dominant copy/zero and empty-progressive slack before the final K.
@@ -197,7 +203,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:0%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:1%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

@@ -4,6 +4,33 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual current root body and main caller cost/memory
+
+The unchanged htr_new_payload_request now has a complete source allowance:
+its four established child caller prices plus413 for the body, plus one for
+the actual main caller. This includes the real saved mark/128-byte allocation,
+payload/header-list/header-copy/request calls, final Merkle and release. Both
+child contracts come from the same decoder/root allocation; each actual normal
+prefix derives the next complete physical SI/RQ/payload image and real heap.
+Observed non-timeout stopped prefixes, including allocation failure, are priced.
+Normal whole body and main caller protect earlier metadata outside the actual
+output/length chunk and restore the entering heap. No future successful hash
+or extra temporary room premise is supplied.
+
+Shared InvocationFrame handles direct local frames and actual protected-memory
+intervals; root geometry derives input/header bounds and SI separation from the
+same decoder. Optional cosmetic arithmetic expansion was removed after its
+elaboration hit the memory guard; the real composition theorems check quickly.
+No source/compiler/frozen bytes change. Source clocks still omit straight-line
+target work; covered-terminal classification and global target steps remain open.
+
+Validation: current-root-main-cost-frame-v5.log PASS1802jobs, permitted printed
+axioms only. 8GiBguard/twoslots/cachefalse. Index8199modules/16615facts;
+inventory8238/replacement closure0/frozen main unchanged. Incremental policy
+65007entries/2483319736bytes PASS. Account1%weekly,0resetcredits, ordinary
+usage allowed. No global finite target K/full verification; claim infinity.
+Next: actual main-to-stateless-verification arena/metadata and scratch boundary.
+
 ## Complete current payload protected-memory and restored-heap caller frame
 
 The whole unchanged payload body and its real two-word caller now preserve

@@ -55,6 +55,10 @@ structure Data (input : Guest.InputBlob) (state : PanSemStateFiniteExact 64 Gues
   siAligned : siRecord.toNat % 8 = 0
   rootArena : AllocatedBytes.Arena root 32
   rootAligned : root.toNat % 8 = 0
+  payloadArena : AllocatedBytes.Arena record 136
+  payloadAligned : record.toNat % 8 = 0
+  payloadAfterSI : siRecord.toNat + 96 ≤ record.toNat
+  siAfterInput : pointer.toNat + input.length % 2^64 + 8 ≤ siRecord.toNat
   rootAfter : max (record.toNat + 136) (requestRecord.toNat + 80) ≤ root.toNat
   arrayBefore : array.toNat + 16 * VarList.decodedCount input start size ≤ root.toNat
   payloadCell : state.memory siRecord = .word record
@@ -90,7 +94,9 @@ theorem at_callee {input : Guest.InputBlob} {decoded current : PanSemStateFinite
     omega
   refine ⟨workspace.at_callee callee, ⟨ready.arena.scratch, ready.arena.frame, ready.arena.domain, ready.arena.code⟩, ready.payload.of_frame rfl, ready.heap, si, out,
     siArena, data.context.statelessAligned, ⟨rootLower, by have := ready.room; omega⟩,
-    ready.aligned, ready.rootAfter, ready.arrayBefore, ?_, ?_, ?_, ?_, ?_, ⟨requestStart,requestSize,counts,actualRequestImage⟩⟩
+    ready.aligned, ⟨by have a:=data.context.pointerLower; have b:=data.context.statelessLower; have c:=data.context.recordAfter; omega,
+      by have h:=data.context.recordRoom; omega⟩, data.context.recordAligned, data.context.recordAfter,
+    data.context.statelessLower, ready.rootAfter, ready.arrayBefore, ?_, ?_, ?_, ?_, ?_, ⟨requestStart,requestSize,counts,actualRequestImage⟩⟩
   all_goals change current.memory _ = _; rw [ready.memory]
   · exact siCell
   · exact hashPointer

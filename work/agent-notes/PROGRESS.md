@@ -3460,3 +3460,21 @@ permitted printed axioms only. Index8516modules/17236facts; inventory8560/
 replacement closure0/fixed files unchanged; incremental policy65346entries/
 2484626057bytes PASS. No global finite target K/full verification. Usage18%
 weekly/0resetcredits. Next: actual nonempty rewiring image and builder loop.
+
+## Original complete nonempty rewiring execution and shared state frames
+
+The actual post-constructor htab_set splice now executes its refresh, three
+parent writes, real physical query-bit child selection, left-cell/root attach
+and return0 in one checked execution theorem. Both real constructors protect
+earlier input/query bytes. Shared metadata records all physical fields except
+memory/locals/clock and replaces nine redundant domain/code projection facts;
+the complete815body/816caller insertion cost still checks with that cleanup.
+Nonempty full image assembly and original caller composition remain open.
+It will also require count+1≤cap from the real builder's processed-count and
+capacity facts; two available node IDs alone need not imply that count room.
+
+Validation: current-patricia-original-entire-splice-v2.log PASS954jobs, permitted
+printed axioms only. Index8528modules/17257facts; inventory8572/replacement
+closure0/fixed files unchanged; incremental policy65358entries/2484664085bytes
+PASS. No global finite target K/full verification. Usage19%weekly/0resetcredits.
+Next: physical nonempty splice image, then full insertion/builder induction.

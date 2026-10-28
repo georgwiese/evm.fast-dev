@@ -164,6 +164,14 @@ post-lookup≤4. A failed empty insertion cannot fall through to comparison.
 This is a complete per-insertion helper bound, not yet a whole-builder/global
 bound: nonempty fresh insertion must still preserve the physical image for
 the next builder iteration, and actual query-buffer ownership remains open.
+The unchanged whole post-constructor splice now has an actual execution
+theorem: refresh nodes, all three parent writes, real query-bit child stores,
+real left-cell/root attachment and return0. Both constructors preserve the
+earlier input/query bytes; every field except memory/locals/clock survives.
+The query bit therefore comes from the same physical buffer as the earlier
+lookup/difference. Shared metadata/frame helpers replace nine redundant
+domain/code projections, while retaining the existing insertion-cost APIs.
+Full nonempty image assembly and its real caller composition remain open.
 
 Checked against current Software syntax and declaration entries:
 
@@ -213,10 +221,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-entire-insertion-caller-cost-v1.log`,946jobs,
-permitted printed axioms only. Historical/current proof index:8516modules/
-17236facts; inventory8560modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65346entries/2484626057bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-original-entire-splice-v2.log`,954jobs,
+permitted printed axioms only. Historical/current proof index:8528modules/
+17257facts; inventory8572modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65358entries/2484664085bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

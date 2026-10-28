@@ -1,11 +1,22 @@
 import InitECandidate.Solver.Input.CurrentTable.NewInternal.Call
 import InitECandidate.Solver.Input.CurrentTable.NodeFrames
+import InitECandidate.Solver.Input.CurrentTable.StoreMetadata
 
 namespace InitECandidate.Solver.Input.CurrentTable.NewInternal
 open Flapjack PanSemStateFiniteExact WitnessRadix
 
 def model (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table cap node bit : BitVec 64) :=
   stored (New.putField source table 64 (node+1#64)) (New.nodesPointer table cap) node bit
+
+theorem model_metadata (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table cap node bit : BitVec 64) :
+    MemoryMetadata.erase (model source table cap node bit) = MemoryMetadata.erase source := by
+  simp only [model,stored,node_metadata,header_metadata]
+
+theorem model_endian (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table cap node bit : BitVec 64) :
+    (model source table cap node bit).be = source.be := MemoryMetadata.endian (model_metadata source table cap node bit)
+
+theorem model_domain (source : PanSemStateFiniteExact 64 Guest.HostMemory) (table cap node bit : BitVec 64) :
+    (model source table cap node bit).memaddrs = source.memaddrs := MemoryMetadata.domain (model_metadata source table cap node bit)
 
 theorem model_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (table cap node bit : BitVec 64)
     (frame : LocalEffects.erase target = LocalEffects.erase source) :

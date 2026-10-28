@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-fixed-record-memory-v2.log`,1282jobs,
-permitted printed axioms only. Historical/current proof index:8104modules/
-16318facts; Solver inventory8143, replacement closure0, frozen main files
-unchanged. Incremental policy passes64912entries/2482821531bytes. These checks
+Latest successful selected closure: `current-progressive-memory-v1.log`,1267jobs,
+permitted printed axioms only. Historical/current proof index:8109modules/
+16336facts; Solver inventory8148, replacement closure0, frozen main files
+unchanged. Incremental policy passes64917entries/2482856750bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -163,7 +163,13 @@ remain historical until their current statements/dependencies are checked.
    room and full buffer suffix. Context contains the real code/domain, zero
    table and incoming persistent cursor; source n/limit and physical arenas
    remain explicit call-entry facts. Full-byte-list/progressive/fixed-record/
-   payload/request-root memory composition remains open. All six actual fixed-record
+   payload/request-root memory composition remains open. Complete actual progressive
+   body/caller memory and heap frames now check: real768/32-byte allocations,
+   capped geometric rounds, actual terminal round, accumulator clear/fold and
+   final output/release. Shared normal allocation inversion derives real room
+   and next context for the same continuation. The fold memory proof needs only
+   its actual accumulator output, with no SHA-input mapping/digest premise.
+   All six actual fixed-record
    bodies/callers now preserve metadata and restore their entering heap. Their
    field extents come from the physical record/chunk arenas; the same allocation
    derives temporary chunk room. Field pipeline local preservation is shared

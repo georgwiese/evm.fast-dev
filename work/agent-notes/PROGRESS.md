@@ -4,6 +4,30 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual progressive hash memory and heap caller frame checks
+
+ProgressiveMemoryStep joins each actual capped Merkle call, current input/root
+slot extents and counter updates. ProgressiveMemoryLoop preserves the same
+protected metadata/current heap through every geometric round and derives its
+actual terminal round. ProgressiveMemoryFold checks decrement-before-SHA and
+complete clear/fold/output/release; only accumulator output is located, with
+no digest or SHA-input mapping assumptions.
+
+MemoryContextAllocation shares real normal allocation inversion and derives
+persistent room, physical arena and next bounded/aligned heap context for its
+same continuation. ProgressiveMemory joins the actual768/32-byte allocations,
+three initializing declarations, whole loop/fold/output scopes and real caller.
+Earlier metadata survives and the entering heap is restored. Count/physical
+input/output/zero-table/current-heap facts remain explicit parent obligations;
+no reserved temporary room or future successful helper is assumed.
+
+Validation: current-progressive-memory-v1.log PASS1267jobs/permitted printed
+axioms only;8GiBguard/twoslots/cachefalse, disk61%. Index8109modules/16336facts;
+inventory8148, replacement closure0, frozen main unchanged. Incremental policy
+64917entries/2482856750bytes PASS. Account29%weekly,0resetcredits; ordinary usage
+allowed. No global finite target K or full verification; claim infinity.
+Next: progressive list/byte/container and complete payload/request joins.
+
 ## All six complete actual fixed-record memory and heap caller frames check
 
 FixedRecordMemorySteps shares actual u64/copy/vector call frames and sequential

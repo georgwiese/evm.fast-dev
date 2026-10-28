@@ -2051,6 +2051,7 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/Log2Cost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MarkedHeap.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Max.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/MemoryContextAllocation.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MemoryContextTransport.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MemoryCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MemoryGlobals.lean",
@@ -2090,6 +2091,10 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveEnvironment.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveFoldCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveLoopCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveMemory.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveMemoryFold.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveMemoryLoop.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveMemoryStep.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveRound.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/ProgressiveStepCost.lean",
@@ -8148,8 +8153,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64912,
-  "package_bytes": 2482821531,
+  "package_entries": 64917,
+  "package_bytes": 2482856750,
   "claim": {
     "K": "infinity"
   },

@@ -3,6 +3,7 @@ import InitECandidate.Solver.Input.HandledCallClock
 import InitECandidate.Solver.Input.QuietHandlerClock
 import InitECandidate.Solver.Input.WordEnvironment
 import InitECandidate.Solver.Input.ScalarScopeTrace
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 
 namespace InitECandidate.Solver.Input.AttemptWrapper
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix

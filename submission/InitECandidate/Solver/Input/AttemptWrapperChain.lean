@@ -9,7 +9,7 @@ All source metadata/memory/FFI fields are retained through their actual
 pre-call local changes; final clocks follow the actual child execution. -/
 def Reaches (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (si : BitVec 64) (depth : Nat) : Prop :=
   ∃ entry target result,entry.locals.lookup (ofString "si")=some (.val (.word si)) ∧ LocalEffects.erase entry=LocalEffects.erase source ∧
-    entry.clock=source.clock-depth ∧ evaluateHOLFiniteState entry RunAttempt.body=(result,target) ∧ target.clock=post.clock
+    entry.clock=source.clock-depth ∧ evaluateHOLFiniteState entry CurrentVerify.RunAttempt.body=(result,target) ∧ target.clock=post.clock
 
 def ToRun (kind : Kind) : Prop := ∀ (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (si : BitVec 64),
   OriginalCode.Installed source.code → source.locals.lookup (ofString "si")=some (.val (.word si)) →
@@ -17,9 +17,9 @@ def ToRun (kind : Kind) : Prop := ∀ (source post : PanSemStateFiniteExact 64 G
 
 theorem block_to_run : ToRun .block := by
   intro source post si installed binding outcome run
-  have code : source.code.lookup Kind.block.child=some (formals,RunAttempt.body,.one) := by
-    simpa only [Kind.child,formals,RunAttempt.formals] using RunAttempt.original_code source.code installed
-  exact trace .block source post si RunAttempt.body binding code outcome run
+  have code : source.code.lookup Kind.block.child=some (formals,CurrentVerify.RunAttempt.body,.one) := by
+    simpa only [Kind.child,formals,CurrentVerify.RunAttempt.formals] using CurrentVerify.RunAttempt.original_code source.code installed
+  exact trace .block source post si CurrentVerify.RunAttempt.body binding code outcome run
 
 /-- One genuine outer wrapper composes its actual child entry with the
 already checked preceding layers, without assuming any child succeeds. -/

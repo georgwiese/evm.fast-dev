@@ -84,11 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-main-root-witness-images-v1.log`,1807jobs
-and `current-witness-array-arguments-v3.log`,1464jobs,
-permitted printed axioms only. Historical/current proof index:8205modules/
-16622facts; Solver inventory8244, replacement closure0, frozen main files
-unchanged. Incremental policy passes65013entries/2483341403bytes. These checks
+Latest successful selected closure: `current-main-verification-header-joined-v1.log`,1828jobs,
+permitted printed axioms only. Historical/current proof index:8213modules/
+16634facts; Solver inventory8252, replacement closure0, frozen main files
+unchanged. Incremental policy passes65022entries/2483366118bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -182,7 +181,14 @@ remain historical until their current statements/dependencies are checked.
    bounds their extents; one shared image/frame and argument-load proof handles
    all three arrays, including empty arrays. Initialized scratch/frame cursors,
    domain, workspace and persistent frontier also survive that same return.
-   Next: actual verification-wrapper/header entry, bounds and covered paths. Recheck old
+   Actual main verification entry and all eight wrappers now select the same
+   current run_attempt execution with those physical inputs and bounded gas.
+   The actual first payload declaration/skip exposes its real header caller
+   and argument loads, retaining lexical restoration and stopped alternatives.
+   Main's later serializer/output continuation remains explicit and unpriced.
+   Wrapper imports drop1601→54 and verify-program1603→56 Solver modules after
+   removing the obsolete header/EVM interface and checking current entries.
+   Next: current header/RLP bounds, normal frames and actual later callers. Recheck old
    limits against encodedLength+16*txCount≤251655056 and txCount≤12582752.
    Treat digest/output values generically when they do not affect runtime.
    Review dominant copy/zero and empty-progressive slack before the final K.

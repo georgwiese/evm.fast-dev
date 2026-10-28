@@ -1,4 +1,5 @@
-import InitECandidate.Solver.Input.RunAttemptProgram
+import InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+import InitECandidate.Solver.PanState
 
 namespace InitECandidate.Solver.Input.AttemptWrapper
 open Flapjack Flapjack.Pancake.PanLang
@@ -8,8 +9,8 @@ inductive Kind where | block | header | rlp | trie | state | transaction | evm
   deriving DecidableEq
 
 def Kind.declaration : Kind→Decl (BitVec 64)
-  | .block=>Guest.guestFn_attempt_l1 | .header=>Guest.guestFn_attempt_l2 | .rlp=>Guest.guestFn_attempt_l3
-  | .trie=>Guest.guestFn_attempt_l4 | .state=>Guest.guestFn_attempt_l5 | .transaction=>Guest.guestFn_attempt_l6 | .evm=>Guest.guestFn_attempt_l7
+  | .block=>Guest.Software.guestFn_attempt_l1 | .header=>Guest.Software.guestFn_attempt_l2 | .rlp=>Guest.Software.guestFn_attempt_l3
+  | .trie=>Guest.Software.guestFn_attempt_l4 | .state=>Guest.Software.guestFn_attempt_l5 | .transaction=>Guest.Software.guestFn_attempt_l6 | .evm=>Guest.Software.guestFn_attempt_l7
 
 def Kind.name : Kind→MlS
   | .block=>ofString "attempt_l1" | .header=>ofString "attempt_l2" | .rlp=>ofString "attempt_l3" | .trie=>ofString "attempt_l4"
@@ -37,15 +38,15 @@ def formals : List (MlS×ShapeHOL) := [(ofString "si",.one)]
 local, one real child call/handler and the original zero return. -/
 theorem body_shape (kind : Kind) : kind.body=.dec (ofString "e") .one (.const 0#64) (.seq kind.call (.return (.const 0#64))) := by
   cases kind <;> simp only [Kind.body,Kind.declaration,Kind.call,Kind.handler,Kind.exception,Kind.child,Kind.ordinal,arguments,localVar,
-    Guest.guestFn_attempt_l1,Guest.guestFn_attempt_l2,Guest.guestFn_attempt_l3,Guest.guestFn_attempt_l4,Guest.guestFn_attempt_l5,Guest.guestFn_attempt_l6,Guest.guestFn_attempt_l7,
+    Guest.Software.guestFn_attempt_l1,Guest.Software.guestFn_attempt_l2,Guest.Software.guestFn_attempt_l3,Guest.Software.guestFn_attempt_l4,Guest.Software.guestFn_attempt_l5,Guest.Software.guestFn_attempt_l6,Guest.Software.guestFn_attempt_l7,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none]
 
 set_option maxRecDepth 100000 in
 theorem original_code (kind : Kind) (code) (installed : OriginalCode.Installed code) : code.lookup kind.name=some (formals,kind.body,.one) := by
-  have selected : (functionsHOL OriginalCode.program)[815+kind.ordinal]?=some (GasBudget.OriginalCodeEnvironment.originalEntry kind.declaration) := by cases kind <;> rfl
+  have selected : (functionsHOL OriginalCode.program)[803+kind.ordinal]?=some (GasBudget.OriginalCodeEnvironment.originalEntry kind.declaration) := by cases kind <;> rfl
   have checked:=OriginalCode.indexed code installed _ _ selected
   cases kind <;> simpa only [Kind.name,Kind.body,Kind.declaration,formals,GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,
-    Guest.guestFn_attempt_l1,Guest.guestFn_attempt_l2,Guest.guestFn_attempt_l3,Guest.guestFn_attempt_l4,Guest.guestFn_attempt_l5,Guest.guestFn_attempt_l6,Guest.guestFn_attempt_l7,
+    Guest.Software.guestFn_attempt_l1,Guest.Software.guestFn_attempt_l2,Guest.Software.guestFn_attempt_l3,Guest.Software.guestFn_attempt_l4,Guest.Software.guestFn_attempt_l5,Guest.Software.guestFn_attempt_l6,Guest.Software.guestFn_attempt_l7,
     paramToHOL,shapeToHOL,List.map_cons,List.map_nil] using checked
 
 end InitECandidate.Solver.Input.AttemptWrapper

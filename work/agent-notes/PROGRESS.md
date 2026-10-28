@@ -4,6 +4,30 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual verification wrappers and header caller from the same main run
+
+The current verify/attempt chain reaches the actual current run_attempt with
+all three physical witness arrays, six SI fields, real scratch/frame arenas,
+entering heap and bounded physical payload gas cell. MainRootTrace keeps each
+stopped alternative and the real serialization/output continuation. HeaderReached
+retains the actual first payload declaration/skip, header caller/run, argument
+loads and lexical restoration; no future validator success is assumed.
+
+Cleanup separates the actual Software run_attempt body/current entry803 from
+obsolete header contracts. All seven wrapper bodies/entries and verify entry811
+now use current Software. Direct binding imports replace transitive accidental
+ones. AttemptWrapperChain Solver closure1601→54; VerifyProgram1603→56. These
+are proof import counts, not runtime improvements. No program bytes change.
+
+Validation: current-main-verification-header-joined-v1.log PASS1828jobs,
+permitted printed axioms only. 8GiBguard/twoslots/cachefalse. Index8213modules/
+16634facts; inventory8252/replacement closure0/frozen main unchanged. Incremental
+policy65022entries/2483366118bytes PASS. Account
+2%weekly,0resetcredits; ordinary usage allowed. No global finite target K/full
+verification; claim infinity. Actual current header/RLP bounds and crypto/map
+joins remain open, alongside target compilation and complete source paths.
+Next: remove obsolete RLP import umbrella, check the current header/RLP costs.
+
 ## Actual main root return retains all three witness arrays
 
 The same decoder now supplies all six physical SI witness pointer/count fields,

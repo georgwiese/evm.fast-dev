@@ -2053,6 +2053,7 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/Invocation.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/InvocationFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Log2Cost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/MainPayloadReturned.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MainWitnessReturned.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MarkedHeap.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Max.lean",
@@ -2342,6 +2343,13 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessValidated.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspaceFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspacePointer.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/HeaderEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/HeaderProgram.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/HeaderReached.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/MainEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/MainRootTrace.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/RunAttempt.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/RunInputs.lean",
     "submission/InitECandidate/Solver/Input/DecCallFallthroughReturn.lean",
     "submission/InitECandidate/Solver/Input/DeclarationClock.lean",
     "submission/InitECandidate/Solver/Input/DeclarationCode.lean",
@@ -8249,8 +8257,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65013,
-  "package_bytes": 2483341403,
+  "package_entries": 65022,
+  "package_bytes": 2483366118,
   "claim": {
     "K": "infinity"
   },

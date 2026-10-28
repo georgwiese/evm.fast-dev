@@ -19,10 +19,11 @@ continuation reached by this database invocation. -/
 def ReachesTable (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (count lower : Nat) (stp pad : BitVec 64)
     (outcome : Option (PanSemResultExact 64)) : Prop :=
 ∃ selected target inner heap bits,
-      2≤bits ∧ bits≤21 ∧ 2*count+2≤2^bits ∧ 2^bits≤4*count+4 ∧ count≤1048575 ∧
+      2≤bits ∧ bits≤21 ∧ 2*count+2≤2^bits ∧ 2^bits≤4*count+4 ∧ count≤1048575 ∧ lower≤heap.toNat ∧
       New.Returned selected target heap (BitVec.ofNat 64 (2^bits)) stp pad ∧
       Workspace (CallNormal.continuationEntry selected target "t" (.val (.word heap))) lower stp pad ∧
       LocalEffects.erase selected=LocalEffects.erase source ∧
+      (∀ name : MlS,ofString "cap"≠name → selected.locals.lookup name=source.locals.lookup name) ∧
       (∀ query : BitVec 64,query.toNat<lower→
         (CallNormal.continuationEntry selected target "t" (.val (.word heap))).memory query=source.memory query) ∧
       target.clock≤source.clock ∧ source.clock-target.clock≤36 ∧
@@ -72,7 +73,7 @@ theorem constructor_trace (source post : PanSemStateFiniteExact 64 Guest.HostMem
       have earlier (query : BitVec 64) (before : query.toNat<lower) :
           (CallNormal.continuationEntry selected target "t" (.val (.word heap))).memory query=source.memory query :=
         (returned.earlier query (by omega)).trans (congrFun memory query)
-      exact Or.inr ⟨selected,target,inner,heap,bits,bitsLower,powerBound,sufficient,capBound,countBound,returned,finalWorkspace,same,earlier,
+      exact Or.inr ⟨selected,target,inner,heap,bits,bitsLower,powerBound,sufficient,capBound,countBound,heapLower,returned,finalWorkspace,same,others,earlier,
         by omega,by omega,rest,by rw [endpoint,restored]⟩
 
 end InitECandidate.Solver.Input.CurrentTable.NodeBuild

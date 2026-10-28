@@ -3593,3 +3593,32 @@ the whole weighted loop, aggregate-byte bound and actual constructor-loop
 state. Only permitted printed axioms. Index8569modules/17369facts; inventory
 8614/replacement closure0/fixed files unchanged. No global finite target K
 or full verification. Usage22%weekly/0resetcredits.
+
+## Complete current database body, literal main bound and normal result
+
+The whole unchanged nodedb_build227 body now costs at most
+44*floor(payloadBytes/136)+1507*recordCount+36source ticks. The actual
+capacity/constructor prefix supplies live caller locals and its table's
+lower boundary. Real decoded node/code images now derive every hash/table
+entry condition at the actual callee, including MPT scratch ownership.
+
+An allocation-derived cap refines the count term to min(recordCount,1048575):
+inputs above that cap stop within36prefix ticks. Actual nonempty record-array
+geometry and the persistent frontier give witness-slice length≤251655184.
+Together these yield the checked uniform1661620381source-body-tick bound
+for either real decoded database. Straight-line target work is still separate.
+
+Actual normal whole-builder returns now derive the real table/capacity,
+complete physical Patricia image with genuine decoded-record value membership,
+count≤1048575, advanced heap, unchanged nonheap globals and protected input.
+The original caller's local/clock restoration retains that same result.
+The normal capacity proof also covers initial clocks below30 by applying
+clock extension to the same observed non-timeout run, not assuming funding.
+Main's actual database caller composition/second-table preservation, later
+current source paths and uniform target-step composition remain open.
+
+Validation: current-builder-result-frame-v2.log PASS2510jobs, including
+complete body/literal decoded-input cost, actual normal result/caller frames
+and existing main node trace. Permitted printed axioms only. Index8578modules/
+17383facts; inventory8623/replacement closure0/fixed files unchanged. No global
+finite target K/full verification. Usage22%weekly/0resetcredits.

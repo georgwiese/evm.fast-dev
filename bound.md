@@ -29,7 +29,7 @@ needed. **Do not read CLAUDE.md.** Fixed definitions govern stale prose.
   Do not claim final verification without a successful run. Existing restrictions
   on running the full verifier on this machine persist.
 
-## Current status — 2026-10-27
+## Current status — 2026-10-28
 
 **No global finite target K yet.** Claim infinity; no full verification claimed.
 Best overall effort estimate: **40%, plausible30–50%**, relative to current main.
@@ -83,10 +83,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-main-decoded-gas-v1.log`,1459jobs,
-permitted printed axioms only. Historical/current proof index:8001modules/
-15900facts; Solver inventory8040, replacement closure0, frozen main files
-unchanged. Incremental policy passes64809entries/2482231548bytes. These checks
+Latest successful selected closure: `current-main-decoded-request-v1.log`,1463jobs,
+permitted printed axioms only. Historical/current proof index:8005modules/
+15920facts; Solver inventory8044, replacement closure0, frozen main files
+unchanged. Incremental policy passes64813entries/2482253694bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -99,7 +99,10 @@ remain historical until their current statements/dependencies are checked.
    through further interfaces; do not identify arbitrary existential executions.
    The actual si+0 payload-pointer cell and its nested pl+88 gas load now check
    at that continuation, with ordinary-domain mapping and gas≤200000000.
-   Materialize the remaining SI fields for hash/attempt argument loads. Carry the
+   The actual hash-list pointer/count, request-header pointer and request-record
+   pointer (SI8/16/24/32) and their mapped loads now also check. The shared
+   witness frame protects earlier payload/request memory except six actual
+   output cells. Materialize remaining witness/chain SI fields. Carry the
    complete payload transaction-record image/count through its final stores;
    the gas-only Context is insufficient for transaction/hash loop bounds.
 2. Join request-root hashing to actual physical layouts and ownership; bound

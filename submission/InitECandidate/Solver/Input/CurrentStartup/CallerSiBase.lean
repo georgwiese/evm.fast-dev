@@ -5,6 +5,27 @@ namespace InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
+/-- All addresses inside the actual stateless record have their ordinary
+nonwrapping natural-number interpretation. -/
+theorem Context.si_field_number (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer statelessRecord record gasWord : BitVec 64) (length offset : Nat)
+    (context : Context input source pointer statelessRecord record gasWord length) (inside : offset ≤ 88) :
+    (statelessRecord + BitVec.ofNat 64 offset).toNat = statelessRecord.toNat + offset := by
+  have encoded : (BitVec.ofNat 64 offset).toNat = offset := by
+    rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  rw [BitVec.toNat_add_of_lt (by rw [encoded]; have := context.statelessRoom; omega), encoded]
+
+theorem Context.si_fields_ne (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer statelessRecord record gasWord : BitVec 64) (length first second : Nat)
+    (context : Context input source pointer statelessRecord record gasWord length)
+    (firstInside : first ≤ 88) (secondInside : second ≤ 88) (different : first ≠ second) :
+    statelessRecord + BitVec.ofNat 64 first ≠ statelessRecord + BitVec.ofNat 64 second := by
+  intro same
+  have natural := congrArg BitVec.toNat same
+  rw [context.si_field_number input source pointer statelessRecord record gasWord length first firstInside,
+    context.si_field_number input source pointer statelessRecord record gasWord length second secondInside] at natural
+  omega
+
 /-- A later field of the actual96-byte stateless record is distinct from its
 base. The proof uses the real allocation bounds and64-bit address semantics. -/
 theorem Context.si_ne_offset (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -39,3 +60,6 @@ end InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn.Context.si_ne_offset
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn.Context.store_base
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn.Context.si_field_number
+#print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn.Context.si_fields_ne

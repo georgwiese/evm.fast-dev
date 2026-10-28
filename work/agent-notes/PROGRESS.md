@@ -1,8 +1,31 @@
-# Current proof progress — 2026-10-27
+# Current proof progress — 2026-10-28
 
 Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
+
+## Shared witness frame and actual main request-hash argument loads
+
+WitnessProtected describes the earlier SI/payload/request memory interval,
+excluding only six actual witness output fields. WitnessPrefixFrame composes
+real workspace/allocation/caller frames across all three list returns and the
+same selected snapshot. It also directly retains SI32=requestRecord. This
+replaces repeated field-specific geometry in DecodedPayloadPointer. Its source
+shrinks185→116lines while preserving public helper statements; request metadata
+proofs now live in a smaller independently importable RequestMetadataCells.
+
+RequestMetadataCells proves the actual SI0/8/16/24 stores and exact versioned-hash
+count. RequestCallerReturn.earlier_memory generalizes its protected earlier-cell
+frame. DecodedRequestFields carries SI8/16/24/32 to the actual snapshot. The
+MainDecodedRequest.si_load helper checks real ordinary-domain mapping; actual
+main decoder executions derive the four genuine hasher argument loads. Remaining
+witness/chain fields, full payload transaction lifetime, hash runtime and target
+composition remain open. No finite global K or full verification.
+
+Validation: current-main-decoded-request-v1.log PASS1463jobs/permitted axioms;
+8GiBguard/twoslots/cachefalse. Index8005modules/15920facts; Solver8044; replacement
+closure0/fixed files unchanged; incremental policy PASS64813entries/2482253694bytes.
+Account20%weekly/0resetcredits. Program and infinity claim unchanged.
 
 ## Actual main loads now reach the bounded physical payload gas
 

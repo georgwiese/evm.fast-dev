@@ -22,6 +22,22 @@ theorem ssz_template_offsets (source : PanSemStateFiniteExact 64 Guest.HostMemor
     show ofString "heap_ptr" ≠ ofString "ssz_offs" from by decide,
     show ofString "zero_hashes" ≠ ofString "ssz_offs" from by decide]
 
+theorem ssz_template_chunk (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) :
+    (InitializerAllocations.template source cursor sszActions).globals.lookup (ofString "ssz_len_chunk") =
+      some (.val (.word (BitVec.ofNat 64 cursor))) := by
+  simp [sszActions, InitializerAllocations.template, InitializerAllocations.reserve,
+    InitializerAllocations.constant, putGlobal, HolFiniteMapExact.update, FUPDATE,
+    show ofString "heap_ptr" ≠ ofString "ssz_len_chunk" from by decide,
+    show ofString "zero_hashes" ≠ ofString "ssz_len_chunk" from by decide,
+    show ofString "ssz_offs" ≠ ofString "ssz_len_chunk" from by decide]
+
+theorem ssz_template_zeros (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) :
+    (InitializerAllocations.template source cursor sszActions).globals.lookup (ofString "zero_hashes") =
+      some (.val (.word (BitVec.ofNat 64 (cursor + 96)))) := by
+  simp [sszActions, InitializerAllocations.template, InitializerAllocations.reserve,
+    InitializerAllocations.constant, putGlobal, HolFiniteMapExact.update, FUPDATE, Nat.add_assoc,
+    show ofString "heap_ptr" ≠ ofString "zero_hashes" from by decide]
+
 /-- Derive the actual first SSZ workspace and heap cursor from the literal
 first three startup calls. Every call is exposed from the observed completed
 startup sequence; no supplied initializer return or future room is required. -/
@@ -38,6 +54,8 @@ theorem first_three (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
       evaluateHOLFiniteState sszState (withTail (routines.drop 3) .skip) = (none, target) ∧
       OriginalCode.Installed sszState.code ∧ OriginalScalarGlobals.Scalars sszState.globals ∧
       sszState.globals.lookup (ofString "ssz_offs") = some (.val (.word (BitVec.ofNat 64 (cursor + 752)))) ∧
+      sszState.globals.lookup (ofString "ssz_len_chunk") = some (.val (.word (BitVec.ofNat 64 (cursor + 720)))) ∧
+      sszState.globals.lookup (ofString "zero_hashes") = some (.val (.word (BitVec.ofNat 64 (cursor + 816)))) ∧
       sszState.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 (cursor + 2864)))) ∧
       cursor + 2864 ≤ 2952790016 ∧ (cursor + 2864) % 8 = 0 := by
   change evaluateHOLFiniteState source (.seq (.call (some (none, none)) (Code.name .sha256_init) [])
@@ -78,10 +96,13 @@ theorem first_three (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     rw [(evaluation_fields keccakState sszState _ none sszRun).2.2.2]; exact keccakCode
   have sszScalars := written_scalars keccakState sszState (cursor + 720) sszActions keccakScalars sszGlobals
   have offsets := (sszGlobals (ofString "ssz_offs")).trans (ssz_template_offsets keccakState (cursor + 720))
+  have chunk := (sszGlobals (ofString "ssz_len_chunk")).trans (ssz_template_chunk keccakState (cursor + 720))
+  have zeros := (sszGlobals (ofString "zero_hashes")).trans (ssz_template_zeros keccakState (cursor + 720))
   have finalHeap := (sszGlobals (ofString "heap_ptr")).trans
     (InitializerAllocations.template_heap keccakState (cursor + 720) sszActions keccakHeap ssz_valid)
   exact ⟨shaState, keccakState, sszState, shaRun, keccakRun, sszRun, afterSsz, sszCode, sszScalars,
     by simpa only [Nat.add_assoc] using offsets,
+    chunk, by simpa only [Nat.add_assoc] using zeros,
     by simpa [sszActions, InitializerAllocations.totalBytes, InitializerAllocations.constant, Nat.add_assoc] using finalHeap,
     by omega, by omega⟩
 
@@ -93,18 +114,23 @@ theorem main_first_three (input : Guest.InputBlob) (origin target : PanSemStateF
     ∃ sszState, evaluateHOLFiniteState sszState (withTail (routines.drop 3) .skip) = (none, target) ∧
       OriginalCode.Installed sszState.code ∧ OriginalScalarGlobals.Scalars sszState.globals ∧
       sszState.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)) ∧
+      sszState.globals.lookup (ofString "ssz_len_chunk") = some (.val (.word 2701132496#64)) ∧
+      sszState.globals.lookup (ofString "zero_hashes") = some (.val (.word 2701132592#64)) ∧
       sszState.globals.lookup (ofString "heap_ptr") = some (.val (.word 2701134640#64)) := by
   have heap := (Main.memory_globals origin).1
   rw [entry.base] at heap
   have zero := (Main.memory_other origin (ofString "zero_hashes") (by decide) (by decide) (by decide)).trans
     (entry.zeros (ofString "zero_hashes") OriginalScalarGlobals.ssz_names.2.2)
-  obtain ⟨shaState, keccakState, sszState, shaRun, keccakRun, sszRun, afterSsz, code, scalars, offsets, finalHeap, bound, aligned⟩ :=
+  obtain ⟨shaState, keccakState, sszState, shaRun, keccakRun, sszRun, afterSsz, code, scalars, offsets, chunk, zeros, finalHeap, bound, aligned⟩ :=
     first_three (Main.memoryState origin) target InitE.sourceBase entry.code (Main.memory_scalars input origin entry)
       heap zero (by decide) (by decide) actual
-  exact ⟨sszState, afterSsz, code, scalars, offsets, finalHeap⟩
+  exact ⟨sszState, afterSsz, code, scalars, offsets, chunk, zeros, finalHeap⟩
 
 end InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace.ssz_template_offsets
 #print axioms InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace.first_three
 #print axioms InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace.main_first_three
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace.ssz_template_chunk
+#print axioms InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace.ssz_template_zeros

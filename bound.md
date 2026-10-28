@@ -83,10 +83,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-hash-root-cut-v1.log`,1508jobs,
-permitted printed axioms only. Historical/current proof index:8025modules/
-15986facts; Solver inventory8064, replacement closure0, frozen main files
-unchanged. Incremental policy passes64833entries/2482297160bytes. These checks
+Latest successful selected closure: `current-hash-workspace-entry-v2.log`,1510jobs,
+permitted printed axioms only. Historical/current proof index:8027modules/
+16001facts; Solver inventory8066, replacement closure0, frozen main files
+unchanged. Incremental policy passes64835entries/2482330954bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -97,8 +97,9 @@ remain historical until their current statements/dependencies are checked.
    mapped hash argument loads. ReturnedImage now retains raw/extra/transaction/
    withdrawal/balance cells and real offset/count arithmetic, including complete
    transaction-record lifetime. Actual room derives encodedLength+16*txCount≤
-   251655056, txCount≤12582752 and total transaction bytes≤251655056. Carry real
-   workspace globals, heap/root allocation and ownership into the hash entry.
+   251655056, txCount≤12582752 and total transaction bytes≤251655056. Actual root allocation and all three initialized SSZ workspace pointers now
+   reach the same hash caller, with mapped/aligned extents and copied-input
+   separation. Retain these globals through current hash calls and join the ABI.
 2. Bound actual request-root hashing on all relevant outcomes, including errors.
    Current sha256_pair now has a checked syntax certificate: it preserves all
    globals, spends0body source ticks and at most1caller tick on all outcomes.
@@ -132,7 +133,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:22%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:23%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

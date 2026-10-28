@@ -36,12 +36,13 @@ theorem prefix_state (source target : PanSemStateFiniteExact 64 Guest.HostMemory
 /-- The real after-decoder execution either reaches the hash caller with its
 physical input image, or stops in the actual root-allocation prefix. -/
 def Cut (input : Guest.InputBlob) (decoded : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (result : Option (PanSemResultExact 64)) (post : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop :=
+    (result : Option (PanSemResultExact 64)) (post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (extra : PanSemStateFiniteExact 64 Guest.HostMemory → Prop := fun _ => True) : Prop :=
   (∃ current inner, ∃ origin : CurrentStartup.DecoderOrigin,
     ∃ record gasWord requestRecord root array : BitVec 64, ∃ payloadLength start size : Nat,
       CallPrefix.Execution decoded RootEntry.actions current ∧
       RootEntry.Ready input decoded current origin record gasWord requestRecord root array payloadLength start size ∧
-      evaluateHOLFiniteState current RootEntry.afterRoot = (result, inner) ∧
+      extra current ∧ evaluateHOLFiniteState current RootEntry.afterRoot = (result, inner) ∧
       post.clock = inner.clock ∧ LocalEffects.erase post = LocalEffects.erase inner) ∨
   (∃ stopped, evaluateHOLFiniteState decoded (CallPrefix.program RootEntry.actions .skip) = (result, stopped) ∧
     ArenaState stopped ∧ ArenaState post ∧ post.clock = stopped.clock ∧ LocalEffects.erase post = LocalEffects.erase stopped)
@@ -84,14 +85,40 @@ theorem cut {input : Guest.InputBlob} {source decoded post : PanSemStateFiniteEx
     have clockEq : post.clock = (evaluateHOLFiniteState current RootEntry.afterRoot).2.clock :=
       congrArg (fun observation => observation.1.2) same
     exact Or.inl ⟨current, (evaluateHOLFiniteState current RootEntry.afterRoot).2, origin, record, gasWord, requestRecord,
-      root, array, payloadLength, start, size, execution, data, Prod.ext resultEq.symm rfl, clockEq, congrArg Prod.snd same⟩
+      root, array, payloadLength, start, size, execution, data, True.intro, Prod.ext resultEq.symm rfl, clockEq, congrArg Prod.snd same⟩
 
 def ThroughDecoder (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (result : Option (PanSemResultExact 64)) (post : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop :=
+    (result : Option (PanSemResultExact 64)) (post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (extra : PanSemStateFiniteExact 64 Guest.HostMemory → Prop := fun _ => True) : Prop :=
   (∃ decoded inner, CallPrefix.Execution source CurrentStartup.DecoderPrefix.actions decoded ∧
-    Cut input decoded result inner ∧ post.clock = inner.clock ∧ LocalEffects.erase post = LocalEffects.erase inner) ∨
+    Cut input decoded result inner extra ∧ post.clock = inner.clock ∧ LocalEffects.erase post = LocalEffects.erase inner) ∨
   (∃ stopped, evaluateHOLFiniteState source (CallPrefix.program CurrentStartup.DecoderPrefix.actions .skip) = (result, stopped) ∧
     ArenaState stopped ∧ ArenaState post ∧ post.clock = stopped.clock ∧ LocalEffects.erase post = LocalEffects.erase stopped)
+
+/-- Add a property derived from the same actual reached root prefix without
+copying the source-observation split or discarding any stopped alternatives. -/
+theorem Cut.with_ready {input : Guest.InputBlob} {decoded post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {result : Option (PanSemResultExact 64)} (data : Cut input decoded result post)
+    (extra : PanSemStateFiniteExact 64 Guest.HostMemory → Prop)
+    (holds : ∀ current, CallPrefix.Execution decoded RootEntry.actions current → extra current) :
+    Cut input decoded result post extra := by
+  rcases data with continued | stopped
+  · obtain ⟨current, inner, origin, record, gasWord, requestRecord, root, array, payloadLength, start, size,
+      execution, ready, trivial, actual, clock, frame⟩ := continued
+    exact Or.inl ⟨current, inner, origin, record, gasWord, requestRecord, root, array, payloadLength, start, size,
+      execution, ready, holds current execution, actual, clock, frame⟩
+  · exact Or.inr stopped
+
+theorem ThroughDecoder.with_ready {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {result : Option (PanSemResultExact 64)} (data : ThroughDecoder input source result post)
+    (extra : PanSemStateFiniteExact 64 Guest.HostMemory → Prop)
+    (holds : ∀ decoded current, CallPrefix.Execution source CurrentStartup.DecoderPrefix.actions decoded →
+      CallPrefix.Execution decoded RootEntry.actions current → extra current) :
+    ThroughDecoder input source result post extra := by
+  rcases data with continued | stopped
+  · obtain ⟨decoded, inner, execution, actual, clock, frame⟩ := continued
+    exact Or.inl ⟨decoded, inner, execution, actual.with_ready extra (fun current reached => holds decoded current execution reached), clock, frame⟩
+  · exact Or.inr stopped
 
 theorem refine_decoder {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {result : Option (PanSemResultExact 64)} (initial : CurrentStartup.HostState input source)
@@ -139,3 +166,6 @@ end InitECandidate.Solver.Input.CurrentHash.RootCut
 #print axioms InitECandidate.Solver.Input.CurrentHash.RootCut.cut
 #print axioms InitECandidate.Solver.Input.CurrentHash.RootCut.refine_decoder
 #print axioms InitECandidate.Solver.Input.CurrentHash.RootCut.reached
+
+#print axioms InitECandidate.Solver.Input.CurrentHash.RootCut.Cut.with_ready
+#print axioms InitECandidate.Solver.Input.CurrentHash.RootCut.ThroughDecoder.with_ready

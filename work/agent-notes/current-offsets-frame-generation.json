@@ -236,6 +236,11 @@
     }
   ],
   "generated_source": "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsFrame.lean",
-  "generated_sha256": "9e77a1a5bd5fb268526de2f949088deeba9115aa0bd77c6b0b25b34970565637",
-  "scope": "Generated all-outcome ssz_offs global frame proof terms; not proof validation, allocation geometry, host/memory equality or a runtime bound."
+  "generated_sha256": "eb1e753f337c0fc18ed172a507b9c281fa4e1efdf7cf0473c59e2e2b30caa198",
+  "protected_globals": [
+    "ssz_offs",
+    "ssz_len_chunk",
+    "zero_hashes"
+  ],
+  "scope": "Generated all-outcome SSZ global frames with default offsets API; not proof validation, allocation geometry, host/memory equality or a runtime bound."
 }

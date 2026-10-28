@@ -4,6 +4,27 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Real SSZ workspaces now reach the whole-source hash caller
+
+A single three-key OffsetsFrame proof now preserves offsets, length-chunk and
+zero-hash globals through the43actual decoder/startup helpers. The original
+first three startup calls derive all three literal pointers; main's later startup,
+caught decoder and root allocation retain them. WorkspaceEntry attaches installed
+code/domain/endian, real mapped/aligned32-byte chunk and2048-byte zero-table extents
+to the same reached caller. Both extents end before the same actual copied input.
+No accelerator, successful future hash, room or funding assumption is supplied.
+
+RootCut now accepts an optional reached-state property with checked refinements,
+so strengthening physical data reuses its actual observation/stopped-path split.
+The default interface remains available. The generic workspace proof avoids two
+more copies of the large generated offsets proof.
+
+Validation: current-hash-workspace-entry-v2.log PASS1510jobs/permitted printed
+axioms;8GiBguard/twoslots/cachefalse. Index8027modules/16001facts; Solver8066;
+replacement closure0/fixed files unchanged. Account23%weekly/0resetcredits.
+No global finite target K, claim infinity; no full verification. Next: retain
+all five arena/workspace globals through the actual hash closure and join its ABI.
+
 ## Actual root allocation and whole-source hash-entry split now check
 
 RootEntry cuts the unchanged main immediately after its actual32-byte root
@@ -23,7 +44,7 @@ loop/memory-frame composition.
 
 Validation: current-hash-root-cut-v1.log PASS1508jobs/permitted printed axioms;
 8GiBguard/twoslots/cachefalse. Index8025modules/15986facts; Solver8064; replacement
-closure0/fixed files unchanged; incremental policy PASS64833entries/2482297160bytes.
+closure0/fixed files unchanged; incremental policy PASS64835entries/2482330954bytes.
 Account22%weekly/0resetcredits. Claim infinity; no full verification.
 
 ## Current supporting hash helpers now have checked all-outcome source costs

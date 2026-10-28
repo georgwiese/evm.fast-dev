@@ -77,7 +77,7 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
   rw [Request.payload_call_shape] at positiveRun
   have positive := CallNormal.normal_clock caller parentPost (ofString "pl") .one (ofString "decode_payload")
     Request.payloadArguments Request.afterPayload value positiveRun
-  have offsetFrame := OffsetsFrame.decode_payload entry.code installed entry rfl
+  have offsetFrame := OffsetsFrame.decode_payload entry.code installed .offsets entry rfl
   have literalBody : Code.body .decode_payload = Payload.body := rfl
   rw [literalBody, bodyRun] at offsetFrame
   have currentWorkspace : bodyPost.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)) :=

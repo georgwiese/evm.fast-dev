@@ -44,7 +44,7 @@ theorem main_lower (input : Guest.InputBlob) (origin target : PanSemStateFiniteE
     (entry : Main.Entry input origin)
     (actual : evaluateHOLFiniteState (Main.memoryState origin) (withTail routines .skip) = (none, target)) :
     NormalHeapEffects.AtLeast 2701134640 target := by
-  obtain ⟨sszState, suffix, code, scalars, offsets, heap⟩ := EarlyWorkspace.main_first_three input origin target entry actual
+  obtain ⟨sszState, suffix, code, scalars, offsets, chunk, zeros, heap⟩ := EarlyWorkspace.main_first_three input origin target entry actual
   have initial : NormalHeapEffects.AtLeast 2701134640 sszState :=
     ⟨2701134640#64, heap, by decide, by decide, by decide⟩
   have pure := sequence sszState.code code (routines.drop 3) (fun function member => List.mem_of_mem_drop member)

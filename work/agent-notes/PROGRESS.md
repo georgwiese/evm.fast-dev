@@ -4,6 +4,29 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual progressive list/byte wrappers and shared output caller frame check
+
+WordTripleLookup and MemoryOutputCall share checked last-output binding and
+same normal caller inversion while the first two argument values/expressions
+remain unrestricted. Current software SHA reuses them without changing its
+public theorem interfaces. MixMemory gains the corresponding output-only frame.
+
+PListMemory joins actual progressive hashing and length mixing, retaining
+metadata and entering heap with arbitrary length word. PBytesMemory joins the
+same scoped pack return/tuple/count, progressive list call and final release;
+its actual three-word caller inherits both memory and heap frames. Physical
+input/output/zero-table/length-chunk/current-heap facts remain parent obligations;
+no temporary-room or future callee success is assumed.
+
+Validation: current-shared-output-and-list-v2.log PASS1290jobs (also rechecks
+fixed-record/progressive/byte dependencies); current-progressive-byte-memory-v1.log
+PASS1283jobs, permitted printed axioms only.8GiBguard/twoslots/cachefalse, disk61%.
+Index8113modules/16348facts; inventory8152, replacement closure0, frozen main
+unchanged. Incremental policy64921entries/2482878976bytes PASS. Account29%weekly,
+0resetcredits; ordinary usage allowed. No global finite target K or full
+verification; claim infinity. Next: container and
+request-list memory/resource joins, then complete payload/request-root.
+
 ## Complete actual progressive hash memory and heap caller frame checks
 
 ProgressiveMemoryStep joins each actual capped Merkle call, current input/root

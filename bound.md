@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-progressive-memory-v1.log`,1267jobs,
-permitted printed axioms only. Historical/current proof index:8109modules/
-16336facts; Solver inventory8148, replacement closure0, frozen main files
-unchanged. Incremental policy passes64917entries/2482856750bytes. These checks
+Latest successful selected closure: `current-progressive-byte-memory-v1.log`,1283jobs,
+permitted printed axioms only. Historical/current proof index:8113modules/
+16348facts; Solver inventory8152, replacement closure0, frozen main files
+unchanged. Incremental policy passes64921entries/2482878976bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -164,6 +164,10 @@ remain historical until their current statements/dependencies are checked.
    table and incoming persistent cursor; source n/limit and physical arenas
    remain explicit call-entry facts. Full-byte-list/progressive/fixed-record/
    payload/request-root memory composition remains open. Complete actual progressive
+   list/byte wrapper memory and heap frames now check, with real ABI callers,
+   packed tuple/count and arbitrary length word. Shared last-output ABI/caller
+   reasoning serves software SHA and length mixing, retaining all previous
+   theorem interfaces and removing duplicate inversion. Complete actual progressive
    body/caller memory and heap frames now check: real768/32-byte allocations,
    capped geometric rounds, actual terminal round, accumulator clear/fold and
    final output/release. Shared normal allocation inversion derives real room

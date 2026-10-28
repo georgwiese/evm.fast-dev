@@ -79,6 +79,11 @@ theorem body_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
   have next := data.after_call _ _ (MemoryGlobals.call .zero _ source.code data.installed (some none) _) normal
   exact (after_zero_memory middle post chunk out query next chunkAway outAway value remaining).trans cleared
 
+theorem original_entry (code) (installed : OriginalCode.Installed code) : code.lookup (Code.name .mix_in_length)=some ([(ofString "root",.one),(ofString "len",.one),(ofString "out",.one)],Code.body .mix_in_length,.one) := by
+  simpa only [Code.formals,Code.shape,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_mix_in_length,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+    using Code.installed code installed .mix_in_length
+
 theorem call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (root len chunk out query : BitVec 64)
     (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
     (chunkCell : source.globals.lookup (ofString "ssz_len_chunk")=some (.val (.word chunk)))
@@ -88,15 +93,27 @@ theorem call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
       some [.val (.word root),.val (.word len),.val (.word out)])
     (actual : evaluateHOLFiniteState source (.call (some (none,none)) (Code.name .mix_in_length) arguments)=(none,post)) :
     post.memory query=source.memory query := by
-  have entry : source.code.lookup (Code.name .mix_in_length)=some ([(ofString "root",.one),(ofString "len",.one),(ofString "out",.one)],Code.body .mix_in_length,.one) := by
-    simpa only [Code.formals,Code.shape,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
-      declToHOL,funDeclToHOL,Guest.Software.guestFn_mix_in_length,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
-      using Code.installed source.code installed .mix_in_length
+  have entry := original_entry source.code installed
   obtain ⟨callee,called,rootLocal,lenLocal,output⟩ := word_triple_environment source.code.lookup (Code.name .mix_in_length)
     (ofString "root") (ofString "len") (ofString "out") (Code.body .mix_in_length) .one root len out (by decide) (by decide) (by decide) entry
   exact MemoryAt.call_normal source post (Code.name .mix_in_length) arguments _ (Code.body .mix_in_length) callee .one query args called
     (fun target value evaluated => body_memory (callEntryStateHOLFinite source callee) target chunk out query ⟨installed,domain,chunkCell,output⟩
       chunkArena aligned chunkAway outAway value evaluated) actual
+
+/-- Only the output expression must be located. The actual normal invocation
+supplies validity of the otherwise unrestricted root/length arguments. -/
+theorem call_output_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (left right output : ExpHOL 64) (chunk out query : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (chunkCell : source.globals.lookup (ofString "ssz_len_chunk")=some (.val (.word chunk)))
+    (chunkArena : AllocatedBytes.Arena chunk 32) (aligned : chunk.toNat%8=0)
+    (chunkAway : CopyGeneral.Away chunk query 32) (outAway : CopyGeneral.Away out query 32)
+    (read : evalHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) output=some (.val (.word out)))
+    (actual : evaluateHOLFiniteState source (.call (some (none,none)) (Code.name .mix_in_length) [left,right,output])=(none,post)) : post.memory query=source.memory query := by
+  apply MemoryAt.call_last_word_memory source post (Code.name .mix_in_length) (ofString "root") (ofString "len") (ofString "out")
+    (Code.body .mix_in_length) .one left right output out query (original_entry source.code installed) read _ actual
+  intro callee target value outputCell returned
+  exact body_memory (callEntryStateHOLFinite source callee) target chunk out query ⟨installed,domain,chunkCell,outputCell⟩
+    chunkArena aligned chunkAway outAway value returned
 
 end InitECandidate.Solver.Input.CurrentHash.MixMemory
 
@@ -106,3 +123,6 @@ end InitECandidate.Solver.Input.CurrentHash.MixMemory
 #print axioms InitECandidate.Solver.Input.CurrentHash.MixMemory.after_zero_memory
 #print axioms InitECandidate.Solver.Input.CurrentHash.MixMemory.body_memory
 #print axioms InitECandidate.Solver.Input.CurrentHash.MixMemory.call_memory
+
+#print axioms InitECandidate.Solver.Input.CurrentHash.MixMemory.original_entry
+#print axioms InitECandidate.Solver.Input.CurrentHash.MixMemory.call_output_memory

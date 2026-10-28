@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-container-record-complete-v1.log`,1634jobs,
-permitted printed axioms only. Historical/current proof index:8070modules/
-16171facts; Solver inventory8109, replacement closure0, frozen main files
-unchanged. Incremental policy passes64878entries/2482592679bytes. These checks
+Latest successful selected closure: `current-request-list-caller-v1.log`,1171jobs,
+permitted printed axioms only. Historical/current proof index:8077modules/
+16198facts; Solver inventory8116, replacement closure0, frozen main files
+unchanged. Incremental policy passes64885entries/2482631547bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -121,8 +121,11 @@ remain historical until their current statements/dependencies are checked.
    packing return and observed errors included. Container body/caller≤89*n+3168/3169 and six fixed-record hashes now
    check without mapped-pointer/workspace/heap-room/success assumptions. Fixed
    record body prices: withdrawal758, deposit1425, wdreq880, cons1144, bdep1279,
-   bexit734. Request-list dispatch/loops, full request-hash composition and real
-   ownership/resource frames remain open. Container syntax/bit-loop/suffix import
+   bexit734. Complete actual request-list dispatch/loop/body/caller now checks: body
+   ≤(selectedRecordPrice+90)*n+3173, caller adds1, actual n≤134217728 and fixed
+   selected record size. No mapping/heap-room/workspace/success premises. Full
+   payload/request-root composition and real ownership/resource frames remain
+   open. Container syntax/bit-loop/suffix import
    closures shrink613→9/614→40/616→128Solver modules. Shared local-prefix
    soundness now handles byte stores; ByteStoreLocal reuses it.
    Current sha256_pair now has a checked syntax certificate: it preserves all

@@ -4,6 +4,30 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete current request-list dispatch, loop, body and caller check
+
+The actual five tests charge exactly one selected fixed-record hash. The
+selected kind and fixed record size come from this same five-word call, and
+ordinary caller-local restoration retains the real count/pointers through the
+iteration. A potential(selectedRecordPrice+2)*(n-index) pays each loop tick and
+that selected hash, including actual failed prefixes. Normal iterations derive
+the increment and retained input bindings; normal exits preserve the current
+counter state without supplying any future result.
+
+The complete actual body composes both real allocation scopes, index0,
+dispatch/loop, progressive list/mix and release. For actual n≤134217728:
+body≤(selectedRecordPrice+90)*n+3173, real caller adds1. Allocation failures,
+read/store errors and traps remain included in the same non-timeout outcome.
+No mapped input/output, accelerator workspace, heap room or successful hash
+premises are needed for these costs. Physical record/RQ lifetimes and the full
+payload/request-root join remain open.
+
+Validation: current-request-list-caller-v1.log PASS1171jobs/permitted printed
+axioms only;8GiBguard/twoslots/cachefalse. Index8077modules/16198facts; inventory
+8116, replacement closure0, fixed main files unchanged. Incremental policy
+64885entries/2482631547bytes PASS; no full verification. Claim infinity and no
+global finite target K. Account26%weekly,0resetcredits; ordinary usage allowed.
+
 ## Current container and six fixed-record hash costs check
 
 The actual activity-bit loop uses the shared signed-counter theorem:≤n-index

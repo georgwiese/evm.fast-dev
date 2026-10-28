@@ -5,10 +5,10 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
 /-- A scoped callee cannot export its own break/continue. The caller can
 produce those only through its genuine continuation. -/
-theorem scoped_no_loop_control (name : MlS) (shape : ShapeHOL) (function : MlS) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
-    (safe : ∀ source : PanSemStateFiniteExact 64 Guest.HostMemory,
+theorem scoped_no_loop_control {F : Type} (name : MlS) (shape : ShapeHOL) (function : MlS) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (safe : ∀ source : PanSemStateFiniteExact 64 F,
       (evaluateHOLFiniteState source continuation).1≠some .break ∧ (evaluateHOLFiniteState source continuation).1≠some .continue)
-    (source : PanSemStateFiniteExact 64 Guest.HostMemory) :
+    (source : PanSemStateFiniteExact 64 F) :
     (evaluateHOLFiniteState source (.decCall name shape function arguments continuation)).1≠some .break ∧
       (evaluateHOLFiniteState source (.decCall name shape function arguments continuation)).1≠some .continue := by
   classical

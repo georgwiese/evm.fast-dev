@@ -1,4 +1,6 @@
-import InitECandidate.Solver.Headers.ValidateEntry
+import InitECandidate.Solver.Headers.ValidateSyntax
+import InitECandidate.Solver.Input.HashInputFrame
+import InitECandidate.Solver.Headers.FieldRowArguments
 
 namespace InitECandidate.Solver.Headers.Validate
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

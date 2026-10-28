@@ -1,11 +1,9 @@
+import InitECandidate.Solver.WitnessRadix.MemeqFormals
 import InitECandidate.Solver.WitnessRadix.MemeqCall
 
 namespace InitECandidate.Solver.WitnessRadix.Memeq32
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
-
-def formals : List (MlS × ShapeHOL) :=
-  [(ofString "a", .one), (ofString "b", .one), (ofString "n", .one)]
 
 def values (a b : BitVec 64) : List (ValueHOL 64) :=
   [.val (.word a), .val (.word b), .val (.word 32#64)]

@@ -37,14 +37,15 @@ Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculat
 not a theorem or target ceiling.
 
 Latest checked steps: unchanged decode_header208 costs≤195*inputLength+473
-body/+474caller source ticks on all outcomes. Genuine returns derive their
-fresh248-byte record,≤616heap growth and preservation of all earlier memory.
-Actual software keccak25692 costs≤44*(bytes/136)+689body/+690caller source ticks;
-its whole normal caller preserves every global and all memory outside its
-200-byte state,136-byte pad and32-byte output. The actual24-round permutation
-is used. Selected1046-job header/Keccak cost/frame/caller replay passed.
-Actual startup Keccak workspace transport, repeated header-validation loop,
-later current source paths and uniform target-step composition remain open.
+body/+474caller source ticks and derives its real fresh header/earlier-memory
+frame. Actual software keccak25692 costs≤44*(bytes/136)+689body/+690caller ticks,
+with its real24-round permutation and full workspace/output memory frame.
+Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
+covering both allocations and all decode/hash/link loops. Actual normal/scoped
+returns supply the real arrays, advanced physical context and protected input.
+Selected2131-job current main/root/header and helper replay passed. Startup
+Keccak workspace transport/header-row entry from main, later current source
+paths and uniform target-step composition remain open.
 
 Checked against current Software syntax and declaration entries:
 
@@ -94,10 +95,12 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-keccak-complete-frame-call-v1.log`,1046jobs,
-permitted printed axioms only. Historical/current proof index:8349modules/
-16859facts; inventory8392modules, replacement AST reverseclosure0, fixed files
-unchanged. This is helper-build evidence, not complete verification.
+Latest successful selected closure: `current-header-validation-complete-caller-main-v2.log`,2131jobs,
+permitted printed axioms only. Historical/current proof index:8379modules/
+16920facts; inventory8423modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65202entries/2483983435bytes PASS. This is helper
+build evidence, not complete verification.
+
 ## Checked source stages and remaining work, in order
 
 1. **Checked: actual decoder image and hash-entry derivation.** RootRun

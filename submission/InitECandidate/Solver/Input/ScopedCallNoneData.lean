@@ -7,7 +7,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 /-- A real normal scoped call derives argument/code lookup, funding, the
 genuine callee return and checked shapes, followed by its actual continuation.
 Useful when opcode argument values come from earlier actual stack pops. -/
-theorem scoped_none_data (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem scoped_none_data {F : Type} (source post : PanSemStateFiniteExact 64 F)
     (name : String) (shape : ShapeHOL) (function : MlS) (arguments : List (ExpHOL 64))
     (continuation : ProgHOL 64)
     (normal : evaluateHOLFiniteState source (.decCall (ofString name) shape function arguments continuation) = (none, post)) :

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 import InitECandidate.Solver.Input.GuardedCounter
 import InitECandidate.Solver.Input.CounterLoopCost
 import InitECandidate.Solver.Input.LoopInvariantNoControl
@@ -29,7 +30,8 @@ theorem transition (test : ExpHOL 64) (body : ProgHOL 64) (stride length : Nat)
   obtain ⟨word,cell,nCell,bounded⟩ := valid
   have expected:=testReads source word cell nCell bounded
   have active : word.toNat+stride≤length := by
-    by_contra inactive
+    apply Classical.byContradiction
+    intro inactive
     rw [if_neg inactive] at expected
     have zero : observed=0#64 := by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
     exact nonzero zero
@@ -60,7 +62,7 @@ theorem cost (test : ExpHOL 64) (body : ProgHOL 64) (stride length : Nat)
     (ClockCost.of_quiet source.code body (guarded.quiet source.code))
     (by intro current codeEq ready observed read nonzero; exact transition test body stride length positive small guarded testReads current ready observed read nonzero) source rfl valid
   simp only [Nat.zero_add,Nat.one_mul] at price
-  exact price.trans (Nat.sub_le _ _)
+  exact Nat.le_trans price (Nat.sub_le _ _)
 
 theorem normal (test : ExpHOL 64) (body : ProgHOL 64) (stride length : Nat)
     (positive : 0<stride) (small : length≤64) (guarded : Input.GuardedCounter stride body) (testReads : TestReads test stride length)

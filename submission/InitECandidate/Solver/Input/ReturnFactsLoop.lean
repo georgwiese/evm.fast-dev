@@ -26,8 +26,8 @@ theorem loop (code) (test : ExpHOL 64) (body : ProgHOL 64)
   have auxiliary : ∀ clock (current : PanSemStateFiniteExact 64 Guest.HostMemory),
       current.clock=clock → current.code=code → invariant current → Returns current (.while test body) property := by
     intro clock
-    induction clock using Nat.strong_induction_on with
-    | h clock ih =>
+    induction clock using Nat.strongRecOn with
+    | ind clock ih =>
       intro current clockEq codeEq valid post value normal
       rw [evaluateHOLFiniteState_while_total] at normal
       generalize observed : evalHOLFinite current (h := fun address => Classical.propDecidable (current.memaddrs address)) test=read at normal

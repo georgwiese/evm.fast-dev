@@ -4,6 +4,40 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual header-validator cost, normal return and caller trace
+
+The unchanged Software validate_headers212 now costs≤51528322body ticks and
+≤51528323ordinary caller ticks on every outcome from its current physical
+entry context. The count guard, both real allocations, all≤256header decode/
+store/software-hash iterations and parent-link comparisons are included. Each
+header row is genuinely≤1024bytes; the first iteration costs≤201152plus its
+loop tick, and each link costs≤129plus its loop tick. Failed reads, guards,
+allocation, comparisons, hashing and timeouts are covered. Source clocks still
+omit straight-line target instructions.
+
+Actual normal returns derive the allocated hs/hash tuple, count≤256, real
+allocation geometry and next bounded aligned heap. The entire fixed input/row
+region, software hash workspace and every nonheap global survive. Real scoped
+call traces either charge stopped work or retain that genuine returned tuple,
+physical next context, forward/paid clock and exact original continuation.
+No future allocator/comparison/hash success is a supplied premise.
+
+Cleanup separates actual validator syntax, physical row model, pure protected
+input frames and memeq formals/ABI from old mapped-arena/normal-execution proof
+umbrellas. The existing unchanged memeq body is checked against the current
+Software code entry. Generic loop/control helpers use direct core facts or
+explicit binding imports instead of incidental transitive imports; two scoped
+control facts are now independent of the host-memory type.
+
+Validation: current-header-validation-complete-caller-main-v2.log PASS2131jobs,
+permitted printed axioms, including original main/root/header entry and the
+moved memeq ABI/old runtime compatibility. Index8379modules/16920facts;
+inventory8423/replacement closure0/frozen main unchanged. Incremental policy
+65202entries/2483983435bytes PASS. No global finite target K/full verification;
+claim infinity. Next: derive real startup Keccak workspace globals and physical
+header row context from main, then later current paths/target composition.
+Usage9%weekly/0resetcredits;8GiBguard/twoslots/cachefalse.
+
 ## Complete actual Keccak memory frame and caller
 
 The whole unchanged Software keccak25692 now protects every word outside its

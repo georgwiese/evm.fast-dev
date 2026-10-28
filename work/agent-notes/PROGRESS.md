@@ -3478,3 +3478,21 @@ printed axioms only. Index8528modules/17257facts; inventory8572/replacement
 closure0/fixed files unchanged; incremental policy65358entries/2484664085bytes
 PASS. No global finite target K/full verification. Usage19%weekly/0resetcredits.
 Next: physical nonempty splice image, then full insertion/builder induction.
+
+## Complete combined fresh-insertion physical image
+
+The exact constructor-plus-splice memory model now establishes the full
+nonempty image: all11header fields, real root/count/next updates, extended
+valid-index range, mapped bit/child cells, increasing routing, physical old/
+new leaf keys and witness-value membership. The actual left-cell comparison
+and prior parent link establish either old parent edge; root replacement
+also checks. Count room comes from the current builder counter. Real scoped
+caller composition must still place this image at its same returned state
+before full insertion/builder induction; no whole-builder/global bound claimed.
+
+Validation: current-patricia-complete-fresh-image-v2.log PASS970jobs, permitted
+printed axioms only, alongside full insertion cost, empty caller and existing
+value-update image. Index8539modules/17283facts; inventory8583/replacement
+closure0/fixed files unchanged; incremental policy65369entries/2484728466bytes
+PASS. Usage19%weekly/0resetcredits. Next: real fresh caller image transport,
+then full insertion return and actual builder loop.

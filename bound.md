@@ -172,6 +172,15 @@ The query bit therefore comes from the same physical buffer as the earlier
 lookup/difference. Shared metadata/frame helpers replace nine redundant
 domain/code projections, while retaining the existing insertion-cost APIs.
 Full nonempty image assembly and its real caller composition remain open.
+The complete nonempty physical image now checks for the exact combined
+constructor/splice memory model. It retains all11header fields, correct
+root/count/next updates, extended valid-index range, mapped markers and child
+cells, increasing routing, real old/new key bytes and witness-value membership.
+Actual parent selection is proved from the original left-cell comparison and
+earlier parent link, including the right-edge alternative. Count room is an
+explicit current-counter obligation. Real scoped constructor/splice execution
+must still transport this image into the same caller post-state before the
+builder induction can use it; this is not yet a whole-builder bound.
 
 Checked against current Software syntax and declaration entries:
 
@@ -221,10 +230,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-original-entire-splice-v2.log`,954jobs,
-permitted printed axioms only. Historical/current proof index:8528modules/
-17257facts; inventory8572modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65358entries/2484664085bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-complete-fresh-image-v2.log`,970jobs,
+permitted printed axioms only. Historical/current proof index:8539modules/
+17283facts; inventory8583modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65369entries/2484728466bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

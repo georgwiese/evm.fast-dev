@@ -4,6 +4,24 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current payload syntax, shared fixed-field costs and complete heap restoration
+
+PayloadProgram/Scopes match the actual current htr_payload, including the
+ordinary assigned withdrawal roots allocation and both m2 releases. Shared
+FixedRecord field prices apply to the literal current payload calls via checked
+source argument/program equivalence: first1668, middle84, last162. Literal
+raw+0 stays in the current AST and still needs its actual target work counted.
+PayloadHeap proves normal whole-body heap restoration without counts, mapped
+inputs, intermediate heap values or additional allocation room as premises.
+Transaction/withdrawal cost and metadata joins remain open.
+
+Validation: current-payload-static-step-v1.log PASS1151jobs and
+current-payload-heap-v1.log PASS1158jobs; permitted printed axioms only.
+8GiBguard/twoslots/cachefalse. Index8138modules/16441facts; inventory8177,
+replacement closure0, frozen main unchanged. Incremental policy64946entries/
+2483015611bytes PASS. Account32%weekly,0resetcredits; ordinary usage allowed.
+No global finite target K or full verification; claim infinity.
+
 ## Complete actual parent requests protected-memory and heap caller frame checks
 
 RequestsMemoryPipeline retains any earlier protected word through the same real

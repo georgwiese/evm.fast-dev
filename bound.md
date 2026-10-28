@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-parent-requests-memory-v1.log`,1401jobs,
-permitted printed axioms only. Historical/current proof index:8133modules/
-16418facts; Solver inventory8172, replacement closure0, frozen main files
-unchanged. Incremental policy passes64941entries/2482989783bytes. These checks
+Latest successful selected closure: `current-payload-heap-v1.log`,1158jobs,
+permitted printed axioms only. Historical/current proof index:8138modules/
+16441facts; Solver inventory8177, replacement closure0, frozen main files
+unchanged. Incremental policy passes64946entries/2483015611bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -150,6 +150,10 @@ remain historical until their current statements/dependencies are checked.
    those frames and compose whole current payload/request-root costs, including
    earlier stopped alternatives. Recheck old layout limits against actual
    encodedLength+16*txCount≤251655056, txCount≤12582752 and totalTxBytes≤251655056.
+   The payload now has minimal current syntax/scope interfaces, exact fixed-field
+   source prices1668/84/162, and a complete normal heap-restoration proof
+   through both dynamic loops and actual m2 releases. Literal raw+0 expressions
+   are retained; source argument equivalence does not price compiled target work.
    Full request fields now reach the actual root callee; their list extents,
    individual count bounds and shared byte/count budgets check. Actual parent
    request syntax, normal heap restoration and all five list ABIs now check.
@@ -189,7 +193,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:28%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:32%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

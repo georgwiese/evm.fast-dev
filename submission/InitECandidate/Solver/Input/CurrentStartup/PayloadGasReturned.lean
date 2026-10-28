@@ -2,6 +2,7 @@ import InitECandidate.Solver.Input.CurrentStartup.WithdrawalReturn
 import InitECandidate.Solver.Input.PayloadRemainingExecute
 import InitECandidate.Solver.Input.PayloadPassingEntry
 import InitECandidate.Solver.Input.PayloadRemainingTransactions
+import InitECandidate.Solver.Input.PayloadReturnedImage
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadGasReturned
 variable {decoderOrigin : DecoderOrigin}
@@ -16,7 +17,7 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
       post.memory (record + 88#64) = .word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
       source.clock = post.clock ∧ NormalHeapEffects.AtLeast (record.toNat + 136) post ∧
       ∃ length, PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length value ∧
-        ∃ array start size, Payload.TransactionImage input post pointer record array start size := by
+        ∃ array start size, Payload.ReturnedImage input post pointer record array length start size := by
   obtain ⟨origin, source, post, pointer, record, array, count, length, start, size, value, data⟩ := actual
   have context := data.context
   have completed := Payload.remaining_execute source input pointer record (BitVec.ofNat 64 length)
@@ -45,7 +46,9 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
   · rw [postEq]
     exact context.recordHeap
   · rw [postEq]
-    exact transactions
+    refine ⟨transactions, ⟨count, Payload.remaining_image source input pointer record count length
+      (by have := context.recordRoom; omega), data.countEq, data.countFits⟩,
+      data.valid, context.sliceEq, context.minimum, context.sliceUpper⟩
 
 /-- Whole-main-derived reachability and the original declared-gas premise
 now meet at the actual returned suffix's physical gas cell. -/
@@ -74,7 +77,7 @@ theorem complete (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached (d
       Blob.HeapInput post input pointer ∧
       post.memory (record + 88#64) = .word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
       NormalHeapEffects.AtLeast (record.toNat + 136) post ∧
-      ∃ array start size, Payload.TransactionImage input post pointer record array start size := by
+      ∃ array start size, Payload.ReturnedImage input post pointer record array length start size := by
   obtain ⟨source, suffixPost, pointer, record, value, suffixRun, valueEq, image, cell, clock, heap, length, endpoint, array, start, size, transactions⟩ := withdrawal input actual
   rw [valueEq] at endpoint
   obtain ⟨entry, post, entryFacts, originHeap, frame, postClock⟩ := endpoint

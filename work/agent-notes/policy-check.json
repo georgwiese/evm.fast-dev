@@ -2094,6 +2094,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/KeccakInit.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/MainCopiedInput.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/MainDecodedGas.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/MainDecodedPayload.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/MainDecodedRequest.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/MainDecodedRoot.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/MainDecodedState.lean",
@@ -2826,9 +2827,11 @@
     "submission/InitECandidate/Solver/Input/PayloadPreparedImage.lean",
     "submission/InitECandidate/Solver/Input/PayloadProgram.lean",
     "submission/InitECandidate/Solver/Input/PayloadRemainingExecute.lean",
+    "submission/InitECandidate/Solver/Input/PayloadRemainingImage.lean",
     "submission/InitECandidate/Solver/Input/PayloadRemainingProgram.lean",
     "submission/InitECandidate/Solver/Input/PayloadRemainingReads.lean",
     "submission/InitECandidate/Solver/Input/PayloadRemainingTransactions.lean",
+    "submission/InitECandidate/Solver/Input/PayloadReturnedImage.lean",
     "submission/InitECandidate/Solver/Input/PayloadTailNormal.lean",
     "submission/InitECandidate/Solver/Input/PayloadTailTrace.lean",
     "submission/InitECandidate/Solver/Input/PayloadTransactionFrame.lean",
@@ -8059,8 +8062,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64823,
-  "package_bytes": 2482293970,
+  "package_entries": 64826,
+  "package_bytes": 2482309152,
   "claim": {
     "K": "infinity"
   },

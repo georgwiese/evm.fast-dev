@@ -83,35 +83,31 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-payload-prefix-image-v3.log`,1477jobs,
-permitted printed axioms only. Historical/current proof index:8015modules/
-15940facts; Solver inventory8054, replacement closure0, frozen main files
-unchanged. Incremental policy passes64823entries/2482293970bytes. These checks
+Latest successful selected closure: `current-full-payload-image-v2.log`,1480jobs,
+permitted printed axioms only. Historical/current proof index:8018modules/
+15954facts; Solver inventory8057, replacement closure0, frozen main files
+unchanged. Incremental policy passes64826entries/2482309152bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
 ## Remaining work, in order
 
-1. **Finish the complete physical decoder layouts used by main.** The actual
-   witness/input/gas snapshot now reaches the same selected stateless post-state
-   and main's real afterDecoder continuation. DecoderOrigin/RootRun indices and
-   proved scope/call frames make that relation explicit. Preserve this origin
-   through further interfaces; do not identify arbitrary existential executions.
-   The actual si+0 payload-pointer cell and its nested pl+88 gas load now check
-   at that continuation, with ordinary-domain mapping and gas≤200000000.
-   The actual hash-list pointer/count, request-header pointer and request-record
-   pointer (SI8/16/24/32) and their mapped loads now also check. The shared
-   witness frame protects earlier payload/request memory except six actual
-   output cells. The full transaction image now survives final payload stores,
-   request allocation/counts and witness calls to that same main state. Real
-   persistent room derives encodedLength+16*txCount≤251655056, txCount≤12582752
-   and total transaction bytes≤251655056. Its raw pointer and bounded extra-data
-   cells now survive with the same transaction image. Materialize remaining
-   witness SI and withdrawal/balance payload fields needed by hashing. Treat chain/output values
-   generically when their numeric contents do not affect a runtime bound.
-2. Join request-root hashing to actual physical layouts and ownership; bound
-   its current helpers on all relevant outcomes, including failures. Reuse old
-   hash/serialization proofs only after checking source/indices/imports.
+1. **Use the complete actual payload image to join current hashing.** RootRun
+   selects the same decoder post-state at main, with actual SI0/8/16/24/32 and
+   mapped hash argument loads. ReturnedImage now retains raw/extra/transaction/
+   withdrawal/balance cells and real offset/count arithmetic, including complete
+   transaction-record lifetime. Actual room derives encodedLength+16*txCount≤
+   251655056, txCount≤12582752 and total transaction bytes≤251655056. Carry real
+   workspace globals, heap/root allocation and ownership into the hash entry.
+2. Bound actual request-root hashing on all relevant outcomes, including errors.
+   Current sha256_pair is expanded software syntax with no helper calls; old
+   accelerator Workspace/entry/cost proofs are not current. Separate source
+   call/loop ticks from its large straight-line target work. Older hash layouts
+   also pin a134217728-byte budget, so check/relax those limits using current
+   physical resource facts. Reuse other hash/serialization proofs only after
+   checking syntax, indices, imports and all entry premises. Materialize remaining
+   witness SI fields at the caller that needs them. Treat chain/output values
+   generically when their numeric contents do not affect runtime.
 3. Prioritize actual early scratch access and its covered-outcome consequences
    before expanding map/crypto/EVM migration. Main's scratch pointers are below
    sourceBase2701131776 and outside ordinary memory. NoReturn alone does not

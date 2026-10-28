@@ -36,7 +36,7 @@ structure Context (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64
 structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer statelessRecord record gasWord : BitVec 64) (length : Nat) (value : ValueHOL 64) : Prop where
   context : Context input current pointer statelessRecord record gasWord length
-  transactions : ∃ array start size, Payload.TransactionImage input current pointer record array start size
+  payload_image : ∃ array start size, Payload.ReturnedImage input current pointer record array length start size
   locals : current.locals = caller.locals.update (ofString "pl", .val (.word record))
   returned : evaluateHOLFiniteState current Request.afterPayload = (some (.returned value), post)
   payload : ∃ entry bodyPost callee parentPost parentValue,
@@ -44,6 +44,15 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
     evaluateHOLFiniteState entry Payload.body = (some (.returned (.val (.word record))), bodyPost) ∧
     PayloadEntry.Invocation (decoderOrigin := decoderOrigin) input entry pointer length caller callee parentPost parentValue statelessRecord ∧
     current = CallNormal.continuationEntry caller bodyPost "pl" (.val (.word record))
+
+/-- Existing transaction-only clients project the stronger complete image. -/
+theorem Result.transactions {input : Guest.InputBlob}
+    {caller current post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer statelessRecord record gasWord : BitVec 64} {length : Nat} {value : ValueHOL 64}
+    (data : Result (decoderOrigin := decoderOrigin) input caller current post pointer statelessRecord record gasWord length value) :
+    ∃ array start size, Payload.TransactionImage input current pointer record array start size := by
+  obtain ⟨array, start, size, image⟩ := data.payload_image
+  exact ⟨array, start, size, image.transactions⟩
 
 def Reached (input : Guest.InputBlob) : Prop :=
   ∃ caller current post, ∃ pointer statelessRecord record gasWord : BitVec 64, ∃ length : Nat, ∃ value : ValueHOL 64,
@@ -240,3 +249,5 @@ end InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn.Context.memory_clock
 #print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn.Context.stateless_store
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.PayloadCallerReturn.Result.transactions

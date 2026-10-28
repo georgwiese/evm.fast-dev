@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.CurrentStartup.RequestMetadataCells
-import InitECandidate.Solver.Input.PayloadTransactionFrame
+import InitECandidate.Solver.Input.PayloadReturnedImage
 
 namespace InitECandidate.Solver.Input.CurrentStartup
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -11,31 +11,31 @@ variable {length payloadLength start size : Nat} {value : ValueHOL 64}
 
 /-- The actual SI0 store and fixed-list count call preserve the complete
 transaction image returned by the same payload invocation. -/
-theorem HashCountReturn.Result.transactions
+theorem HashCountReturn.Result.payload_image
     (data : HashCountReturn.Result (decoderOrigin := decoderOrigin) input source current post
       pointer statelessRecord record gasWord count length value) :
-    ∃ array start size, Payload.TransactionImage input current pointer record array start size := by
+    ∃ array start size, Payload.ReturnedImage input current pointer record array length start size := by
   obtain ⟨origin, originalPost, stored, previous, storedRun, frame, endpoint⟩ := data.origin
-  obtain ⟨array, start, size, transactions⟩ := previous.transactions
+  obtain ⟨array, start, size, transactions⟩ := previous.payload_image
   have context := previous.context
   obtain ⟨run, storedContext⟩ := context.stateless_store input source pointer statelessRecord record gasWord length 0
     (localVar "pl") record (by decide) (by decide) (Request.local_word source "pl" record context.pl)
   change evaluateHOLFiniteState source Request.payloadPointerStore = _ at run
   have same := congrArg Prod.snd (storedRun.symm.trans run)
   dsimp only at same
-  have storedImage : Payload.TransactionImage input stored pointer record array start size := by
+  have storedImage : Payload.ReturnedImage input stored pointer record array length start size := by
     rw [same]
     simpa using transactions.store_before statelessRecord record (by have := context.recordAfter; omega)
   exact ⟨array, start, size, storedImage.of_frame frame⟩
 
 /-- The same three real SI metadata stores precede the request call and
 leave its complete payload transaction image and allocator extent intact. -/
-theorem RequestsEntry.Result.transactions
+theorem RequestsEntry.Result.payload_image
     (data : RequestsEntry.Result (decoderOrigin := decoderOrigin) input caller entry post
       pointer statelessRecord record gasWord payloadLength start size value) :
-    ∃ array start size, Payload.TransactionImage input caller pointer record array start size := by
+    ∃ array start size, Payload.ReturnedImage input caller pointer record array payloadLength start size := by
   obtain ⟨origin, hashSource, hashPost, count, parentValue, hashes, callerEq⟩ := data.stores
-  obtain ⟨array, txStart, txSize, transactions⟩ := hashes.transactions
+  obtain ⟨array, txStart, txSize, transactions⟩ := hashes.payload_image
   have context := hashes.context
   have before (offset : Nat) (small : offset ≤ 24) :
       (statelessRecord + BitVec.ofNat 64 offset).toNat < record.toNat := by
@@ -49,8 +49,26 @@ theorem RequestsEntry.Result.transactions
   rw [callerEq]
   exact third
 
+/-- Transaction-only consumers retain their existing projection. -/
+theorem HashCountReturn.Result.transactions
+    (data : HashCountReturn.Result (decoderOrigin := decoderOrigin) input source current post
+      pointer statelessRecord record gasWord count length value) :
+    ∃ array start size, Payload.TransactionImage input current pointer record array start size := by
+  obtain ⟨array, start, size, image⟩ := data.payload_image
+  exact ⟨array, start, size, image.transactions⟩
+
+theorem RequestsEntry.Result.transactions
+    (data : RequestsEntry.Result (decoderOrigin := decoderOrigin) input caller entry post
+      pointer statelessRecord record gasWord payloadLength start size value) :
+    ∃ array start size, Payload.TransactionImage input caller pointer record array start size := by
+  obtain ⟨array, start, size, image⟩ := data.payload_image
+  exact ⟨array, start, size, image.transactions⟩
+
 end InitECandidate.Solver.Input.CurrentStartup
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.HashCountReturn.Result.transactions
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.RequestsEntry.Result.transactions
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.HashCountReturn.Result.payload_image
+#print axioms InitECandidate.Solver.Input.CurrentStartup.RequestsEntry.Result.payload_image

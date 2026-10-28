@@ -11,15 +11,15 @@ variable {payloadLength : Nat} {counts : Nat → BitVec 64} {value : ValueHOL 64
 
 /-- The actual request allocation starts after the complete transaction array.
 The request return therefore retains its cells and both payload output fields. -/
-theorem RequestCallerReturn.Result.transactions
+theorem RequestCallerReturn.Result.payload_image
     (data : RequestCallerReturn.Result (decoderOrigin := decoderOrigin) input caller current post
       pointer statelessRecord record gasWord requestRecord payloadLength counts value) :
-    ∃ array start size, Payload.TransactionImage input current pointer record array start size ∧
+    ∃ array start size, Payload.ReturnedImage input current pointer record array payloadLength start size ∧
       array.toNat + 16 * VarList.decodedCount input start size ≤ requestRecord.toNat := by
   obtain ⟨entry, bodyPost, start, size, decoded, currentEq⟩ := data.decoded
-  obtain ⟨array, txStart, txSize, transactions⟩ := decoded.origin.transactions
+  obtain ⟨array, txStart, txSize, transactions⟩ := decoded.origin.payload_image
   have before : array.toNat + 16 * VarList.decodedCount input txStart txSize ≤ requestRecord.toNat := by
-    obtain ⟨cursor, cell, low, high, aligned⟩ := transactions.heapExtent
+    obtain ⟨cursor, cell, low, high, aligned⟩ := transactions.transactions.heapExtent
     have same : cursor = requestRecord := by
       have eq := Option.some.inj (cell.symm.trans decoded.callerHeap)
       cases eq
@@ -36,18 +36,18 @@ theorem RequestCallerReturn.Result.transactions
   omega
 
 /-- The real SI32 store and witness declarations preserve the array before rq. -/
-theorem WitnessEntry.Result.transactions
+theorem WitnessEntry.Result.payload_image
     (data : WitnessEntry.Result (decoderOrigin := decoderOrigin) input source current post
       pointer statelessRecord record gasWord requestRecord payloadLength value) :
-    ∃ array start size, Payload.TransactionImage input current pointer record array start size ∧
+    ∃ array start size, Payload.ReturnedImage input current pointer record array payloadLength start size ∧
       array.toNat + 16 * VarList.decodedCount input start size ≤ requestRecord.toNat := by
   obtain ⟨caller, previous, previousPost, counts, decoded, sourceEq⟩ := data.origin
-  obtain ⟨array, start, size, transactions, before⟩ := decoded.transactions
+  obtain ⟨array, start, size, transactions, before⟩ := decoded.payload_image
   have beforeSi : (statelessRecord + 32#64).toNat < record.toNat := by
     rw [decoded.context.si_field_number input previous pointer statelessRecord record gasWord payloadLength 32 (by decide)]
     have := decoded.context.recordAfter
     omega
-  have sourceImage : Payload.TransactionImage input source pointer record array start size := by
+  have sourceImage : Payload.ReturnedImage input source pointer record array payloadLength start size := by
     rw [sourceEq]
     exact transactions.store_before (statelessRecord + 32#64) requestRecord beforeSi
   exact ⟨array, start, size, sourceImage.of_frame (by rw [data.prepared]; rfl), before⟩
@@ -65,13 +65,13 @@ theorem WitnessHeadersReturn.Snapshot.heap
 
 /-- Complete transaction records and their real pointer/count fields survive
 all three witness decoders at the same selected stateless post-state. -/
-theorem WitnessHeadersReturn.Snapshot.transactions
+theorem WitnessHeadersReturn.Snapshot.payload_image
     (snapshot : WitnessHeadersReturn.Snapshot (decoderOrigin := decoderOrigin) input current
       pointer statelessRecord record gasWord requestRecord payloadLength) :
-    ∃ array start size, Payload.TransactionImage input current pointer record array start size ∧
+    ∃ array start size, Payload.ReturnedImage input current pointer record array payloadLength start size ∧
       array.toNat + 16 * VarList.decodedCount input start size ≤ requestRecord.toNat := by
   obtain ⟨origin, prepared, originalPost, value, decoded, memory⟩ := snapshot.prefix_frame
-  obtain ⟨array, start, size, transactions, before⟩ := decoded.transactions
+  obtain ⟨array, start, size, transactions, before⟩ := decoded.payload_image
   have heap : NormalHeapEffects.AtLeast (array.toNat + 16 * VarList.decodedCount input start size) current := by
     obtain ⟨cursor, cell, low, high, aligned⟩ := snapshot.heap
     exact ⟨cursor, cell, by omega, high, aligned⟩
@@ -89,9 +89,38 @@ theorem WitnessHeadersReturn.Snapshot.transactions
   have := decoded.context.recordAfter
   omega
 
+/-- Existing resource proofs project the transaction portion of the full image. -/
+theorem RequestCallerReturn.Result.transactions
+    (data : RequestCallerReturn.Result (decoderOrigin := decoderOrigin) input caller current post
+      pointer statelessRecord record gasWord requestRecord payloadLength counts value) :
+    ∃ array start size, Payload.TransactionImage input current pointer record array start size ∧
+      array.toNat + 16 * VarList.decodedCount input start size ≤ requestRecord.toNat := by
+  obtain ⟨array, start, size, image, before⟩ := data.payload_image
+  exact ⟨array, start, size, image.transactions, before⟩
+
+theorem WitnessEntry.Result.transactions
+    (data : WitnessEntry.Result (decoderOrigin := decoderOrigin) input source current post
+      pointer statelessRecord record gasWord requestRecord payloadLength value) :
+    ∃ array start size, Payload.TransactionImage input current pointer record array start size ∧
+      array.toNat + 16 * VarList.decodedCount input start size ≤ requestRecord.toNat := by
+  obtain ⟨array, start, size, image, before⟩ := data.payload_image
+  exact ⟨array, start, size, image.transactions, before⟩
+
+theorem WitnessHeadersReturn.Snapshot.transactions
+    (snapshot : WitnessHeadersReturn.Snapshot (decoderOrigin := decoderOrigin) input current
+      pointer statelessRecord record gasWord requestRecord payloadLength) :
+    ∃ array start size, Payload.TransactionImage input current pointer record array start size ∧
+      array.toNat + 16 * VarList.decodedCount input start size ≤ requestRecord.toNat := by
+  obtain ⟨array, start, size, image, before⟩ := snapshot.payload_image
+  exact ⟨array, start, size, image.transactions, before⟩
+
 end InitECandidate.Solver.Input.CurrentStartup
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.RequestCallerReturn.Result.transactions
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessEntry.Result.transactions
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessHeadersReturn.Snapshot.heap
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessHeadersReturn.Snapshot.transactions
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.RequestCallerReturn.Result.payload_image
+#print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessEntry.Result.payload_image
+#print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessHeadersReturn.Snapshot.payload_image

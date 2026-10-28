@@ -4,6 +4,34 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete payload hash data now reaches main's selected decoder post-state
+
+RemainingImage proves every one of the actual eleven final literal field values,
+with memory/return frames and concrete withdrawal/balance projections. ReturnedImage
+combines that data with the real transaction/prefix image, passing four-offset
+validation, original payload length and withdrawal quotient/remainder facts.
+PayloadGasReturned constructs it from the same actual suffix and complete return.
+PayloadCallerReturn retains it once; existing transaction-only APIs project it.
+
+RequestTransactions and DecodedTransactions now carry the stronger ReturnedImage
+through the exact same stores, request allocation and protected witness interval.
+Their previous transaction APIs remain projections. MainDecodedPayload identifies
+the complete image with the same actual RootRun, main si binding and snapshot;
+array-end≤requestRecord is retained. The root hasher's physical payload-data gap
+is closed. No hash runtime/global target bound is claimed.
+
+Next: carry actual workspace/root allocation into hashing and migrate current
+software sha256_pair. It has no helper calls and expanded straight-line software
+operations; old ShaPair.Workspace requires obsolete sha_accel facts. Older hash
+Description.Layout pins budget≤134217728, below the current checked shared resource
+ceiling251655056, so syntax/entry/budget assumptions must be checked before reuse.
+Remaining witness SI fields should be proved at the actual caller that needs them.
+
+Validation: current-full-payload-image-v2.log PASS1480jobs/permitted axioms;
+8GiBguard/twoslots/cachefalse. Index8018modules/15954facts; Solver8057; replacement
+closure0/fixed files unchanged; incremental policy PASS64826entries/2482309152bytes.
+Account21%weekly/0resetcredits. Claim infinity; no full verification.
+
 ## Early payload hash fields now survive with the complete transaction image
 
 PayloadCut.input_frame also retains the actual raw-pointer cell selected by its

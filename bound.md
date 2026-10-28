@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-merkle-complete-frame-v1.log`,1226jobs,
-permitted printed axioms only. Historical/current proof index:8090modules/
-16266facts; Solver inventory8129, replacement closure0, frozen main files
-unchanged. Incremental policy passes64898entries/2482734199bytes. These checks
+Latest successful selected closure: `current-mix-memory-v1.log`,1187jobs,
+permitted printed axioms only. Historical/current proof index:8095modules/
+16295facts; Solver inventory8134, replacement closure0, frozen main files
+unchanged. Incremental policy passes64903entries/2482765844bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -159,7 +159,11 @@ remain historical until their current statements/dependencies are checked.
    room and full buffer suffix. Context contains the real code/domain, zero
    table and incoming persistent cursor; source n/limit and physical arenas
    remain explicit call-entry facts. Full-byte-list/progressive/fixed-record/
-   payload/request-root memory composition remains open. Large
+   payload/request-root memory composition remains open. Both actual byte-vector
+   branches and byte-list now restore the entering heap on normal return, including
+   the list length mix after release. Actual st_le32/st_le64 and length mixing
+   preserve words outside their real output/length chunk. Shared byte-store
+   syntax checking now handles a bare pointer directly. Large
    straight-line target work remains open; old accelerator Workspace/entry/cost
    proofs are not current. Older hash layouts
    also pin a134217728-byte budget, so check/relax those limits using current

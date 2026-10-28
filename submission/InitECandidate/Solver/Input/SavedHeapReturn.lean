@@ -72,6 +72,9 @@ theorem release_return (source post : PanSemStateFiniteExact 64 Guest.HostMemory
 unrestricted; actual normal continuation retains the saved caller binding. -/
 inductive Tail (saved : String) : ProgHOL 64 → Prop where
   | release : Tail saved (SavedHeapReturn.release saved)
+  | releaseThen (rest : ProgHOL 64)
+      (pure : ∀ code, OriginalCode.Installed code → GlobalEffects.Preserves (ofString "heap_ptr") code rest) :
+      Tail saved (.seq (.call (some (none,none)) (ofString "heap_release") [localVar saved]) rest)
   | seq {first rest : ProgHOL 64} (safe : LocalPrefix (ofString saved) first) (ending : Tail saved rest) : Tail saved (.seq first rest)
   | dec (name : String) (shape : ShapeHOL) (expression : ExpHOL 64) {rest : ProgHOL 64}
       (different : ofString saved ≠ ofString name) (ending : Tail saved rest) : Tail saved (.dec (ofString name) shape expression rest)
@@ -86,6 +89,15 @@ theorem Tail.sound {saved : String} {program : ProgHOL 64} (certificate : Tail s
     post.globals.lookup (ofString "heap_ptr") = some (.val (.word mark)) := by
   induction certificate generalizing source post mark value with
   | release => exact release_return source post saved mark installed binding value actual
+  | releaseThen rest pure =>
+    have safe : LocalPrefix (ofString saved) (.call (some (none,none)) (ofString "heap_release") [localVar saved]) :=
+      .call none _ _ (by intro name impossible; cases impossible)
+    obtain ⟨middle,normal,remaining⟩ := Input.sequence_returned source post _ _ value (safe.summary_full source).2.1 actual
+    have restored := release_call source middle saved mark installed binding normal
+    have nextCode : OriginalCode.Installed middle.code := by rw [(evaluation_fields source middle _ none normal).2.2.2]; exact installed
+    have unchanged := pure middle.code nextCode middle rfl
+    rw [remaining] at unchanged
+    exact (congrArg Prod.snd unchanged).trans restored
   | seq safe ending ih =>
     obtain ⟨middle,normal,remaining⟩ := Input.sequence_returned source post _ _ value (safe.summary_full source).2.1 actual
     have summary := safe.summary_full source

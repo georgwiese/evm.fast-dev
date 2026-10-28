@@ -7,20 +7,28 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- Recognize a literal byte displacement from a stable local output pointer. -/
 def offset? (key : MlS) : ExpHOL 64 → Option (BitVec 64)
+  | .var .local name => if name = key then some 0#64 else none
   | .op .add [.var .local name, .const offset] => if name = key then some offset else none
   | _ => none
 
 theorem offset_sound (key : MlS) (expression : ExpHOL 64) (offset : BitVec 64)
-    (checked : offset? key expression = some offset) :
-    expression = .op .add [.var .local key, .const offset] := by
+    (checked : offset? key expression = some offset)
+    (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
+    (cell : source.locals.lookup key = some (.val (.word pointer))) :
+    eval source expression = some (.val (.word (pointer+offset))) := by
   unfold offset? at checked
   split at checked
+  · rename_i name
+    split at checked
+    · cases checked
+      subst name
+      simp [eval,evalHOLExact,toExact,cell]
+    · cases checked
   · rename_i name displacement
     split at checked
-    · rename_i same
-      cases checked
+    · cases checked
       subst name
-      rfl
+      simp [eval,evalHOLExact,evalListHOLExact,toExact,cell,valueIsWord,valueWord,wordOpHOL,wordOp]
     · cases checked
   · cases checked
 
@@ -112,15 +120,12 @@ theorem sound (key : MlS) (size : Nat) (program : ProgHOL 64)
     | none => simp only [found] at checked; cases checked
     | some offset =>
       have inside : offset.toNat < size := of_decide_eq_true (by simpa only [found] using checked)
-      have shape := offset_sound key address offset found
-      subst address
       intro source cell
-      have read : eval source (.op .add [.var .local key, .const offset]) = some (.val (.word (pointer + offset))) := by
-        simp [eval, evalHOLExact, evalListHOLExact, toExact, cell, valueIsWord, valueWord, wordOpHOL, wordOp]
+      have read := offset_sound key address offset found source pointer cell
       have outside : query ≠ panByteAlignHOL (width := 64) (pointer + offset) := by
         simpa using away offset.toNat inside
       refine ⟨MemoryAt.byte_store_current source _ value (pointer + offset) query read outside, ?_⟩
-      have locals : (evaluateHOLFiniteState source (.storeByte (.op .add [.var .local key, .const offset]) value)).2.locals = source.locals := by
+      have locals : (evaluateHOLFiniteState source (.storeByte address value)).2.locals = source.locals := by
         rw [evaluateHOLFiniteState_storeByte]
         repeat first | rfl | split
       intro normal

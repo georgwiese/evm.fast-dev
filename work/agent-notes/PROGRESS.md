@@ -4,6 +4,27 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual byte heap restoration and length-mix memory frame check
+
+Both actual byte-vector branches and the byte-list body restore exactly their
+entering heap on a genuine normal return. SavedHeapReturn now handles release
+followed by a checked heap-preserving suffix; this covers the list length mix.
+PureGlobals checks actual basic/st_le64/mix/u64 helper effects and real callers.
+
+ByteOutputFrame recognizes a bare output pointer as offset zero and proves its
+actual expression read. WordPairLookup identifies the known pointer even when
+the other argument has unrestricted shape. WordStoreMemory checks actual32/64bit
+stores; MixMemory joins the real zero/store/software-SHA calls and preserves
+metadata outside the32-byte length chunk and output. No digest/input mapping or
+future callee success is assumed. Complete byte memory composition remains open.
+
+Validation: current-word-store-memory-v2.log PASS1228jobs (also rechecks complete
+MerkleMemory); current-mix-memory-v1.log PASS1187jobs, permitted printed axioms
+only;8GiBguard/twoslots/cachefalse. Index8095modules/16295facts; inventory8134,
+replacement closure0, frozen main unchanged; incremental policy64903entries/
+2482765844bytes PASS. Account29%weekly,0resetcredits; ordinary usage allowed.
+No global finite target K or full verification; claim infinity.
+
 ## Complete actual Merkle memory and heap caller frame checks
 
 MerkleAllocationMemory derives persistent cursor+32*capacity room from the same

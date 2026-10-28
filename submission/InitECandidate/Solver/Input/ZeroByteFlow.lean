@@ -11,7 +11,7 @@ def byteStore (offset : Nat) : ProgHOL 64 := .storeByte
 def stores (offsets : List Nat) (tail : ProgHOL 64) := offsets.foldr (fun offset rest=>.seq (byteStore offset) rest) tail
 
 theorem byte_shape : Zero.byteBody=stores [0,1,2,3,4,5,6,7] (Zero.increment 8#64) := by
-  simp only [Zero.byteBody,Zero.loopBytes,Zero.body,BuildProgram.loops,Guest.guestFn_memzero,progToHOL,expToHOL,shapeToHOL,
+  simp only [Zero.byteBody,Zero.loopBytes,Zero.body,BuildProgram.loops,Guest.Software.guestFn_memzero,progToHOL,expToHOL,shapeToHOL,
     List.map_cons,List.map_nil,List.nil_append,List.cons_append,List.append_nil,List.getElem?_cons_zero,List.getElem?_cons_succ,
     Option.getD_some,stores,List.foldr_cons,List.foldr_nil,byteStore,Zero.increment,localVar,addConst]
   rfl

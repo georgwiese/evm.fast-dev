@@ -15,7 +15,7 @@ def tailBody : ProgHOL 64 := .seq (store 0) (increment 1#64)
 
 theorem loop_shapes : Copy32.loopBytes = .while (Copy32.condition 8#64) byteBody ∧
     Copy32.loopTail = .while (.cmp .lower (localVar "i") (localVar "n")) tailBody := by
-  simp only [Copy32.loopBytes, Copy32.loopTail, Copy32.body, BuildProgram.loops, Guest.guestFn_memcpy,
+  simp only [Copy32.loopBytes, Copy32.loopTail, Copy32.body, BuildProgram.loops, Guest.Software.guestFn_memcpy,
     progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, List.nil_append, List.cons_append,
     List.append_nil, List.getElem?_cons_zero, List.getElem?_cons_succ, Option.getD_some,
     byteBody, tailBody, stores, store, increment, Copy32.address, Copy32.condition, localVar, addConst, ↓reduceIte]

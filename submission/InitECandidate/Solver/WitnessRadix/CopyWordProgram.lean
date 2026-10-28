@@ -12,7 +12,7 @@ theorem loop_shapes : Copy32.loop32 = .while (Copy32.condition 32#64) (stores [0
     Copy32.loopWord = .while (Copy32.condition 8#64) (stores [0] (CopyBytes.increment 8#64)) := by
   constructor
   · rw [Copy32.loop32_shape]; rfl
-  · simp only [Copy32.loopWord, Copy32.body, BuildProgram.loops, Guest.guestFn_memcpy,
+  · simp only [Copy32.loopWord, Copy32.body, BuildProgram.loops, Guest.Software.guestFn_memcpy,
       progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, List.nil_append, List.cons_append,
       List.append_nil, List.getElem?_cons_zero, List.getElem?_cons_succ, Option.getD_some,
       stores, CopyBytes.increment, Copy32.wordStore, Copy32.address, Copy32.condition, localVar, addConst, ↓reduceIte]

@@ -40,7 +40,7 @@ theorem Loop.cost (loop : Loop) (length : Nat) (small : length+32<2^64)
     (ClockCost.of_quiet source.code _ block.quiet) source rfl valid
   simp only [Nat.zero_add,Nat.one_mul] at priced
   rw [Loop.shape]
-  exact priced.trans (Nat.div_le_div_right (Nat.sub_le _ _))
+  exact Nat.le_trans priced (Nat.div_le_div_right (Nat.sub_le _ _))
 
 theorem Loop.normal (loop : Loop) (length : Nat) (small : length+32<2^64)
     (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (valid : StrideInvariant length source)

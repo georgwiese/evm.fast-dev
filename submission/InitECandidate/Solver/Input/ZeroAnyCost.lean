@@ -13,7 +13,7 @@ def price (length : Nat) : Nat:=length/32+length/8+length/8+length
 theorem Loop.uniform_cost (loop : Loop) (length : Nat) (small : length+32<2^64)
     (source : PanSemStateFiniteExact 64 Guest.HostMemory) (valid : StrideInvariant length source) :
     source.clock-(evaluateHOLFiniteState source loop.program).2.clock≤length/loop.stride:=
-  (loop.cost length small source valid).trans (Nat.div_le_div_right (Nat.sub_le length _))
+  Nat.le_trans (loop.cost length small source valid) (Nat.div_le_div_right (Nat.sub_le length _))
 
 private theorem conditional_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (test : ExpHOL 64) (yes no : ProgHOL 64) (length : Nat)

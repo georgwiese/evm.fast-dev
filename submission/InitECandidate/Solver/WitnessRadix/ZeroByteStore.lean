@@ -24,7 +24,7 @@ theorem zero_byte_execute {F : Type} (source : PanSemStateFiniteExact 64 F)
 
 theorem tail_body_shape : tailBody =
     .seq (.storeByte (.op .add [localVar "dst", localVar "i"]) (.const 0#64)) (increment 1#64) := by
-  simp only [tailBody, loopTail, body, BuildProgram.loops, Guest.guestFn_memzero,
+  simp only [tailBody, loopTail, body, BuildProgram.loops, Guest.Software.guestFn_memzero,
     progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, List.nil_append, List.cons_append,
     List.append_nil, List.getElem?_cons_zero, List.getElem?_cons_succ, Option.getD_some, increment, localVar, addConst]
 

@@ -31,10 +31,12 @@ theorem stride_transition (test : ExpHOL 64) (body : ProgHOL 64) (stride length 
   obtain ⟨word,cell,nCell,bounded⟩:=valid
   have expected:=testReads source word cell nCell bounded
   have active : word.toNat+stride≤length:=by
-    by_contra inactive
+    by_cases active : word.toNat + stride ≤ length
+    · exact active
+    have inactive := active
     rw [if_neg inactive] at expected
     have zero : observed=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
-    exact nonzero zero
+    exact False.elim (nonzero zero)
   have rankEq : strideRank stride length source=(length-word.toNat)/stride:=by simp [strideRank,counterWord,cell,valueWord]
   refine ⟨by rw [rankEq]; exact Nat.div_pos (by omega) positive,?_⟩
   intro funded

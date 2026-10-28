@@ -1,10 +1,11 @@
 import InitECandidate.Solver.Input.UDivMod.Loop
+import Guest.SoftwareAst
 
 namespace InitECandidate.Solver.Input.CeilLog2
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_ceil_log2 with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_ceil_log2 with | .function fn=>progToHOL fn.body | _=>.skip
 def test : ExpHOL 64 := .cmp .lower (.shift .lsl (.const 1#64) (localVar "d")) (localVar "n")
 def increment : ExpHOL 64 := .op .add [localVar "d",.const 1#64]
 def loopBody : ProgHOL 64 := .assign .local (ofString "d") increment
@@ -12,7 +13,7 @@ def loop : ProgHOL 64 := .while test loopBody
 def finish : ProgHOL 64 := .return (localVar "d")
 
 theorem body_shape : body=.dec (ofString "d") .one (.const 0#64) (.seq loop finish) := by
-  simp only [body,Guest.guestFn_ceil_log2,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+  simp only [body,Guest.Software.guestFn_ceil_log2,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     loop,test,loopBody,increment,finish,localVar]
 
 theorem test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) [DecidablePred source.memaddrs] (n : BitVec 64) (index : Nat)

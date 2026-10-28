@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CounterStrideLoop
 import InitECandidate.Solver.Input.ZeroByteFlow
 import InitECandidate.Solver.WitnessRadix.ZeroConditions
+import InitECandidate.Solver.WitnessRadix.ZeroLoopTail
 
 namespace InitECandidate.Solver.Input.ZeroAny
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix

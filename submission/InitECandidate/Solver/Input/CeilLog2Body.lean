@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.CeilLog2
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.Input.OriginalEntry
+import InitECandidate.Solver.Input.OriginalCode
 
 namespace InitECandidate.Solver.Input.CeilLog2
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -10,8 +11,8 @@ def formals : List (MlS×ShapeHOL) := [(ofString "n",.one)]
 
 theorem original_code (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "ceil_log2")=some (formals,body,.one) := by
-  have checked := OriginalCode.indexed code installed 31 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_ceil_log2) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_ceil_log2,
+  have checked := OriginalCode.indexed code installed 31 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_ceil_log2) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_ceil_log2,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 /-- Literal original ceil_log2 returns its actual least covering exponent,

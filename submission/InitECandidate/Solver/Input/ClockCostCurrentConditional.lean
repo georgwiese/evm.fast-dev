@@ -24,8 +24,8 @@ theorem conditional_current (source : PanSemStateFiniteExact 64 Guest.HostMemory
       | word word=>
         change source.clock-(if word=0 then evaluateHOLFiniteState source no else evaluateHOLFiniteState source yes).2.clock≤max yesPrice noPrice
         by_cases zero : word=0
-        · rw [if_pos zero]; exact right.trans (Nat.le_max_right _ _)
-        · rw [if_neg zero]; exact left.trans (Nat.le_max_left _ _)
+        · rw [if_pos zero]; exact Nat.le_trans right (Nat.le_max_right _ _)
+        · rw [if_neg zero]; exact Nat.le_trans left (Nat.le_max_left _ _)
 
 end InitECandidate.Solver.Input.ClockCost
 

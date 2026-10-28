@@ -4,6 +4,32 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current supporting hash helpers now have checked all-outcome source costs
+
+Copy32Program/loop-shape proofs now refer to actual Software.memcpy; its code entry
+uses minimal OriginalEntry/OriginalCode imports. Current zero-byte shapes and log2
+syntax/entries also use Software. CounterStrideLoop no longer relies on an imported
+by_contra tactic; Nat.le_trans and a direct ZeroLoopTail import make the relevant
+clock/counter proofs independent of the removed umbrella imports. The unrelated
+legacy BufferGlobals/obsolete accelerator closure remains outside this batch.
+
+CurrentHash.MemoryCost checks real copy/zero entries and provides tail/ignored/
+local-result call costs price(length)+1, where price=length/32+length/8+length/8+
+length. Only actual ABI values and length+32<2^64 are required; pointers may be
+unaligned/unmapped and stores may fail. StraightCost checks heap_mark/max/st_le32
+straight syntax and caller≤1; actual st_le64 has two32-bit calls, body≤2/caller≤3.
+AllocatorCost checks actual persistent allocation caller≤2 without cursor/room
+premises, and heap_release caller≤1. Log2Cost uses actual sufficient-fuel execution
+or the smaller incoming-clock budget to prove all outcomes body≤depth/caller≤depth+1
+for actual n≤2^depth, depth<64. No future return or funding premise.
+
+Validation: current-hash-leaf-cost-v1.log PASS1179jobs/permitted axioms; actual hash
+prefix included. Index8023modules/15976facts; Solver8062; replacement closure0/fixed
+files unchanged; incremental policy PASS64831entries/2482279722bytes.8GiBguard/
+twoslots/cachefalse; account22%weekly/0resetcredits. No global finite target K,
+no whole verifier run. Next: actual root allocation/data/workspace entry and
+composed current hash loops/memory frames/straight-line target weights.
+
 ## Software SHA pair: compact checked syntax and all-outcome source pricing
 
 StraightBody.accepts recognizes fixed syntax without calls, loops, source ticks

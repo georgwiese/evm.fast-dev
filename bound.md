@@ -43,7 +43,7 @@ with its real24-round permutation and full workspace/output memory frame.
 Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
 covering both allocations and all decode/hash/link loops. Actual normal/scoped
 returns supply the real arrays, advanced physical context and protected input.
-Selected2165-job current main/root/header/gas/database and constructor-caller replay passed. The
+Selected2175-job current main/root/table and find-leaf helper replay passed. The
 actual first three initializer calls derive Keccak state2701132160 and pad2701132360;
 these globals survive startup, decoding and the31-helper root graph. Real decoded
 witness images supply the header rows and full caller context. Header returns
@@ -66,6 +66,13 @@ table/insertion-loop continuation within36source ticks or stops earlier.
 The same caller/callee run derives the constructor workspace, physical header,
 array separation, earlier-input frame and resulting count≤1048575; main’s
 later codedb continuation remains explicit.
+Current htab_find_leaf119 now has a257body/258caller source allowance from a
+physical32-byte-key table with an increasing-bit node image. Its actual
+step chooses a real child or stops at leaf marker256; invalid key reads and
+short-clock outcomes are included. A physical empty table returns0 in0body
+ticks without any initialized node/key contents. Deriving/preserving the
+increasing-bit image from actual insertions remains open; this helper is not
+a global database bound.
 
 Checked against current Software syntax and declaration entries:
 
@@ -115,9 +122,9 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-main-patricia-builder-reached-v4.log`,2165jobs,
-permitted printed axioms only. Historical/current proof index:8417modules/
-17001facts; inventory8461modules, replacement AST reverseclosure0, fixed files
+Latest successful selected closure: `current-patricia-find-leaf-caller-empty-v7.log`,2175jobs,
+permitted printed axioms only. Historical/current proof index:8427modules/
+17025facts; inventory8471modules, replacement AST reverseclosure0, fixed files
 unchanged. Incremental policy65202entries/2483983435bytes PASS. This is helper
 build evidence, not complete verification.
 

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.ConditionalNone
 import InitECandidate.Solver.Input.ZeroAnyFlow
 import InitECandidate.Solver.Input.ClockCostCurrentConditional
 import InitECandidate.Solver.Input.ClockCostSequenceReached
@@ -20,22 +21,7 @@ private theorem conditional_normal (source post : PanSemStateFiniteExact 64 Gues
     (left : evaluateHOLFiniteState source yes=(none,post)→StrideInvariant length post)
     (right : evaluateHOLFiniteState source no=(none,post)→StrideInvariant length post)
     (normal : evaluateHOLFiniteState source (.ite test yes no)=(none,post)) : StrideInvariant length post:=by
-  rw [evaluateHOLFiniteState_ite] at normal
-  generalize observed : @evalHOLExact 64 Guest.HostMemory _ source.toExact
-    (fun address=>Classical.propDecidable (source.memaddrs address)) test=value at normal
-  cases value with
-  | none=>simp at normal
-  | some value=>
-    cases value with
-    | rStruct fields=>simp at normal
-    | nStruct name fields=>simp at normal
-    | val payload=>
-      cases payload with
-      | word word=>
-        simp only at normal
-        by_cases zero : word=0
-        · rw [if_pos zero] at normal; exact right normal
-        · rw [if_neg zero] at normal; exact left normal
+  exact (Input.conditional_none source post test yes no normal).elim left right
 
 theorem aligned_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (length : Nat)
     (small : length+32<2^64) (valid : StrideInvariant length source) :

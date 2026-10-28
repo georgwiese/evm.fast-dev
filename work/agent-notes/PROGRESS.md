@@ -3097,3 +3097,34 @@ witness/Keccak scratch separation, complete builder/current main paths and
 uniform target composition. Account12%weekly used; zero reset credits.
 Five old unfinished RLP files preserved untracked. Overall estimate40%,
 plausible30–50%; module counts remain bookkeeping.
+
+## Actual current find-leaf traversal and shared-helper cleanup — 2026-10-28
+
+Current Software htab_find_leaf119 body≤257source ticks/caller≤258 from
+a reached mapped32-byte-key table with an increasing-bit node image. The
+actual loop uses rank257−nodeBit; every normal internal step chooses a real
+left/right child with a larger bit, and marker256 breaks. Failed key-byte
+reads, wrong operands, short clocks and every other outcome are retained.
+Actual normal branch/source bindings, scoped b restoration and full
+nonlocal read-only effects are checked. Physical empty tables return0 in
+0body ticks at every clock, without any node/key contents premise.
+
+This is a local traversal contract. The actual insertion history still
+has to establish/preserve the node image before a whole database bound can
+use it. No global target K or new finite certificate is claimed.
+
+Cleanup extracted the generic mapped scalar load from the witness-decoder
+pipeline into Input.LoadWord, retaining its existing namespace and making
+it host-polymorphic. Both copy/memzero cost files now share the generic
+actual normally-continuing conditional lemma instead of duplicate case
+analyses. Existing APIs are preserved, current main/root dependencies replayed.
+
+Validation: current-patricia-find-leaf-caller-empty-v7.log PASS2175jobs,
+permitted printed axioms only. Index8427modules/17025facts; inventory8471,
+replacement AST reverse closure0, fixed files unchanged. Incremental policy
+PASS65252entries/2484184597bytes; no full verification. Claim infinity.
+Next: actual traversal normal leaf result, first-difference semantics and
+Patricia insertion invariant, raw witness/Keccak scratch separation, remaining
+current main paths and uniform target composition. Overall estimate40%,
+plausible30–50%. Five old unfinished RLP files preserved untracked.
+Account12%weekly used, zero reset credits, ordinary usage allowed.

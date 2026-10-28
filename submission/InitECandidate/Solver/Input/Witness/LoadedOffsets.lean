@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.LoadWord
 import InitECandidate.Solver.Input.Witness.OffsetProgram
 import InitECandidate.Solver.Input.RequestOffsetsStores
 import InitECandidate.Solver.WitnessRadix.ProgramPrefix
@@ -16,14 +17,6 @@ def loadedState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : G
 def restoreLoaded (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob) (start : Nat)
     (target : PanSemStateFiniteExact 64 Guest.HostMemory):=
   restore source "w0" (restore (firstLoaded source input start) "w1" (restore (secondLoaded source input start) "w2" target))
-
-theorem load_word_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (expression : ExpHOL 64)
-    (address value : BitVec 64) (read : eval source expression=some (.val (.word address)))
-    (mapped : source.memaddrs address) (cell : source.memory address=.word value) :
-    eval source (.load .one expression)=some (.val (.word value)) := by
-  classical
-  simp only [eval] at read ⊢
-  simp [evalHOLExact,read,memLoadHOLExact,isWfShapeExactHOL,toExact,mapped,cell]
 
 /-- The actual three mapped offset loads enter the real node-list call with
 all declaration scopes retained; no memory or source clock changes. -/

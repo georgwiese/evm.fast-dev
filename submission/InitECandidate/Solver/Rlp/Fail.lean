@@ -1,4 +1,5 @@
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.Input.OriginalCode
+import InitECandidate.Solver.Input.OriginalEntry
 import InitECandidate.Solver.Input.NoReturnScoped
 import InitECandidate.Solver.Input.NoNamedException
 import InitECandidate.Solver.Input.ClockCostCall
@@ -8,17 +9,17 @@ namespace InitECandidate.Solver.Rlp.Fail
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_rlp_fail with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_rlp_fail with | .function fn => progToHOL fn.body | _ => .skip
 def formals : List (MlS × ShapeHOL) := [(ofString "code", .one)]
 theorem body_shape : body = .seq (.raise (ofString "RlpErr") (localVar "code")) (.return (.const 0#64)) := by
-  simp only [body, Guest.guestFn_rlp_fail, progToHOL, expToHOL, localVar]
+  simp only [body, Guest.Software.guestFn_rlp_fail, progToHOL, expToHOL, localVar]
 
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "rlp_fail") = some (formals, body, .one) := by
-  have checked := Input.OriginalCode.indexed code installed 93 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_fail) (by rfl)
+  have checked := Input.OriginalCode.indexed code installed 93 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_fail) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry, declToHOL, funDeclToHOL, body, formals,
-    Guest.guestFn_rlp_fail, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
+    Guest.Software.guestFn_rlp_fail, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
 
 theorem never_returns : Input.NoReturn.Never body := by
   rw [body_shape]

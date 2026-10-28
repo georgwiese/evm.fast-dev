@@ -7,7 +7,7 @@ open WitnessRadix.QueryBranch
 /-- Actual scoped call with known entry arguments/code: derive funding,
 the real callee return/shape checks and the actual continued caller. No result
 from the callee or resumed continuation is supplied in advance. -/
-theorem scoped_none (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+theorem scoped_none {F : Type} (source post : PanSemStateFiniteExact 64 F)
     (name : String) (shape : ShapeHOL) (function : MlS) (arguments : List (ExpHOL 64)) (values : List (ValueHOL 64))
     (body continuation : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (returnShape : ShapeHOL)
     (args : evalListHOLFinite source (h := fun address => Classical.propDecidable (source.memaddrs address)) arguments = some values)

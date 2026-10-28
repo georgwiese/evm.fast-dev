@@ -42,7 +42,7 @@ theorem loop_body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (po
   rw [choice]
   by_cases same : position=ending
   · rw [if_pos same]
-    exact (at_end_price source.code source rfl).trans (by decide)
+    exact Nat.le_trans (at_end_price source.code source rfl) (by decide)
   · rw [if_neg same]
     exact Header.scoped_cost source position (ending-position) (ofString "h") headerArguments afterHeader 2
       (header_arguments source position ending positionCell endCell) installed (after_header_price source.code installed)

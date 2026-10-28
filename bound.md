@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-main-verification-header-joined-v1.log`,1828jobs,
-permitted printed axioms only. Historical/current proof index:8213modules/
-16634facts; Solver inventory8252, replacement closure0, frozen main files
-unchanged. Incremental policy passes65022entries/2483366118bytes. These checks
+Latest successful selected closure: `current-rlp-validator-step-variable-store-v8.log`,752jobs,
+permitted printed axioms only. Historical/current proof index:8215modules/
+16637facts; Solver inventory8254, replacement closure0, frozen main files
+unchanged. Incremental policy passes65024entries/2483372784bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -188,7 +188,17 @@ remain historical until their current statements/dependencies are checked.
    Main's later serializer/output continuation remains explicit and unpriced.
    Wrapper imports drop1601→54 and verify-program1603→56 Solver modules after
    removing the obsolete header/EVM interface and checking current entries.
-   Next: current header/RLP bounds, normal frames and actual later callers. Recheck old
+   Current RLP byte-header body/caller cost≤10/11, real normal return
+   derives positive nonwrapping item extent, and one actual validator body
+   step costs≤13. A real scratch allocation followed by storing an existing
+   caller word cannot continue below ordinary memory. Parser Solver import
+   closures drop251→56 (HeaderCost) and243→48 (ReadLengthCall); an unrelated
+   serializer/U256 carrier import is removed.
+   Next: whole validator under the actual below-domain scratch state. The old
+   Rlp.Validation.Arena.lower assumes frame memory≥2701131776, false for the
+   current initialized2688618496. Retain those old theorems as conditional;
+   derive the current flat-list transitions and failed nested push separately.
+   Then current header bounds, normal frames and actual later callers. Recheck old
    limits against encodedLength+16*txCount≤251655056 and txCount≤12582752.
    Treat digest/output values generically when they do not affect runtime.
    Review dominant copy/zero and empty-progressive slack before the final K.

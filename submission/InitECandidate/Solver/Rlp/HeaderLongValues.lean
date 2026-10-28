@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Rlp.HeaderShortValues
-import InitECandidate.Solver.Input.RlpWrite.U256Shape
+import InitECandidate.Solver.Input.ScalarWordShape
 
 namespace InitECandidate.Solver.Rlp.Header
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -69,7 +69,7 @@ theorem long_case_returns (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   obtain ⟨positiveClock,args,actualBody,callee,actualShape,target,actualPayload,inner,argRead,called,bodyRun,checked,continuationRun,restored⟩ :=
     Input.CallNormal.scoped_data entered post "n" .one (ofString "rlp_read_length") readArguments (afterRead flag) returned scopedRun
   have typed : shapeOfHOLExact actualPayload=.one := (shapeEqHOL_eq_true _ _).mp (Bool.and_eq_true_iff.mp checked).1
-  obtain ⟨payload,payloadEq⟩ := Input.RlpWrite.U256Value.scalar_word actualPayload typed
+  obtain ⟨payload,payloadEq⟩ := Input.scalar_word_of_shape actualPayload typed
   rw [payloadEq] at continuationRun
   let ready := Input.CallNormal.continuationEntry entered target "n" (.val (.word payload))
   have readyLength : ready.locals.lookup (ofString "len")=some (.val (.word length)) :=

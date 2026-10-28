@@ -48,7 +48,7 @@ theorem scoped_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (point
 
 set_option maxRecDepth 10000 in
 theorem readonly (code) (installed : Input.OriginalCode.Installed code) : Input.LocalEffects.Preserves code body := by
-  simp only [body,Guest.guestFn_rlp_item_header,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  simp only [body,Guest.Software.guestFn_rlp_item_header,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
   repeat first
     | apply Input.LocalEffects.sequence
     | apply Input.LocalEffects.declared

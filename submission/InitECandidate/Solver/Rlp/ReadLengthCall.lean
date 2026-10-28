@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Rlp.ReadLengthCost
 import InitECandidate.Solver.Input.ClockCostCurrentCall
 import InitECandidate.Solver.Input.ClockCostCurrentScoped
+import InitECandidate.Solver.WitnessRadix.CodeEnvironment
 
 namespace InitECandidate.Solver.Rlp.ReadLength
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -52,7 +53,7 @@ theorem scoped_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (point
   exact Input.ClockCost.scoped_current source name .one (ofString "rlp_read_length") arguments _ body continuation callee .one 8 tailPrice args called priced tailCost
 
 theorem readonly (code) (installed : Input.OriginalCode.Installed code) : Input.LocalEffects.Preserves code body := by
-  simp only [body,Guest.guestFn_rlp_read_length,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  simp only [body,Guest.Software.guestFn_rlp_read_length,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
   repeat first
     | apply Input.LocalEffects.sequence
     | apply Input.LocalEffects.declared

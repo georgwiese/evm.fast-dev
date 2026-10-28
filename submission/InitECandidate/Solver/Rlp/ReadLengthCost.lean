@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Rlp.ReadLengthProgram
 import InitECandidate.Solver.Input.ClockCostCurrentGuard
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 
 namespace InitECandidate.Solver.Rlp.ReadLength
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

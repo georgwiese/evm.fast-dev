@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Rlp.HeaderProgram
+import InitECandidate.Solver.WitnessRadix.Addressing
 
 namespace InitECandidate.Solver.Rlp.Header
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

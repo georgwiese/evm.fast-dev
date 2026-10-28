@@ -4,6 +4,36 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Current RLP byte parser, validator step and real variable scratch store
+
+The actual current rlp_item_header body/caller cost≤10/11 source ticks;
+normal return derives its actual binary flag and positive nonwrapping item
+extent inside the current input. One actual internal validator loop body
+costs≤13. A real scratch allocation followed by storing an existing scalar
+caller word cannot continue below ordinary memory; its actual allocator return
+supplies the address, without extra room or a future successful helper premise.
+
+Rlp.Fail drops the obsolete full gas/EVM import umbrella. HeaderCost Solver
+closure251→56; ReadLengthCall243→48. Current Software AST names are used for
+selected parser/validator syntax and entries. The scalar carrier fact no longer
+imports unrelated serializer/U256 implementation. Needed bindings/code/address
+facts are imported directly; Nat transitivity uses the core theorem. Shared
+scoped_none now works for arbitrary FFI state, removing an accidental Guest
+import requirement. Public parser interfaces are retained.
+
+The old Rlp.Validation.Arena.lower requires frame memory≥2701131776, which
+cannot follow from the actual initialized2688618496. Do not apply that old
+whole-validator theorem to current main. Next prove flat continuing parses
+and failed nested scratch pushes under the real arena, then close the whole
+validator/current header caller. Current Keccak and subsequent databases also
+remain open. No global finite target K/full verification; claim infinity.
+
+Validation: current-rlp-validator-step-variable-store-v8.log PASS752jobs,
+permitted printed axioms only. Index8215modules/16637facts; inventory8254,
+replacement closure0/frozen main unchanged. Incremental policy65024entries/
+2483372784bytes PASS. 8GiBguard/twoslots/cachefalse; account2%weekly,
+0resetcredits, ordinary usage allowed. Failed diagnostics remain unindexed.
+
 ## Actual verification wrappers and header caller from the same main run
 
 The current verify/attempt chain reaches the actual current run_attempt with

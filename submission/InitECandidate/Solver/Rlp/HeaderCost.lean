@@ -15,13 +15,13 @@ theorem after_byte_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
   rw [after_byte_evaluate source (BitVec.ofNat 64 byte.toNat) byteCell]
   simp only [number]
   split_ifs with singleCase shortStringCase longStringCase shortListCase
-  · exact (single_price source.code source rfl).trans (by decide)
-  · exact (short_string_price source.code installed source rfl).trans (by decide)
+  · exact Nat.le_trans (single_price source.code source rfl) (by decide)
+  · exact Nat.le_trans (short_string_price source.code installed source rfl) (by decide)
   · rw [long_string_shape]
     have difference : BitVec.ofNat 64 byte.toNat-183#64=BitVec.ofNat 64 (byte.toNat-183) :=
       BitVec.ofNat_sub_ofNat_of_le byte.toNat 183 (by omega) (by omega)
     exact long_case_price source pointer (BitVec.ofNat 64 byte.toNat) 183#64 0#64 (byte.toNat-183) pointerCell byteCell difference (by omega) installed
-  · exact (short_list_price source.code installed source rfl).trans (by decide)
+  · exact Nat.le_trans (short_list_price source.code installed source rfl) (by decide)
   · rw [long_list_shape]
     have difference : BitVec.ofNat 64 byte.toNat-247#64=BitVec.ofNat 64 (byte.toNat-247) :=
       BitVec.ofNat_sub_ofNat_of_le byte.toNat 247 (by omega) (by omega)

@@ -3070,3 +3070,30 @@ loop; actual Patricia find/insert tree invariants, remaining current main
 paths and target-step composition. Overall estimate40%, plausible30–50%.
 Five old unfinished RLP files preserved untracked. Account12%weekly used,
 zero reset credits, ordinary usage allowed.
+
+## Current main enters the real initialized Patricia builder — 2026-10-28
+
+Connected the full current constructor return/layout to its actual scoped
+caller and database capacity loop. The database body stops within36source
+ticks or reaches the original insertion-loop continuation with the genuine
+empty Patricia header/arrays, current arena/Keccak workspace, advanced
+persistent frontier and protected earlier input. Actual returned capacities
+force bits≤21 and count≤1048575. The first caller in current run_attempt now
+selects this same child execution from its real decoded node image/ABI.
+Its later codedb/main continuation is retained explicitly on all outcomes.
+
+Cleanup: one physical workspace interface and an explicit source-frame
+re-anchoring lemma carry the same returned table across actual callee/caller
+locals and clock, without identifying the entire two states. The normal
+caller is a projection of the classified all-outcome interface. No future
+constructor success or independently selected returned state is assumed.
+
+Validation: current-main-patricia-builder-reached-v4.log PASS2165jobs,
+permitted printed axioms only. Index8417modules/17001facts, inventory8461,
+replacement AST reverse closure0, fixed files unchanged. Incremental policy
+PASS65241entries/2484147331bytes; no full verification claimed, claim infinity,
+no global target K. Next: actual Patricia find/insert invariant and raw
+witness/Keccak scratch separation, complete builder/current main paths and
+uniform target composition. Account12%weekly used; zero reset credits.
+Five old unfinished RLP files preserved untracked. Overall estimate40%,
+plausible30–50%; module counts remain bookkeeping.

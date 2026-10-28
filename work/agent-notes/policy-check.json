@@ -2451,7 +2451,9 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspacePointer.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/ArrayAllocation.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewArraysProgram.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewCall.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewCompleteCost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewContext.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewFinalEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewFinalStores.lean",
@@ -2465,7 +2467,9 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/NewReturned.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewStores.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildCapacity.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildConstructor.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildSyntax.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Workspace.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Memory.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Price.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Program.lean",
@@ -2481,6 +2485,7 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/HeaderReturned.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/MainEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/MainRootTrace.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/NodeBuildReached.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/NodeEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/NodePrefix.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/RunAttempt.lean",
@@ -8461,8 +8466,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65236,
-  "package_bytes": 2484122431,
+  "package_entries": 65241,
+  "package_bytes": 2484147331,
   "claim": {
     "K": "infinity"
   },

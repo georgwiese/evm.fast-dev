@@ -43,7 +43,7 @@ with its real24-round permutation and full workspace/output memory frame.
 Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
 covering both allocations and all decode/hash/link loops. Actual normal/scoped
 returns supply the real arrays, advanced physical context and protected input.
-Selected2160-job current main/root/header/gas/database and table-constructor replay passed. The
+Selected2165-job current main/root/header/gas/database and constructor-caller replay passed. The
 actual first three initializer calls derive Keccak state2701132160 and pad2701132360;
 these globals survive startup, decoding and the31-helper root graph. Real decoded
 witness images supply the header rows and full caller context. Header returns
@@ -60,7 +60,12 @@ entry. Actual successful returns derive all four request-room facts, the table
 value, all11metadata cells and the earlier-input frame. Its real88+72*(capacity+1)
 byte layout implies successful power-of-two capacities≤2^21 and corresponding
 builder counts≤1048575. These are current constructor contracts; actual
-insertion/tree invariants and full builder/caller composition remain open.
+insertion/tree invariants and full builder/source/target composition remain open.
+The actual first database child now reaches its real initialized Patricia
+table/insertion-loop continuation within36source ticks or stops earlier.
+The same caller/callee run derives the constructor workspace, physical header,
+array separation, earlier-input frame and resulting count≤1048575; main’s
+later codedb continuation remains explicit.
 
 Checked against current Software syntax and declaration entries:
 
@@ -110,9 +115,9 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-constructor-geometry-main-v7.log`,2160jobs,
-permitted printed axioms only. Historical/current proof index:8412modules/
-16988facts; inventory8456modules, replacement AST reverseclosure0, fixed files
+Latest successful selected closure: `current-main-patricia-builder-reached-v4.log`,2165jobs,
+permitted printed axioms only. Historical/current proof index:8417modules/
+17001facts; inventory8461modules, replacement AST reverseclosure0, fixed files
 unchanged. Incremental policy65202entries/2483983435bytes PASS. This is helper
 build evidence, not complete verification.
 

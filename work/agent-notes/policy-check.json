@@ -2379,8 +2379,12 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/Memcpy.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/Memzero.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/MptInit.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/MptInitialized.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/MptReached.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/MptWorkspace.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/NormalHost.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsFrame.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsKeys.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/OuterLocals.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/OutputWrite.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/PayloadCallReturned.lean",
@@ -2449,6 +2453,7 @@
     "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessSnapshot.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WitnessValidated.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspaceFrame.lean",
+    "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspaceFrameCore.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspacePointer.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/ArrayAllocation.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/CellGeometry.lean",
@@ -8599,8 +8604,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65380,
-  "package_bytes": 2484769018,
+  "package_entries": 65385,
+  "package_bytes": 2484804503,
   "claim": {
     "K": "infinity"
   },

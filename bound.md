@@ -434,3 +434,24 @@ with its hash in [manifest](work/agent-notes/witness-plan-cleanup-20261027.json)
 Earlier large task/progress histories remain archived as described there.
 Historical program indices, numerical gates and conflicting instructions are
 superseded by the user's current goal and this plan.
+
+## Actual MPT workspace and shared frame cleanup
+
+Actual current mpt_init223 normal body/caller returns now derive all five
+allocations,184bytes of persistent room and the exact global template.
+Main's actual first four calls establish mpt_hash_scratch2701134768 and heap
+at least2701134824. All nine remaining initializers preserve that pointer
+and lower frontier, including the actual EVM mark release. Main's decoder
+and root-allocation traces retain the same MPT pointer. No successful future
+hash/allocation or source funding is assumed. The previous2701134640 input
+lower frontier is too weak to protect against this buffer; propagate the
+new derived frontier through physical input/witness images next.
+
+Cleanup moves42large actual-syntax helper proofs into one shared six-key
+core; the43existing five-key public interfaces remain thin wrappers, with
+mpt_init restricted because it writes the sixth key. Decoder/root prefix
+frames now support all six keys. The generator reproduces this layout and
+its check-only mode passes. Existing startup/decoder/root API replay passed
+1609jobs; actual MPT/main proof replay passed1600jobs. Only permitted printed
+axioms. Index8554modules/17343facts; inventory8599modules, replacement closure0,
+fixed files unchanged. No global finite target K or full verification.

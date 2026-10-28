@@ -3516,3 +3516,27 @@ replacement closure0/fixed files unchanged; incremental policy65380entries/
 2484769018bytes PASS. Usage20%weekly/0resetcredits. Next: current builder loop
 and actual startup MPT scratch/input separation, without assuming a stronger
 copied-input frontier or reusing stale pre-rebase initializer constants.
+
+## Actual MPT initializer/main workspace and shared frame cleanup
+
+The current mpt_init223 normal body and ignored caller derive their actual
+five allocations,184bytes of room and complete global template. The same
+first-four main execution gives hash buffer2701134768 and heap frontier
+2701134824. All nine later initializers retain both, including the actual
+EVM saved-mark release. Main's decoder/root-allocation traces preserve that
+pointer. No independent successful hash/allocation or future funding premise.
+
+Cleanup shares42large syntax-effect proofs in one six-key core and retains
+all43old five-key APIs as wrappers; mpt_init's own restricted proof stays
+outside the core because it initializes the sixth key. The actual decoder
+prefix supports the new key. Generator layout check passes. Need propagate
+the stronger heap/input lower frontier and real MPT pointer into decoded
+witness/builder contexts; the old2701134640 bound falls below this buffer.
+
+Validation: current-workspace-shared-core-v1.log PASS272jobs;
+current-workspace-extended-api-v1.log PASS1609jobs;
+current-actual-mpt-workspace-return-v1.log PASS839jobs;
+current-mpt-main-workspace-v1.log PASS1600jobs. Permitted printed axioms only.
+Index8554modules/17343facts; inventory8599/replacement closure0/fixed files
+unchanged. No global finite target K/full verification. Usage20%weekly,
+0resetcredits. Next: carry derived MPT separation into actual builder loop.

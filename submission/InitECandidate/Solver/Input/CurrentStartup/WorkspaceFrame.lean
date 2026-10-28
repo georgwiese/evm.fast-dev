@@ -4,8 +4,8 @@ import InitECandidate.Solver.Input.CurrentHash.RootEntry
 namespace InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
-abbrev WorkspaceKey := OffsetsFrame.WorkspaceKey
-abbrev key := OffsetsFrame.workspaceKey
+abbrev WorkspaceKey := WorkspaceFrameCore.WorkspaceKey
+abbrev key := WorkspaceFrameCore.workspaceKey
 
 /-- The actual caught-decoder handler also retains all three SSZ globals,
 including serialization, byte output and its terminal FFI outcome. -/
@@ -16,12 +16,12 @@ theorem handler_preserves (workspace : WorkspaceKey) (code) (installed : Origina
     shapeToHOL, List.map_cons, List.map_nil, Option.map_some, Option.map_none]
   refine GlobalEffects.scoped_body (key workspace) code _ _ (Code.name .serialize_result) _ _
     (Code.formals .serialize_result) (Code.body .serialize_result) (Code.shape .serialize_result)
-    (Code.installed code installed .serialize_result) (OffsetsFrame.serialize_result code installed workspace) ?_
+    (Code.installed code installed .serialize_result) (WorkspaceFrameCore.serialize_result code installed workspace) ?_
   refine GlobalEffects.sequence (key workspace) code _ _ (GlobalEffects.byte_store (key workspace) code _ _) ?_
   refine GlobalEffects.sequence (key workspace) code _ _
     (GlobalEffects.call_body (key workspace) code (some none) (Code.name .output_write) _
       (Code.formals .output_write) (Code.body .output_write) (Code.shape .output_write)
-      (Code.installed code installed .output_write) (OffsetsFrame.output_write code installed workspace)) ?_
+      (Code.installed code installed .output_write) (WorkspaceFrameCore.output_write code installed workspace)) ?_
   exact GlobalEffects.sequence (key workspace) code _ _
     (GlobalEffects.external (key workspace) code _ _ _ _ _) (GlobalEffects.returned (key workspace) code _)
 
@@ -32,7 +32,7 @@ theorem decoder_preserves (workspace : WorkspaceKey) (code) (installed : Origina
     (Code.name .decode_host_input) [] (Code.formals .decode_host_input) (Code.body .decode_host_input)
     (Code.shape .decode_host_input) (ofString "SszErr") (ofString "err_code") DecoderPrefix.handler
     (Code.installed code installed .decode_host_input)
-    (OffsetsFrame.decode_host_input code installed workspace) (handler_preserves workspace code installed)
+    (WorkspaceFrameCore.decode_host_input code installed workspace) (handler_preserves workspace code installed)
 
 theorem decoder_prefix (workspace : WorkspaceKey) (code) (installed : OriginalCode.Installed code) :
     GlobalEffects.Preserves (key workspace) code (CallPrefix.program DecoderPrefix.actions .skip) := by
@@ -40,14 +40,14 @@ theorem decoder_prefix (workspace : WorkspaceKey) (code) (installed : OriginalCo
   simp only [CallPrefix.program]
   refine GlobalEffects.scoped_body (key workspace) code _ _ (Code.name .alloc) _ _
     (Code.formals .alloc) (Code.body .alloc) (Code.shape .alloc)
-    (Code.installed code installed .alloc) (OffsetsFrame.alloc code installed workspace) ?_
+    (Code.installed code installed .alloc) (WorkspaceFrameCore.alloc code installed workspace) ?_
   refine GlobalEffects.scoped_body (key workspace) code _ _ (Code.name .alloc) _ _
     (Code.formals .alloc) (Code.body .alloc) (Code.shape .alloc)
-    (Code.installed code installed .alloc) (OffsetsFrame.alloc code installed workspace) ?_
+    (Code.installed code installed .alloc) (WorkspaceFrameCore.alloc code installed workspace) ?_
   refine GlobalEffects.sequence (key workspace) code _ _
     (GlobalEffects.call_body (key workspace) code (some none) (Code.name .memzero) _
       (Code.formals .memzero) (Code.body .memzero) (Code.shape .memzero)
-      (Code.installed code installed .memzero) (OffsetsFrame.memzero code installed workspace)) ?_
+      (Code.installed code installed .memzero) (WorkspaceFrameCore.memzero code installed workspace)) ?_
   refine GlobalEffects.declared (key workspace) code _ _ _ _ ?_
   refine GlobalEffects.declared (key workspace) code _ _ _ _ ?_
   exact GlobalEffects.sequence (key workspace) code _ _
@@ -59,7 +59,7 @@ theorem root_prefix (workspace : WorkspaceKey) (code) (installed : OriginalCode.
   simp only [CallPrefix.program]
   exact GlobalEffects.scoped_body (key workspace) code _ _ (Code.name .alloc) _ _
     (Code.formals .alloc) (Code.body .alloc) (Code.shape .alloc)
-    (Code.installed code installed .alloc) (OffsetsFrame.alloc code installed workspace)
+    (Code.installed code installed .alloc) (WorkspaceFrameCore.alloc code installed workspace)
     (GlobalEffects.skip (key workspace) code)
 
 /-- The three actual initialized pointers survive main's decoder and real

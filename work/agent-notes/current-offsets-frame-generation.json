@@ -235,12 +235,28 @@
       "sha256": "7ef1867a9c9962eb40a3e4a810a3d12e47d8e3e53b3a63aedc2d85e5b0c79ee8"
     }
   ],
-  "generated_source": "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsFrame.lean",
-  "generated_sha256": "eb1e753f337c0fc18ed172a507b9c281fa4e1efdf7cf0473c59e2e2b30caa198",
+  "generated_sources": [
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsKeys.lean",
+      "sha256": "ba8e59f34b04b9a81bdce67ec13e38bac26ed2c6ddc05631ed3034ad691ac841"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspaceFrameCore.lean",
+      "sha256": "03c425541fbd6b02308489d234390e17f9610a1f39788c7aa6365245532b9a61"
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsFrame.lean",
+      "sha256": "bab4782a90671fedf89196d785116ba626c3b5d7b89cbfe7425c69c26cf55133"
+    }
+  ],
   "protected_globals": [
     "ssz_offs",
     "ssz_len_chunk",
-    "zero_hashes"
+    "zero_hashes",
+    "keccak_st",
+    "keccak_pad",
+    "mpt_hash_scratch"
   ],
-  "scope": "Generated all-outcome SSZ global frames with default offsets API; not proof validation, allocation geometry, host/memory equality or a runtime bound."
+  "restricted_initializer": "mpt_init preserves only the original five keys",
+  "scope": "Generated actual all-outcome global frames; not proof validation, ownership or a runtime bound."
 }

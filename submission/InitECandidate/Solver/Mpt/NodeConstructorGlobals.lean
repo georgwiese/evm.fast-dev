@@ -11,7 +11,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix
 
 set_option maxRecDepth 100000 in
 theorem zero_globals (key : MlS) (code) : Input.GlobalEffects.Preserves key code Zero.body := by
-  simp only [Zero.body,Guest.guestFn_memzero,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+  simp only [Zero.body,Guest.Software.guestFn_memzero,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
   repeat first
     | apply Input.GlobalEffects.declared
     | apply Input.GlobalEffects.sequence
@@ -31,7 +31,7 @@ theorem globals (kind : Kind) (key : MlS) (code) (installed : Input.OriginalCode
   rw [allocation_shape]
   apply Input.GlobalEffects.scoped_body key code (ofString "nd") .one (ofString "alloc") _ _ PersistentAlloc.formals PersistentAlloc.body .one
     (PersistentAlloc.original_code code installed) (PersistentAlloc.globals key code installed other)
-  cases kind <;> simp only [tail,body,original,Guest.guestFn_node_new_hashed,Guest.guestFn_node_new_leaf,Guest.guestFn_node_new_ext,Guest.guestFn_node_new_branch,
+  cases kind <;> simp only [tail,body,original,Guest.Software.guestFn_node_new_hashed,Guest.Software.guestFn_node_new_leaf,Guest.Software.guestFn_node_new_ext,Guest.Software.guestFn_node_new_branch,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
   all_goals repeat first
     | apply Input.GlobalEffects.sequence

@@ -1,4 +1,6 @@
 import InitECandidate.Solver.Mpt.StateInitProgram
+import InitECandidate.Solver.WitnessRadix.AllocationGlobalExecution
+import InitECandidate.Solver.WitnessRadix.AllocationCost
 import InitECandidate.Solver.WitnessRadix.AllocatedBytes
 import InitECandidate.Solver.WitnessRadix.StoreWord
 
@@ -19,7 +21,7 @@ theorem store_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (hea
     (mapped : source.memaddrs (heap+BitVec.ofNat 64 offset)) :
     evaluateHOLFiniteState source (store offset name)=(none,written source heap offset word) := by
   have addressRead : eval source (.op .add [.var .global (ofString "ws"),.const (BitVec.ofNat 64 offset)])=some (.val (.word (heap+BitVec.ofNat 64 offset))) := by
-    simp [eval,evalHOLExact,evalListHOLExact,toExact,ws,valueIsWord,valueWord,wordOpHOL,wordOp]
+    simp [eval,evalHOLExact,evalListHOLExact,ws,valueIsWord,valueWord,wordOpHOL,wordOp]
   have valueRead : eval source (localVar name)=some (.val (.word word)) := by simp [eval,evalHOLExact,toExact,localVar,cell]
   exact StoreWord.execute source _ _ _ _ addressRead valueRead mapped
 
@@ -52,9 +54,9 @@ theorem execute_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (he
     (nodesCell : source.locals.lookup (ofString "nodedb")=some (.val (.word nodes)))
     (rootCell : source.locals.lookup (ofString "state_root")=some (.val (.word root)))
     (codesCell : source.locals.lookup (ofString "codedb")=some (.val (.word codes)))
-    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena heap 40) (aligned : heap.toNat%8=0) (funded : 1≤source.clock) :
+    (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena heap 40) (aligned : heap.toNat%8=0) (room : heap.toNat+40≤2952790016) (funded : 1≤source.clock) :
     evaluateHOLFiniteState source body=evaluateHOLFiniteState (ready source heap nodes root codes) rootCall := by
-  have alloc:=PersistentAlloc.global_call_execute source "ws" oldWs heap 40#64 ws [.const 40#64] rfl (PersistentAlloc.original_code source.code installed) heapCell arena.upper funded
+  have alloc:=PersistentAlloc.global_call_execute source "ws" oldWs heap 40#64 ws [.const 40#64] rfl (PersistentAlloc.original_code source.code installed) heapCell room funded
   have newWs : (allocated source heap).globals.lookup (ofString "ws")=some (.val (.word heap)) := by
     simp [allocated,Input.putGlobal,HolFiniteMapExact.update,FUPDATE]
   have stores:=stores_execute (allocated source heap) heap nodes root codes newWs nodesCell rootCell codesCell domain arena aligned

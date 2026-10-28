@@ -10,7 +10,7 @@ set_option maxRecDepth 100000 in
 cursors and every global except the genuine persistent allocator cursor. -/
 theorem globals (key : MlS) (code) (installed : Input.OriginalCode.Installed code) (other : key≠ofString "heap_ptr") :
     Input.GlobalEffects.Preserves key code body := by
-  simp only [body,Guest.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  simp only [body,Guest.Software.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
   repeat' first
     | apply Input.GlobalEffects.declared
     | apply Input.GlobalEffects.sequence

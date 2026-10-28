@@ -42,11 +42,13 @@ theorem block_normal_remainder (source target : PanSemStateFiniteExact 64 Guest.
   have stopped:=Input.while_normal_guard blockCondition blockBody (fun current=>(bodies_length_summary.1 current).2.2) source target normal
   have actual:=block_reads length small target word iCell nCell inside
   have remainder : length-word.toNat≤3:=by
-    by_contra tooMany
-    have active : word.toNat+4≤length:=by omega
-    rw [if_pos active] at actual
-    have impossible : (0#64 : BitVec 64)=1#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using stopped.symm.trans actual
-    exact (by decide : (0#64 : BitVec 64)≠1#64) impossible
+    by_cases short : length-word.toNat≤3
+    · exact short
+    · exfalso
+      have active : word.toNat+4≤length:=by omega
+      rw [if_pos active] at actual
+      have impossible : (0#64 : BitVec 64)=1#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using stopped.symm.trans actual
+      exact (by decide : (0#64 : BitVec 64)≠1#64) impossible
   exact ⟨word,iCell,nCell,inside,remainder⟩
 
 /-- Both actual loops cost at most one tick per four-byte block plus three
@@ -71,7 +73,7 @@ theorem loops_any_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (le
   have actualTailPrice : middle.clock-(evaluateHOLFiniteState middle tailLoop).2.clock≤3:=by
     rw [loop_shapes.2]
     simp only [Nat.zero_add,Nat.one_mul,Input.CounterFlow.strideRank,Input.CounterFlow.counterWord,iNext,Option.getD_some,valueWord,Nat.div_one] at tailPrice
-    exact tailPrice.trans remainder
+    exact Nat.le_trans tailPrice remainder
   have footer : Input.ClockCost.Bound middle.code afterTail 0:=by rw [after_tail_shape]; exact Input.ClockCost.returned middle.code _
   exact Input.ClockCost.sequence_current middle tailLoop afterTail 3 0 actualTailPrice footer
 

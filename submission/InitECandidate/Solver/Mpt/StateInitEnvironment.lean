@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.StateInitProgram
+import InitECandidate.Solver.WitnessRadix.CodeEnvironment
 
 namespace InitECandidate.Solver.Mpt.StateInit
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix

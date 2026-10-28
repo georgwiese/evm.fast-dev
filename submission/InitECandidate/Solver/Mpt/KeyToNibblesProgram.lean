@@ -1,11 +1,14 @@
-import InitECandidate.Solver.Mpt.TrieWalkProgram
+import InitECandidate.Solver.Input.OriginalCode
+import InitECandidate.Solver.Input.OriginalEntry
+import InitECandidate.Solver.PanState
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 import InitECandidate.Solver.Input.ByteStoreClock
 
 namespace InitECandidate.Solver.Mpt.KeyToNibbles
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def body : ProgHOL 64 := match Guest.guestFn_key_to_nibbles with | .function fn => progToHOL fn.body | _ => .skip
+def body : ProgHOL 64 := match Guest.Software.guestFn_key_to_nibbles with | .function fn => progToHOL fn.body | _ => .skip
 def formals : List (MlS × ShapeHOL) := [(ofString "key", .one), (ofString "n", .one), (ofString "out", .one)]
 def afterIndex : ProgHOL 64 := match body with | .dec _ _ _ rest => rest | _ => .skip
 def blockLoop : ProgHOL 64 := match afterIndex with | .seq first _ => first | _ => .skip
@@ -29,10 +32,10 @@ def increment (amount : BitVec 64) : ProgHOL 64 := .assign .local (ofString "i")
 
 set_option maxRecDepth 10000
 theorem body_shape : body = .dec (ofString "i") .one (.const 0#64) (.seq blockLoop (.seq tailLoop afterTail)) := by
-  simp only [body, afterIndex, blockLoop, afterBlocks, tailLoop, afterTail, Guest.guestFn_key_to_nibbles,
+  simp only [body, afterIndex, blockLoop, afterBlocks, tailLoop, afterTail, Guest.Software.guestFn_key_to_nibbles,
     progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil]
 theorem loop_shapes : blockLoop = .while blockCondition blockBody ∧ tailLoop = .while tailCondition tailBody := by
-  simp only [blockLoop, blockBody, tailLoop, tailBody, afterIndex, afterBlocks, body, Guest.guestFn_key_to_nibbles,
+  simp only [blockLoop, blockBody, tailLoop, tailBody, afterIndex, afterBlocks, body, Guest.Software.guestFn_key_to_nibbles,
     progToHOL, expToHOL, shapeToHOL, List.map_cons, List.map_nil, blockCondition, tailCondition, addConst, localVar]
   exact ⟨True.intro, True.intro⟩
 theorem block_body_shape : blockBody =
@@ -40,15 +43,15 @@ theorem block_body_shape : blockBody =
       (.dec (ofString "b1") .one (.loadByte (inputAddress 1)) (pair "b1" 1
         (.dec (ofString "b2") .one (.loadByte (inputAddress 2)) (pair "b2" 2
           (.dec (ofString "b3") .one (.loadByte (inputAddress 3)) (pair "b3" 3 (increment 4#64)))))))) := by
-  simp only [blockBody, blockLoop, afterIndex, body, Guest.guestFn_key_to_nibbles, progToHOL, expToHOL, shapeToHOL,
+  simp only [blockBody, blockLoop, afterIndex, body, Guest.Software.guestFn_key_to_nibbles, progToHOL, expToHOL, shapeToHOL,
     List.map_cons, List.map_nil, pair, inputAddress, outputAddress, increment, addConst, localVar]
   rfl
 theorem tail_body_shape : tailBody = .dec (ofString "b") .one (.loadByte (inputAddress 0)) (pair "b" 0 (increment 1#64)) := by
-  simp only [tailBody, tailLoop, afterBlocks, afterIndex, body, Guest.guestFn_key_to_nibbles, progToHOL, expToHOL, shapeToHOL,
+  simp only [tailBody, tailLoop, afterBlocks, afterIndex, body, Guest.Software.guestFn_key_to_nibbles, progToHOL, expToHOL, shapeToHOL,
     List.map_cons, List.map_nil, pair, inputAddress, outputAddress, increment, addConst, localVar]
   rfl
 theorem after_tail_shape : afterTail = .return (.const 0#64) := by
-  simp only [afterTail, afterBlocks, afterIndex, body, Guest.guestFn_key_to_nibbles, progToHOL, expToHOL]
+  simp only [afterTail, afterBlocks, afterIndex, body, Guest.Software.guestFn_key_to_nibbles, progToHOL, expToHOL]
 theorem pair_quiet (code) (name : String) (offset : Nat) (rest : ProgHOL 64)
     (quiet : Input.QuietClock.Preserves code rest) : Input.QuietClock.Preserves code (pair name offset rest) :=
   Input.QuietClock.sequence code _ _ (Input.QuietClock.store_byte code _ _)
@@ -65,9 +68,9 @@ theorem bodies_quiet (code) : Input.QuietClock.Preserves code blockBody ∧ Inpu
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "key_to_nibbles") = some (formals, body, .one) := by
-  have checked := Input.OriginalCode.indexed code installed 224 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_key_to_nibbles) (by rfl)
+  have checked := Input.OriginalCode.indexed code installed 222 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_key_to_nibbles) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry, declToHOL, funDeclToHOL, body, formals,
-    Guest.guestFn_key_to_nibbles, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
+    Guest.Software.guestFn_key_to_nibbles, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
 
 end InitECandidate.Solver.Mpt.KeyToNibbles
 

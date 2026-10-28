@@ -633,3 +633,34 @@ closure0/fixed files unchanged. Incremental policy PASS65442entries/
 2484995980bytes. Earlier exploratory old-library builds exposed stale imports
 and were not indexed. No global finite target K or full verification claimed.
 Usage24%weekly/0resetcredits. Continue actual state_init and witness decoding.
+
+## Actual state_init entry, workspace preservation and nibble cleanup
+
+The real main state_init call now derives all three scalar formals from
+its observed arguments, including an arbitrary parent-root load or an earlier
+stop. Its callee receives the matching decoded node/table images and real
+heap frontier; SI locals are not incorrectly assumed to survive the call.
+The original40-byte workspace prefix either stops within2source ticks or
+reaches its actual root call after three mapped stores. Normal allocation
+derives room and the exact ws/heap state without assuming an old ws value.
+The older exact-execution helper now states the required persistent room
+explicitly instead of confusing it with the larger ordinary-domain bound.
+
+A shared physical table-interval frame and actual workspace-store frame
+protect both decoded records and node image. Lookup now consumes that minimal
+physical image/code, so unrelated ws/global changes do not invalidate it.
+The original completed-builder lookup wrapper remains available.
+
+Retargeted current nibble/key/compact and scalar-node constructors, removed
+unrelated trie/gas imports, made code/binding/prefix imports explicit, reused
+core strong recursion and removed tactics/order notation imported by accident.
+Current key conversion costs≤n/4+3body ticks; compact_to_nibbles≤n/4+6;
+scalar node constructors≤2. Their checked global frames retain scratch/frame
+cursors. These are local helper facts, not a whole-decoder/global target bound.
+
+Validation: current-state-workspace-and-nibble-cleanup-v5.log PASS2580jobs
+including actual main/table/root/state caller/workspace and helper costs/frames.
+Permitted printed axioms only. Index8614modules/17437facts; inventory8659,
+replacement closure0/fixed files unchanged. Incremental policy PASS65449
+entries/2485021520bytes. Usage25%weekly/0resetcredits. No global finite target
+K/full verification. Continue actual MPT decode-step/control composition.

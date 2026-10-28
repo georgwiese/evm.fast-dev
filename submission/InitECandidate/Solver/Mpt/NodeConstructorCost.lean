@@ -8,7 +8,7 @@ open Flapjack.Basis.Pure.MlString
 set_option maxRecDepth 100000 in
 theorem scalar_tail_quiet (kind : Kind) (scalar : kind≠.branch) (code) : Input.QuietClock.Preserves code (tail kind) := by
   cases kind <;> try exact (scalar rfl).elim
-  all_goals simp only [tail,body,original,Guest.guestFn_node_new_hashed,Guest.guestFn_node_new_leaf,Guest.guestFn_node_new_ext,
+  all_goals simp only [tail,body,original,Guest.Software.guestFn_node_new_hashed,Guest.Software.guestFn_node_new_leaf,Guest.Software.guestFn_node_new_ext,
     progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
   all_goals repeat first
     | apply Input.QuietClock.sequence

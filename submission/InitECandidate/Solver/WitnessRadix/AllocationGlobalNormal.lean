@@ -61,7 +61,40 @@ theorem global_call_normal_expected {F : Type} (source target : PanSemStateFinit
   refine ⟨by simpa only [pointerNat, amountNat] using room, nextBound, positive, ?_⟩
   simpa only [post, rounded] using same
 
+/-- A real normal global-result allocation derives its exact caller state
+without requiring the destination's old value as an entry premise. Invalid
+destination shapes cannot produce the observed normal continuation. -/
+theorem global_call_normal_any {F : Type} (source target : PanSemStateFiniteExact 64 F)
+    (name : String) (pointer amount : BitVec 64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h := fun query => Classical.propDecidable (source.memaddrs query)) arguments=some (values amount))
+    (code : source.code.lookup (ofString "alloc")=some (formals,body,.one))
+    (trapCode : source.code.lookup (ofString "trap_with")=some (Input.Trap.formals,Input.Trap.body,.one))
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (bounded : pointer.toNat≤2952790016)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString name),none)) (ofString "alloc") arguments)=(none,target)) :
+    pointer.toNat+amount.toNat≤2952790016 ∧ 1≤source.clock ∧
+      target=Input.putGlobal (post {source with clock:=source.clock-1} pointer amount) name pointer := by
+  classical
+  obtain ⟨callee,called,nCell⟩ := environment source.code.lookup amount code
+  obtain ⟨positive,actualPost,returned,bodyRun⟩ := Input.CallNormal.assigned_callee_return source target
+    (some (.global,ofString name)) (ofString "alloc") arguments _ body callee .one args called normal
+  obtain ⟨answer,room,frame⟩ := post_of_normal (callEntryStateHOLFinite source callee) actualPost pointer amount nCell heap bounded trapCode returned bodyRun
+  rw [answer] at bodyRun
+  have callerFrame := congrArg (fun state : PanSemStateFiniteExact 64 F=>{state with locals:=source.locals}) frame
+  change {actualPost with locals:=source.locals}=post {source with clock:=source.clock-1} pointer amount at callerFrame
+  rw [evaluateHOLFiniteState_call,args] at normal
+  simp only [called,if_neg (show source.clock≠0 by omega),bodyRun,shapeOfHOLExact,shapeEqHOL,↓reduceIte] at normal
+  split at normal
+  · have targetEq := (congrArg Prod.snd normal).symm
+    change target=setKvarHOLFinite .global (ofString name) (.val (.word pointer)) {actualPost with locals:=source.locals} at targetEq
+    refine ⟨room,positive,?_⟩
+    rw [targetEq,callerFrame]
+    rfl
+  · cases normal
+
 end InitECandidate.Solver.WitnessRadix.PersistentAlloc
 
 #print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.global_call_normal
 #print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.global_call_normal_expected
+
+#print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.global_call_normal_any

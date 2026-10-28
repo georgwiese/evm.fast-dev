@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.KeyToNibblesAnyCall
 import InitECandidate.Solver.Mpt.Fail
+import InitECandidate.Solver.WitnessRadix.ProgramPrefix
 
 namespace InitECandidate.Solver.Mpt.CompactToNibbles
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -8,7 +9,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 private def decRest : ProgHOL 64→ProgHOL 64 | .dec _ _ _ rest=>rest | _=>.skip
 private def callRest : ProgHOL 64→ProgHOL 64 | .decCall _ _ _ _ rest=>rest | _=>.skip
 private def seqRest : ProgHOL 64→ProgHOL 64 | .seq _ rest=>rest | _=>.skip
-def body : ProgHOL 64:=match Guest.guestFn_compact_to_nibbles with | .function fn=>progToHOL fn.body | _=>.skip
+def body : ProgHOL 64:=match Guest.Software.guestFn_compact_to_nibbles with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL):=[(ofString "p",.one),(ofString "n",.one)]
 def resultShape : ShapeHOL:=.comb [.one,.one,.one]
 def fail : ProgHOL 64:=.call (some (none,none)) (ofString "mpt_fail") [.const 5#64]
@@ -34,24 +35,24 @@ def afterOdd : ProgHOL 64:=.seq keyCall footer
 
 set_option maxRecDepth 100000
 theorem body_shape : body=.seq (.ite zeroTest fail .skip) afterGuard := by
-  simp only [body,afterGuard,seqRest,zeroTest,fail,localVar,Guest.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  simp only [body,afterGuard,seqRest,zeroTest,fail,localVar,Guest.Software.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 theorem byte_shape : afterGuard=.dec (ofString "c0") .one (.loadByte (localVar "p")) afterByte := by
-  simp only [body,afterGuard,afterByte,seqRest,decRest,localVar,Guest.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  simp only [body,afterGuard,afterByte,seqRest,decRest,localVar,Guest.Software.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 theorem initial_shape : afterByte=ProgramPrefix.program initialActions allocationCall := by
   simp only [body,afterGuard,afterByte,allocationCall,seqRest,decRest,initialActions,firstExpression,leafExpression,oddExpression,
-    ProgramPrefix.program,localVar,Guest.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+    ProgramPrefix.program,localVar,Guest.Software.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 theorem allocation_shape : allocationCall=.decCall (ofString "out") .one (ofString "alloc") [amount] afterAllocation := by
   simp only [body,afterGuard,afterByte,allocationCall,afterAllocation,seqRest,decRest,callRest,amount,localVar,
-    Guest.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+    Guest.Software.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 theorem after_allocation_shape : afterAllocation=.dec (ofString "k") .one (.const 0#64) (.seq oddGuard afterOdd) := by
   simp only [body,afterGuard,afterByte,allocationCall,afterAllocation,seqRest,decRest,callRest,oddGuard,oddTest,oddWrite,afterOdd,keyCall,keyArguments,footer,resultExpression,localVar,
-    Guest.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+    Guest.Software.guestFn_compact_to_nibbles,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
 
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "compact_to_nibbles")=some (formals,body,resultShape) := by
-  have checked:=Input.OriginalCode.indexed code installed 225 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_compact_to_nibbles) (by rfl)
+  have checked:=Input.OriginalCode.indexed code installed 223 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_compact_to_nibbles) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,resultShape,
-    Guest.guestFn_compact_to_nibbles,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_compact_to_nibbles,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 end InitECandidate.Solver.Mpt.CompactToNibbles
 

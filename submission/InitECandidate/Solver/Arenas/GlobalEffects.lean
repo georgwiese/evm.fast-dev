@@ -6,7 +6,7 @@ namespace InitECandidate.Solver.Input.Trap
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 
 theorem globals (key : MlS) (code) : GlobalEffects.Preserves key code body := by
-  simp only [body,Guest.guestFn_trap_with,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+  simp only [body,Guest.Software.guestFn_trap_with,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
   repeat first
     | apply GlobalEffects.sequence
     | exact GlobalEffects.shared_store key code _ _ _

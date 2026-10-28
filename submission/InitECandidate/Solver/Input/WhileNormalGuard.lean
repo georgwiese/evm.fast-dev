@@ -17,8 +17,8 @@ theorem while_normal_guard {F : Type} (condition : ExpHOL 64) (body : ProgHOL 64
       evaluateHOLFiniteState current (.while condition body)=(none,target)→
       evalHOLFinite target (h:=fun query=>Classical.propDecidable (target.memaddrs query)) condition=some (.val (.word 0#64)) := by
     intro clock
-    induction clock using Nat.strong_induction_on with
-    | h clock ih=>
+    induction clock using Nat.strongRecOn with
+    | ind clock ih=>
       intro current clockEq run
       rw [evaluateHOLFiniteState_while_total] at run
       generalize observed : evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) condition=value at run

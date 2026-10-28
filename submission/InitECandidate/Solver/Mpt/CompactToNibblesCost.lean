@@ -44,7 +44,7 @@ theorem allocation_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
       have codeEq:=(Input.evaluation_fields (callEntryStateHOLFinite source callee) target PersistentAlloc.body (some (.returned (.val (.word out)))) bodyRun).2.2.2
       have currentInstalled : Input.OriginalCode.Installed ready.code:=by change Input.OriginalCode.Installed target.code; rw [codeEq]; exact installed
       exact after_allocation_cost ready pointer out odd length positive small currentPointer currentLength currentOut currentOdd currentInstalled)
-  exact full.trans (by omega)
+  exact Nat.le_trans full (by omega)
 
 theorem after_guard_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (length : Nat)
     (positive : 1≤length) (small : length+4<2^64)
@@ -54,7 +54,7 @@ theorem after_guard_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     source.clock-(evaluateHOLFiniteState source afterGuard).2.clock≤length/4+6 := by
   let output:=evaluateHOLFiniteState source afterGuard
   rcases allocation_entry_trace source output.2 pointer pointerCell output.1 rfl with stopped|reached
-  · exact stopped.trans (by omega)
+  · exact Nat.le_trans stopped (by omega)
   · obtain ⟨byte,restoreStack,inner,setup,continued,endpoint,clock⟩:=reached
     let byteState:=QueryBranch.bind source "c0" (BitVec.ofNat 64 byte.toNat)
     let current:=prepared byteState (BitVec.ofNat 64 byte.toNat)
@@ -84,14 +84,16 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
     intro passed
     have test:=(Fail.guard_normal source source zeroTest [.const 5#64] installed passed).1
     have positive : 1≤length:=by
-      by_contra bad
-      have zero : length=0:=by omega
-      have actual : eval source zeroTest=some (.val (.word 1#64)):=by
-        simp [eval,zeroTest,evalHOLExact,localVar,toExact,lengthCell,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-      have impossible : (1#64 : BitVec 64)=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans test
-      exact (by decide : (1#64 : BitVec 64)≠0#64) impossible
+      by_cases positive : 1≤length
+      · exact positive
+      · exfalso
+        have zero : length=0:=by omega
+        have actual : eval source zeroTest=some (.val (.word 1#64)):=by
+          simp [eval,zeroTest,evalHOLExact,localVar,toExact,lengthCell,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+        have impossible : (1#64 : BitVec 64)=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans test
+        exact (by decide : (1#64 : BitVec 64)≠0#64) impossible
     exact after_guard_cost source pointer length positive small pointerCell lengthCell installed)
-  exact price.trans (by omega)
+  exact Nat.le_trans price (by omega)
 
 end InitECandidate.Solver.Mpt.CompactToNibbles
 

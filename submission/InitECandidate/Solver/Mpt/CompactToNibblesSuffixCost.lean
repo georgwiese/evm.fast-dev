@@ -21,7 +21,7 @@ theorem after_odd_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (po
   have priced:=KeyToNibbles.call_any_cost source (pointer+1#64) (out+k) (length-1) (by omega) (some none) keyArguments args installed
   have full:=Input.ClockCost.sequence_current source keyCall footer ((length-1)/4+4) 0 priced
     (Input.ClockCost.returned source.code resultExpression)
-  exact full.trans (by omega)
+  exact Nat.le_trans full (by omega)
 
 /-- Price the actual optional nibble write and following generic original
 converter, deriving its real scalar arguments only on normal passage. -/

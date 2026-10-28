@@ -4,6 +4,33 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete current payload protected-memory and restored-heap caller frame
+
+The whole unchanged payload body and its real two-word caller now preserve
+any earlier protected word outside the actual output/length chunk and restore
+the entering heap on the same normal return. The query may be outside the
+payload record, covering earlier SI/RQ metadata at the actual root caller.
+The proof includes literal static fields/extra data, both actual root allocations,
+transaction and withdrawal loops/lists, saved releases, balance and container.
+Normal prefix inversions select the same real continuation; nested allocations
+derive their own room and mapped extents. No future successful helper or extra
+temporary allocation room is supplied as a premise.
+
+PayloadWithdrawalSuffix/Allocation/ScopeMemory and matching transaction modules
+compose the established component frames. PayloadPrefixMemory, PayloadMemory
+and PayloadCallMemory close the actual enclosing scopes and ABI. Actual decoder,
+workspace, frontier and separation facts remain root call-entry obligations.
+Source-cost and normal memory/heap results are separate; neither classifies
+terminal errors as covered or prices compiled target straight-line work.
+
+Validation: current-payload-whole-caller-memory-v1.log PASS1489jobs/permitted
+printed axioms only. 8GiBguard/twoslots/cachefalse, disk61%. Index8183modules/
+16574facts; inventory8222, replacement closure0, frozen main unchanged.
+Incremental policy64991entries/2483258806bytes PASS. Latest account reading
+0%weekly,0resetcredits; ordinary usage allowed. No reset was invoked by this
+agent. No global finite target K or full verification; claim infinity.
+Next: actual root allocation/call-entry data and complete root hash joins.
+
 ## Complete actual current htr_payload body and two-word caller source bound
 
 Whole payload body allowance is5*actual total transaction bytes+3391*actual

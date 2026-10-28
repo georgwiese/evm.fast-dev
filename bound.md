@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-mix-memory-v1.log`,1187jobs,
-permitted printed axioms only. Historical/current proof index:8095modules/
-16295facts; Solver inventory8134, replacement closure0, frozen main files
-unchanged. Incremental policy passes64903entries/2482765844bytes. These checks
+Latest successful selected closure: `current-byte-call-memory-v2.log`,1257jobs,
+permitted printed axioms only. Historical/current proof index:8099modules/
+16306facts; Solver inventory8138, replacement closure0, frozen main files
+unchanged. Incremental policy passes64907entries/2482797966bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -114,7 +114,11 @@ remain historical until their current statements/dependencies are checked.
    without room/mapping/success hypotheses. Its minimal syntax import closure
    shrinks593→27Solver modules. Complete current byte-list/vector bodies and real ABI callers now compose
    packing, current Merkle, release and length mix, including the actual short
-   vector branch. Complete current progressive body/caller now costs≤88*n+3120/3121 for
+   vector branch. Complete current byte-list/vector normal memory and heap frames
+   now compose their actual packing allocation, Merkle call, release and list
+   length mix. The real three/four-word callers inherit both frames; temporary
+   room is derived from their actual pack return, with no old accelerator or
+   temporary-room premise. Complete current progressive body/caller now costs≤88*n+3120/3121 for
    actual n≤134217728 and the same non-timeout observation, deriving≤15rounds
    and actual fold count. Progressive list body/caller costs≤88*n+3168/3169; progressive-byte
    body/caller≤packPrice(n)+88*ceil(n/32)+3172/3173 now check, with exact

@@ -4,6 +4,24 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete actual byte list/vector memory and heap caller frames check
+
+PackBytesScopeMemory inverts the same actual scoped pack call, derives its real
+buffer tuple, persistent room, next heap bounds/alignment and protected word,
+and passes them into its actual continuation with lexical restoration intact.
+Both byte-vector branches and the whole byte-list body now retain metadata and
+restore their entering heap. BytesCallMemory joins their actual three/four-word
+ABIs to these same callee proofs. Temporary allocation room and successful
+future helpers are not caller premises; physical input/output/workspace and
+count/depth facts remain explicit parent/root obligations.
+
+Validation: current-byte-call-memory-v2.log PASS1257jobs/permitted printed axioms
+only;8GiBguard/twoslots/cachefalse, disk61%. Index8099modules/16306facts;
+inventory8138, replacement closure0, frozen main unchanged. Account29%weekly,
+0resetcredits; ordinary usage allowed. Incremental policy64907entries/
+2482797966bytes PASS. No global finite target K or full verification; claim
+infinity. Next: fixed-record/progressive/payload composition.
+
 ## Actual byte heap restoration and length-mix memory frame check
 
 Both actual byte-vector branches and the byte-list body restore exactly their

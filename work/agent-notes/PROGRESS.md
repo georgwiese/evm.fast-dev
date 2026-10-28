@@ -4,6 +4,33 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual parent request syntax/arguments and shared price budget check
+
+RequestsProgram matches the whole current htr_requests source: five literal
+list calls, five-field container and saved mark/release. Its actual normal
+body restores the entering heap with no count/mapping/room premises.
+RequestsEntry uses the complete decoded RQ image and real mapping to derive
+all five actual pointer/count/size/output argument lists and physical record
+extents. RequestsBudget proves their checked caller allowances sum to at most
+13*(requestSize-20)+15870 source ticks, using the single encoded byte budget.
+This is arithmetic on the established allowances; whole parent cost composition
+and metadata preservation between these calls still remain open.
+
+AllocationScopeCost prices every same non-timeout scoped allocator outcome.
+Only its same checked normal return supplies actual returned cursor, persistent
+room and complete nonlocal post-state to the real continuation. Failed
+allocations are charged without assuming future success. This supports joining
+parent metadata/ownership to later call-entry obligations.
+
+Validation: current-parent-requests-entry-v1.log PASS1273jobs,
+current-parent-requests-budget-v1.log PASS1246jobs and
+current-allocation-scope-cost-v1.log PASS283jobs; permitted printed axioms only.
+8GiBguard/twoslots/cachefalse, disk61%. Index8127modules/16397facts; inventory8166,
+replacement closure0, frozen main unchanged. Incremental policy64935entries/
+2482954487bytes PASS. Account31%weekly,0resetcredits; ordinary usage allowed.
+No global finite target K or full verification; claim infinity. Next: actual
+parent request call memory/image transport and whole request/payload/root costs.
+
 ## Same-decoder complete request image and shared byte budget reach root callee
 
 RequestsReturned now retains its already proved first/valid offset facts.

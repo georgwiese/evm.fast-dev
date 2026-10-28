@@ -81,19 +81,25 @@ theorem bit_quiet (code) : QuietClock.Preserves code bitStep := by
     (QuietClock.conditional code _ _ _ (QuietClock.returned code _) (QuietClock.skip code))
     (QuietClock.assign code _ _)
 
-theorem readonly (code) : LocalEffects.Preserves code body := by
-  rw [shapes.1,shapes.2.1,shapes.2.2.1,shapes.2.2.2.1,shapes.2.2.2.2.1,
-    shapes.2.2.2.2.2.1,shapes.2.2.2.2.2.2.1,shapes.2.2.2.2.2.2.2.1,
-    shapes.2.2.2.2.2.2.2.2.1,shapes.2.2.2.2.2.2.2.2.2]
+theorem bit_readonly (code) : LocalEffects.Preserves code bitStep := by
+  rw [shapes.2.2.2.2.2.2.2.2.1,shapes.2.2.2.2.2.2.2.2.2]
+  exact LocalEffects.sequence code _ _
+    (LocalEffects.conditional code _ _ _ (LocalEffects.returned code _) (LocalEffects.skip code))
+    (LocalEffects.assign code _ _)
+
+theorem step_readonly (code) : LocalEffects.Preserves code step := by
+  rw [shapes.2.2.2.1,shapes.2.2.2.2.1,shapes.2.2.2.2.2.1,
+    shapes.2.2.2.2.2.2.1,shapes.2.2.2.2.2.2.2.1]
   exact LocalEffects.declared code _ _ _ _ (LocalEffects.sequence code _ _
-    (LocalEffects.loop code _ _ (LocalEffects.declared code _ _ _ _ (LocalEffects.sequence code _ _
-      (LocalEffects.conditional code _ _ _
-        (LocalEffects.declared code _ _ _ _ (LocalEffects.loop code _ _ (LocalEffects.sequence code _ _
-          (LocalEffects.conditional code _ _ _ (LocalEffects.returned code _) (LocalEffects.skip code))
-          (LocalEffects.assign code _ _))))
-        (LocalEffects.skip code))
-      (LocalEffects.assign code _ _))))
-    (LocalEffects.returned code _))
+    (LocalEffects.conditional code _ _ _
+      (LocalEffects.declared code _ _ _ _ (LocalEffects.loop code _ _ (bit_readonly code)))
+      (LocalEffects.skip code))
+    (LocalEffects.assign code _ _))
+
+theorem readonly (code) : LocalEffects.Preserves code body := by
+  rw [shapes.1,shapes.2.1,shapes.2.2.1]
+  exact LocalEffects.declared code _ _ _ _ (LocalEffects.sequence code _ _
+    (LocalEffects.loop code _ _ (step_readonly code)) (LocalEffects.returned code _))
 
 end InitECandidate.Solver.Input.CurrentTable.FirstDiff
 
@@ -101,3 +107,5 @@ end InitECandidate.Solver.Input.CurrentTable.FirstDiff
 #print axioms InitECandidate.Solver.Input.CurrentTable.FirstDiff.bit_advance
 #print axioms InitECandidate.Solver.Input.CurrentTable.FirstDiff.step_advance
 #print axioms InitECandidate.Solver.Input.CurrentTable.FirstDiff.readonly
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.FirstDiff.step_readonly

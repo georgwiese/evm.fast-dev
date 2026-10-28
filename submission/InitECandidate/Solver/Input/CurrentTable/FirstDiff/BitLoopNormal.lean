@@ -55,6 +55,41 @@ def BitInvariant (byte : BitVec 8) (source : PanSemStateFiniteExact 64 Guest.Hos
     source.locals.lookup (ofString "x") = some (.val (.word (byte.setWidth 64))) ∧
     ∀ prior,prior < position → byte.getLsbD (7-prior) = false
 
+/-- Actual continuing bit iterations retain the scanned zero prefix. -/
+theorem bit_progress (current : PanSemStateFiniteExact 64 Guest.HostMemory) (byte : BitVec 8)
+    (valid : BitInvariant byte current) (observed : BitVec 64)
+    (actual : evalHOLFinite current (h:=fun query => Classical.propDecidable (current.memaddrs query)) bitLimit =
+      some (.val (.word observed))) (nonzero : observed ≠ 0#64)
+    (target : PanSemStateFiniteExact 64 Guest.HostMemory) (result : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState (decClockHOLFinite current) bitStep = (result,target))
+    (continuing : result = none ∨ result = some .continue) : BitInvariant byte target := by
+  obtain ⟨position,bounded,counterCell,wordCell,before⟩ := valid
+  have read := bit_limit_read current position bounded counterCell
+  have active : position < 8 := by
+    by_contra inactive
+    rw [if_neg inactive] at read
+    have same : observed = 0#64 := by
+      simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans read
+    exact nonzero same
+  have controls := (bit_flow (ofString "x") (by decide)).summary (decClockHOLFinite current)
+  have normalResult : result = none := by
+    rcases continuing with fallthrough | continued
+    · exact fallthrough
+    · have impossible := controls.2.2
+      rw [run] at impossible
+      exact (impossible continued).elim
+  subst result
+  obtain ⟨clear,next,saved⟩ := bit_step_none (decClockHOLFinite current) target (byte.setWidth 64)
+    position active wordCell counterCell run
+  have clearByte : byte.getLsbD (7-position) = false := by
+    simpa only [BitVec.getLsbD_setWidth,show decide (7-position < 64) = true from by simp; omega,Bool.true_and] using clear
+  refine ⟨position+1,by omega,next,saved,?_⟩
+  intro prior earlier
+  by_cases old : prior < position
+  · exact before prior old
+  · have same : prior = position := by omega
+    simpa only [same] using clearByte
+
 /-- The inner loop can fall through only after all eight actual byte digits
 were zero. A nonzero xor therefore returns or stops; it cannot advance i. -/
 theorem bit_loop_none_zero (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -77,32 +112,7 @@ theorem bit_loop_none_zero (source post : PanSemStateFiniteExact 64 Guest.HostMe
     have absent := before (7-digit) (by omega)
     simpa only [reverse,BitVec.getLsbD_zero] using absent
   · intro current valid observed actual nonzero funded target result run continuing
-    obtain ⟨position,bounded,counterCell,wordCell,before⟩ := valid
-    have read := bit_limit_read current position bounded counterCell
-    have active : position < 8 := by
-      by_contra inactive
-      rw [if_neg inactive] at read
-      have same : observed = 0#64 := by
-        simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans read
-      exact nonzero same
-    have controls := (bit_flow (ofString "x") (by decide)).summary (decClockHOLFinite current)
-    have normalResult : result = none := by
-      rcases continuing with fallthrough | continued
-      · exact fallthrough
-      · have impossible := controls.2.2
-        rw [run] at impossible
-        exact (impossible continued).elim
-    subst result
-    obtain ⟨clear,next,saved⟩ := bit_step_none (decClockHOLFinite current) target (byte.setWidth 64)
-      position active wordCell counterCell run
-    have clearByte : byte.getLsbD (7-position) = false := by
-      simpa only [BitVec.getLsbD_setWidth,show decide (7-position < 64) = true from by simp; omega,Bool.true_and] using clear
-    refine ⟨position+1,by omega,next,saved,?_⟩
-    intro prior earlier
-    by_cases old : prior < position
-    · exact before prior old
-    · have same : prior = position := by omega
-      simpa only [same] using clearByte
+    exact bit_progress current byte valid observed actual nonzero target result run continuing
   · intro current valid observed actual nonzero funded target run
     have controls := (bit_flow (ofString "x") (by decide)).summary (decClockHOLFinite current)
     have impossible := controls.2.1
@@ -114,3 +124,5 @@ end InitECandidate.Solver.Input.CurrentTable.FirstDiff
 #print axioms InitECandidate.Solver.Input.CurrentTable.FirstDiff.bit_limit_read
 #print axioms InitECandidate.Solver.Input.CurrentTable.FirstDiff.bit_step_none
 #print axioms InitECandidate.Solver.Input.CurrentTable.FirstDiff.bit_loop_none_zero
+
+#print axioms InitECandidate.Solver.Input.CurrentTable.FirstDiff.bit_progress

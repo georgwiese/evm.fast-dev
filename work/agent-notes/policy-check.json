@@ -2465,9 +2465,16 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Step.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/BitFacts.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/BitLoopNormal.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/BitLoopReturned.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/ByteAnswer.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/ByteLoop.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/ByteLoopState.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/ByteReads.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/ByteStepNormal.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Call.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/CallCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Cost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Entry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/Program.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/KeyBits.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewArraysProgram.lean",
@@ -8489,8 +8496,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65266,
-  "package_bytes": 2484243110,
+  "package_entries": 65273,
+  "package_bytes": 2484278265,
   "claim": {
     "K": "infinity"
   },

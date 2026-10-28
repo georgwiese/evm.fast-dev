@@ -43,7 +43,7 @@ with its real24-round permutation and full workspace/output memory frame.
 Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
 covering both allocations and all decode/hash/link loops. Actual normal/scoped
 returns supply the real arrays, advanced physical context and protected input.
-Selected1882-job current main/root/table and find-leaf helper replay passed. The
+Selected1889-job current main/root/table and find-leaf helper replay passed. The
 actual first three initializer calls derive Keccak state2701132160 and pad2701132360;
 these globals survive startup, decoding and the31-helper root graph. Real decoded
 witness images supply the header rows and full caller context. Header returns
@@ -80,9 +80,12 @@ The unchanged htab_first_diff118 now costs≤9*keyLength body/+1caller,
 including failed byte reads, bit-scan early returns and exhausted clocks.
 Actual32-byte callers therefore have288body/289caller allowances. A real
 continuing bit step skipped a zero digit; falling through its whole8-bit
-loop forces the byte xor to zero. Current most-significant-first key bits
-and least-mismatch mathematics are checked, but the full returned least
-mismatch/insertion connection remains open. Shared counter/local-flow
+loop forces the byte xor to zero. The complete actual function now
+returns its genuine least most-significant-first mismatch, or256 exactly for
+equal keys, with the full physical frame. Its scoped caller retains that same
+returned word and original continuation within289source ticks. Actual byte
+loads, zero prefixes and every normal/returned loop path are checked. The
+insertion history/tree-order connection remains open. Shared counter/local-flow
 interfaces now admit actual early returns while preserving existing APIs.
 
 Checked against current Software syntax and declaration entries:
@@ -133,10 +136,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-first-diff-bit-cost-v7.log`,1882jobs,
-permitted printed axioms only. Historical/current proof index:8440modules/
-17064facts; inventory8484modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65266entries/2484243110bytes PASS. This is helper
+Latest successful selected closure: `current-first-diff-complete-caller-v1.log`,1889jobs,
+permitted printed axioms only. Historical/current proof index:8447modules/
+17081facts; inventory8491modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65273entries/2484278265bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

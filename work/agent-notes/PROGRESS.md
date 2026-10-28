@@ -3183,3 +3183,31 @@ Next: source least-difference semantics and actual insertion image, workspace
 separation, remaining main paths and uniform target composition. Overall
 estimate40%, plausible30–50%. Five old unfinished RLP files preserved untracked.
 Account14%weekly used, zero reset credits, ordinary usage allowed.
+
+
+## Actual full first-difference return and caller — 2026-10-28
+
+The unchanged htab_first_diff118 now returns the actual least mismatch in
+current most-significant-first order, or marker256 for equal32-byte keys.
+The proof reads genuine physical key bytes from the same execution, carries
+the zero digit/byte prefixes, handles early returns and full normal loop
+completion, and retains the complete physical frame. Its classified scoped
+caller either stops within289source ticks or reaches the exact original
+continuation with that same returned word; a cheap stopped alternative cannot
+stand in for an enclosing normal return. Previous288body/289caller costs remain.
+
+Cleanup shares actual inner/outer read-only effects and one bit-prefix
+progress proof between normal and early-return loop outcomes. Current key
+byte views remain independent of historical bit-order conventions. No source
+program changes and no assumed future completed first-difference scan.
+Actual insertion still has to establish/preserve tree order and physical
+array/key ownership; a whole database/global target bound is not claimed.
+
+Validation: current-first-diff-complete-caller-v1.log PASS1889jobs, permitted
+printed axioms only. Index8447modules/17081facts; inventory8491, replacement
+AST reverse closure0, fixed files unchanged. Incremental policy PASS65273
+entries/2484278265bytes; no full verification, claim infinity, no global K.
+Next: current node allocation/leaf/internal construction and insertion image,
+workspace separation, remaining main paths and uniform target composition.
+Overall estimate40%, plausible30–50%. Five old unfinished RLP files preserved
+untracked. Account14%weekly used, zero reset credits, ordinary usage allowed.

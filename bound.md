@@ -43,7 +43,7 @@ with its real24-round permutation and full workspace/output memory frame.
 Whole validate_headers212 now costs≤51528322body/+51528323caller source ticks,
 covering both allocations and all decode/hash/link loops. Actual normal/scoped
 returns supply the real arrays, advanced physical context and protected input.
-Selected2199-job current main/root/table and find-leaf helper replay passed. The
+Selected2198-job current main/root/table and find-leaf helper replay passed. The
 actual first three initializer calls derive Keccak state2701132160 and pad2701132360;
 these globals survive startup, decoding and the31-helper root graph. Real decoded
 witness images supply the header rows and full caller context. Header returns
@@ -94,8 +94,13 @@ It costs0body/1scoped caller source ticks. The genuine constructor return now
 retains its real capacity≥2 and derives this first allocator context. Shared
 slot geometry maps all available real keys/nodes/order slots, without assuming
 initialized contents. The actual find-leaf key test now observes the real
-most-significant-first key bit from physical bytes. Insertion history still
-must derive node availability and preserve the full tree/keys after updates.
+most-significant-first key bit from physical bytes. Actual normal find-leaf execution now
+derives its finite query-directed route to the actual returned leaf, and
+the original scoped caller retains that earlier route. A logical routing
+model proves common-prefix preservation and excludes insertion stopping at
+a bit equal to the real first mismatch. Actual htab_set126 entry/search
+syntax is checked. Insertion history still must establish/preserve this
+routing model, node availability and full physical keys after updates.
 
 Checked against current Software syntax and declaration entries:
 
@@ -145,10 +150,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-patricia-allocator-slots-key-read-v3.log`,2199jobs,
-permitted printed axioms only. Historical/current proof index:8453modules/
-17100facts; inventory8497modules, replacement AST reverseclosure0, fixed files
-unchanged. Incremental policy65280entries/2484309843bytes PASS. This is helper
+Latest successful selected closure: `current-patricia-routes-set-syntax-v1.log`,2198jobs,
+permitted printed axioms only. Historical/current proof index:8458modules/
+17113facts; inventory8502modules, replacement AST reverseclosure0, fixed files
+unchanged. Incremental policy65286entries/2484340197bytes PASS. This is helper
 build evidence, not complete verification.
 
 ## Checked source stages and remaining work, in order

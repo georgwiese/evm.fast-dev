@@ -3240,3 +3240,32 @@ insertion invariant; workspace separation, later main paths and target-step
 composition. Overall estimate40%, plausible30–50%. Five old unfinished RLP
 files preserved untracked. Account15%weekly used, zero reset credits, ordinary
 usage allowed.
+
+
+## Actual query-directed lookup route and insertion ordering facts — 2026-10-28
+
+The actual internal traversal step chooses the zero/one child from real
+physical query bytes and restores its temporary bit local exactly. Normal
+lookup execution now derives its finite query-directed route to the actual
+returned leaf; the classified scoped caller retains that same earlier route,
+full physical frame and258tick allowance for its original continuation.
+No independent successful lookup, guessed leaf or future terminal state is
+supplied. Current htab_set126's real entry and second-search syntax check.
+
+The logical routing model carries common prefixes and left/right split
+digits along increasing-bit edges. Its route lemmas show that insertion
+cannot stop at a bit equal to the earlier real first mismatch: the reached
+leaf would instead agree with the query at that traversed split. This is
+used to justify strict ordering when a new internal node is linked. The
+actual constructor/insertion history still must establish and preserve this
+logical model and its physical key images; no global database result claimed.
+
+Validation: current-patricia-routes-set-syntax-v1.log PASS2198jobs, permitted
+printed axioms only, with current main/root/database and first-difference
+callers. Index8458modules/17113facts; inventory8502, replacement AST reverse
+closure0, fixed files unchanged. Incremental policy PASS65286entries/
+2484340197bytes; no full verification, claim infinity, no global target K.
+Next: real second-search cursor/exit and insertion writes/image, workspace
+separation, remaining main paths and target composition. Overall estimate40%,
+plausible30–50%. Five old unfinished RLP files preserved untracked. Account15%
+weekly used, zero reset credits, ordinary usage allowed.

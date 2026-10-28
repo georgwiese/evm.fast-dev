@@ -2459,9 +2459,12 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/EmptyTable.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Entry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Exit.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/KeyBranch.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Loop.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Model.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Program.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Route.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/RouteCall.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FindLeaf/Step.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/BitFacts.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/FirstDiff/BitLoopNormal.lean",
@@ -2501,6 +2504,8 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildCapacity.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildConstructor.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuildSyntax.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Routing.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/Set/Program.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/SlotGeometry.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Workspace.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Memory.lean",
@@ -8502,8 +8507,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65280,
-  "package_bytes": 2484309843,
+  "package_entries": 65286,
+  "package_bytes": 2484340197,
   "claim": {
     "K": "infinity"
   },

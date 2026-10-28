@@ -4,6 +4,35 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Actual packing image and Merkle pair-loop memory frames check
+
+PackBytesMemory.Returned retains the exact returned(buffer,ceil(n/32)) tuple,
+persistent request room≤2952790016, actual next heap, monotonicity/alignment/
+upper bound, and a protected word below the real incoming cursor. The same
+actual normal allocator call derives room; a geometric ordinary-domain extent
+is never substituted for allocation room. The length premise n+64<2^64 includes
+current251655056-byte inputs. Its buffer/caller frames use actual copy and
+short padding returns. Shared PackBytesArguments supplies the identical amount/
+padding arithmetic to runtime and memory proofs.
+
+LoopBodyEffects structurally certifies call-free local-assignment loops preserve
+every global, on all outcomes. MemoryGlobals checks that actual Software copy/
+zero syntax and their real callers satisfy it. This includes the heap pointer.
+SHA's checked caller frame now only needs its actual output expression located;
+input expressions/contents/mapping remain unrestricted. Actual Merkle dense and
+extension pair steps/loops preserve protected words using their real counter
+and32-byte output slot, including the correct decrement/increment placement.
+No obsolete SHA state/accelerator buffers or successful future calls are used.
+
+Validation: current-pack-frame-complete-v1.log PASS1222jobs, including complete
+current request-list/PBytes/container callers and scalar/SHA frames;
+current-merkle-pair-memory-v2.log PASS733jobs. Permitted printed axioms only;
+8GiBguard/twoslots/cachefalse, disk61%. Index8083modules/16223facts; inventory8122,
+replacement closure0, fixed main files unchanged; incremental policy64891entries/
+2482668495bytes PASS. Account27%weekly,0resetcredits. No global finite target K,
+no full verification; claim infinity. Next: complete dense/fill/extension/root
+memory and heap restoration, then the actual payload/request-root composition.
+
 ## Current memory primitives and scalar-root output frame check
 
 U64Memory checks actual scalar-root zero32/copy8/return syntax and its two-word

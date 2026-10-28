@@ -84,10 +84,11 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-hash-memory-primitives-v4.log`,765jobs,
-permitted printed axioms only. Historical/current proof index:8078modules/
-16204facts; Solver inventory8117, replacement closure0, frozen main files
-unchanged. Incremental policy passes64886entries/2482638885bytes. These checks
+Latest successful selected closure: `current-pack-frame-complete-v1.log`,1222jobs;
+`current-merkle-pair-memory-v2.log`,733jobs,
+permitted printed axioms only. Historical/current proof index:8083modules/
+16223facts; Solver inventory8122, replacement closure0, frozen main files
+unchanged. Incremental policy passes64891entries/2482668495bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -136,7 +137,14 @@ remain historical until their current statements/dependencies are checked.
    zero/copy/return now preserves words outside its actual32-byte output, with
    real caller transport. Aligned copy/zero and unaligned short-zero memory
    frames recheck with minimal actual Software imports (copy/zero closure246→96,
-   short-zero266→119, ZeroCost231→49). Packing/whole-hash frames remain open. Large
+   short-zero266→119, ZeroCost231→49). Packing now derives its actual returned tuple, persistent request room, next
+   aligned/monotone/bounded heap and protected word below the real cursor. No
+   allocator-room premise or old134217728-byte packing cap is used. Shared
+   actual padding arguments serve both cost and frame proofs. A structural
+   call-free-loop certificate proves actual copy/zero preserve every global.
+   Actual dense/extension pair loops now preserve protected words using their
+   real output slots and current counters, without SHA-input mapping or old
+   workspace assumptions. Whole-hash frames remain open. Large
    straight-line target work remains open; old accelerator Workspace/entry/cost
    proofs are not current. Older hash layouts
    also pin a134217728-byte budget, so check/relax those limits using current
@@ -166,7 +174,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:26%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:27%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

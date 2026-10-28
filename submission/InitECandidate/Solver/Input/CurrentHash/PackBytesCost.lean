@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.PackBytesProgram
+import InitECandidate.Solver.Input.CurrentHash.PackBytesArguments
 import InitECandidate.Solver.Input.CurrentHash.MemoryCost
 import InitECandidate.Solver.Input.CurrentHash.AllocatorCost
 import InitECandidate.Solver.Input.ClockCostScopeLocals
@@ -33,20 +33,9 @@ theorem copy_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p buffe
 theorem zero_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p buffer : BitVec 64) (n : Nat)
     (data : Locals source p buffer n) (installed : OriginalCode.Installed source.code) (small : n + 64 < 2^64) :
     source.clock - (evaluateHOLFiniteState source (.call (some (none, none)) (ofString "memzero") PackBytes.zeroArguments)).2.clock ≤ ZeroAny.price (PackBytes.padded n - n) + 1 := by
-  have bounds := PackBytes.padding_bounds n
-  have difference := BitVec.ofNat_sub_ofNat_of_le (w := 64) (PackBytes.padded n) n (by omega) bounds.1
-  have amount : BitVec.ofNat 64 (PackBytes.chunks n) * 32#64 = BitVec.ofNat 64 (PackBytes.padded n) := by
-    change BitVec.ofNat 64 (PackBytes.chunks n) * BitVec.ofNat 64 32 = _
-    rw [← BitVec.ofNat_mul]
-    congr 1
-    unfold PackBytes.padded
-    omega
-  have padding : BitVec.ofNat 64 (PackBytes.chunks n) * 32#64 - BitVec.ofNat 64 n = BitVec.ofNat 64 (PackBytes.padded n - n) := by
-    rw [amount, difference]
-  apply MemoryCost.zero source installed (some none) PackBytes.zeroArguments (buffer + BitVec.ofNat 64 n) (PackBytes.padded n - n) (by omega)
-  simp [evalListHOLFinite, evalListHOLExact, evalHOLExact, toExact, PackBytes.zeroArguments, PackBytes.amountExpression, localVar,
-    data.buf, data.length, data.count, Zero.values, valueIsWord, valueWord, wordOpHOL, wordOp, panOpHOL,
-    padding]
+  apply MemoryCost.zero source installed (some none) PackBytes.zeroArguments (buffer + BitVec.ofNat 64 n) (PackBytes.padded n - n)
+    (by have bounds := PackBytes.padding_bounds n; omega)
+  exact PackBytesArguments.zero_arguments source buffer n small data.buf data.length data.count
 
 theorem buffer_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p buffer : BitVec 64) (n : Nat)
     (data : Locals source p buffer n) (installed : OriginalCode.Installed source.code) (small : n + 64 < 2^64) :

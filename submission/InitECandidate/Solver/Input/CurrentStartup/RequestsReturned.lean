@@ -15,6 +15,7 @@ structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFinit
   heap : NormalHeapEffects.AtLeast (requestRecord.toNat + 80) post
   requestAfter : record.toNat + 136 ≤ requestRecord.toNat
   requestAligned : requestRecord.toNat % 8 = 0
+  callerHeap : caller.globals.lookup (ofString "heap_ptr") = some (.val (.word requestRecord))
   requestRoom : requestRecord.toNat + 80 ≤ 2952790016
   control : WitnessRadix.BackingLayout.control post = WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post entry requestRecord 80#64)
   gasCell : post.memory (record + 88#64) = .word gasWord
@@ -90,7 +91,7 @@ theorem counts (input : Guest.InputBlob) (actual : RequestsCountsEntry.Reached (
       exact same
     refine ⟨caller, entry, post, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, start, size, counts,
       ⟨original, full, Blob.HeapInput.of_fields suffixPost post input pointer memory.symm domain.symm endian.symm image,
-        ?_, data.requestAfter, data.requestAligned, data.requestRoom, rootControl.trans (control.trans allocationControl), ?_, ?_, ?_, ?_, arithmetic, ?_⟩⟩
+        ?_, data.requestAfter, data.requestAligned, data.callerHeap, data.requestRoom, rootControl.trans (control.trans allocationControl), ?_, ?_, ?_, ?_, arithmetic, ?_⟩⟩
     · obtain ⟨cursor, cell, low, high, aligned⟩ := suffixHeap
       exact ⟨cursor, (congrArg (fun table => table.lookup (ofString "heap_ptr")) rootGlobals).trans cell, low, high, aligned⟩
     · rw [memory]

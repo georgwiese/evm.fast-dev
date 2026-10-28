@@ -36,6 +36,7 @@ structure Context (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64
 structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer statelessRecord record gasWord : BitVec 64) (length : Nat) (value : ValueHOL 64) : Prop where
   context : Context input current pointer statelessRecord record gasWord length
+  transactions : ∃ array start size, Payload.TransactionImage input current pointer record array start size
   locals : current.locals = caller.locals.update (ofString "pl", .val (.word record))
   returned : evaluateHOLFiniteState current Request.afterPayload = (some (.returned value), post)
   payload : ∃ entry bodyPost callee parentPost parentValue,
@@ -53,7 +54,7 @@ resume its existing continuation. The two record allocations are disjoint. -/
 theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached (decoderOrigin := decoderOrigin) input)
     (gas : (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)).toNat ≤ 200000000) : Reached (decoderOrigin := decoderOrigin) input := by
   classical
-  obtain ⟨entry, bodyPost, pointer, record, length, originHeap, original, bodyRun, image, gasCell, heap⟩ :=
+  obtain ⟨entry, bodyPost, pointer, record, length, originHeap, original, bodyRun, image, gasCell, heap, array, start, size, transactions⟩ :=
     PayloadGasReturned.complete input actual
   have originalFacts := original
   have originalBodyRun := bodyRun
@@ -103,7 +104,7 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
     BitVec.ofNat 64 (Guest.GasLimit.le64 input 474), length, value,
     ⟨⟨currentCode, currentShapes, ?_, ?_, Blob.HeapInput.of_fields bodyPost current input pointer rfl rfl rfl image,
       heap, ?_, ?_, statelessLower, statelessAligned, statelessRoom, recordAfter, cursorAligned, recordRoom,
-      gasCell, gas, lower, aligned, lengthBound, sliceEq, ?_, currentWorkspace⟩, rfl, Prod.ext remaining rfl, ⟨entry, bodyPost, callee, parentPost, value, originalFacts, originalBodyRun, selected, rfl⟩⟩⟩
+      gasCell, gas, lower, aligned, lengthBound, sliceEq, ?_, currentWorkspace⟩, ⟨array, start, size, transactions.of_frame rfl⟩, rfl, Prod.ext remaining rfl, ⟨entry, bodyPost, callee, parentPost, value, originalFacts, originalBodyRun, selected, rfl⟩⟩⟩
   · change bodyPost.memaddrs = InitE.ordinaryDomain
     rw [fields.1, ← entryEq]
     exact domain

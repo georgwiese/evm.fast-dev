@@ -17,6 +17,7 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   heap : NormalHeapEffects.AtLeast (requestRecord.toNat + 80) current
   requestAfter : record.toNat + 136 ≤ requestRecord.toNat
   requestAligned : requestRecord.toNat % 8 = 0
+  callerHeap : caller.globals.lookup (ofString "heap_ptr") = some (.val (.word requestRecord))
   requestRoom : requestRecord.toNat + 80 ≤ 2952790016
   model : Requests.CountLocals current (Requests.offsetWord input start) (BitVec.ofNat 64 size)
     (pointer + BitVec.ofNat 64 start) requestRecord
@@ -65,7 +66,7 @@ theorem allocated (input : Guest.InputBlob) (actual : RequestsAllocation.Reached
   exact ⟨caller, current, innerPost, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, start, size, value,
     ⟨data.context, data.code, data.shapes, data.domain, data.endian,
       Blob.HeapInput.of_fields source current input pointer rfl rfl rfl data.image, data.heap, data.requestAfter,
-      data.requestAligned, data.requestRoom, model, data.inside, data.minimum, data.first, data.valid, data.gasCell,
+      data.requestAligned, data.callerHeap, data.requestRoom, model, data.inside, data.minimum, data.first, data.valid, data.gasCell,
       Prod.ext resumed rfl, entry, originalPost, original, originControl, prefixForward, prefixCost, originalFrame.trans frame, originalClock.trans clock, prefixMemory⟩⟩
 
 theorem separated (input : Guest.InputBlob)

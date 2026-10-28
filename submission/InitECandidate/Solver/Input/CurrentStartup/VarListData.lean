@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.CurrentStartup.VarListRoom
 import InitECandidate.Solver.Input.VarList.NormalAnyClock
+import InitECandidate.Solver.Input.AllocationHeapControl
 
 namespace InitECandidate.Solver.Input.CurrentStartup.VarListData
 variable {decoderOrigin : DecoderOrigin}
@@ -27,6 +28,7 @@ structure Result (input : Guest.InputBlob) (caller entry post : PanSemStateFinit
   control : WitnessRadix.BackingLayout.control post = WitnessRadix.BackingLayout.control
     (if size = 0 then entry else WitnessRadix.PersistentAlloc.post entry array
       (BitVec.ofNat 64 (16 * (Guest.GasLimit.le32 input start / 4))))
+  heapExtent : NormalHeapEffects.AtLeast (array.toNat + 16 * VarList.decodedCount input start size) post
   heap : NormalHeapEffects.AtLeast (record.toNat + 136) post
   price : entry.clock - post.clock ≤ size / 4 + 1
   clock : post.clock ≤ entry.clock
@@ -57,29 +59,43 @@ theorem transaction (input : Guest.InputBlob) (actual : TransactionEntry.Reached
     VarList.normal_summary_any_clock entry post input pointer array 9223372036854775807#64 start size image inside p n l domain
       (by have := context.lower; omega) context.aligned aligned afterInput room cell high (trap_entry entry.code installed)
       (allocation_entry entry.code installed) (CanonicalHeader.fail_code entry.code installed) (shapes .SszErr) value returned
-  have postHeap : NormalHeapEffects.AtLeast (record.toNat + 136) post := by
-    have globalFrame := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.globals) control
+  have actualRoom (nonempty : size ≠ 0) : array.toNat + 16 * (Guest.GasLimit.le32 input start / 4) ≤ 2952790016 := by
+    obtain ⟨observed, observedCell, observedLow, observedAligned, minimum, positive, header, upper, limit, allocatedRoom⟩ :=
+      (VarListRoom.returned_room input entry post pointer 9223372036854775807#64 start size (record.toNat + 136)
+        installed shapes ⟨array, cell, low, high, aligned⟩ image inside p n l value returned).resolve_left
+        (by intro no; exact nonempty no.1)
+    have same : observed = array := by
+      have eq := Option.some.inj (observedCell.symm.trans cell)
+      cases eq
+      rfl
+    subst observed
+    exact allocatedRoom
+  let amount := BitVec.ofNat 64 (16 * VarList.decodedCount input start size)
+  have amountNat : amount.toNat = 16 * VarList.decodedCount input start size := by
     by_cases empty : size = 0
-    · simp only [if_pos empty] at globalFrame
-      exact ⟨array, (congrArg (fun table => table.lookup (ofString "heap_ptr")) globalFrame).trans cell, low, high, aligned⟩
-    · obtain ⟨observed, observedCell, observedLow, observedAligned, minimum, positive, header, upper, limit, allocatedRoom⟩ :=
-        (VarListRoom.returned_room input entry post pointer 9223372036854775807#64 start size (record.toNat + 136)
-          installed shapes ⟨array, cell, low, high, aligned⟩ image inside p n l value returned).resolve_left (by intro no; exact empty no.1)
-      have same : observed = array := by
-        have eq := Option.some.inj (observedCell.symm.trans cell)
-        cases eq
-        rfl
-      subst observed
-      let amount := BitVec.ofNat 64 (16 * (Guest.GasLimit.le32 input start / 4))
-      have amountNat : amount.toNat = 16 * (Guest.GasLimit.le32 input start / 4) := by
-        rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-      have guards := WitnessRadix.PersistentAlloc.guards array amount (by rw [amountNat]; exact allocatedRoom)
-      refine ⟨WitnessRadix.PersistentAlloc.rounded array amount, ?_, by omega, guards.2.2.2.1, guards.2.2.2.2⟩
-      simp only [if_neg empty] at globalFrame
-      rw [show post.globals = (WitnessRadix.PersistentAlloc.post entry array amount).globals from globalFrame]
-      simp [WitnessRadix.PersistentAlloc.post, HolFiniteMapExact.update, FUPDATE]
+    · simp [amount, VarList.decodedCount, empty]
+    · have allocated := actualRoom empty
+      dsimp only [amount]
+      simp only [VarList.decodedCount, if_neg empty]
+      rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+  have extentControl : WitnessRadix.BackingLayout.control post = WitnessRadix.BackingLayout.control
+      (if size = 0 then entry else WitnessRadix.PersistentAlloc.post entry array amount) := by
+    by_cases empty : size = 0
+    · simpa only [if_pos empty] using control
+    · simpa only [if_neg empty, amount, VarList.decodedCount] using control
+  have heapExtent : NormalHeapEffects.AtLeast (array.toNat + 16 * VarList.decodedCount input start size) post := by
+    have returned := NormalHeapEffects.allocation_extent entry post array amount (size = 0) cell high aligned
+      (by intro empty; simp [amount, VarList.decodedCount, empty]) (by
+        intro nonempty
+        rw [amountNat]
+        simpa only [VarList.decodedCount, if_neg nonempty] using actualRoom nonempty) extentControl
+    rw [amountNat] at returned
+    exact returned
+  have postHeap : NormalHeapEffects.AtLeast (record.toNat + 136) post := by
+    obtain ⟨cursor, cursorCell, cursorLow, cursorHigh, cursorAligned⟩ := heapExtent
+    exact ⟨cursor, cursorCell, by omega, cursorHigh, cursorAligned⟩
   exact ⟨caller, entry, post, pointer, record, array, length, start, size, value,
-    ⟨context, valid, cell, low, aligned, high, startEq, sizeEq, inside, returned, tuple, bytes, records, memory, control, postHeap, price, clock, invocation⟩⟩
+    ⟨context, valid, cell, low, aligned, high, startEq, sizeEq, inside, returned, tuple, bytes, records, memory, control, heapExtent, postHeap, price, clock, invocation⟩⟩
 
 theorem separated (input : Guest.InputBlob) (actual : MainSeparatedInput.RootRun input decoderOrigin) : Reached (decoderOrigin := decoderOrigin) input :=
   transaction input (TransactionEntry.separated input actual)

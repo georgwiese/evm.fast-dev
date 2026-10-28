@@ -13,6 +13,7 @@ structure Result (input : Guest.InputBlob) (caller current post : PanSemStateFin
   txs : current.locals.lookup (ofString "txs") = some
     (VarList.pairValue (VarList.decodedArray array size) (VarList.decodedCount input start size))
   arrayAfter : record.toNat + 136 ≤ array.toNat
+  heapExtent : NormalHeapEffects.AtLeast (array.toNat + 16 * VarList.decodedCount input start size) current
   records : VarList.Records current input pointer array start size
   startEq : start = 62 + Guest.GasLimit.le32 input 566
   sizeEq : size = Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566
@@ -93,7 +94,7 @@ theorem returned (input : Guest.InputBlob) (actual : VarListData.Reached (decode
       old.minimum, old.sliceUpper, old.sliceEq, old.recordLower, old.recordAligned, old.recordRoom, heap⟩
   have entryClock : entry.clock = caller.clock - 1 := by rw [entryEq]; rfl
   refine ⟨caller, current, (evaluateHOLFiniteState current Payload.afterTransactions).2, pointer, record, array,
-    length, start, size, value, ⟨context, data.valid, ?_, data.recordBefore, VarList.Records.of_memory bodyPost current input pointer array start size rfl data.records,
+    length, start, size, value, ⟨context, data.valid, ?_, data.recordBefore, data.heapExtent, VarList.Records.of_memory bodyPost current input pointer array start size rfl data.records,
     data.startEq, data.sizeEq, data.inside, ?_, ?_, ?_, Prod.ext resumed rfl,
     PayloadEntry.Endpoint.of_frame input parentPost _ pointer record length value endpoint (by rw [parentEq]; rfl) (by rw [parentEq]; rfl)⟩⟩
   · change (caller.locals.update (ofString "txs", tuple)).lookup (ofString "txs") = _

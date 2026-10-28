@@ -4,6 +4,35 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Complete transaction records now survive to actual main, with tighter resource bounds
+
+VarListData derives the actual allocation end for its complete returned array;
+TransactionReturn and WithdrawalReturn retain it. PayloadFieldsFrame proves
+literal field writes preserve all other cells and earlier transaction arrays.
+Payload.TransactionImage packages actual records, PL32/40pointer/count, canonical
+slice positions, containment and real heap extent. Its after_remaining/of_frame
+lemmas carry the whole image through the eleven final payload stores, complete
+return and actual PayloadCallerReturn. No decoder program change.
+
+RequestsAllocation now retains the actual incoming caller heap pointer, propagated
+through RequestsCountsEntry/RequestsReturned. RequestMetadataCells.stores factors
+the genuine three-store state so metadata and transaction proofs share it.
+RequestTransactions transports the same actual image through SI0 and hash metadata.
+DecodedTransactions derives transaction-array-end≤rq from the real cursor, retains
+it through the request decoder and SI32store, then uses the shared protected witness
+frame. MainDecodedTransactions joins it to the same actual main continuation.
+
+Joint physical room derives encodedLength+16*txCount≤251655056, txCount≤12582752,
+and total transaction bytes≤251655056. These are resource bounds for a normally
+returned decoder; earlier stopped alternatives remain in the main cuts. They are
+not a global runtime bound. Remaining work includes witness/nontransaction payload
+fields, actual hash/caller costs, covered scratch consequences and target transport.
+
+Validation: current-main-decoded-transactions-v1.log PASS1473jobs/permitted axioms;
+8GiBguard/twoslots/cachefalse. Index8012modules/15935facts; Solver8051; replacement
+closure0/fixed files unchanged; incremental policy PASS64820entries/2482282734bytes.
+Account21%weekly/0resetcredits. Claim infinity; no full verification.
+
 ## Shared witness frame and actual main request-hash argument loads
 
 WitnessProtected describes the earlier SI/payload/request memory interval,
@@ -11,7 +40,7 @@ excluding only six actual witness output fields. WitnessPrefixFrame composes
 real workspace/allocation/caller frames across all three list returns and the
 same selected snapshot. It also directly retains SI32=requestRecord. This
 replaces repeated field-specific geometry in DecodedPayloadPointer. Its source
-shrinks185→116lines while preserving public helper statements; request metadata
+shrinks185→117lines while preserving public helper statements; request metadata
 proofs now live in a smaller independently importable RequestMetadataCells.
 
 RequestMetadataCells proves the actual SI0/8/16/24 stores and exact versioned-hash

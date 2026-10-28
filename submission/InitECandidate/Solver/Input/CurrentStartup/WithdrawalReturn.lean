@@ -16,6 +16,7 @@ structure Result (input : Guest.InputBlob) (source current post : PanSemStateFin
   txs : current.memory (record + 32#64) = .word (VarList.decodedArray array size)
   txCount : current.memory (record + 40#64) = .word (BitVec.ofNat 64 (VarList.decodedCount input start size))
   arrayAfter : record.toNat + 136 ≤ array.toNat
+  heapExtent : NormalHeapEffects.AtLeast (array.toNat + 16 * VarList.decodedCount input start size) current
   records : VarList.Records current input pointer array start size
   startEq : start = 62 + Guest.GasLimit.le32 input 566
   sizeEq : size = Guest.GasLimit.le32 input 570 - Guest.GasLimit.le32 input 566
@@ -110,8 +111,12 @@ theorem transaction (input : Guest.InputBlob) (actual : TransactionReturn.Reache
         show ofString "nwd" ≠ ofString "o_extra" from by decide, show ofString "nwd" ≠ ofString "o_txs" from by decide,
         show ofString "nwd" ≠ ofString "o_wd" from by decide, show ofString "nwd" ≠ ofString "o_bal" from by decide]
   have memory : current.memory = stored.memory := by rw [currentEq]
+  have extent : NormalHeapEffects.AtLeast (array.toNat + 16 * VarList.decodedCount input start size) current := by
+    obtain ⟨cursor, cell, low, high, aligned⟩ := data.heapExtent
+    rw [currentEq]
+    exact ⟨cursor, cell, low, high, aligned⟩
   refine ⟨source, current, innerPost, pointer, record, array, count, length, start, size, value,
-    ⟨currentContext, data.valid, ?_, ?_, ?_, data.arrayAfter, VarList.Records.of_memory stored current input pointer array start size memory storedRecords,
+    ⟨currentContext, data.valid, ?_, ?_, ?_, data.arrayAfter, extent, VarList.Records.of_memory stored current input pointer array start size memory storedRecords,
     data.startEq, data.sizeEq, data.inside, (arithmetic (by decide)).1, (arithmetic (by decide)).2, price, clock, remaining,
     PayloadEntry.Endpoint.of_frame input post innerPost pointer record length value data.endpoint (by rw [postEq]; rfl) (by rw [postEq]; rfl)⟩⟩
   · rw [locals]

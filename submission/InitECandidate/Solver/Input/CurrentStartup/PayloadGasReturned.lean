@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentStartup.WithdrawalReturn
 import InitECandidate.Solver.Input.PayloadRemainingExecute
 import InitECandidate.Solver.Input.PayloadPassingEntry
+import InitECandidate.Solver.Input.PayloadRemainingTransactions
 
 namespace InitECandidate.Solver.Input.CurrentStartup.PayloadGasReturned
 variable {decoderOrigin : DecoderOrigin}
@@ -14,7 +15,8 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
       value = .val (.word record) ∧ Blob.HeapInput post input pointer ∧
       post.memory (record + 88#64) = .word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
       source.clock = post.clock ∧ NormalHeapEffects.AtLeast (record.toNat + 136) post ∧
-      ∃ length, PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length value := by
+      ∃ length, PayloadEntry.Endpoint (decoderOrigin := decoderOrigin) input post pointer record length value ∧
+        ∃ array start size, Payload.TransactionImage input post pointer record array start size := by
   obtain ⟨origin, source, post, pointer, record, array, count, length, start, size, value, data⟩ := actual
   have context := data.context
   have completed := Payload.remaining_execute source input pointer record (BitVec.ofNat 64 length)
@@ -28,7 +30,12 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
     rfl
   have postEq := (congrArg Prod.snd same).symm
   dsimp only at postEq
-  refine ⟨source, post, pointer, record, value, data.returned, valueEq, ?_, ?_, ?_, ?_, ⟨length, data.endpoint⟩⟩
+  have before : Payload.TransactionImage input source pointer record array start size :=
+    ⟨data.startEq, data.sizeEq, data.inside, data.arrayAfter, data.heapExtent, data.records, data.txs, data.txCount⟩
+  have transactions := before.after_remaining (BitVec.ofNat 64 length) (Payload.offsetWords input 2)
+    (Payload.offsetWords input 3) count (by have := context.recordRoom; omega)
+  refine ⟨source, post, pointer, record, value, data.returned, valueEq, ?_, ?_, ?_, ?_,
+    ⟨length, data.endpoint, array, start, size, ?_⟩⟩
   · rw [postEq]
     exact completed.2.1
   · rw [postEq]
@@ -37,6 +44,8 @@ theorem withdrawal (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached 
     exact completed.2.2.1.symm
   · rw [postEq]
     exact context.recordHeap
+  · rw [postEq]
+    exact transactions
 
 /-- Whole-main-derived reachability and the original declared-gas premise
 now meet at the actual returned suffix's physical gas cell. -/
@@ -47,7 +56,7 @@ theorem separated (input : Guest.InputBlob)
       evaluateHOLFiniteState source Payload.afterWithdrawals = (some (.returned (.val (.word record))), post) ∧
       Blob.HeapInput post input pointer ∧ post.memory (record + 88#64) = .word gasWord ∧ gasWord.toNat ≤ 200000000 ∧
       source.clock = post.clock ∧ NormalHeapEffects.AtLeast (record.toNat + 136) post := by
-  obtain ⟨source, post, pointer, record, value, run, valueEq, image, cell, clock, heap, length, endpoint⟩ :=
+  obtain ⟨source, post, pointer, record, value, run, valueEq, image, cell, clock, heap, length, endpoint, transactions⟩ :=
     withdrawal input (WithdrawalReturn.separated input actual)
   obtain ⟨request, payload⟩ := CanonicalRequest.separated_offsets input actual
   rw [valueEq] at run
@@ -55,7 +64,7 @@ theorem separated (input : Guest.InputBlob)
     Payload.stored_gas_bound input request payload gas, clock, heap⟩
 
 /-- The suffix endpoint is the complete actual decoder poststate, up to
-local-scope restoration. Thus its physical gas decoderOrigin.word and copied image survive
+local-scope restoration. Thus its physical gas word and copied image survive
 at the complete payload return, not just at an intermediate suffix. -/
 theorem complete (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached (decoderOrigin := decoderOrigin) input) :
     ∃ entry post, ∃ pointer record : BitVec 64, ∃ length : Nat,
@@ -64,8 +73,9 @@ theorem complete (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached (d
       evaluateHOLFiniteState entry Payload.body = (some (.returned (.val (.word record))), post) ∧
       Blob.HeapInput post input pointer ∧
       post.memory (record + 88#64) = .word (BitVec.ofNat 64 (Guest.GasLimit.le64 input 474)) ∧
-      NormalHeapEffects.AtLeast (record.toNat + 136) post := by
-  obtain ⟨source, suffixPost, pointer, record, value, suffixRun, valueEq, image, cell, clock, heap, length, endpoint⟩ := withdrawal input actual
+      NormalHeapEffects.AtLeast (record.toNat + 136) post ∧
+      ∃ array start size, Payload.TransactionImage input post pointer record array start size := by
+  obtain ⟨source, suffixPost, pointer, record, value, suffixRun, valueEq, image, cell, clock, heap, length, endpoint, array, start, size, transactions⟩ := withdrawal input actual
   rw [valueEq] at endpoint
   obtain ⟨entry, post, entryFacts, originHeap, frame, postClock⟩ := endpoint
   have original := entryFacts
@@ -85,7 +95,8 @@ theorem complete (input : Guest.InputBlob) (actual : WithdrawalReturn.Reached (d
     have field := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.globals) frame
     exact field
   refine ⟨entry, post, pointer, record, length, originHeap, original, passed.trans returned,
-    Blob.HeapInput.of_fields suffixPost post input pointer memory.symm domainFrame.symm endianFrame.symm image, ?_, ?_⟩
+    Blob.HeapInput.of_fields suffixPost post input pointer memory.symm domainFrame.symm endianFrame.symm image, ?_, ?_,
+    array, start, size, transactions.of_frame frame⟩
   · rw [memory]
     exact cell
   · obtain ⟨cursor, cursorCell, low, high, cursorAligned⟩ := heap
@@ -100,7 +111,7 @@ theorem separated_complete (input : Guest.InputBlob)
       evaluateHOLFiniteState entry Payload.body = (some (.returned (.val (.word record))), post) ∧
       Blob.HeapInput post input pointer ∧ post.memory (record + 88#64) = .word gasWord ∧ gasWord.toNat ≤ 200000000 ∧
       NormalHeapEffects.AtLeast (record.toNat + 136) post := by
-  obtain ⟨entry, post, pointer, record, length, originHeap, original, returned, bytes, cell, heap⟩ :=
+  obtain ⟨entry, post, pointer, record, length, originHeap, original, returned, bytes, cell, heap, transactions⟩ :=
     complete input (WithdrawalReturn.separated input actual)
   obtain ⟨request, payload⟩ := CanonicalRequest.separated_offsets input actual
   exact ⟨entry, post, pointer, record, BitVec.ofNat 64 (Guest.GasLimit.le64 input 474), length,

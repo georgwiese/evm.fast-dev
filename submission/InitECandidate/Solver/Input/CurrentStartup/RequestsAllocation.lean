@@ -18,6 +18,7 @@ structure Result (input : Guest.InputBlob) (caller source current post : PanSemS
   requestAfter : record.toNat + 136 ≤ requestRecord.toNat
   requestAligned : requestRecord.toNat % 8 = 0
   requestRoom : requestRecord.toNat + 80 ≤ 2952790016
+  callerHeap : caller.globals.lookup (ofString "heap_ptr") = some (.val (.word requestRecord))
   sourceHeap : source.globals.lookup (ofString "heap_ptr") = some (.val (.word requestRecord))
   exactState : current = setVarHOLFinite (ofString "rq") (.val (.word requestRecord))
     (WitnessRadix.PersistentAlloc.post {source with clock := source.clock - 1} requestRecord 80#64)
@@ -79,6 +80,12 @@ theorem validated (input : Guest.InputBlob) (actual : RequestsValidated.Reached 
     rw [stateEq]
     simp [setVarHOLFinite, WitnessRadix.PersistentAlloc.post, HolFiniteMapExact.update, FUPDATE, other]
   obtain ⟨entry, originalPost, original, originControl, prefixForward, prefixCost, originalFrame, originalClock, prefixMemory⟩ := data.endpoint
+  have callerHeap : caller.globals.lookup (ofString "heap_ptr") = some (.val (.word requestRecord)) := by
+    have globals := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory => state.globals) originControl
+    change source.globals = entry.globals at globals
+    obtain ⟨callee, parentPost, parentValue, entryEq, rest⟩ := original.invocation
+    rw [entryEq] at globals
+    exact (congrArg (fun table => table.lookup (ofString "heap_ptr")) globals).symm.trans sourceHeap
   have nextControl : WitnessRadix.BackingLayout.control current =
       WitnessRadix.BackingLayout.control (WitnessRadix.PersistentAlloc.post entry requestRecord 80#64) := by
     have lifted := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory =>
@@ -89,7 +96,7 @@ theorem validated (input : Guest.InputBlob) (actual : RequestsValidated.Reached 
     exact lifted
   have currentClock : current.clock = source.clock - 1 := by rw [stateEq]; rfl
   refine ⟨caller, source, current, innerPost, pointer, statelessRecord, record, gasWord, requestRecord, payloadLength, start, size, value,
-    ⟨data.context, code, shapes, domain, endian, image, heap, afterRecord, aligned, room, sourceHeap, stateEq, ?_,
+    ⟨data.context, code, shapes, domain, endian, image, heap, afterRecord, aligned, room, callerHeap, sourceHeap, stateEq, ?_,
       (kept "p" (by decide)).trans data.p, (kept "len" (by decide)).trans data.len, workspace, data.inside, data.minimum,
       data.first, data.valid, ?_, ?_, remaining, entry, originalPost, original, nextControl, (by rw [currentClock]; omega), (by rw [currentClock]; omega), originalFrame.trans frame, originalClock.trans clock,
       (by intro query outside; rw [stateEq]; exact prefixMemory query outside)⟩⟩

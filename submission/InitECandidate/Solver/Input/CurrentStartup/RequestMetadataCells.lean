@@ -27,13 +27,16 @@ theorem HashCountReturn.Result.payload_cell
   simp [WitnessRadix.StoreWord.put]
 
 /-- The three genuine metadata stores are all above the payload-pointer cell. -/
-theorem RequestsEntry.Result.metadata
+theorem RequestsEntry.Result.stores
     (data : RequestsEntry.Result (decoderOrigin := decoderOrigin) input caller entry post
       pointer statelessRecord record gasWord payloadLength start size value) :
-    caller.memory statelessRecord = .word record ∧
-    caller.memory (statelessRecord + 8#64) = .word (pointer + 18#64 + Request.requestWords input 1) ∧
-    caller.memory (statelessRecord + 16#64) = .word (BitVec.ofNat 64 ((Guest.GasLimit.le32 input 58 - Guest.GasLimit.le32 input 22) / 32)) ∧
-    caller.memory (statelessRecord + 24#64) = .word (pointer + 18#64 + 8#64) := by
+    ∃ origin hashSource hashPost count parentValue,
+      HashCountReturn.Result (decoderOrigin := decoderOrigin) input origin hashSource hashPost
+        pointer statelessRecord record gasWord count payloadLength parentValue ∧
+      caller = {hashSource with memory := (WitnessRadix.StoreWord.put
+        (WitnessRadix.StoreWord.put (WitnessRadix.StoreWord.put hashSource.memory
+          (statelessRecord + 8#64) (pointer + 18#64 + Request.requestWords input 1))
+          (statelessRecord + 16#64) count) (statelessRecord + 24#64) (pointer + 18#64 + 8#64))} := by
   obtain ⟨origin, hashSource, hashPost, count, parentValue, first, second, hashes, callerRun,
     firstRun, secondRun, thirdRun⟩ := data.history
   have context := hashes.context
@@ -64,11 +67,25 @@ theorem RequestsEntry.Result.metadata
   have callerEq := congrArg Prod.snd (thirdRun.symm.trans run)
   dsimp only at callerEq
   rw [← callerEq] at thirdKept
-  refine ⟨thirdKept.trans (secondKept.trans (kept.trans hashes.payload_cell)), ?_⟩
+  refine ⟨origin, hashSource, hashPost, count, parentValue, hashes, ?_⟩
+  rw [callerEq, secondEq, firstEq]
+
+theorem RequestsEntry.Result.metadata
+    (data : RequestsEntry.Result (decoderOrigin := decoderOrigin) input caller entry post
+      pointer statelessRecord record gasWord payloadLength start size value) :
+    caller.memory statelessRecord = .word record ∧
+    caller.memory (statelessRecord + 8#64) = .word (pointer + 18#64 + Request.requestWords input 1) ∧
+    caller.memory (statelessRecord + 16#64) = .word (BitVec.ofNat 64 ((Guest.GasLimit.le32 input 58 - Guest.GasLimit.le32 input 22) / 32)) ∧
+    caller.memory (statelessRecord + 24#64) = .word (pointer + 18#64 + 8#64) := by
+  obtain ⟨origin, hashSource, hashPost, count, parentValue, hashes, callerEq⟩ := data.stores
+  have context := hashes.context
   have countEq : count = BitVec.ofNat 64 ((Guest.GasLimit.le32 input 58 - Guest.GasLimit.le32 input 22) / 32) := by
     rw [← hashes.countEq, BitVec.ofNat_toNat, BitVec.setWidth_eq]
-  rw [callerEq, secondEq, firstEq]
-  simp [WitnessRadix.StoreWord.put,
+  rw [callerEq]
+  simp [WitnessRadix.StoreWord.put, hashes.payload_cell,
+    context.si_ne_offset input hashSource pointer statelessRecord record gasWord payloadLength 8 (by decide) (by decide),
+    context.si_ne_offset input hashSource pointer statelessRecord record gasWord payloadLength 16 (by decide) (by decide),
+    context.si_ne_offset input hashSource pointer statelessRecord record gasWord payloadLength 24 (by decide) (by decide),
     context.si_fields_ne input hashSource pointer statelessRecord record gasWord payloadLength 8 24 (by decide) (by decide) (by decide),
     context.si_fields_ne input hashSource pointer statelessRecord record gasWord payloadLength 8 16 (by decide) (by decide) (by decide),
     context.si_fields_ne input hashSource pointer statelessRecord record gasWord payloadLength 16 24 (by decide) (by decide) (by decide), countEq]
@@ -83,3 +100,5 @@ end InitECandidate.Solver.Input.CurrentStartup
 #print axioms InitECandidate.Solver.Input.CurrentStartup.HashCountReturn.Result.payload_cell
 #print axioms InitECandidate.Solver.Input.CurrentStartup.RequestsEntry.Result.metadata
 #print axioms InitECandidate.Solver.Input.CurrentStartup.RequestsEntry.Result.payload_cell
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.RequestsEntry.Result.stores

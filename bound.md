@@ -83,10 +83,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-main-decoded-request-v1.log`,1463jobs,
-permitted printed axioms only. Historical/current proof index:8005modules/
-15920facts; Solver inventory8044, replacement closure0, frozen main files
-unchanged. Incremental policy passes64813entries/2482253694bytes. These checks
+Latest successful selected closure: `current-main-decoded-transactions-v1.log`,1473jobs,
+permitted printed axioms only. Historical/current proof index:8012modules/
+15935facts; Solver inventory8051, replacement closure0, frozen main files
+unchanged. Incremental policy passes64820entries/2482282734bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -102,9 +102,12 @@ remain historical until their current statements/dependencies are checked.
    The actual hash-list pointer/count, request-header pointer and request-record
    pointer (SI8/16/24/32) and their mapped loads now also check. The shared
    witness frame protects earlier payload/request memory except six actual
-   output cells. Materialize remaining witness/chain SI fields. Carry the
-   complete payload transaction-record image/count through its final stores;
-   the gas-only Context is insufficient for transaction/hash loop bounds.
+   output cells. The full transaction image now survives final payload stores,
+   request allocation/counts and witness calls to that same main state. Real
+   persistent room derives encodedLength+16*txCount≤251655056, txCount≤12582752
+   and total transaction bytes≤251655056. Materialize remaining witness SI and
+   nontransaction payload fields needed by hashing. Treat chain/output values
+   generically when their numeric contents do not affect a runtime bound.
 2. Join request-root hashing to actual physical layouts and ownership; bound
    its current helpers on all relevant outcomes, including failures. Reuse old
    hash/serialization proofs only after checking source/indices/imports.
@@ -130,7 +133,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:20%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:21%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

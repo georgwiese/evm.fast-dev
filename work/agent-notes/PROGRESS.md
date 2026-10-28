@@ -4,6 +4,29 @@ Active plan: [bound.md](../../bound.md). Reference main:
 `f892870c8682517186860842a3ff5f0dea1aa3eb`; actual Software AST.
 **No global finite target K yet**; claim infinity; no complete verifier run.
 
+## Shared actual saved-mark restoration checks on current hash bodies
+
+SavedHeapReturn inverts the real normal heap_release assignment, deriving its
+own validity/shape facts with no assumed previous heap cell. Its structural
+Tail proof tracks the actual saved caller binding through foreign lexical
+bindings, arbitrary scoped callees and no-return prefixes. The real heap_mark
+call supplies that saved value in the same normal parent run; final release
+therefore restores exactly the entering heap.
+
+MarkedHeap instantiates the grammar against actual current source syntax for
+the nonempty Merkle phase, all six fixed-record hashes, progressive hashing,
+progressive bytes/container and the complete request-list body. These normal
+heap-restoration theorems assume no counts, mapped input/output, workspace,
+intermediate heap value, allocation room or future successful callees. This
+shares heap reasoning without replacing any current Pancake code. Allocation/
+depth memory joins and empty-Merkle/full-byte-list heap cases remain open.
+
+Validation: current-marked-hash-heap-v1.log PASS1180jobs/permitted printed axioms
+only;8GiBguard/twoslots/cachefalse, disk61%. Index8088modules/16256facts; inventory
+8127, replacement closure0, frozen main unchanged; incremental policy64896entries/
+2482711872bytes PASS. Account28%weekly,0resetcredits; ordinary usage allowed.
+No global finite target K or full verification; claim infinity.
+
 ## Complete current Merkle buffer/dense/extension/output memory frame checks
 
 The actual outer body derives half=cur/2 and its j=0 inner entry. Every real

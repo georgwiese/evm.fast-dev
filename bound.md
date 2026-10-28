@@ -84,10 +84,10 @@ Checked against current Software syntax and declaration entries:
   DecoderRuntimeCode357→83, request CountsTrace743→109, StructureStore124→34,
   witness PrefixTrace213→113. Existing namespaces are retained where practical.
 
-Latest successful selected closure: `current-merkle-buffer-memory-v2.log`,1162jobs,
-permitted printed axioms only. Historical/current proof index:8086modules/
-16237facts; Solver inventory8125, replacement closure0, frozen main files
-unchanged. Incremental policy passes64894entries/2482692432bytes. These checks
+Latest successful selected closure: `current-marked-hash-heap-v1.log`,1180jobs,
+permitted printed axioms only. Historical/current proof index:8088modules/
+16256facts; Solver inventory8127, replacement closure0, frozen main files
+unchanged. Incremental policy passes64896entries/2482711872bytes. These checks
 are not a whole candidate build or full verification. Unselected old proofs
 remain historical until their current statements/dependencies are checked.
 
@@ -148,8 +148,14 @@ remain historical until their current statements/dependencies are checked.
    temporary buffer and final32-byte output, on the same normal return. Heap
    mark/release/copy-return frames also recheck with real Software/minimal
    imports (heap scope225→22, copy-return252→114, heap-return227→27Solver
-   modules). Actual allocation/depth joins, whole-Merkle heap restoration and
-   whole-hash frames remain open. Large
+   modules). Shared SavedHeapReturn derives actual final-release assignment
+   validity instead of assuming an intermediate heap cell. Its structural
+   certificates instantiate current nonempty Merkle, all six fixed records,
+   progressive hashing and progressive byte/container/request-list bodies:
+   every actual normal return restores the entering heap exactly, without
+   numeric/capacity/workspace/mapping/room premises. Actual allocation/depth
+   memory joins, empty-Merkle/full-byte-list heap composition and whole-hash
+   frames remain open. Large
    straight-line target work remains open; old accelerator Workspace/entry/cost
    proofs are not current. Older hash layouts
    also pin a134217728-byte budget, so check/relax those limits using current
@@ -179,7 +185,7 @@ remain historical until their current statements/dependencies are checked.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:27%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:28%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them

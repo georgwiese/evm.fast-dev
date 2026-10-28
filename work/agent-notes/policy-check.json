@@ -2041,6 +2041,7 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/HtrWithdrawal.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Invocation.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Log2Cost.lean",
+    "submission/InitECandidate/Solver/Input/CurrentHash/MarkedHeap.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/Max.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MemoryCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/MemoryGlobals.lean",
@@ -3153,6 +3154,7 @@
     "submission/InitECandidate/Solver/Input/RunAttemptTransactionProgram.lean",
     "submission/InitECandidate/Solver/Input/RunAttemptTransactionTrace.lean",
     "submission/InitECandidate/Solver/Input/RunAttemptWitnessArguments.lean",
+    "submission/InitECandidate/Solver/Input/SavedHeapReturn.lean",
     "submission/InitECandidate/Solver/Input/Scalar64.lean",
     "submission/InitECandidate/Solver/Input/ScalarArgumentsLookup.lean",
     "submission/InitECandidate/Solver/Input/ScalarAssignNormal.lean",
@@ -8130,8 +8132,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 64894,
-  "package_bytes": 2482692432,
+  "package_entries": 64896,
+  "package_bytes": 2482711872,
   "claim": {
     "K": "infinity"
   },

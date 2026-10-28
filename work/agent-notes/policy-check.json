@@ -2673,7 +2673,9 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/RunInputs.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateCallProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateCallTrace.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/StateContinuationTrace.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/StateGlobalFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateInitCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateInputs.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateWorkspace.lean",
@@ -5452,6 +5454,7 @@
     "submission/InitECandidate/Solver/Mpt/StateInitCompleteTables.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitDatabase.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitEnvironment.lean",
+    "submission/InitECandidate/Solver/Mpt/StateInitGlobals.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitInputFrame.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitNormal.lean",
     "submission/InitECandidate/Solver/Mpt/StateInitOutputFrame.lean",
@@ -8689,8 +8692,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65474,
-  "package_bytes": 2485159760,
+  "package_entries": 65477,
+  "package_bytes": 2485266398,
   "claim": {
     "K": "infinity"
   },

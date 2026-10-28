@@ -762,3 +762,28 @@ rebased main; these are local source-cost milestones. No global finite target
 K/full verification; claim infinity. Usage27%weekly/0resetcredits.
 Next: actual continued main after state_init, its physical/input/global frames,
 later execution and uniform target-step composition.
+
+
+## Main continuation after state_init and shared global effects
+
+The actual run_attempt header/gas/two-database/state-init prefix either stops
+within3374969779source ticks or resumes its original afterStateInit suffix.
+The same real normal state_init callee return, typed result and saved caller
+locals remain explicit for later physical-frame proofs. The state-init caller
+allowance is200625ticks; no successful return is supplied as a premise.
+
+A reproducible generator emits one shared global-effect module for the actual
+37-function state_init call graph, including all caught handlers. Lean checks
+every actual Software code entry and compositional body proof. Only the nine
+real destinations bs/heap_ptr/journal/journal_cap/journal_n/scratch_ptr/sk_buf/
+ts/ws may change. Actual normal main continuation therefore retains Keccak
+state/pad, MPT hash workspace and frame cursor bindings. Scratch restoration,
+earlier memory and the returned persistent frontier still need normal proofs.
+The generator's --check is nonwriting; source scan alone is not certification.
+
+Validation: current-main-state-globals-v1.log PASS2640jobs/permitted printed
+axioms. Generator --check PASS. Index8642modules/17534facts; inventory8687/
+replacement closure0/fixed files unchanged. Incremental policy PASS65477entries/
+2485266398bytes. Usage27%weekly/0resetcredits. No global finite target K/full
+verification; claim infinity. Continue actual normal memory/heap frames and
+later main/target-step composition.

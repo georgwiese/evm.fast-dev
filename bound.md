@@ -1240,3 +1240,22 @@ closure0/fixed files unchanged. Incremental policy PASS65497entries/
 2485410097bytes. Claim infinity; no global finite target K/full verification.
 Usage34%weekly/0resetcredits. Next: current wide writer, actual complete
 encoder/block-length bounds, indexed tries, later main and uniform target steps.
+
+
+## Current wide-integer writer: all outcomes and own allocation room
+
+Current rlp_put_u256 now has a checked124body source-clock bound for every
+outcome at a valid earlier output span and bounded persistent heap. A32-byte
+request that cannot fit stops within3body ticks. A genuine normal execution
+proves that its own actual allocator accepted that request; future room is
+not a caller hypothesis. Its true encoded length is1..41, with complete
+nonlocal preservation and writes confined to output41plus temporary32bytes.
+All helper identities are tied to the actual current Software catalogue.
+
+Validation: current-rlp-wide-write-v5.log PASS2082jobs, including scalar
+helpers and physical-header regression. Printed axioms permitted only.
+Index8662modules/17715facts; inventory8707/replacement closure0/fixed files
+unchanged. Incremental policy PASS65498entries/2485424629bytes. Claim
+infinity; no global finite target K/full verification. Usage34%weekly,
+0resetcredits. Next: compose the complete actual header encoder and block
+length; indexed tries, remaining main and uniform target steps still open.

@@ -52,6 +52,20 @@ theorem installed (code) (ready : OriginalCode.Installed code) (function : Fn) :
     code.lookup (name function)=some (formals function,body function,shape function) := by
   exact OriginalCode.indexed code ready (index function) (entry function) (by cases function <;> rfl)
 
+
+/-- A concrete helper ABI/body view is accepted only by equality with its
+actual software declaration. This avoids importing a larger code catalogue. -/
+theorem installed_as (code) (ready : OriginalCode.Installed code) (function : Fn)
+    {functionName : MlS} {parameters : List (MlS×ShapeHOL)} {program : ProgHOL 64} {resultShape : ShapeHOL}
+    (expected : entry function=(functionName,parameters,program,resultShape)) :
+    code.lookup functionName=some (parameters,program,resultShape) := by
+  have known:=installed code ready function
+  change code.lookup (entry function).1=some (entry function).2 at known
+  rw [expected] at known
+  exact known
+
 end InitECandidate.Solver.Input.CurrentRlp.Code
 
 #print axioms InitECandidate.Solver.Input.CurrentRlp.Code.installed
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Code.installed_as

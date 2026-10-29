@@ -1215,3 +1215,28 @@ closure0/fixed files unchanged. Incremental policy PASS65495entries/
 Usage34%weekly/0resetcredits. Next: compose current word/byte/wide writers
 and complete actual header-encoder/block-length bounds, then indexed tries,
 later main and uniform target steps. Five old untracked WIPs remain untouched.
+
+
+## Current scalar-word and byte-string encoder contracts
+
+A shared short-tag guard now preserves the actual real returning path.
+Current rlp_encode_word costs≤18body/19caller source ticks on every outcome,
+including both zero/single-byte early returns and the long form. Its true
+normal result is1..9with bounded nine-byte writes and all nonlocals retained.
+
+Current rlp_encode_bytes now derives all byte/header/copy accesses from
+owned source/destination spans, as supplied by the actual earlier header
+entry. It costs≤length+20body/+21caller on every entry clock and its genuine
+normal return is at least both1and length, at most length+9, and retains all
+nonlocals while writing only that bounded destination. Empty and single-byte
+special cases are included. These range premises describe the caller's
+proved earlier allocations; no later return or allocation success is assumed.
+The permitted helper entries come only from the current software catalogue.
+
+Validation: current-rlp-bytes-write-v2.log PASS2063jobs, including the current
+scalar/length helpers and actual physical-header entry. Printed axioms
+permitted only. Index8661modules/17705facts; inventory8706/replacement
+closure0/fixed files unchanged. Incremental policy PASS65497entries/
+2485410097bytes. Claim infinity; no global finite target K/full verification.
+Usage34%weekly/0resetcredits. Next: current wide writer, actual complete
+encoder/block-length bounds, indexed tries, later main and uniform target steps.

@@ -124,9 +124,43 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     obtain ⟨encoded,lower,upper,answer,frame⟩:=long_normal source target dst word "n" RlpWrite.HeaderWrite.longTag installed d n (by decide) (by decide) value (same.symm.trans normal)
     exact ⟨encoded,lower,upper,answer,priced,frame⟩
 
+
+/-- Shared real short-tag guard. A false guard leaves precisely the same
+source for its observed tail; a true guard cannot fall through its return. -/
+theorem guarded_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (dst : BitVec 64)
+    (test tag : ExpHOL 64) (rest : ProgHOL 64) (condition : Prop) [Decidable condition]
+    (d : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (read : eval source test=some (.val (.word (if condition then 1#64 else 0#64)))) (value : ValueHOL 64)
+    (back : evaluateHOLFiniteState source rest=(some (.returned value),target)→
+      ∃ encoded,1≤encoded ∧ encoded≤9 ∧ value=.val (.word (BitVec.ofNat 64 encoded)) ∧ WriteFrame source target dst 9)
+    (normal : evaluateHOLFiniteState source (.seq (.ite test (shortForm tag) .skip) rest)=(some (.returned value),target)) :
+    ∃ encoded,1≤encoded ∧ encoded≤9 ∧ value=.val (.word (BitVec.ofNat 64 encoded)) ∧ WriteFrame source target dst 9 := by
+  simp only [eval] at read
+  by_cases active : condition
+  · have guard : evaluateHOLFiniteState source (.ite test (shortForm tag) .skip)=evaluateHOLFiniteState source (shortForm tag):=by
+      rw [evaluateHOLFiniteState_ite,read]
+      simp [active]
+    have same : evaluateHOLFiniteState source (.seq (.ite test (shortForm tag) .skip) rest)=evaluateHOLFiniteState source (shortForm tag):=by
+      rw [evaluateHOLFiniteState_seq_line780,guard]
+      have stops:=short_stops source tag
+      generalize computed : evaluateHOLFiniteState source (shortForm tag)=output at stops ⊢
+      obtain ⟨result,post⟩:=output
+      cases result with
+      | none=>exact (stops rfl).elim
+      | some result=>rfl
+    obtain ⟨answer,frame⟩:=short_normal source target dst tag d value (same.symm.trans normal)
+    exact ⟨1,by decide,by decide,answer,frame⟩
+  · have guard : evaluateHOLFiniteState source (.ite test (shortForm tag) .skip)=(none,source):=by
+      rw [evaluateHOLFiniteState_ite,read]
+      simp [active,evaluateHOLFiniteState_skip]
+    have same:=StateSteps.next_sequence source source (.ite test (shortForm tag) .skip) rest guard (Nat.le_refl _)
+    exact back (same.symm.trans normal)
+
 end InitECandidate.Solver.Input.CurrentRlp.HeaderWrite
 
 #print axioms InitECandidate.Solver.Input.CurrentRlp.HeaderWrite.short_normal
 #print axioms InitECandidate.Solver.Input.CurrentRlp.HeaderWrite.length_tail_normal
 #print axioms InitECandidate.Solver.Input.CurrentRlp.HeaderWrite.long_normal
 #print axioms InitECandidate.Solver.Input.CurrentRlp.HeaderWrite.body_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.HeaderWrite.guarded_normal

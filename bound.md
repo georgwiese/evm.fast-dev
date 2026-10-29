@@ -2971,3 +2971,44 @@ images. Derive/retain the current640-byte u256_ws allocation/global from
 startup before connecting actual Taylor/header validation/main. Uniform
 target composition, exact K, slack review and cleanup remain in the same
 active goal. The5historical untracked RlpLength/RlpWrite WIPs stay untouched.
+
+
+## Actual one-digit divmnu loop and short-clock bound
+
+The unchanged divmnu(61) one-digit branch and its exact original loop are
+identified syntactically. Each real body decrements j, reads the actual next
+input digit, invokes the checked32-round div64by32 body through its scalar
+ABI, stores the genuine quotient digit and assigns the next remainder.
+The actual caller costs33ticks and the outer loop adds1tick per digit.
+
+The full descending loop now constructs the real physical quotient image,
+keeps every quotient digit below2^32, carries a remainder below the divisor,
+and proves the exact natural quotient/remainder equations. Input/quotient
+slot separation retains all future input reads. Every cell outside the
+written quotient slots survives. The complete loop costs at most34*count
+source ticks (at most272for8digits) on every outcome, including short clocks.
+Its actual normal exit derives its own full funding and exact remaining
+clock; no future completed helper or loop is supplied as an entry assumption.
+
+A small reusable normal_from_zero_clock fact applies the pinned evaluator's
+existing evaluate_add_clock_or_timeout theorem: a checked exact-charge run
+that ends at clock0 determines the funding/result/frame of any actual
+non-timeout run. This avoids repeating call/loop inversion just to derive
+funding, without changing source semantics or adding assumptions.
+
+Validation: current-single-digit-normal-v1.log PASS1028jobs; all13new printed
+facts have only permitted axioms, including the pinned clock theorem's
+transitive dependencies. Index8700modules/18394facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Overall effort estimate
+remains50%, plausible40–60%. Usage30%weekly/0resetcredits, ordinary usage
+allowed. Package remains exactly65536entries; no new candidate paths.
+
+Next: connect this loop to the actual one-digit branch's declarations, initial
+j=m/k=0, final remainder store and return, then the full divmnu caller. The
+loop's mapped buffers/separation/divisor facts still must come from actual
+conversion/clearing/workspace entries. Two-digit normalization/subtraction/
+remainder stores, startup u256_ws ownership/global, actual Taylor/header/
+main and uniform target-step composition remain open. Exact K evaluation,
+slack review and cleanup remain in the same active goal. No executable or
+fixed challenge assumption changed; historical untracked WIPs untouched.

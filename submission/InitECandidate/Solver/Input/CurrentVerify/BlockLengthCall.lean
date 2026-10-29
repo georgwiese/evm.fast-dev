@@ -79,9 +79,9 @@ theorem length_trace {input : Guest.InputBlob} {source current post : PanSemStat
     (outcome : Option (PanSemResultExact 64)) (actual : evaluateHOLFiniteState current lengthCall=(outcome,post)) :
     (current.clock-post.clock≤396930026 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ continued inner,CallPrefix.Execution current lengthActions continued ∧ continued.clock≤current.clock ∧ current.clock-continued.clock≤396930026 ∧
-        post.clock=inner.clock ∧ evaluateHOLFiniteState continued PayloadHeader.afterLength=(outcome,inner) := by
+        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState continued PayloadHeader.afterLength=(outcome,inner) := by
   rw [length_program] at actual
-  rcases CallPrefix.priced_trace current post lengthActions PayloadHeader.afterLength 396930026 (length_sink_cost physical) outcome actual with stopped|reached
+  rcases CallPrefix.priced_frame_trace current post lengthActions PayloadHeader.afterLength 396930026 (length_sink_cost physical) outcome actual with stopped|reached
   · refine Or.inl ⟨stopped.1,?_⟩
     intro value
     rw [stopped.2]

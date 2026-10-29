@@ -124,13 +124,13 @@ theorem to_loop {input : Guest.InputBlob} {source current post : PanSemStateFini
     (outcome : Option (PanSemResultExact 64)) (actual : evaluateHOLFiniteState current afterTransactionTrie=(outcome,post)) :
     (current.clock-post.clock≤2 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ entered inner,CallPrefix.Execution current actions entered ∧ entered.clock≤current.clock ∧ current.clock-entered.clock≤2 ∧
-        post.clock=inner.clock ∧ evaluateHOLFiniteState entered loopAndAfter=(outcome,inner) := by
+        CallPrefix.ScopeFrame post inner ∧ evaluateHOLFiniteState entered loopAndAfter=(outcome,inner) := by
   have safe : LocalPrefix (ofString "pl") (CallPrefix.program actions .skip):=
     .dec (ofString "nwd") .one countExpression (by decide)
       (.seq (.globalCall (ofString "wd_rlp_slices") (ofString "alloc") arrayArguments)
         (.dec (ofString "i") .one (.const 0#64) (by decide) .skip))
   rw [prefix_shape] at actual
-  rcases CallPrefix.priced_trace current post actions loopAndAfter 2 (prefix_cost physical) outcome actual with stopped|reached
+  rcases CallPrefix.priced_frame_trace current post actions loopAndAfter 2 (prefix_cost physical) outcome actual with stopped|reached
   · refine Or.inl ⟨stopped.1,?_⟩
     intro value
     rw [stopped.2]
@@ -900,7 +900,7 @@ theorem to_after_loop {input : Guest.InputBlob} {source current post : PanSemSta
     (outcome : Option (PanSemResultExact 64)) (actual : evaluateHOLFiniteState current afterTransactionTrie=(outcome,post)) :
     (current.clock-post.clock≤68115434 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ next inner,(∃ model : LoopModel input next pointer si record gasWord (headerFrontier header) boundary (Payload.withdrawalCount input),model.index.toNat=Payload.withdrawalCount input) ∧
-        next.clock≤current.clock ∧ current.clock-next.clock≤68115434 ∧ post.clock=inner.clock ∧
+        next.clock≤current.clock ∧ current.clock-next.clock≤68115434 ∧ CallPrefix.ScopeFrame post inner ∧
         next.locals.lookup (ofString "wr")=some (.val (.word (withdrawalBase header))) ∧
         (∀ query : BitVec 64,query.toNat<(headerFrontier header).toNat→ next.memory query=current.memory query) ∧
         (∀ name : String,ofString "nwd"≠ofString name→ ofString "i"≠ofString name→ ofString "e"≠ofString name→ next.locals.lookup (ofString name)=current.locals.lookup (ofString name)) ∧
@@ -930,7 +930,7 @@ theorem to_after_loop {input : Guest.InputBlob} {source current post : PanSemSta
       have clocks:=congrArg (fun output=>output.2.clock) remaining
       have observed:=congrArg Prod.fst remaining
       change next.clock=inner.clock at clocks
-      refine Or.inl ⟨by rw [endpoint,←clocks]; omega,?_⟩
+      refine Or.inl ⟨by rw [endpoint.clock,←clocks]; omega,?_⟩
       intro value returned
       apply never value
       rw [computed]
@@ -948,7 +948,7 @@ theorem to_after_root {input : Guest.InputBlob} {source current post : PanSemSta
         NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) next ∧ Payload.withdrawalCount input=0 ∧
         (∀ name : String,ofString "nwd"≠ofString name→ ofString "i"≠ofString name→ ofString "e"≠ofString name→ next.locals.lookup (ofString name)=current.locals.lookup (ofString name)) ∧
         (∀ query : BitVec 64,query.toNat<header.toNat+248→ next.memory query=current.memory query) ∧
-        next.clock≤current.clock ∧ current.clock-next.clock≤12425194334 ∧ post.clock=inner.clock ∧
+        next.clock≤current.clock ∧ current.clock-next.clock≤12425194334 ∧ CallPrefix.ScopeFrame post inner ∧
         evaluateHOLFiniteState next afterRoot=(outcome,inner) := by
   rcases to_after_loop physical small outcome actual with stopped|reached
   · exact Or.inl ⟨by have price:=stopped.1; omega,stopped.2⟩
@@ -990,7 +990,7 @@ theorem to_after_root {input : Guest.InputBlob} {source current post : PanSemSta
       have clocks:=congrArg (fun output=>output.2.clock) remaining
       have observed:=congrArg Prod.fst remaining
       change next.clock=inner.clock at clocks
-      refine Or.inl ⟨by rw [endpoint,←clocks]; omega,?_⟩
+      refine Or.inl ⟨by rw [endpoint.clock,←clocks]; omega,?_⟩
       intro value returned
       apply never value
       change (evaluateHOLFiniteState entered rootCall).1=some (.returned value)
@@ -1028,13 +1028,13 @@ theorem to_before_requests {input : Guest.InputBlob} {source post : PanSemStateF
     (actual : evaluateHOLFiniteState source PayloadHeader.body=(outcome,post)) :
     (source.clock-post.clock≤476207133311 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ header next inner encoded,BeforeRequests input next pointer si record gasWord boundary header encoded ∧
-        next.clock≤source.clock ∧ source.clock-next.clock≤476207133311 ∧ post.clock=inner.clock ∧
+        next.clock≤source.clock ∧ source.clock-next.clock≤476207133311 ∧ CallPrefix.ScopeFrame post inner ∧
         evaluateHOLFiniteState next afterRoot=(outcome,inner) := by
   rcases PayloadHeaderEntry.to_after_transaction data checked outcome actual with stopped|reached
   · exact Or.inl ⟨by have priced:=stopped.1; omega,stopped.2⟩
   · obtain ⟨header,entered,outer,encoded,physical,txZero,encodedBound,wdBound,number,blCell,forward,price,endpoint,remaining⟩:=reached
     rcases to_after_root physical wdBound outcome remaining with stopped|reached
-    · exact Or.inl ⟨by have priced:=stopped.1; rw [endpoint]; omega,stopped.2⟩
+    · exact Or.inl ⟨by have priced:=stopped.1; rw [endpoint.clock]; omega,stopped.2⟩
     · obtain ⟨next,inner,retained,heapAfter,wdZero,saved,memory,nextForward,nextPrice,nextEndpoint,continuation⟩:=reached
       have cells (offset : Nat) (small : offset≤240) : next.memory (HeaderEncoding.address header offset)=entered.memory (HeaderEncoding.address header offset):=by
         apply memory

@@ -216,7 +216,7 @@ theorem to_after_transaction {input : Guest.InputBlob} {source post : PanSemStat
         VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)=0 ∧
         encoded≤8388608 ∧ Payload.withdrawalCount input≤335544 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
         current.locals.lookup (ofString "bl")=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
-        current.clock≤source.clock ∧ source.clock-current.clock≤463781938977 ∧ post.clock=inner.clock ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤463781938977 ∧ CallPrefix.ScopeFrame post inner ∧
         evaluateHOLFiniteState current afterTransactionTrie=(outcome,inner) := by
   rcases to_trie data outcome actual with stopped|reached
   · exact Or.inl ⟨by have price:=stopped.1; omega,stopped.2⟩
@@ -238,7 +238,7 @@ theorem to_after_transaction {input : Guest.InputBlob} {source post : PanSemStat
       have observed:=congrArg Prod.fst remaining
       have clocks:=congrArg (fun output=>output.2.clock) remaining
       change current.clock=inner.clock at clocks
-      refine Or.inl ⟨by rw [endpoint,←clocks]; omega,?_⟩
+      refine Or.inl ⟨by rw [endpoint.clock,←clocks]; omega,?_⟩
       intro value returned
       apply never value
       change (evaluateHOLFiniteState entered transactionTrieCall).1=some (.returned value)

@@ -117,3 +117,51 @@ end InitECandidate.Solver.Input.CallPrefix
 #print axioms InitECandidate.Solver.Input.CallPrefix.action_classify_frame
 #print axioms InitECandidate.Solver.Input.CallPrefix.classify_frame
 #print axioms InitECandidate.Solver.Input.CallPrefix.StoppedFrame.stopped
+
+namespace InitECandidate.Solver.Input.CallPrefix
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+
+/-- Lexical scope restoration changes neither the observed final clock nor
+any state field other than locals. Keep this observation as one trace field. -/
+structure ScopeFrame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop where
+  clock : source.clock=target.clock
+  metadata : LocalEffects.erase source=LocalEffects.erase target
+
+theorem ScopeFrame.refl (source : PanSemStateFiniteExact 64 Guest.HostMemory) : ScopeFrame source source := ⟨rfl,rfl⟩
+
+theorem ScopeFrame.trans {source middle target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (first : ScopeFrame source middle) (second : ScopeFrame middle target) : ScopeFrame source target :=
+  ⟨first.clock.trans second.clock,first.metadata.trans second.metadata⟩
+
+/-- The priced actual prefix trace, retaining the complete scope observation
+needed when its continuation later returns to an enclosing caller. -/
+theorem priced_frame_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (actions : List Action) (tail : ProgHOL 64) (price : Nat)
+    (priced : source.clock-(evaluateHOLFiniteState source (program actions .skip)).2.clock≤price)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source (program actions tail)=(outcome,post)) :
+    (source.clock-post.clock≤price ∧ outcome=(evaluateHOLFiniteState source (program actions .skip)).1) ∨
+      ∃ current inner,Execution source actions current ∧ current.clock≤source.clock ∧ source.clock-current.clock≤price ∧
+        ScopeFrame post inner ∧ evaluateHOLFiniteState current tail=(outcome,inner) := by
+  rcases classify_frame source actions with stopped|reached
+  · have plain:=stopped.stopped
+    have equal:=congrArg Prod.snd (plain tail)
+    rw [run] at equal
+    change post.clock=(evaluateHOLFiniteState source (program actions .skip)).2.clock at equal
+    have resultEq:=congrArg Prod.fst (plain tail)
+    rw [run] at resultEq
+    exact Or.inl ⟨by rw [equal]; exact priced,resultEq⟩
+  · obtain ⟨current,execution⟩:=reached
+    have replay:=execution.observe tail
+    rw [run] at replay
+    have resultEq:=congrArg (fun observed=>observed.1.1) replay
+    have clockEq:=congrArg (fun observed=>observed.1.2) replay
+    have metadata:=congrArg Prod.snd replay
+    change outcome=(evaluateHOLFiniteState current tail).1 at resultEq
+    change post.clock=(evaluateHOLFiniteState current tail).2.clock at clockEq
+    rw [execution.skip_clock] at priced
+    exact Or.inr ⟨current,(evaluateHOLFiniteState current tail).2,execution,execution.forward,priced,⟨clockEq,metadata⟩,Prod.ext resultEq.symm rfl⟩
+
+end InitECandidate.Solver.Input.CallPrefix
+
+#print axioms InitECandidate.Solver.Input.CallPrefix.ScopeFrame.refl
+#print axioms InitECandidate.Solver.Input.CallPrefix.ScopeFrame.trans
+#print axioms InitECandidate.Solver.Input.CallPrefix.priced_frame_trace

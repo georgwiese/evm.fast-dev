@@ -2428,3 +2428,29 @@ printed axioms only. Index8700modules/18166facts; inventory8745/replacement
 closure0/fixed files unchanged. Claim infinity; no global finite target K/full
 verifier success. Usage52%weekly/0resetcredits. Remaining: state-carrying header
 return/main, formal target composition, dominant-slack review and final cleanup.
+
+
+## Complete state-carrying actual header return
+
+CallPrefix.ScopeFrame retains the actual final clock and all fields except
+locals. Its new priced_frame_trace is checked from the same full scope
+observation; the original clock-only API remains available. The current
+header/length/size/two-tries/withdrawal/requests traces now propagate this
+stronger conclusion. No entry hypothesis, allowance or executable changed.
+
+The real final BAL Keccak preserves all older decoded/header cells outside
+its actual32-byte output and lower workspace. Its original final Return
+supplies the actual header word. The complete payload_header normal-return
+theorem now carries its same physical31-field header/Data/heap state through
+all enclosing lexical scopes, without claiming callee locals survive Return.
+This is the state needed by main's actual hdr caller. All-outcome body source
+cost remains476485158958. Formal target-step composition is still open.
+
+Validation: current-scope-frame-trace-v1.log PASS123jobs,
+current-header-scope-frames-v1.log PASS2713jobs and current-payload-header-normal-v1.log
+PASS2713jobs. Permitted printed axioms only. Index8700modules/18173facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity; no
+global finite target K/full verifier success. Usage53%weekly/0resetcredits.
+Next: actual run_attempt hdr call, header hash/comparison/version checks and
+remaining main continuation, formal target composition, dominant-slack review
+and final cleanup.

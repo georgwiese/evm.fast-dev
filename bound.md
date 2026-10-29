@@ -3536,3 +3536,44 @@ the actual top-word/quotient stores, then two-digit normalization and final
 remainder extraction. Taylor/header/main, uniform target composition, exact
 K, dominant slack review and final cleanup remain open. Historical untracked
 RlpLength/RlpWrite WIPs and executable/fixed challenge premises stay untouched.
+
+
+## Actual quotient correction connected to subtraction and final digit stores
+
+The full original phase inside again's scope is now identified literally:
+actual quotient correction, k declaration, i reset, both subtraction
+iterations, tt declaration and unchanged complete add-back conditional.
+Actual correction normal returns retain all untouched caller bindings and
+the real normalized workspace window. They derive the exact current qhat
+from the initial estimate's conservation/upper-bound facts; the subsequent
+subtraction no longer receives a future corrected-quotient oracle premise.
+
+The real tt read is then zero. Its signed guard selects the original
+nonnegative branch, which stores the actual quotient digit and zeroes the
+actual top word. Both lexical k/tt restorations are included. Normal phase
+returns derive their subtraction funding, exact natural remainder and
+exact four-store physical memory update, while every other source field
+is retained. The complete literal phase costs≤5source ticks on every
+outcome; timeouts and failed paths are included. Straight-line target
+work remains unpriced by these source clocks.
+
+Entry facts still include the initial estimate's conservation and upper
+bound, current normalized physical images and normalized leading-digit
+range. The preceding actual estimate branch/normalization must derive
+those facts; no whole two-digit divider or main theorem is claimed here.
+Static AST selection was narrowed to the real expression/guard shapes,
+removing a redundant list of constant-name inequality proofs.
+
+Validation: current-two-digit-corrected-v2.log PASS1122jobs; all11new
+printed facts have only permitted axioms. Index8700modules/18568facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage33%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: derive the initial estimate/conservation/upper bound from the original
+max-digit/scoped div64by32 branches. Connect physical normalization, outer
+quotient/remainder loop invariant and final remainder extraction, then the
+actual two-digit caller/Taylor/header/main. Uniform target composition,
+exact K, dominant slack review and final cleanup remain open. Historical
+untracked RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.

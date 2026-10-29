@@ -1329,3 +1329,27 @@ only. Index8669modules/17749facts; inventory8714/replacement closure0/fixed
 files unchanged. No global finite target K/full verification; claim infinity.
 Usage35%weekly/0resetcredits. Next: actual current block-length call and
 physical caller, indexed tries, remaining main and uniform target steps.
+
+
+## Complete unchanged current block_rlp_length
+
+The actual current block-length entry now has an all-outcome source-clock
+bound12*txCount+43*withdrawalCount+1382. It includes the real heap mark,
+complete header encoder, heap release, both decoded length loops and final
+list headers. The header's own1024-byte and wide-temporary allocation room
+is derived from those same actual normal calls, never assumed by the caller.
+
+A genuine normal block-length return derives its exact nonwrapping word,
+25*withdrawalCount lower bound, generic817879876+57*withdrawalCount upper
+bound, original restored heap/all runtime metadata and protected older
+input/header memory. All required code/ABIs are tied to current Software
+entries. The physical decoded input contract is still explicit; connecting
+it to the reached payload_header prefix is the next step.
+
+Validation: current-rlp-block-length-v2.log PASS2128jobs with physical-header
+regression. Printed axioms permitted only. Index8674modules/17762facts;
+inventory8719/replacement closure0/fixed files unchanged. Incremental policy
+PASS65510entries/2485518288bytes. Claim infinity; no global finite target
+K/full verification. Usage35%weekly/0resetcredits. Next: derive block data
+at the actual caller, then indexed tries, remaining main and uniform target
+steps. Five historical untracked WIPs remain untouched/unclaimed.

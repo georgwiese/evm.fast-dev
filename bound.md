@@ -3819,3 +3819,44 @@ straight-line work. Final remainder extraction, complete two-digit caller/
 Taylor/header/main, uniform target composition, exact K, dominant slack
 review and cleanup remain. Historical untracked WIPs and executable/fixed
 premises stay untouched.
+
+## Real outer quotient iteration and preserved carried-remainder entry
+
+The original j decrement, three mapped captured digit loads and five lexical
+ujn/ujn1/ujn2/qhat/rhat declarations now execute into the checked actual
+estimate/correction/subtraction phase. Both normal and stopped outcomes keep
+the original lexical restorations. The complete actual body costs≤38source
+call/loop ticks; the surrounding while's own tick is separate.
+
+Its real normal execution derives the quotient digit as the three-word
+window divided by the actual normalized two-word divisor, and both written
+remainder words are32-bit and represent the natural remainder. The actual
+four-store memory image, all static fields, retained external locals, i=2
+and decremented j are checked. No future phase result or successful funding
+is supplied as an entry premise.
+
+A physical guard entry now consists of the untouched low input prefix,
+two current32-bit carry words at UN[j]/UN[j+1], actual normalized VN cells,
+current pointers/counts and carry<divisor. At j=count+1 the genuine next
+assignment derives the phase window from input[count]+2^32*carry, which is
+below divisor*2^32. An actual normal body constructs the complete successor
+entry at j=count: its new carry is the proved remainder<divisor, the entire
+lower prefix and divisor image survive, and all required bindings persist.
+This closes one actual iteration's invariant preservation; induction over
+the full original outer loop and its quotient image/conservation remain open.
+
+Validation: current-two-digit-outer-successor-v2.log PASS1126jobs; all12new
+printed facts use only permitted axioms. Index8700modules/18653facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage35%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: full actual descending-loop cost≤39*count, quotient image and
+D*Q+R conservation. Derive its initial two-word carry range from the actual
+normalization images and common normalization factor. The enclosing current
+vtop/vsec loads/j initialization, final remainder extraction and complete
+two-digit caller/Taylor/header/main still remain. Source-clock bounds omit
+straight-line target work. Uniform target composition, exact K, dominant
+slack review and final cleanup remain. Historical untracked WIPs and
+executable/fixed premises stay untouched.

@@ -231,7 +231,7 @@
       },
       {
         "module": "GasBudget.ForwardSites",
-        "solver_dependency_count": 121,
+        "solver_dependency_count": 126,
         "imports_replacement_ast": false
       },
       {
@@ -265,22 +265,22 @@
     "abstract_global_accounting": [
       {
         "module": "GasBudget.BlockAccounting",
-        "solver_dependency_count": 118,
+        "solver_dependency_count": 123,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.MergeBudget",
-        "solver_dependency_count": 126,
+        "solver_dependency_count": 131,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.NestedDecay",
-        "solver_dependency_count": 125,
+        "solver_dependency_count": 130,
         "imports_replacement_ast": false
       },
       {
         "module": "GasBudget.StorageDebt",
-        "solver_dependency_count": 115,
+        "solver_dependency_count": 120,
         "imports_replacement_ast": false
       }
     ],

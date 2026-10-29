@@ -4350,7 +4350,7 @@
       "sha256": "a3c5552372b71dc67d99f1d35ad7d17810d49a549574d1ead4eb9074a3d34cc5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -4358,7 +4358,7 @@
       "sha256": "dc768d7924080939787d4a3dd58f652073fd509430b8719cf9a49e615aabc957",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -4378,7 +4378,7 @@
       "sha256": "5964df3b2f853c9e5cdc80a1b5dd74133b56d5246e02e0e853323bdcbd0372e3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -6775,10 +6775,10 @@
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/U256Eq.lean",
-      "sha256": "3b1ad4ba087baf1d34997631542aea098f6d6c2f1c3dbf68af0ed84a25993904",
+      "sha256": "3ebf6beb49eea772d9712f4a22b8d75f9974e9dd7ecf3baaffc97f0f5e96ac6d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -6807,10 +6807,10 @@
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/U256Zero.lean",
-      "sha256": "3c9dddf2a1c2767d1bac683e61b1a416f0a34fe4e1b82a75cbe992fd6704a9ab",
+      "sha256": "fd0ad22cc367e2c22439426fdc47b9952479102ff83f5833e51bb9939b37c134",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -8618,7 +8618,7 @@
       "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -8738,7 +8738,7 @@
       "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -8754,7 +8754,7 @@
       "sha256": "9ab29c416bb696d207cd6c985b96a9047f3878f6b257f64e34e870369ffb08cb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-geometric-compatibility-v1.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -8814,7 +8814,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -8838,7 +8838,7 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -8910,7 +8910,7 @@
       "sha256": "0ccb23656f25fed27209cc0afb3aba632f83b20052f384c3e35d9b18ed32a26f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-geometric-compatibility-v1.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -8986,7 +8986,7 @@
       "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -14422,7 +14422,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -14502,7 +14502,7 @@
       "sha256": "33ed90c3932c7504426b5025443ebde0efb549cf9f3f03a24f55c7c520801f7d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -14678,7 +14678,7 @@
       "sha256": "5e22bd7a0245e87bf42b83ace67458027f39979a2e0da03d69e5e75e569e50d6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -15446,7 +15446,7 @@
       "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -15454,7 +15454,7 @@
       "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -15462,7 +15462,7 @@
       "sha256": "10f79a844bc343d963d8facb6e3eba8792f4d0477c6e1d0af113bdfe655407a5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-geometric-compatibility-v1.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -15470,7 +15470,7 @@
       "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -15482,7 +15482,7 @@
       "sha256": "e42751907e33fb019cb6d5cbb451f10e5efbaf23cdf8608c2d6ad688975ac1b3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -15490,7 +15490,7 @@
       "sha256": "1d2bdcae27c9816657057947e766783f3eac37fdf80316bd5a33d2f11fb403db",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -16522,7 +16522,7 @@
       "sha256": "86b3a88779f47b7c4605eb7999bb62452a5dfc589ddb6568694ec1acb19ee4d0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -17102,7 +17102,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18174,7 +18174,7 @@
       "sha256": "62f4e4e062bb5940f97b1c99a60331fbd88877f7404bdad6aa38e78cb42e9a53",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18198,7 +18198,7 @@
       "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18222,7 +18222,7 @@
       "sha256": "6b494efa06e32dcd2cdce30dcdca29e5708536080fb8f8dc7be57b2f2818047e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18242,7 +18242,7 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18822,7 +18822,7 @@
       "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18846,7 +18846,7 @@
       "sha256": "76857c6b80d9df645bea7a8fb6ffd6f4da98a2972efcc9ce19b0ced6cecf3fbd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18854,7 +18854,7 @@
       "sha256": "8817c782ea1b9089305857ec2605f7b885da5e806e8ab13b18b4457b9b91ace0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18862,7 +18862,7 @@
       "sha256": "bea7358ff77e89ee983f23ff268ac5584efd9fed3f06dbfd344f72d474281eae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18870,7 +18870,7 @@
       "sha256": "52bb9b704232fdec922ef1f4123c476105cddd60ac501f27a557d1f2a9b0d2e1",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -18878,7 +18878,7 @@
       "sha256": "e5947fc716ca3f31ba856f2a3e04261787477b075ad682a0bda5c6dc834c6a85",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19034,7 +19034,7 @@
       "sha256": "3b0ccab7faa20e8342a17ac7108ba6fd54ea473f777e7c0711ab302ac5e34a64",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19134,7 +19134,7 @@
       "sha256": "212e7380ca288cbd60d154fc175bb227749962586bf2fe8e27ae56f6ce1dfb46",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19142,7 +19142,7 @@
       "sha256": "bb13c2a075c7932d82eacf5a6e42453954a49e2b6b0dba64cbdd0c981d59861c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19154,7 +19154,7 @@
       "sha256": "908613c8a82d8caa25d514585d10143d4c09350fe5204ee2a0d2bf8f7876e3b0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19162,7 +19162,7 @@
       "sha256": "ec8f6e316b8ae427078eb02fdf4eca8dd76afc422868dea07c6a7974916cdea7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19170,7 +19170,7 @@
       "sha256": "933dafa03160d32cca13849bb46855f1bb0d2cadc6bcc7773bc2f92667f58504",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19178,7 +19178,7 @@
       "sha256": "93f23d358a80adc48f9c057cd4e5103948908bb4071fba78f02cdff75186ece5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19190,7 +19190,7 @@
       "sha256": "e4be702a572adafc6c76113191dab531dede4cd5ff880dbba467048f8996cb71",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19198,7 +19198,7 @@
       "sha256": "b45d67bea8b8f92724653f2d9aacafd7003138f6fa6a3f73eb39e84cb7d812b4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19206,7 +19206,7 @@
       "sha256": "9363339453112f25834ce95640f93e901f64278feb1c78ec01660e69fbef1af9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19218,7 +19218,7 @@
       "sha256": "0642098766ca80251fef9208bf1a3ad4f1d68cc404275e2be63348dc75e0570d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19234,7 +19234,7 @@
       "sha256": "ffb7d725756c067a49c3c4b13af4e552af1e9cbad38207dc249e5558ebc05a09",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19242,7 +19242,7 @@
       "sha256": "e07a3dc925608d6696e4f3519cd64a29903c514d9f7c5aac9537ca349f3fef9a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19250,7 +19250,7 @@
       "sha256": "35f9cec3d41a3b3994d2909fa98c400bf7dbe8845a25f8fdff304c22105172e4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19258,7 +19258,7 @@
       "sha256": "780bcad0cd1df755fe6d29ca1d3d183bb3bdd8eae90b70af02d6fc9be41f0f46",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19566,7 +19566,7 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19606,7 +19606,7 @@
       "sha256": "260583f2ead6709d5362e5604721117c5700c7825da6ef97e20c7db50fe81e74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -19714,7 +19714,7 @@
       "sha256": "88d874513969ebc1d8dcbec979b123eaa6cbfbb303e9f50353d050d4a6520670",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-geometric-compatibility-v1.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -20766,7 +20766,7 @@
       "sha256": "c072a56b47af08503a8c88f5413d60e70af38b471c22cf37b3ef1f08917735c4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -21034,7 +21034,7 @@
       "sha256": "633d733f7bad0e1724aafae8b60d6cda037625e18257f1d983bae37436d86eed",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -21042,7 +21042,7 @@
       "sha256": "4327161056ae5aae8634b32aed28193da70e8e6cd5155615b95b25bd96a7dbd7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -21138,7 +21138,7 @@
       "sha256": "a7cfe374c278163f0af0aad1ac737fa4f4d6268d106aa4d136299a1b1e9f9d3a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -32618,7 +32618,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -37734,7 +37734,7 @@
       "sha256": "499a7062f31ec74e4568f2533ae4aa29bac2c8aa419be8aa4fdb6f87eb2a510e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -37918,7 +37918,7 @@
       "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -37926,7 +37926,7 @@
       "sha256": "02071e2394e8a909552d0d29cc091e76ecb5a43b2909b69ab4dd731d1a5bf044",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -37950,7 +37950,7 @@
       "sha256": "437ded0bbc2dbeea0eb5909575a2895a32e0335a9ce8bed077dc09d9cfa06016",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -37958,7 +37958,7 @@
       "sha256": "40fce38b23cfb2246214da156ede18d95ef9bb9f5e66ada5a2ce6cdba4ccf1ce",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -37966,7 +37966,7 @@
       "sha256": "355b873f0b8ccbc72cb2b20a46e2d1b47111fc2fee90b546a4295073e1db8b52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -37982,7 +37982,7 @@
       "sha256": "3789b922788c82ff974a5025f0953d6d4e9fe29bdb0129c2b1404f3b932e8688",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38014,7 +38014,7 @@
       "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38022,7 +38022,7 @@
       "sha256": "9bf469db054912ee33f4aed500be2e85029f2a7f6c5476b0bf0dbe31b8104c4e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38030,7 +38030,7 @@
       "sha256": "5f4f94c543c77f028eccb5e14d46cb47a84e9495bf8a4208605eb2db6c2e6b1d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38038,7 +38038,7 @@
       "sha256": "a0de5ea30c7795fb5332b93cacd4dd90d63e15da12c167a40d23f356ba067a9a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38046,7 +38046,7 @@
       "sha256": "da45009935dfa9cbab0514a1517be821503768a952cb1377b5eb02b6cca7c229",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38054,7 +38054,7 @@
       "sha256": "7e6a3a0a18e079fbdaf302eb726e96997a66c8618d00bdefd26805ef663b504c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38062,7 +38062,7 @@
       "sha256": "a8b0233748e0f03e90e628b79d3215046558dc40d2e9f89691cca80f462e4427",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38070,7 +38070,7 @@
       "sha256": "6e5ac25c2f99e8ffbcbc7044ccf9e92173523e851534130d22521b7032ad521e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38078,7 +38078,7 @@
       "sha256": "20faa123672a458c7b2275fc4263ee1834eea1d7ea21946e1a030b0fffab0cbe",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38086,7 +38086,7 @@
       "sha256": "be37cf170b6e9a242bd3dd80eec72b548717c29974fb6072f6aa620120278d0a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38094,7 +38094,7 @@
       "sha256": "6760d66a0555e60fa210403fb24f65cee97d7a10953f30e23a24495b94ad9c47",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38102,7 +38102,7 @@
       "sha256": "e2f9ec59685a1f69d92b0889a17ac23654dc04999b98b4a72e2ce5c4ab95189a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38122,7 +38122,7 @@
       "sha256": "832b514beaabd38cf1255c01ca18fa7ac669ccd94587c67675317aa3bf6e6478",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38130,7 +38130,7 @@
       "sha256": "c86aaa98cb40110454a66ab9cf6e28429e25b02d0c3fb2825b6ed997b05d54c3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38138,7 +38138,7 @@
       "sha256": "d0e3bfb76862423368d30674b138427e06e4695339119a0369ae7d07a156cf2c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38150,7 +38150,7 @@
       "sha256": "fc743bf3e5927a7104aa44050be7c9e5814fea88481499be913ab577365a85cb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38162,7 +38162,7 @@
       "sha256": "e0563280b246c8b81be243957ee904589af035808a20fbc0a1f57aeba15d6d32",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38170,7 +38170,7 @@
       "sha256": "528147b74b9e00f94b94612c9a58dfff5608df348eb9657f361ead7931a5af37",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38178,7 +38178,7 @@
       "sha256": "ce7e858cc7f3e554a1c15b3b8055ca0a2ac2d29313cc6e347db6b044f9284840",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38202,7 +38202,7 @@
       "sha256": "5eaccdc98fffd5ef0f28a2a9491fce077aff1ae63573d51e12b41b63ba96a68a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38210,7 +38210,7 @@
       "sha256": "c86de0edc122ebcffc28c1569523ecafbf895d8000d375e82f6cbb0e542c1776",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38234,7 +38234,7 @@
       "sha256": "7bc8de4401a0cf169e01e6bd409e6a9317a107f30a0c1f465b53b10ef92b19ca",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38242,7 +38242,7 @@
       "sha256": "78569ffc5284a01f02ed2c0c960c08655ed2cec3483db16aa0e15eb1bdee6681",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38250,7 +38250,7 @@
       "sha256": "b1409922b329e25cfb634493e6d98396830ea240c9042fdbd7ee088299cc3e29",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38262,7 +38262,7 @@
       "sha256": "dc2f4178b60f395476701aad1e144172f55cac92fad9aa3d30f75af36234cc14",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38282,7 +38282,7 @@
       "sha256": "babf783081e24e2e1427660b43c0732e9e34a791f0b5c641034c7727c9889aff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38298,7 +38298,7 @@
       "sha256": "7ba65fa9a88c2c4d97ef54e99a05b930559bf73aece6a749ceecac8d298764cd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38306,7 +38306,7 @@
       "sha256": "4f031eb1eb80c368101802103cdc7e5c6fb39283f6fdb2a94f3abd5bc9f482d9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38314,7 +38314,7 @@
       "sha256": "fb325e7ae6ca4664082a424ac7591dcc2d4202469558475b717e3e9cb308dff3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38322,7 +38322,7 @@
       "sha256": "9364d37cec80d77dfaaa07b6b087a641c028a5b6ca8bc68bb36c12f89d30c14d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38330,7 +38330,7 @@
       "sha256": "89dc173fc43c00c73f44635e501a282f3553d1e361e5efe12487b5946e7a5acb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38562,7 +38562,7 @@
       "sha256": "00496c0a1c173eb32d8df0463c59b14de29c7328603a98dc6b0c112fbb93934c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38570,7 +38570,7 @@
       "sha256": "c6fdc8a09e4996d2da0b16a6a0440a2fd69ee375557bb530b76a1f8448514a52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38578,7 +38578,7 @@
       "sha256": "afd581628da544649c453743c68b58e6b4ca94482d391efb1ffb14781ce68394",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38586,7 +38586,7 @@
       "sha256": "2fff59466ce3299a8761387286fc7c63f313eee4a1255155cce0053d4ed1776a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38594,7 +38594,7 @@
       "sha256": "ec1bf723f03a1ac0bfe94da02c09ce084671bd3fdccd0ada35781ed1e1d902e0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38610,7 +38610,7 @@
       "sha256": "2941b3ac83ce909b1a8068ce503772b29ea52a43f11c608f4f0a7abe48b4744b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38618,7 +38618,7 @@
       "sha256": "6ab96ace982f411c854278c50e9b95392fef23147aced50f944fc2eb92a55d11",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38626,7 +38626,7 @@
       "sha256": "e43d813f36d73b97ba1da6d69ba3606285c1de8ee703a7a3b6d49c8f1b04f06a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38670,7 +38670,7 @@
       "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38682,7 +38682,7 @@
       "sha256": "28e77a3f74ebcea4b2b99d9994fdef0f8ba6e9826549224c94bd947df61f1612",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38722,7 +38722,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38730,7 +38730,7 @@
       "sha256": "751b89698479201e036a489982de317a96f8cc9901949acc630acdac40624387",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38810,7 +38810,7 @@
       "sha256": "18293761d3208f32f393fd4b61cdd264e8a2c459a854ba9ab19a7805a5fe68ff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38818,7 +38818,7 @@
       "sha256": "ad93b859ea4ff36f33ef1e17afb91976d4a5a58818be76b60a7451b19df94c65",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38826,7 +38826,7 @@
       "sha256": "733106c9b8bbc99ede453052fe54fb84dfff7b672fbf3eb496f2a0690b286d8e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38838,7 +38838,7 @@
       "sha256": "104f957ee6467f61139e398592cea612344885923e9a992c512316efabe50b88",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38854,7 +38854,7 @@
       "sha256": "e24e77f84db7341fc326c851ad3cd01e54972f09455b3ea9bac2f7bd97ac0899",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38894,7 +38894,7 @@
       "sha256": "ed75627b8cf895b6cd5cee9eaf393508abf3eb5cac71e8c7a6c9b5b9a01ad5d9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38926,7 +38926,7 @@
       "sha256": "e521ffe5733615cbbbb0b5fc42121f5f4074d920552c89927bb8c38394f6249f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -38954,7 +38954,7 @@
       "sha256": "58aaf5113da81e01cfc85f1d940a36b379c6ad9178d5ffd9378e7c36a1d77c45",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-arithmetic-value-imports-v2.log"
+        "current-wide-division-wrapper-zero-v3.log"
       ]
     },
     {
@@ -89393,7 +89393,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89402,7 +89402,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89410,13 +89410,13 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89425,7 +89425,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89462,7 +89462,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89472,7 +89472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89482,7 +89482,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89492,7 +89492,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89502,7 +89502,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89512,7 +89512,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89522,7 +89522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89532,7 +89532,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89542,7 +89542,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89552,7 +89552,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89562,7 +89562,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89571,7 +89571,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89580,7 +89580,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89590,7 +89590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89600,7 +89600,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89610,7 +89610,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89619,7 +89619,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89629,7 +89629,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89659,7 +89659,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89669,7 +89669,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89679,7 +89679,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89689,7 +89689,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89699,7 +89699,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89709,7 +89709,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89719,7 +89719,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89729,7 +89729,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89748,7 +89748,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89757,7 +89757,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89767,7 +89767,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89777,7 +89777,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89787,7 +89787,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89817,7 +89817,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89827,7 +89827,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89837,7 +89837,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89847,7 +89847,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89857,7 +89857,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89865,7 +89865,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89874,7 +89874,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89910,7 +89910,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89920,7 +89920,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89930,7 +89930,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89940,7 +89940,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89950,7 +89950,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89960,7 +89960,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89969,7 +89969,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89979,7 +89979,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89989,7 +89989,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89999,7 +89999,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90009,7 +90009,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90019,7 +90019,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90028,7 +90028,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90096,7 +90096,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90106,7 +90106,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90126,7 +90126,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90136,7 +90136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90195,7 +90195,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90205,7 +90205,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90215,7 +90215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90285,7 +90285,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90371,7 +90371,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90381,7 +90381,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90391,7 +90391,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90401,7 +90401,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90744,7 +90744,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90754,7 +90754,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90764,7 +90764,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90774,7 +90774,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90782,7 +90782,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90790,7 +90790,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90800,7 +90800,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90810,7 +90810,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90820,7 +90820,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90830,7 +90830,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90840,7 +90840,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90901,7 +90901,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90909,7 +90909,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90919,7 +90919,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90929,7 +90929,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90939,7 +90939,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90949,7 +90949,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90959,7 +90959,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90969,7 +90969,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90979,7 +90979,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90989,7 +90989,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90998,7 +90998,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91007,7 +91007,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91017,7 +91017,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91027,7 +91027,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91037,7 +91037,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91047,7 +91047,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91057,7 +91057,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91067,7 +91067,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91077,7 +91077,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91087,7 +91087,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91097,7 +91097,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91107,7 +91107,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91117,7 +91117,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91127,7 +91127,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91137,7 +91137,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91147,7 +91147,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91156,7 +91156,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91166,7 +91166,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91176,7 +91176,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91186,7 +91186,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91196,7 +91196,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91206,7 +91206,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91216,7 +91216,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91226,7 +91226,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91236,7 +91236,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91246,7 +91246,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91256,7 +91256,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91264,7 +91264,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91272,7 +91272,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91282,7 +91282,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91292,7 +91292,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91302,7 +91302,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91312,7 +91312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91322,7 +91322,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91332,7 +91332,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91341,7 +91341,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91349,7 +91349,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91359,7 +91359,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91369,7 +91369,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91377,7 +91377,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91385,7 +91385,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91395,7 +91395,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91405,7 +91405,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91415,7 +91415,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91425,7 +91425,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91435,7 +91435,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91445,7 +91445,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91455,7 +91455,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91465,7 +91465,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91475,7 +91475,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91485,7 +91485,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91495,7 +91495,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91505,7 +91505,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91515,7 +91515,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91524,7 +91524,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91753,7 +91753,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92334,7 +92334,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92343,7 +92343,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92352,7 +92352,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92361,7 +92361,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92370,7 +92370,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92379,7 +92379,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92672,7 +92672,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92681,7 +92681,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92690,7 +92690,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92896,7 +92896,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92906,7 +92906,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92916,7 +92916,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92926,7 +92926,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92935,7 +92935,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94311,7 +94311,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94779,7 +94779,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94789,7 +94789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95413,7 +95413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95559,7 +95559,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95662,7 +95662,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95672,7 +95672,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95682,7 +95682,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95692,7 +95692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95702,7 +95702,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95712,7 +95712,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95722,7 +95722,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95732,7 +95732,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95742,7 +95742,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95752,7 +95752,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95931,7 +95931,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96218,7 +96218,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96228,7 +96228,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96238,7 +96238,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96248,7 +96248,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96258,7 +96258,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96268,7 +96268,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96278,7 +96278,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96288,7 +96288,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96298,7 +96298,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96308,7 +96308,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96318,7 +96318,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96328,7 +96328,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96358,7 +96358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96368,7 +96368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96378,7 +96378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96388,7 +96388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96398,7 +96398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96408,7 +96408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96418,7 +96418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96428,7 +96428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96438,7 +96438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96478,7 +96478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96488,7 +96488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96498,7 +96498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96508,7 +96508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96518,7 +96518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96528,7 +96528,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96538,7 +96538,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96627,7 +96627,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96637,7 +96637,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98049,7 +98049,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98059,7 +98059,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98069,7 +98069,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98419,7 +98419,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98429,7 +98429,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98439,7 +98439,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -98449,7 +98449,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100988,7 +100988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100998,7 +100998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101008,7 +101008,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101018,7 +101018,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101027,7 +101027,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101036,7 +101036,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101045,7 +101045,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101091,7 +101091,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101101,7 +101101,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101110,7 +101110,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101119,7 +101119,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101129,7 +101129,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101139,7 +101139,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101149,7 +101149,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101185,7 +101185,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101897,7 +101897,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101907,7 +101907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112815,7 +112815,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112825,7 +112825,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112835,7 +112835,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112845,7 +112845,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112999,7 +112999,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113009,7 +113009,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113019,7 +113019,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113029,7 +113029,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113039,7 +113039,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113049,7 +113049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113059,7 +113059,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113069,7 +113069,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113077,7 +113077,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113085,7 +113085,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113095,7 +113095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113104,7 +113104,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113114,7 +113114,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113124,7 +113124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113134,7 +113134,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113144,7 +113144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113154,7 +113154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113358,7 +113358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113368,7 +113368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113378,7 +113378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113388,7 +113388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113398,7 +113398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113408,7 +113408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113418,7 +113418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113428,7 +113428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113438,7 +113438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113448,7 +113448,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113458,7 +113458,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113468,7 +113468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113478,7 +113478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113488,7 +113488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113498,7 +113498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113508,7 +113508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113518,7 +113518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113528,7 +113528,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113538,7 +113538,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113548,7 +113548,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113558,7 +113558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113568,7 +113568,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113578,7 +113578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113588,7 +113588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113813,7 +113813,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113821,7 +113821,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113858,7 +113858,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113868,7 +113868,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113878,7 +113878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113888,7 +113888,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121587,7 +121587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -128144,7 +128144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -128154,7 +128154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -174561,7 +174561,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -177137,7 +177137,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -178870,7 +178870,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -191379,7 +191379,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204899,7 +204899,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204909,7 +204909,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204987,7 +204987,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204997,7 +204997,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205006,7 +205006,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205015,7 +205015,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205024,7 +205024,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205033,7 +205033,117 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-arithmetic-value-imports-v2.log",
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.divmod_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.divmod_code",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.div_code",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.divmod_zero_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.divmod_zero_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.RlpWrite.U256Value.pair_environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.div_shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.zero_entry",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.div_zero_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.div_zero_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Division.div_zero_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-division-wrapper-zero-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

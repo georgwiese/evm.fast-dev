@@ -50,18 +50,7 @@ theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×Sh
       lookupCodeHOLFinite codeFn (ofString "u256_eq") [Input.RlpWrite.U256Value.tuple a,Input.RlpWrite.U256Value.tuple b]=some (body,callee,.one) ∧
       callee.lookup (ofString "a")=some (Input.RlpWrite.U256Value.tuple a) ∧
       callee.lookup (ofString "b")=some (Input.RlpWrite.U256Value.tuple b) := by
-  have valid : (formals.map Prod.fst).Nodup ∧ formals.length=([Input.RlpWrite.U256Value.tuple a,Input.RlpWrite.U256Value.tuple b] : List (ValueHOL 64)).length ∧
-      ((formals.zip [Input.RlpWrite.U256Value.tuple a,Input.RlpWrite.U256Value.tuple b]).all (fun pair=>shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2)))=true := by
-    simp [formals,Input.RlpWrite.U256Value.tuple,Input.RlpWrite.U256Value.tupleShape,shapeOfHOLExact,shapeEqHOL_eq_true,
-      show ofString "a"≠ofString "b" from by decide]
-  have raw : lookupCodeHOLExact codeFn (ofString "u256_eq") [Input.RlpWrite.U256Value.tuple a,Input.RlpWrite.U256Value.tuple b]=some (body,rawLocals a b,.one) := by
-    simp only [lookupCodeHOLExact,lookup,valid,↓reduceIte]
-    rfl
-  obtain ⟨callee,called,locals⟩:=WitnessRadix.CodeEnvironment.finite_lookup codeFn _ _ _ _ _ raw
-  refine ⟨callee,called,?_,?_⟩
-  all_goals rw [locals]
-  · simp [rawLocals,show ofString "a"≠ofString "b" from by decide]
-  · simp [rawLocals]
+  exact Input.RlpWrite.U256Value.pair_environment codeFn (ofString "u256_eq") body .one a b lookup
 
 theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b : Quad)
     (name : String) (expressions : List (ExpHOL 64)) (continuation : ProgHOL 64)

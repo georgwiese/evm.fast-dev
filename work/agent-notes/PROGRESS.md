@@ -4443,3 +4443,28 @@ progress, parent-header field-size facts and current header validation,
 execution/wrappers/main, uniform target composition, dominant-slack review
 and final cleanup. Earlier header normal contracts retain allocation/input
 geometry but do not yet expose all materialized parent field-size facts.
+
+
+## Actual current wide-division zero-divisor branch and wrapper
+
+The literal u256_divmod63 zero-divisor guard returns the real eight-zero
+quotient/remainder tuple at every source clock, before reading its numerator,
+workspace or numerical division helpers. It spends0body source ticks and
+retains every nonlocal field. The actual u256_div64 wrapper has a checked
+current signature and two-quadruple callee entry; its zero-divisor path costs
+≤1body source tick on every outcome, including clock0timeout. Every actual
+normal wrapper return supplies the real four-zero quotient tuple, with the
+same full nonlocal frame. No general division-correctness oracle is used.
+
+A reusable two-quadruple actual ABI now serves both division and the existing
+U256 equality call, replacing that equality helper's duplicate lookup proof
+without changing its public statement. No executable or challenge hypothesis
+changed. This is a concrete arithmetic stopping case, not yet a whole Taylor
+or global finite target-step bound. General multiply/divide progress and the
+1280natural recurrence connection remain open.
+
+Validation: current-wide-division-zero-v2.log PASS733jobs and
+current-wide-division-wrapper-zero-v3.log PASS738jobs, permitted printed
+axioms only. Index8700modules/18261facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage56%weekly/0resetcredits.

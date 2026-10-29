@@ -5,6 +5,7 @@ import InitECandidate.Solver.Input.LoopSummaryInvariant
 import InitECandidate.Solver.Input.SequenceReturned
 import InitECandidate.Solver.Input.NormalWordDeclaration
 import InitECandidate.Solver.WitnessRadix.CopyGeneralMemory
+import InitECandidate.Solver.Input.IgnoredCallTarget
 
 namespace InitECandidate.Solver.Input.CurrentRlp
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -43,6 +44,35 @@ theorem WriteFrame.byte (source target : PanSemStateFiniteExact 64 Guest.HostMem
     apply BitVec.eq_of_toNat_eq
     simp only [BitVec.toNat_ofNat,Nat.mod_eq_of_lt index.isLt]
   simpa only [byteAddress,scalar] using (away index.toNat inside).2
+
+
+/-- Move a real smaller write span into its enclosing destination span.
+Address equalities are bitvector identities, without an overflow premise. -/
+theorem WriteFrame.shift {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (dst : BitVec 64) (offset length limit : Nat)
+    (frame : WriteFrame source target (dst+BitVec.ofNat 64 offset) length) (inside : offset+length≤limit) :
+    WriteFrame source target dst limit := by
+  refine ⟨frame.metadata,?_⟩
+  intro query away
+  apply frame.memory query
+  intro index bounded
+  simpa only [byteAddress,BitVec.ofNat_add,BitVec.add_assoc] using away (offset+index) (by omega)
+
+/-- Lift the frame of the actual callee return through the ignored caller's
+real local restoration. Normality is used only for that same observed call. -/
+theorem WriteFrame.ignored (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (function : MlS) (arguments : List (ExpHOL 64))
+    (values : List (ValueHOL 64)) (body : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (dst : BitVec 64) (length : Nat)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some values)
+    (called : lookupCodeHOLFinite source.code.lookup function values=some (body,callee,shape))
+    (frame : ∀ target value,evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body=(some (.returned value),target)→
+      WriteFrame (callEntryStateHOLFinite source callee) target dst length)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) function arguments)=(none,post)) : WriteFrame source post dst length := by
+  obtain ⟨funded,target,returned,bodyRun⟩:=CallNormal.ignored_callee_return source post function arguments values body callee shape args called normal
+  have physical:=frame target returned bodyRun
+  have endpoint:=CallNormal.ignored_target source post function arguments values body callee shape args called returned target bodyRun normal
+  rw [endpoint]
+  exact ⟨physical.metadata,physical.memory⟩
 
 namespace PutBe
 open RlpWrite.PutBe hiding body
@@ -131,6 +161,20 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   have fromSource : WriteFrame source last dst length:=⟨frame.metadata,frame.memory⟩
   exact ⟨answer,price,fromSource.trans finalFrame⟩
 
+
+/-- The original current ignored call retains the callee's bounded memory
+frame and every nonlocal; its real caller locals are restored by the ABI. -/
+theorem call_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (arguments : List (ExpHOL 64))
+    (dst word : BitVec 64) (length : Nat) (small : length<2^64) (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+      some [.val (.word dst),.val (.word word),.val (.word (BitVec.ofNat 64 length))])
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "rlp_put_be") arguments)=(none,post)) : WriteFrame source post dst length := by
+  obtain ⟨callee,called,d,v,n⟩:=environment source.code.lookup dst word (BitVec.ofNat 64 length) (original_code source.code installed)
+  apply WriteFrame.ignored source post (ofString "rlp_put_be") arguments _ body callee .one dst length args called
+  · intro target value run
+    exact (body_normal (callEntryStateHOLFinite source callee) target dst length small d n value run).2.2
+  · exact normal
+
 end PutBe
 end InitECandidate.Solver.Input.CurrentRlp
 
@@ -142,3 +186,9 @@ end InitECandidate.Solver.Input.CurrentRlp
 #print axioms InitECandidate.Solver.Input.CurrentRlp.PutBe.step_frame
 #print axioms InitECandidate.Solver.Input.CurrentRlp.PutBe.loop_frame
 #print axioms InitECandidate.Solver.Input.CurrentRlp.PutBe.body_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.WriteFrame.shift
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.WriteFrame.ignored
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.PutBe.call_frame

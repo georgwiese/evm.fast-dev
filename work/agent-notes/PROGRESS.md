@@ -4243,3 +4243,27 @@ entries/2485376634bytes. No global finite target K/full verification; claim
 infinity. Usage34%weekly/0resetcredits. Next: header/byte/word/wide writer
 normal frames and intrinsic costs, actual full encoder/block-length bound,
 then indexed tries, later main and uniform target steps.
+
+
+## Current header-writer normal frames and genuine caller memory
+
+Added bounded-span inclusion and actual ignored-caller frame transport.
+The current put_be caller now retains its genuine callee's counted memory
+frame and complete nonlocal state. Fixed IgnoredCallTarget's missing explicit
+Guest.Model import, exposed by the narrowed dependency closure.
+
+The actual current rlp_write_header normal return now derives its true
+encoded length1..9, full runtime/global/FFI preservation, write confinement
+to the nine-byte destination span and the already-proved≤18body source cost.
+Both real short-tag and long-length paths are checked. The long path derives
+its actual byte-count child, normal tag store, ignored reverse-byte return,
+restored ll binding and final returned length from that same execution.
+No output mapping, later funding or successful helper is assumed in advance.
+
+Validation: current-rlp-header-frame-v1.log PASS731jobs; printed axioms
+permitted only. Index8659modules/17690facts; inventory8704/replacement
+closure0/fixed files unchanged. Incremental policy PASS65495entries/
+2485391301bytes. No global finite target K/full verification; claim infinity.
+Usage34%weekly/0resetcredits. Next: compose current word/byte/wide writers
+and complete actual header-encoder/block-length bounds, then indexed tries,
+later main and uniform target steps. Five old untracked WIPs remain untouched.

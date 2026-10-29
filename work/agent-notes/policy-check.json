@@ -2310,6 +2310,7 @@
     "submission/InitECandidate/Solver/Input/CurrentRlp/BeLength.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/Code.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/HeaderWrite.lean",
+    "submission/InitECandidate/Solver/Input/CurrentRlp/HeaderWriteFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/PutBe.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/SmallSizes.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/WriteFrame.lean",
@@ -8708,8 +8709,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65494,
-  "package_bytes": 2485376634,
+  "package_entries": 65495,
+  "package_bytes": 2485391301,
   "claim": {
     "K": "infinity"
   },

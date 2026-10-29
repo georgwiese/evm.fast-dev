@@ -3099,3 +3099,42 @@ one-digit division wrapper/reconstruction and two-digit normalization/
 subtraction/remainder stores. Taylor/current header validation/main,
 uniform target composition, exact K, slack review and final cleanup remain
 in the same active goal. Historical untracked RlpLength/RlpWrite WIPs untouched.
+
+
+## Current workspace slots and wider one-digit callers
+
+The actual640-byte layout now has checked mapped/aligned arenas and
+pairwise disjoint word slots for normalized numerator offset0/17words,
+normalized divisor144/8, quotient216/16, remainder352/8, numerator424/16
+and divisor560/8. Separation uses modular address cancellation and the
+small literal offsets, so no unproved pointer-wrap assumption is needed.
+The actual startup-derived constant pointer plus ordinary domain supplies
+its arena/mapping context. Current slot geometry derives all one-digit
+Buffers mapping/separation conditions from the actual input/divisor cells;
+no future helper execution is assumed.
+
+Inspection found additional original digits_divmod callers with10and16
+numerator digits in the crypto helpers. The existing digits_len and full
+one-digit divmnu body/caller proofs now cover up to16digits, including real
+early returns, short clocks, exact normal funding and numerical/memory
+results. The general one-digit caller allowance is34*count+1, hence545for16
+digits and273for the8-digit Taylor/u256 path. Normalized numerator capacity
+is17words for the wider actual input; the earlier9-word description covered
+only the8-digit path. No executable or fixed challenge assumption changed.
+
+Validation: current-u256-slot-geometry-wide-v1.log PASS1029jobs; all10new
+printed geometry facts and all generalized prior scan/divider facts have
+only permitted axioms. Index8700modules/18428facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Overall effort estimate
+remains50%, plausible40–60%. Usage31%weekly/0resetcredits, ordinary usage
+allowed. No new candidate paths; package remains exactly65536entries.
+
+Next: exact literal q16/r8 zero-fill loops and their physical images, then
+digits_divmod's actual one-digit caller/result and reconstruction. The
+new startup heap minimum2701135464 must be carried through the actual input
+allocation to prove input/workspace separation, and the u256 pointer must
+enter runtime Data. Two-digit normalization/subtraction/remainder stores,
+Taylor/current header validation/main, uniform target composition, exact K,
+slack review and cleanup remain in the same active goal. Historical
+untracked RlpLength/RlpWrite WIPs stay untouched.

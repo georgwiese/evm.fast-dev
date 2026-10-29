@@ -8,6 +8,10 @@ import InitECandidate.Solver.Input.ClockCostCurrentValue
 import InitECandidate.Solver.Input.CounterStrideLoop
 import InitECandidate.Solver.Input.LoopNormalExit
 import InitECandidate.Solver.Input.WordTripleEnvironment
+import InitECandidate.Solver.Input.WordPairLookup
+import InitECandidate.Solver.Input.WordEnvironment
+import InitECandidate.Solver.Input.MemoryConstantLoop
+import InitECandidate.Solver.Input.CounterLoopLocal
 import InitECandidate.Solver.WitnessRadix.CopyNormalCall
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
@@ -2243,3 +2247,455 @@ end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
 #print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.environment
 #print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.call_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.dynamic_call_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem be32_globals (key : MlS) (code) : GlobalEffects.Preserves key code (CurrentStartup.Code.body .st_be32) :=
+  (StraightBody.effects key code _ be32_supported).2
+
+set_option maxRecDepth 100000 in
+theorem be64_globals (key : MlS) (code) (installed : OriginalCode.Installed code) : GlobalEffects.Preserves key code (CurrentStartup.Code.body .st_be64) := by
+  have swap : GlobalEffects.Preserves key code (CurrentStartup.Code.body .bswap64):=(StraightBody.effects key code _ bswap_supported).2
+  have be32 (args : List (ExpHOL 64)) : GlobalEffects.Preserves key code (.call (some (none,none)) (ofString "st_be32") args):=
+    GlobalEffects.call_body key code (some none) (ofString "st_be32") args
+      (CurrentStartup.Code.formals .st_be32) (CurrentStartup.Code.body .st_be32) (CurrentStartup.Code.shape .st_be32)
+      (CurrentStartup.Code.installed code installed .st_be32) (be32_globals key code)
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_st_be64,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  apply GlobalEffects.sequence
+  · apply GlobalEffects.conditional
+    · apply GlobalEffects.scoped_body key code _ _ (ofString "bswap64") _ _
+        (CurrentStartup.Code.formals .bswap64) (CurrentStartup.Code.body .bswap64) (CurrentStartup.Code.shape .bswap64)
+        (CurrentStartup.Code.installed code installed .bswap64) swap
+      exact GlobalEffects.sequence key code _ _ (GlobalEffects.store key code _ _) (GlobalEffects.returned key code _)
+    · exact GlobalEffects.skip key code
+  · exact GlobalEffects.sequence key code _ _ (be32 _) (GlobalEffects.sequence key code _ _ (be32 _) (GlobalEffects.returned key code _))
+
+theorem finish_globals (key : MlS) (code) (installed : OriginalCode.Installed code) :
+    GlobalEffects.Preserves key code (Code.body .finish) := by
+  rw [finish_shape]
+  apply GlobalEffects.declared
+  apply GlobalEffects.sequence
+  · apply GlobalEffects.loop
+    exact GlobalEffects.sequence key code finishCall finishIncrement
+      (GlobalEffects.call_body key code (some none) (ofString "st_be32") finishArguments
+        (CurrentStartup.Code.formals .st_be32) (CurrentStartup.Code.body .st_be32) (CurrentStartup.Code.shape .st_be32)
+        (CurrentStartup.Code.installed code installed .st_be32) (be32_globals key code))
+      (GlobalEffects.assign key code (ofString "i") _)
+  · exact GlobalEffects.returned key code _
+
+theorem compression_call_globals (key : MlS) (code) (installed : OriginalCode.Installed code) (args : List (ExpHOL 64)) :
+    GlobalEffects.Preserves key code (.call (some (none,none)) (ofString "sha256_block") args) :=
+  GlobalEffects.call_body key code (some none) (ofString "sha256_block") args
+    (Code.formals .block) (Code.body .block) (Code.shape .block) (Code.installed code installed .block) (block_globals key code)
+
+theorem digest_call_globals (key : MlS) (code) (installed : OriginalCode.Installed code) (args : List (ExpHOL 64)) :
+    GlobalEffects.Preserves key code (.call (some (none,none)) (ofString "sha256_finish") args) :=
+  GlobalEffects.call_body key code (some none) (ofString "sha256_finish") args
+    (Code.formals .finish) (Code.body .finish) (Code.shape .finish) (Code.installed code installed .finish) (finish_globals key code installed)
+
+theorem final_tail_globals (key : MlS) (code) (installed : OriginalCode.Installed code) : GlobalEffects.Preserves key code finalTail := by
+  unfold finalTail selectTotal storeLength absorbPad extraPad digestCall
+  repeat' first
+    | apply GlobalEffects.sequence
+    | apply GlobalEffects.conditional
+    | exact GlobalEffects.assign key code _ _
+    | exact GlobalEffects.skip key code
+    | exact GlobalEffects.returned key code _
+    | exact compression_call_globals key code installed _
+    | exact digest_call_globals key code installed _
+    | exact GlobalEffects.call_body key code (some none) (ofString "st_be64") _
+        (CurrentStartup.Code.formals .st_be64) (CurrentStartup.Code.body .st_be64) (CurrentStartup.Code.shape .st_be64)
+        (CurrentStartup.Code.installed code installed .st_be64) (be64_globals key code installed)
+
+theorem body_globals (key : MlS) (code) (installed : OriginalCode.Installed code) : GlobalEffects.Preserves key code (Code.body .hash) := by
+  rw [hash_shape]
+  have padding : GlobalEffects.Preserves key code afterBlocks:=by
+    unfold afterBlocks paddingTail paddingFinish zeroPad copyPad padFirst
+    repeat' first
+      | exact final_tail_globals key code installed
+      | apply GlobalEffects.sequence
+      | apply GlobalEffects.declared
+      | exact GlobalEffects.byte_store key code _ _
+      | exact CurrentKeccak.Hash.zero_call_globals key code installed _
+      | exact CurrentKeccak.Hash.copy_call_globals key code installed _
+  have loop : GlobalEffects.Preserves key code blocks:=GlobalEffects.loop key code blockTest blockIteration
+    (GlobalEffects.sequence key code blockCall blockIncrement (compression_call_globals key code installed blockArguments) (GlobalEffects.assign key code (ofString "i") _))
+  exact GlobalEffects.sequence key code initCall _
+    (GlobalEffects.call_body key code (some none) (ofString "sha256_state_init") [state]
+      (Code.formals .stateInit) (Code.body .stateInit) (Code.shape .stateInit) (Code.installed code installed .stateInit) (state_globals key code))
+    (GlobalEffects.declared key code (ofString "i") .one (.const 0#64) _ (GlobalEffects.sequence key code blocks afterBlocks loop padding))
+
+theorem call_globals (key : MlS) (code) (installed : OriginalCode.Installed code) (args : List (ExpHOL 64)) :
+    GlobalEffects.Preserves key code (.call (some (none,none)) (ofString "sha256") args) :=
+  GlobalEffects.call_body key code (some none) (ofString "sha256") args
+    (Code.formals .hash) (Code.body .hash) (Code.shape .hash) (Code.installed code installed .hash) (body_globals key code installed)
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be32_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be64_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.compression_call_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.digest_call_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.final_tail_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.body_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.call_globals
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Use the same actual two-argument lookup to identify the first scalar
+formal. The second expression may read the current compression workspace. -/
+theorem first_word_call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (function firstName secondName : MlS) (body : ProgHOL 64) (shape : ShapeHOL)
+    (first second : ExpHOL 64) (pointer query : BitVec 64) (different : firstName≠secondName)
+    (code : source.code.lookup function=some ([(firstName,.one),(secondName,.one)],body,shape))
+    (read : eval source first=some (.val (.word pointer)))
+    (frame : ∀ callee : HolFiniteMapExact MlS (ValueHOL 64),∀ target value,
+      callee.lookup firstName=some (.val (.word pointer))→
+      evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body=(some (.returned value),target)→ target.memory query=source.memory query)
+    (actual : evaluateHOLFiniteState source (.call (some (none,none)) function [first,second])=(none,post)) : post.memory query=source.memory query := by
+  classical
+  obtain ⟨positive,args,actualBody,callee,actualShape,target,value,arguments,called,bodyRun,checked,endpoint,fields⟩:=
+    CallNormal.ignored_data source post function [first,second] actual
+  have argsEq : ∃ stored,args=[.val (.word pointer),stored]:=by
+    simp only [eval] at read
+    change evalListHOLExact source.toExact [first,second]=some args at arguments
+    cases valueRead : evalHOLExact source.toExact second with
+    | none=>simp [evalListHOLExact,read,valueRead] at arguments
+    | some stored=>exact ⟨stored,Option.some.inj (by simpa [evalListHOLExact,read,valueRead] using arguments.symm)⟩
+  obtain ⟨stored,rfl⟩:=argsEq
+  obtain ⟨bodyEq,binding⟩:=checked_pair_left source.code.lookup function firstName secondName body shape pointer stored different code actualBody callee actualShape called
+  rw [bodyEq] at bodyRun
+  rw [endpoint]
+  exact frame callee target value binding bodyRun
+
+set_option maxRecDepth 100000 in
+theorem be32_frame_supported : ByteOutputFrame.accepts (ofString "p") 4 (CurrentStartup.Code.body .st_be32)=true := by
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_st_be32,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  rfl
+
+theorem be32_call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (first second : ExpHOL 64) (pointer query : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (read : eval source first=some (.val (.word pointer)))
+    (away : CopyGeneral.Away pointer query 4)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "st_be32") [first,second])=(none,post)) : post.memory query=source.memory query := by
+  have code : source.code.lookup (ofString "st_be32")=some ([(ofString "p",.one),(ofString "v",.one)],CurrentStartup.Code.body .st_be32,.one):=by
+    simpa only [CurrentStartup.Code.name,CurrentStartup.Code.formals,CurrentStartup.Code.shape,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,
+      GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,Guest.Software.guestFn_st_be32,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+      using CurrentStartup.Code.installed source.code installed .st_be32
+  apply first_word_call_memory source post (ofString "st_be32") (ofString "p") (ofString "v") (CurrentStartup.Code.body .st_be32) .one
+    first second pointer query (by decide) code read ?_ normal
+  intro callee target value cell run
+  have bodyFrame:=(ByteOutputFrame.sound (ofString "p") 4 (CurrentStartup.Code.body .st_be32) be32_frame_supported pointer query
+    (fun offset inside=>(away offset inside).2) (callEntryStateHOLFinite source callee) cell).1
+  rw [run] at bodyFrame
+  exact bodyFrame
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.first_word_call_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be32_frame_supported
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be32_call_memory
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem finish_other (key : MlS) (different : key≠ofString "i") : LocalPrefix key finishIteration :=
+  .seq (.call none _ _ (by simp)) (.assign _ _ different)
+
+theorem finish_step_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64) (index : Nat)
+    (installed : OriginalCode.Installed source.code) (active : index<8)
+    (output : source.locals.lookup (ofString "out")=some (.val (.word pointer)))
+    (position : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))))
+    (away : CopyGeneral.Away pointer query 32) (run : evaluateHOLFiniteState source finishIteration=(none,post)) : post.memory query=source.memory query := by
+  obtain ⟨middle,normal,remaining⟩:=sequence_none source post finishCall finishIncrement run
+  let address : ExpHOL 64:=.op .add [localVar "out",.panop .mul [localVar "i",.const 4#64]]
+  let expression : ExpHOL 64:=.load .one (.op .add [localVar "stp",.panop .mul [localVar "i",.const 8#64]])
+  have read : eval source address=some (.val (.word (pointer+BitVec.ofNat 64 (4*index)))):=by
+    simp [eval,address,evalHOLExact,evalListHOLExact,toExact,localVar,output,position,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,BitVec.ofNat_mul,Nat.mul_comm]
+  have called:=be32_call_memory source middle address expression (pointer+BitVec.ofNat 64 (4*index)) query installed read
+    (CopyGeneral.Away.subrange pointer query 32 (4*index) 4 away (by omega)) normal
+  have assigned:=MemoryAt.assign_current middle .local (ofString "i") (.op .add [localVar "i",.const 1#64]) query
+  change evaluateHOLFiniteState middle (.assign .local (ofString "i") (.op .add [localVar "i",.const 1#64]))=(none,post) at remaining
+  rw [remaining] at assigned
+  exact assigned.trans called
+
+theorem finish_loop_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (output : source.locals.lookup (ofString "out")=some (.val (.word pointer)))
+    (position : source.locals.lookup (ofString "i")=some (.val (.word 0#64)))
+    (away : CopyGeneral.Away pointer query 32)
+    (run : evaluateHOLFiniteState source (.while finishTest finishIteration)=(none,post)) : post.memory query=source.memory query := by
+  have summary:=MemoryAt.constant_loop_normal source.code (ofString "i") (ofString "stp") finishIteration 8 query (by decide)
+    finish_iteration_local.summary_full finish_iteration_advance
+    (fun current=>current.locals.lookup (ofString "out")=some (.val (.word pointer))) (by intro current actual; exact actual)
+    (by intro current codeEq currentOutput index active currentPosition target bodyRun
+        have localFrame:=(finish_other (ofString "out") (by decide)).summary_full current
+        unfold LocalSummary at localFrame
+        rw [bodyRun] at localFrame
+        exact ⟨(localFrame.1 rfl).trans currentOutput,finish_step_memory current target pointer query index (codeEq.symm ▸ installed) active currentOutput currentPosition away bodyRun⟩)
+    source post 0 rfl output (by decide) position run
+  exact summary.2.2
+
+/-- Normal original digest output touches only its32 output bytes. The actual
+BE32 calls supply their own successful scalar reads. -/
+theorem finish_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (output : source.locals.lookup (ofString "out")=some (.val (.word pointer))) (away : CopyGeneral.Away pointer query 32)
+    (value : ValueHOL 64) (run : evaluateHOLFiniteState source (Code.body .finish)=(some (.returned value),post)) : post.memory query=source.memory query := by
+  rw [finish_shape] at run
+  refine MemoryAt.declaration_returned source post "i" (.const 0#64) 0#64 query finishTail value rfl ?_ run
+  intro inner remaining
+  let entry:=QueryBranch.bind source "i" 0#64
+  have nextOutput : entry.locals.lookup (ofString "out")=some (.val (.word pointer)):=
+    (bind_lookup_other source "i" "out" 0#64 (by decide)).trans output
+  have safe : LocalPrefix (ofString "out") (.while finishTest finishIteration):=.loop _ (finish_other (ofString "out") (by decide))
+  obtain ⟨middle,normal,returned⟩:=sequence_returned entry inner _ (.return (.const 0#64)) value (safe.summary_full entry).2.1 remaining
+  have frame:=finish_loop_memory entry middle pointer query installed nextOutput (bind_lookup_same _ _ _) away normal
+  have finalFrame:=MemoryAt.return_current middle (.const 0#64) query
+  rw [returned] at finalFrame
+  exact finalFrame.trans frame
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_other
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_step_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_loop_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_memory
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem state_call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp query : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (args : List (ExpHOL 64))
+    (read : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) args=some [.val (.word stp)])
+    (away : ∀ offset : Nat,offset<64→ query≠stp+BitVec.ofNat 64 offset)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "sha256_state_init") args)=(none,post)) :
+    post.memory query=source.memory query := by
+  have code : source.code.lookup (ofString "sha256_state_init")=some ([(ofString "stp",.one)],Code.body .stateInit,.one):=by
+    simpa only [Code.name,Code.formals,Code.shape,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+      declToHOL,funDeclToHOL,Guest.Software.guestFn_sha256_state_init,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+      using Code.installed source.code installed .stateInit
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "sha256_state_init") (ofString "stp") (Code.body .stateInit) .one stp code
+  apply MemoryAt.call_normal source post (ofString "sha256_state_init") args [.val (.word stp)] (Code.body .stateInit) callee .one query read called ?_ normal
+  intro target value run
+  have frame:=state_memory (callEntryStateHOLFinite source callee) stp query cell away
+  rw [run] at frame
+  exact frame
+
+set_option maxRecDepth 100000 in
+theorem compression_call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp blk query : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (args : List (ExpHOL 64))
+    (read : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) args=some [.val (.word stp),.val (.word blk)])
+    (away : ∀ offset : Nat,offset<64→ query≠stp+BitVec.ofNat 64 offset)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "sha256_block") args)=(none,post)) :
+    post.memory query=source.memory query := by
+  have code : source.code.lookup (ofString "sha256_block")=some ([(ofString "stp",.one),(ofString "blk",.one)],Code.body .block,.one):=by
+    simpa only [Code.name,Code.formals,Code.shape,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+      declToHOL,funDeclToHOL,Guest.Software.guestFn_sha256_block,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+      using Code.installed source.code installed .block
+  obtain ⟨callee,called,cell,blockCell⟩:=word_pair_environment source.code.lookup (ofString "sha256_block") (ofString "stp") (ofString "blk")
+    (Code.body .block) .one stp blk (by decide) code
+  apply MemoryAt.call_normal source post (ofString "sha256_block") args [.val (.word stp),.val (.word blk)] (Code.body .block) callee .one query read called ?_ normal
+  intro target value run
+  have frame:=block_memory (callEntryStateHOLFinite source callee) stp query cell away
+  rw [run] at frame
+  exact frame
+
+theorem digest_call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp out query : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (args : List (ExpHOL 64))
+    (read : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) args=some [.val (.word stp),.val (.word out)])
+    (away : CopyGeneral.Away out query 32)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "sha256_finish") args)=(none,post)) :
+    post.memory query=source.memory query := by
+  have code : source.code.lookup (ofString "sha256_finish")=some ([(ofString "stp",.one),(ofString "out",.one)],Code.body .finish,.one):=by
+    simpa only [Code.name,Code.formals,Code.shape,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+      declToHOL,funDeclToHOL,Guest.Software.guestFn_sha256_finish,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+      using Code.installed source.code installed .finish
+  obtain ⟨callee,called,stateCell,cell⟩:=word_pair_environment source.code.lookup (ofString "sha256_finish") (ofString "stp") (ofString "out")
+    (Code.body .finish) .one stp out (by decide) code
+  exact MemoryAt.call_normal source post (ofString "sha256_finish") args [.val (.word stp),.val (.word out)] (Code.body .finish) callee .one query read called
+    (fun target value run=>finish_memory (callEntryStateHOLFinite source callee) target out query installed cell away value run) normal
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.state_call_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.compression_call_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.digest_call_memory
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+set_option maxRecDepth 100000 in
+/-- Only the compression-state pointer is needed to frame a normal block
+call; its other argument may be any actual successful scalar expression. -/
+theorem compression_first_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (first second : ExpHOL 64) (stp query : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (read : eval source first=some (.val (.word stp)))
+    (away : ∀ offset : Nat,offset<64→ query≠stp+BitVec.ofNat 64 offset)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "sha256_block") [first,second])=(none,post)) :
+    post.memory query=source.memory query := by
+  have code : source.code.lookup (ofString "sha256_block")=some ([(ofString "stp",.one),(ofString "blk",.one)],Code.body .block,.one):=by
+    simpa only [Code.name,Code.formals,Code.shape,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+      declToHOL,funDeclToHOL,Guest.Software.guestFn_sha256_block,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+      using Code.installed source.code installed .block
+  apply first_word_call_memory source post (ofString "sha256_block") (ofString "stp") (ofString "blk") (Code.body .block) .one
+    first second stp query (by decide) code read ?_ normal
+  intro callee target value cell run
+  have frame:=block_memory (callEntryStateHOLFinite source callee) stp query cell away
+  rw [run] at frame
+  exact frame
+
+theorem blocks_globals (key : MlS) (code) (installed : OriginalCode.Installed code) : GlobalEffects.Preserves key code blocks :=
+  GlobalEffects.loop key code blockTest blockIteration (GlobalEffects.sequence key code blockCall blockIncrement
+    (compression_call_globals key code installed blockArguments) (GlobalEffects.assign key code (ofString "i") _))
+
+/-- Every real normal block loop only writes the64-byte state. No initialized
+input block contents, fixed counter, digest value or later success is needed. -/
+theorem blocks_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp query : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (stateCell : source.globals.lookup (ofString "sha_st")=some (.val (.word stp)))
+    (away : ∀ offset : Nat,offset<64→ query≠stp+BitVec.ofNat 64 offset)
+    (normal : evaluateHOLFiniteState source blocks=(none,post)) : post.memory query=source.memory query := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>current.globals.lookup (ofString "sha_st")=some (.val (.word stp))
+  apply MemoryAt.loop_normal source.code (ofString "len") blockTest blockIteration query block_iteration_local.summary_full invariant ?_
+    source post rfl stateCell normal
+  intro current codeEq ready observed read nonzero funded target bodyRun
+  change evaluateHOLFiniteState (decClockHOLFinite current) (.seq blockCall blockIncrement)=(none,target) at bodyRun
+  have currentInstalled : OriginalCode.Installed current.code:=by rw [codeEq]; exact installed
+  have kept:=(GlobalEffects.sequence (ofString "sha_st") current.code blockCall blockIncrement
+    (compression_call_globals (ofString "sha_st") current.code currentInstalled blockArguments) (GlobalEffects.assign (ofString "sha_st") current.code (ofString "i") _))
+    (decClockHOLFinite current) rfl
+  rw [bodyRun] at kept
+  have nextState : invariant target:=(congrArg Prod.snd kept).trans ready
+  obtain ⟨middle,front,back⟩:=sequence_none (decClockHOLFinite current) target blockCall blockIncrement bodyRun
+  have firstRead : eval (decClockHOLFinite current) (.var .global (ofString "sha_st"))=some (.val (.word stp)):=by
+    simpa only [eval,evalHOLExact,toExact,invariant,decClockHOLFinite,decClockHOLExact] using ready
+  have frame:=compression_first_memory (decClockHOLFinite current) middle (.var .global (ofString "sha_st")) (.op .add [localVar "p",localVar "i"])
+    stp query currentInstalled firstRead away front
+  have assigned:=MemoryAt.assign_current middle .local (ofString "i") (.op .add [localVar "i",.const 64#64]) query
+  change (evaluateHOLFiniteState middle blockIncrement).2.memory query=middle.memory query at assigned
+  rw [back] at assigned
+  exact ⟨nextState,assigned.trans frame⟩
+
+theorem blocks_local (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (key : MlS) (different : key≠ofString "i")
+    (normal : evaluateHOLFiniteState source blocks=(none,post)) : post.locals.lookup key=source.locals.lookup key :=
+  counter_loop_local source post blockTest (ofString "sha256_block") blockArguments "i" (.op .add [localVar "i",.const 64#64]) key different normal
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.compression_first_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.blocks_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.blocks_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.blocks_local
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Actual allocated SHA workspace. No hash value, mapped input read or
+future successful call is included. -/
+structure Environment (source : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad : BitVec 64) : Prop where
+  installed : OriginalCode.Installed source.code
+  domain : source.memaddrs=InitE.ordinaryDomain
+  stateGlobal : source.globals.lookup (ofString "sha_st")=some (.val (.word stp))
+  padGlobal : source.globals.lookup (ofString "sha_pad")=some (.val (.word pad))
+  stateArena : AllocatedBytes.Arena stp 64
+  padArena : AllocatedBytes.Arena pad 128
+  stateAligned : stp.toNat%8=0
+  padAligned : pad.toNat%8=0
+
+theorem Environment.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {stp pad : BitVec 64}
+    (ready : Environment source stp pad) (same : LocalEffects.erase target=LocalEffects.erase source) : Environment target stp pad := by
+  have code:=congrArg PanSemStateFiniteExact.code same
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs same
+  have globals:=congrArg PanSemStateFiniteExact.globals same
+  change target.code=source.code at code
+  change target.memaddrs=source.memaddrs at domain
+  change target.globals=source.globals at globals
+  exact ⟨by rw [code]; exact ready.installed,domain.trans ready.domain,by rw [globals]; exact ready.stateGlobal,
+    by rw [globals]; exact ready.padGlobal,ready.stateArena,ready.padArena,ready.stateAligned,ready.padAligned⟩
+
+theorem Environment.after {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {stp pad : BitVec 64}
+    (ready : Environment source stp pad) (program : ProgHOL 64) (result : Option (PanSemResultExact 64))
+    (globals : ∀ key,GlobalEffects.Preserves key source.code program)
+    (run : evaluateHOLFiniteState source program=(result,target)) : Environment target stp pad := by
+  have fields:=evaluation_fields source target program result run
+  have state:=globals (ofString "sha_st") source rfl
+  have padding:=globals (ofString "sha_pad") source rfl
+  rw [run] at state padding
+  exact ⟨by rw [fields.2.2.2]; exact ready.installed,fields.1.trans ready.domain,
+    (congrArg Prod.snd state).trans ready.stateGlobal,(congrArg Prod.snd padding).trans ready.padGlobal,
+    ready.stateArena,ready.padArena,ready.stateAligned,ready.padAligned⟩
+
+structure Frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad query : BitVec 64) : Prop where
+  environment : Environment target stp pad
+  memory : target.memory query=source.memory query
+  locals : ∀ key,target.locals.lookup key=source.locals.lookup key
+
+theorem Frame.cell {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {stp pad query : BitVec 64}
+    (frame : Frame source target stp pad query) (key : MlS) (value : ValueHOL 64)
+    (cell : source.locals.lookup key=some value) : target.locals.lookup key=some value := (frame.locals key).trans cell
+
+theorem zero_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad dst query : BitVec 64) (length : Nat)
+    (environment : Environment source stp pad) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (Zero.values dst length))
+    (arena : AllocatedBytes.Arena dst length) (aligned : dst.toNat%8=0) (multiple : length%8=0)
+    (away : ∀ offset<length,query≠byteAddress dst offset)
+    (run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "memzero") arguments)=(none,post)) : Frame source post stp pad query :=
+  ⟨environment.after _ _ (fun key=>CurrentKeccak.Hash.zero_call_globals key source.code environment.installed arguments) run,
+   MemoryAt.zero_normal source post arguments dst query length args environment.installed environment.domain arena aligned multiple away run,
+   fun key=>CallNormal.ignored_lookup source post key (ofString "memzero") arguments run⟩
+
+theorem copy_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad src dst query : BitVec 64) (length : Nat)
+    (environment : Environment source stp pad) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (CopyGeneral.values dst src length))
+    (inputArena : AllocatedBytes.Arena src length) (outArena : AllocatedBytes.Arena dst length) (away : CopyGeneral.Away dst query length)
+    (run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "memcpy") arguments)=(none,post)) : Frame source post stp pad query :=
+  ⟨environment.after _ _ (fun key=>CurrentKeccak.Hash.copy_call_globals key source.code environment.installed arguments) run,
+   MemoryAt.copy_normal source post arguments src dst query length args environment.installed environment.domain inputArena outArena away run,
+   fun key=>CallNormal.ignored_lookup source post key (ofString "memcpy") arguments run⟩
+
+theorem compression_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad blk query : BitVec 64)
+    (environment : Environment source stp pad) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word stp),.val (.word blk)])
+    (away : ∀ offset : Nat,offset<64→ query≠stp+BitVec.ofNat 64 offset)
+    (run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "sha256_block") arguments)=(none,post)) : Frame source post stp pad query :=
+  ⟨environment.after _ _ (fun key=>compression_call_globals key source.code environment.installed arguments) run,
+   compression_call_memory source post stp blk query environment.installed arguments args away run,
+   fun key=>CallNormal.ignored_lookup source post key (ofString "sha256_block") arguments run⟩
+
+theorem byte_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad address query : BitVec 64)
+    (environment : Environment source stp pad) (destination expression : ExpHOL 64)
+    (read : eval source destination=some (.val (.word address))) (away : query≠panByteAlignHOL (width:=64) address)
+    (run : evaluateHOLFiniteState source (.storeByte destination expression)=(none,post)) : Frame source post stp pad query := by
+  have frame:=byte_store_normal_frame source post destination expression address read run
+  exact ⟨environment.after _ _ (fun key=>GlobalEffects.byte_store key source.code destination expression) run,
+    frame.2 query away,by intro key; rw [frame.1]⟩
+
+theorem digest_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad out query : BitVec 64)
+    (environment : Environment source stp pad) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word stp),.val (.word out)])
+    (away : CopyGeneral.Away out query 32)
+    (run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "sha256_finish") arguments)=(none,post)) : Frame source post stp pad query :=
+  ⟨environment.after _ _ (fun key=>digest_call_globals key source.code environment.installed arguments) run,
+   digest_call_memory source post stp out query environment.installed arguments args away run,
+   fun key=>CallNormal.ignored_lookup source post key (ofString "sha256_finish") arguments run⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.Environment.of_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.Environment.after
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.Frame.cell
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.zero_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.copy_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.compression_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.byte_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.digest_frame

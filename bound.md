@@ -2224,3 +2224,31 @@ files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage50%weekly/0resetcredits. Next: complete actual SHA workspace/
 output/caller memory frames, request-hash loop and BAL/main continuation,
 formal target composition, dominant-slack review and final cleanup.
+
+
+## Current SHA global, digest and block-loop memory frames
+
+All actual general SHA outcomes retain every global, including the real
+state/pad pointers and heap. The original BE32 writer frame is checked from
+current syntax and its same-call first-argument ABI; actual second-argument
+read/shape success comes from the real normal call. The eight-iteration
+finish loop and complete digest body therefore preserve every memory word
+outside its32output bytes, without supplied digest contents or later success.
+
+Actual state-init/compression/digest caller frames retain the same protected
+word through their ordinary call restoration. The real block loop only
+writes its64-byte state. Its memory invariant only needs the actual state
+global; counter/length progress is separately checked for the source bound.
+Current allocated workspace Environment/Frame helpers now retain real globals,
+domain, caller locals and protected memory through actual zero/copy/byte-store/
+compression/digest calls. Padding placement and complete SHA/main caller
+composition remain open. The generic constant-loop memory proof was ported
+to the currently available contradiction tactic; no hypothesis was added.
+
+Validation: current-general-sha-helper-memory-v6.log PASS2711jobs, permitted
+printed axioms only. Index8700modules/18095facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K/full
+verifier success. Usage50%weekly/0resetcredits. Next: current optimized64-bit
+length-writer memory frame, full SHA padding/body/caller frame, request-hash
+and BAL/main continuation, formal target composition, dominant-slack review
+and final cleanup.

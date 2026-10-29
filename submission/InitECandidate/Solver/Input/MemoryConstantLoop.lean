@@ -36,7 +36,8 @@ theorem constant_loop_normal (code) (counter marker : MlS) (body : ProgHOL 64) (
       simp [evalHOLFinite,evalHOLExact,toExact,indexCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,Flapjack.Compiler.Encoders.Asm.holAsmSignedLess,
         iNumber,lengthNumber,show index<9223372036854775808 from by omega,small]
     have active : index<length := by
-      by_contra inactive
+      apply Classical.byContradiction
+      intro inactive
       rw [if_neg inactive] at expected
       have zero : word=0#64 := by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
       exact nonzero zero

@@ -427,7 +427,7 @@ build evidence, not complete verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:49%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:50%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them
@@ -2169,3 +2169,31 @@ closure0/fixed files unchanged. Claim infinity; no global finite target K/full
 verifier success. Usage49%weekly/0resetcredits. Next: actual general SHA/block/
 finish contracts, request-hash loop/caller and BAL Keccak suffix, remaining
 main, formal target composition, dominant-slack review and final cleanup.
+
+## Current general software SHA helper checks
+
+The actual SHA84/85/86/87 declarations and code indices are now checked.
+The original expanded state initializer and compression block are kernel-
+checked straight bodies:0body source-call/loop ticks on every outcome, and
+every global retained. Their substantial straight-line target work is still
+an open static-cost obligation.
+
+A shared scalar-word-store frame reuses the existing checked straight-prefix
+composition rules. Successful const/op/shift values flatten to at most one
+word, failed stores keep memory unchanged, and the literal SHA state/body
+syntax is checked against its stable stp and64-byte region. Every actual
+initializer/block outcome therefore preserves memory outside that state,
+without successful-read, digest-value or future-body-return premises.
+
+Original sha256_finish86's real8-iteration st_be32 loop costs≤16body source
+ticks on every outcome, including errors and exhausted clocks. Each original
+st_be32 has0body ticks and a single caller tick; normal bodies derive i++.
+The full general SHA loop/padding and complete memory/caller frame remain next.
+
+Validation: current-general-sha-finish-cost-v2.log PASS2710jobs; permitted
+printed axioms only. Index8700modules/18042facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K/full
+verifier success. Usage50%weekly/0resetcredits. Next: share the existing stride
+rule across actual n/len locals, SHA block loop/padding/output frames, actual
+request-hash and BAL/main continuation, formal target composition, dominant-
+slack review and final cleanup.

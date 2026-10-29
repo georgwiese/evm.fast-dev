@@ -2,6 +2,9 @@ import InitECandidate.Solver.Input.CurrentVerify.Withdrawals
 import InitECandidate.Solver.Input.StraightBody
 import InitECandidate.Solver.Input.CallPrefixLocalResult
 import InitECandidate.Solver.Input.AssignNormal
+import InitECandidate.Solver.Input.ScalarStoreMemory
+import InitECandidate.Solver.Input.ConstantCounterCost
+import InitECandidate.Solver.Input.ClockCostCurrentValue
 import InitECandidate.Solver.WitnessRadix.CopyNormalCall
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
@@ -1668,3 +1671,251 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.caller_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.to_after_encoder
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.to_before_hash
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix QueryBranch
+
+namespace Code
+inductive Routine where | stateInit | block | finish | hash
+
+def declaration : Routine→Decl (BitVec 64)
+  | .stateInit=>Guest.Software.guestFn_sha256_state_init
+  | .block=>Guest.Software.guestFn_sha256_block
+  | .finish=>Guest.Software.guestFn_sha256_finish
+  | .hash=>Guest.Software.guestFn_sha256
+
+def entry (routine : Routine):=GasBudget.OriginalCodeEnvironment.originalEntry (declaration routine)
+def name (routine : Routine):=(entry routine).1
+def formals (routine : Routine):=(entry routine).2.1
+def body (routine : Routine):=(entry routine).2.2.1
+def shape (routine : Routine):=(entry routine).2.2.2
+
+set_option maxRecDepth 100000 in
+theorem installed (code) (installed : OriginalCode.Installed code) (routine : Routine) :
+    code.lookup (name routine)=some (formals routine,body routine,shape routine) := by
+  cases routine with
+  | stateInit=>exact OriginalCode.indexed code installed 84 (entry .stateInit) (by rfl)
+  | block=>exact OriginalCode.indexed code installed 85 (entry .block) (by rfl)
+  | finish=>exact OriginalCode.indexed code installed 86 (entry .finish) (by rfl)
+  | hash=>exact OriginalCode.indexed code installed 87 (entry .hash) (by rfl)
+end Code
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem state_supported : StraightBody.accepts (Code.body .stateInit)=true := by
+  simp only [Code.body,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,
+    Guest.Software.guestFn_sha256_state_init,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  rfl
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem block_supported : StraightBody.accepts (Code.body .block)=true := by
+  simp only [Code.body,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,
+    Guest.Software.guestFn_sha256_block,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  rfl
+
+/-- The actual expanded compression has no source calls or loops. Its
+large straight-line target work still needs a separate static allowance. -/
+theorem state_cost (code) : ClockCost.Bound code (Code.body .stateInit) 0 :=
+  ClockCost.of_quiet code _ (StraightBody.effects (ofString "sha_st") code _ state_supported).1
+
+theorem block_cost (code) : ClockCost.Bound code (Code.body .block) 0 :=
+  ClockCost.of_quiet code _ (StraightBody.effects (ofString "sha_st") code _ block_supported).1
+
+theorem state_globals (key : MlS) (code) : GlobalEffects.Preserves key code (Code.body .stateInit) :=
+  (StraightBody.effects key code _ state_supported).2
+
+theorem block_globals (key : MlS) (code) : GlobalEffects.Preserves key code (Code.body .block) :=
+  (StraightBody.effects key code _ block_supported).2
+
+namespace WordFrame
+
+def scalar : ExpHOL 64→Bool
+  | .const _ | .op _ _ | .shift _ _ _=>true
+  | _=>false
+
+theorem scalar_length (expression : ExpHOL 64) (checked : scalar expression=true)
+    (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : ValueHOL 64)
+    (read : eval source expression=some value) : (flattenHOL value).length≤1 := by
+  cases expression with
+  | const word=>
+    have actual : eval source (.const word)=some (.val (.word word)):=rfl
+    have same:=Option.some.inj (read.symm.trans actual)
+    rw [same]
+    simp [flattenHOL]
+  | op operator arguments=>rw [op_length source operator arguments value read]
+  | shift operator left right=>rw [MemoryAt.shift_length source operator left right value read]
+  | _=>simp only [scalar] at checked; cases checked
+
+/-- Successful scalar stores touch one word; every failed store leaves
+memory unchanged. This includes actual read/mapping failures. -/
+theorem scalar_store_current (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (address expression : ExpHOL 64) (pointer query : BitVec 64)
+    (read : eval source address=some (.val (.word pointer)))
+    (small : ∀ value,eval source expression=some value→ (flattenHOL value).length≤1)
+    (away : query≠pointer) : (evaluateHOLFiniteState source (.store address expression)).2.memory query=source.memory query := by
+  by_cases normal : (evaluateHOLFiniteState source (.store address expression)).1=none
+  · exact MemoryAt.scalar_store_normal source _ address expression pointer query read small away (Prod.ext normal rfl)
+  · classical
+    simp only [eval] at read
+    rw [evaluateHOLFiniteState_store,read] at normal ⊢
+    dsimp only at normal ⊢
+    cases valueRead : evalHOLExact source.toExact expression with
+    | none=>simp [valueRead]
+    | some value=>
+      simp only [valueRead] at normal ⊢
+      cases stored : panMemStoresHOL pointer (flattenHOL value) source.memaddrs source.memory with
+      | none=>simp [stored]
+      | some memory=>simp [stored] at normal
+
+def accepts (key : MlS) (size : Nat) : ProgHOL 64→Bool
+  | .skip | .return _=>true
+  | .assign .local name _=>decide (name≠key)
+  | .store address expression=>match ByteOutputFrame.offset? key address with
+    | some offset=>decide (offset.toNat<size) && scalar expression
+    | none=>false
+  | .seq first second=>accepts key size first && accepts key size second
+  | .dec name _ _ body=>decide (name≠key) && accepts key size body
+  | _=>false
+
+/-- Reuse the checked straight-prefix composition rules, with scalar
+word stores in place of byte stores. No successful body run is supplied. -/
+theorem sound (key : MlS) (size : Nat) (program : ProgHOL 64) (checked : accepts key size program=true)
+    (pointer query : BitVec 64) (away : ∀ offset : Nat,offset<size→ query≠pointer+BitVec.ofNat 64 offset) :
+    ByteOutputFrame.Frame key pointer query program := by
+  cases program with
+  | skip=>exact ByteOutputFrame.sound key 0 .skip rfl pointer query (by intro offset inside; omega)
+  | «return» expression=>exact ByteOutputFrame.sound key 0 (.return expression) rfl pointer query (by intro offset inside; omega)
+  | assign kind name expression=>
+    cases kind with
+    | «global»=>cases checked
+    | «local»=>exact ByteOutputFrame.sound key 0 (.assign .local name expression) checked pointer query (by intro offset inside; omega)
+  | store address expression=>
+    unfold accepts at checked
+    cases found : ByteOutputFrame.offset? key address with
+    | none=>simp only [found] at checked; cases checked
+    | some offset=>
+      have parts : offset.toNat<size ∧ scalar expression=true:=by
+        simpa only [found,Bool.and_eq_true,decide_eq_true_eq] using checked
+      intro source cell
+      have read:=ByteOutputFrame.offset_sound key address offset found source pointer cell
+      have outside : query≠pointer+offset:=by
+        simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using away offset.toNat parts.1
+      refine ⟨scalar_store_current source address expression (pointer+offset) query read (fun value evaluated=>scalar_length expression parts.2 source value evaluated) outside,?_⟩
+      have locals : (evaluateHOLFiniteState source (.store address expression)).2.locals=source.locals:=by
+        rw [evaluateHOLFiniteState_store]
+        repeat first | rfl | split
+      intro normal
+      rw [locals]
+      exact cell
+  | seq first second=>
+    have parts : accepts key size first=true ∧ accepts key size second=true:=by simpa only [accepts,Bool.and_eq_true] using checked
+    exact ByteOutputFrame.sequence key pointer query first second (sound key size first parts.1 pointer query away) (sound key size second parts.2 pointer query away)
+  | dec name shape expression body=>
+    have parts : name≠key ∧ accepts key size body=true:=by simpa only [accepts,Bool.and_eq_true,decide_eq_true_eq] using checked
+    exact ByteOutputFrame.declared key name pointer query shape expression body parts.1 (sound key size body parts.2 pointer query away)
+  | _=>simp only [accepts] at checked; cases checked
+termination_by structural program
+
+end WordFrame
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem state_frame_supported : WordFrame.accepts (ofString "stp") 64 (Code.body .stateInit)=true := by
+  simp only [Code.body,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,
+    Guest.Software.guestFn_sha256_state_init,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  rfl
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem block_frame_supported : WordFrame.accepts (ofString "stp") 64 (Code.body .block)=true := by
+  simp only [Code.body,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,
+    Guest.Software.guestFn_sha256_block,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  rfl
+
+theorem state_memory (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64)
+    (cell : source.locals.lookup (ofString "stp")=some (.val (.word pointer)))
+    (away : ∀ offset : Nat,offset<64→ query≠pointer+BitVec.ofNat 64 offset) :
+    (evaluateHOLFiniteState source (Code.body .stateInit)).2.memory query=source.memory query :=
+  (WordFrame.sound (ofString "stp") 64 (Code.body .stateInit) state_frame_supported pointer query away source cell).1
+
+theorem block_memory (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64)
+    (cell : source.locals.lookup (ofString "stp")=some (.val (.word pointer)))
+    (away : ∀ offset : Nat,offset<64→ query≠pointer+BitVec.ofNat 64 offset) :
+    (evaluateHOLFiniteState source (Code.body .block)).2.memory query=source.memory query :=
+  (WordFrame.sound (ofString "stp") 64 (Code.body .block) block_frame_supported pointer query away source cell).1
+
+set_option maxRecDepth 100000 in
+theorem be32_supported : StraightBody.accepts (CurrentStartup.Code.body .st_be32)=true := by
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,
+    Guest.Software.guestFn_st_be32,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  rfl
+
+theorem be32_cost (code) : ClockCost.Bound code (CurrentStartup.Code.body .st_be32) 0 :=
+  ClockCost.of_quiet code _ (StraightBody.effects (ofString "p") code _ be32_supported).1
+
+def finishArguments : List (ExpHOL 64):=[.op .add [localVar "out",.panop .mul [localVar "i",.const 4#64]],
+  .load .one (.op .add [localVar "stp",.panop .mul [localVar "i",.const 8#64]])]
+def finishCall : ProgHOL 64:=.call (some (none,none)) (ofString "st_be32") finishArguments
+def finishIncrement : ProgHOL 64:=.assign .local (ofString "i") (.op .add [localVar "i",.const 1#64])
+def finishIteration : ProgHOL 64:=.seq finishCall finishIncrement
+def finishTest : ExpHOL 64:=.cmp .less (localVar "i") (.const 8#64)
+def finishTail : ProgHOL 64:=.seq (.while finishTest finishIteration) (.return (.const 0#64))
+
+set_option maxRecDepth 100000 in
+theorem finish_shape : Code.body .finish=.dec (ofString "i") .one (.const 0#64) finishTail := by
+  simp only [Code.body,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,
+    Guest.Software.guestFn_sha256_finish,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,
+    finishTail,finishTest,finishIteration,finishCall,finishArguments,finishIncrement,localVar]
+
+theorem finish_iteration_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code finishIteration 1 := by
+  have called:=ClockCost.call_body code (some none) (ofString "st_be32") finishArguments
+    (CurrentStartup.Code.formals .st_be32) (CurrentStartup.Code.body .st_be32) (CurrentStartup.Code.shape .st_be32) 0
+    (CurrentStartup.Code.installed code installed .st_be32) (be32_cost code)
+  exact ClockCost.sequence code finishCall finishIncrement 1 0 called (ClockCost.assign code (ofString "i") _)
+
+theorem finish_iteration_advance : CounterFlow.Advances (ofString "i") 1 finishIteration :=
+  CounterFlow.sequence (ofString "i") finishCall finishIncrement 0 1
+    (CounterFlow.preserved _ _ (.call none _ _ (by simp))) (CounterFlow.increment _)
+
+theorem finish_iteration_local : LocalPrefix (ofString "stp") finishIteration :=
+  .seq (.call none _ _ (by simp)) (.assign (ofString "i") _ (by decide))
+
+/-- Every real digest-output outcome costs at most eight loop ticks plus
+eight literal st_be32 calls. Failed reads and exhausted clocks are included. -/
+theorem finish_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code (Code.body .finish) 16 := by
+  intro source codeEq
+  have currentInstalled : OriginalCode.Installed source.code:=by rw [codeEq]; exact installed
+  rw [finish_shape]
+  apply ClockCost.declared_value_current source (ofString "i") .one (.const 0#64) (.val (.word 0#64)) finishTail 16 rfl
+  let entered:=bind source "i" 0#64
+  have loopPrice:=CounterFlow.constant_loop_cost source.code (ofString "i") (ofString "stp") finishIteration 1 8 (by decide)
+    (finish_iteration_cost source.code currentInstalled) finish_iteration_advance finish_iteration_local entered 0#64 rfl (bind_lookup_same _ _ _) (by decide)
+  exact ClockCost.sequence_current entered (.while finishTest finishIteration) (.return (.const 0#64)) 16 0 loopPrice (ClockCost.returned source.code (.const 0#64))
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.Code.installed
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.state_supported
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.block_supported
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.state_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.block_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.state_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.block_globals
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.WordFrame.scalar_length
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.WordFrame.scalar_store_current
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.WordFrame.sound
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.state_frame_supported
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.block_frame_supported
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.state_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.block_memory
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be32_supported
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be32_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_iteration_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_iteration_advance
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_iteration_local
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_cost

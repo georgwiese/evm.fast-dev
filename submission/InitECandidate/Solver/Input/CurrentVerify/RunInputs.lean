@@ -55,6 +55,55 @@ structure Data (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Gue
 /-- Shared transport of all decoded input facts through an actual earlier
 memory interval. The advanced heap and hash/arena state are independently
 obtained from the same normal caller; no later execution is assumed. -/
+theorem Data.of_interval_from {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (cutoff : Nat) (inputLower : cutoff≤pointer.toNat)
+    (arena : CurrentStartup.ArenaState target) (little : target.be=false)
+    (environment : CurrentKeccak.Hash.Environment target 2701132160#64 2701132360#64)
+    (mptHash : target.globals.lookup (ofString "mpt_hash_scratch")=some (.val (.word 2701134768#64)))
+    (mptKey : target.globals.lookup (ofString "mpt_key_scratch")=some (.val (.word 2701134808#64)))
+    (mptEmpty : target.globals.lookup (ofString "empty_trie_root")=some (.val (.word 2701134640#64)))
+    (shaState : target.globals.lookup (ofString "sha_st")=some (.val (.word 2701131776#64)))
+    (shaPad : target.globals.lookup (ofString "sha_pad")=some (.val (.word 2701131840#64)))
+    (u256 : target.globals.lookup (ofString "u256_ws")=some (.val (.word 2701134824#64)))
+    (heap : NormalHeapEffects.AtLeast (boundary+32) target)
+    (siLocal : target.locals.lookup (ofString "si")=some (.val (.word si)))
+    (memory : ∀ query : BitVec 64,cutoff≤query.toNat→query.toNat<boundary→target.memory query=source.memory query) :
+    Data input target pointer si record gasWord boundary := by
+  have siLower : cutoff≤si.toNat:=by have afterInput:=data.siAfterInput;omega
+  have recordLower : cutoff≤record.toNat:=by have afterInput:=data.copied.beforeRecord;omega
+  obtain ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,nodeImage,codeImage,headerImage⟩:=data.witnesses
+  have siFrame (offset : Nat) (inside : offset<96) : target.memory (si+BitVec.ofNat 64 offset)=source.memory (si+BitVec.ofNat 64 offset) := by
+    have number : (si+BitVec.ofNat 64 offset).toNat=si.toNat+offset:=byteAddress_toNat si offset (by have upper:=data.siArena.upper; omega)
+    apply memory
+    · rw [number]; have lower:=siLower; omega
+    · rw [number]; have before:=nodeImage.siBefore; omega
+  have siZero : target.memory si=source.memory si:=by simpa only [BitVec.add_zero] using siFrame 0 (by decide)
+  have payloadCell : target.memory si=.word record:=siZero.trans data.payloadCell
+  have gasNumber : (record+88#64).toNat=record.toNat+88:=byteAddress_toNat record 88 (by have upper:=data.recordArena.upper; omega)
+  have gasFrame : target.memory (record+88#64)=source.memory (record+88#64):=memory _
+    (by rw [gasNumber]; have lower:=recordLower; omega) (by rw [gasNumber]; have before:=data.recordInside.2; omega)
+  obtain ⟨rq,requestStart,requestSize,counts,rqStored,requestImage,requestBefore⟩:=data.requests
+  have requestMemory (offset : Nat) (inside : offset<80) : target.memory (rq+BitVec.ofNat 64 offset)=source.memory (rq+BitVec.ofNat 64 offset):=by
+    have number:=byteAddress_toNat rq offset (by have upper:=requestImage.cursorArena.upper; omega)
+    apply memory
+    · change (rq+BitVec.ofNat 64 offset).toNat=rq.toNat+offset at number
+      have lower:=inputLower
+      have afterInput:=requestImage.cursorAfterInput
+      omega
+    · change (rq+BitVec.ofNat 64 offset).toNat=rq.toNat+offset at number
+      omega
+  have requests : RequestImage input target pointer si boundary:=⟨rq,requestStart,requestSize,counts,(siFrame 32 (by decide)).trans rqStored,
+    requestImage.of_memory (by intro index inside; exact ⟨requestMemory (16*index) (by omega),requestMemory (16*index+8) (by omega)⟩),requestBefore⟩
+  exact ⟨arena,little,environment,mptHash,mptKey,mptEmpty,shaState,shaPad,u256,data.inputAfterWorkspace,data.siAfterInput,heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
+    payloadCell,(siFrame 24 (by decide)).trans data.parentCell,gasFrame.trans data.gasCell,data.gasBound,
+    data.payload.of_interval (fun query lower upper=>memory query (Nat.le_trans recordLower lower) upper) heap,
+    data.copied.of_interval_from cutoff inputLower boundary (by have before:=data.recordInside.2; omega) (arena.domain.trans data.arena.domain.symm) (little.trans data.little.symm) memory,
+    ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
+    nodeImage.of_interval_from cutoff inputLower siLower (by decide) memory,codeImage.of_interval_from cutoff inputLower siLower (by decide) memory,headerImage.of_interval_from cutoff inputLower siLower (by decide) memory⟩,requests⟩
+
+
 theorem Data.of_interval {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
@@ -70,35 +119,7 @@ theorem Data.of_interval {input : Guest.InputBlob} {source target : PanSemStateF
     (siLocal : target.locals.lookup (ofString "si")=some (.val (.word si)))
     (memory : ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<boundary→target.memory query=source.memory query) :
     Data input target pointer si record gasWord boundary := by
-  obtain ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,nodeImage,codeImage,headerImage⟩:=data.witnesses
-  have siFrame (offset : Nat) (inside : offset<96) : target.memory (si+BitVec.ofNat 64 offset)=source.memory (si+BitVec.ofNat 64 offset) := by
-    have number : (si+BitVec.ofNat 64 offset).toNat=si.toNat+offset:=byteAddress_toNat si offset (by have upper:=data.siArena.upper; omega)
-    apply memory
-    · rw [number]; have lower:=nodeImage.siLower; omega
-    · rw [number]; have before:=nodeImage.siBefore; omega
-  have siZero : target.memory si=source.memory si:=by simpa only [BitVec.add_zero] using siFrame 0 (by decide)
-  have payloadCell : target.memory si=.word record:=siZero.trans data.payloadCell
-  have gasNumber : (record+88#64).toNat=record.toNat+88:=byteAddress_toNat record 88 (by have upper:=data.recordArena.upper; omega)
-  have gasFrame : target.memory (record+88#64)=source.memory (record+88#64):=memory _
-    (by rw [gasNumber]; have lower:=data.recordInside.1; omega) (by rw [gasNumber]; have before:=data.recordInside.2; omega)
-  obtain ⟨rq,requestStart,requestSize,counts,rqStored,requestImage,requestBefore⟩:=data.requests
-  have requestMemory (offset : Nat) (inside : offset<80) : target.memory (rq+BitVec.ofNat 64 offset)=source.memory (rq+BitVec.ofNat 64 offset):=by
-    have number:=byteAddress_toNat rq offset (by have upper:=requestImage.cursorArena.upper; omega)
-    apply memory
-    · change (rq+BitVec.ofNat 64 offset).toNat=rq.toNat+offset at number
-      have lower:=requestImage.inputLower
-      have afterInput:=requestImage.cursorAfterInput
-      omega
-    · change (rq+BitVec.ofNat 64 offset).toNat=rq.toNat+offset at number
-      omega
-  have requests : RequestImage input target pointer si boundary:=⟨rq,requestStart,requestSize,counts,(siFrame 32 (by decide)).trans rqStored,
-    requestImage.of_memory (by intro index inside; exact ⟨requestMemory (16*index) (by omega),requestMemory (16*index+8) (by omega)⟩),requestBefore⟩
-  exact ⟨arena,little,environment,mptHash,mptKey,mptEmpty,shaState,shaPad,u256,data.inputAfterWorkspace,data.siAfterInput,heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
-    payloadCell,(siFrame 24 (by decide)).trans data.parentCell,gasFrame.trans data.gasCell,data.gasBound,
-    data.payload.of_interval (fun query lower upper=>memory query (Nat.le_trans data.recordInside.1 lower) upper) heap,
-    data.copied.of_interval boundary (by have before:=data.recordInside.2; omega) (arena.domain.trans data.arena.domain.symm) (little.trans data.little.symm) memory,
-    ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
-    nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩,requests⟩
+  exact data.of_interval_from 2701134824 data.copied.lower arena little environment mptHash mptKey mptEmpty shaState shaPad u256 heap siLocal memory
 
 theorem Data.of_frame {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
@@ -171,3 +192,5 @@ end InitECandidate.Solver.Input.CurrentVerify
 #print axioms InitECandidate.Solver.Input.CurrentVerify.through_wrappers
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.Data.of_interval
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.of_interval_from

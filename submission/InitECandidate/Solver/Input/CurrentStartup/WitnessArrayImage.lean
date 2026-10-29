@@ -25,11 +25,12 @@ structure Image (input : Guest.InputBlob) (state : PanSemStateFiniteExact 64 Gue
 
 /-- The same physical image survives any actual earlier-memory frame.
 Empty decoded arrays require no readable zero pointer. -/
-theorem Image.of_interval {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem Image.of_interval_from {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si array : BitVec 64} {start length boundary offset itemLimit countLimit : Nat}
     (data : Image input source pointer si array start length boundary offset itemLimit countLimit)
+    (cutoff : Nat) (inputLower : cutoff≤pointer.toNat) (siLower : cutoff≤si.toNat)
     (offsetBound : offset+8<96)
-    (memory : ∀ query : BitVec 64,2701134824≤query.toNat → query.toNat<boundary → post.memory query=source.memory query) :
+    (memory : ∀ query : BitVec 64,cutoff≤query.toNat → query.toNat<boundary → post.memory query=source.memory query) :
     Image input post pointer si array start length boundary offset itemLimit countLimit := by
   have records : VarList.Records post input pointer array start length := by
     rcases data.records with empty|⟨plan,pointerEq,arrayEq,startEq,lengthEq,countEq,complete,valid⟩
@@ -46,11 +47,11 @@ theorem Image.of_interval {input : Guest.InputBlob} {source post : PanSemStateFi
       have before : plan.array.toNat+16*plan.count≤boundary := by rw [arrayEq,count]; exact data.before
       have rowFrame : post.memory (VarList.row plan.array index)=source.memory (VarList.row plan.array index) := by
         apply memory
-        · rw [rowNumber]; rw [pointerEq] at afterInput; have h:=data.inputLower; omega
+        · rw [rowNumber]; rw [pointerEq] at afterInput; have h:=inputLower; omega
         · rw [rowNumber]; omega
       have lengthFrame : post.memory (VarList.lengthCell plan.array index)=source.memory (VarList.lengthCell plan.array index) := by
         apply memory
-        · rw [lengthNumber]; rw [pointerEq] at afterInput; have h:=data.inputLower; omega
+        · rw [lengthNumber]; rw [pointerEq] at afterInput; have h:=inputLower; omega
         · rw [lengthNumber]; omega
       change _ ∧ _
       rw [rowFrame,lengthFrame]
@@ -58,11 +59,21 @@ theorem Image.of_interval {input : Guest.InputBlob} {source post : PanSemStateFi
   have siFrame (extra : Nat) (small : extra<96) : post.memory (si+BitVec.ofNat 64 extra)=source.memory (si+BitVec.ofNat 64 extra) := by
     have number : (si+BitVec.ofNat 64 extra).toNat=si.toNat+extra := byteAddress_toNat si extra (by have h:=data.siArena.upper; omega)
     apply memory
-    · rw [number]; have h:=data.siLower; omega
+    · rw [number]; have h:=siLower; omega
     · rw [number]; have h:=data.siBefore; omega
   exact ⟨data.siArena,data.siAligned,data.siLower,data.siBefore,data.inputLower,data.inside,data.before,records,data.lengths,data.countBound,
     (siFrame offset (by omega)).trans data.pointerCell,(siFrame (offset+8) offsetBound).trans data.countCell⟩
 
+theorem Image.of_interval {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si array : BitVec 64} {start length boundary offset itemLimit countLimit : Nat}
+    (data : Image input source pointer si array start length boundary offset itemLimit countLimit)
+    (offsetBound : offset+8<96)
+    (memory : ∀ query : BitVec 64,2701134824≤query.toNat → query.toNat<boundary → post.memory query=source.memory query) :
+    Image input post pointer si array start length boundary offset itemLimit countLimit := by
+  exact data.of_interval_from 2701134824 data.inputLower data.siLower offsetBound memory
+
 end InitECandidate.Solver.Input.CurrentStartup.WitnessArrays
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessArrays.Image.of_interval
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.WitnessArrays.Image.of_interval_from

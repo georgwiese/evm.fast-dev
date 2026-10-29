@@ -22,10 +22,10 @@ theorem CopiedInput.of_frame {input : Guest.InputBlob} {source target : PanSemSt
   exact ⟨Blob.HeapInput.of_fields source target input pointer memory.symm (MemoryMetadata.domain metadata).symm (MemoryMetadata.endian metadata).symm data.bytes,
     data.lower,data.aligned,data.beforeRecord⟩
 
-theorem CopiedInput.of_interval {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    {pointer record : BitVec 64} (data : CopiedInput input source pointer record) (boundary : Nat)
+theorem CopiedInput.of_interval_from {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer record : BitVec 64} (data : CopiedInput input source pointer record) (cutoff : Nat) (inputLower : cutoff≤pointer.toNat) (boundary : Nat)
     (recordBefore : record.toNat≤boundary) (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
-    (memory : ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<boundary→target.memory query=source.memory query) :
+    (memory : ∀ query : BitVec 64,cutoff≤query.toNat→query.toNat<boundary→target.memory query=source.memory query) :
     CopiedInput input target pointer record := by
   refine ⟨Blob.HeapInput.of_words source target input pointer data.bytes domain endian ?_,data.lower,data.aligned,data.beforeRecord⟩
   intro offset inside
@@ -33,11 +33,20 @@ theorem CopiedInput.of_interval {input : Guest.InputBlob} {source target : PanSe
   have backing:=AllocatedBytes.aligned_number (pointer+BitVec.ofNat 64 offset)
   apply memory
   · rw [backing,number]
-    have lower:=data.lower
+    have lower:=inputLower
+    have aligned:=data.aligned
     omega
   · rw [backing,number]
     have before:=data.beforeRecord
     omega
+
+
+theorem CopiedInput.of_interval {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer record : BitVec 64} (data : CopiedInput input source pointer record) (boundary : Nat)
+    (recordBefore : record.toNat≤boundary) (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
+    (memory : ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<boundary→target.memory query=source.memory query) :
+    CopiedInput input target pointer record := by
+  exact data.of_interval_from 2701134824 data.lower boundary recordBefore domain endian memory
 
 /-- The same real final decoder snapshot supplies the original byte image;
 main's actual root-hash call retains every physical backing word of it. -/
@@ -72,3 +81,5 @@ end InitECandidate.Solver.Input.CurrentVerify
 #print axioms InitECandidate.Solver.Input.CurrentVerify.CopiedInput.of_frame
 #print axioms InitECandidate.Solver.Input.CurrentVerify.CopiedInput.of_interval
 #print axioms InitECandidate.Solver.Input.CurrentVerify.main_copied_input
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.CopiedInput.of_interval_from

@@ -5269,3 +5269,38 @@ one-digit assigned division contract. Two-digit Taylor normalization,
 subtraction/remainder stores, Taylor/header/main, uniform target composition,
 exact K, dominant slack review and cleanup remain open. Historical untracked
 RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.
+
+
+## Decoded-data transport through actual arithmetic workspace writes
+
+Copied-input, witness-array and complete runtime-data frames now accept a
+proved physical lower boundary. Their existing APIs delegate to these shared
+proofs at the older boundary; no earlier main/hash/header contracts were lost.
+The new workspace metadata frame uses the actually derived2701135464cutoff,
+so arithmetic may legitimately write its allocated640-byte workspace.
+
+Data.after_one_digit_division now connects the completed original assigned
+u256_div contract directly to the same reached runtime Data. An actual normal
+call derives its required clock, exact quotient and real destination binding,
+and retains SI/gas/payload, copied bytes, witness/request images, heap and all
+workspace globals. Its earlier-memory frame follows from the actual u/q/r/v
+stores and checked workspace geometry; no future memory frame or normal
+helper result is supplied as an entry premise. The assigned destination is
+statically distinct from SI, as it is at the real Taylor accumulator call.
+
+Validation: current-u256-data-memory-frame-v1.log PASS3100jobs, including
+complete current before-validate_header main prefix and all5new printed facts;
+only permitted axioms. Index8700modules/18527facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K or
+full verifier success. Effort estimate remains50%, plausible40–60%.
+Usage33%weekly/0resetcredits, ordinary usage allowed. No new candidate paths;
+package stays65536entries.
+
+Next: complete the actual two-digit Taylor divisor path, including physical
+normalization, corrected quotient, subtraction and remainder stores, then
+connect Taylor/header/main and uniform target composition. For two-digit
+divisors the checked correction theorem gives the exact digit quotient;
+prove its connection to the actual subtraction before claiming that the
+add-back branch cannot execute. Exact K, dominant slack review and final cleanup remain.
+Historical untracked RlpLength/RlpWrite WIPs and executable/fixed premises
+stay untouched.

@@ -40,7 +40,7 @@ theorem body_path_normal (source : PanSemStateFiniteExact 64 Guest.HostMemory)
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat → target.memory address=source.memory address) ∧
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
-            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ TrieWalk.Uncached target.memory root := by
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ TrieWalk.Uncached target.memory root ∧ root≠0#64 := by
   obtain ⟨initial,initialMembers,initialHeap⟩:=initial_loop_model source heap node key level length pointer size graph limit nodeLower pathLower property
     values regions disjoint paths pathRegions separated query member nodeCell keyCell levelCell lengthCell pointerCell sizeCell before bounded payload floor domain installed heapCell frontier aligned
   obtain ⟨inner,clock,frame,continued⟩:=normal_setup source target value normal
@@ -48,7 +48,12 @@ theorem body_path_normal (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have safe : Input.LocalPrefix (ofString "klen") (.while test loopBody):=.loop test loop_body_safe
   obtain ⟨last,loopRun,returnRun⟩:=Input.sequence_returned (setup source) inner (.while test loopBody) (.return (localVar "result")) value
     (fun returned=>(safe.summary_full (setup source)).2.1 returned) continued
-  obtain ⟨finished,stopped,grows,members,memory,tags,fields,protectedWords,provenance,protection⟩:=loop_path_normal (setup source) last key length pointer size limit nodeLower pathLower property initial extra empty loopRun
+  obtain ⟨finished,stopped,grows,members,memory,tags,fields,protectedWords,provenance,protection,positive⟩:=loop_path_normal (setup source) last key length pointer size limit nodeLower pathLower property initial extra empty loopRun
+  have initialGo : initial.go=1#64:=by
+    simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using initial.goCell.symm.trans (setup_locals source).2.2
+  have initialSlot : initial.slot=0#64:=by
+    simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using initial.slotCell.symm.trans (setup_locals source).2.1
+  have resultPositive : finished.result≠0#64:=positive (Or.inr ⟨by rw [initialGo]; decide,initialSlot⟩)
   obtain ⟨read,innerEq⟩:=Input.return_normal last inner (localVar "result") value returnRun
   have expected : eval last (localVar "result")=some (.val (.word finished.result)):=by
     simp [eval,evalHOLExact,toExact,localVar,finished.resultCell]
@@ -72,7 +77,7 @@ theorem body_path_normal (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have heapGrows : heap.toNat≤finished.heap.toNat:=by rw [←initialHeap]; exact grows
   have evaluatedFields:=Input.evaluation_fields source target body (some (.returned value)) normal
   refine ⟨evaluatedFields.1,evaluatedFields.2.1,evaluatedFields.2.2.2,preserved,finalTags,finished.result,finished.heap,answer,finalHeapCell,finished.heapArena,finished.heapAligned,heapGrows,
-    next,inclusion,(by rw [same]; exact finished.resultMember),nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,?_,?_,?_,?_,?_⟩
+    next,inclusion,(by rw [same]; exact finished.resultMember),nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,?_,?_,?_,?_,?_,resultPositive⟩
   · rw [memoryEq]
     have initialFields : graph.PathFields (setup source).memory:=⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
     exact initialFields.trans graph initial.graph fields (by intro node live; rw [initialMembers]; exact live)

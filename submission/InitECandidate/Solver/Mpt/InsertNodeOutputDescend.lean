@@ -18,7 +18,7 @@ theorem descend_output (source target : PanSemStateFiniteExact 64 Guest.HostMemo
     (positive : level.toNat<nextLevel.toNat) (bounded : nextLevel.toNat≤length.toNat)
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
     (arena : AllocatedBytes.Arena heap 0) (aligned : heap.toNat%8=0)
-    (clean : TrieWalk.Uncached source.memory root)
+    (active : root≠0#64) (clean : TrieWalk.Uncached source.memory root)
     (endpoint : target=QueryBranch.bind (QueryBranch.bind (QueryBranch.bind (QueryBranch.bind (QueryBranch.bind source "r" root)
       "next_node" child) "next_slot" address) "next_level" nextLevel) "go" 1#64) :
     Nonempty (NodeOutput source target graph heap key length level limit nodeLower pathLower property) := by
@@ -49,6 +49,7 @@ theorem descend_output (source target : PanSemStateFiniteExact 64 Guest.HostMemo
     oldPathFields:=⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
     cacheFrame:=TrieWalk.Graph.CacheFrame.refl graph
     rootUncached:=clean
+    rootActive:=active
     protectedMemory:=by intro address safe before; rfl
     tags:=by intro node live active; rfl
     graph:=graph

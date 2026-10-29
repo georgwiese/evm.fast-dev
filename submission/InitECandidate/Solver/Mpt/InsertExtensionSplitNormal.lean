@@ -43,7 +43,7 @@ theorem extension_split_normal (source target : PanSemStateFiniteExact 64 Guest.
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
-            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ TrieWalk.Uncached target.memory root := by
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ TrieWalk.Uncached target.memory root ∧ root≠0#64 := by
   have subtraction : (length-level).toNat=length.toNat-level.toNat:=BitVec.toNat_sub_of_le (by rwa [BitVec.le_def])
   have suffix:=query.window graph source.be pathLower heap.toNat key level length.toNat (length-level).toNat before (by rw [subtraction])
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) splitArguments=
@@ -61,7 +61,7 @@ theorem extension_split_normal (source target : PanSemStateFiniteExact 64 Guest.
     rw [localsEq]
     simp [HolFiniteMapExact.update,FUPDATE,Ne.symm other]
   have currentBranch : ready.locals.lookup (ofString "br")=some (.val (.word heap)):=by rw [localsEq]; simp [HolFiniteMapExact.update,FUPDATE]
-  obtain ⟨root,resultLocals,finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalTags,finalHeap,finalHeapCell,finalArena,finalAligned,finalGrows,next,finalMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection,rootClean⟩:=
+  obtain ⟨root,resultLocals,finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalTags,finalHeap,finalHeapCell,finalArena,finalAligned,finalGrows,next,finalMembers,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection,rootClean,rootPositive⟩:=
     extension_result_normal ready inner currentHeap (wordAt source.memory (node+32#64)) prefixLength heap base limit nodeLower pathLower property
       baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated buffer branchMember (floor.trans grows)
       ((current _ (by decide)).trans segmentCell) ((current _ (by decide)).trans prefixCell) currentBranch
@@ -93,7 +93,7 @@ theorem extension_split_normal (source target : PanSemStateFiniteExact 64 Guest.
   rw [endpoint]
   exact ⟨root,restoredLocals,finalDomain.trans domainEq,finalEndian.trans endianEq,finalCode.trans codeEq,spent,olderMemory,tags,
     finalHeap,finalHeapCell,finalArena,finalAligned,grows.trans finalGrows,next,(fun current live=>finalMembers current (members current live)),rootMember,
-    nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection,rootClean branchClean⟩
+    nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection,rootClean branchClean,rootPositive (TrieWalk.allocated_nonzero frontier)⟩
 
 end InitECandidate.Solver.Mpt.Insert
 

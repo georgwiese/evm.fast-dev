@@ -34,7 +34,7 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
           (∀ node,next.valid node → graph.valid node ∨ heap.toNat≤node.toNat) ∧
           (∀ query : BitVec 64,graph.ProtectedWord query → query.toNat<heap.toNat →
             TrieWalk.PathWordAway key prefixLength.toNat query → next.ProtectedWord query) ∧
-          (TrieWalk.Uncached source.memory branch→TrieWalk.Uncached target.memory root) := by
+          (TrieWalk.Uncached source.memory branch→TrieWalk.Uncached target.memory root) ∧ (branch≠0#64 → root≠0#64) := by
   by_cases zero : prefixLength=0#64
   · have read : eval source prefixPositive=some (.val (.word 0#64)):=by
       simp [eval,prefixPositive,localVar,evalHOLExact,toExact,prefixCell,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
@@ -50,7 +50,7 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
     have answer : value=.val (.word branch):=Option.some.inj (observed.symm.trans expected)
     rw [endpoint]
     exact ⟨rfl,rfl,rfl,(by change source.clock-source.clock≤3; omega),(by intro query before; rfl),heap,branch,answer,heapCell,frontier,aligned,Nat.le_refl _,
-      graph,(fun _ live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro node live; exact Or.inl live),(by intro query safe _before _away; exact safe),(by intro clean; exact clean)⟩
+      graph,(fun _ live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro node live; exact Or.inl live),(by intro query safe _before _away; exact safe),(by intro clean; exact clean),(by intro live; exact live)⟩
   · have positive : 0<prefixLength.toNat:=by
       by_contra bad
       have number : prefixLength.toNat=(0#64).toNat:=by change prefixLength.toNat=0; omega
@@ -89,7 +89,7 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
         intro query safe before away
         exact (physical.path_protected .extension (Or.inr rfl) source target heap _ graph next nodeLower regions members query safe before
           (by simpa [NodeConstructor.extensionWords] using away)).2),
-      (fun _=>physical.uncached (Or.inr rfl))⟩
+      (fun _=>physical.uncached (Or.inr rfl)),(fun _=>physical.nonzero)⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

@@ -9,6 +9,13 @@ import InitECandidate.Solver.Mpt.BranchValueUpdateProgram
 namespace InitECandidate.Solver.Mpt.TrieWalk
 open Flapjack PanSemStateFiniteExact GasBudget WitnessRadix
 
+theorem allocated_nonzero {pointer : BitVec 64} {length : Nat} (arena : AllocatedBytes.Arena pointer length) : pointer≠0#64 := by
+  intro zero
+  have lower:=arena.lower
+  rw [zero] at lower
+  change 2701131776≤0 at lower
+  omega
+
 /-- A real nonempty root has neither an encoded RLP pointer nor a hash
 pointer. No claim is made about the irrelevant saved length at offset16. -/
 def Uncached (memory : Memory) (node : BitVec 64) : Prop :=
@@ -164,6 +171,10 @@ end InitECandidate.Solver.Mpt.TrieWalk
 
 namespace InitECandidate.Solver.Mpt.NodeConstructor
 open Flapjack PanSemStateFiniteExact WitnessRadix
+
+theorem Physical.nonzero {kind : Kind} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {heap : BitVec 64} {words : String→BitVec 64} (physical : Physical kind source target heap words) : heap≠0#64 :=
+  TrieWalk.allocated_nonzero physical.arena
 
 theorem Physical.uncached {kind : Kind} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {heap : BitVec 64} {words : String→BitVec 64} (physical : Physical kind source target heap words)

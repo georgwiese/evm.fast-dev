@@ -1758,3 +1758,25 @@ replacement closure0/fixed files unchanged. Claim infinity; no global finite
 target K/full verification. Usage43%weekly/0resetcredits. Next: prove positive
 row counts produce nonzero roots, derive actual normal builder continuation,
 then remaining main and uniform target-step composition.
+
+## Normal current indexed returns force zero rows
+
+Every real successful insertion now proves a nonzero returned root, through
+leaf/extension construction, dispatch, parent stores and the complete actual
+loop. The assigned insertion and setter retain that fact. The current indexed
+loop derives a nonzero final root whenever it processes a row; no new global
+hypothesis or future successful helper is supplied.
+
+Combining this with the checked current mpt_root semantics proves that any
+normal whole build_mpt_indexed return has count zero. Its same actual execution
+returns zero, restores the original saved heap pointer, retains every other
+global and preserves older memory outside its owned 32-byte root output. All
+outcome costs continue to cover nonempty inputs, failures and short clocks.
+
+Validation: current-indexed-normal-frame-v2.log PASS2705jobs, including the
+literal first transaction-trie caller; printed axioms permitted only. Index
+8698modules/17853facts; inventory8743/replacement closure0/fixed files unchanged.
+Incremental policy65534entries/2485762167bytes. Claim infinity; no global finite
+target K or full verifier success. Usage43%weekly/0resetcredits. Next: actual
+main transaction continuation and withdrawals/header suffix, remaining main,
+then uniform target-step composition and final cleanup.

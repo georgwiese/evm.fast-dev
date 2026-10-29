@@ -44,7 +44,7 @@ theorem iteration_normal {source target : PanSemStateFiniteExact 64 Guest.HostMe
     (model : LoopModel source m array count cutoff limit slices) (inside : model.index.toNat<count)
     (normal : evaluateHOLFiniteState source Indexed.loopBody=(none,target)) :
     ∃ next : LoopModel target m array count cutoff limit slices,next.index=model.index+1#64 ∧ model.heap.toNat≤next.heap.toNat ∧
-      HeapGlobals source target ∧ ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→target.memory query=source.memory query := by
+      HeapGlobals source target ∧ (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→target.memory query=source.memory query) ∧ next.root≠0#64 := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) Indexed.keyArguments=
       some [.val (.word keyPointer),.val (.word model.index)]:=by
     simp [Indexed.keyArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,model.keyGlobal,model.indexCell]
@@ -57,7 +57,7 @@ theorem iteration_normal {source target : PanSemStateFiniteExact 64 Guest.HostMe
     .scoped source (ofString "klen") .one (ofString "rlp_encode_word") Indexed.keyArguments _ CurrentRlp.WordWrite.body callee .one returned child args called (by omega) run checked
   obtain ⟨encoded,converted,lower,upper,lengthCell,indexEq,rootEq,heapEq,price⟩:=key_model model reached
   obtain ⟨middle,setRun,advanceRun⟩:=sequence_none current inner Indexed.setCall Indexed.advance continued
-  obtain ⟨updated,updatedIndex,grows,globals,memory⟩:=set_model converted upper lengthCell (by rw [indexEq]; exact inside) setRun
+  obtain ⟨updated,updatedIndex,grows,globals,memory,rootPositive⟩:=set_model converted upper lengthCell (by rw [indexEq]; exact inside) setRun
   have sameIndex : updated.index=model.index:=updatedIndex.trans indexEq
   have advanceRead : eval middle (.op .add [localVar "i",.const 1#64])=some (.val (.word (updated.index+1#64))):=by
     simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,updated.indexCell,valueIsWord,valueWord,wordOpHOL,wordOp]
@@ -84,7 +84,7 @@ theorem iteration_normal {source target : PanSemStateFiniteExact 64 Guest.HostMe
     have sameHeap : model.heap=converted.heap:=heapEq.symm
     exact Nat.le_trans (by rw [sameHeap]) grows
   rw [endpoint,innerEq]
-  refine ⟨next,?_,totalGrows,?_,?_⟩
+  refine ⟨next,?_,totalGrows,?_,?_,by rwa [nextRoot]⟩
   · rw [nextIndex,sameIndex]
   · intro name other
     exact (globals name other).trans (congrArg (fun table=>table.lookup name) keyGlobals)
@@ -145,7 +145,7 @@ theorem loop_cost_ranked {source : PanSemStateFiniteExact 64 Guest.HostMemory} {
       · exact ((Indexed.loop_body_limit.summary_full (decClockHOLFinite current)).2.2.2 continued).elim
     have run : evaluateHOLFiniteState (decClockHOLFinite current) Indexed.loopBody=(none,output.2):=Prod.ext normal rfl
     let entered : LoopModel (decClockHOLFinite current) m array count cutoff limit slices:={live with rows:=live.rows.of_band current (decClockHOLFinite current) array count m.toNat limit slices NonemptyRow rfl (by intros; rfl)}
-    obtain ⟨next,nextIndex,grows,globals,memory⟩:=iteration_normal entered active run
+    obtain ⟨next,nextIndex,grows,globals,memory,_positive⟩:=iteration_normal entered active run
     have number : (live.index+1#64).toNat=live.index.toNat+1:=by
       rw [BitVec.toNat_add_of_lt (by change live.index.toNat+1<2^64; have small:=live.countBound; omega)]
       rfl
@@ -168,21 +168,23 @@ theorem loop_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {
     (model : LoopModel source m array count cutoff limit slices)
     (normal : evaluateHOLFiniteState source (.while Indexed.test Indexed.loopBody)=(none,post)) :
     ∃ final : LoopModel post m array count cutoff limit slices,final.index.toNat=count ∧ model.heap.toNat≤final.heap.toNat ∧
-      HeapGlobals source post ∧ ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→post.memory query=source.memory query := by
+      HeapGlobals source post ∧ (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→post.memory query=source.memory query) ∧
+      ((model.root≠0#64 ∨ model.index.toNat<count) → final.root≠0#64) := by
   let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ live : LoopModel current m array count cutoff limit slices,
     model.heap.toNat≤live.heap.toNat ∧ HeapGlobals source current ∧
-      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→current.memory query=source.memory query
-  have initial : invariant source:=⟨model,Nat.le_refl _,by intro name other; rfl,by intros; rfl⟩
+      (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→current.memory query=source.memory query) ∧
+      ((model.root≠0#64 ∨ model.index.toNat<live.index.toNat) → live.root≠0#64)
+  have initial : invariant source:=⟨model,Nat.le_refl _,by intro name other; rfl,by intros; rfl,by intro incoming; exact incoming.elim id (fun impossible=>(Nat.lt_irrefl _ impossible).elim)⟩
   have step : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→invariant current→∀ word : BitVec 64,
       evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) Indexed.test=some (.val (.word word))→
       word≠0#64→current.clock≠0→∀ target,evaluateHOLFiniteState (decClockHOLFinite current) Indexed.loopBody=(none,target)→invariant target:=by
     intro current codeEq valid word read nonzero funded target bodyRun
-    obtain ⟨live,grows,globals,memory⟩:=valid
+    obtain ⟨live,grows,globals,memory,positive⟩:=valid
     let entered : LoopModel (decClockHOLFinite current) m array count cutoff limit slices:={live with rows:=live.rows.of_band current (decClockHOLFinite current) array count m.toNat limit slices NonemptyRow rfl (by intros; rfl)}
-    obtain ⟨next,nextIndex,nextGrows,nextGlobals,nextMemory⟩:=iteration_normal entered (active_of_test live word read nonzero) bodyRun
+    obtain ⟨next,nextIndex,nextGrows,nextGlobals,nextMemory,nextPositive⟩:=iteration_normal entered (active_of_test live word read nonzero) bodyRun
     exact ⟨next,Nat.le_trans grows nextGrows,fun name other=>(nextGlobals name other).trans (globals name other),
-      fun query above before=>(nextMemory query above before).trans (memory query above before)⟩
-  obtain ⟨final,grows,globals,memory⟩:=loop_invariant_no_control source.code Indexed.test Indexed.loopBody
+      fun query above before=>(nextMemory query above before).trans (memory query above before),fun _=>nextPositive⟩
+  obtain ⟨final,grows,globals,memory,positive⟩:=loop_invariant_no_control source.code Indexed.test Indexed.loopBody
     (fun current=>(Indexed.loop_body_limit.summary_full current).2.2) invariant step source post rfl initial normal
   have exited:=loop_normal_exit Indexed.test Indexed.loopBody (fun current=>(Indexed.loop_body_limit.summary_full current).2.2.1) source post normal
   have expected:=Indexed.test_read post final.index count final.countBound final.indexCell final.countCell
@@ -194,7 +196,7 @@ theorem loop_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {
       exact False.elim ((by decide : (0#64 : BitVec 64)≠1#64) impossible)
     · have bounded:=final.bounded
       omega
-  exact ⟨final,exactCount,grows,globals,memory⟩
+  exact ⟨final,exactCount,grows,globals,memory,by simpa only [exactCount] using positive⟩
 
 /-- Uniform current transaction-count specialization. This is only the
 repeated-loop allowance, separate from setup/root and target instructions. -/

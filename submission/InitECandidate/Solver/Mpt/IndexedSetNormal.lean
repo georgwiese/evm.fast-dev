@@ -27,6 +27,7 @@ structure Output (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
   graph : TrieWalk.Graph target.memory target.memaddrs
   member : graph.valid root
   rootUncached : TrieWalk.Uncached target.memory root
+  rootActive : root≠0#64
   values : TrieWalk.Values graph limit (fun _ _=>True)
   regions : graph.Regions cutoff heap.toNat
   disjoint : graph.Disjoint
@@ -99,7 +100,7 @@ theorem Converted.suffix_normal {source target : PanSemStateFiniteExact 64 Guest
     rootStored:=by change StoreWord.put middle.memory m root m=.word root; exact if_pos rfl
     older:=?_
     graph:=graph,member:=by rw [same]; exact output.rootMember
-    rootUncached:=rootClean
+    rootUncached:=rootClean,rootActive:=output.rootActive
     values:=Classical.choice values
     regions:=regions,disjoint:=disjoint,paths:=paths,pathRegions:=pathRegions,separated:=separated }⟩⟩
   intro query before different
@@ -163,7 +164,7 @@ theorem body_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     globals:=fun name other=>(output.globals name other).trans (globals name other)
     heapCell:=output.heapCell,heapArena:=output.heapArena,heapAligned:=output.heapAligned,grows:=totalGrows,rootStored:=output.rootStored
     older:=?_
-    graph:=output.graph,member:=output.member,rootUncached:=output.rootUncached,values:=output.values,regions:=output.regions,disjoint:=output.disjoint
+    graph:=output.graph,member:=output.member,rootUncached:=output.rootUncached,rootActive:=output.rootActive,values:=output.values,regions:=output.regions,disjoint:=output.disjoint
     paths:=output.paths,pathRegions:=output.pathRegions,separated:=output.separated }⟩⟩
   intro query before different
   exact (output.older query before different).trans (memory query (Or.inl (Nat.lt_of_lt_of_le before data.floor)))

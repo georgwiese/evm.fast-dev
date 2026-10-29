@@ -41,7 +41,7 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
             TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ graph.CacheFrame target.memory ∧
-          (TrieWalk.Uncached source.memory node→TrieWalk.Uncached target.memory root) := by
+          (TrieWalk.Uncached source.memory node→TrieWalk.Uncached target.memory root) ∧ root≠0#64 := by
   have priced:=after_length_cost source (wordAt source.memory (node+32#64)) (wordAt source.memory (node+40#64)) key length small installed leftCell oldLengthCell keyCell lengthCell
   rw [normal] at priced
   rw [dispatch_shapes.2.2.1,evaluateHOLFiniteState_seq_line780] at normal
@@ -72,7 +72,7 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
     have currentLeaf : wordAt middle.memory node=1#64:=by rw [memoryEq]; exact leaf
     have currentLeft : middle.locals.lookup (ofString "ek")=some (.val (.word (wordAt middle.memory (node+32#64)))):=by rw [memoryEq,current _ (by decide)]; exact leftCell
     have currentLength : middle.locals.lookup (ofString "el")=some (.val (.word (wordAt middle.memory (node+40#64)))):=by rw [memoryEq,current _ (by decide)]; exact oldLengthCell
-    obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection,rootClean⟩:=
+    obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection,rootClean,rootPositive⟩:=
       split_scope_path_normal middle target heap node key length pointer size base limit nodeLower pathLower property baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated
         currentQuery currentMember active currentLeaf ((current _ (by decide)).trans nodeCell) currentLeft currentLength
         ((current _ (by decide)).trans keyCell) ((current _ (by decide)).trans lengthCell) ((current _ (by decide)).trans pointerCell) ((current _ (by decide)).trans sizeCell)
@@ -104,7 +104,7 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
           exact ⟨by intro node live active; rfl,by intro node live active tag; exact ⟨rfl,rfl⟩⟩
         exact finalProtection address (safe.of_fields graph base address same pureFields) before away),
       graph.cache_of_older nodeLower heap.toNat regions (fun address before=>(finalMemory address before).trans (congrFun memoryEq address)),
-      (fun _=>rootClean)⟩
+      (fun _=>rootClean),rootPositive⟩
   | some result=>
     have sameResult : result=.returned value:=Option.some.inj (congrArg Prod.fst normal)
     subst result
@@ -148,7 +148,7 @@ theorem after_length_path_normal (source target : PanSemStateFiniteExact 64 Gues
       rw [memoryEq]
       exact TrieWalk.Graph.PathFields.of_agreement graph (post source node pointer size).memory agree
     refine ⟨domainEq,endianEq,codeEq,priced,preserved,tags,heap,node,answer,(by rw [globalsEq]; exact heapCell),frontier,aligned,Nat.le_refl _,
-      next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,allFields,?_,?_,?_,?_,?_⟩
+      next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,allFields,?_,?_,?_,?_,?_,active⟩
     · intro address safe _before
       rw [memoryEq]
       exact safe.leaf_value_memory source graph address node pointer size member active leaf

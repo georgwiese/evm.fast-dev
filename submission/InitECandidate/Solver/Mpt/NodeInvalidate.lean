@@ -1,5 +1,6 @@
-import InitECandidate.Solver.PanFieldStoresFrame
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.PanFieldStores
+import InitECandidate.Solver.WitnessRadix.AllocatedBytes
+import InitECandidate.Solver.Input.OriginalEntry
 import InitECandidate.Solver.Input.OriginalCode
 import InitECandidate.Solver.Input.WordEnvironment
 import InitECandidate.Solver.Input.QuietClock
@@ -21,8 +22,8 @@ theorem body_shape : body=FieldStores.program "nd" "" fields (.return (.const 0#
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "node_invalidate")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 235 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_node_invalidate) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_node_invalidate,
+  have checked:=Input.OriginalCode.indexed code installed 233 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_node_invalidate) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_node_invalidate,Guest.guestFn_node_invalidate,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem quiet (code) : Input.QuietClock.Preserves code body := by

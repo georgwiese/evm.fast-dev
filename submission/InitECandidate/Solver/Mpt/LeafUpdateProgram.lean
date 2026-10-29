@@ -1,5 +1,6 @@
-import InitECandidate.Solver.PanFieldStoresFrame
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.PanFieldStores
+import InitECandidate.Solver.WitnessRadix.AllocatedBytes
+import InitECandidate.Solver.Input.OriginalEntry
 import InitECandidate.Solver.Input.OriginalCode
 
 namespace InitECandidate.Solver.Mpt.InsertLeaf
@@ -28,8 +29,8 @@ theorem replace_shape (pointer size : BitVec 64) : replaceBody=FieldStores.progr
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "_insert_into_leaf")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 249 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn__insert_into_leaf) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn__insert_into_leaf,
+  have checked:=Input.OriginalCode.indexed code installed 247 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn__insert_into_leaf) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn__insert_into_leaf,Guest.guestFn__insert_into_leaf,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 /-- Execute the unchanged matching-leaf replacement stores and return.

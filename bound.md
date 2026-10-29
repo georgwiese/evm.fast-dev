@@ -1419,3 +1419,32 @@ permitted only. Index8682modules/17777facts; inventory8727/replacement
 closure0/fixed files unchanged. Policy PASS65518entries/2485552391bytes.
 Claim infinity; no global finite target K/full verification. Next: pure
 insertion helpers/actual indexed-trie models, remaining main and target steps.
+
+
+## Current pure trie insertion iteration and dependency cleanup
+
+Retargeted the insertion/leaf/split/prefix/invalidation/walk lookup proofs
+to actual current Software positions. The original insertion traversal
+iteration now checks at≤565source-clock ticks on every outcome using only
+its actual six scalar operands, current level≤key length≤64and installed
+code. Leaf replacement/splitting, current common-prefix and byte equality,
+branch/extension constructors, failed reads/allocations and short clocks are
+included. This is the iteration allowance; the full current indexed-loop
+invariant and iteration count remain to be connected.
+
+Separated literal iteration prefix/footer, branch syntax and scalar call
+ABI facts from normal graph-mutation outputs. Narrowed field-store and
+walk imports; the cost dependency set fell from832to roughly200Solver
+modules and no longer imports the removed hash-table lookup implementation.
+Moved shared facts retain their previous names for normal graph clients.
+Fixed exposed missing explicit dependencies and reflexive/Nat comparison
+proofs. No executable declaration/body or fixed-source file changed. The
+older normal graph/constructor clients are still pending current checks.
+
+Validation: current-trie-insert-iteration-v6.log PASS2203jobs, with the
+current walk declaration and complete payload-to-trie regression. Printed
+axioms permitted only. Index8683modules/17777facts; inventory8728/
+replacement closure0/fixed files unchanged. Policy PASS65519entries/
+2485553664bytes. Claim infinity; no global finite target K/full verification.
+Usage37%weekly/0resetcredits. Next: actual allocator-derived normal trie
+frames/loop invariant, indexed builder, remaining main and target steps.

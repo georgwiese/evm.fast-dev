@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Mpt.Fail
-import InitECandidate.Solver.MutableTable.QueryNoException
+import InitECandidate.Solver.Input.OriginalEntry
 
 namespace InitECandidate.Solver.Mpt.TrieWalk
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -58,9 +58,9 @@ theorem after_loop_shape : afterLoop = absent := by
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "trie_walk") = some (formals, body, resultShape) := by
-  have checked := Input.OriginalCode.indexed code installed 242 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_trie_walk) (by rfl)
+  have checked := Input.OriginalCode.indexed code installed 240 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_trie_walk) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry, declToHOL, funDeclToHOL, body, formals, resultShape,
-    Guest.guestFn_trie_walk, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
+    Guest.Software.guestFn_trie_walk,Guest.guestFn_trie_walk, shapeToHOL, paramToHOL, List.map_cons, List.map_nil] using checked
 
 end InitECandidate.Solver.Mpt.TrieWalk
 

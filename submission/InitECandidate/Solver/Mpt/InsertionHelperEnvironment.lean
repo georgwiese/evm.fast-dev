@@ -1,5 +1,5 @@
-import InitECandidate.Solver.Mpt.LeafInsertNormal
-import InitECandidate.Solver.Mpt.SplitExtensionNormal
+import InitECandidate.Solver.Mpt.LeafUpdateProgram
+import InitECandidate.Solver.Mpt.SplitExtensionCost
 import InitECandidate.Solver.Input.WordQuadEnvironment
 
 namespace InitECandidate.Solver.Mpt.InsertLeaf

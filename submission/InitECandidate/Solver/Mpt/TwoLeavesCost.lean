@@ -11,8 +11,8 @@ def formals : List (MlS×ShapeHOL):=[(ofString "k1",.one),(ofString "l1",.one),(
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "_create_branch_from_two_leaves")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 248 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn__create_branch_from_two_leaves) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn__create_branch_from_two_leaves,
+  have checked:=Input.OriginalCode.indexed code installed 246 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn__create_branch_from_two_leaves) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn__create_branch_from_two_leaves,Guest.guestFn__create_branch_from_two_leaves,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in

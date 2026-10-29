@@ -26,7 +26,7 @@ theorem extension_prefix_cost (source : PanSemStateFiniteExact 64 Guest.HostMemo
       segmentCell,oldLengthCell,keyCell,levelCell,lengthCell,valueIsWord,valueWord,wordOpHOL,wordOp]
   obtain ⟨callee,called,aCell,alCell,bCell,blCell⟩:=CommonPrefix.environment source.code.lookup segment oldLength (key+level) (length-level) (CommonPrefix.original_code source.code installed)
   have price:=CommonPrefix.body_cost (callEntryStateHOLFinite source callee) oldLength (length-level) small installed alCell blCell
-  have priced : (callEntryStateHOLFinite source callee).clock-(evaluateHOLFiniteState (callEntryStateHOLFinite source callee) CommonPrefix.body).2.clock≤65:=price.trans (by omega)
+  have priced : (callEntryStateHOLFinite source callee).clock-(evaluateHOLFiniteState (callEntryStateHOLFinite source callee) CommonPrefix.body).2.clock≤65:=Nat.le_trans price (by omega)
   rw [extension_shapes.2.2.1]
   exact Input.ClockCost.scoped_current source (ofString "pl") .one (ofString "common_prefix_length") prefixArguments _ CommonPrefix.body extensionPrefixChoice callee .one 65 240
     args called priced (extension_prefix_choice_price source.code installed)

@@ -5,11 +5,6 @@ namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-def chooseResult : ProgHOL 64:=.ite (.cmp .equal (localVar "slot") (.const 0#64))
-  (.assign .local (ofString "result") (localVar "r")) (.store (localVar "slot") (localVar "r"))
-def clearNode : ProgHOL 64:=.assign .local (ofString "node") (localVar "next_node")
-def clearSlot : ProgHOL 64:=.assign .local (ofString "slot") (localVar "next_slot")
-def clearLevel : ProgHOL 64:=.assign .local (ofString "level") (localVar "next_level")
 def withResult (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap key length pointer size : BitVec 64):=
   bind (leafResult source heap key length pointer size) "result" heap
 def withNode (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap key length pointer size : BitVec 64):=
@@ -18,12 +13,6 @@ def withSlot (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap key len
   bind (withNode source heap key length pointer size) "slot" 0#64
 def finished (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap key length pointer size : BitVec 64):=
   bind (withSlot source heap key length pointer size) "level" 0#64
-
-set_option maxRecDepth 100000 in
-theorem after_choice_shape : afterChoice=.seq chooseResult (.seq clearNode (.seq clearSlot clearLevel)) := by
-  simp only [afterChoice,afterGo,afterNextLevel,afterNextSlot,afterNextNode,afterR,loopBody,loop,loopAndAfter,afterResult,afterSlot,
-    body,Guest.guestFn__mpt_insert_node,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,
-    chooseResult,clearNode,clearSlot,clearLevel,localVar]
 
 set_option maxHeartbeats 1000000 in
 theorem after_choice_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap key length pointer size : BitVec 64)

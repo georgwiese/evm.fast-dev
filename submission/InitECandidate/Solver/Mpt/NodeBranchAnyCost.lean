@@ -1,6 +1,7 @@
-import InitECandidate.Solver.Mpt.NodeBranchConstructor
+import InitECandidate.Solver.Mpt.NodeBranchProgram
 import InitECandidate.Solver.Mpt.NodeConstructorCost
 import InitECandidate.Solver.Input.ZeroLiteralCallCost
+import InitECandidate.Solver.WitnessRadix.ZeroCost
 
 namespace InitECandidate.Solver.Mpt.NodeConstructor
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix

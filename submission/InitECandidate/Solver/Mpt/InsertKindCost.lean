@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.InsertExtensionCost
+import InitECandidate.Solver.Mpt.LeafInsertCost
 import InitECandidate.Solver.Mpt.InsertionHelperEnvironment
 import InitECandidate.Solver.Mpt.InsertScalarInputs
 import InitECandidate.Solver.Input.ClockCostAssignedCurrent
@@ -22,7 +23,7 @@ theorem leaf_call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory)
       inputs.nodeCell,inputs.keyCell,inputs.levelCell,inputs.lengthCell,inputs.pointerCell,inputs.sizeCell,valueIsWord,valueWord,wordOpHOL,wordOp]
   obtain ⟨callee,called,nodeCell,rkCell,rlCell,pointerCell,sizeCell⟩:=InsertLeaf.environment source node (key+level) (length-level) pointer size (InsertLeaf.original_code source.code installed)
   have price:=InsertLeaf.body_cost (callEntryStateHOLFinite source callee) (key+level) (length-level) small installed rkCell rlCell
-  have priced : (callEntryStateHOLFinite source callee).clock-(evaluateHOLFiniteState (callEntryStateHOLFinite source callee) InsertLeaf.body).2.clock≤562:=price.trans (by omega)
+  have priced : (callEntryStateHOLFinite source callee).clock-(evaluateHOLFiniteState (callEntryStateHOLFinite source callee) InsertLeaf.body).2.clock≤562:=Nat.le_trans price (by omega)
   rw [dispatch_shapes.2.2.2.2.2.2.1]
   exact Input.ClockCost.assigned_current source (some (.local,ofString "r")) (ofString "_insert_into_leaf") insertLeafArguments _ InsertLeaf.body callee .one 562 args called priced
 

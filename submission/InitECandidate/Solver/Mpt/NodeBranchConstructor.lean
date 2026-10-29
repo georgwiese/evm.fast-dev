@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Mpt.NodeConstructorFields
+import InitECandidate.Solver.Mpt.NodeBranchProgram
 import InitECandidate.Solver.WitnessRadix.AllocationTrace
 import InitECandidate.Solver.WitnessRadix.ZeroCost
 import InitECandidate.Solver.Input.ClockCostCurrent
@@ -6,19 +6,6 @@ import InitECandidate.Solver.Input.ClockCostCurrent
 namespace InitECandidate.Solver.Mpt.NodeConstructor
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString
-
-def branchArguments : List (ExpHOL 64):=[QueryBranch.localVar "nd",.const 176#64]
-def branchZero : ProgHOL 64:=.call (some (none,none)) (ofString "memzero") branchArguments
-def branchFields : List FieldStores.Field:=[⟨0,.literal 3#64⟩]
-def branchFooter : ProgHOL 64:=FieldStores.program "nd" "" branchFields (.return (QueryBranch.localVar "nd"))
-
-set_option maxRecDepth 100000 in
-theorem branch_tail_shape : tail .branch=.seq branchZero branchFooter := by
-  simp only [tail,body,original,branchZero,branchArguments,branchFooter,branchFields,FieldStores.program,FieldStores.address,
-    FieldStores.Value.expression,QueryBranch.addConst,QueryBranch.localVar,Guest.guestFn_node_new_branch,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
-
-theorem branch_footer_quiet (code) : Input.QuietClock.Preserves code branchFooter := by
-  exact Input.QuietClock.sequence code _ _ (Input.QuietClock.store code _ _) (Input.QuietClock.returned code _)
 
 theorem branch_tail_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
     (node : source.locals.lookup (ofString "nd")=some (.val (.word heap)))

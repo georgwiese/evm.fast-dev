@@ -20,11 +20,11 @@ theorem split_scope_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     simp [prefixArguments,CommonPrefix.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,leftCell,elCell,rightCell,rlCell]
   obtain ⟨callee,called,_,al,_,bl⟩:=CommonPrefix.environment source.code.lookup left el right rl (CommonPrefix.original_code source.code installed)
   have bodyPrice:=CommonPrefix.body_cost (callEntryStateHOLFinite source callee) el rl
-    ((Nat.min_le_right _ _).trans small) installed al bl
+    (Nat.le_trans (Nat.min_le_right _ _) small) installed al bl
   rw [dispatch_shapes.2.2.2.2.2]
   have priced:=Input.ClockCost.scoped_current source (ofString "pl") .one (ofString "common_prefix_length") prefixArguments _ CommonPrefix.body afterPrefix
     callee .one (min el.toNat rl.toNat+1) 239 args called bodyPrice (after_prefix_price source.code installed)
-  exact priced.trans (by have bound:=Nat.min_le_right el.toNat rl.toNat; omega)
+  exact Nat.le_trans priced (by have bound:=Nat.min_le_right el.toNat rl.toNat; omega)
 
 theorem length_choice_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (left el right rl : BitVec 64)
     (small : rl.toNat≤64) (installed : Input.OriginalCode.Installed source.code)

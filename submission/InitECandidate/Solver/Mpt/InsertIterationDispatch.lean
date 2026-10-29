@@ -5,13 +5,6 @@ namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-theorem dispatch_saved (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
-    (notRoot : ofString name≠ofString "r") (notNode : ofString name≠ofString "next_node")
-    (notSlot : ofString name≠ofString "next_slot") (notLevel : ofString name≠ofString "next_level") (notGo : ofString name≠ofString "go") :
-    (dispatchEntry source).locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
-  simp [dispatchEntry,prepared,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,
-    Ne.symm notRoot,Ne.symm notNode,Ne.symm notSlot,Ne.symm notLevel,Ne.symm notGo]
-
 /-- The real cleared iteration prefix satisfies every current input of the
 checked original node choice; no successful future graph is a premise. -/
 theorem dispatch_output (source chosen : PanSemStateFiniteExact 64 Guest.HostMemory)

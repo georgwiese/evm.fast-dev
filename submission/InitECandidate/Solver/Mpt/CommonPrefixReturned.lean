@@ -47,6 +47,7 @@ theorem loop_and_after_normal (source target : PanSemStateFiniteExact 64 Guest.H
     have actual : eval middle (localVar "n")=some (.val (.word (BitVec.ofNat 64 length))):=by simp [eval,localVar,evalHOLExact,toExact,nCell]
     refine ⟨BitVec.ofNat 64 length,Option.some.inj (read.symm.trans actual),?_⟩
     rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+    exact Nat.le_refl _
   | some result=>
     have resultEq : result=.returned value:=Option.some.inj (congrArg Prod.fst normal)
     subst result

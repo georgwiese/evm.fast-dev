@@ -1,6 +1,6 @@
 import InitECandidate.Solver.Input.CallPrefixNormalTrace
 import InitECandidate.Solver.Input.CallPrefixDeclaration
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.Input.OriginalEntry
 import InitECandidate.Solver.Input.OriginalCode
 
 namespace InitECandidate.Solver.Mpt.Insert
@@ -35,8 +35,8 @@ theorem loop_shape : loopAndAfter=.seq (.while test loopBody) (.return (localVar
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "_mpt_insert_node")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 251 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn__mpt_insert_node) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn__mpt_insert_node,
+  have checked:=Input.OriginalCode.indexed code installed 249 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn__mpt_insert_node) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn__mpt_insert_node,Guest.guestFn__mpt_insert_node,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in

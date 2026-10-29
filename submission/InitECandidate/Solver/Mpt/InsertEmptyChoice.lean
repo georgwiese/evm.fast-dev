@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.InsertSetup
 import InitECandidate.Solver.Input.CallPrefixCommand
+import InitECandidate.Solver.Input.QuietClock
 
 namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -62,9 +63,47 @@ theorem empty_choice (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   rw [read]
   simp
 
+def chooseResult : ProgHOL 64:=.ite (.cmp .equal (localVar "slot") (.const 0#64))
+  (.assign .local (ofString "result") (localVar "r")) (.store (localVar "slot") (localVar "r"))
+def clearNode : ProgHOL 64:=.assign .local (ofString "node") (localVar "next_node")
+def clearSlot : ProgHOL 64:=.assign .local (ofString "slot") (localVar "next_slot")
+def clearLevel : ProgHOL 64:=.assign .local (ofString "level") (localVar "next_level")
+
+set_option maxRecDepth 100000 in
+theorem after_choice_shape : afterChoice=.seq chooseResult (.seq clearNode (.seq clearSlot clearLevel)) := by
+  simp only [afterChoice,afterGo,afterNextLevel,afterNextSlot,afterNextNode,afterR,loopBody,loop,loopAndAfter,afterResult,afterSlot,
+    body,Guest.guestFn__mpt_insert_node,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,
+    chooseResult,clearNode,clearSlot,clearLevel,localVar]
+
+theorem dispatch_saved (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (notRoot : ofString name≠ofString "r") (notNode : ofString name≠ofString "next_node")
+    (notSlot : ofString name≠ofString "next_slot") (notLevel : ofString name≠ofString "next_level") (notGo : ofString name≠ofString "go") :
+    (dispatchEntry source).locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
+  simp [dispatchEntry,prepared,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,
+    Ne.symm notRoot,Ne.symm notNode,Ne.symm notSlot,Ne.symm notLevel,Ne.symm notGo]
+
+theorem after_choice_local (key : MlS) (notResult : key≠ofString "result") (notNode : key≠ofString "node")
+    (notSlot : key≠ofString "slot") (notLevel : key≠ofString "level") : Input.LocalPrefix key afterChoice := by
+  rw [after_choice_shape]
+  exact .seq (.ite _ (.assign _ _ notResult) (.store _ _))
+    (.seq (.assign _ _ notNode) (.seq (.assign _ _ notSlot) (.assign _ _ notLevel)))
+
+theorem after_choice_quiet (code) : Input.QuietClock.Preserves code afterChoice := by
+  rw [after_choice_shape]
+  exact Input.QuietClock.sequence code _ _
+    (Input.QuietClock.conditional code _ _ _ (Input.QuietClock.assign code _ _) (Input.QuietClock.store code _ _))
+    (Input.QuietClock.sequence code _ _ (Input.QuietClock.assign code _ _)
+      (Input.QuietClock.sequence code _ _ (Input.QuietClock.assign code _ _) (Input.QuietClock.assign code _ _)))
+
+
 end InitECandidate.Solver.Mpt.Insert
 
 #print axioms InitECandidate.Solver.Mpt.Insert.iteration_shape
 #print axioms InitECandidate.Solver.Mpt.Insert.node_choice_shape
 #print axioms InitECandidate.Solver.Mpt.Insert.prefix_execution
 #print axioms InitECandidate.Solver.Mpt.Insert.empty_choice
+
+#print axioms InitECandidate.Solver.Mpt.Insert.after_choice_shape
+#print axioms InitECandidate.Solver.Mpt.Insert.dispatch_saved
+#print axioms InitECandidate.Solver.Mpt.Insert.after_choice_local
+#print axioms InitECandidate.Solver.Mpt.Insert.after_choice_quiet

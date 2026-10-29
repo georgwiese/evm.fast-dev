@@ -12,8 +12,8 @@ def formals : List (MlS×ShapeHOL):=[(ofString "node",.one),(ofString "rk",.one)
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "_split_extension")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 250 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn__split_extension) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn__split_extension,
+  have checked:=Input.OriginalCode.indexed code installed 248 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn__split_extension) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn__split_extension,Guest.guestFn__split_extension,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in

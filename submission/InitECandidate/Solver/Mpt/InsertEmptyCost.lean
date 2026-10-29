@@ -6,19 +6,6 @@ namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-theorem after_choice_local (key : MlS) (notResult : key≠ofString "result") (notNode : key≠ofString "node")
-    (notSlot : key≠ofString "slot") (notLevel : key≠ofString "level") : Input.LocalPrefix key afterChoice := by
-  rw [after_choice_shape]
-  exact .seq (.ite _ (.assign _ _ notResult) (.store _ _))
-    (.seq (.assign _ _ notNode) (.seq (.assign _ _ notSlot) (.assign _ _ notLevel)))
-
-theorem after_choice_quiet (code) : Input.QuietClock.Preserves code afterChoice := by
-  rw [after_choice_shape]
-  exact Input.QuietClock.sequence code _ _
-    (Input.QuietClock.conditional code _ _ _ (Input.QuietClock.assign code _ _) (Input.QuietClock.store code _ _))
-    (Input.QuietClock.sequence code _ _ (Input.QuietClock.assign code _ _)
-      (Input.QuietClock.sequence code _ _ (Input.QuietClock.assign code _ _) (Input.QuietClock.assign code _ _)))
-
 /-- The actual empty-node traversal body spends at most three ticks;
 every normal continuation clears go, even if unrelated ABI reads can fail. -/
 theorem empty_iteration_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (go : BitVec 64)

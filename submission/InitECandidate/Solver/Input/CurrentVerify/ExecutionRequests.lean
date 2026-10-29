@@ -1,5 +1,7 @@
 import InitECandidate.Solver.Input.CurrentVerify.Withdrawals
 import InitECandidate.Solver.Input.StraightBody
+import InitECandidate.Solver.Input.CallPrefixLocalResult
+import InitECandidate.Solver.WitnessRadix.CopyNormalCall
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -551,6 +553,21 @@ theorem blob_copy_args (source : PanSemStateFiniteExact 64 Guest.HostMemory) (po
   simp [blobCopyArguments,Scalar.plus,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,
     p,b,c,w,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL]
 
+def tagState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (blob : BitVec 64) (index : Nat) :=
+  {source with memory:=ByteStore.put source.memory source.be blob (BitVec.ofNat 8 index)}
+
+theorem tag_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (blob : BitVec 64) (index span : Nat)
+    (active : index<5) (positive : 0<span) (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena blob span)
+    (b : source.locals.lookup (ofString "blob")=some (.val (.word blob)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index)))) :
+    evaluateHOLFiniteState source tagStore=(none,tagState source blob index) := by
+  have byteNumber : (BitVec.ofNat 8 index).toNat=index:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  apply ByteStore.execute source (localVar "blob") (localVar "i") blob (BitVec.ofNat 8 index)
+  · simpa [eval,evalHOLExact,toExact,localVar] using b
+  · rw [byteNumber]
+    simpa [eval,evalHOLExact,toExact,localVar] using i
+  · simpa [byteAddress] using AllocatedBytes.byte_mapped source blob span 0 domain arena positive
+
 /-- After its actual allocation, the original tag/copy/descriptor suffix
 has a linear all-outcome copy allowance. The owned destination is exactly
 the newly checked blob; the source is the same decoded input list. -/
@@ -564,14 +581,8 @@ theorem after_blob_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
     (src : AllocatedBytes.Arena pointer (count*width).toNat)
     (dst : AllocatedBytes.Arena blob ((count*width).toNat+8)) :
     source.clock-(evaluateHOLFiniteState source afterBlob).2.clock≤(count*width).toNat/8+8 := by
-  let tagged : PanSemStateFiniteExact 64 Guest.HostMemory:={source with memory:=ByteStore.put source.memory source.be blob (BitVec.ofNat 8 index)}
-  have byteNumber : (BitVec.ofNat 8 index).toNat=index:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
-  have tagRun : evaluateHOLFiniteState source tagStore=(none,tagged):=by
-    apply ByteStore.execute source (localVar "blob") (localVar "i") blob (BitVec.ofNat 8 index)
-    · simpa [eval,evalHOLExact,toExact,localVar] using b
-    · rw [byteNumber]
-      simpa [eval,evalHOLExact,toExact,localVar] using i
-    · simpa [byteAddress] using AllocatedBytes.byte_mapped source blob ((count*width).toNat+8) 0 domain dst (by omega)
+  let tagged:=tagState source blob index
+  have tagRun:=tag_execute source blob index ((count*width).toNat+8) active (by omega) domain dst b i
   have output : AllocatedBytes.Arena (blob+1#64) (count*width).toNat:=by
     simpa only [byteAddress] using dst.subrange blob ((count*width).toNat+8) 1 (count*width).toNat (by omega)
   have copyPrice:=CopyGeneral.call_cost_blocks tagged blobCopyArguments pointer (blob+1#64) (count*width).toNat
@@ -684,6 +695,185 @@ theorem LoopModel.iteration_uniform {input : Guest.InputBlob} {source : PanSemSt
   have budget:=list_bytes model.image model.index active
   omega
 
+/-- Original lexical restoration affects only p/cnt/sz. Every other
+actual post-iteration local agrees with that same prepared continuation. -/
+theorem LoopModel.iteration_local {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) (active : model.index<5)
+    (key : MlS) (notPointer : key≠ofString "p") (notCount : key≠ofString "cnt") (notSize : key≠ofString "sz") :
+    (evaluateHOLFiniteState source iterationBody).2.locals.lookup key=
+      (evaluateHOLFiniteState (preparedState input source pointer start model.index counts) afterSizes).2.locals.lookup key := by
+  let entered:=fieldsState source (pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index) (counts model.index)
+  have counter : entered.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 model.index))):=by
+    simpa [entered,fieldsState,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using model.indexCell
+  have initial : entered.locals.lookup (ofString "sz")=some (.val (.word 192#64)):=bind_lookup_same _ _ _
+  have avoids : ∀ action∈fieldActions,action.avoids key:=by
+    intro action member
+    simp only [fieldActions,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl|rfl|rfl
+    · exact Ne.symm notPointer
+    · exact Ne.symm notCount
+    · exact Ne.symm notSize
+  calc
+    _ = (evaluateHOLFiniteState entered afterFields).2.locals.lookup key := by
+      simpa only [fields_shape] using (model.fields_execution active).local_result key avoids afterFields
+    _ = _ := by
+      rw [size_prefix_shape,size_continue entered model.index active counter initial afterSizes]
+      rfl
+
+def descriptorPointer : ExpHOL 64:=.op .add [localVar "arr",.panop .mul [localVar "n",.const 16#64]]
+def descriptorLength : ExpHOL 64:=.op .add [localVar "arr",.panop .mul [localVar "n",.const 16#64],.const 8#64]
+def encodedLength : ExpHOL 64:=.op .add [.panop .mul [localVar "cnt",localVar "sz"],.const 1#64]
+def incrementEmitted : ProgHOL 64:=.assign .local (ofString "n") (.op .add [localVar "n",.const 1#64])
+def descriptorState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array blob count width : BitVec 64) (emitted : Nat) :=
+  bind {source with memory:=(StoreWord.put (StoreWord.put source.memory (array+BitVec.ofNat 64 (16*emitted)) blob)
+    (array+BitVec.ofNat 64 (16*emitted+8)) (count*width+1#64))} "n" (BitVec.ofNat 64 emitted+1#64)
+
+set_option maxRecDepth 100000 in
+theorem descriptor_shape : descriptorFooter=.seq (.store descriptorPointer (localVar "blob"))
+    (.seq (.store descriptorLength encodedLength) incrementEmitted) := by
+  simp only [descriptorFooter,afterBlob,nonemptyChoice,afterSizes,afterFields,iterationBody,requestsLoopAndReturn,afterArrayAllocation,body,
+    Guest.Software.guestFn_encode_execution_requests,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,CallPrefix.cutAt,
+    descriptorPointer,descriptorLength,encodedLength,incrementEmitted,localVar]
+
+/-- Both real descriptor stores and n++ execute at the current empty slot.
+No descriptor cell is assumed initialized before its own write. -/
+theorem descriptor_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array blob count width : BitVec 64)
+    (emitted : Nat) (inside : emitted<5) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (arena : AllocatedBytes.Arena array 80) (aligned : array.toNat%8=0)
+    (a : source.locals.lookup (ofString "arr")=some (.val (.word array)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 emitted))))
+    (b : source.locals.lookup (ofString "blob")=some (.val (.word blob)))
+    (c : source.locals.lookup (ofString "cnt")=some (.val (.word count)))
+    (w : source.locals.lookup (ofString "sz")=some (.val (.word width))) :
+    evaluateHOLFiniteState source descriptorFooter=(none,descriptorState source array blob count width emitted) := by
+  have pointerRead : eval source descriptorPointer=some (.val (.word (array+BitVec.ofNat 64 (16*emitted)))):=by
+    simp [eval,descriptorPointer,evalHOLExact,evalListHOLExact,toExact,localVar,a,n,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+      BitVec.ofNat_mul,Nat.mul_comm,BitVec.mul_comm]
+  have lengthRead : eval source descriptorLength=some (.val (.word (array+BitVec.ofNat 64 (16*emitted+8)))):=by
+    simp [eval,descriptorLength,evalHOLExact,evalListHOLExact,toExact,localVar,a,n,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+      BitVec.ofNat_mul,BitVec.ofNat_add,Nat.mul_comm,BitVec.mul_comm,BitVec.add_assoc]
+  have blobRead : eval source (localVar "blob")=some (.val (.word blob)):=by simp [eval,evalHOLExact,toExact,localVar,b]
+  have sizeRead : eval source encodedLength=some (.val (.word (count*width+1#64))):=by
+    simp [eval,encodedLength,evalHOLExact,evalListHOLExact,toExact,localVar,c,w,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL]
+  have pointerMapped:=AllocatedBytes.word_mapped source array 80 (16*emitted) domain arena (by omega) aligned (by omega)
+  have lengthMapped:=AllocatedBytes.word_mapped source array 80 (16*emitted+8) domain arena (by omega) aligned (by omega)
+  let sp:={source with memory:=StoreWord.put source.memory (array+BitVec.ofNat 64 (16*emitted)) blob}
+  let sl:={sp with memory:=StoreWord.put sp.memory (array+BitVec.ofNat 64 (16*emitted+8)) (count*width+1#64)}
+  have first : evaluateHOLFiniteState source (.store descriptorPointer (localVar "blob"))=(none,sp):=
+    StoreWord.execute source descriptorPointer (localVar "blob") _ blob pointerRead blobRead pointerMapped
+  have second : evaluateHOLFiniteState sp (.store descriptorLength encodedLength)=(none,sl):=
+    StoreWord.execute sp descriptorLength encodedLength _ (count*width+1#64) lengthRead sizeRead lengthMapped
+  have advancedRead : eval sl (.op .add [localVar "n",.const 1#64])=some (.val (.word (BitVec.ofNat 64 emitted+1#64))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,show sl.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 emitted))) from n,
+      valueIsWord,valueWord,wordOpHOL,wordOp]
+  have advanced:=StateSteps.assign_execute sl "n" (.op .add [localVar "n",.const 1#64]) (BitVec.ofNat 64 emitted) (BitVec.ofNat 64 emitted+1#64) n advancedRead
+  rw [descriptor_shape,evaluateHOLFiniteState_seq_line780,first]
+  change evaluateHOLFiniteState sp (.seq (.store descriptorLength encodedLength) incrementEmitted)=_
+  rw [evaluateHOLFiniteState_seq_line780,second]
+  exact advanced
+
+def afterBlobState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array blob count width : BitVec 64)
+    (index emitted : Nat) :=
+  descriptorState (CopyGeneral.callState (tagState source blob index) pointer (blob+1#64) (count*width).toNat) array blob count width emitted
+
+/-- A real normal suffix derives memcpy's own clock funding and the exact
+new descriptor state. Neither a later copy return nor its funding is an
+entry hypothesis; only this invocation's normal result is inspected. -/
+theorem after_blob_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array blob count width : BitVec 64)
+    (index emitted : Nat) (active : index<5) (inside : emitted<5)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (a : source.locals.lookup (ofString "arr")=some (.val (.word array)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 emitted))))
+    (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (b : source.locals.lookup (ofString "blob")=some (.val (.word blob)))
+    (c : source.locals.lookup (ofString "cnt")=some (.val (.word count)))
+    (w : source.locals.lookup (ofString "sz")=some (.val (.word width)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))))
+    (arrayArena : AllocatedBytes.Arena array 80) (arrayAligned : array.toNat%8=0)
+    (src : AllocatedBytes.Arena pointer (count*width).toNat) (dst : AllocatedBytes.Arena blob ((count*width).toNat+8))
+    (normal : evaluateHOLFiniteState source afterBlob=(none,target)) :
+    CopyGeneral.cost pointer (blob+1#64) (count*width).toNat+1≤source.clock ∧
+      target=afterBlobState source pointer array blob count width index emitted := by
+  let tagged:=tagState source blob index
+  have tagRun:=tag_execute source blob index ((count*width).toNat+8) active (by omega) domain dst b i
+  rw [blob_shape.2,evaluateHOLFiniteState_seq_line780,tagRun] at normal
+  change evaluateHOLFiniteState tagged (.seq blobCopy descriptorFooter)=(none,target) at normal
+  obtain ⟨copied,copyRun,remaining⟩:=sequence_none tagged target blobCopy descriptorFooter normal
+  have output : AllocatedBytes.Arena (blob+1#64) (count*width).toNat:=by
+    simpa only [byteAddress] using dst.subrange blob ((count*width).toNat+8) 1 (count*width).toNat (by omega)
+  obtain ⟨funded,price,copiedEq⟩:=CopyGeneral.call_normal tagged copied blobCopyArguments pointer (blob+1#64) (count*width).toNat
+    (blob_copy_args tagged pointer blob count width p b c w) (CopyGeneral.original_code source.code installed)
+    (AllocatedBytes.copy_mapped tagged pointer (blob+1#64) (count*width).toNat domain src output)
+    (by have upper:=src.upper; omega) copyRun
+  rw [copiedEq] at remaining
+  have footerRun:=descriptor_execute (CopyGeneral.callState tagged pointer (blob+1#64) (count*width).toNat) array blob count width emitted inside domain
+    arrayArena arrayAligned a n b c w
+  exact ⟨funded,congrArg Prod.snd (remaining.symm.trans footerRun)⟩
+
+theorem descriptor_numbers (array : BitVec 64) (emitted : Nat) (inside : emitted<5) (arena : AllocatedBytes.Arena array 80) :
+    (array+BitVec.ofNat 64 (16*emitted)).toNat=array.toNat+16*emitted ∧
+    (array+BitVec.ofNat 64 (16*emitted+8)).toNat=array.toNat+16*emitted+8 := by
+  have upper:=arena.upper
+  exact ⟨byteAddress_toNat array (16*emitted) (by omega),by
+    have number:=byteAddress_toNat array (16*emitted+8) (by omega)
+    change (array+BitVec.ofNat 64 (16*emitted+8)).toNat=array.toNat+(16*emitted+8) at number
+    omega⟩
+
+theorem descriptor_cells (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array blob count width : BitVec 64)
+    (emitted : Nat) (inside : emitted<5) (arena : AllocatedBytes.Arena array 80) :
+    (descriptorState source array blob count width emitted).memory (array+BitVec.ofNat 64 (16*emitted))=.word blob ∧
+    (descriptorState source array blob count width emitted).memory (array+BitVec.ofNat 64 (16*emitted+8))=.word (count*width+1#64) := by
+  have numbers:=descriptor_numbers array emitted inside arena
+  have different : array+BitVec.ofNat 64 (16*emitted)≠array+BitVec.ofNat 64 (16*emitted+8):=by
+    intro equal
+    have number:=congrArg BitVec.toNat equal
+    omega
+  exact ⟨by change StoreWord.put (StoreWord.put source.memory _ blob) _ (count*width+1#64) _=_; simp [StoreWord.put,different],by exact if_pos rfl⟩
+
+/-- Descriptor writes protect the entire preceding array prefix, including
+all real earlier row words and the complete earlier decoded input. -/
+theorem descriptor_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array blob count width query : BitVec 64)
+    (emitted : Nat) (inside : emitted<5) (arena : AllocatedBytes.Arena array 80) (before : query.toNat<array.toNat+16*emitted) :
+    (descriptorState source array blob count width emitted).memory query=source.memory query := by
+  have numbers:=descriptor_numbers array emitted inside arena
+  have notPointer : query≠array+BitVec.ofNat 64 (16*emitted):=by intro equal; have number:=congrArg BitVec.toNat equal; omega
+  have notLength : query≠array+BitVec.ofNat 64 (16*emitted+8):=by intro equal; have number:=congrArg BitVec.toNat equal; omega
+  change StoreWord.put (StoreWord.put source.memory _ blob) _ (count*width+1#64) query=_
+  simp [StoreWord.put,notPointer,notLength]
+
+/-- The unaligned payload at blob+1 stays inside the same owned blob;
+its backing words cannot touch anything below that aligned allocation. -/
+theorem copy_after_tag_away (blob query : BitVec 64) (length : Nat) (arena : AllocatedBytes.Arena blob (length+8))
+    (aligned : blob.toNat%8=0) (before : query.toNat<blob.toNat) : CopyGeneral.Away (blob+1#64) query length := by
+  have whole:=arena.away_below blob query (length+8) aligned before
+  intro offset inside
+  have address : byteAddress (blob+1#64) offset=byteAddress blob (offset+1):=by
+    simp only [byteAddress,BitVec.ofNat_add]
+    rw [BitVec.add_assoc,BitVec.add_comm (1#64) (BitVec.ofNat 64 offset)]
+  simpa only [address] using whole (offset+1) (by omega)
+
+theorem after_blob_metadata (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array blob count width : BitVec 64)
+    (index emitted : Nat) : MemoryMetadata.erase (afterBlobState source pointer array blob count width index emitted)=MemoryMetadata.erase source := rfl
+
+/-- The complete real normal suffix protects previous rows and all earlier
+input cells. Both the tag and memcpy stay in the same fresh allocation. -/
+theorem after_blob_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array blob count width query : BitVec 64)
+    (index emitted : Nat) (inside : emitted<5) (arrayArena : AllocatedBytes.Arena array 80)
+    (blobArena : AllocatedBytes.Arena blob ((count*width).toNat+8)) (blobAligned : blob.toNat%8=0)
+    (afterArray : array.toNat+80≤blob.toNat) (before : query.toNat<array.toNat+16*emitted) :
+    (afterBlobState source pointer array blob count width index emitted).memory query=source.memory query := by
+  have below : query.toNat<blob.toNat:=by omega
+  have whole:=blobArena.away_below blob query ((count*width).toNat+8) blobAligned below
+  have notBacking : query≠panByteAlignHOL (width:=64) blob:=by
+    simpa [byteAddress] using (whole 0 (by omega)).2
+  calc
+    _ = (CopyGeneral.callState (tagState source blob index) pointer (blob+1#64) (count*width).toNat).memory query :=
+      descriptor_prefix _ array blob count width query emitted inside arrayArena before
+    _ = (tagState source blob index).memory query :=
+      CopyGeneral.call_memory_away _ pointer (blob+1#64) query (count*width).toNat (copy_after_tag_away blob query (count*width).toNat blobArena blobAligned below)
+    _ = source.memory query := ByteStore.away source.memory source.be blob query (BitVec.ofNat 8 index) notBacking
+
 end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.original_code
@@ -745,3 +935,17 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.iteration_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.iteration_uniform
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.iteration_local
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.descriptor_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.descriptor_execute
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.tag_execute
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.after_blob_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.descriptor_numbers
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.descriptor_cells
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.descriptor_prefix
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.copy_after_tag_away
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.after_blob_metadata
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.after_blob_prefix

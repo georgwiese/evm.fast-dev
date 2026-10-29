@@ -2062,3 +2062,27 @@ closure0/fixed files unchanged. Claim infinity; no global finite target K/full
 verifier success. Usage48%weekly/0resetcredits. Next: same actual iteration's
 normal next model and whole encoder, requests SHA/BAL, remaining main and
 formal target composition, dominant-slack review and final cleanup.
+
+## Current normal request copy/descriptor state and earlier-memory frame
+
+Actual normal per-list tag/copy/descriptor execution now derives memcpy's own
+required clock and its exact complete caller state. The same observed normal
+return supplies the new descriptor state and n++ value. Its two row words are
+proved just written from the actual blob pointer and original cnt*sz+1 word;
+no previous descriptor contents or future row are supplied.
+
+The original p/cnt/sz lexical restorations now retain every other actual
+post-iteration local at the same prepared continuation. The generic normal
+suffix keeps full runtime/global metadata and every memory cell before its
+current descriptor row. This frame includes earlier rows and all earlier
+RQ/input cells: both the tag and the unaligned copy at blob+1 stay inside
+the same actual aligned fresh allocation. The width/copy cost proof reuses
+the shared literal tag execution helper.
+
+Validation: current-requests-normal-frame-v2.log PASS2709jobs, permitted
+printed axioms only. Index8700modules/17992facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K/full
+verifier success. Usage48%weekly/0resetcredits. Next: attach the suffix to its
+same normal allocator and construct the real next LoopModel (including empty
+lists), repeated-loop/encoder normal result, requests SHA/BAL and remaining
+main/target composition, dominant-slack review and final cleanup.

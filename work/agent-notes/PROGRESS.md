@@ -5171,3 +5171,38 @@ shortcut, then the two-digit Taylor path. Actual runtime workspace/input
 separation, Taylor/header/main, uniform target composition, exact K,
 dominant slack review and cleanup remain open. Historical untracked
 RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.
+
+
+## Complete actual one-digit u256 division and Taylor assigned-call form
+
+The complete unchanged u256_divmod63 function now has an actual execution
+contract for every256-bit numerator and positive32-bit divisor. Its real
+zero guard and u256_lt call select the genuine a<b return,64-round scalar
+shortcut or wide digits branch. Each selected path has exact clock funding,
+actual eight returned words, natural quotient/remainder and full memory frame.
+A genuine normal return derives these facts from the real function entry.
+The total all-outcome source bound is314body ticks.
+
+The unchanged u256_div64 wrapper now calls that actual function, extracts
+its real quotient and returns the exact four-word value. Its all-outcome
+bound is315body/316ordinary caller source ticks. The assigned-call form
+used by Taylor derives its own funding and canonical next accumulator from
+the actual normal call, together with exact natural division and protection
+outside the u/q/r/v write ranges. No future callee result, value oracle or
+preassumed successful assignment is an entry premise. The caller's actual
+normal return supplies the assignment's type/lookup facts. Source clocks
+still exclude the straight-line target work required by the full goal.
+
+Validation: current-u256-divide-assigned-v2.log PASS1122jobs; all17new
+printed facts have only permitted axioms. Index8700modules/18518facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage32%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: retain the real u256 workspace through runtime Data and derive input/
+workspace separation using startup heap minimum2701135464; complete the
+two-digit Taylor divisor path's normalization, actual subtraction and final
+remainder stores. Taylor/header/main, uniform target composition, exact K,
+dominant slack review and cleanup remain open. Historical untracked
+RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.

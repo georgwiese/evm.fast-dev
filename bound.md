@@ -1161,3 +1161,33 @@ or full verification; claim infinity. Usage33%weekly/0resetcredits.
 Next: bound the actual header encoder/block-length call on every outcome,
 deriving any stronger allocation room from its true continuing prefix;
 then real indexed tries, later main and the uniform target-step theorem.
+
+
+## Intrinsic current RLP helper costs and bounded reverse-byte writes
+
+Added a small current RLP catalogue checking21actual software entries,
+without the older block-execution/large code catalogue dependency. The
+reused shift/reverse-byte loop bodies are proved literally equal to the
+actual current Software declarations. Preserved all five earlier untracked
+WIPs untouched and unimported.
+
+Current rlp_be_len costs≤8body/9caller ticks and its true normal result is
+≤8with every nonlocal retained. The actual reverse put_be loop costs≤its
+input count on every outcome, including missing operands, unmapped stores
+and exhausted clocks. Its genuine normal return is0and protects every word
+outside that counted destination, retaining all runtime metadata/globals/FFI.
+Header/word scalar sizers cost≤9body; list-header length≤10body. Their real
+normal encoded lengths are1..9and retain all nonlocals even below the
+conservative price, by clock padding. Current rlp_write_header costs≤18body/
+19caller, deriving its real bounded length-helper return and only pricing
+the reverse writer after an actual normal tag store. No mapped-output or
+future successful-call premise was added for these cost bounds.
+
+Validation: current-rlp-write-frame-v2.log PASS2052jobs, including the entire
+current helper set and actual physical payload-header entry regression.
+Printed axioms permitted only. Index8658modules/17683facts; inventory8703/
+replacement closure0/fixed files unchanged. Incremental policy PASS65494
+entries/2485376634bytes. No global finite target K/full verification; claim
+infinity. Usage34%weekly/0resetcredits. Next: header/byte/word/wide writer
+normal frames and intrinsic costs, actual full encoder/block-length bound,
+then indexed tries, later main and uniform target steps.

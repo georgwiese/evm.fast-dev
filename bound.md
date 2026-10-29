@@ -2861,3 +2861,45 @@ correction now has its numerical contract; its two subtraction/store steps
 still must construct the next real remainder image. Taylor/current parent
 header validation/execution/wrappers/main, uniform target composition,
 dominant-slack review and cleanup remain open in the same active goal.
+
+
+## Actual u256_to_digits physical image and ignored caller
+
+A checked physical word-slot image now models up to16distinct workspace
+slots, with exact prefix writes and preservation of every cell outside the
+write set. Its mapped-slot entry facts follow from the current ordinary
+64-byte arena and alignment, without assuming initialized contents. The
+eight converted base2^32digits are each below2^32, and their natural
+little-endian value equals the real four-limb input. Each32-bit digit is
+stored in an8-byte source word slot.
+
+The unchanged u256_to_digits(58) literal eight-store body now has exact
+ordered execution at every body clock, including0. It returns0, constructs
+the real digit image and changes only memory/local return state. The full
+body allowance is0source ticks; the actual p-word/a-quad ABI and ignored
+caller are checked at1source tick. A real normal caller derives its own
+funding and exact canonical returned state. Every memory cell outside the
+64-byte nonwrapping buffer is protected. No future store/helper outcome is
+an entry premise; actual mapped destinations come from the current arena.
+
+Validation: current-wide-digits-image-v2.log PASS1020jobs,
+current-wide-digits-stores-v1.log PASS1020jobs and
+current-wide-digits-call-v1.log PASS1021jobs; printed axioms permitted.
+Index8700modules/18354facts; inventory8745/replacement closure0/fixed files
+unchanged. Claim infinity; no global finite target K or full verifier success.
+Overall estimate remains50%, plausible40–60%. Usage30%weekly/0resetcredits,
+ordinary usage allowed. No executable or challenge hypothesis changed.
+
+Next: actual digits_len(60), deriving its returned count≤8, nonzero leading
+digit and zero suffix from this same physical image, including short-clock
+outcomes and real early returns. digits_to_u256(59) then needs its actual
+read/combination inverse to the image. The divmnu one-/two-digit numerical
+paths still need their real array stores/next remainder model.
+CurrentStartup has the real u256_ws_init allocation and scalar/global
+frameworks; derive and retain its640-byte allocation/global through startup
+and main. The older MainU256Prefix has obsolete concrete startup cursors,
+so do not infer the current address from that older main template. Only
+workspace ownership/global/domain are needed initially, not old contents: the
+real conversion and clearing calls initialize used slots. Taylor/current
+parent-header validation/execution/wrappers/main, uniform target composition,
+dominant-slack review and cleanup remain in the same active goal.

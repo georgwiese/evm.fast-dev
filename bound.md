@@ -1481,3 +1481,32 @@ closure0/fixed files unchanged. Claim infinity; no global finite target K or
 full verification. Next: current unsecured key/setter and actual indexed-loop
 invariant, remaining main and target-step composition. Five historical
 untracked RLP WIPs remain untouched/unclaimed. Usage38%weekly/0resetcredits.
+
+
+## Current unsecured indexed-key conversion and whole setter allowance
+
+The actual current mpt_nibble_key244 unsecured branch costs≤length/4+6,
+thus≤14body source ticks at a key of at most32bytes. A true normal call
+derives its fresh2*length-byte nibble span, exact heap/runtime metadata,
+saved caller locals and complete earlier-memory frame. The bounded real
+allocation derives persistent room from its own checked guard and earlier
+no-wrap, without an assumed successful future request.
+
+Its actual reached caller now reconstructs the retained graph, values,
+path bytes/separation and protected query at the new heap. This current
+unsecured path imports no cryptographic oracle. The real mpt_set call now uses its checked current catalogue position
+(the insertion child is249); its whole body costs≤36806source ticks on every outcome for
+a nonempty row and fresh unsecured indexed-trie entry. Normal key conversion
+supplies the true insertion query before the suffix is priced. Row nonemptiness
+is an explicit local entry condition; deriving it from the actual main scan
+and connecting the whole indexed loop remain open, not global hypotheses.
+
+Validation: current-unsecured-key-v3.log PASS2408jobs;
+current-indexed-set-prerequisites-v1.log PASS2426jobs;
+current-indexed-set-entry-v1.log PASS2214jobs;
+current-indexed-set-cost-v1.log PASS2427jobs with complete payload-to-trie
+regression. Printed axioms permitted only. Index8689modules/17788facts;
+inventory8734/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verification. Next: actual setter normal
+frame, indexed-loop invariant and main-scan nonemptiness, then remaining
+main and target-step composition. Usage38%weekly/0resetcredits.

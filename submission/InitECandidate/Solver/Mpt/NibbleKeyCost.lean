@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.NibbleKeyProgram
+import InitECandidate.Solver.Input.ScalarWordShape
 import InitECandidate.Solver.Input.ClockCostScopedReached
 
 namespace InitECandidate.Solver.Mpt.NibbleKey
@@ -40,7 +41,7 @@ theorem unsecured_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (m 
       have scalar : shapeEqHOL (shapeOfHOLExact returned) .one=true:=by simpa only [Bool.and_self] using checked
       have shape : shapeOfHOLExact returned=.one:=
         (shapeEqHOL_eq_true _ _).mp scalar
-      obtain ⟨out,valueEq⟩:=Input.RlpWrite.U256Value.scalar_word returned shape
+      obtain ⟨out,valueEq⟩:=Input.scalar_word_of_shape returned shape
       let ready:=Input.CallNormal.continuationEntry source target "nb2" returned
       have keyLocal : ready.locals.lookup (ofString "key")=some (.val (.word key)):=by
         simpa [ready,Input.CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,

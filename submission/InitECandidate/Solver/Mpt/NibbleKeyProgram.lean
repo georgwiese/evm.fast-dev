@@ -35,9 +35,9 @@ theorem unsecured_shape : unsecured=.decCall (ofString "nb2") .one (ofString "al
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "mpt_nibble_key")=some (formals,body,returnShape) := by
-  have checked:=Input.OriginalCode.indexed code installed 246 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_mpt_nibble_key) (by rfl)
+  have checked:=Input.OriginalCode.indexed code installed 244 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_mpt_nibble_key) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,returnShape,
-    Guest.guestFn_mpt_nibble_key,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_mpt_nibble_key,Guest.guestFn_mpt_nibble_key,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem environment (table : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (m key length : BitVec 64)
     (known : table (ofString "mpt_nibble_key")=some (formals,body,returnShape)) :

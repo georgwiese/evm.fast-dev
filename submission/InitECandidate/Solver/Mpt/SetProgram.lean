@@ -17,8 +17,8 @@ theorem body_shape : body=.decCall (ofString "nk") NibbleKey.returnShape (ofStri
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "mpt_set")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 256 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_mpt_set) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_mpt_set,
+  have checked:=Input.OriginalCode.indexed code installed 254 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_mpt_set) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_mpt_set,Guest.guestFn_mpt_set,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem key_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (m key : BitVec 64) (length : Nat)

@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Mpt.NibbleKeyProgram
-import InitECandidate.Solver.WitnessRadix.AllocationCallNormal
+import InitECandidate.Solver.WitnessRadix.AllocationNoWrapTrace
 
 namespace InitECandidate.Solver.Mpt.NibbleKey
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -25,13 +25,13 @@ theorem normal_allocation (source target : PanSemStateFiniteExact 64 Guest.HostM
       some (PersistentAlloc.values (BitVec.ofNat 64 (2*length))):=by
     simp [amount,PersistentAlloc.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,lengthCell,panOpHOL,
       valueIsWord,valueWord,BitVec.ofNat_mul]
-  rw [unsecured_run source m mCell mapped cell,unsecured_shape] at normal
-  obtain ⟨room,funded,inner,continued,endpoint⟩:=PersistentAlloc.call_normal source target "nb2" [amount] tail heap
-    (BitVec.ofNat 64 (2*length)) args (PersistentAlloc.original_code source.code installed) (Input.Trap.original_code source.code installed)
-    heapCell (by have upper:=frontier.upper; omega) value normal
   have number : (BitVec.ofNat 64 (2*length)).toNat=2*length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  rw [unsecured_run source m mCell mapped cell,unsecured_shape] at normal
+  obtain ⟨room,funded,inner,continued,endpoint⟩:=PersistentAlloc.call_normal_no_wrap source target "nb2" [amount] tail heap
+    (BitVec.ofNat 64 (2*length)) args (PersistentAlloc.original_code source.code installed) (Input.Trap.original_code source.code installed)
+    heapCell (by rw [number]; have upper:=frontier.upper; omega) value normal
   rw [number] at room
-  exact ⟨⟨frontier.lower,room⟩,inner,continued,endpoint⟩
+  exact ⟨⟨frontier.lower,by omega⟩,inner,continued,endpoint⟩
 
 theorem allocated_locals (source : PanSemStateFiniteExact 64 Guest.HostMemory) (key heap : BitVec 64) (length : Nat)
     (keyCell : source.locals.lookup (ofString "key")=some (.val (.word key)))

@@ -39,10 +39,10 @@ not a theorem or target ceiling.
 The current startup/input/header/gas/two-database/state-init path is connected
 through both actual payload-header indexed tries. The complete unchanged
 withdrawal encoder costs≤201body source ticks; its real loop costs≤203 per
-row. The actual payload_header execution through both tries and complete request
-encoding/hashing either stops or reaches the final BAL hash within476403740492
-source ticks, retaining all decoded inputs/header fields and the actual restored
-encoder heap. The request array/count≤5 and every helper entry are derived
+row. The actual run_attempt prefix through payload_header, both indexed tries,
+request encoding/hashing and final BAL hash either stops or reaches the original
+header-hash continuation within479872711490source ticks, retaining all decoded
+inputs/header fields and the actual restored heap. The request array/count≤5 and every helper entry are derived
 from that same execution. Any reached continuation has zero actual transactions
 and withdrawals, derived from the real trie executions.
 
@@ -56,7 +56,8 @@ costs≤157284452body source ticks on every outcome. Its actual normal return
 supplies the real count≤5, owned rows, checked heap and complete earlier-memory
 frame. The actual main caller connection is checked. General software SHA now has a
 complete all-outcome body source allowance2*(bytes/64)+268, plus1caller tick.
-Its complete caller memory frame is checked. Request hashes, the remaining main continuation,
+Its complete caller memory frame is checked. Request hashing and the full physical
+header return are connected; the remaining main continuation,
 uniform target composition, dominant-slack review and final cleanup remain open.
 
 ## Earlier checked milestones, in order
@@ -2454,3 +2455,26 @@ global finite target K/full verifier success. Usage53%weekly/0resetcredits.
 Next: actual run_attempt hdr call, header hash/comparison/version checks and
 remaining main continuation, formal target composition, dominant-slack review
 and final cleanup.
+
+
+## Actual main caller receives the completed payload header
+
+The original run_attempt hdr call now derives its real returned word from
+payload_header's actual normal execution. Its actual caller restoration retains
+SI/PL, the complete decoded input, all31header-field facts, allocated buffers,
+bounded aligned heap and the derived zero transaction/withdrawal counts.
+No later hash result, success, funding or extra entry hypothesis is assumed.
+
+The complete original prefix through that call either stops or reaches its
+unchanged header-hash continuation within479872711490source ticks. Header
+caller alone costs476485158959. These remain source-clock allowances; global
+uniform target-step composition remains open. Joining the previously separate
+proof paths exposed two identically named node-constructor shape lemmas;
+the cost-only duplicate is now private, without changing either proof or ABI.
+
+Validation: current-main-header-caller-v5.log PASS3090jobs, permitted printed
+axioms only. Index8700modules/18180facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage53%weekly/0resetcredits. Next: actual header hash/comparison/
+version checks and remaining main, formal target composition, dominant-slack
+review and final cleanup.

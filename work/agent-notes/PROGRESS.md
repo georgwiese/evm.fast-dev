@@ -4292,3 +4292,26 @@ closure0/fixed files unchanged. Incremental policy PASS65497entries/
 2485410097bytes. Claim infinity; no global finite target K/full verification.
 Usage34%weekly/0resetcredits. Next: current wide writer, actual complete
 encoder/block-length bounds, indexed tries, later main and uniform target steps.
+
+
+## Actual main caller receives the completed payload header
+
+The original run_attempt hdr call now derives its real returned word from
+payload_header's actual normal execution. Its actual caller restoration retains
+SI/PL, the complete decoded input, all31header-field facts, allocated buffers,
+bounded aligned heap and the derived zero transaction/withdrawal counts.
+No later hash result, success, funding or extra entry hypothesis is assumed.
+
+The complete original prefix through that call either stops or reaches its
+unchanged header-hash continuation within479872711490source ticks. Header
+caller alone costs476485158959. These remain source-clock allowances; global
+uniform target-step composition remains open. Joining the previously separate
+proof paths exposed two identically named node-constructor shape lemmas;
+the cost-only duplicate is now private, without changing either proof or ABI.
+
+Validation: current-main-header-caller-v5.log PASS3090jobs, permitted printed
+axioms only. Index8700modules/18180facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage53%weekly/0resetcredits. Next: actual header hash/comparison/
+version checks and remaining main, formal target composition, dominant-slack
+review and final cleanup.

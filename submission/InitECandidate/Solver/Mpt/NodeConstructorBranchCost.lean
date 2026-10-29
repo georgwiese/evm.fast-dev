@@ -13,7 +13,7 @@ def branchSuffix : ProgHOL 64 := .seq
   (.store (.op .add [localVar "nd",.const 0#64]) (.const 3#64)) (.return (localVar "nd"))
 
 set_option maxRecDepth 100000 in
-theorem branch_tail_shape : tail .branch=
+private theorem branch_cost_tail_shape : tail .branch=
     .seq (.call (some (none,none)) (ofString "memzero") [localVar "nd",.const 176#64]) branchSuffix := by
   simp only [tail,body,original,Guest.Software.guestFn_node_new_branch,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
     branchSuffix,localVar,Option.map_none]
@@ -29,7 +29,7 @@ theorem branch_tail_price (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   change source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "memzero") [localVar "nd",.const 176#64])).2.clock≤226 at zeroPrice
   have footer : ClockCost.Bound source.code branchSuffix 0 :=
     ClockCost.sequence source.code _ _ 0 0 (ClockCost.store source.code _ _) (ClockCost.returned source.code _)
-  rw [branch_tail_shape]
+  rw [branch_cost_tail_shape]
   exact ClockCost.sequence_current source _ branchSuffix 226 0 zeroPrice footer
 
 /-- The actual persistent branch constructor has a fixed all-outcome cost,

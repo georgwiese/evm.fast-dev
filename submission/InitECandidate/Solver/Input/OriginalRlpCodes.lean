@@ -1,6 +1,6 @@
-import InitECandidate.Solver.Input.RlpLength.BlockGuard
+import InitECandidate.Solver.Input.CurrentRlp.BlockCodes
 import InitECandidate.Solver.Input.OriginalCode
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.Input.OriginalEntry
 import InitECandidate.Solver.WitnessRadix.AllocationEnvironment
 import InitECandidate.Solver.WitnessRadix.AllocationCost
 import InitECandidate.Solver.WitnessRadix.CopyGeneralCode
@@ -12,149 +12,149 @@ open Flapjack.Basis.Pure.MlString
 set_option maxRecDepth 100000 in
 theorem heap_mark (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "heap_mark")=some ([],HeapScope.markBody,.one) := by
-  have checked:=OriginalCode.indexed code installed 3 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_heap_mark) (by rfl)
+  have checked:=OriginalCode.indexed code installed 3 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_heap_mark) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,HeapScope.markBody,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_heap_mark,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_heap_mark,Guest.guestFn_heap_mark,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem heap_release (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "heap_release")=some (HeapScope.releaseFormals,HeapScope.releaseBody,.one) := by
-  have checked:=OriginalCode.indexed code installed 4 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_heap_release) (by rfl)
+  have checked:=OriginalCode.indexed code installed 4 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_heap_release) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,HeapScope.releaseFormals,HeapScope.releaseBody,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_heap_release,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_heap_release,Guest.guestFn_heap_release,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem u256_limb (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "u256_limb")=some (RlpWrite.U256Limb.formals,RlpWrite.U256Limb.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 37 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_u256_limb) (by rfl)
+  have checked:=OriginalCode.indexed code installed 37 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_u256_limb) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.U256Limb.formals,RlpWrite.U256Limb.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_u256_limb,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_u256_limb,Guest.guestFn_u256_limb,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem bit_length64 (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "bit_length64")=some (RlpWrite.BitLength.formals,RlpWrite.BitLength.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 71 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_bit_length64) (by rfl)
+  have checked:=OriginalCode.indexed code installed 71 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_bit_length64) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.BitLength.formals,RlpWrite.BitLength.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_bit_length64,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_bit_length64,Guest.guestFn_bit_length64,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem u256_bit_length (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "u256_bit_length")=some (RlpWrite.U256Bits.formals,RlpWrite.U256Bits.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 72 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_u256_bit_length) (by rfl)
+  have checked:=OriginalCode.indexed code installed 72 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_u256_bit_length) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.U256Bits.formals,RlpWrite.U256Bits.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_u256_bit_length,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_u256_bit_length,Guest.guestFn_u256_bit_length,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem u256_byte_length (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "u256_byte_length")=some (RlpWrite.U256ByteLength.formals,RlpWrite.U256ByteLength.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 73 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_u256_byte_length) (by rfl)
+  have checked:=OriginalCode.indexed code installed 73 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_u256_byte_length) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.U256ByteLength.formals,RlpWrite.U256ByteLength.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_u256_byte_length,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_u256_byte_length,Guest.guestFn_u256_byte_length,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem u256_to_be_min (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "u256_to_be_min")=some (RlpWrite.U256Min.formals,RlpWrite.U256Min.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 82 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_u256_to_be_min) (by rfl)
+  have checked:=OriginalCode.indexed code installed 82 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_u256_to_be_min) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.U256Min.formals,RlpWrite.U256Min.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_u256_to_be_min,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_u256_to_be_min,Guest.guestFn_u256_to_be_min,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_be_len (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_be_len")=some (RlpLength.Be.formals,RlpLength.Be.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 106 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_be_len) (by rfl)
+  have checked:=OriginalCode.indexed code installed 106 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_be_len) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpLength.Be.formals,RlpLength.Be.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_be_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_be_len,Guest.guestFn_rlp_be_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_put_be (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_put_be")=some (RlpWrite.PutBe.formals,RlpWrite.PutBe.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 107 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_put_be) (by rfl)
+  have checked:=OriginalCode.indexed code installed 107 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_put_be) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.PutBe.formals,RlpWrite.PutBe.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_put_be,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_put_be,Guest.guestFn_rlp_put_be,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_write_header (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_write_header")=some (RlpWrite.HeaderWrite.formals,RlpWrite.HeaderWrite.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 108 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_write_header) (by rfl)
+  have checked:=OriginalCode.indexed code installed 108 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_write_header) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.HeaderWrite.formals,RlpWrite.HeaderWrite.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_write_header,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_write_header,Guest.guestFn_rlp_write_header,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_header_len (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_header_len")=some (RlpLength.Header.formals,RlpLength.Header.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 109 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_header_len) (by rfl)
+  have checked:=OriginalCode.indexed code installed 109 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_header_len) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpLength.Header.formals,RlpLength.Header.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_header_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_header_len,Guest.guestFn_rlp_header_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_encode_bytes (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_encode_bytes")=some (RlpWrite.BytesWrite.formals,RlpWrite.BytesWrite.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 110 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_encode_bytes) (by rfl)
+  have checked:=OriginalCode.indexed code installed 110 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_encode_bytes) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.BytesWrite.formals,RlpWrite.BytesWrite.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_encode_bytes,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_encode_bytes,Guest.guestFn_rlp_encode_bytes,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_encode_word (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_encode_word")=some (RlpWrite.WordWrite.formals,RlpWrite.WordWrite.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 111 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_encode_word) (by rfl)
+  have checked:=OriginalCode.indexed code installed 111 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_encode_word) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.WordWrite.formals,RlpWrite.WordWrite.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_encode_word,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_encode_word,Guest.guestFn_rlp_encode_word,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_encode_list_header (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_encode_list_header")=some (RlpWrite.ListWrite.formals,RlpWrite.ListWrite.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 112 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_encode_list_header) (by rfl)
+  have checked:=OriginalCode.indexed code installed 112 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_encode_list_header) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.ListWrite.formals,RlpWrite.ListWrite.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_encode_list_header,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_encode_list_header,Guest.guestFn_rlp_encode_list_header,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_bytes_encoded_len (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_bytes_encoded_len")=some (RlpLength.BytesSize.formals,RlpLength.BytesSize.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 113 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_bytes_encoded_len) (by rfl)
+  have checked:=OriginalCode.indexed code installed 113 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_bytes_encoded_len) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpLength.BytesSize.formals,RlpLength.BytesSize.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_bytes_encoded_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_bytes_encoded_len,Guest.guestFn_rlp_bytes_encoded_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_list_header_len (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_list_header_len")=some (RlpLength.ListHeader.formals,RlpLength.ListHeader.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 114 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_list_header_len) (by rfl)
+  have checked:=OriginalCode.indexed code installed 114 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_list_header_len) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpLength.ListHeader.formals,RlpLength.ListHeader.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_list_header_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_list_header_len,Guest.guestFn_rlp_list_header_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_word_encoded_len (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_word_encoded_len")=some (RlpLength.WordSize.formals,RlpLength.WordSize.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 115 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_word_encoded_len) (by rfl)
+  have checked:=OriginalCode.indexed code installed 115 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_word_encoded_len) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpLength.WordSize.formals,RlpLength.WordSize.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_word_encoded_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_word_encoded_len,Guest.guestFn_rlp_word_encoded_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem rlp_put_u256 (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "rlp_put_u256")=some (RlpWrite.U256Put.formals,RlpWrite.U256Put.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 211 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_rlp_put_u256) (by rfl)
+  have checked:=OriginalCode.indexed code installed 209 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_rlp_put_u256) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpWrite.U256Put.formals,RlpWrite.U256Put.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_rlp_put_u256,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_rlp_put_u256,Guest.guestFn_rlp_put_u256,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem encode_header (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "encode_header")=some (HeaderEncoding.formals,HeaderEncoding.body,HeaderEncoding.returnShape) := by
-  have checked:=OriginalCode.indexed code installed 212 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_encode_header) (by rfl)
+  have checked:=OriginalCode.indexed code installed 210 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_encode_header) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,HeaderEncoding.formals,HeaderEncoding.body,HeaderEncoding.returnShape,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_encode_header,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_encode_header,Guest.guestFn_encode_header,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem withdrawal_rlp_len (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "withdrawal_rlp_len")=some (RlpLength.Withdrawal.formals,RlpLength.Withdrawal.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 790 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_withdrawal_rlp_len) (by rfl)
+  have checked:=OriginalCode.indexed code installed 778 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_withdrawal_rlp_len) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpLength.Withdrawal.formals,RlpLength.Withdrawal.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_withdrawal_rlp_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_withdrawal_rlp_len,Guest.guestFn_withdrawal_rlp_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 set_option maxRecDepth 100000 in
 theorem block_rlp_length (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "block_rlp_length")=some (RlpLength.Block.formals,RlpLength.Block.body,.one) := by
-  have checked:=OriginalCode.indexed code installed 799 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_block_rlp_length) (by rfl)
+  have checked:=OriginalCode.indexed code installed 787 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_block_rlp_length) (by rfl)
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,RlpLength.Block.formals,RlpLength.Block.body,RlpWrite.U256Value.tupleShape,
-    Guest.guestFn_block_rlp_length,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+    Guest.Software.guestFn_block_rlp_length,Guest.guestFn_block_rlp_length,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem bytes_codes (source : PanSemStateFiniteExact 64 Guest.HostMemory) (installed : OriginalCode.Installed source.code) :
     RlpWrite.BytesWrite.Codes source :=

@@ -1400,3 +1400,22 @@ Incremental policy PASS65518entries/2485551402bytes. Claim infinity; no
 global finite target K/full verification. Usage36%weekly/0resetcredits.
 Next: retarget/reuse the original pure trie insertion proofs and construct
 actual indexed-trie invariants, then remaining main and uniform target steps.
+
+
+## Shared RLP catalogue retargeted to current Software declarations
+
+The21legacy shared RLP lookup proofs now use actual current function
+positions and declarations, including wide209/header210/withdrawal778/
+block787. Each proof checks the unchanged helper body against that real
+current declaration. Removed the historical whole-block guard dependency
+and the unrelated EVM/dictionary execution imports; code records now come
+from the checked current encoder/block helper structures.
+
+Added a reproducible named-file retargeting/check tool. It changes lookup
+proofs only and leaves all executable declaration/body definitions alone.
+Validation: current-rlp-catalogue-v2.log PASS2141jobs with the complete
+payload-to-trie regression; retargeting --check PASS. Printed axioms
+permitted only. Index8682modules/17777facts; inventory8727/replacement
+closure0/fixed files unchanged. Policy PASS65518entries/2485552391bytes.
+Claim infinity; no global finite target K/full verification. Next: pure
+insertion helpers/actual indexed-trie models, remaining main and target steps.

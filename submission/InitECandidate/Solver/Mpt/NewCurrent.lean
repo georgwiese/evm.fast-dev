@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Mpt.NewProgram
-import InitECandidate.Solver.WitnessRadix.AllocationCall
+import InitECandidate.Solver.WitnessRadix.AllocationNoWrapTrace
 import InitECandidate.Solver.WitnessRadix.AllocatedBytes
 
 namespace InitECandidate.Solver.Mpt.NewTrie
@@ -57,14 +57,13 @@ theorem normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (hea
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned value),target)) :
     AllocatedBytes.Arena heap 16 ∧ value=.val (.word heap) ∧
       emptyLocalsHOLFinite target=emptyLocalsHOLFinite (ready source heap root secured) := by
-  obtain ⟨current,inner,execution,endpoint,remaining⟩:=allocation_trace source target value run
-  obtain ⟨middle,first,next⟩:=execution.head
-  have funded:=first.scoped_funded
-  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [.const 16#64]=some (PersistentAlloc.values 16#64):=by
-    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,PersistentAlloc.values]
-  obtain ⟨room,nextTrace⟩:=Input.CallPrefix.Execution.alloc_next (source:=source) (target:=current) (ofString "m") [.const 16#64] heap 16#64 []
-    installed args heapCell (by have h:=frontier.upper; omega) execution
-  let arena : AllocatedBytes.Arena heap 16:=⟨frontier.lower,room⟩
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [.const 16#64]=some (PersistentAlloc.values 16#64):=rfl
+  have shaped:=run
+  rw [body_shape] at shaped
+  obtain ⟨room,funded,inner,continued,endpoint⟩:=PersistentAlloc.call_normal_no_wrap source target "m" [.const 16#64] tail heap 16#64 args
+    (PersistentAlloc.original_code source.code installed) (Input.Trap.original_code source.code installed) heapCell
+    (by change heap.toNat+16+7<2^64; have upper:=frontier.upper; omega) value shaped
+  have arena : AllocatedBytes.Arena heap 16:=⟨frontier.lower,by change heap.toNat+16≤2952790016 at room; omega⟩
   have allocation:=PersistentAlloc.call_execute source "m" [.const 16#64] tail heap 16#64 args
     (PersistentAlloc.original_code source.code installed) heapCell room (by omega)
   have suffix:=tail_execute source heap root secured rootCell securedCell domain arena aligned

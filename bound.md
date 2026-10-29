@@ -1539,3 +1539,35 @@ files unchanged. Claim infinity; no global finite target K/full verification.
 Next: actual current indexed-loop entry/key workspace and repeated-row
 invariant, then remaining main and target-step composition. Usage38%weekly/
 0resetcredits. Five historical untracked RLP WIPs untouched/unclaimed.
+
+
+## Actual indexed-key workspace and current repeated-row model
+
+The actual mpt_init allocation now establishes mpt_key_scratch2701134808,
+with its16-byte span ending at2701134824before the copied input. Shared
+all-outcome startup/decoder/hash frames preserve that global. The real main
+input contract retains it through header validation, both current Patricia
+databases, state initialization and the physical payload-header/trie caller.
+The generator sources and reports were updated reproducibly and rechecked.
+
+The current indexed-loop model has no obsolete secure-hash oracle, historical
+workspace constants or historical scratch-arena hypothesis. It carries actual
+nonempty decoded rows before its header, live registered nodes/path buffers
+after its aligned cutoff, true root/flag cells, current key global and heap.
+Actual RLP key returns cost≤19caller ticks, derive encoded1..9and preserve
+all loop data/rows. The actual ignored setter costs≤36807caller ticks and
+its real normal return supplies the new graph, heap and retained rows/header.
+The normal sixteen-byte mpt_new constructor now derives persistent room from
+its own actual normal allocation, and its lookup plus the indexed program
+lookup are tied to current Software declarations. The complete repeated loop
+and builder/root suffix still remain open.
+
+Validation: current-indexed-key-workspace-v1.log PASS3063jobs;
+current-indexed-loop-model-v2.log PASS3072jobs, including actual current main
+transaction-nonemptiness, physical payload-to-trie, setter and constructor
+regressions. Printed axioms permitted only. Both generator --check runs PASS.
+Index8693modules/17802facts; inventory8738/replacement closure0/fixed files
+unchanged. Claim infinity; no global finite target K/full verification.
+Usage39%weekly/0resetcredits. Next: bound/retain the actual repeated indexed
+loop, constructor/root suffix and actual main caller; remaining main and
+uniform target steps follow. Five old untracked RLP WIPs untouched/unclaimed.

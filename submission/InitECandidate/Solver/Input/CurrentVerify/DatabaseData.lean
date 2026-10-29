@@ -30,7 +30,7 @@ theorem after_database_data {input : Guest.InputBlob} {source target : PanSemSta
   obtain ⟨heap,heapCell,heapLower,heapUpper,heapAligned⟩ := returned.heap
   have heap : NormalHeapEffects.AtLeast (boundary+32) ready :=
     ⟨heap,heapCell,by have := returned.tableAfter; change upper≤table.toNat at this; omega,heapUpper,heapAligned⟩
-  exact data.of_interval arena returned.little environment returned.outCell heap siLocal
+  exact data.of_interval arena returned.little environment returned.outCell ((returned.globals _ (by decide)).trans data.mptKey) heap siLocal
     (fun query low high=>returned.input.words query low (by change query.toNat<upper; omega))
 
 end InitECandidate.Solver.Input.CurrentVerify

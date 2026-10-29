@@ -31,8 +31,8 @@ theorem loop_shape : loopAndAfter=.seq (.while test loopBody) afterLoop := by
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "build_mpt_indexed")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 268 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_build_mpt_indexed) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_build_mpt_indexed,
+  have checked:=Input.OriginalCode.indexed code installed 266 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_build_mpt_indexed) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_build_mpt_indexed,Guest.guestFn_build_mpt_indexed,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (array count out : BitVec 64)

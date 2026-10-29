@@ -14,6 +14,7 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
     (data : Data input caller pointer si record gasWord boundary) :
     Data input {target with locals:=caller.locals} pointer si record gasWord boundary := by
   have hashes:=returned.hash_globals
+  have keyGlobal:=returned.globals (ofString "mpt_key_scratch") (by decide)
   obtain ⟨entry,value,inputs,entryFrame,bodyRun,checked⟩:=returned
   obtain ⟨heap,heapCell,valueEq,targetArena,physical⟩:=state_init_normal_memory inputs value bodyRun
   let current : PanSemStateFiniteExact 64 Guest.HostMemory:={target with locals:=caller.locals}
@@ -31,7 +32,7 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
   have environment : CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64:=
     ⟨currentArena.code,currentArena.domain,hashes.1.trans data.keccak.stateGlobal,hashes.2.1.trans data.keccak.padGlobal,
       data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
-  exact data.of_interval currentArena little environment (hashes.2.2.trans data.mptHash) heapNow data.siLocal
+  exact data.of_interval currentArena little environment (hashes.2.2.trans data.mptHash) (keyGlobal.trans data.mptKey) heapNow data.siLocal
     (fun query low high=>frame.memory query (by omega))
 
 /-- Main's actual complete state-init prefix now resumes with retained

@@ -72,7 +72,10 @@
     "ssz_offs",
     "ssz_len_chunk",
     "zero_hashes",
-    "mpt_hash_scratch"
+    "keccak_st",
+    "keccak_pad",
+    "mpt_hash_scratch",
+    "mpt_key_scratch"
   ],
   "scope": "Generator/scanner output; not proof validation, timing or a whole-program bound.",
   "generated_sources": [
@@ -82,11 +85,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Base.lean",
-      "sha256": "a78e539791ad094637f996c5641a7155a10c58da83788d04c71a81863989ecc2"
+      "sha256": "b420423594f97ac494bb8798c4d7e9b019512cfe8abb3071c2e6b0489f09ef3e"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/SharedEffects.lean",
-      "sha256": "f57b834b348ae82cfb5ff0dba75a5fb748589731f399db6629407244a20acd02"
+      "sha256": "0a22eebd6e6c3da73577774a75f66494d747efc22be6eea5e8ee83e6d3b0112a"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Effects.lean",

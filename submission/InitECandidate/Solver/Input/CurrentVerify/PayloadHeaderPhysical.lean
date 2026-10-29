@@ -17,7 +17,7 @@ theorem HeaderFrame.data {input : Guest.InputBlob} {source current : PanSemState
   have nextHeap : NormalHeapEffects.AtLeast (boundary+32) current:=
     ⟨cursor,frontier.cell,by have afterHeader:=frontier.afterHeader; omega,frontier.bounded,frontier.aligned⟩
   exact data.of_interval arena (frame.endian.trans data.little) (frame.environment source current pointer record heap data.keccak)
-    ((frame.globals _ (by decide)).trans data.mptHash) nextHeap (frame.si.trans data.siLocal)
+    ((frame.globals _ (by decide)).trans data.mptHash) ((frame.globals _ (by decide)).trans data.mptKey) nextHeap (frame.si.trans data.siLocal)
     (fun query lower upper=>frame.older query lower (by omega))
 
 /-- Physical inputs at the actual block-length caller. Geometry describes

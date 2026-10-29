@@ -21,6 +21,7 @@ structure Workspace (state : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop 
   keccakState : state.globals.lookup (ofString "keccak_st") = some (.val (.word 2701132160#64))
   keccakPad : state.globals.lookup (ofString "keccak_pad") = some (.val (.word 2701132360#64))
   mptHash : state.globals.lookup (ofString "mpt_hash_scratch") = some (.val (.word 2701134768#64))
+  mptKey : state.globals.lookup (ofString "mpt_key_scratch") = some (.val (.word 2701134808#64))
   chunkArena : AllocatedBytes.Arena chunkPointer 32
   zeroArena : AllocatedBytes.Arena zeroPointer 2048
   chunkAligned : chunkPointer.toNat % 8 = 0
@@ -36,19 +37,20 @@ theorem main {input : Guest.InputBlob}
     (root : CallPrefix.Execution decoded RootEntry.actions current) : Workspace current := by
   have cells := CurrentStartup.WorkspaceFrame.main_cells entry startup decoder root
   have mpt := CurrentStartup.MptWorkspace.main_decoder_cells entry startup decoder root
+  have mptKey := CurrentStartup.MptWorkspace.main_decoder_key_cell entry startup decoder root
   have keccak := CurrentStartup.WorkspaceFrame.main_keccak_cells entry startup decoder root
   have code : OriginalCode.Installed current.code := by
     rw [root.runtime.2.2.2.1, decoder.runtime.2.2.2.1]
     exact initial.arena.code
   have domain : current.memaddrs = InitE.ordinaryDomain := root.runtime.1.trans (decoder.runtime.1.trans initial.arena.domain)
   have little : current.be = false := root.runtime.2.1.trans (decoder.runtime.2.1.trans initial.little)
-  exact ⟨code, domain, little, cells.1, cells.2.1, cells.2.2,keccak.1,keccak.2,mpt,
+  exact ⟨code, domain, little, cells.1, cells.2.1, cells.2.2,keccak.1,keccak.2,mpt,mptKey,
     ⟨by decide, by decide⟩, ⟨by decide, by decide⟩, by decide, by decide⟩
 
 theorem Workspace.at_callee {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     (data : Workspace source) (callee : HolFiniteMapExact MlS (ValueHOL 64)) :
     Workspace (callEntryStateHOLFinite source callee) :=
-  ⟨data.code, data.domain, data.little, data.offsets, data.chunk, data.zeros,data.keccakState,data.keccakPad,data.mptHash,
+  ⟨data.code, data.domain, data.little, data.offsets, data.chunk, data.zeros,data.keccakState,data.keccakPad,data.mptHash,data.mptKey,
     data.chunkArena, data.zeroArena, data.chunkAligned, data.zeroAligned⟩
 
 theorem Workspace.keccak_environment {source : PanSemStateFiniteExact 64 Guest.HostMemory}

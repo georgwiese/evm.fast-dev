@@ -13,7 +13,7 @@ structure SliceArray (source : PanSemStateFiniteExact 64 Guest.HostMemory) (arra
     (count cutoff limit : Nat) (slices : Nat→BitVec 64×BitVec 64) (property : BitVec 64→BitVec 64→Prop) : Prop where
   allocation : count≠0→AllocatedBytes.Arena array (16*count)
   aligned : count≠0→array.toNat%8=0
-  above : count≠0→2713731432≤array.toNat
+  above : count≠0→2701134824≤array.toNat
   before : count≠0→array.toNat+16*count≤cutoff
   cells : ∀ index<count,source.memory (row array index)=.word (slices index).1 ∧
     source.memory (lengthCell array index)=.word (slices index).2
@@ -34,7 +34,7 @@ payload ownership after either key scratch writes or a trie update. -/
 theorem SliceArray.of_band (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (array : BitVec 64)
     (count cutoff limit : Nat) (slices : Nat→BitVec 64×BitVec 64) (property : BitVec 64→BitVec 64→Prop)
     (data : SliceArray source array count cutoff limit slices property) (domain : target.memaddrs=source.memaddrs)
-    (memory : ∀ query : BitVec 64,2713731432≤query.toNat→query.toNat<cutoff→target.memory query=source.memory query) :
+    (memory : ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<cutoff→target.memory query=source.memory query) :
     SliceArray target array count cutoff limit slices property := by
   refine ⟨data.allocation,data.aligned,data.above,data.before,?_,?_,data.extra⟩
   · intro index inside
@@ -58,9 +58,9 @@ theorem set_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (arr
     (mCell : source.locals.lookup (ofString "m")=some (.val (.word m)))
     (indexCell : source.locals.lookup (ofString "i")=some (.val (.word index)))
     (lengthCell : source.locals.lookup (ofString "klen")=some (.val (.word (BitVec.ofNat 64 encoded))))
-    (keyCell : source.globals.lookup (ofString "mpt_key_scratch")=some (.val (.word 2713717624#64))) :
+    (keyCell : source.globals.lookup (ofString "mpt_key_scratch")=some (.val (.word 2701134808#64))) :
     evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) setArguments=
-      some (SetTrie.values m 2713717624#64 (BitVec.ofNat 64 encoded) (slices index.toNat).1 (slices index.toNat).2) := by
+      some (SetTrie.values m 2701134808#64 (BitVec.ofNat 64 encoded) (slices index.toNat).1 (slices index.toNat).2) := by
   have active : count≠0:=by omega
   have mapped:=AllocatedBytes.word_mapped source array (16*count) (16*index.toNat) domain (data.allocation active) (by omega) (data.aligned active) (by omega)
   have lengthMapped:=AllocatedBytes.word_mapped source array (16*count) (16*index.toNat+8) domain (data.allocation active) (by omega) (data.aligned active) (by omega)

@@ -25,7 +25,7 @@ theorem Data.of_frame (data : Data input source blob si record rq root array len
   have cell (name : String) : post.globals.lookup (ofString name)=source.globals.lookup (ofString name) := congrArg (fun table=>table.lookup (ofString name)) globals
   have workspace : WorkspaceEntry.Workspace post := ⟨installed,domain.trans data.workspace.domain,endian.trans data.workspace.little,
     (cell "ssz_offs").trans data.workspace.offsets,(cell "ssz_len_chunk").trans data.workspace.chunk,(cell "zero_hashes").trans data.workspace.zeros,
-    (cell "keccak_st").trans data.workspace.keccakState,(cell "keccak_pad").trans data.workspace.keccakPad,(cell "mpt_hash_scratch").trans data.workspace.mptHash,
+    (cell "keccak_st").trans data.workspace.keccakState,(cell "keccak_pad").trans data.workspace.keccakPad,(cell "mpt_hash_scratch").trans data.workspace.mptHash,(cell "mpt_key_scratch").trans data.workspace.mptKey,
     data.workspace.chunkArena,data.workspace.zeroArena,data.workspace.chunkAligned,data.workspace.zeroAligned⟩
   have arena : CurrentStartup.ArenaState post := ⟨(cell "scratch_ptr").trans data.arena.scratch,(cell "frame_mem_ptr").trans data.arena.frame,workspace.domain,installed⟩
   obtain ⟨cursor,heap,lower,bounded,aligned⟩ := data.heap

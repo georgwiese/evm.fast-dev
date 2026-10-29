@@ -65,7 +65,7 @@ theorem {name} (code) (installed : OriginalCode.Installed code) (workspace : Wor
 '''+proof
 text+='\nend InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame\n\n'
 text+=''.join(f'#print axioms InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame.{name}\n' for name in order)
-# Keep the large proofs in a single six-key core. mpt_init writes the new key,
+# Keep the large proofs in a single seven-key core. mpt_init writes the new key,
 # so its restricted proof stays in the original five-key compatibility module.
 header, rest = text.split('\nset_option maxRecDepth', 1)
 body = ('set_option maxRecDepth' + rest).split('\nend InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame', 1)[0]
@@ -74,7 +74,7 @@ names = [re.search(r'theorem (\w+)', b)[1] for b in blocks]
 assert names == order
 keys = header[:header.index('-- Actual-syntax')].replace('import InitECandidate.Solver.Input.GlobalEffectsCaught\n', '')
 keys += 'end InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame\n'
-core = header.replace('import InitECandidate.Solver.Input.CurrentStartup.Base', 'import InitECandidate.Solver.Input.CurrentStartup.OffsetsKeys').replace('CurrentStartup.OffsetsFrame', 'CurrentStartup.WorkspaceFrameCore').replace('| keccakPad\n', '| keccakPad | mptHash\n').replace('  | .keccakPad => ofString "keccak_pad"', '  | .keccakPad => ofString "keccak_pad"\n  | .mptHash => ofString "mpt_hash_scratch"')
+core = header.replace('import InitECandidate.Solver.Input.CurrentStartup.Base', 'import InitECandidate.Solver.Input.CurrentStartup.OffsetsKeys').replace('CurrentStartup.OffsetsFrame', 'CurrentStartup.WorkspaceFrameCore').replace('| keccakPad\n', '| keccakPad | mptHash | mptKey\n').replace('  | .keccakPad => ofString "keccak_pad"', '  | .keccakPad => ofString "keccak_pad"\n  | .mptHash => ofString "mpt_hash_scratch"\n  | .mptKey => ofString "mpt_key_scratch"')
 core = core[:core.index('-- Actual-syntax')] + '''/-- Shared current-syntax frames, including the MPT buffer after its initializer. -/
 def fromLegacy : OffsetsFrame.WorkspaceKey → WorkspaceKey
   | .offsets => .offsets
@@ -96,8 +96,8 @@ namespace InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
--- Preserve the five-key public API. The shared six-key proofs live in the core;
--- mpt_init has its own restricted proof because it initializes the sixth key.
+-- Preserve the five-key public API. The shared seven-key proofs live in the core;
+-- mpt_init has its own restricted proof because it initializes both MPT keys.
 '''
 for n, b in zip(names, blocks):
     if n == 'mpt_init':
@@ -125,7 +125,7 @@ report = {'fixed_source': 'Guest/SoftwareAst.lean',
           'roots': roots, 'order': order, 'inputs': inputs,
           'generated_sources': [{'path': str((folder/name).relative_to(ROOT)),
                                  'sha256': hashlib.sha256((folder/name).read_bytes()).hexdigest()} for name in outputs],
-          'protected_globals': ['ssz_offs', 'ssz_len_chunk', 'zero_hashes', 'keccak_st', 'keccak_pad', 'mpt_hash_scratch'],
+          'protected_globals': ['ssz_offs', 'ssz_len_chunk', 'zero_hashes', 'keccak_st', 'keccak_pad', 'mpt_hash_scratch', 'mpt_key_scratch'],
           'restricted_initializer': 'mpt_init preserves only the original five keys',
           'scope': 'Generated actual all-outcome global frames; not proof validation, ownership or a runtime bound.'}
 if not check:

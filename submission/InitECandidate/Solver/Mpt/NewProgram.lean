@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.OriginalEntry
 import InitECandidate.Solver.Input.WordPairEnvironment
 import InitECandidate.Solver.Input.CallPrefixNormalTrace
 import InitECandidate.Solver.Input.CallPrefixAllocation
@@ -22,8 +23,8 @@ theorem body_shape : body=.decCall (ofString "m") .one (ofString "alloc") [.cons
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : Input.OriginalCode.Installed code) :
     code.lookup (ofString "mpt_new")=some (formals,body,.one) := by
-  have checked:=Input.OriginalCode.indexed code installed 244 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_mpt_new) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_mpt_new,
+  have checked:=Input.OriginalCode.indexed code installed 242 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_mpt_new) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_mpt_new,Guest.guestFn_mpt_new,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem body_cost (code) (installed : Input.OriginalCode.Installed code) : Input.ClockCost.Bound code body 2 := by

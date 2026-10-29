@@ -3,6 +3,7 @@ import InitECandidate.Solver.Input.CurrentVerify.GeneralSha
 import InitECandidate.Solver.Input.CallPrefixLocalResult
 import InitECandidate.Solver.Input.AssignNormal
 import InitECandidate.Solver.WitnessRadix.CopyNormalCall
+import InitECandidate.Solver.Input.HeapReleaseNormal
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -2306,3 +2307,344 @@ end InitECandidate.Solver.Input.CurrentVerify.RequestHash
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.main_entry
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.caller_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem arena_away_above (pointer query : BitVec 64) (length : Nat) (arena : AllocatedBytes.Arena pointer length)
+    (above : pointer.toNat+length≤query.toNat) : CopyGeneral.Away pointer query length := by
+  intro offset inside
+  have number:=byteAddress_toNat pointer offset (by have bound:=arena.upper; omega)
+  have backing : (panByteAlignHOL (width:=64) (byteAddress pointer offset)).toNat≤pointer.toNat+offset:=by
+    rw [AllocatedBytes.aligned_number,←number]
+    omega
+  constructor
+  · intro same; have equal:=congrArg BitVec.toNat same; rw [number] at equal; omega
+  · intro same; have equal:=congrArg BitVec.toNat same; omega
+
+theorem loop_globals (key : MlS) (code) (installed : OriginalCode.Installed code) : GlobalEffects.Preserves key code loop :=
+  GlobalEffects.loop key code test iteration (GlobalEffects.sequence key code hashCall increment
+    (GeneralSha.call_globals key code installed hashArguments) (GlobalEffects.assign key code (ofString "i") _))
+
+theorem loop_local (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (key : MlS) (different : key≠ofString "i")
+    (normal : evaluateHOLFiniteState source loop=(none,post)) : post.locals.lookup key=source.locals.lookup key :=
+  counter_loop_local source post test (ofString "sha256") hashArguments "i" (.op .add [localVar "i",.const 1#64]) key different normal
+
+theorem setup_local : LocalPrefix (ofString "out") (CallPrefix.program setupActions .skip) := by
+  unfold setupActions CallPrefix.program
+  exact .decCall (ofString "mark") .one (ofString "heap_mark") [] (by decide)
+    (.decCall (ofString "cat") .one (ofString "alloc") allocationArguments (by decide)
+      (.dec (ofString "i") .one (.const 0#64) (by decide) .skip))
+
+/-- Actual final digest, release and return restore this invocation's saved
+heap. Only actual normal calls supply their own reads and funding. -/
+theorem after_loop_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap currentHeap out : BitVec 64) (count : Nat)
+    (environment : GeneralSha.Environment source 2701131776#64 2701131840#64) (small : count≤5)
+    (heapLower : 2701131968≤heap.toNat) (room : heap.toNat+(32*count+8)≤2952790016)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word currentHeap)))
+    (saved : source.locals.lookup (ofString "mark")=some (.val (.word heap)))
+    (catCell : source.locals.lookup (ofString "cat")=some (.val (.word heap)))
+    (outCell : source.locals.lookup (ofString "out")=some (.val (.word out)))
+    (countCell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterLoop=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701131968≤query.toNat→ query.toNat<heap.toNat→ CopyGeneral.Away out query 32→ post.memory query=source.memory query := by
+  obtain ⟨hashed,hashRun,remaining⟩:=sequence_returned source post finalCall _ value
+    ((LocalPrefix.call (key:=ofString "mark") none _ _ (by simp)).summary_full source).2.1 normal
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) finalArguments=some (GeneralSha.values heap out (32*count)):=by
+    simp [finalArguments,digestSize,GeneralSha.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,catCell,outCell,countCell,
+      valueIsWord,valueWord,panOpHOL,BitVec.ofNat_mul,Nat.mul_comm]
+  have globals (key : MlS) : hashed.globals.lookup key=source.globals.lookup key:=by
+    have frame:=GeneralSha.call_globals key source.code environment.installed finalArguments source rfl
+    change GlobalEffects.erase key (evaluateHOLFiniteState source finalCall).2=GlobalEffects.erase key source at frame
+    rw [hashRun] at frame
+    exact congrArg Prod.snd frame
+  have installed : OriginalCode.Installed hashed.code:=by
+    rw [(evaluation_fields source hashed finalCall none hashRun).2.2.2]
+    exact environment.installed
+  have nextMark : hashed.locals.lookup (ofString "mark")=some (.val (.word heap)):=
+    (CallNormal.ignored_lookup source hashed (ofString "mark") (ofString "sha256") finalArguments hashRun).trans saved
+  have nextHeap : hashed.globals.lookup (ofString "heap_ptr")=some (.val (.word currentHeap)):=(globals _).trans heapCell
+  obtain ⟨released,releaseRun,returned⟩:=sequence_returned hashed post releaseCall (.return (.const 0#64)) value
+    ((LocalPrefix.call (key:=ofString "mark") none _ _ (by simp)).summary_full hashed).2.1 remaining
+  have releaseArgs : evalListHOLFinite hashed (h:=fun address=>Classical.propDecidable (hashed.memaddrs address)) [localVar "mark"]=some [.val (.word heap)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,nextMark]
+  have releaseEq:=HeapScope.release_normal hashed released heap currentHeap [localVar "mark"] releaseArgs nextHeap installed releaseRun
+  obtain ⟨read,postEq⟩:=return_normal released post (.const 0#64) value returned
+  have answer : value=.val (.word 0#64):=by simpa only [eval,evalHOLExact,Option.some.injEq] using read.symm
+  have restored : post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by
+    rw [postEq,releaseEq]
+    simp [emptyLocalsHOLFinite,HeapScope.releasePost,HolFiniteMapExact.update,FUPDATE]
+  have kept : HeapGlobals source post:=by
+    intro key different
+    rw [postEq,releaseEq]
+    simpa [emptyLocalsHOLFinite,HeapScope.releasePost,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different] using globals key
+  refine ⟨answer,restored,kept,?_⟩
+  intro query above below outAway
+  have stateAway:=arena_away_above 2701131776#64 query 64 environment.stateArena (by change 2701131840≤query.toNat; omega)
+  have padAway:=arena_away_above 2701131840#64 query 128 environment.padArena above
+  have inputArena : AllocatedBytes.Arena heap (32*count):=⟨by omega,by omega⟩
+  have memory:=GeneralSha.call_memory source hashed 2701131776#64 2701131840#64 heap out query (32*count) (by omega) environment finalArguments args inputArena
+    (fun offset inside=>(stateAway offset inside).1) padAway outAway hashRun
+  rw [postEq,releaseEq]
+  exact memory
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.arena_away_above
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.loop_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.loop_local
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.setup_local
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.after_loop_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Complete normally returning helper restores its actual saved heap and
+all older non-workspace/non-output memory through its own lexical scopes. -/
+theorem body_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap out : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (entry : Entry source array heap out count slices) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701131968≤query.toNat→ query.toNat<heap.toNat→ CopyGeneral.Away out query 32→ post.memory query=source.memory query := by
+  have never : NoReturn.Never (CallPrefix.program setupActions .skip):=by
+    intro F current returned
+    exact (setup_local.summary_full current).2.1 returned
+  have expanded:=normal
+  rw [setup_shape] at expanded
+  obtain ⟨current,inner,execution,tailRun,clock,metadata⟩:=CallPrefix.normal_frame_trace source post setupActions (.seq loop afterLoop) value never expanded
+  obtain ⟨model,indexEq,memoryEq⟩:=setup_model entry execution
+  obtain ⟨room,setupEq⟩:=setup_reached entry execution
+  have currentOut : current.locals.lookup (ofString "out")=some (.val (.word out)):=by
+    rw [setupEq]
+    simpa [setupState,markState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using entry.outCell
+  have currentMark : current.locals.lookup (ofString "mark")=some (.val (.word heap)):=by
+    rw [setupEq]
+    simp [setupState,markState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+  have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap (amount count)))):=by
+    rw [setupEq]
+    simp [setupState,markState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have setupGlobals : HeapGlobals source current:=by
+    intro key different
+    rw [setupEq]
+    simp [setupState,markState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different]
+  obtain ⟨looped,loopRun,afterLoop⟩:=sequence_returned current inner loop afterLoop value
+    ((LocalPrefix.loop test (iteration_local (ofString "n") (by decide))).summary_full current).2.1 tailRun
+  obtain ⟨final,finished,loopMemory⟩:=model.loop_normal loopRun
+  have loopGlobals (key : MlS) : looped.globals.lookup key=current.globals.lookup key:=by
+    have frame:=loop_globals key current.code model.environment.installed current rfl
+    rw [loopRun] at frame
+    exact congrArg Prod.snd frame
+  have loopHeap : looped.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap (amount count)))):=(loopGlobals _).trans currentHeap
+  have loopMark : looped.locals.lookup (ofString "mark")=some (.val (.word heap)):=
+    (loop_local current looped (ofString "mark") (by decide) loopRun).trans currentMark
+  have loopOut : looped.locals.lookup (ofString "out")=some (.val (.word out)):=
+    (loop_local current looped (ofString "out") (by decide) loopRun).trans currentOut
+  have lower : 2701131968≤heap.toNat:=by have above:=entry.arrayLower; have before:=entry.requests.arrayBefore; omega
+  obtain ⟨answer,restored,globals,memory⟩:=after_loop_normal looped inner heap (PersistentAlloc.rounded heap (amount count)) out count
+    final.environment entry.requests.countBound lower room loopHeap loopMark final.catCell loopOut final.countCell value afterLoop
+  have postGlobals:=congrArg PanSemStateFiniteExact.globals metadata
+  change post.globals=inner.globals at postGlobals
+  have postMemory:=LocalEffects.memory_of_erase inner post metadata
+  refine ⟨answer,by rw [postGlobals]; exact restored,?_,?_⟩
+  · intro key different
+    rw [postGlobals]
+    exact (globals key different).trans ((loopGlobals key).trans (setupGlobals key different))
+  · intro query above below away
+    exact (congrFun postMemory query).trans ((memory query above below away).trans
+      ((loopMemory query above below).trans (congrFun memoryEq query)))
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.body_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Same actual three-word call supplies its body return and inherits the
+saved heap and protected-memory frame through ordinary caller restoration. -/
+theorem call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (array heap out : BitVec 64)
+    (count : Nat) (slices : Nat→BitVec 64×BitVec 64) (rows : ExecutionRequests.Returned source array heap count slices)
+    (environment : GeneralSha.Environment source 2701131776#64 2701131840#64) (lower : 2701131968≤array.toNat)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values array out count))
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "compute_requests_hash") arguments)=(none,post)) :
+    post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701131968≤query.toNat→ query.toNat<heap.toNat→ CopyGeneral.Away out query 32→ post.memory query=source.memory query := by
+  obtain ⟨callee,called,arrayCell,countCell,outCell⟩:=word_triple_environment source.code.lookup (ofString "compute_requests_hash")
+    (ofString "arr") (ofString "n") (ofString "out") body .one array (BitVec.ofNat 64 count) out
+    (by decide) (by decide) (by decide) (original_code source.code environment.installed)
+  have entry : Entry (callEntryStateHOLFinite source callee) array heap out count slices:=
+    ⟨rows.of_frame rfl,environment.of_frame rfl,lower,arrayCell,countCell,outCell⟩
+  obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,target,returned,actualArgs,actualCalled,bodyRun,checked,endpoint,fields⟩:=
+    CallNormal.ignored_data source post (ofString "compute_requests_hash") arguments normal
+  have valuesEq : actualValues=values array out count:=Option.some.inj (actualArgs.symm.trans args)
+  subst actualValues
+  have entryEq : (actualBody,actualCallee,actualShape)=(body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases entryEq
+  obtain ⟨answer,restored,globals,memory⟩:=body_normal entry returned bodyRun
+  rw [endpoint]
+  exact ⟨restored,globals,memory⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.call_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch PayloadHeaderEntry PayloadHeaderWithdrawals
+
+/-- Retain precisely the existing header cells; lower SHA workspace may change. -/
+theorem retained_header_cells {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : BeforeRequests input source pointer si record gasWord boundary header encoded)
+    (data : Data input target pointer si record gasWord boundary)
+    (heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) target)
+    (saved : ∀ name : String,target.locals.lookup (ofString name)=source.locals.lookup (ofString name))
+    (cells : ∀ offset : Nat,offset≤240→ target.memory (HeaderEncoding.address header offset)=source.memory (HeaderEncoding.address header offset)) :
+    BeforeRequests input target pointer si record gasWord boundary header encoded :=
+  {physical with
+    data:=data,heapAfter:=heapAfter,
+    fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory target.memory header field cells (physical.fields field member),
+    optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory target.memory header field cells (physical.optional field member),
+    headerCell:=(saved "h").trans physical.headerCell,payloadCell:=(saved "pl").trans physical.payloadCell,
+    requestsCell:=(saved "rh").trans physical.requestsCell,balanceCell:=(saved "bh").trans physical.balanceCell,
+    sizeCell:=(saved "bl").trans physical.sizeCell}
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.retained_header_cells
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch PayloadHeaderEntry PayloadHeaderWithdrawals
+
+abbrev BeforeBalance:=PayloadHeaderWithdrawals.BeforeRequests
+
+/-- The actual completed main helper restores the saved heap and retains
+all decoded/header inputs at the original following BAL hash. -/
+theorem caller_normal {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (ready : ExecutionRequests.BeforeHash input source pointer si record gasWord boundary header encoded)
+    (normal : evaluateHOLFiniteState source caller=(none,post)) :
+    BeforeBalance input post pointer si record gasWord boundary header encoded := by
+  obtain ⟨array,heap,count,slices,physical,rows,reqs,afterHeader⟩:=ready
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values array (requestsBase header) count):=by
+    simp [arguments,values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,reqs,physical.requestsCell]
+  have numbers:=physical.buffers.numbers header
+  have arrayLower : 2701131968≤array.toNat:=by
+    have lower:=physical.buffers.ommer.headerArena.lower
+    rw [numbers.frontier] at afterHeader
+    omega
+  obtain ⟨heapCell,globals,memory⟩:=call_normal source post array heap (requestsBase header) count slices rows physical.data.general_sha arrayLower arguments args normal
+  have saved (name : String) : post.locals.lookup (ofString name)=source.locals.lookup (ofString name):=
+    CallNormal.ignored_lookup source post (ofString name) (ofString "compute_requests_hash") arguments normal
+  have fields:=evaluation_fields source post caller none normal
+  have heapLower : boundary+32≤heap.toNat:=by
+    have before:=physical.before
+    have arrayBefore:=rows.arrayBefore
+    rw [numbers.frontier] at afterHeader
+    omega
+  have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) post:=
+    ⟨heap,heapCell,by have before:=rows.arrayBefore; omega,rows.heapBound,rows.heapAligned⟩
+  have heapData : NormalHeapEffects.AtLeast (boundary+32) post:=⟨heap,heapCell,heapLower,rows.heapBound,rows.heapAligned⟩
+  have requestsAligned : (requestsBase header).toNat%8=0:=by
+    rw [numbers.requests]
+    have aligned:=physical.buffers.ommer.headerAligned
+    omega
+  have prior (query : BitVec 64) (below : query.toNat<(requestsBase header).toNat) : CopyGeneral.Away (requestsBase header) query 32:=
+    AllocatedBytes.Arena.away_below (requestsBase header) query 32 physical.buffers.requests requestsAligned below
+  have retained : Data input post pointer si record gasWord boundary:=physical.data.of_heap_frame fields.1 fields.2.1 fields.2.2.2 globals heapData
+    ((saved "si").trans physical.data.siLocal) (by
+      intro query lower upper
+      apply memory query (by omega) (by omega)
+      apply prior
+      rw [numbers.requests]
+      have before:=physical.before
+      omega)
+  apply ExecutionRequests.retained_header_cells physical retained heapAfter saved
+  intro offset inside
+  have number : (HeaderEncoding.address header offset).toNat=header.toNat+offset:=by
+    exact byteAddress_toNat header offset (by have bounded:=physical.buffers.ommer.headerArena.upper; omega)
+  apply memory (HeaderEncoding.address header offset)
+  · rw [number]
+    have lower:=physical.data.recordInside.1
+    have beforeInput:=physical.data.recordInside.2
+    have before:=physical.before
+    omega
+  · rw [number]
+    have arrayBefore:=rows.arrayBefore
+    rw [numbers.frontier] at afterHeader
+    omega
+  · apply prior
+    rw [number,numbers.requests]
+    omega
+
+def callerActions : List CallPrefix.Action:=[.command caller]
+
+theorem prefix_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (ready : ExecutionRequests.BeforeHash input source pointer si record gasWord boundary header encoded) :
+    source.clock-(evaluateHOLFiniteState source (CallPrefix.program callerActions .skip)).2.clock≤39322728 :=
+  ClockCost.sequence_current source caller .skip 39322728 0 (caller_cost ready) (ClockCost.skip source.code)
+
+/-- Real request hashing either stops within its whole allowance or reaches
+its unchanged BAL continuation with full earlier decoded/header facts. -/
+theorem to_after_hash {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (ready : ExecutionRequests.BeforeHash input source pointer si record gasWord boundary header encoded)
+    (outcome : Option (PanSemResultExact 64)) (actual : evaluateHOLFiniteState source ExecutionRequests.afterEncode=(outcome,post)) :
+    (source.clock-post.clock≤39322728 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner,BeforeBalance input current pointer si record gasWord boundary header encoded ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤39322728 ∧ post.clock=inner.clock ∧
+        evaluateHOLFiniteState current afterHash=(outcome,inner) := by
+  have expanded:=actual
+  rw [caller_shape] at expanded
+  change evaluateHOLFiniteState source (CallPrefix.program callerActions afterHash)=(outcome,post) at expanded
+  rcases CallPrefix.priced_trace source post callerActions afterHash 39322728 (prefix_cost ready) outcome expanded with stopped|reached
+  · refine Or.inl ⟨stopped.1,?_⟩
+    intro value returned
+    have safe : LocalPrefix (ofString "si") (CallPrefix.program callerActions .skip):=.seq (.call none _ _ (by simp)) .skip
+    apply (safe.summary_full source).2.1 value
+    rw [←stopped.2]
+    exact returned
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    have run : evaluateHOLFiniteState source caller=(none,current):=by
+      cases execution with
+      | step first next=>cases next; cases first with | command _ _ run=>exact run
+    exact Or.inr ⟨current,inner,caller_normal ready run,forward,price,endpoint,continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.caller_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.to_after_hash
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Complete unchanged payload-header prefix through both tries, encoding
+and request hashing, to its actual final BAL hash continuation. -/
+theorem to_before_balance {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (checked : RunAttempt.TransactionsNonempty input) (outcome : Option (PanSemResultExact 64))
+    (actual : evaluateHOLFiniteState source PayloadHeader.body=(outcome,post)) :
+    (source.clock-post.clock≤476403740492 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ header current inner encoded,BeforeBalance input current pointer si record gasWord boundary header encoded ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤476403740492 ∧ post.clock=inner.clock ∧
+        evaluateHOLFiniteState current afterHash=(outcome,inner) := by
+  rcases ExecutionRequests.to_before_hash data checked outcome actual with stopped|reached
+  · exact Or.inl ⟨by have price:=stopped.1; omega,stopped.2⟩
+  · obtain ⟨header,entered,outer,encoded,physical,forward,price,endpoint,remaining⟩:=reached
+    rcases to_after_hash physical outcome remaining with stopped|reached
+    · exact Or.inl ⟨by have cost:=stopped.1; rw [endpoint]; omega,stopped.2⟩
+    · obtain ⟨current,inner,ready,nextForward,nextPrice,nextEndpoint,continued⟩:=reached
+      exact Or.inr ⟨header,current,inner,encoded,ready,Nat.le_trans nextForward forward,by omega,endpoint.trans nextEndpoint,continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.to_before_balance

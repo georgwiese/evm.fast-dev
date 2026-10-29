@@ -40,9 +40,10 @@ The current startup/input/header/gas/two-database/state-init path is connected
 through both actual payload-header indexed tries. The complete unchanged
 withdrawal encoder costs≤201body source ticks; its real loop costs≤203 per
 row. The actual payload_header execution through both tries and complete request
-encoding either stops or reaches request hashing within476364417764source
-ticks, retaining all decoded inputs and header fields plus the actual owned
-request array/count≤5. Any reached continuation has zero actual transactions
+encoding/hashing either stops or reaches the final BAL hash within476403740492
+source ticks, retaining all decoded inputs/header fields and the actual restored
+encoder heap. The request array/count≤5 and every helper entry are derived
+from that same execution. Any reached continuation has zero actual transactions
 and withdrawals, derived from the real trie executions.
 
 These are all-outcome source-clock allowances, not formal target-step bounds.
@@ -2375,3 +2376,29 @@ files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage52%weekly/0resetcredits. Next: actual request-hash normal whole-
 body/caller frame, BAL/main continuation, formal target composition,
 dominant-slack review and final cleanup.
+
+
+## Complete actual main request hashing and prefix to BAL
+
+The normally completed helper derives its real saved mark, own temporary
+allocation room, normal row-loop exit and final concatenated SHA, then
+restores its actual old heap through heap_release and every original scope.
+It returns0, retains every nonheap global and preserves earlier memory at/
+above2701131968 outside its output32. The ordinary main caller lifts those
+same-run heap and memory facts through its actual checked arr/n/out ABI.
+
+Main's RH output is separated from all older decoded input and31header cells.
+The complete Data, real heap/frontier, header fields/buffers, bl/h/pl/rh/bh
+bindings and zero-TX/WD facts therefore survive at the original BAL hash.
+A cell-based header transport avoids demanding preservation of SHA's own
+lower workspace. The full original payload_header prefix through request
+hashing stops or reaches this actual BeforeBalance continuation within
+476403740492source ticks. BAL and complete main/target composition remain open.
+
+Validation: current-request-hash-final-normal-v2.log PASS2713jobs and
+current-main-before-balance-v1.log PASS2713jobs, permitted printed axioms
+only. Index8700modules/18160facts; inventory8745/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage52%weekly/0resetcredits. Next: actual BAL Keccak/complete header
+return, remaining run_attempt/main, formal target composition, dominant-slack
+review and final cleanup.

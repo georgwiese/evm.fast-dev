@@ -1825,3 +1825,28 @@ unchanged. Incremental policy65536entries/2485790287bytes: package entry cap
 is now exactly full; consolidate or remove an unused module before adding
 another path. Claim infinity; no global finite target K/full verifier success.
 Usage44%weekly/0resetcredits. Five historical RLP WIPs remain untouched.
+
+## Current withdrawal list finisher and actual loop-entry trace
+
+The actual rlp_finish_list ABI/body now has a complete execution proof for
+an owned64-byte buffer at any real payload end position9..57. The actual
+length helper, overlap-safe memcpy, list-header writer, return and lexical
+restoration all occur in this execution. Its output length is1..57; writes
+remain within the same64-byte buffer, metadata are retained, and every
+outcome costs at most100body source ticks (short clocks included). The normal
+contract uses clock padding of this actual body, with no future success
+hypothesis. This is a local helper allowance, not a global target bound.
+
+The unchanged withdrawal count/global-array/counter prefix also now has a
+complete two-source-tick trace: it either stops or reaches its actual encoding
+loop with the same continuation after those three actual actions. Complete
+withdrawal encoding/loop/trie and the rest of header/main remain outstanding.
+
+Validation: current-withdrawal-loop-entry-v1.log PASS2709jobs; permitted
+printed axioms only. Index8700modules/17872facts; inventory8745/replacement
+closure0/fixed files unchanged. Incremental policy65536entries/2485808244bytes
+(entry cap full). Claim infinity; no global finite target K/full verifier
+success. Usage44%weekly/0resetcredits. Next: combine current word/byte/list
+writer contracts into the unchanged withdrawal encoder, then its loop and
+indexed trie, remaining header/main and uniform target steps. Cleanup remains
+on the plan; historical five RLP WIPs are untouched/unclaimed.

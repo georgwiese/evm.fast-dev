@@ -91,6 +91,48 @@ theorem array_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory
   obtain ⟨room,funded,same⟩:=PersistentAlloc.global_call_normal_no_wrap source target "wd_rlp_slices" heap amount arrayArguments args installed frontier.cell noWrap normal
   exact ⟨⟨frontier.arena.lower,by rw [amountNumber] at room; omega⟩,funded,same⟩
 
+def actions : List CallPrefix.Action:=[.declare (ofString "nwd") .one countExpression,.command arrayCall,.declare (ofString "i") .one (.const 0#64)]
+
+theorem prefix_shape : afterTransactionTrie=CallPrefix.program actions loopAndAfter := by
+  rw [prefix_shapes.1,prefix_shapes.2.1,prefix_shapes.2.2.1]
+  rfl
+
+/-- Allocation is the only clock-spending command in the original count,
+array and counter setup. Its real operands come from the count declaration. -/
+theorem prefix_cost {input : Guest.InputBlob} {source current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary : Nat}
+    (physical : PhysicalHeader input source current pointer si record gasWord boundary header) :
+    current.clock-(evaluateHOLFiniteState current (CallPrefix.program actions .skip)).2.clock≤2 := by
+  change current.clock-(evaluateHOLFiniteState current (.dec (ofString "nwd") .one countExpression
+    (.seq arrayCall (.dec (ofString "i") .one (.const 0#64) .skip)))).2.clock≤2
+  apply ClockCost.declared_current current "nwd" countExpression (BitVec.ofNat 64 (Payload.withdrawalCount input)) _ 2 (count_read physical)
+  let ready:=bind current "nwd" (BitVec.ofNat 64 (Payload.withdrawalCount input))
+  have cell : ready.locals.lookup (ofString "nwd")=some (.val (.word (BitVec.ofNat 64 (Payload.withdrawalCount input)))):=bind_lookup_same _ _ _
+  exact ClockCost.sequence_current ready arrayCall _ 2 0 (array_cost ready _ physical.data.arena.code cell)
+    (ClockCost.declared ready.code (ofString "i") .one (.const 0#64) .skip 0 (ClockCost.skip ready.code))
+
+/-- Every actual withdrawal suffix stops in setup or reaches the literal
+encoding loop after executing its real count read, global allocation and
+counter initialization. No encoder or later trie success is assumed. -/
+theorem to_loop {input : Guest.InputBlob} {source current post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary : Nat}
+    (physical : PhysicalHeader input source current pointer si record gasWord boundary header)
+    (outcome : Option (PanSemResultExact 64)) (actual : evaluateHOLFiniteState current afterTransactionTrie=(outcome,post)) :
+    (current.clock-post.clock≤2 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ entered inner,CallPrefix.Execution current actions entered ∧ entered.clock≤current.clock ∧ current.clock-entered.clock≤2 ∧
+        post.clock=inner.clock ∧ evaluateHOLFiniteState entered loopAndAfter=(outcome,inner) := by
+  have safe : LocalPrefix (ofString "pl") (CallPrefix.program actions .skip):=
+    .dec (ofString "nwd") .one countExpression (by decide)
+      (.seq (.globalCall (ofString "wd_rlp_slices") (ofString "alloc") arrayArguments)
+        (.dec (ofString "i") .one (.const 0#64) (by decide) .skip))
+  rw [prefix_shape] at actual
+  rcases CallPrefix.priced_trace current post actions loopAndAfter 2 (prefix_cost physical) outcome actual with stopped|reached
+  · refine Or.inl ⟨stopped.1,?_⟩
+    intro value
+    rw [stopped.2]
+    exact (safe.summary_full current).2.1 value
+  · exact Or.inr reached
+
 end InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals.prefix_shapes
@@ -99,3 +141,7 @@ end InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals.array_cost
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals.array_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals.prefix_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals.prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals.to_loop

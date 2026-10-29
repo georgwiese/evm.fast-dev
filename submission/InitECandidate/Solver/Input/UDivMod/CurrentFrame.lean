@@ -1,5 +1,6 @@
 import Flapjack.Pancake.Semantics.PanSem.ClockTimeout
 import InitECandidate.Solver.WitnessRadix.RestoreLookup
+import InitECandidate.Solver.Input.ClockCostCurrent
 import InitECandidate.Solver.Input.ClockCostCurrentCall
 import InitECandidate.Solver.Input.LoadWord
 import InitECandidate.Solver.Input.IgnoredCallNormal
@@ -2202,3 +2203,239 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.tail_execute
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.tail_cost
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.tail_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Single
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def remainderDigits (remainder : BitVec 64) (index : Nat) : BitVec 64:=if index=0 then remainder else 0#64
+def remainderWords (remainder : BitVec 64) : Quad:=fun index=>if index=0 then remainder else 0#64
+
+theorem remainder_reconstruction (remainder : BitVec 64) : ToWords.words (remainderDigits remainder)=remainderWords remainder := by
+  funext index
+  obtain ⟨index,inside⟩:=index
+  have cases : index=0 ∨ index=1 ∨ index=2 ∨ index=3:=by omega
+  rcases cases with rfl|rfl|rfl|rfl <;> simp [ToWords.words,remainderDigits,remainderWords]
+
+theorem remainder_number (remainder : BitVec 64) : quadNumber (remainderWords remainder)=remainder.toNat := by
+  simp [quadNumber,remainderWords]
+
+def padded (quotient : Nat→ BitVec 64) (length index : Nat) : BitVec 64:=if index<length then quotient index else 0#64
+
+theorem padded_number (quotient : Nat→ BitVec 64) (length width : Nat) (small : length≤width) :
+    number (padded quotient length) width=number quotient length := by
+  induction width with
+  | zero=>
+    have empty : length=0:=by omega
+    subst length
+    rfl
+  | succ width ih=>
+    by_cases lower : length≤width
+    · rw [number,ih lower]
+      simp [padded,show ¬width<length by omega]
+    · have same : length=width+1:=by omega
+      subst length
+      exact number_congr (padded quotient (width+1)) quotient (width+1) (by
+        intro index inside;simp only [padded,if_pos inside])
+
+/-- The actual divider preserves the already-zero higher remainder cells;
+its genuine final store supplies the low digit. -/
+theorem CallerResult.remainder_image {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor remainder : BitVec 64}
+    {contents quotient : Nat→ BitVec 64} {length : Nat} {arguments : List (ExpHOL 64)}
+    (result : CallerResult source post (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) divisor contents length arguments quotient remainder)
+    (small : length≤16) (zero : Image source (Workspace.pointer base .remainder) (fun _=>0#64) 8) :
+    Image post (Workspace.pointer base .remainder) (remainderDigits remainder) 8 := by
+  intro index inside
+  by_cases first : index=0
+  · subst index
+    simpa [slot,remainderDigits] using result.remainderCell
+  · have notQ : ∀ written,written<length→ slot (Workspace.pointer base .remainder) index≠slot (Workspace.pointer base .quotient) written:=by
+      intro written writtenInside
+      exact Workspace.separate base .remainder .quotient (by intro impossible;cases impossible) index written
+        (by change index<8;exact inside) (by change written<16;omega)
+    have notR : slot (Workspace.pointer base .remainder) index≠Workspace.pointer base .remainder:=by
+      intro hit
+      have equal : slot (Workspace.pointer base .remainder) index=slot (Workspace.pointer base .remainder) 0:=by simpa [slot] using hit
+      exact first (slot_injective _ index 0 (by omega) (by decide) equal)
+    rw [result.away _ notQ notR]
+    simpa only [remainderDigits,if_neg first] using zero index inside
+
+/-- The real quotient prefix and the old cleared suffix form the full
+sixteen-word scratch image used by subsequent reconstruction. -/
+theorem CallerResult.quotient_image {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor remainder : BitVec 64}
+    {contents quotient : Nat→ BitVec 64} {length : Nat} {arguments : List (ExpHOL 64)}
+    (result : CallerResult source post (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) divisor contents length arguments quotient remainder)
+    (zero : Image source (Workspace.pointer base .quotient) (fun _=>0#64) 16) :
+    Image post (Workspace.pointer base .quotient) (padded quotient length) 16 := by
+  intro index inside
+  by_cases written : index<length
+  · simpa only [padded,if_pos written] using result.image index written
+  · have notQ : ∀ earlier,earlier<length→ slot (Workspace.pointer base .quotient) index≠slot (Workspace.pointer base .quotient) earlier:=by
+      intro earlier earlierInside hit
+      have same:=slot_injective (Workspace.pointer base .quotient) index earlier inside (by omega) hit
+      omega
+    have notR : slot (Workspace.pointer base .quotient) index≠Workspace.pointer base .remainder:=by
+      simpa only [slot,Nat.mul_zero,show BitVec.ofNat 64 0=0#64 from rfl,BitVec.add_zero] using
+        Workspace.separate base .quotient .remainder (by intro impossible;cases impossible) index 0 inside (by decide)
+    rw [result.away _ notQ notR]
+    simpa only [padded,if_neg written] using zero index inside
+
+/-- For the actual eight-digit u256 path, reconstruction of the written
+quotient digits gives the exact natural quotient rather than a word oracle. -/
+theorem CallerResult.quotient_number {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor remainder : BitVec 64}
+    {contents quotient : Nat→ BitVec 64} {length : Nat} {arguments : List (ExpHOL 64)}
+    (result : CallerResult source post (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) divisor contents length arguments quotient remainder)
+    (small : length≤8) :
+    quadNumber (ToWords.words (padded quotient length))=number contents length/divisor.toNat := by
+  have digits : ∀ index,index<8→ (padded quotient length index).toNat<2^32:=by
+    intro index inside
+    by_cases before : index<length
+    · simpa only [padded,if_pos before] using result.digits index before
+    · simp [padded,before]
+  rw [ToWords.words_number _ digits,padded_number quotient length 8 small]
+  exact result.quotientEq
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Single
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.remainder_reconstruction
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.remainder_number
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.padded_number
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.CallerResult.remainder_image
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.CallerResult.quotient_image
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.CallerResult.quotient_number
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Single
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def wideArguments : List (ExpHOL 64):=[localVar "q",localVar "r",localVar "u",localVar "mm",localVar "v",localVar "n"]
+def returnArguments : List (ExpHOL 64):=[localVar "r"]
+def afterClearing (arguments : List (ExpHOL 64)) : ProgHOL 64:=
+  .seq (.call (some (none,none)) (ofString "divmnu") arguments) (.call none (ofString "digits_to_u256") returnArguments)
+
+private def findTail : ProgHOL 64→ Option (ProgHOL 64)
+  | .seq (.call destination function arguments) rest=>
+    if function=ofString "divmnu" then some (.seq (.call destination function arguments) rest) else findTail rest
+  | .seq first rest=>(findTail first).orElse (fun _=>findTail rest)
+  | .dec _ _ _ rest=>findTail rest
+  | .decCall _ _ _ _ rest=>findTail rest
+  | .ite _ yes no=>(findTail yes).orElse (fun _=>findTail no)
+  | _=>none
+
+theorem literal_tail : findTail Clear.divmodBody=some (afterClearing wideArguments) := by
+  simp [findTail,Clear.divmodBody,Guest.Software.guestFn_digits_divmod,progToHOL,expToHOL,shapeToHOL,
+    afterClearing,wideArguments,returnArguments,localVar]
+  all_goals decide
+
+/-- All outcomes of the real post-clearing tail include both actual calls. -/
+theorem after_clearing_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (length : Nat) (checked : Buffers source qPointer rPointer uPointer vPointer divisor contents length)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some (values qPointer rPointer uPointer vPointer length)) :
+    source.clock-(evaluateHOLFiniteState source (afterClearing arguments)).2.clock≤34*length+2 := by
+  simpa only [afterClearing,Nat.add_assoc] using ClockCost.sequence_current source
+    (.call (some (none,none)) (ofString "divmnu") arguments) (.call none (ofString "digits_to_u256") returnArguments)
+    (34*length+1) 1 (call_cost source qPointer rPointer uPointer vPointer divisor contents length checked arguments args)
+    (ToWords.tail_cost source.code checked.installed returnArguments)
+
+private theorem result_context {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor remainder : BitVec 64}
+    {contents quotient : Nat→ BitVec 64} {length : Nat} {arguments : List (ExpHOL 64)}
+    (context : Workspace.Context source base)
+    (result : CallerResult source post (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) divisor contents length arguments quotient remainder) :
+    Workspace.Context post base := by
+  refine ⟨?_,?_,context.arena,context.aligned⟩
+  · rw [result.state]
+    exact context.global
+  · rw [result.state]
+    exact context.domain
+
+private theorem result_return_arguments {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor remainder : BitVec 64}
+    {contents quotient : Nat→ BitVec 64} {length : Nat} {arguments : List (ExpHOL 64)}
+    (result : CallerResult source post (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) divisor contents length arguments quotient remainder)
+    (rLocal : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder)))) :
+    evalListHOLFinite post (h:=fun query=>Classical.propDecidable (post.memaddrs query)) returnArguments=
+      some [.val (.word (Workspace.pointer base .remainder))] := by
+  have afterR : post.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder))):=by
+    rw [result.state]
+    exact rLocal
+  simp [returnArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,afterR]
+
+/-- The original actual divmnu call and subsequent tail reconstruction return
+the physical one-digit remainder in a real four-word value. -/
+theorem after_clearing_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (contents : Nat→ BitVec 64) (length : Nat) (small : length≤16)
+    (image : Image source (Workspace.pointer base .numerator) contents length)
+    (divisorCell : source.memory (Workspace.pointer base .divisor)=.word divisor)
+    (divisorSmall : divisor.toNat<2^32) (positive : 0<divisor.toNat)
+    (digitsSmall : ∀ index,index<length→ (contents index).toNat<2^32)
+    (zero : Image source (Workspace.pointer base .remainder) (fun _=>0#64) 8)
+    (rLocal : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder))))
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some (values (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) (Workspace.pointer base .numerator) (Workspace.pointer base .divisor) length))
+    (enough : 34*length+2≤source.clock) :
+    ∃ middle quotient remainder,
+      CallerResult source middle (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) divisor contents length arguments quotient remainder ∧
+      evaluateHOLFiniteState source (afterClearing arguments)=
+        (some (.returned (RlpWrite.U256Value.tuple (remainderWords remainder))),emptyLocalsHOLFinite {middle with clock:=middle.clock-1}) := by
+  have checked:=Workspace.single_buffers source base divisor context installed contents length small image divisorCell divisorSmall positive digitsSmall
+  obtain ⟨middle,quotient,remainder,result⟩:=call_execute source (Workspace.pointer base .quotient) (Workspace.pointer base .remainder)
+    (Workspace.pointer base .numerator) (Workspace.pointer base .divisor) divisor contents length checked arguments args (by omega)
+  have nextContext:=result_context context result
+  have nextCode : OriginalCode.Installed middle.code:=by rw [result.state];exact installed
+  have middleClock:=congrArg PanSemStateFiniteExact.clock result.state
+  change middle.clock=source.clock-(34*length+1) at middleClock
+  have tailRun:=ToWords.tail_execute middle (Workspace.pointer base .remainder) (remainderDigits remainder) returnArguments nextCode
+    (result_return_arguments result rLocal) (result.remainder_image small zero)
+    (by intro index inside;exact Workspace.slot_mapped middle base nextContext .remainder index inside) (by omega)
+  rw [remainder_reconstruction] at tailRun
+  refine ⟨middle,quotient,remainder,result,?_⟩
+  rw [afterClearing,evaluateHOLFiniteState_seq_line780,result.run]
+  exact tailRun
+
+theorem after_clearing_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (contents : Nat→ BitVec 64) (length : Nat) (small : length≤16)
+    (image : Image source (Workspace.pointer base .numerator) contents length)
+    (divisorCell : source.memory (Workspace.pointer base .divisor)=.word divisor)
+    (divisorSmall : divisor.toNat<2^32) (positive : 0<divisor.toNat)
+    (digitsSmall : ∀ index,index<length→ (contents index).toNat<2^32)
+    (zero : Image source (Workspace.pointer base .remainder) (fun _=>0#64) 8)
+    (rLocal : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder))))
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some (values (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) (Workspace.pointer base .numerator) (Workspace.pointer base .divisor) length))
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source (afterClearing arguments)=(some (.returned returned),post)) :
+    ∃ middle quotient remainder,
+      CallerResult source middle (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) divisor contents length arguments quotient remainder ∧
+      34*length+2≤source.clock ∧ returned=RlpWrite.U256Value.tuple (remainderWords remainder) ∧
+      post=emptyLocalsHOLFinite {middle with clock:=middle.clock-1} ∧
+      quadNumber (remainderWords remainder)=number contents length%divisor.toNat := by
+  have checked:=Workspace.single_buffers source base divisor context installed contents length small image divisorCell divisorSmall positive digitsSmall
+  have safe : LocalPrefix (ofString "unused") (.call (some (none,none)) (ofString "divmnu") arguments):=
+    .call none (ofString "divmnu") arguments (by intro name impossible;cases impossible)
+  rw [afterClearing] at normal
+  obtain ⟨middle,divisionRun,returnRun⟩:=sequence_returned source post
+    (.call (some (none,none)) (ofString "divmnu") arguments) (.call none (ofString "digits_to_u256") returnArguments)
+    returned (safe.summary_full source).2.1 normal
+  obtain ⟨quotient,remainder,divisionFunded,result⟩:=call_normal source middle (Workspace.pointer base .quotient) (Workspace.pointer base .remainder)
+    (Workspace.pointer base .numerator) (Workspace.pointer base .divisor) divisor contents length checked arguments args divisionRun
+  have nextContext:=result_context context result
+  have nextCode : OriginalCode.Installed middle.code:=by rw [result.state];exact installed
+  obtain ⟨returnFunded,returnedEq,postEq⟩:=ToWords.tail_normal middle post (Workspace.pointer base .remainder) (remainderDigits remainder)
+    returnArguments nextCode (result_return_arguments result rLocal) (result.remainder_image small zero)
+    (by intro index inside;exact Workspace.slot_mapped middle base nextContext .remainder index inside) returned returnRun
+  rw [remainder_reconstruction] at returnedEq
+  have middleClock:=congrArg PanSemStateFiniteExact.clock result.state
+  change middle.clock=source.clock-(34*length+1) at middleClock
+  exact ⟨middle,quotient,remainder,result,by omega,returnedEq,postEq,(remainder_number remainder).trans result.remainderEq⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Single
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.literal_tail
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.after_clearing_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.after_clearing_execute
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.after_clearing_normal

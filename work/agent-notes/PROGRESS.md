@@ -5012,3 +5012,42 @@ Two-digit normalization/subtraction/remainder stores, Taylor/current header
 validation/main, uniform target composition, exact K, slack review and
 cleanup remain in the same active goal. Source/semantics/ROM/fixed proofs and
 historical untracked RlpLength/RlpWrite WIPs remain untouched.
+
+
+## Actual one-digit quotient/remainder reconstruction and wrapper tail
+
+The real one-digit divmnu caller's quotient prefix now combines with its
+previously cleared suffix to form the full16-word quotient image. Its final
+remainder store combines with the old zero higher cells to form the real
+8-word remainder image. The four returned words reconstruct that exact
+remainder. For the actual≤8-digit u256 path, reconstructing the quotient
+also gives the exact natural quotient. Wider callers retain their full
+quotient image without incorrectly identifying a low256-bit read with the
+whole wider quotient.
+
+The original digits_divmod post-clearing tail is identified literally from
+the current AST. Its real divmnu call and digits_to_u256 tail return now have
+exact execution and actual normal-return contracts: the same observed run
+derives both calls' funding, physical result and canonical remaining state.
+Its all-outcome source allowance is34*count+2 (274for8digits,546for16).
+No future completed call or numerical-result oracle is an entry premise.
+The zero remainder image is a preceding clearing fact, not a future outcome.
+
+Validation: current-single-digit-tail-normal-v1.log PASS1030jobs; all10new
+printed facts have only permitted axioms. Index8700modules/18457facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Overall effort estimate
+remains50%, plausible40–60%. Usage31%weekly/0resetcredits, ordinary usage
+allowed. No new candidate paths; package remains exactly65536entries.
+
+Next: connect the real post-scan i declaration, q16 clear, mm<n guard,
+i reset and r8 clear to this tail, then the actual conversions/length calls
+and complete digits_divmod/u256_divmod caller. The mm<n branch returns from
+u directly; r need not have been cleared on that path. Original m=4 callers
+still run u256_to_digits and initialize8cells; preserve those cells for that
+return rather than assuming only4reads. Retain u256 in runtime Data and
+prove input/workspace separation using startup heap minimum2701135464.
+Two-digit normalization/subtraction/remainder stores, Taylor/current header
+validation/main, uniform target composition, exact K, slack review and
+cleanup remain in the active goal. No executable/fixed challenge premise or
+historical untracked RlpLength/RlpWrite WIP changed.

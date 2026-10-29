@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.HeaderEncoding.FieldData
 import InitECandidate.Solver.Input.RlpWrite.U256PutCall
 import InitECandidate.Solver.Input.RlpWrite.WordWriteCall
 
@@ -8,13 +9,6 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 def body : ProgHOL 64 := match Guest.guestFn_encode_header with | .function fn=>progToHOL fn.body | _=>.skip
 def formals : List (MlS×ShapeHOL) := [(ofString "h",.one)]
 def returnShape : ShapeHOL := .comb [.one,.one]
-
-inductive Field where
-  | bytes (offset length : Nat)
-  | scalar (offset : Nat)
-  | wide (offset : Nat)
-  | extra
-  deriving DecidableEq
 
 def loadOne (offset : Nat) : ExpHOL 64 := .load .one (.op .add [localVar "h",.const (BitVec.ofNat 64 offset)])
 def loadWide (offset : Nat) : ExpHOL 64 := .load RlpWrite.U256Value.tupleShape (.op .add [localVar "h",.const (BitVec.ofNat 64 offset)])
@@ -35,12 +29,6 @@ def fields : List Field→ProgHOL 64→ProgHOL 64
   | [],tail=>tail
   | field::rest,tail=>.seq (call field) (.seq advance (fields rest tail))
 
-def firstField : Field := .bytes 8 32
-def baseRest : List Field := [
-  .bytes 16 32,.bytes 24 20,.bytes 32 32,.bytes 40 32,.bytes 48 32,.bytes 56 256,
-  .wide 64,.scalar 96,.scalar 104,.scalar 112,.scalar 120,.extra,.bytes 144 32,.bytes 152 8,
-  .wide 160,.bytes 192 32,.scalar 200,.scalar 208,.bytes 216 32,.bytes 224 32]
-def optionalFields : List Field := [.bytes 232 32,.scalar 240]
 def optionalCode : ProgHOL 64 := fields [.bytes 232 32] (.seq (call (.scalar 240)) advance)
 def currentTest : ExpHOL 64 := .cmp .notEqual (loadOne 0) (.const 0#64)
 def payloadExpression : ExpHOL 64 := .op .sub [localVar "p",.op .add [localVar "buf",.const 9#64]]

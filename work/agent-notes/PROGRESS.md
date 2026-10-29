@@ -4182,3 +4182,34 @@ infinity. Usage33%weekly/0resetcredits. Next: turn these physical header
 facts into actual block-length cost/return contracts, then indexed tries,
 remaining main and the uniform target-step theorem. Existing older encoder
 helpers still have pre-rebase import/allocator-premise issues to port.
+
+
+## Physical encoder entry and current U256 allocation contract
+
+Main's actual complete prefix now derives every HeaderEncoding.FieldFacts
+premise, the readable header/buffer geometry and the genuine caller frontier,
+while retaining the complete decoded Data image at that same block-length
+caller. All borrowed spans come from the original copied/decoded input; all
+fresh strings come from the eight observed allocations. No later encoder,
+allocation, trie or block-length success is a new main hypothesis.
+
+Extracted the unchanged static header field/geometry definitions into the
+small shared HeaderEncoding.FieldData module so current input facts do not
+import the whole old writer execution library. Removed PutBeProgram's unused
+transaction proof import and supplied the writer's actual direct imports.
+Ported the U256 writer prepare/whole/caller allocation premise to the real
+2952790016persistent ceiling (ordinary mapping remains the wider arena).
+The strengthened helper premise must be derived at actual continuing callers;
+it is not assumed at main's pre-allocation entry. Fixed a lost two_mul import
+with its explicit elementary equality. The Context and all changed writer
+modules compile; later old field-run/block helper callers still need porting.
+
+Validation: current-payload-header-physical-v1.log PASS2760jobs, including
+current main transaction/state/Data, full header entry and the ported U256
+writer/encoder Context. Printed axioms permitted only. Index8652modules/
+17650facts; inventory8697/replacement closure0/fixed files unchanged.
+Incremental policy PASS65487entries/2485334773bytes. No global finite target K
+or full verification; claim infinity. Usage33%weekly/0resetcredits.
+Next: bound the actual header encoder/block-length call on every outcome,
+deriving any stronger allocation room from its true continuing prefix;
+then real indexed tries, later main and the uniform target-step theorem.

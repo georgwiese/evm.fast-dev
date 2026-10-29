@@ -48,7 +48,7 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (word
     (code : source.code.lookup (ofString "rlp_put_u256")=some (formals,body,.one))
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word cursor)))
     (codes : Codes source) (domain : source.memaddrs=InitE.ordinaryDomain)
-    (cursorLower : 2701131776≤cursor.toNat) (fits : cursor.toNat+32≤33806089496)
+    (cursorLower : 2701131776≤cursor.toNat) (fits : cursor.toNat+32≤2952790016)
     (dstArena : WitnessRadix.AllocatedBytes.Arena dst 41) (enough : 125≤source.clock) :
     ∃ memory encoded paid,1≤encoded ∧ encoded≤41 ∧ paid≤124 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
       evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "rlp_put_u256") expressions continuation)=
@@ -69,7 +69,7 @@ theorem assign_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (wo
     (code : source.code.lookup (ofString "rlp_put_u256")=some (formals,body,.one))
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word cursor)))
     (codes : Codes source) (domain : source.memaddrs=InitE.ordinaryDomain)
-    (cursorLower : 2701131776≤cursor.toNat) (fits : cursor.toNat+32≤33806089496)
+    (cursorLower : 2701131776≤cursor.toNat) (fits : cursor.toNat+32≤2952790016)
     (dstArena : WitnessRadix.AllocatedBytes.Arena dst 41) (enough : 125≤source.clock) :
     ∃ memory encoded paid,1≤encoded ∧ encoded≤41 ∧ paid≤124 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
       evaluateHOLFiniteState source (.call (some (some (.local,ofString name),none)) (ofString "rlp_put_u256") expressions)=

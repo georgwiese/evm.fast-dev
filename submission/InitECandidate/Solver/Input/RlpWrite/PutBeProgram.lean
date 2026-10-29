@@ -1,6 +1,5 @@
 import InitECandidate.Solver.Input.RlpLength.BeCall
 import InitECandidate.Solver.WitnessRadix.ByteStoreWord
-import InitECandidate.Solver.Input.RlpLength.TransactionAfterFirst
 
 namespace InitECandidate.Solver.Input.RlpWrite.PutBe
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

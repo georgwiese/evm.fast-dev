@@ -11,7 +11,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (words : U
     (d : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word cursor)))
     (codes : Codes source) (domain : source.memaddrs=InitE.ordinaryDomain)
-    (cursorLower : 2701131776≤cursor.toNat) (fits : cursor.toNat+32≤33806089496)
+    (cursorLower : 2701131776≤cursor.toNat) (fits : cursor.toNat+32≤2952790016)
     (dstArena : WitnessRadix.AllocatedBytes.Arena dst 41) (enough : 124≤source.clock) :
     ∃ target encoded paid,1≤encoded ∧ encoded≤41 ∧ paid≤124 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
       evaluateHOLFiniteState source body=(some (.returned (.val (.word (BitVec.ofNat 64 encoded)))),target) ∧
@@ -28,7 +28,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (words : U
   have entryCodes : Codes entry:=⟨codes.markCode,codes.allocCode,codes.minCode,
     ⟨codes.minCodes.byteCode,codes.minCodes.bitsCode,codes.minCodes.bitCode,codes.minCodes.limbCode⟩,
     codes.bytesCode,⟨codes.bytesCodes.header,codes.bytesCodes.beCode,codes.bytesCodes.put,codes.bytesCodes.copyCode⟩,codes.releaseCode⟩
-  have temporary : WitnessRadix.AllocatedBytes.Arena cursor 32:=⟨cursorLower,fits⟩
+  have temporary : WitnessRadix.AllocatedBytes.Arena cursor 32:=⟨cursorLower,by omega⟩
   obtain ⟨target,encoded,suffixPaid,lower,upper,bound,suffixRun,frame,memory⟩:=suffix_execute entry words dst cursor cursor
     (WitnessRadix.PersistentAlloc.rounded cursor 32#64) vEntry dEntry locals.1 locals.2 heapEntry entryCodes domain temporary dstArena
       (by change 122≤source.clock-1-1; omega)

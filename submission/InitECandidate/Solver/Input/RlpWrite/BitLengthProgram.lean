@@ -50,7 +50,7 @@ theorem stage_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (val
   · have bound : (value>>>amount).toNat<2^amount := by
       rw [BitVec.toNat_ushiftRight,Nat.shiftRight_eq_div_pow]
       apply (Nat.div_lt_iff_lt_mul positive).mpr
-      simpa only [two_mul,Nat.pow_add] using valueBound
+      simpa only [show 2*amount=amount+amount from by omega,Nat.pow_add] using valueBound
     have addRead : eval source (addition amount)=some (.val (.word (BitVec.ofNat 64 (count+amount)))) := by
       simp [eval,addition,localVar,evalHOLExact,evalListHOLExact,toExact,n,valueIsWord,valueWord,wordOpHOL,wordOp,←BitVec.ofNat_add]
     let added:=bind source "n" (BitVec.ofNat 64 (count+amount))

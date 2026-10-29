@@ -2681,11 +2681,13 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderCells.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderCompleted.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderFieldFacts.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderFields.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderHash.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderInputSpans.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderOmmer.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderPhysical.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderStores.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderZero.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadImage.lean",
@@ -2788,6 +2790,7 @@
     "submission/InitECandidate/Solver/Input/HeaderEncoding/Call.lean",
     "submission/InitECandidate/Solver/Input/HeaderEncoding/Context.lean",
     "submission/InitECandidate/Solver/Input/HeaderEncoding/FieldBounds.lean",
+    "submission/InitECandidate/Solver/Input/HeaderEncoding/FieldData.lean",
     "submission/InitECandidate/Solver/Input/HeaderEncoding/FieldFrame.lean",
     "submission/InitECandidate/Solver/Input/HeaderEncoding/FieldPost.lean",
     "submission/InitECandidate/Solver/Input/HeaderEncoding/FieldRun.lean",
@@ -8699,8 +8702,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65484,
-  "package_bytes": 2485325271,
+  "package_entries": 65487,
+  "package_bytes": 2485334773,
   "claim": {
     "K": "infinity"
   },

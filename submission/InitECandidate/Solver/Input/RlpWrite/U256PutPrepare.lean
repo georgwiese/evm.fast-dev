@@ -11,7 +11,7 @@ def prepared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Bit
 
 theorem prepare_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : BitVec 64)
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word cursor))) (codes : Codes source)
-    (fits : cursor.toNat+32≤33806089496) (enough : 2≤source.clock) :
+    (fits : cursor.toNat+32≤2952790016) (enough : 2≤source.clock) :
     evaluateHOLFiniteState source body=
       (let output:=evaluateHOLFiniteState (prepared source cursor) afterTemporary
       (output.1,restore source "mark" (restore (marked source cursor) "tmp" output.2))) := by

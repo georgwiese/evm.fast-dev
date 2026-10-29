@@ -4,34 +4,12 @@ namespace InitECandidate.Solver.Input.HeaderEncoding
 open Flapjack PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-abbrev Memory := WitnessRadix.WordWrites.Memory
-def wordAt (memory : Memory) (address : BitVec 64) : BitVec 64 := WitnessRadix.MemoryBytes.wordBits (memory address)
-def address (header : BitVec 64) (offset : Nat) : BitVec 64 := header+BitVec.ofNat 64 offset
-def cursor (buffer : BitVec 64) : BitVec 64 := buffer+1024#64
-
-structure Geometry (header buffer : BitVec 64) : Prop where
-  headerLower : 2701131776≤header.toNat
-  headerAligned : header.toNat%8=0
-  headerBefore : header.toNat+248≤buffer.toNat
-  bufferAligned : buffer.toNat%8=0
-  room : buffer.toNat+1056≤33806089496
-
-def OldMemory (current original : Memory) (buffer : BitVec 64) : Prop :=
-  ∀ query,query.toNat<buffer.toNat→current query=original query
-
 structure Context (source : PanSemStateFiniteExact 64 Guest.HostMemory) (original : Memory) (header buffer : BitVec 64) : Prop where
   geometry : Geometry header buffer
   domain : source.memaddrs=InitE.ordinaryDomain
   oldMemory : OldMemory source.memory original buffer
   headerLocal : source.locals.lookup (ofString "h")=some (.val (.word header))
   heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word (cursor buffer)))
-
-def FieldFacts (original : Memory) (header : BitVec 64) : Field→Prop
-  | .bytes offset length=>offset≤240 ∧ offset%8=0 ∧ length≤256 ∧ WitnessRadix.AllocatedBytes.Arena (wordAt original (address header offset)) length
-  | .scalar offset=>offset≤240 ∧ offset%8=0
-  | .wide offset=>offset≤216 ∧ offset%8=0
-  | .extra=>(wordAt original (address header 136)).toNat≤32 ∧
-      WitnessRadix.AllocatedBytes.Arena (wordAt original (address header 128)) (wordAt original (address header 136)).toNat
 
 theorem Geometry.buffer_arena (header buffer : BitVec 64) (geometry : Geometry header buffer) : WitnessRadix.AllocatedBytes.Arena buffer 1056 :=
   ⟨by have h:=geometry.headerLower; have b:=geometry.headerBefore; omega,geometry.room⟩

@@ -5079,3 +5079,40 @@ heap minimum2701135464. Two-digit normalization/subtraction/remainder stores,
 Taylor/header validation/main, uniform target composition, exact K, dominant
 slack review and cleanup remain open. No executable/fixed challenge premise
 or historical untracked RlpLength/RlpWrite WIP changed.
+
+
+## Complete actual one-digit digits_divmod and real caller ABI
+
+The full unchanged digits_divmod62 function now has execution, all-outcome
+source cost and genuine normal-return contracts on the one-digit-divisor
+path. The proof executes the q/r/v pointer declarations, real divisor
+conversion, both actual length scans and the complete preceding post-scan
+wrapper. Physical input images and the derived workspace separation protect
+the numerator through the actual divisor writes. The early return retains
+its eight real numerator reads. This contract covers initial counts8–16;
+it deliberately makes no claim about m=4 callers' extra early-return reads.
+
+Normal execution derives its own funding, full16-word quotient image,32-bit
+quotient digits, exact natural quotient/remainder, actual returned four-word
+value and all memory outside the q/r/v write ranges. No completed helper
+outcome is an entry premise. The real mixed scalar/quad ABI, original code
+lookup, ordinary call pricing and actual returned-child continuation are
+checked. The descending scan and returned length share their digit range,
+so the full allowance is≤34*count+38:310body source ticks at8digits,311
+including the caller tick (582/583at16). Source clocks still exclude the
+straight-line target work required by the final task.
+
+Validation: current-divmod-whole-caller-final-v1.log PASS1030jobs; all24new
+printed facts have only permitted axioms. Index8700modules/18491facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Effort estimate remains
+50%, plausible40–60%. Usage32%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays exactly65536entries.
+
+Next: connect the complete u256_divmod/u256_div outer paths and derive the
+two-digit Taylor division path's normalization, actual subtraction and
+remainder stores. Retain u256 in runtime Data and derive input/workspace
+separation using the actual startup heap minimum2701135464. Taylor/header
+validation/main, uniform target composition, exact K, dominant slack review
+and cleanup remain open. No executable/fixed challenge premise or historical
+untracked RlpLength/RlpWrite WIP changed.

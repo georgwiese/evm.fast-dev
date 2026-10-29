@@ -4158,3 +4158,287 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.U256
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256.divide_call_cost
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256.divide_assigned_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def address (name : String) (index : ExpHOL 64) : ExpHOL 64:=.op .add [localVar name,.panop .mul [index,.const 8#64]]
+def inputAddress : ExpHOL 64:=address "un" (.op .add [localVar "i",localVar "j"])
+def divisorAddress : ExpHOL 64:=address "vn" (localVar "i")
+def productExpression : ExpHOL 64:=.panop .mul [localVar "qhat",.load .one divisorAddress]
+def residualExpression : ExpHOL 64:=.op .sub [.op .sub [.load .one inputAddress,localVar "k"],.op .and [localVar "p",.const 4294967295#64]]
+def lowExpression : ExpHOL 64:=.op .and [localVar "t",.const 4294967295#64]
+def carryExpression : ExpHOL 64:=.op .sub [.shift .lsr (localVar "p") (.const 32#64),.shift .asr (localVar "t") (.const 32#64)]
+def increment : ExpHOL 64:=.op .add [localVar "i",.const 1#64]
+def updates : ProgHOL 64:=.seq (.store inputAddress lowExpression)
+  (.seq (.assign .local (ofString "k") carryExpression) (.assign .local (ofString "i") increment))
+def step : ProgHOL 64:=.dec (ofString "p") .one productExpression (.dec (ofString "t") .one residualExpression updates)
+def test : ExpHOL 64:=.cmp .lower (localVar "i") (localVar "n")
+def loop : ProgHOL 64:=.while test step
+
+private def findStep : ProgHOL 64→ Option (ProgHOL 64)
+  | .while condition contents=>
+    match condition with
+    | .cmp .lower (.var .local index) (.var .local bound)=>
+      if index=ofString "i" ∧ bound=ofString "n" then some contents else findStep contents
+    | _=>findStep contents
+  | .dec _ _ _ rest=>findStep rest
+  | .decCall _ _ _ _ rest=>findStep rest
+  | .seq first rest=>(findStep first).orElse (fun _=>findStep rest)
+  | .ite _ yes no=>(findStep yes).orElse (fun _=>findStep no)
+  | _=>none
+
+theorem literal_step : findStep Single.body=some step := by
+  simp [findStep,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    step,updates,productExpression,residualExpression,lowExpression,carryExpression,increment,inputAddress,divisorAddress,address,localVar]
+
+private theorem divisor_address_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (index : Nat)
+    (v : source.locals.lookup (ofString "vn")=some (.val (.word pointer)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index)))) :
+    eval source divisorAddress=some (.val (.word (slot pointer index))) := by
+  simp [eval,divisorAddress,address,localVar,evalHOLExact,evalListHOLExact,toExact,v,i,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+    slot,BitVec.ofNat_mul,Nat.mul_comm]
+
+private theorem input_address_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (index position : Nat)
+    (u : source.locals.lookup (ofString "un")=some (.val (.word pointer)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))))
+    (j : source.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 position)))) :
+    eval source inputAddress=some (.val (.word (slot pointer (index+position)))) := by
+  simp [eval,inputAddress,address,localVar,evalHOLExact,evalListHOLExact,toExact,u,i,j,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+    slot,BitVec.ofNat_mul,BitVec.ofNat_add,Nat.mul_comm]
+
+private theorem binary_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (operator : BinOp) (left right : ExpHOL 64) (a b result : BitVec 64)
+    (leftRead : eval source left=some (.val (.word a))) (rightRead : eval source right=some (.val (.word b)))
+    (computed : wordOpHOL operator [a,b]=some result) :
+    eval source (.op operator [left,right])=some (.val (.word result)) := by
+  simp only [eval] at leftRead rightRead ⊢
+  rw [evalHOLExact]
+  simp [evalListHOLExact,leftRead,rightRead,valueIsWord,valueWord,computed]
+
+private theorem multiply_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (left right : ExpHOL 64) (a b : BitVec 64)
+    (leftRead : eval source left=some (.val (.word a))) (rightRead : eval source right=some (.val (.word b))) :
+    eval source (.panop .mul [left,right])=some (.val (.word (a*b))) := by
+  simp only [eval] at leftRead rightRead ⊢
+  rw [evalHOLExact]
+  simp [evalListHOLExact,leftRead,rightRead,valueIsWord,valueWord,panOpHOL]
+
+private theorem shifted_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (operator : Shift) (expression : ExpHOL 64) (word result : BitVec 64)
+    (read : eval source expression=some (.val (.word word))) (computed : wordShiftHOL operator word 32=some result) :
+    eval source (.shift operator expression (.const 32#64))=some (.val (.word result)) := by
+  simp only [eval] at read ⊢
+  rw [evalHOLExact]
+  simp [read,evalHOLExact,computed]
+
+/-- The real inner body has no calls or loops; source clocks are unchanged. -/
+theorem step_cost (code) : ClockCost.Bound code step 0 := by
+  unfold step updates
+  exact ClockCost.declared code _ _ _ _ 0 (ClockCost.declared code _ _ _ _ 0
+    (ClockCost.sequence code _ _ 0 0 (ClockCost.store code _ _)
+      (ClockCost.sequence code _ _ 0 0 (ClockCost.assign code _ _) (ClockCost.assign code _ _))))
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.literal_step
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.step_cost
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) : Prop where
+  context : Workspace.Context source base
+  indexSmall : index<2
+  inside : index+position<17
+  u : source.locals.lookup (ofString "un")=some (.val (.word (Workspace.pointer base .normalizedNumerator)))
+  v : source.locals.lookup (ofString "vn")=some (.val (.word (Workspace.pointer base .normalizedDivisor)))
+  i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index)))
+  j : source.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 position)))
+  q : source.locals.lookup (ofString "qhat")=some (.val (.word quotient))
+  k : source.locals.lookup (ofString "k")=some (.val (.word carry))
+  input : source.memory (slot (Workspace.pointer base .normalizedNumerator) (index+position))=.word cell
+  divisorCell : source.memory (slot (Workspace.pointer base .normalizedDivisor) index)=.word divisor
+  cellSmall : cell.toNat<4294967296
+  carrySmall : carry.toNat<4294967296
+  quotientSmall : quotient.toNat<4294967296
+  divisorSmall : divisor.toNat<4294967296
+
+theorem Entry.bindTemporary {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {index position : Nat}
+    {quotient carry cell divisor : BitVec 64} (checked : Entry source base index position quotient carry cell divisor)
+    (name : String) (word : BitVec 64) (allowed : name="p" ∨ name="t") :
+    Entry (bind source name word) base index position quotient carry cell divisor := by
+  rcases allowed with rfl|rfl <;>
+    refine ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.indexSmall,checked.inside,
+      ?_,?_,?_,?_,?_,?_,checked.input,checked.divisorCell,checked.cellSmall,checked.carrySmall,checked.quotientSmall,checked.divisorSmall⟩ <;>
+    first
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.u
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.v
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.i
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.j
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.q
+    | exact (bind_lookup_other _ _ _ _ (by decide)).trans checked.k
+
+private theorem local_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (word : BitVec 64)
+    (cell : source.locals.lookup (ofString name)=some (.val (.word word))) : eval source (localVar name)=some (.val (.word word)) := by
+  simp [eval,localVar,evalHOLExact,toExact,cell]
+
+private theorem product_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) (checked : Entry source base index position quotient carry cell divisor) :
+    eval source productExpression=some (.val (.word (quotient*divisor))) := by
+  have mapped:=Workspace.slot_mapped source base checked.context .normalizedDivisor index (by change index<8;have h:=checked.indexSmall;omega)
+  have loaded:=Witness.load_word_read source divisorAddress _ divisor (divisor_address_read source _ index checked.v checked.i) mapped checked.divisorCell
+  exact multiply_read source (localVar "qhat") (.load .one divisorAddress) quotient divisor (local_read source "qhat" quotient checked.q) loaded
+
+private theorem residual_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) (checked : Entry source base index position quotient carry cell divisor)
+    (p : source.locals.lookup (ofString "p")=some (.val (.word (quotient*divisor)))) :
+    eval source residualExpression=some (.val (.word (TwoDigitSubtract.residual cell carry (quotient*divisor)))) := by
+  have mapped:=Workspace.slot_mapped source base checked.context .normalizedNumerator (index+position) checked.inside
+  have loaded:=Witness.load_word_read source inputAddress _ cell (input_address_read source _ index position checked.u checked.i checked.j) mapped checked.input
+  have first:=binary_read source .sub (.load .one inputAddress) (localVar "k") cell carry (cell-carry)
+    loaded (local_read source "k" carry checked.k) rfl
+  have masked:=binary_read source .and (localVar "p") (.const 4294967295#64) (quotient*divisor) 4294967295#64 ((quotient*divisor) &&& 4294967295#64)
+    (local_read source "p" _ p) rfl rfl
+  exact binary_read source .sub _ _ _ _ _ first masked rfl
+
+def updatePost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) :=
+  bind (bind {source with
+    memory:=StoreWord.put source.memory (slot (Workspace.pointer base .normalizedNumerator) (index+position))
+      (TwoDigitSubtract.low cell carry (quotient*divisor))} "k" (TwoDigitSubtract.nextCarry cell carry (quotient*divisor))) "i" (BitVec.ofNat 64 (index+1))
+
+def post (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) :=
+  let pEntry:=bind source "p" (quotient*divisor)
+  let tEntry:=bind pEntry "t" (TwoDigitSubtract.residual cell carry (quotient*divisor))
+  restore source "p" (restore pEntry "t" (updatePost tEntry base index position quotient carry cell divisor))
+
+private theorem updates_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) (checked : Entry source base index position quotient carry cell divisor)
+    (p : source.locals.lookup (ofString "p")=some (.val (.word (quotient*divisor))))
+    (t : source.locals.lookup (ofString "t")=some (.val (.word (TwoDigitSubtract.residual cell carry (quotient*divisor))))) :
+    evaluateHOLFiniteState source updates=(none,updatePost source base index position quotient carry cell divisor) := by
+  let product:=quotient*divisor
+  let rest:=TwoDigitSubtract.residual cell carry product
+  let stored:={source with memory:=StoreWord.put source.memory (slot (Workspace.pointer base .normalizedNumerator) (index+position)) (TwoDigitSubtract.low cell carry product)}
+  have lowRead : eval source lowExpression=some (.val (.word (TwoDigitSubtract.low cell carry product))):=
+    binary_read source .and (localVar "t") (.const 4294967295#64) rest 4294967295#64 _ (local_read source "t" _ t) rfl rfl
+  have storedRun:=StoreWord.execute source inputAddress lowExpression _ _ (input_address_read source _ index position checked.u checked.i checked.j) lowRead
+    (Workspace.slot_mapped source base checked.context .normalizedNumerator (index+position) checked.inside)
+  have left:=shifted_read stored .lsr (localVar "p") product (product>>>(32:Nat)) (local_read stored "p" _ p) rfl
+  have right:=shifted_read stored .asr (localVar "t") rest (rest.sshiftRight 32) (local_read stored "t" _ t) rfl
+  have carryRead : eval stored carryExpression=some (.val (.word (TwoDigitSubtract.nextCarry cell carry product))):=
+    binary_read stored .sub _ _ _ _ _ left right rfl
+  let carried:=bind stored "k" (TwoDigitSubtract.nextCarry cell carry product)
+  have iCell : carried.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))):=
+    (bind_lookup_other stored "k" "i" _ (by decide)).trans checked.i
+  have nextRead : eval carried increment=some (.val (.word (BitVec.ofNat 64 (index+1)))):=by
+    simp [eval,increment,localVar,evalHOLExact,evalListHOLExact,toExact,iCell,valueIsWord,valueWord,wordOpHOL,wordOp,BitVec.ofNat_add]
+  rw [updates,evaluateHOLFiniteState_seq_line780,storedRun]
+  change evaluateHOLFiniteState stored (.seq (.assign .local (ofString "k") carryExpression) (.assign .local (ofString "i") increment))=_
+  rw [evaluateHOLFiniteState_seq_line780,StateSteps.assign_execute stored "k" carryExpression carry _ checked.k carryRead]
+  exact StateSteps.assign_execute carried "i" increment _ _ iCell nextRead
+
+/-- Execute the original p/t declarations, real mapped load/store, signed
+carry update and index increment, including their actual lexical restores. -/
+theorem step_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) (checked : Entry source base index position quotient carry cell divisor) :
+    evaluateHOLFiniteState source step=(none,post source base index position quotient carry cell divisor) := by
+  let pEntry:=bind source "p" (quotient*divisor)
+  have pModel : Entry pEntry base index position quotient carry cell divisor:=checked.bindTemporary "p" _ (Or.inl rfl)
+  let tEntry:=bind pEntry "t" (TwoDigitSubtract.residual cell carry (quotient*divisor))
+  have tModel : Entry tEntry base index position quotient carry cell divisor:=pModel.bindTemporary "t" _ (Or.inr rfl)
+  have pCell : tEntry.locals.lookup (ofString "p")=some (.val (.word (quotient*divisor))):=
+    (bind_lookup_other pEntry "t" "p" _ (by decide)).trans (bind_lookup_same _ _ _)
+  have run:=updates_execute tEntry base index position quotient carry cell divisor tModel pCell (bind_lookup_same _ _ _)
+  have tRun:=ScalarScope.declare_execute pEntry (updatePost tEntry base index position quotient carry cell divisor) "t" residualExpression
+    (TwoDigitSubtract.residual cell carry (quotient*divisor)) updates none (residual_read pEntry base index position quotient carry cell divisor pModel (bind_lookup_same _ _ _)) run
+  exact ScalarScope.declare_execute source _ "p" productExpression (quotient*divisor) (.dec (ofString "t") .one residualExpression updates) none
+    (product_read source base index position quotient carry cell divisor checked) tRun
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.Entry.bindTemporary
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.step_execute
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+private theorem restore_memory (saved state : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (memory : BitVec 64→HolWordLab 64) :
+    restore saved name {state with memory:=memory}={restore saved name state with memory:=memory} := rfl
+
+/-- Restoring p/t leaves exactly the actual memory store and i/k updates. -/
+theorem post_canonical (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) :
+    post source base index position quotient carry cell divisor=updatePost source base index position quotient carry cell divisor := by
+  unfold post updatePost
+  dsimp only
+  rw [restore_bind_other _ _ "t" "i" _ (by decide),restore_bind_other _ _ "t" "k" _ (by decide),
+    restore_bind_other _ _ "p" "i" _ (by decide),restore_bind_other _ _ "p" "k" _ (by decide)]
+  simp only [restore_memory,restore_bound]
+  rfl
+
+theorem post_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) :
+    post source base index position quotient carry cell divisor={source with
+      locals:=(post source base index position quotient carry cell divisor).locals,
+      memory:=StoreWord.put source.memory (slot (Workspace.pointer base .normalizedNumerator) (index+position)) (TwoDigitSubtract.low cell carry (quotient*divisor))} := by
+  rw [post_canonical]
+  rfl
+
+theorem post_index (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) :
+    (post source base index position quotient carry cell divisor).locals.lookup (ofString "i")=
+      some (.val (.word (BitVec.ofNat 64 (index+1)))) := by
+  rw [post_canonical]
+  exact bind_lookup_same _ _ _
+
+theorem post_carry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) :
+    (post source base index position quotient carry cell divisor).locals.lookup (ofString "k")=
+      some (.val (.word (TwoDigitSubtract.nextCarry cell carry (quotient*divisor)))) := by
+  rw [post_canonical]
+  exact (bind_lookup_other _ "i" "k" _ (by decide)).trans (bind_lookup_same _ _ _)
+
+theorem post_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) (name : String) (notI : ofString name≠ofString "i") (notK : ofString name≠ofString "k") :
+    (post source base index position quotient carry cell divisor).locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
+  rw [post_canonical]
+  exact (bind_lookup_other _ "i" name _ (Ne.symm notI)).trans (bind_lookup_other _ "k" name _ (Ne.symm notK))
+
+theorem post_written (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) :
+    (post source base index position quotient carry cell divisor).memory (slot (Workspace.pointer base .normalizedNumerator) (index+position))=
+      .word (TwoDigitSubtract.low cell carry (quotient*divisor)) := by
+  rw [post_canonical]
+  simp [updatePost,WitnessRadix.QueryBranch.bind,setVarHOLFinite,StoreWord.put]
+
+theorem post_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor query : BitVec 64)
+    (outside : query≠slot (Workspace.pointer base .normalizedNumerator) (index+position)) :
+    (post source base index position quotient carry cell divisor).memory query=source.memory query := by
+  rw [post_canonical]
+  simp only [updatePost,WitnessRadix.QueryBranch.bind,setVarHOLFinite,StoreWord.put,if_neg outside]
+
+theorem step_arithmetic (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (index position : Nat)
+    (quotient carry cell divisor : BitVec 64) (checked : Entry source base index position quotient carry cell divisor) :
+    evaluateHOLFiniteState source step=(none,post source base index position quotient carry cell divisor) ∧
+      (TwoDigitSubtract.low cell carry (quotient*divisor)).toNat<4294967296 ∧
+      (TwoDigitSubtract.nextCarry cell carry (quotient*divisor)).toNat<4294967296 ∧
+      cell.toNat+4294967296*(TwoDigitSubtract.nextCarry cell carry (quotient*divisor)).toNat=
+        (TwoDigitSubtract.low cell carry (quotient*divisor)).toNat+quotient.toNat*divisor.toNat+carry.toNat :=
+  ⟨step_execute source base index position quotient carry cell divisor checked,
+    TwoDigitSubtract.product_digit cell carry quotient divisor checked.cellSmall checked.carrySmall checked.quotientSmall checked.divisorSmall⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.post_canonical
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.post_frame
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.post_index
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.post_carry
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.post_other
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.post_written
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.post_away
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.step_arithmetic

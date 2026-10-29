@@ -1455,3 +1455,178 @@ end InitECandidate.Solver.Input.UDivMod.QhatCorrection
 
 #print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.max_initial_upper
 #print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.normal_digit
+
+namespace InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract
+open Flapjack
+
+def residual (cell carry product : BitVec 64) : BitVec 64:=cell-carry-(product &&& 4294967295#64)
+def low (cell carry product : BitVec 64) : BitVec 64:=residual cell carry product &&& 4294967295#64
+def nextCarry (cell carry product : BitVec 64) : BitVec 64:=
+  (product>>>(32:Nat))-(residual cell carry product).sshiftRight 32
+
+private theorem mask_number (word : BitVec 64) : (word &&& 4294967295#64).toNat=word.toNat%4294967296 := by
+  rw [BitVec.toNat_and]
+  exact Nat.and_two_pow_sub_one_eq_mod word.toNat 32
+
+private theorem high_number (word : BitVec 64) : (word>>>(32:Nat)).toNat=word.toNat/4294967296 := by
+  rw [BitVec.toNat_ushiftRight,Nat.shiftRight_eq_div_pow]
+
+private theorem small_signed (word : BitVec 64) (small : word.toNat<4294967296) : word.toInt=(word.toNat : Int) :=
+  BitVec.toInt_eq_toNat_of_lt (by omega)
+
+/-- The actual signed intermediate of the original multiply/subtract loop
+has no signed64-bit overflow, even when subtracting two full32-bit words. -/
+theorem residual_signed (cell carry product : BitVec 64)
+    (cellSmall : cell.toNat<4294967296) (carrySmall : carry.toNat<4294967296) :
+    (residual cell carry product).toInt=(cell.toNat : Int)-carry.toNat-(product.toNat%4294967296) := by
+  have productLow : (product &&& 4294967295#64).toNat<4294967296:=by
+    rw [mask_number]
+    exact Nat.mod_lt _ (by decide)
+  have first : (cell-carry).toInt=(cell.toNat : Int)-carry.toNat:=by
+    rw [BitVec.toInt_sub,small_signed cell cellSmall,small_signed carry carrySmall]
+    exact Int.bmod_eq_of_le (by omega) (by omega)
+  rw [residual,BitVec.toInt_sub,first,small_signed _ productLow,mask_number]
+  exact Int.bmod_eq_of_le (by have bound:=Nat.mod_lt product.toNat (show 0<4294967296 by decide);omega)
+    (by have bound:=Nat.mod_lt product.toNat (show 0<4294967296 by decide);omega)
+
+/-- Masking the actual signed residual keeps its ordinary base2^32 remainder. -/
+theorem low_signed (cell carry product : BitVec 64) :
+    ((low cell carry product).toNat : Int)=(residual cell carry product).toInt%4294967296 := by
+  rw [low,mask_number,Int.natCast_emod,BitVec.toInt_eq_toNat_cond]
+  split_ifs <;> omega
+
+/-- One real32-bit multiply/subtract digit has a32-bit outgoing carry and
+an exact conservation equation. The product cap follows from two32-bit factors. -/
+theorem digit (cell carry product : BitVec 64)
+    (cellSmall : cell.toNat<4294967296) (carrySmall : carry.toNat<4294967296)
+    (productCap : product.toNat≤4294967295^2) :
+    (low cell carry product).toNat<4294967296 ∧ (nextCarry cell carry product).toNat<4294967296 ∧
+      cell.toNat+4294967296*(nextCarry cell carry product).toNat=
+        (low cell carry product).toNat+product.toNat+carry.toNat := by
+  have masked : (low cell carry product).toNat<4294967296:=by
+    rw [low,mask_number]
+    exact Nat.mod_lt _ (by decide)
+  have high:=high_number product
+  have productLow:=Nat.mod_lt product.toNat (show 0<4294967296 by decide)
+  have splitProduct:=Nat.mod_add_div product.toNat 4294967296
+  have signed:=residual_signed cell carry product cellSmall carrySmall
+  have shifted : ((residual cell carry product).sshiftRight 32).toInt=
+      (residual cell carry product).toInt/4294967296:=by
+    rw [BitVec.toInt_sshiftRight,Int.shiftRight_eq_div_pow]
+    rfl
+  have highSmall : (product>>>(32:Nat)).toNat<4294967296:=by omega
+  have outgoing : (nextCarry cell carry product).toInt=
+      ((product>>>(32:Nat)).toNat : Int)-(residual cell carry product).toInt/4294967296:=by
+    rw [nextCarry,BitVec.toInt_sub,small_signed _ highSmall,shifted]
+    exact Int.bmod_eq_of_le (by omega) (by omega)
+  have lowEq:=low_signed cell carry product
+  have balance:=Int.emod_add_mul_ediv (residual cell carry product).toInt 4294967296
+  have nonnegative : 0≤(nextCarry cell carry product).toInt:=by omega
+  have natural : (nextCarry cell carry product).toInt=((nextCarry cell carry product).toNat : Int):=by
+    have conversion:=BitVec.toInt_eq_toNat_cond (nextCarry cell carry product)
+    have bounded:=(nextCarry cell carry product).isLt
+    split_ifs at conversion <;> omega
+  refine ⟨masked,?_,?_⟩ <;> omega
+
+end InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract
+
+#print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.residual_signed
+#print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.low_signed
+#print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.digit
+
+namespace InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract
+open Flapjack
+
+/-- The original64-bit word multiplication of two32-bit digits is exact
+and supplies the cap used by the real subtraction/carry step. -/
+theorem product_number (left right : BitVec 64) (leftSmall : left.toNat<4294967296) (rightSmall : right.toNat<4294967296) :
+    (left*right).toNat=left.toNat*right.toNat ∧ (left*right).toNat≤4294967295^2 := by
+  have bound : left.toNat*right.toNat≤4294967295^2:=by
+    change left.toNat*right.toNat≤4294967295*4294967295
+    exact Nat.mul_le_mul (by omega) (by omega)
+  have number : (left*right).toNat=left.toNat*right.toNat:=by
+    rw [BitVec.toNat_mul,Nat.mod_eq_of_lt (by omega)]
+  exact ⟨number,by omega⟩
+
+theorem product_digit (cell carry quotient divisor : BitVec 64)
+    (cellSmall : cell.toNat<4294967296) (carrySmall : carry.toNat<4294967296)
+    (quotientSmall : quotient.toNat<4294967296) (divisorSmall : divisor.toNat<4294967296) :
+    (low cell carry (quotient*divisor)).toNat<4294967296 ∧
+      (nextCarry cell carry (quotient*divisor)).toNat<4294967296 ∧
+      cell.toNat+4294967296*(nextCarry cell carry (quotient*divisor)).toNat=
+        (low cell carry (quotient*divisor)).toNat+quotient.toNat*divisor.toNat+carry.toNat := by
+  have number:=product_number quotient divisor quotientSmall divisorSmall
+  obtain ⟨lowSmall,carryOutSmall,balance⟩:=digit cell carry (quotient*divisor) cellSmall carrySmall number.2
+  rw [number.1] at balance
+  exact ⟨lowSmall,carryOutSmall,balance⟩
+
+def firstCarry (lowCell quotient lowDivisor : BitVec 64) : BitVec 64:=nextCarry lowCell 0#64 (quotient*lowDivisor)
+def secondCarry (lowCell middleCell quotient lowDivisor highDivisor : BitVec 64) : BitVec 64:=
+  nextCarry middleCell (firstCarry lowCell quotient lowDivisor) (quotient*highDivisor)
+def firstLow (lowCell quotient lowDivisor : BitVec 64) : BitVec 64:=low lowCell 0#64 (quotient*lowDivisor)
+def secondLow (lowCell middleCell quotient lowDivisor highDivisor : BitVec 64) : BitVec 64:=
+  low middleCell (firstCarry lowCell quotient lowDivisor) (quotient*highDivisor)
+
+def window (lowCell middleCell topCell : BitVec 64) : Nat:=lowCell.toNat+4294967296*middleCell.toNat+18446744073709551616*topCell.toNat
+def divisorNumber (lowDivisor highDivisor : BitVec 64) : Nat:=lowDivisor.toNat+4294967296*highDivisor.toNat
+
+/-- Two real subtraction digits with a correct quotient leave a zero top
+word. Thus the original add-back test is false once its actual inputs and
+corrected quotient have been connected to this equation. -/
+theorem pair_no_borrow (lowCell middleCell topCell quotient lowDivisor highDivisor : BitVec 64)
+    (lowSmall : lowCell.toNat<4294967296) (middleSmall : middleCell.toNat<4294967296)
+    (quotientSmall : quotient.toNat<4294967296) (divisorLowSmall : lowDivisor.toNat<4294967296) (divisorHighSmall : highDivisor.toNat<4294967296)
+    (below : quotient.toNat*divisorNumber lowDivisor highDivisor≤window lowCell middleCell topCell)
+    (close : window lowCell middleCell topCell<quotient.toNat*divisorNumber lowDivisor highDivisor+18446744073709551616) :
+    secondCarry lowCell middleCell quotient lowDivisor highDivisor=topCell ∧
+      topCell-secondCarry lowCell middleCell quotient lowDivisor highDivisor=0#64 ∧
+      (firstLow lowCell quotient lowDivisor).toNat+4294967296*(secondLow lowCell middleCell quotient lowDivisor highDivisor).toNat=
+        window lowCell middleCell topCell-quotient.toNat*divisorNumber lowDivisor highDivisor := by
+  have first:=product_digit lowCell 0#64 quotient lowDivisor lowSmall (by decide) quotientSmall divisorLowSmall
+  have second:=product_digit middleCell (firstCarry lowCell quotient lowDivisor) quotient highDivisor middleSmall first.2.1 quotientSmall divisorHighSmall
+  have distributed : quotient.toNat*divisorNumber lowDivisor highDivisor=
+      quotient.toNat*lowDivisor.toNat+4294967296*(quotient.toNat*highDivisor.toNat):=by
+    unfold divisorNumber
+    ring
+  change (firstLow lowCell quotient lowDivisor).toNat<4294967296 ∧ (firstCarry lowCell quotient lowDivisor).toNat<4294967296 ∧
+    lowCell.toNat+4294967296*(firstCarry lowCell quotient lowDivisor).toNat=(firstLow lowCell quotient lowDivisor).toNat+quotient.toNat*lowDivisor.toNat+0 at first
+  change (secondLow lowCell middleCell quotient lowDivisor highDivisor).toNat<4294967296 ∧
+    (secondCarry lowCell middleCell quotient lowDivisor highDivisor).toNat<4294967296 ∧
+    middleCell.toNat+4294967296*(secondCarry lowCell middleCell quotient lowDivisor highDivisor).toNat=
+      (secondLow lowCell middleCell quotient lowDivisor highDivisor).toNat+quotient.toNat*highDivisor.toNat+(firstCarry lowCell quotient lowDivisor).toNat at second
+  rw [distributed] at below close ⊢
+  unfold window at below close ⊢
+  have same : secondCarry lowCell middleCell quotient lowDivisor highDivisor=topCell:=by
+    apply BitVec.eq_of_toNat_eq
+    omega
+  refine ⟨same,by rw [same];simp,?_⟩
+  have firstBalance:=first.2.2
+  have secondBalance:=second.2.2
+  rw [same] at secondBalance
+  omega
+
+/-- The actual exact quotient suffices for both no-borrow conditions and
+identifies the two stored low words with the ordinary natural remainder. -/
+theorem pair_from_quotient (lowCell middleCell topCell quotient lowDivisor highDivisor : BitVec 64)
+    (lowSmall : lowCell.toNat<4294967296) (middleSmall : middleCell.toNat<4294967296)
+    (quotientSmall : quotient.toNat<4294967296) (divisorLowSmall : lowDivisor.toNat<4294967296) (divisorHighSmall : highDivisor.toNat<4294967296)
+    (positive : 0<divisorNumber lowDivisor highDivisor)
+    (exactQuotient : quotient.toNat=window lowCell middleCell topCell/divisorNumber lowDivisor highDivisor) :
+    secondCarry lowCell middleCell quotient lowDivisor highDivisor=topCell ∧
+      topCell-secondCarry lowCell middleCell quotient lowDivisor highDivisor=0#64 ∧
+      (firstLow lowCell quotient lowDivisor).toNat+4294967296*(secondLow lowCell middleCell quotient lowDivisor highDivisor).toNat=
+        window lowCell middleCell topCell%divisorNumber lowDivisor highDivisor := by
+  have decomposition:=Nat.mod_add_div (window lowCell middleCell topCell) (divisorNumber lowDivisor highDivisor)
+  rw [←exactQuotient,Nat.mul_comm (divisorNumber lowDivisor highDivisor) quotient.toNat] at decomposition
+  have small:=Nat.mod_lt (window lowCell middleCell topCell) positive
+  have width : divisorNumber lowDivisor highDivisor<18446744073709551616:=by unfold divisorNumber;omega
+  obtain ⟨same,topZero,remainder⟩:=pair_no_borrow lowCell middleCell topCell quotient lowDivisor highDivisor
+    lowSmall middleSmall quotientSmall divisorLowSmall divisorHighSmall (by omega) (by omega)
+  exact ⟨same,topZero,by omega⟩
+
+end InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract
+
+#print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.product_number
+#print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.product_digit
+#print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.pair_no_borrow
+#print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.pair_from_quotient

@@ -3468,3 +3468,37 @@ prove its connection to the actual subtraction before claiming that the
 add-back branch cannot execute. Exact K, dominant slack review and final cleanup remain.
 Historical untracked RlpLength/RlpWrite WIPs and executable/fixed premises
 stay untouched.
+
+
+## Actual two-digit subtraction arithmetic and physical inner body
+
+The original multiply/subtract digit now has a checked exact conservation
+law,32-bit output/carry bounds and signed64-bit no-overflow justification.
+The actual product of two32-bit factors supplies its own product cap.
+Two such real digit operations with an exact quotient leave a zero top
+word and reconstruct the ordinary natural remainder. This is arithmetic;
+the original quotient-correction caller must still supply that exact quotient
+before the actual add-back branch can be ruled out.
+
+The unchanged divmnu61 subtraction step is identified literally in its AST.
+From the actual mapped UN/VN cells and existing qhat/k/i/j bindings, its
+original p/t declarations, loads, low-word store, signed carry update and
+index increment execute exactly. Both temporary variables are genuinely
+restored; all other bindings and fields are retained, and memory changes
+only at the intended normalized-numerator word. No future run/result is an
+entry premise. Its source-clock cost is0because it has no calls or loops;
+its straight-line target cost remains part of the unfinished global task.
+
+Validation: current-two-digit-subtract-store-v4.log PASS1122jobs, all19new
+printed facts use only permitted axioms. Index8700modules/18546facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage33%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package remains65536entries.
+
+Next: connect both actual subtraction iterations, derive their two source
+loop ticks and physical stores, then connect the real corrected quotient
+and top-word update. Two-digit normalization/remainder stores, Taylor/header/
+main, uniform target composition, exact K, dominant slack review and final
+cleanup remain open. Historical untracked RlpLength/RlpWrite WIPs and
+executable/fixed challenge premises remain untouched.

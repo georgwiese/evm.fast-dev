@@ -2063,3 +2063,246 @@ theorem LoopModel.loop_normal {source post : PanSemStateFiniteExact 64 Guest.Hos
 end InitECandidate.Solver.Input.CurrentVerify.RequestHash
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.loop_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Actual arr/n/out ABI, prior encoder return and retained startup workspace.
+No temporary allocation room or future hash return is supplied. -/
+structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array heap out : BitVec 64)
+    (count : Nat) (slices : Nat→BitVec 64×BitVec 64) : Prop where
+  requests : ExecutionRequests.Returned source array heap count slices
+  environment : GeneralSha.Environment source 2701131776#64 2701131840#64
+  arrayLower : 2701131968≤array.toNat
+  arrayCell : source.locals.lookup (ofString "arr")=some (.val (.word array))
+  countCell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))
+  outCell : source.locals.lookup (ofString "out")=some (.val (.word out))
+
+def amount (count : Nat) : BitVec 64:=BitVec.ofNat 64 (32*count+8)
+def setupActions : List CallPrefix.Action:=[.scoped (ofString "mark") .one (ofString "heap_mark") [],
+  .scoped (ofString "cat") .one (ofString "alloc") allocationArguments,.declare (ofString "i") .one (.const 0#64)]
+def markState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64):=
+  QueryBranch.bind {source with clock:=source.clock-1} "mark" heap
+
+def setupState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) (count : Nat):=
+  let marked:=markState source heap
+  QueryBranch.bind (QueryBranch.bind (PersistentAlloc.post {marked with clock:=marked.clock-1} heap (amount count)) "cat" heap) "i" 0#64
+
+theorem setup_shape : body=CallPrefix.program setupActions (.seq loop afterLoop) := by
+  rw [body_shape]
+  rfl
+
+theorem amount_number (count : Nat) (small : count≤5) : (amount count).toNat=32*count+8 := by
+  rw [amount,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+
+theorem allocation_args (source : PanSemStateFiniteExact 64 Guest.HostMemory) (count : Nat)
+    (cell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) allocationArguments=some (PersistentAlloc.values (amount count)) := by
+  simp [allocationArguments,digestSize,amount,PersistentAlloc.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,cell,
+    valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,BitVec.ofNat_add,BitVec.ofNat_mul,Nat.mul_comm]
+
+set_option maxRecDepth 100000 in
+theorem mark_cost (code) : ClockCost.Bound code (CurrentStartup.Code.body .heap_mark) 0 := by
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_heap_mark,progToHOL,expToHOL]
+  exact ClockCost.returned code _
+
+set_option maxRecDepth 100000 in
+theorem release_body_cost (code) : ClockCost.Bound code (CurrentStartup.Code.body .heap_release) 0 := by
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_heap_release,progToHOL,expToHOL]
+  exact ClockCost.sequence code _ _ 0 0 (ClockCost.of_quiet code _ (QuietClock.assign_kind code .global (ofString "heap_ptr") _)) (ClockCost.returned code _)
+
+theorem release_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code releaseCall 1 :=
+  ClockCost.call_body code (some none) (ofString "heap_release") [localVar "mark"]
+    (CurrentStartup.Code.formals .heap_release) (CurrentStartup.Code.body .heap_release) (CurrentStartup.Code.shape .heap_release) 0
+    (CurrentStartup.Code.installed code installed .heap_release) (release_body_cost code)
+
+/-- Covers the allocator's own capacity-failure trap as well as normal setup. -/
+theorem setup_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code (CallPrefix.program setupActions .skip) 3 := by
+  unfold setupActions CallPrefix.program
+  apply ClockCost.scoped_body code _ _ (ofString "heap_mark") _ _
+    (CurrentStartup.Code.formals .heap_mark) (CurrentStartup.Code.body .heap_mark) (CurrentStartup.Code.shape .heap_mark) 0 2
+    (CurrentStartup.Code.installed code installed .heap_mark) (mark_cost code)
+  apply PersistentAlloc.scoped_price code installed (tailPrice:=0)
+  exact ClockCost.declared code _ _ _ _ _ (ClockCost.skip code)
+
+/-- The actual concatenated digest has at most160bytes; releasing its own
+mark and returning cost one additional caller tick on every outcome. -/
+theorem after_loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (count : Nat) (small : count≤5)
+    (installed : OriginalCode.Installed source.code)
+    (cell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))) :
+    source.clock-(evaluateHOLFiniteState source afterLoop).2.clock≤274 := by
+  have sizeRead : eval source digestSize=some (.val (.word (BitVec.ofNat 64 (32*count)))):=by
+    simp [eval,digestSize,evalHOLExact,evalListHOLExact,toExact,localVar,cell,valueIsWord,valueWord,panOpHOL,BitVec.ofNat_mul,Nat.mul_comm]
+  have called:=GeneralSha.dynamic_call_cost source (localVar "cat") digestSize (localVar "out") (32*count) installed (by omega) sizeRead
+  have allowance : GeneralSha.bodyPrice (32*count)+1≤273:=by unfold GeneralSha.bodyPrice; omega
+  have first : source.clock-(evaluateHOLFiniteState source finalCall).2.clock≤273:=Nat.le_trans called allowance
+  exact ClockCost.sequence_current source finalCall (.seq releaseCall (.return (.const 0#64))) 273 1 first
+    (ClockCost.sequence source.code releaseCall (.return (.const 0#64)) 1 0 (release_cost source.code installed) (ClockCost.returned source.code _))
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.setup_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.amount_number
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.allocation_args
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.mark_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.release_body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.release_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.setup_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.after_loop_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+set_option maxRecDepth 100000 in
+theorem mark_shape : CurrentStartup.Code.body .heap_mark=.return (.var .global (ofString "heap_ptr")) := by
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_heap_mark,progToHOL,expToHOL]
+
+/-- Same-run setup derives its saved pointer, actual allocation room and
+complete reached state. No later row/final digest return is supplied. -/
+theorem setup_reached {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap out : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (entry : Entry source array heap out count slices)
+    (actual : CallPrefix.Execution source setupActions current) :
+    heap.toNat+(32*count+8)≤2952790016 ∧ current=setupState source heap count := by
+  change CallPrefix.Execution source (.scoped (ofString "mark") .one (ofString "heap_mark") []::
+    [.scoped (ofString "cat") .one (ofString "alloc") allocationArguments,.declare (ofString "i") .one (.const 0#64)]) current at actual
+  obtain ⟨marked,markReached,rest⟩:=actual.head
+  have markCode : source.code.lookup (ofString "heap_mark")=some ([],CurrentStartup.Code.body .heap_mark,.one):=by
+    simpa only [CurrentStartup.Code.name,CurrentStartup.Code.formals,CurrentStartup.Code.shape,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,
+      GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,Guest.Software.guestFn_heap_mark,List.map_nil,shapeToHOL]
+      using CurrentStartup.Code.installed source.code entry.environment.installed .heap_mark
+  have raw : lookupCodeHOLExact source.code.lookup (ofString "heap_mark") []=some (CurrentStartup.Code.body .heap_mark,(fun _=>none),.one):=by
+    simp [lookupCodeHOLExact,markCode]
+  obtain ⟨markCallee,markCalled,markLocals⟩:=CodeEnvironment.finite_lookup source.code.lookup _ _ _ _ _ raw
+  obtain ⟨child,returned,bodyRun,endpoint⟩:=markReached.scoped_known (ofString "mark") .one (ofString "heap_mark") [] []
+    (CurrentStartup.Code.body .heap_mark) markCallee .one rfl markCalled
+  rw [mark_shape] at bodyRun
+  obtain ⟨read,childEq⟩:=return_normal (callEntryStateHOLFinite source markCallee) child (.var .global (ofString "heap_ptr")) returned bodyRun
+  have expected : eval (callEntryStateHOLFinite source markCallee) (.var .global (ofString "heap_ptr"))=some (.val (.word heap)):=by
+    simp [eval,evalHOLExact,toExact,callEntryStateHOLFinite,entry.requests.heapCell]
+  have answer : returned=.val (.word heap):=Option.some.inj (read.symm.trans expected)
+  have markedEq : marked=markState source heap:=by rw [endpoint,answer,childEq]; rfl
+  rw [markedEq] at rest
+  obtain ⟨allocated,reached,declared⟩:=rest.head
+  have markedInstalled : OriginalCode.Installed (markState source heap).code:=entry.environment.installed
+  have countCell : (markState source heap).locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))):=
+    (bind_lookup_other {source with clock:=source.clock-1} "mark" "n" heap (by decide)).trans entry.countCell
+  obtain ⟨callee,called,amountCell⟩:=PersistentAlloc.environment (markState source heap).code.lookup (amount count)
+    (PersistentAlloc.original_code _ markedInstalled)
+  obtain ⟨child,returned,bodyRun,endpoint⟩:=reached.scoped_known (ofString "cat") .one (ofString "alloc") allocationArguments
+    (PersistentAlloc.values (amount count)) PersistentAlloc.body callee .one (allocation_args _ count countCell) called
+  obtain ⟨answer,room,frame⟩:=PersistentAlloc.post_of_normal (callEntryStateHOLFinite (markState source heap) callee) child heap (amount count)
+    amountCell entry.requests.heapCell entry.requests.heapBound (Trap.original_code _ markedInstalled) returned bodyRun
+  have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=(markState source heap).locals}) frame
+  change {child with locals:=(markState source heap).locals}=PersistentAlloc.post
+    {markState source heap with clock:=(markState source heap).clock-1} heap (amount count) at callerFrame
+  have allocatedEq : allocated=QueryBranch.bind (PersistentAlloc.post
+      {markState source heap with clock:=(markState source heap).clock-1} heap (amount count)) "cat" heap:=by
+    rw [endpoint,answer,callerFrame]
+    rfl
+  rw [allocatedEq] at declared
+  have afterI:=declared.declare_next (.val (.word 0#64)) (by simp [eval,evalHOLExact])
+  have currentEq : current=setupState source heap count:=by cases afterI; rfl
+  rw [amount_number count entry.requests.countBound] at room
+  exact ⟨room,currentEq⟩
+
+theorem setup_model {source current : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap out : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (entry : Entry source array heap out count slices)
+    (actual : CallPrefix.Execution source setupActions current) :
+    ∃ model : LoopModel current array heap count slices,model.index=0 ∧ current.memory=source.memory := by
+  obtain ⟨room,currentEq⟩:=setup_reached entry actual
+  rw [currentEq]
+  have image : Image (setupState source heap count) array heap count slices:=
+    (Image.of_returned entry.requests).of_prefix (by intros; rfl)
+  have stateCell : (setupState source heap count).globals.lookup (ofString "sha_st")=some (.val (.word 2701131776#64)):=by
+    simpa [setupState,markState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using entry.environment.stateGlobal
+  have padCell : (setupState source heap count).globals.lookup (ofString "sha_pad")=some (.val (.word 2701131840#64)):=by
+    simpa [setupState,markState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using entry.environment.padGlobal
+  have environment : GeneralSha.Environment (setupState source heap count) 2701131776#64 2701131840#64:=
+    ⟨entry.environment.installed,entry.environment.domain,stateCell,padCell,entry.environment.stateArena,entry.environment.padArena,
+      entry.environment.stateAligned,entry.environment.padAligned⟩
+  have counter : (setupState source heap count).locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 0))):=bind_lookup_same _ _ _
+  have nCell : (setupState source heap count).locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))):=by
+    simpa [setupState,markState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using entry.countCell
+  have arrayCell : (setupState source heap count).locals.lookup (ofString "arr")=some (.val (.word array)):=by
+    simpa [setupState,markState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using entry.arrayCell
+  have catCell : (setupState source heap count).locals.lookup (ofString "cat")=some (.val (.word heap)):=by
+    simp [setupState,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+  exact ⟨⟨0,by omega,image,environment,entry.arrayLower,entry.requests.heapBound,entry.requests.heapAligned,counter,nCell,arrayCell,catCell⟩,rfl,rfl⟩
+
+/-- Complete original compute_requests_hash on every outcome from its real
+owned encoder image and ABI. Temporary room comes from its own actual alloc. -/
+theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap out : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (entry : Entry source array heap out count slices) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤39322727 := by
+  let output:=evaluateHOLFiniteState source body
+  have run : evaluateHOLFiniteState source (CallPrefix.program setupActions (.seq loop afterLoop))=(output.1,output.2):=by rw [←setup_shape]
+  rcases CallPrefix.priced_trace source output.2 setupActions (.seq loop afterLoop) 3
+      (setup_cost source.code entry.environment.installed source rfl) output.1 run with stopped|reached
+  · change source.clock-output.2.clock≤39322727
+    have price:=stopped.1
+    omega
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    obtain ⟨model,indexEq,memory⟩:=setup_model entry execution
+    have tailPrice:=ClockCost.sequence_reached_current current loop afterLoop 39322450 274 model.loop_uniform (by
+      intro looped loopRun
+      obtain ⟨final,finished,kept⟩:=model.loop_normal loopRun
+      exact after_loop_cost looped count final.image.countBound final.environment.installed final.countCell)
+    rw [continued] at tailPrice
+    change current.clock-inner.clock≤39322724 at tailPrice
+    change source.clock-output.2.clock≤39322727
+    omega
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.mark_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.setup_reached
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.setup_model
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.body_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch PayloadHeaderEntry PayloadHeaderWithdrawals
+
+def values (array out : BitVec 64) (count : Nat) : List (ValueHOL 64):=
+  [.val (.word array),.val (.word (BitVec.ofNat 64 count)),.val (.word out)]
+
+/-- The actual main reqs tuple, header output and physical encoder result
+supply this helper's real callee entry. No request-hash return is assumed. -/
+theorem main_entry {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (ready : ExecutionRequests.BeforeHash input source pointer si record gasWord boundary header encoded) :
+    ∃ array heap count slices callee,
+      evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values array (requestsBase header) count) ∧
+      lookupCodeHOLFinite source.code.lookup (ofString "compute_requests_hash") (values array (requestsBase header) count)=some (body,callee,.one) ∧
+      Entry (callEntryStateHOLFinite source callee) array heap (requestsBase header) count slices := by
+  obtain ⟨array,heap,count,slices,physical,rows,reqs,afterHeader⟩:=ready
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values array (requestsBase header) count):=by
+    simp [arguments,values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,reqs,physical.requestsCell]
+  obtain ⟨callee,called,arrayCell,countCell,outCell⟩:=word_triple_environment source.code.lookup (ofString "compute_requests_hash")
+    (ofString "arr") (ofString "n") (ofString "out") body .one array (BitVec.ofNat 64 count) (requestsBase header)
+    (by decide) (by decide) (by decide) (original_code source.code physical.data.arena.code)
+  have lower : 2701131968≤array.toNat:=by
+    have numbers:=physical.buffers.numbers header
+    have headerLower:=physical.buffers.ommer.headerArena.lower
+    rw [numbers.frontier] at afterHeader
+    omega
+  exact ⟨array,heap,count,slices,callee,args,called,rows.of_frame rfl,physical.data.general_sha.of_frame rfl,lower,arrayCell,countCell,outCell⟩
+
+/-- Complete actual main request-hash caller allowance on every outcome. -/
+theorem caller_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (ready : ExecutionRequests.BeforeHash input source pointer si record gasWord boundary header encoded) :
+    source.clock-(evaluateHOLFiniteState source caller).2.clock≤39322728 := by
+  obtain ⟨array,heap,count,slices,callee,args,called,entry⟩:=main_entry ready
+  exact ClockCost.call_current source (some none) (ofString "compute_requests_hash") arguments (values array (requestsBase header) count)
+    body callee .one 39322727 args called (body_cost entry)
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.main_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.caller_cost

@@ -2350,3 +2350,28 @@ verifier success. Usage51%weekly/0resetcredits. Next: derive this loop entry
 from its actual mark/temporary allocation, final digest/release, main request-
 hash/BAL continuation, formal target composition, dominant-slack review and
 final cleanup.
+
+
+## Complete current request-hash body and main-entry source bound
+
+The actual heap_mark return derives its saved old pointer and full reached
+state. The actual temporary alloc derives its own room for32*count+8bytes
+and original cat pointer; setup preserves every row and all retained SHA
+metadata. It therefore constructs the initial index0 loop model without
+assuming any later hash return or allocation funding. Setup costs≤3source
+ticks including the allocator's own failure trap.
+
+The final concatenated digest reads actual n*32≤160bytes, then releases its
+mark and returns, at≤274source ticks on every outcome. Combined with the
+real row loop, unchanged compute_requests_hash781 costs≤39322727body source
+ticks. The real main reqs tuple/owned rows/header RH pointer derive its same
+arr/n/out callee ABI and full Entry; its caller costs≤39322728ticks.
+The completed-call memory/heap frame and continued main/BAL trace remain open.
+
+Validation: current-request-hash-setup-cost-v1.log PASS2712jobs and
+current-request-hash-body-cost-v2.log PASS2712jobs, permitted printed axioms
+only. Index8700modules/18148facts; inventory8745/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage52%weekly/0resetcredits. Next: actual request-hash normal whole-
+body/caller frame, BAL/main continuation, formal target composition,
+dominant-slack review and final cleanup.

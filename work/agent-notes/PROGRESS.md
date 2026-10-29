@@ -4566,3 +4566,44 @@ account read29%weekly/0resetcredits, ordinary usage allowed (earlier read57%).
 No executable or challenge hypothesis changed. Remaining current parent-header
 validation/execution/wrappers/main, uniform target composition, dominant-slack
 review and final cleanup stay in the active goal.
+
+
+## Complete actual div64by32 arithmetic, clocks and caller ABI
+
+The restoring-division invariant now carries an explicit natural dividend,
+so the real32-bit helper can start with an incoming high remainder while
+consuming only32low bits. The existing scalar division step/finish proofs
+use this shared invariant through wrappers with their original statements.
+Its actual seed is high*2^32+low; checked transitions conserve that value
+and retain remainder<divisor and quotient-bit alignment.
+
+The literal current div64by32(57) has complete step/loop/setup execution
+contracts and an all-outcome32body-source-tick allowance at real typed
+entries, including short-clock outcomes. Actual normal execution derives
+its own32ticks. For real digit inputs (low<2^32, divisor<2^32,
+incoming high<divisor), its actual returned q/r words are exactly natural
+division/remainder of high*2^32+low, with q<2^32 and r<divisor. The
+true three-scalar ABI prices calls at33source ticks plus the continuation.
+Every actual valid normal child return derives33caller ticks and resumes
+the genuine caller with the concrete q/r pair and canonical full state.
+The helper changes no nonlocal field; no future success/funding is assumed.
+
+Validation: current-div32-seeded-arithmetic-v1.log PASS928jobs,
+current-div32-loop-v1.log PASS968jobs, current-div32-body-v2.log PASS972jobs
+and current-div32-complete-v3.log PASS975jobs. Final successful graph covers
+both changed modules and existing unsigned-division APIs; printed axioms
+permitted. Index8700modules/18305facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no global finite target K or full
+verifier success. Overall estimate remains50%, plausible40–60%. Usage29%
+weekly/0resetcredits, ordinary usage allowed. No executable or challenge
+hypothesis changed.
+
+Next: actual digit-array/normalization and divmnu numerical contracts, then
+the actual wide division/Taylor recurrence. The qhat correction guard is
+rhat<2^32; with normalized vtop≥2^31, every continuing correction increases
+rhat by vtop without64-bit overflow, so at most2corrections are possible.
+This is an inspected proof plan, not a proved current loop bound. The actual
+u256_ws640-byte allocation/global must also be retained from startup through
+the current main prefix; current main Data does not yet expose that model.
+Parent-header validation/execution/wrappers/main, uniform target composition,
+dominant-slack review and final cleanup remain in the same active goal.

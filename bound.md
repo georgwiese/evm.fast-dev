@@ -48,9 +48,11 @@ These are all-outcome source-clock allowances, not formal target-step bounds.
 Actual SHA state/pad globals now survive startup and this complete main prefix.
 The request encoder receives the real five-list image, with nonwrapping sizes
 and owned input slices before its incoming heap. Each actual iteration costs
-≤(its encoded bytes)/8+10source ticks (uniformly31456889). Normal next-model
-preservation and the complete loop/hash continuation, remaining main, uniform
-target composition, dominant-slack review and final cleanup remain open.
+≤(its encoded bytes)/8+10source ticks (uniformly31456889). Actual normal
+iterations construct the next complete model; the whole original encoder
+costs≤157284452body source ticks on every outcome. The whole normal returned
+array/caller connection, request hashes, remaining main, uniform target
+composition, dominant-slack review and final cleanup remain open.
 
 ## Earlier checked milestones, in order
 
@@ -422,7 +424,7 @@ build evidence, not complete verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:48%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:49%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them
@@ -2086,3 +2088,30 @@ verifier success. Usage48%weekly/0resetcredits. Next: attach the suffix to its
 same normal allocator and construct the real next LoopModel (including empty
 lists), repeated-loop/encoder normal result, requests SHA/BAL and remaining
 main/target composition, dominant-slack review and final cleanup.
+
+## Complete original execution-request encoder source-clock bound
+
+The same actual normal guarded blob call now derives its own natural room,
+exact copied/descriptor state and original scoped restoration. Empty-list
+skips and newly emitted rows each construct the next real complete LoopModel.
+The nonempty case adds only its own just-written row; prior rows and all ten
+RQ fields remain intact, and the new bounded/aligned heap comes from that
+same allocation. The actual final i++ and all p/cnt/sz/blob scopes retain
+normal next-model progress, nonheap globals and every memory cell before
+the original descriptor array. No future row, call or funding is supplied.
+
+The real loop body cannot return/break/continue to its caller. Its actual
+normal transition decreases rank5-i; failed or short-clock bodies need no
+future model. The complete original repeated loop therefore costs at most
+31456890*(5-i), uniformly157284450source ticks. Its actual array allocation/
+zero-counter setup costs≤2, and its tuple return spends0. Complete unchanged
+encode_execution_requests780 costs≤157284452body source ticks on every
+outcome from the real main-derived Entry, including allocator failures and
+all clock budgets. Straight-line target work is still not included.
+
+Validation: current-requests-body-cost-v2.log PASS2709jobs, permitted printed
+axioms only. Index8700modules/18011facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage49%weekly/0resetcredits. Next: complete normal loop exit/returned
+array and actual main caller frame, requests SHA/BAL and remaining main, formal
+target composition, dominant-slack review and final cleanup.

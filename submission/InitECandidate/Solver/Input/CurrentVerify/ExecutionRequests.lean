@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentVerify.Withdrawals
 import InitECandidate.Solver.Input.StraightBody
 import InitECandidate.Solver.Input.CallPrefixLocalResult
+import InitECandidate.Solver.Input.AssignNormal
 import InitECandidate.Solver.WitnessRadix.CopyNormalCall
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
@@ -597,6 +598,14 @@ theorem after_blob_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (p
   rw [blob_shape.2,clocks]
   exact suffixPrice
 
+theorem blob_allocation_args (source : PanSemStateFiniteExact 64 Guest.HostMemory) (count width : BitVec 64)
+    (c : source.locals.lookup (ofString "cnt")=some (.val (.word count)))
+    (w : source.locals.lookup (ofString "sz")=some (.val (.word width))) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) blobArguments=
+      some (PersistentAlloc.values (count*width+8#64)) := by
+  simp [blobArguments,PersistentAlloc.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,c,w,
+    valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL]
+
 /-- The original guarded blob allocation and its real tag/copy/descriptor
 suffix are bounded even when the allocation fails. Natural room and the
 mapped destination are derived only from the same normal allocator return. -/
@@ -618,9 +627,7 @@ theorem LoopModel.blob_cost {input : Guest.InputBlob} {source : PanSemStateFinit
     dsimp only [amount]
     rw [BitVec.toNat_add_of_lt (by change bytes+8<2^64; omega)]
     rfl
-  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) blobArguments=some (PersistentAlloc.values amount):=by
-    simp [blobArguments,PersistentAlloc.values,amount,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,cntCell,szCell,
-      valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL]
+  have args:=blob_allocation_args source (counts model.index) (Requests.elementSize model.index) cntCell szCell
   obtain ⟨callee,called,amountCell⟩:=PersistentAlloc.environment source.code.lookup amount (PersistentAlloc.original_code source.code model.installed)
   have inputArena : AllocatedBytes.Arena (pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index) bytes:=by
     dsimp only [bytes]
@@ -874,6 +881,428 @@ theorem after_blob_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
       CopyGeneral.call_memory_away _ pointer (blob+1#64) query (count*width).toNat (copy_after_tag_away blob query (count*width).toNat blobArena blobAligned below)
     _ = source.memory query := ByteStore.away source.memory source.be blob query (BitVec.ofNat 8 index) notBacking
 
+def blobAllocated (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap count width : BitVec 64) :=
+  bind (PersistentAlloc.post {source with clock:=source.clock-1} heap (count*width+8#64)) "blob" heap
+
+/-- The same real normal blob branch derives its checked natural room and
+complete post-state, including the original scoped blob restoration. -/
+theorem LoopModel.blob_normal {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) (active : model.index<5)
+    (pCell : source.locals.lookup (ofString "p")=some (.val (.word (pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index))))
+    (cntCell : source.locals.lookup (ofString "cnt")=some (.val (.word (counts model.index))))
+    (szCell : source.locals.lookup (ofString "sz")=some (.val (.word (Requests.elementSize model.index))))
+    (normal : evaluateHOLFiniteState source blobBody=(none,target)) :
+    model.heap.toNat+(counts model.index*Requests.elementSize model.index).toNat+8≤2952790016 ∧
+      target=restore source "blob" (afterBlobState (blobAllocated source model.heap (counts model.index) (Requests.elementSize model.index))
+        (pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index) array model.heap
+        (counts model.index) (Requests.elementSize model.index) model.index model.emitted) := by
+  let bytes:=(counts model.index*Requests.elementSize model.index).toNat
+  let amount:=counts model.index*Requests.elementSize model.index+8#64
+  have bytesBound : bytes≤251655056:=by
+    dsimp only [bytes]
+    rw [list_size_number model.image model.index active]
+    have budget:=list_bytes model.image model.index active
+    omega
+  have amountNumber : amount.toNat=bytes+8:=by
+    dsimp only [amount]
+    rw [BitVec.toNat_add_of_lt (by change bytes+8<2^64; omega)]
+    rfl
+  have args:=blob_allocation_args source (counts model.index) (Requests.elementSize model.index) cntCell szCell
+  obtain ⟨callee,called,amountCell⟩:=PersistentAlloc.environment source.code.lookup amount (PersistentAlloc.original_code source.code model.installed)
+  obtain ⟨funded,child,returned,inner,bodyRun,checked,continued,endpoint⟩:=CallNormal.scoped_none source target "blob" .one (ofString "alloc") blobArguments
+    (PersistentAlloc.values amount) PersistentAlloc.body afterBlob callee .one args called normal
+  obtain ⟨answer,room,frame⟩:=PersistentAlloc.post_of_normal (callEntryStateHOLFinite source callee) child model.heap amount amountCell model.heapCell model.heapBound
+    (Trap.original_code source.code model.installed) returned bodyRun
+  have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) frame
+  change {child with locals:=source.locals}=PersistentAlloc.post {source with clock:=source.clock-1} model.heap amount at callerFrame
+  let fresh:=blobAllocated source model.heap (counts model.index) (Requests.elementSize model.index)
+  have readyEq : CallNormal.continuationEntry source child "blob" returned=fresh:=by
+    unfold CallNormal.continuationEntry
+    rw [answer,callerFrame]
+    rfl
+  rw [readyEq] at continued
+  have inputArena : AllocatedBytes.Arena (pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index) bytes:=by
+    dsimp only [bytes]
+    rw [list_size_number model.image model.index active]
+    exact model.image.list_arena model.index active
+  have mapped : AllocatedBytes.Arena model.heap (bytes+8):=by
+    constructor
+    · have first:=model.arrayArena.lower; have before:=model.arrayBefore; omega
+    · rw [amountNumber] at room; omega
+  have cells : fresh.locals.lookup (ofString "arr")=some (.val (.word array)) ∧
+      fresh.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 model.emitted))) ∧
+      fresh.locals.lookup (ofString "p")=some (.val (.word (pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index))) ∧
+      fresh.locals.lookup (ofString "cnt")=some (.val (.word (counts model.index))) ∧
+      fresh.locals.lookup (ofString "sz")=some (.val (.word (Requests.elementSize model.index))) ∧
+      fresh.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 model.index))):=by
+    simpa [fresh,blobAllocated,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using
+      And.intro model.arrayCell (And.intro model.emittedCell (And.intro pCell (And.intro cntCell (And.intro szCell model.indexCell))))
+  obtain ⟨copyFunded,innerEq⟩:=after_blob_normal fresh inner _ array model.heap (counts model.index) (Requests.elementSize model.index) model.index model.emitted
+    active (by have bounded:=model.emittedBound; omega) model.installed model.domain cells.1 cells.2.1 cells.2.2.1
+    (bind_lookup_same _ _ _) cells.2.2.2.1 cells.2.2.2.2.1 cells.2.2.2.2.2 model.arrayArena model.arrayAligned inputArena mapped continued
+  refine ⟨by rw [amountNumber] at room; omega,?_⟩
+  rw [endpoint,innerEq]
+
+theorem choice_preserves (key : MlS) (notBlob : key≠ofString "blob") (notCount : key≠ofString "n") :
+    LocalPrefix key nonemptyChoice := by
+  rw [blob_shape.1,blobBody,blob_shape.2,descriptor_shape]
+  exact .ite _ (.decCall (ofString "blob") .one (ofString "alloc") blobArguments notBlob
+    (.seq (.storeByte _ _) (.seq (.call none _ _ (by simp))
+      (.seq (.store _ _) (.seq (.store _ _) (.assign (ofString "n") _ notCount)))))) .skip
+
+theorem LoopModel.increment_execute {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) :
+    evaluateHOLFiniteState source incrementIndex=(none,bind source "i" (BitVec.ofNat 64 model.index+1#64)) := by
+  apply StateSteps.assign_execute source "i" (.op .add [localVar "i",.const 1#64]) (BitVec.ofNat 64 model.index) _ model.indexCell
+  simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,model.indexCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+
+/-- A skipped empty list advances i and retains exactly the old row image;
+it does not preinitialize a row or request another allocation. -/
+def LoopModel.skip_next {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) (active : model.index<5) :
+    LoopModel input (bind source "i" (BitVec.ofNat 64 model.index+1#64)) pointer rq array start size counts :=
+  {model with
+    index:=model.index+1,indexBound:=(by omega),emittedBound:=(by have bounded:=model.emittedBound; omega),
+    indexCell:=(by simpa only [BitVec.ofNat_add] using bind_lookup_same source "i" (BitVec.ofNat 64 model.index+1#64)),
+    emittedCell:=(bind_lookup_other source "i" "n" _ (by decide)).trans model.emittedCell,
+    requestCell:=(bind_lookup_other source "i" "rq" _ (by decide)).trans model.requestCell,
+    arrayCell:=(bind_lookup_other source "i" "arr" _ (by decide)).trans model.arrayCell,
+    image:=model.image.of_memory (by intro index inside; exact ⟨rfl,rfl⟩)}
+
+def emittedState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array heap count width : BitVec 64)
+    (index emitted : Nat) :=
+  bind (restore source "blob" (afterBlobState (blobAllocated source heap count width) pointer array heap count width index emitted))
+    "i" (BitVec.ofNat 64 index+1#64)
+
+theorem emitted_metadata (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array heap count width : BitVec 64)
+    (index emitted : Nat) :
+    MemoryMetadata.erase (emittedState source pointer array heap count width index emitted)=
+      MemoryMetadata.erase (PersistentAlloc.post source heap (count*width+8#64)) := rfl
+
+theorem emitted_keeps (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array heap count width : BitVec 64)
+    (index emitted : Nat) (key : String) (notIndex : ofString key≠ofString "i") (notCount : ofString key≠ofString "n")
+    (notBlob : ofString key≠ofString "blob") :
+    (emittedState source pointer array heap count width index emitted).locals.lookup (ofString key)=source.locals.lookup (ofString key) := by
+  unfold emittedState
+  rw [bind_lookup_other _ "i" key _ (Ne.symm notIndex),restore_lookup_other source _ "blob" key notBlob]
+  unfold afterBlobState descriptorState
+  rw [bind_lookup_other _ "n" key _ (Ne.symm notCount)]
+  change (blobAllocated source heap count width).locals.lookup (ofString key)=source.locals.lookup (ofString key)
+  exact bind_lookup_other _ "blob" key _ (Ne.symm notBlob)
+
+theorem emitted_count_cell (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array heap count width : BitVec 64)
+    (index emitted : Nat) :
+    (emittedState source pointer array heap count width index emitted).locals.lookup (ofString "n")=
+      some (.val (.word (BitVec.ofNat 64 emitted+1#64))) := by
+  unfold emittedState
+  rw [bind_lookup_other _ "i" "n" _ (by decide),restore_lookup_other source _ "blob" "n" (by decide)]
+  exact bind_lookup_same _ "n" _
+
+theorem emitted_prefix (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array heap count width query : BitVec 64)
+    (index emitted : Nat) (inside : emitted<5) (arrayArena : AllocatedBytes.Arena array 80)
+    (blobArena : AllocatedBytes.Arena heap ((count*width).toNat+8)) (heapAligned : heap.toNat%8=0)
+    (afterArray : array.toNat+80≤heap.toNat) (before : query.toNat<array.toNat+16*emitted) :
+    (emittedState source pointer array heap count width index emitted).memory query=source.memory query :=
+  after_blob_prefix (blobAllocated source heap count width) pointer array heap count width query index emitted inside arrayArena blobArena heapAligned afterArray before
+
+theorem emitted_cells (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer array heap count width : BitVec 64)
+    (index emitted : Nat) (inside : emitted<5) (arena : AllocatedBytes.Arena array 80) :
+    (emittedState source pointer array heap count width index emitted).memory (array+BitVec.ofNat 64 (16*emitted))=.word heap ∧
+    (emittedState source pointer array heap count width index emitted).memory (array+BitVec.ofNat 64 (16*emitted+8))=.word (count*width+1#64) :=
+  descriptor_cells (CopyGeneral.callState (tagState (blobAllocated source heap count width) heap index)
+    pointer (heap+1#64) (count*width).toNat) array heap count width emitted inside arena
+
+/-- Construct just the next nonempty-list image from its own checked
+allocation and exact executed writes. No later rows or calls are supplied. -/
+def LoopModel.emit_next {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) (active : model.index<5)
+    (room : model.heap.toNat+(counts model.index*Requests.elementSize model.index).toNat+8≤2952790016) :
+    LoopModel input (emittedState source (pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index)
+      array model.heap (counts model.index) (Requests.elementSize model.index) model.index model.emitted) pointer rq array start size counts := by
+  let count:=counts model.index
+  let width:=Requests.elementSize model.index
+  let p:=pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index
+  let bytes:=(count*width).toNat
+  let amount:=count*width+8#64
+  let final:=emittedState source p array model.heap count width model.index model.emitted
+  let nextHeap:=PersistentAlloc.rounded model.heap amount
+  let slices:=Function.update model.slices model.emitted (model.heap,count*width+1#64)
+  have bytesBound : bytes≤251655056:=by
+    dsimp only [bytes,count,width]
+    rw [list_size_number model.image model.index active]
+    have budget:=list_bytes model.image model.index active
+    omega
+  have amountNumber : amount.toNat=bytes+8:=by
+    dsimp only [amount]
+    rw [BitVec.toNat_add_of_lt (by change bytes+8<2^64; omega)]
+    rfl
+  have lengthNumber : (count*width+1#64).toNat=bytes+1:=by
+    rw [BitVec.toNat_add_of_lt (by change bytes+1<2^64; omega)]
+    rfl
+  have guards:=PersistentAlloc.guards model.heap amount (by rw [amountNumber]; exact room)
+  have grows : model.heap.toNat+bytes+8≤nextHeap.toNat:=by
+    have bounded:=guards.2.2.1
+    rw [amountNumber] at bounded
+    exact bounded
+  have lower : 2701131776≤model.heap.toNat:=by have first:=model.arrayArena.lower; have before:=model.arrayBefore; omega
+  have blobArena : AllocatedBytes.Arena model.heap (bytes+8):=⟨lower,by omega⟩
+  have globals:=congrArg PanSemStateFiniteExact.globals (emitted_metadata source p array model.heap count width model.index model.emitted)
+  change final.globals=source.globals.update (ofString "heap_ptr",.val (.word nextHeap)) at globals
+  have heapCell : final.globals.lookup (ofString "heap_ptr")=some (.val (.word nextHeap)):=by rw [globals]; simp [HolFiniteMapExact.update,FUPDATE]
+  have emittedInside : model.emitted<5:=by have bounded:=model.emittedBound; omega
+  have earlier (query : BitVec 64) (before : query.toNat<array.toNat+16*model.emitted) : final.memory query=source.memory query:=
+    emitted_prefix source p array model.heap count width query model.index model.emitted emittedInside model.arrayArena blobArena model.heapAligned model.arrayBefore before
+  have requestMemory (offset : Nat) (inside : offset<80) : final.memory (rq+BitVec.ofNat 64 offset)=source.memory (rq+BitVec.ofNat 64 offset):=by
+    apply earlier
+    have number:=byteAddress_toNat rq offset (by have upper:=model.image.cursorArena.upper; omega)
+    change (rq+BitVec.ofNat 64 offset).toNat=rq.toNat+offset at number
+    have before:=model.requestBefore
+    omega
+  have newSlice : EncodedSlice array nextHeap model.heap (count*width+1#64):=
+    ⟨by rw [lengthNumber]; omega,by rw [lengthNumber]; omega,⟨lower,by rw [lengthNumber]; omega⟩,model.arrayBefore,by rw [lengthNumber]; omega⟩
+  refine {
+    index:=model.index+1,emitted:=model.emitted+1,heap:=nextHeap,slices:=slices,
+    indexBound:=(by omega),emittedBound:=(by have bounded:=model.emittedBound; omega),
+    indexCell:=(by simpa only [emittedState,BitVec.ofNat_add] using bind_lookup_same _ "i" (BitVec.ofNat 64 model.index+1#64)),
+    emittedCell:=(by simpa only [BitVec.ofNat_add] using emitted_count_cell source p array model.heap count width model.index model.emitted),
+    requestCell:=(emitted_keeps source p array model.heap count width model.index model.emitted "rq" (by decide) (by decide) (by decide)).trans model.requestCell,
+    arrayCell:=(emitted_keeps source p array model.heap count width model.index model.emitted "arr" (by decide) (by decide) (by decide)).trans model.arrayCell,
+    installed:=model.installed,domain:=model.domain,little:=model.little,
+    image:=model.image.of_memory (by intro index inside; exact ⟨requestMemory (16*index) (by omega),requestMemory (16*index+8) (by omega)⟩),
+    heapCell:=heapCell,heapBound:=guards.2.2.2.1,heapAligned:=guards.2.2.2.2,
+    arrayArena:=model.arrayArena,arrayAligned:=model.arrayAligned,requestBefore:=model.requestBefore,
+    arrayBefore:=(by have before:=model.arrayBefore; omega),rows:=?_}
+  intro row inside
+  by_cases same : row=model.emitted
+  · subst row
+    simpa only [slices,Function.update_self] using And.intro (emitted_cells source p array model.heap count width model.index model.emitted emittedInside model.arrayArena).1
+      (And.intro (emitted_cells source p array model.heap count width model.index model.emitted emittedInside model.arrayArena).2 newSlice)
+  · have old : row<model.emitted:=by omega
+    obtain ⟨pointerStored,lengthStored,bounds⟩:=model.rows row old
+    have numbers:=descriptor_numbers array row (by omega) model.arrayArena
+    have pointerFrame:=earlier (array+BitVec.ofNat 64 (16*row)) (by rw [numbers.1]; omega)
+    have lengthFrame:=earlier (array+BitVec.ofNat 64 (16*row+8)) (by rw [numbers.2]; omega)
+    have retained : EncodedSlice array nextHeap (model.slices row).1 (model.slices row).2:=
+      ⟨bounds.positive,bounds.bounded,bounds.arena,bounds.afterArray,by have before:=bounds.beforeHeap; omega⟩
+    simpa [slices,Function.update,same,Ne.symm same] using And.intro (pointerFrame.trans pointerStored) (And.intro (lengthFrame.trans lengthStored) retained)
+
+/-- Inspect the actual empty/nonempty branch and its final increment to
+construct the next real model. Its globals and all earlier input cells
+come from the same execution, including the allocator's checked room. -/
+theorem LoopModel.after_sizes_normal {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) (active : model.index<5)
+    (pCell : source.locals.lookup (ofString "p")=some (.val (.word (pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index))))
+    (cntCell : source.locals.lookup (ofString "cnt")=some (.val (.word (counts model.index))))
+    (szCell : source.locals.lookup (ofString "sz")=some (.val (.word (Requests.elementSize model.index))))
+    (normal : evaluateHOLFiniteState source afterSizes=(none,target)) :
+    ∃ next : LoopModel input target pointer rq array start size counts,next.index=model.index+1 ∧
+      model.heap.toNat≤next.heap.toNat ∧ HeapGlobals source target ∧
+      ∀ query : BitVec 64,query.toNat<array.toNat→ target.memory query=source.memory query := by
+  rw [after_sizes_shape] at normal
+  obtain ⟨afterChoice,choiceRun,incrementRun⟩:=sequence_none source target nonemptyChoice incrementIndex normal
+  have summary:=(choice_preserves (ofString "i") (by decide) (by decide)).summary_full source
+  unfold LocalSummary at summary
+  rw [choiceRun] at summary
+  have iAfter : afterChoice.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 model.index))):=(summary.1 rfl).trans model.indexCell
+  have advancedRead : eval afterChoice (.op .add [localVar "i",.const 1#64])=some (.val (.word (BitVec.ofNat 64 model.index+1#64))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,iAfter,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have targetEq:=assign_none afterChoice target "i" (.op .add [localVar "i",.const 1#64]) (BitVec.ofNat 64 model.index+1#64) advancedRead incrementRun
+  by_cases empty : counts model.index=0#64
+  · have chosen : evaluateHOLFiniteState source nonemptyChoice=(none,source):=by
+      rw [blob_shape.1,evaluateHOLFiniteState_ite]
+      simp [evalHOLExact,toExact,localVar,cntCell,empty,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,evaluateHOLFiniteState_skip]
+    have choiceEq:=congrArg Prod.snd (choiceRun.symm.trans chosen)
+    change afterChoice=source at choiceEq
+    rw [choiceEq] at targetEq
+    rw [targetEq]
+    exact ⟨model.skip_next active,rfl,Nat.le_refl _,fun key other=>rfl,fun query before=>rfl⟩
+  · have chosen : evaluateHOLFiniteState source nonemptyChoice=evaluateHOLFiniteState source blobBody:=by
+      rw [blob_shape.1,evaluateHOLFiniteState_ite]
+      simp [evalHOLExact,toExact,localVar,cntCell,empty,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+    obtain ⟨room,choiceEq⟩:=model.blob_normal active pCell cntCell szCell (chosen.symm.trans choiceRun)
+    rw [choiceEq] at targetEq
+    change target=emittedState source (pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index)
+      array model.heap (counts model.index) (Requests.elementSize model.index) model.index model.emitted at targetEq
+    rw [targetEq]
+    let next:=model.emit_next active room
+    let count:=counts model.index
+    let width:=Requests.elementSize model.index
+    let p:=pointer+BitVec.ofNat 64 start+Requests.offsetWord input start model.index
+    have amountNumber : (count*width+8#64).toNat=(count*width).toNat+8:=by
+      rw [BitVec.toNat_add_of_lt (by change (count*width).toNat+8<2^64; dsimp only [count,width]; omega)]
+      rfl
+    have guards:=PersistentAlloc.guards model.heap (count*width+8#64) (by rw [amountNumber]; exact room)
+    have grows : model.heap.toNat≤next.heap.toNat:=by
+      change model.heap.toNat≤(PersistentAlloc.rounded model.heap (count*width+8#64)).toNat
+      have bounded:=guards.2.2.1
+      omega
+    have globals:=congrArg PanSemStateFiniteExact.globals (emitted_metadata source p array model.heap count width model.index model.emitted)
+    change (emittedState source p array model.heap count width model.index model.emitted).globals=
+      source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded model.heap (count*width+8#64)))) at globals
+    have heapFrame : HeapGlobals source (emittedState source p array model.heap count width model.index model.emitted):=by
+      intro key other
+      rw [globals]
+      simp [HolFiniteMapExact.update,FUPDATE,other,Ne.symm other]
+    have lower : 2701131776≤model.heap.toNat:=by have first:=model.arrayArena.lower; have before:=model.arrayBefore; omega
+    have blobArena : AllocatedBytes.Arena model.heap ((count*width).toNat+8):=⟨lower,by omega⟩
+    refine ⟨next,rfl,grows,heapFrame,?_⟩
+    intro query before
+    exact emitted_prefix source p array model.heap count width query model.index model.emitted (by have bounded:=model.emittedBound; omega)
+      model.arrayArena blobArena model.heapAligned model.arrayBefore (by omega)
+
+/-- The same genuinely normal complete iteration supplies its actual
+next model and one-step counter progress, with heap/global/earlier-memory
+frames. All field and blob scopes are restored by that real caller. -/
+theorem LoopModel.iteration_normal {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) (active : model.index<5)
+    (normal : evaluateHOLFiniteState source iterationBody=(none,target)) :
+    ∃ next : LoopModel input target pointer rq array start size counts,next.index=model.index+1 ∧
+      model.heap.toNat≤next.heap.toNat ∧ HeapGlobals source target ∧
+      ∀ query : BitVec 64,query.toNat<array.toNat→ target.memory query=source.memory query := by
+  let prepared:=preparedState input source pointer start model.index counts
+  let inner:=(evaluateHOLFiniteState prepared afterSizes).2
+  have observed:=model.iteration_observe active
+  rw [normal] at observed
+  have resultEq:=congrArg (fun observation=>observation.1.1) observed
+  change none=(evaluateHOLFiniteState prepared afterSizes).1 at resultEq
+  have continued : evaluateHOLFiniteState prepared afterSizes=(none,inner):=Prod.ext resultEq.symm rfl
+  have frame:=congrArg Prod.snd observed
+  change LocalEffects.erase target=LocalEffects.erase inner at frame
+  have locals (key : MlS) (notPointer : key≠ofString "p") (notCount : key≠ofString "cnt") (notSize : key≠ofString "sz") :
+      target.locals.lookup key=inner.locals.lookup key:=by
+    have same:=model.iteration_local active key notPointer notCount notSize
+    rw [normal] at same
+    exact same
+  have cells:=prepared_cells input source pointer start model.index counts
+  obtain ⟨next,nextIndex,grows,heapFrame,earlier⟩:=model.prepared.after_sizes_normal active cells.1 cells.2.1 cells.2.2 continued
+  let final:=next.of_frame frame
+    ((locals _ (by decide) (by decide) (by decide)).trans next.indexCell)
+    ((locals _ (by decide) (by decide) (by decide)).trans next.emittedCell)
+    ((locals _ (by decide) (by decide) (by decide)).trans next.requestCell)
+    ((locals _ (by decide) (by decide) (by decide)).trans next.arrayCell)
+  have targetGlobals:=congrArg PanSemStateFiniteExact.globals frame
+  change target.globals=inner.globals at targetGlobals
+  have preparedGlobals:=congrArg PanSemStateFiniteExact.globals (prepared_frame input source pointer start model.index counts)
+  change prepared.globals=source.globals at preparedGlobals
+  have globals : HeapGlobals source target:=by
+    intro key other
+    rw [targetGlobals]
+    exact (heapFrame key other).trans (congrArg (fun table=>table.lookup key) preparedGlobals)
+  have memory:=LocalEffects.memory_of_erase inner target frame
+  have oldMemory:=LocalEffects.memory_of_erase source prepared (prepared_frame input source pointer start model.index counts)
+  exact ⟨final,nextIndex,grows,globals,fun query before=>(congrFun memory query).trans ((earlier query before).trans (congrFun oldMemory query))⟩
+
+set_option maxRecDepth 100000 in
+theorem iteration_request_local : LocalPrefix (ofString "rq") iterationBody := by
+  simp only [iterationBody,requestsLoopAndReturn,afterArrayAllocation,body,
+    Guest.Software.guestFn_encode_execution_requests,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some]
+  repeat' first
+    | apply LocalPrefix.dec
+    | apply LocalPrefix.decCall
+    | apply LocalPrefix.seq
+    | apply LocalPrefix.ite
+    | exact LocalPrefix.store _ _
+    | exact LocalPrefix.storeByte _ _
+    | exact LocalPrefix.skip
+    | apply LocalPrefix.assign
+    | exact LocalPrefix.call none _ _ (by simp)
+    | decide
+
+def loopRank (source : PanSemStateFiniteExact 64 Guest.HostMemory) :=5-(CounterFlow.counterWord source (ofString "i")).toNat
+
+theorem LoopModel.rank {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) : loopRank source=5-model.index := by
+  have number : (BitVec.ofNat 64 model.index).toNat=model.index:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have bounded:=model.indexBound; omega)]
+  simp [loopRank,CounterFlow.counterWord,model.indexCell,valueWord,number]
+
+theorem LoopModel.active_of_test {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) (word : BitVec 64)
+    (read : eval source loopTest=some (.val (.word word))) (nonzero : word≠0#64) : model.index<5 := by
+  by_contra inactive
+  have expected:=model.test_read
+  rw [if_neg inactive] at expected
+  have zero : word=0#64:=by
+    simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
+  exact nonzero zero
+
+/-- Every outcome of the original repeated request loop has a fixed finite
+allowance. Its progress premise is discharged only by that same actual
+continuing body, which supplies the next physical row/image model. -/
+theorem LoopModel.loop_cost_ranked {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) :
+    source.clock-(evaluateHOLFiniteState source (.while loopTest iterationBody)).2.clock≤31456890*loopRank source := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>Nonempty (LoopModel input current pointer rq array start size counts)
+  have priced : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→ invariant current→ ∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) loopTest=some (.val (.word word))→
+      word≠0#64→ current.clock≠0→ current.clock-1-(evaluateHOLFiniteState (decClockHOLFinite current) iterationBody).2.clock≤31456889:=by
+    intro current codeEq valid word read nonzero funded
+    obtain ⟨live⟩:=valid
+    exact (live.clocked (current.clock-1)).iteration_uniform (live.active_of_test word read nonzero)
+  have progress : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→ invariant current→ ∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) loopTest=some (.val (.word word))→ word≠0#64→
+      0<loopRank current ∧ (current.clock≠0→ let output:=evaluateHOLFiniteState (decClockHOLFinite current) iterationBody
+        (output.1=none ∨ output.1=some .continue)→ invariant output.2 ∧ loopRank output.2<loopRank current):=by
+    intro current codeEq valid word read nonzero
+    obtain ⟨live⟩:=valid
+    have active:=live.active_of_test word read nonzero
+    have before:=live.rank
+    refine ⟨by rw [before]; omega,?_⟩
+    intro funded
+    dsimp only
+    intro continuing
+    let output:=evaluateHOLFiniteState (decClockHOLFinite current) iterationBody
+    have normal : output.1=none:=by
+      rcases continuing with normal|continued
+      · exact normal
+      · exact ((iteration_request_local.summary_full (decClockHOLFinite current)).2.2.2 continued).elim
+    have run : evaluateHOLFiniteState (decClockHOLFinite current) iterationBody=(none,output.2):=Prod.ext normal rfl
+    obtain ⟨next,indexEq,grows,globals,memory⟩:=(live.clocked (current.clock-1)).iteration_normal active run
+    change next.index=live.index+1 at indexEq
+    have after:=next.rank
+    exact ⟨⟨next⟩,by rw [before,after,indexEq]; omega⟩
+  exact ClockCost.ranked_loop_current source.code loopTest iterationBody 31456889 invariant loopRank priced progress source rfl ⟨model⟩
+
+theorem LoopModel.loop_uniform {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) :
+    source.clock-(evaluateHOLFiniteState source (.while loopTest iterationBody)).2.clock≤157284450 := by
+  have price:=model.loop_cost_ranked
+  rw [model.rank] at price
+  omega
+
+/-- Complete unchanged execution-request encoder780, on every actual
+outcome from its main-derived entry: setup, all five possible lists and
+its original tuple return. This is a source-clock bound, not target steps. -/
+theorem body_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq heap : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (entry : Entry input source pointer rq heap start size counts) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤157284452 := by
+  let output:=evaluateHOLFiniteState source body
+  have run : evaluateHOLFiniteState source (CallPrefix.program setupActions requestsLoopAndReturn)=(output.1,output.2):=by
+    rw [←setup_shape]
+  rcases CallPrefix.priced_trace source output.2 setupActions requestsLoopAndReturn 2
+      (setup_cost source.code entry.installed source rfl) output.1 run with stopped|reached
+  · change source.clock-output.2.clock≤157284452
+    have price:=stopped.1
+    omega
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    obtain ⟨model,indexEq,emittedEq,heapEq,memoryEq⟩:=setup_model entry execution
+    have tailPrice:=ClockCost.sequence_current current (.while loopTest iterationBody) loopReturn 157284450 0 model.loop_uniform
+      (ClockCost.returned current.code (.rstruct [localVar "arr",localVar "n"]))
+    rw [←loop_shape,continued] at tailPrice
+    change current.clock-inner.clock≤157284450 at tailPrice
+    change source.clock-output.2.clock≤157284452
+    omega
+
 end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.original_code
@@ -949,3 +1378,30 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.copy_after_tag_away
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.after_blob_metadata
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.after_blob_prefix
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.blob_allocation_args
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.blob_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.choice_preserves
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.increment_execute
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.skip_next
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.emitted_metadata
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.emitted_keeps
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.emitted_count_cell
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.emitted_prefix
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.emitted_cells
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.emit_next
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.after_sizes_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.iteration_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.iteration_request_local
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.rank
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.active_of_test
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.loop_cost_ranked
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.loop_uniform
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.body_cost

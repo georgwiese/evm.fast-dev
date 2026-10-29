@@ -1,4 +1,6 @@
-import InitECandidate.Solver.Input.PayloadTransactionsNormal
+import InitECandidate.Solver.Input.PayloadPrefixProgram
+import InitECandidate.Solver.Input.OffsetsAnyLoop
+import InitECandidate.Solver.Input.RawScalar
 
 namespace InitECandidate.Solver.Input.Payload
 open Flapjack PanSemStateFiniteExact

@@ -1353,3 +1353,28 @@ PASS65510entries/2485518288bytes. Claim infinity; no global finite target
 K/full verification. Usage35%weekly/0resetcredits. Next: derive block data
 at the actual caller, then indexed tries, remaining main and uniform target
 steps. Five historical untracked WIPs remain untouched/unclaimed.
+
+
+## Actual main-derived block-length caller and retained physical return
+
+The retained current decoder evidence now supplies every block-length
+input: copied bytes, decoded transaction records, withdrawal range/count,
+and actual mapped payload cells. The allocator frontier implies encoded
+input≤251655056, transactionCount≤12582752and withdrawalCount≤5719433;
+the mathematical input list remains unrestricted. Narrowed the pure
+withdrawal arithmetic module's imports to its actual prerequisites.
+
+The real current payload_header block-length call either stops within
+396930026source-clock ticks or reaches its actual next caller within that
+allowance. This includes the396930025uniform callee-body bound. Any actual
+normal return derives its true size, restored heap and protected older
+memory. A generic metadata/earlier-memory transport and the header-return
+proof retain the complete physical header, input, transaction and witness
+contracts at that resumed caller, ready for the actual size guard and tries.
+
+Validation: current-block-returned-v1.log PASS2135jobs. Printed axioms
+permitted only. Index8679modules/17771facts; inventory8724/replacement
+closure0/fixed files unchanged. Incremental policy PASS65515entries/
+2485539481bytes. Claim infinity; no global finite target K/full verification.
+Usage36%weekly/0resetcredits. Next: actual guard/trie entry and indexed tries,
+then remaining main and uniform target steps.

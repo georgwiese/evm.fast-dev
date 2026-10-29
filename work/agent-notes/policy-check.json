@@ -2308,6 +2308,7 @@
     "submission/InitECandidate/Solver/Input/CurrentHash/WorkspaceEffects.lean",
     "submission/InitECandidate/Solver/Input/CurrentHash/WorkspaceEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/BeLength.lean",
+    "submission/InitECandidate/Solver/Input/CurrentRlp/BlockCall.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/BlockCodes.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/BlockHeader.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/BlockLength.lean",
@@ -2676,10 +2677,14 @@
     "submission/InitECandidate/Solver/Input/CurrentU256/Price.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Program.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Swap.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/BlockLengthCall.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/BlockLengthData.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/BlockLengthReturned.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/CodeEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/CopiedInput.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DataActions.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DataGlobals.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/DataMetadata.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseCall.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseContext.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseCost.lean",
@@ -8724,8 +8729,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65510,
-  "package_bytes": 2485518288,
+  "package_entries": 65515,
+  "package_bytes": 2485539481,
   "claim": {
     "K": "infinity"
   },

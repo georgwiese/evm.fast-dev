@@ -5338,3 +5338,37 @@ and top-word update. Two-digit normalization/remainder stores, Taylor/header/
 main, uniform target composition, exact K, dominant slack review and final
 cleanup remain open. Historical untracked RlpLength/RlpWrite WIPs and
 executable/fixed challenge premises remain untouched.
+
+## Complete actual two-iteration normalized subtraction loop
+
+The original n=2 subtraction loop now executes both actual iterations and
+its final false guard from the real UN/VN images. The first real store
+preserves the next input digit and divisor digit by checked workspace
+nonaliasing, including the seventeenth normalized numerator slot. Its actual
+outgoing32-bit carry supplies the next iteration's entry invariant.
+The complete final state has exactly the two original low-word stores,
+real i/k bindings, unchanged other locals/fields and clock reduced by2.
+Every outcome costs≤2source loop ticks, including short-clock timeouts.
+Actual normal returns derive both required ticks from the pinned clock
+theorem; their funding is not assumed.
+
+The physical final carry/cells are connected to the checked remainder
+arithmetic when supplied the corrected quotient. This theorem explicitly
+retains that quotient premise until the actual surrounding correction
+caller establishes it. No global no-add-back claim is made yet. Source
+clocks still omit straight-line target work.
+
+Validation: current-two-digit-subtract-loop-v4.log PASS1122jobs, all11new
+printed facts have only permitted axioms. Index8700modules/18557facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage33%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries. Shared private one-step/exit
+composition keeps the kernel proof small: the final build took65seconds
+with2.2GiB maximum resident memory under the existing8GiB host guard.
+
+Next: connect the actual corrected quotient to these subtraction cells and
+the actual top-word/quotient stores, then two-digit normalization and final
+remainder extraction. Taylor/header/main, uniform target composition, exact
+K, dominant slack review and final cleanup remain open. Historical untracked
+RlpLength/RlpWrite WIPs and executable/fixed challenge premises stay untouched.

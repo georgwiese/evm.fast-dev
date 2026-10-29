@@ -4442,3 +4442,241 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.post_written
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.post_away
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.step_arithmetic
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The two actual input/divisor words needed by the n=2 subtraction loop. -/
+structure PairEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) : Prop where
+  first : Entry source base 0 position quotient 0#64 low divisorLow
+  n : source.locals.lookup (ofString "n")=some (.val (.word 2#64))
+  nextInside : 1+position<17
+  middleCell : source.memory (slot (Workspace.pointer base .normalizedNumerator) (1+position))=.word middle
+  highCell : source.memory (slot (Workspace.pointer base .normalizedDivisor) 1)=.word divisorHigh
+  middleSmall : middle.toNat<4294967296
+  highSmall : divisorHigh.toNat<4294967296
+
+theorem Entry.withClock {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {index position : Nat}
+    {quotient carry cell divisor : BitVec 64} (checked : Entry source base index position quotient carry cell divisor) (clock : Nat) :
+    Entry {source with clock:=clock} base index position quotient carry cell divisor :=
+  ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,
+    checked.indexSmall,checked.inside,checked.u,checked.v,checked.i,checked.j,checked.q,checked.k,
+    checked.input,checked.divisorCell,checked.cellSmall,checked.carrySmall,checked.quotientSmall,checked.divisorSmall⟩
+
+theorem PairEntry.withClock {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {position : Nat}
+    {quotient low middle divisorLow divisorHigh : BitVec 64}
+    (checked : PairEntry source base position quotient low middle divisorLow divisorHigh) (clock : Nat) :
+    PairEntry {source with clock:=clock} base position quotient low middle divisorLow divisorHigh :=
+  ⟨checked.first.withClock clock,checked.n,checked.nextInside,checked.middleCell,checked.highCell,checked.middleSmall,checked.highSmall⟩
+
+private theorem slots_different (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : Workspace.Context source base) (left right : Nat) (leftInside : left<17) (rightInside : right<17) (different : left≠right) :
+    slot (Workspace.pointer base .normalizedNumerator) left≠slot (Workspace.pointer base .normalizedNumerator) right := by
+  intro hit
+  have number:=congrArg BitVec.toNat hit
+  rw [Workspace.slot_number source base context .normalizedNumerator left leftInside,
+    Workspace.slot_number source base context .normalizedNumerator right rightInside] at number
+  omega
+
+private theorem next_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) (checked : PairEntry source base position quotient low middle divisorLow divisorHigh) :
+    Entry (post source base 0 position quotient 0#64 low divisorLow) base 1 position quotient
+      (TwoDigitSubtract.nextCarry low 0#64 (quotient*divisorLow)) middle divisorHigh := by
+  have arithmetic:=TwoDigitSubtract.product_digit low 0#64 quotient divisorLow checked.first.cellSmall (by decide)
+    checked.first.quotientSmall checked.first.divisorSmall
+  refine ⟨⟨checked.first.context.global,checked.first.context.domain,checked.first.context.arena,checked.first.context.aligned⟩,
+    by decide,checked.nextInside,?_,?_,?_,?_,?_,?_,?_,?_,checked.middleSmall,arithmetic.2.1,checked.first.quotientSmall,checked.highSmall⟩
+  · exact (post_other source base 0 position quotient 0#64 low divisorLow "un" (by decide) (by decide)).trans checked.first.u
+  · exact (post_other source base 0 position quotient 0#64 low divisorLow "vn" (by decide) (by decide)).trans checked.first.v
+  · exact post_index source base 0 position quotient 0#64 low divisorLow
+  · exact (post_other source base 0 position quotient 0#64 low divisorLow "j" (by decide) (by decide)).trans checked.first.j
+  · exact (post_other source base 0 position quotient 0#64 low divisorLow "qhat" (by decide) (by decide)).trans checked.first.q
+  · exact post_carry source base 0 position quotient 0#64 low divisorLow
+  · exact (post_away source base 0 position quotient 0#64 low divisorLow _
+      (slots_different source base checked.first.context (1+position) (0+position) checked.nextInside checked.first.inside (by omega))).trans checked.middleCell
+  · exact (post_away source base 0 position quotient 0#64 low divisorLow _
+      (Workspace.separate base .normalizedDivisor .normalizedNumerator (by intro same;cases same) 1 (0+position) (by decide) checked.first.inside)).trans checked.highCell
+
+/-- Exact final state of the original two iterations, including both loop ticks. -/
+def pairPost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) :=
+  let first:=post (decClockHOLFinite source) base 0 position quotient 0#64 low divisorLow
+  post (decClockHOLFinite first) base 1 position quotient (TwoDigitSubtract.nextCarry low 0#64 (quotient*divisorLow)) middle divisorHigh
+
+private theorem test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (index : Nat) (small : index≤2)
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word 2#64))) :
+    evalHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) test=
+      some (.val (.word (if index<2 then 1#64 else 0#64))) := by
+  have indexNumber : (BitVec.ofNat 64 index).toNat=index:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  rw [finite_eval]
+  simp [eval,test,localVar,evalHOLExact,toExact,i,n,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,indexNumber]
+
+theorem pairPost_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) :
+    pairPost source base position quotient low middle divisorLow divisorHigh={source with
+      locals:=(pairPost source base position quotient low middle divisorLow divisorHigh).locals,
+      memory:=StoreWord.put (StoreWord.put source.memory (slot (Workspace.pointer base .normalizedNumerator) (0+position))
+        (TwoDigitSubtract.low low 0#64 (quotient*divisorLow)))
+        (slot (Workspace.pointer base .normalizedNumerator) (1+position))
+        (TwoDigitSubtract.low middle (TwoDigitSubtract.nextCarry low 0#64 (quotient*divisorLow)) (quotient*divisorHigh)),
+      clock:=source.clock-2} := by
+  simp only [pairPost,post_canonical,updatePost,WitnessRadix.QueryBranch.bind,setVarHOLFinite,decClockHOLFinite]
+  congr 1
+
+private theorem while_next (source next final : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (condition : ExpHOL 64) (contents : ProgHOL 64)
+    (read : evalHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) condition=some (.val (.word 1#64)))
+    (paid : source.clock≠0)
+    (bodyRun : evaluateHOLFiniteState (decClockHOLFinite source) contents=(none,next))
+    (tailRun : evaluateHOLFiniteState next (.while condition contents)=(none,final)) :
+    evaluateHOLFiniteState source (.while condition contents)=(none,final) := by
+  have clock:=evaluateHOLFiniteState_clock_le (decClockHOLFinite source) contents
+  rw [bodyRun] at clock
+  rw [evaluateHOLFiniteState_while_total,read]
+  simp only [if_neg paid,if_pos (show (1#64 : BitVec 64)≠0 by decide)]
+  rw [bodyRun,StateSteps.fixed_clock (decClockHOLFinite source) next none clock]
+  exact tailRun
+
+private theorem while_done (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (condition : ExpHOL 64) (contents : ProgHOL 64)
+    (read : evalHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) condition=some (.val (.word 0#64))) :
+    evaluateHOLFiniteState source (.while condition contents)=(none,source) := by
+  rw [evaluateHOLFiniteState_while_total,read]
+  rfl
+
+/-- Both real iterations, and the final false guard, execute from actual cells. -/
+theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) (checked : PairEntry source base position quotient low middle divisorLow divisorHigh)
+    (enough : 2≤source.clock) :
+    evaluateHOLFiniteState source loop=(none,pairPost source base position quotient low middle divisorLow divisorHigh) := by
+  let first:=post (decClockHOLFinite source) base 0 position quotient 0#64 low divisorLow
+  let second:=pairPost source base position quotient low middle divisorLow divisorHigh
+  have firstRun : evaluateHOLFiniteState (decClockHOLFinite source) step=(none,first):=
+    step_execute (decClockHOLFinite source) base 0 position quotient 0#64 low divisorLow (checked.first.withClock _)
+  have nextModel : Entry first base 1 position quotient (TwoDigitSubtract.nextCarry low 0#64 (quotient*divisorLow)) middle divisorHigh:=
+    next_entry (decClockHOLFinite source) base position quotient low middle divisorLow divisorHigh (checked.withClock _)
+  have firstN : first.locals.lookup (ofString "n")=some (.val (.word 2#64)):=
+    (post_other (decClockHOLFinite source) base 0 position quotient 0#64 low divisorLow "n" (by decide) (by decide)).trans checked.n
+  have secondRun : evaluateHOLFiniteState (decClockHOLFinite first) step=(none,second):=
+    step_execute (decClockHOLFinite first) base 1 position quotient (TwoDigitSubtract.nextCarry low 0#64 (quotient*divisorLow)) middle divisorHigh (nextModel.withClock _)
+  have secondI : second.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 2))):=
+    post_index (decClockHOLFinite first) base 1 position quotient (TwoDigitSubtract.nextCarry low 0#64 (quotient*divisorLow)) middle divisorHigh
+  have secondN : second.locals.lookup (ofString "n")=some (.val (.word 2#64)):=
+    (post_other (decClockHOLFinite first) base 1 position quotient (TwoDigitSubtract.nextCarry low 0#64 (quotient*divisorLow)) middle divisorHigh "n" (by decide) (by decide)).trans firstN
+  have read0:=test_read source 0 (by decide) checked.first.i checked.n
+  have read1:=test_read first 1 (by decide) nextModel.i firstN
+  have read2:=test_read second 2 (by decide) secondI secondN
+  simp only [Nat.reduceLT,↓reduceIte] at read0 read1 read2
+  have finish : evaluateHOLFiniteState second loop=(none,second):=while_done second test step read2
+  have firstClock : first.clock=source.clock-1:=rfl
+  have tailRun : evaluateHOLFiniteState first loop=(none,second):=
+    while_next first second second test step read1 (by omega) secondRun finish
+  exact while_next source first second test step read0 (by omega) firstRun tailRun
+
+/-- The all-outcome source allowance includes short-clock timeout executions. -/
+theorem loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) (checked : PairEntry source base position quotient low middle divisorLow divisorHigh) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤2 := by
+  by_cases enough : 2≤source.clock
+  · rw [loop_execute source base position quotient low middle divisorLow divisorHigh checked enough]
+    have clock:=congrArg PanSemStateFiniteExact.clock (pairPost_frame source base position quotient low middle divisorLow divisorHigh)
+    change (pairPost source base position quotient low middle divisorLow divisorHigh).clock=source.clock-2 at clock
+    change source.clock-(pairPost source base position quotient low middle divisorLow divisorHigh).clock≤2
+    omega
+  · omega
+
+/-- An actual normal return derives both required loop ticks and its real stores. -/
+theorem loop_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) (checked : PairEntry source base position quotient low middle divisorLow divisorHigh)
+    (normal : evaluateHOLFiniteState source loop=(none,target)) :
+    2≤source.clock ∧ target=pairPost source base position quotient low middle divisorLow divisorHigh := by
+  let baseSource:={source with clock:=2}
+  let baseTarget:=pairPost baseSource base position quotient low middle divisorLow divisorHigh
+  have baseRun:=loop_execute baseSource base position quotient low middle divisorLow divisorHigh (checked.withClock 2) (by rfl)
+  have zero : baseTarget.clock=0:=by
+    have clock:=congrArg PanSemStateFiniteExact.clock (pairPost_frame baseSource base position quotient low middle divisorLow divisorHigh)
+    change baseTarget.clock=2-2 at clock
+    omega
+  have funded:=(ClockCost.normal_from_zero_clock source baseTarget target loop 2 none none baseRun zero (by decide) normal (by decide)).1
+  have expected:=loop_execute source base position quotient low middle divisorLow divisorHigh checked funded
+  exact ⟨funded,congrArg Prod.snd (normal.symm.trans expected)⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.Entry.withClock
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.PairEntry.withClock
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.pairPost_frame
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.loop_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.loop_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.loop_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+theorem pairPost_carry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) :
+    (pairPost source base position quotient low middle divisorLow divisorHigh).locals.lookup (ofString "k")=
+      some (.val (.word (TwoDigitSubtract.secondCarry low middle quotient divisorLow divisorHigh))) :=
+  post_carry _ base 1 position quotient _ middle divisorHigh
+
+theorem pairPost_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) (name : String) (notI : ofString name≠ofString "i") (notK : ofString name≠ofString "k") :
+    (pairPost source base position quotient low middle divisorLow divisorHigh).locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
+  unfold pairPost
+  exact (post_other _ base 1 position quotient _ middle divisorHigh name notI notK).trans
+    (post_other _ base 0 position quotient 0#64 low divisorLow name notI notK)
+
+theorem pairPost_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh query : BitVec 64)
+    (outsideLow : query≠slot (Workspace.pointer base .normalizedNumerator) (0+position))
+    (outsideMiddle : query≠slot (Workspace.pointer base .normalizedNumerator) (1+position)) :
+    (pairPost source base position quotient low middle divisorLow divisorHigh).memory query=source.memory query := by
+  unfold pairPost
+  exact (post_away _ base 1 position quotient _ middle divisorHigh query outsideMiddle).trans
+    (post_away _ base 0 position quotient 0#64 low divisorLow query outsideLow)
+
+theorem pairPost_cells (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) (checked : PairEntry source base position quotient low middle divisorLow divisorHigh) :
+    (pairPost source base position quotient low middle divisorLow divisorHigh).memory (slot (Workspace.pointer base .normalizedNumerator) (0+position))=
+      .word (TwoDigitSubtract.firstLow low quotient divisorLow) ∧
+    (pairPost source base position quotient low middle divisorLow divisorHigh).memory (slot (Workspace.pointer base .normalizedNumerator) (1+position))=
+      .word (TwoDigitSubtract.secondLow low middle quotient divisorLow divisorHigh) := by
+  let first:=post (decClockHOLFinite source) base 0 position quotient 0#64 low divisorLow
+  refine ⟨?_,post_written (decClockHOLFinite first) base 1 position quotient _ middle divisorHigh⟩
+  exact (post_away (decClockHOLFinite first) base 1 position quotient _ middle divisorHigh _
+    (slots_different source base checked.first.context (0+position) (1+position) checked.first.inside checked.nextInside (by omega))).trans
+    (post_written (decClockHOLFinite source) base 0 position quotient 0#64 low divisorLow)
+
+/-- A genuine normal subtraction-loop return, with its actual corrected
+quotient, has the real remainder cells and the exact top carry. Connecting
+quotient correction to that quotient premise remains the surrounding caller's job. -/
+theorem loop_remainder (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle top divisorLow divisorHigh : BitVec 64) (checked : PairEntry source base position quotient low middle divisorLow divisorHigh)
+    (positive : 0<TwoDigitSubtract.divisorNumber divisorLow divisorHigh)
+    (exactQuotient : quotient.toNat=TwoDigitSubtract.window low middle top/TwoDigitSubtract.divisorNumber divisorLow divisorHigh)
+    (normal : evaluateHOLFiniteState source loop=(none,target)) :
+    2≤source.clock ∧
+      target.locals.lookup (ofString "k")=some (.val (.word top)) ∧
+      target.memory (slot (Workspace.pointer base .normalizedNumerator) (0+position))=.word (TwoDigitSubtract.firstLow low quotient divisorLow) ∧
+      target.memory (slot (Workspace.pointer base .normalizedNumerator) (1+position))=.word (TwoDigitSubtract.secondLow low middle quotient divisorLow divisorHigh) ∧
+      (TwoDigitSubtract.firstLow low quotient divisorLow).toNat+4294967296*(TwoDigitSubtract.secondLow low middle quotient divisorLow divisorHigh).toNat=
+        TwoDigitSubtract.window low middle top%TwoDigitSubtract.divisorNumber divisorLow divisorHigh := by
+  obtain ⟨funded,rfl⟩:=loop_normal source target base position quotient low middle divisorLow divisorHigh checked normal
+  have arithmetic:=TwoDigitSubtract.pair_from_quotient low middle top quotient divisorLow divisorHigh
+    checked.first.cellSmall checked.middleSmall checked.first.quotientSmall checked.first.divisorSmall checked.highSmall positive exactQuotient
+  have carry:=pairPost_carry source base position quotient low middle divisorLow divisorHigh
+  rw [arithmetic.1] at carry
+  have cells:=pairPost_cells source base position quotient low middle divisorLow divisorHigh checked
+  exact ⟨funded,carry,cells.1,cells.2,arithmetic.2.2⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.pairPost_carry
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.pairPost_other
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.pairPost_away
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.pairPost_cells
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.loop_remainder

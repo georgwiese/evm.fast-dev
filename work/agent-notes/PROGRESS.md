@@ -5453,3 +5453,41 @@ window-range invariant; final remainder extraction and complete caller.
 Then Taylor/header/main, uniform target composition, exact K, dominant slack
 review and final cleanup. Historical untracked RlpLength/RlpWrite WIPs and
 executable/fixed challenge premises remain untouched.
+
+## Exact actual normalization arithmetic for complete digit arrays
+
+The original left-shift/right-shift/or/mask expressions now have exact
+natural32-bit carry equations for every s≤31, including s=0. Both64-bit
+shifted intermediates are justified without overflow. The right-shifted
+carry is below2^s; a leading digit whose actual shifted value is below2^32
+has zero outgoing carry, exactly the checked nlz32 upper-bound case.
+
+These real word equations now telescope across every digit prefix. The
+normalized numerator image, including its genuine extra carry word,
+represents U*2^s exactly and every represented word remains32-bit.
+The normalized divisor's actual leading bound removes its outgoing carry,
+so its stored n-word image represents D*2^s exactly. No zero numerator-top
+assumption or replacement arithmetic implementation is used.
+
+This is the numerical bridge. The physical descending normalization loops,
+actual nlz32 caller, mapped input/output images and following outer loop
+still must establish the same image at runtime. No full two-digit divider,
+Taylor/main allowance or global target bound follows yet.
+
+Validation: current-normalization-array-number-v2.log PASS1126jobs; all9new
+printed facts have only permitted axioms. Index8700modules/18588facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage34%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: execute the actual VN and UN normalization loops and their separate
+first/top-word stores. Derive s and the leading bounds from the actual
+nlz32 call. Then actual captured digit loads and the outer-loop invariant:
+initial window<divisor*2^32 follows from the original m-digit input bound
+and D≥2^32; after a real digit phase, the next window is its untouched
+low digit plus2^32 times the proved remainder<divisor. Prove this against
+the actual prefix/suffix images and quotient stores. Final remainder
+extraction and caller/Taylor/header/main, uniform target composition, exact
+K, dominant slack review and cleanup remain. Historical untracked WIPs and
+executable/fixed premises stay untouched.

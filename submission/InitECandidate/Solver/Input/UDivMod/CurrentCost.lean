@@ -1630,3 +1630,110 @@ end InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract
 #print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.product_digit
 #print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.pair_no_borrow
 #print axioms InitECandidate.Solver.Input.UDivMod.TwoDigitSubtract.pair_from_quotient
+
+namespace InitECandidate.Solver.Input.UDivMod.Normalize
+open Flapjack
+
+def high (word : BitVec 64) (bits : Nat) : BitVec 64:=word>>>(32-bits)
+def digit (current previous : BitVec 64) (bits : Nat) : BitVec 64:=
+  ((current<<<bits) ||| high previous bits) &&& 4294967295#64
+def first (word : BitVec 64) (bits : Nat) : BitVec 64:=(word<<<bits) &&& 4294967295#64
+
+theorem high_number (word : BitVec 64) (bits : Nat) :
+    (high word bits).toNat=word.toNat/2^(32-bits) := by
+  rw [high,BitVec.toNat_ushiftRight,Nat.shiftRight_eq_div_pow]
+
+private theorem powers (bits : Nat) (small : bits≤31) : 2^(32-bits)*2^bits=4294967296 := by
+  rw [←Nat.pow_add]
+  have exponents : 32-bits+bits=32:=by omega
+  rw [exponents]
+
+/-- The actual right-shifted carry fits below the normalization power. -/
+theorem high_bound (word : BitVec 64) (bits : Nat) (small : bits≤31) (wordSmall : word.toNat<4294967296) :
+    (high word bits).toNat<2^bits := by
+  have positive : 0<2^(32-bits):=Nat.two_pow_pos _
+  rw [high_number,Nat.div_lt_iff_lt_mul positive]
+  have power:=powers bits small
+  rw [Nat.mul_comm] at power
+  omega
+
+private theorem shifted_number (word : BitVec 64) (bits : Nat) (small : bits≤31) (wordSmall : word.toNat<4294967296) :
+    (word<<<bits).toNat=word.toNat*2^bits := by
+  have factorBound : 2^bits≤2147483648:=Nat.pow_le_pow_right (by decide) small
+  have productBound:=Nat.mul_le_mul (show word.toNat≤4294967295 by omega) factorBound
+  rw [BitVec.toNat_shiftLeft,Nat.shiftLeft_eq,Nat.mod_eq_of_lt (by omega)]
+
+private theorem joined_number (current previous : BitVec 64) (bits : Nat) (small : bits≤31)
+    (currentSmall : current.toNat<4294967296) (previousSmall : previous.toNat<4294967296) :
+    ((current<<<bits) ||| high previous bits).toNat=current.toNat*2^bits+(high previous bits).toNat := by
+  rw [BitVec.toNat_or,shifted_number current bits small currentSmall]
+  have joined:=Nat.two_pow_add_eq_or_of_lt (i:=bits) (high_bound previous bits small previousSmall) current.toNat
+  rw [Nat.mul_comm current.toNat (2^bits)]
+  exact joined.symm
+
+private theorem masked_number (word : BitVec 64) : (word &&& 4294967295#64).toNat=word.toNat%4294967296 := by
+  rw [BitVec.toNat_and]
+  exact Nat.and_two_pow_sub_one_eq_mod word.toNat 32
+
+/-- Actual shift/or/mask normalization has an exact carry equation. Both
+input words are original32-bit digits; all64-bit intermediate shifts are exact. -/
+theorem digit_balance (current previous : BitVec 64) (bits : Nat) (small : bits≤31)
+    (currentSmall : current.toNat<4294967296) (previousSmall : previous.toNat<4294967296) :
+    (digit current previous bits).toNat<4294967296 ∧
+      (digit current previous bits).toNat+4294967296*(high current bits).toNat=
+        current.toNat*2^bits+(high previous bits).toNat := by
+  have upper:=high_bound previous bits small previousSmall
+  have positive : 0<2^(32-bits):=Nat.two_pow_pos _
+  have remainderBound:=Nat.mod_lt current.toNat positive
+  have decomposition:=Nat.mod_add_div current.toNat (2^(32-bits))
+  have power:=powers bits small
+  have next : current.toNat%2^(32-bits)+1≤2^(32-bits):=by omega
+  have weighted:=Nat.mul_le_mul_right (2^bits) next
+  rw [Nat.add_mul,Nat.one_mul,power] at weighted
+  have lowBound : (current.toNat%2^(32-bits))*2^bits+(high previous bits).toNat<4294967296:=by omega
+  have splitScaled : current.toNat*2^bits+(high previous bits).toNat=
+      (current.toNat%2^(32-bits))*2^bits+(high previous bits).toNat+4294967296*(current.toNat/2^(32-bits)):=by
+    calc
+      _=(current.toNat%2^(32-bits)+2^(32-bits)*(current.toNat/2^(32-bits)))*2^bits+(high previous bits).toNat:=by rw [decomposition]
+      _=(current.toNat%2^(32-bits))*2^bits+(high previous bits).toNat+(2^(32-bits)*2^bits)*(current.toNat/2^(32-bits)):=by ring
+      _=_:=by rw [power]
+  have digitNumber : (digit current previous bits).toNat=(current.toNat*2^bits+(high previous bits).toNat)%4294967296:=by
+    rw [digit,masked_number,joined_number current previous bits small currentSmall previousSmall]
+  have bounded:=Nat.mod_lt (current.toNat*2^bits+(high previous bits).toNat) (show 0<4294967296 by decide)
+  rw [digitNumber,high_number current bits]
+  exact ⟨bounded,by omega⟩
+
+/-- The original separate lowest-word store is the same normalization with
+zero incoming carry. -/
+theorem first_balance (word : BitVec 64) (bits : Nat) (small : bits≤31) (wordSmall : word.toNat<4294967296) :
+    (first word bits).toNat<4294967296 ∧
+      (first word bits).toNat+4294967296*(high word bits).toNat=word.toNat*2^bits := by
+  simpa [digit,high,first] using digit_balance word 0#64 bits small wordSmall (by decide)
+
+end InitECandidate.Solver.Input.UDivMod.Normalize
+
+#print axioms InitECandidate.Solver.Input.UDivMod.Normalize.high_number
+#print axioms InitECandidate.Solver.Input.UDivMod.Normalize.high_bound
+#print axioms InitECandidate.Solver.Input.UDivMod.Normalize.digit_balance
+#print axioms InitECandidate.Solver.Input.UDivMod.Normalize.first_balance
+
+namespace InitECandidate.Solver.Input.UDivMod.Normalize
+open Flapjack
+
+/-- A normalized leading digit whose shifted value is below the radix has
+no discarded outgoing carry. This is the genuine nlz32 caller's upper bound. -/
+theorem high_zero (word : BitVec 64) (bits : Nat) (small : bits≤31)
+    (upper : word.toNat*2^bits<4294967296) : high word bits=0#64 := by
+  have power:=powers bits small
+  have inside : word.toNat<2^(32-bits):=by
+    by_contra outside
+    have lower:=Nat.mul_le_mul_right (2^bits) (show 2^(32-bits)≤word.toNat by omega)
+    rw [power] at lower
+    omega
+  apply BitVec.eq_of_toNat_eq
+  rw [high_number,Nat.div_eq_of_lt inside]
+  rfl
+
+end InitECandidate.Solver.Input.UDivMod.Normalize
+
+#print axioms InitECandidate.Solver.Input.UDivMod.Normalize.high_zero

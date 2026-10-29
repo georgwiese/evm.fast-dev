@@ -5627,3 +5627,109 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.digitMemory_cells
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.digitMemory_away
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Normalized
+open Flapjack
+
+def incoming (contents : Nat→BitVec 64) (bits : Nat) : Nat→BitVec 64
+  | 0=>0#64
+  | count+1=>Normalize.high (contents count) bits
+
+def digit (contents : Nat→BitVec 64) (bits : Nat) : Nat→BitVec 64
+  | 0=>Normalize.first (contents 0) bits
+  | index+1=>Normalize.digit (contents (index+1)) (contents index) bits
+
+def extended (contents : Nat→BitVec 64) (bits length index : Nat) : BitVec 64:=
+  if index<length then digit contents bits index else incoming contents bits length
+
+/-- The actual incoming carry and actual normalized digit conserve one
+source digit, including the original separate first-word store. -/
+private theorem digit_balance (contents : Nat→BitVec 64) (bits index : Nat) (bitsSmall : bits≤31)
+    (small : ∀ current,current≤index→(contents current).toNat<4294967296) :
+    (digit contents bits index).toNat<4294967296 ∧
+      (digit contents bits index).toNat+4294967296*(incoming contents bits (index+1)).toNat=
+        (contents index).toNat*2^bits+(incoming contents bits index).toNat := by
+  cases index with
+  | zero=>
+    simpa only [digit,incoming,BitVec.toNat_zero,Nat.add_zero] using Normalize.first_balance (contents 0) bits bitsSmall (small 0 (by omega))
+  | succ index=>
+    exact Normalize.digit_balance (contents (index+1)) (contents index) bits bitsSmall (small (index+1) (by omega)) (small index (by omega))
+
+/-- Telescoping the actual32-bit carry equations proves that a normalized
+prefix plus its outgoing carry is exactly the original prefix times2^s. -/
+theorem prefix_number (contents : Nat→BitVec 64) (bits count : Nat) (bitsSmall : bits≤31)
+    (small : ∀ index,index<count→(contents index).toNat<4294967296) :
+    number (digit contents bits) count+2^(32*count)*(incoming contents bits count).toNat=
+      number contents count*2^bits := by
+  induction count with
+  | zero=>simp [number,incoming]
+  | succ count ih=>
+    have prior:=ih (by intro index inside;exact small index (by omega))
+    have step:=digit_balance contents bits count bitsSmall (by intro index inside;exact small index (by omega))
+    have power : 2^(32*(count+1))=2^(32*count)*4294967296:=by
+      rw [Nat.mul_add,Nat.mul_one,Nat.pow_add]
+    rw [number,number,power]
+    calc
+      _=number (digit contents bits) count+2^(32*count)*
+          ((digit contents bits count).toNat+4294967296*(incoming contents bits (count+1)).toNat):=by ring
+      _=number (digit contents bits) count+2^(32*count)*
+          ((contents count).toNat*2^bits+(incoming contents bits count).toNat):=by rw [step.2]
+      _=(number (digit contents bits) count+2^(32*count)*(incoming contents bits count).toNat)+
+          2^(32*count)*(contents count).toNat*2^bits:=by ring
+      _=number contents count*2^bits+2^(32*count)*(contents count).toNat*2^bits:=by rw [prior]
+      _=_:=by ring
+
+/-- The seventeenth possible normalized numerator word is the real outgoing
+carry, not an assumed zero. The complete array represents U*2^s exactly. -/
+theorem extended_number (contents : Nat→BitVec 64) (bits length : Nat) (bitsSmall : bits≤31)
+    (small : ∀ index,index<length→(contents index).toNat<4294967296) :
+    number (extended contents bits length) (length+1)=number contents length*2^bits := by
+  have prefixEq : number (extended contents bits length) length=number (digit contents bits) length:=
+    Single.number_congr _ _ length (by intro index inside;exact if_pos inside)
+  rw [number,prefixEq]
+  have last : extended contents bits length length=incoming contents bits length:=by simp [extended]
+  rw [last]
+  exact prefix_number contents bits length bitsSmall small
+
+/-- Every actually normalized word, including the extra numerator carry,
+is a32-bit digit. -/
+theorem extended_small (contents : Nat→BitVec 64) (bits length index : Nat) (bitsSmall : bits≤31)
+    (small : ∀ current,current<length→(contents current).toNat<4294967296) (inside : index≤length) :
+    (extended contents bits length index).toNat<4294967296 := by
+  by_cases ordinary : index<length
+  · rw [extended,if_pos ordinary]
+    exact (digit_balance contents bits index bitsSmall (by intro current bound;exact small current (by omega))).1
+  · have last : index=length:=by omega
+    subst index
+    rw [extended,if_neg (by omega)]
+    cases length with
+    | zero=>
+      change (0#64 : BitVec 64).toNat<4294967296
+      decide
+    | succ length=>
+      have high:=Normalize.high_bound (contents length) bits bitsSmall (small length (by omega))
+      have factorBound : 2^bits≤2147483648:=Nat.pow_le_pow_right (by decide) bitsSmall
+      change (Normalize.high (contents length) bits).toNat<4294967296
+      omega
+
+/-- The real nlz32 upper bound removes the divisor's outgoing carry, so its
+stored n-word normalized image already represents D*2^s exactly. -/
+theorem divisor_number (contents : Nat→BitVec 64) (bits length : Nat) (bitsSmall : bits≤31) (positive : 0<length)
+    (small : ∀ index,index<length→(contents index).toNat<4294967296)
+    (leading : (contents (length-1)).toNat*2^bits<4294967296) :
+    number (digit contents bits) length=number contents length*2^bits := by
+  have noCarry : incoming contents bits length=0#64:=by
+    cases length with
+    | zero=>omega
+    | succ length=>
+      exact Normalize.high_zero (contents length) bits bitsSmall (by simpa only [Nat.add_sub_cancel] using leading)
+  have total:=prefix_number contents bits length bitsSmall small
+  rw [noCarry,BitVec.toNat_zero,Nat.mul_zero,Nat.add_zero] at total
+  exact total
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Normalized
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalized.prefix_number
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalized.extended_number
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalized.extended_small
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalized.divisor_number

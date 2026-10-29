@@ -421,7 +421,7 @@ build evidence, not complete verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:47%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:48%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them
@@ -2006,3 +2006,28 @@ Index8700modules/17945facts; inventory8745/replacement closure0/fixed files
 unchanged. Claim infinity; no global finite target K/full verifier success.
 Usage47%weekly/0resetcredits. Continue with actual request encoder/hash/BAL,
 remaining main, formal target composition, dominant-slack review and cleanup.
+
+## Current execution-request loop entry and real width/field prefix
+
+The literal encoder780 setup now costs≤2source ticks on every outcome.
+Its same actual reached alloc80/declare-n0/declare-i0 execution derives the
+allocator's own checked room, exact post-state, preserved request image and
+vacuous initial LoopModel. The model owns the descriptor array, keeps real
+RQ/input/heap separation and only requires images for already emitted rows;
+there are no preinitialized future rows or future allocation successes.
+
+The actual indexed pointer/count loads are mapped/aligned and read the same
+ten decoder cells. All four original width decisions execute to exactly
+192/76/116/184/68 for types0..4, preserving the arbitrary original continuation.
+The real signed guard matches the bounded cursor, and every genuinely
+continuing complete iteration advances i exactly once, including through
+its real allocation/copy scopes. Model transport keeps already emitted rows
+through pure local/clock changes. These are entry/progress facts, not yet a
+complete encoder loop cost/normal result.
+
+Validation: current-requests-setup-v3.log PASS2709jobs; permitted printed axioms
+only. Index8700modules/17965facts; fixed files unchanged/replacement closure0.
+Claim infinity; no global finite target K/full verifier success. Usage48%weekly/
+0resetcredits. Next: actual prepared iteration, guarded blob allocation/copy,
+normal row/frame preservation and whole encoder, then requests SHA/BAL and
+remaining main/target composition, dominant-slack review and cleanup.

@@ -2674,6 +2674,7 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/NodeBuildReached.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/NodeEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/NodePrefix.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadImage.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/RunAttempt.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/RunInputs.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateCallProgram.lean",
@@ -8727,8 +8728,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65512,
-  "package_bytes": 2485471496,
+  "package_entries": 65513,
+  "package_bytes": 2485477092,
   "claim": {
     "K": "infinity"
   },

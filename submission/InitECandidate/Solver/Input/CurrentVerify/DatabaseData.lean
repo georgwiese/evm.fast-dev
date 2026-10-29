@@ -41,6 +41,7 @@ theorem after_database_data {input : Guest.InputBlob} {source target : PanSemSta
     · rw [gasNumber]; have := data.recordInside.2; omega
   exact ⟨arena,returned.little,environment,returned.outCell,heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
     siFrame.trans data.payloadCell,gasFrame.trans data.gasCell,data.gasBound,
+    data.payload.of_interval (fun query lower upper=>memory query (Nat.le_trans data.recordInside.1 lower) upper) heap,
     nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
     nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩
 

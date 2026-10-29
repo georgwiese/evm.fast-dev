@@ -929,3 +929,24 @@ Overall effort estimate50%, plausible40–60%, relative to rebased main.
 Usage30%weekly/0resetcredits. Next: retain actual payload/transaction record
 facts needed after state_init, then transaction scan, payload header/hash,
 remaining validation/execution and uniform target steps.
+
+
+## Retained complete payload image and real transaction budgets
+
+Main's real root-hash return now supplies the complete payload ReturnedImage,
+its physical transaction pointer/count/records and already-derived decoder
+budgets. The actual transaction count is≤12582752 and aggregate transaction
+bytes≤251655056. These facts come from the same snapshot and actual normal
+root return; no extra accepted-input hypothesis is introduced.
+
+The current verification Data contract carries that image through actual
+header validation, both database builds, global updates and state_init's
+normal memory frame. Shared interval/frame transport also retains payload
+prefix and remaining fields needed by later header/execution work.
+
+Validation: current-main-payload-data-v2.log PASS2683jobs/permitted printed
+axioms only. Index8678modules/17624facts; inventory8723/replacement closure0/
+fixed files unchanged. Incremental policy PASS65513entries/2485477092bytes.
+No global finite target K/full verification; claim infinity.
+Usage30%weekly/0resetcredits. Next: retain the actual pl local through the
+existing reached-prefix traces, then prove the original transaction scan.

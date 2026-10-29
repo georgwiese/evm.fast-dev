@@ -3860,3 +3860,45 @@ two-digit caller/Taylor/header/main still remain. Source-clock bounds omit
 straight-line target work. Uniform target composition, exact K, dominant
 slack review and final cleanup remain. Historical untracked WIPs and
 executable/fixed premises stay untouched.
+
+## Full actual two-digit outer loop and derived normalization entry
+
+The complete original descending quotient loop now has an all-outcome
+source allowance≤39*incoming j: one real outer tick and≤38actual body ticks
+per digit. Its physical invariant decreases at every genuine continuation;
+actual errors/timeouts/stopped outcomes fit the same bound. A checked
+structural frame excludes escaping return/break/continue from its real body,
+including the complete original add-back syntax and scoped callees.
+
+An actual normal full-loop evaluation now constructs every quotient digit
+in physical Q, derives each digit's32-bit bound, finishes with j=0 and two
+actual32-bit remainder words below the same normalized divisor, and proves
+D*Q+R=initialCarry*2^(32*count)+untouchedInputPrefix. Thus its physical output
+is the natural quotient and remainder. The same induction retains all
+external locals and static fields, proves the exact enclosing write range,
+and derives the zero UN[2] needed by the original final remainder loads.
+No future successful body/helper return or incoming funding is assumed.
+
+The actual normalized numerator's two top words are now proved below the
+normalized divisor. The argument uses the real highest32-bit input digit,
+the normalization carry<2^s and the original nonzero high divisor digit;
+both numerator and divisor use the same actual factor2^s. This range is a
+derived fact, not a loop-entry oracle. The checked normalization images now
+supply the complete first guard entry after its described vtop/vsec/j bindings.
+Its carry/prefix number is proved equal to the whole original numerator*2^s.
+The next step must execute those actual leading loads and j assignment.
+
+Validation: current-two-digit-outer-loop-v5.log PASS1126jobs; all6new printed facts have only permitted
+axioms. Index8700modules/18659facts; inventory8745/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verifier
+success. Effort estimate remains50%, plausible40–60%. Usage35%weekly/
+0resetcredits, ordinary usage allowed. No new candidate paths;
+package stays65536entries.
+
+Next: actual vtop/vsec loads and j initialization connecting Ready to this
+first guard; original post-loop quotient clearing, two-digit remainder
+extraction/denormalization and return. Then complete current two-digit
+callee/caller, Taylor/header/main, uniform target-step composition, exact K,
+dominant slack review and final cleanup. Source-clock allowances omit
+straight-line target work. Historical untracked WIPs and executable/fixed
+premises stay untouched.

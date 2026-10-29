@@ -7487,3 +7487,369 @@ theorem Entry.successor {source target : PanSemStateFiniteExact 64 Guest.HostMem
 end InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.Entry.successor
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+set_option maxRecDepth 100000 in
+private theorem finish_safe : LocalPrefix (ofString "u") Subtract.finish := by
+  simp [Subtract.finish,Subtract.findFinish,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL]
+  repeat' first
+    | exact LocalPrefix.skip
+    | apply LocalPrefix.seq
+    | apply LocalPrefix.ite
+    | apply LocalPrefix.loop
+    | apply LocalPrefix.dec
+    | apply LocalPrefix.decCall
+    | apply LocalPrefix.assign
+    | exact LocalPrefix.store _ _
+    | decide
+
+/-- The complete original iteration has no escaping return, break or
+continue. Scoped callees retain their own original control behavior. -/
+private theorem body_safe : LocalPrefix (ofString "u") body := by
+  unfold body captures Estimate.phase Estimate.program Estimate.maximum Estimate.scalar Estimate.updates Estimate.continuation
+    Subtract.corrected Subtract.initialized Subtract.loop Subtract.step Subtract.updates
+    QhatCorrection.loop QhatCorrection.body QhatCorrection.branch QhatCorrection.correct
+  repeat' first
+    | exact finish_safe
+    | exact LocalPrefix.skip
+    | apply LocalPrefix.seq
+    | apply LocalPrefix.ite
+    | apply LocalPrefix.loop
+    | apply LocalPrefix.dec
+    | apply LocalPrefix.decCall
+    | apply LocalPrefix.assign
+    | exact LocalPrefix.store _ _
+    | decide
+
+/-- The full actual descending quotient loop costs at most39source ticks
+per incoming digit, including every stopped and short-clock outcome. -/
+theorem loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (carryLow carryHigh divisorLow divisorHigh : BitVec 64)
+    (checked : Entry source base contents count carryLow carryHigh divisorLow divisorHigh) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤39*count := by
+  induction count generalizing source carryLow carryHigh with
+  | zero=>
+    have read:=Single.loop_test source 0 (by decide) checked.j
+    have done:=Subtract.while_done source test body read
+    rw [loop,done]
+    simp
+  | succ count ih=>
+    have read:=Single.loop_test source (count+1) (by have h:=checked.small;omega) checked.j
+    simp only [show 0<count+1 from by omega,↓reduceIte] at read
+    change evalHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) test=some (.val (.word 1#64)) at read
+    rw [loop,evaluateHOLFiniteState_while_total,read]
+    simp only [if_pos (show (1#64 : BitVec 64)≠0 by decide)]
+    by_cases zero : source.clock=0
+    · simp [zero]
+    · rw [if_neg zero]
+      have current:=checked.withClock (source.clock-1)
+      have price:=body_cost (decClockHOLFinite source) base count (contents count) carryLow carryHigh divisorLow divisorHigh current.j current.window
+      have forward:=evaluateHOLFiniteState_clock_le (decClockHOLFinite source) body
+      have safe:=body_safe.summary_full (decClockHOLFinite source)
+      unfold LocalSummary at safe
+      generalize computed : evaluateHOLFiniteState (decClockHOLFinite source) body=output at price forward safe ⊢
+      obtain ⟨result,middle⟩:=output
+      rw [StateSteps.fixed_clock (decClockHOLFinite source) middle result forward]
+      change source.clock-1-middle.clock≤38 at price
+      change middle.clock≤source.clock-1 at forward
+      have stopped : source.clock-middle.clock≤39*(count+1):=by omega
+      cases result with
+      | none=>
+        obtain ⟨quotient,qSmall,qNumber,next,written,static,paid⟩:=current.successor computed
+        have tail:=ih middle _ _ next
+        have tailClock:=evaluateHOLFiniteState_clock_le middle loop
+        change source.clock-(evaluateHOLFiniteState middle loop).2.clock≤39*(count+1)
+        omega
+      | some result=>
+        cases result <;> first
+          | exact (safe.2.2.2 rfl).elim
+          | exact stopped
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.loop_cost
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+private theorem loop_normal_step (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (count : Nat)
+    (small : count+1≤15) (j : source.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 (count+1)))))
+    (normal : evaluateHOLFiniteState source loop=(none,target)) :
+    ∃ middle,evaluateHOLFiniteState (decClockHOLFinite source) body=(none,middle) ∧ evaluateHOLFiniteState middle loop=(none,target) := by
+  have read:=Single.loop_test source (count+1) (by omega) j
+  simp only [show 0<count+1 from by omega,↓reduceIte] at read
+  change evalHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) test=some (.val (.word 1#64)) at read
+  rw [loop,evaluateHOLFiniteState_while_total,read] at normal
+  simp only [if_pos (show (1#64 : BitVec 64)≠0 by decide)] at normal
+  by_cases zero : source.clock=0
+  · rw [if_pos zero] at normal
+    have impossible:=congrArg Prod.fst normal
+    cases impossible
+  · rw [if_neg zero] at normal
+    have forward:=evaluateHOLFiniteState_clock_le (decClockHOLFinite source) body
+    have safe:=body_safe.summary_full (decClockHOLFinite source)
+    unfold LocalSummary at safe
+    generalize computed : evaluateHOLFiniteState (decClockHOLFinite source) body=output at forward safe normal ⊢
+    obtain ⟨result,middle⟩:=output
+    rw [StateSteps.fixed_clock (decClockHOLFinite source) middle result forward] at normal
+    cases result with
+    | none=>exact ⟨middle,rfl,normal⟩
+    | some result=>
+      cases result <;> first
+        | exact (safe.2.2.1 rfl).elim
+        | exact (safe.2.2.2 rfl).elim
+        | cases (congrArg Prod.fst normal)
+
+/-- Full physical output of the original descending loop. Every entry and
+conservation fact follows from the same actual normal evaluation. -/
+structure LoopResult (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (carryLow carryHigh divisorLow divisorHigh : BitVec 64)
+    (quotient : Nat→ BitVec 64) (remainderLow remainderHigh : BitVec 64) : Prop where
+  entry : Entry target base contents 0 remainderLow remainderHigh divisorLow divisorHigh
+  state : target={source with locals:=target.locals,memory:=target.memory,clock:=target.clock}
+  image : Image target (Workspace.pointer base .quotient) quotient count
+  digits : ∀ index,index<count→ (quotient index).toNat<4294967296
+  value : TwoDigitSubtract.divisorNumber divisorLow divisorHigh*number quotient count+
+    (remainderLow.toNat+4294967296*remainderHigh.toNat)=
+    (carryLow.toNat+4294967296*carryHigh.toNat)*2^(32*count)+number contents count
+  other : ∀ name : String,ofString name≠ofString "ujn"→ ofString name≠ofString "ujn1"→ ofString name≠ofString "ujn2"→
+    ofString name≠ofString "qhat"→ ofString name≠ofString "rhat"→ ofString name≠ofString "i"→ ofString name≠ofString "k"→
+    ofString name≠ofString "again"→ ofString name≠ofString "j"→ target.locals.lookup (ofString name)=source.locals.lookup (ofString name)
+  away : ∀ query,(∀ index,index<count→ query≠slot (Workspace.pointer base .quotient) index)→
+    (∀ index,index<count+2→ query≠slot (Workspace.pointer base .normalizedNumerator) index)→ target.memory query=source.memory query
+  topZero : 0<count→ target.memory (slot (Workspace.pointer base .normalizedNumerator) 2)=.word 0#64
+  cost : source.clock-target.clock≤39*count
+
+/-- Induct over the actual descending loop. The quotient image, final
+remainder, outer frames and D*Q+R identity are derived without assuming a
+future successful body, helper return or incoming clock funding. -/
+theorem loop_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (carryLow carryHigh divisorLow divisorHigh : BitVec 64)
+    (checked : Entry source base contents count carryLow carryHigh divisorLow divisorHigh)
+    (normal : evaluateHOLFiniteState source loop=(none,target)) :
+    ∃ quotient remainderLow remainderHigh,LoopResult source target base contents count carryLow carryHigh divisorLow divisorHigh quotient remainderLow remainderHigh := by
+  have price:=loop_cost source base contents count carryLow carryHigh divisorLow divisorHigh checked
+  rw [normal] at price
+  induction count generalizing source target carryLow carryHigh with
+  | zero=>
+    have read:=Single.loop_test source 0 (by decide) checked.j
+    have done:=Subtract.while_done source test body read
+    have same : target=source:=congrArg Prod.snd (normal.symm.trans done)
+    subst target
+    refine ⟨(fun _=>0#64),carryLow,carryHigh,⟨checked,?_,?_,?_,?_,?_,?_,?_,price⟩⟩
+    · rfl
+    · intro index inside
+      omega
+    · intro index inside
+      omega
+    · simp [number]
+    · intros
+      rfl
+    · intros
+      rfl
+    · omega
+  | succ count ih=>
+    obtain ⟨middle,bodyRun,tailRun⟩:=loop_normal_step source target count checked.small checked.j normal
+    have current:=checked.withClock (source.clock-1)
+    obtain ⟨digit,digitSmall,digitNumber,next,written,static,paid⟩:=current.successor bodyRun
+    obtain ⟨tailDigits,remainderLow,remainderHigh,tail⟩:=ih middle target _ _ next tailRun (by
+      have p:=loop_cost middle base contents count _ _ divisorLow divisorHigh next
+      rw [tailRun] at p
+      exact p)
+    let finalDigits : Nat→ BitVec 64:=fun index=>if index=count then digit else tailDigits index
+    have lowNumber : number finalDigits count=number tailDigits count:=Single.number_congr finalDigits tailDigits count
+      (by intro index inside;simp only [finalDigits,if_neg (show index≠count by omega)])
+    have countSmall:=checked.small
+    have cells:=Subtract.digitMemory_cells (decClockHOLFinite source) base count digit (contents count) carryLow divisorLow divisorHigh current.context (by omega)
+    have outputLast : target.memory (slot (Workspace.pointer base .quotient) count)=.word digit:=by
+      have kept:=tail.away (slot (Workspace.pointer base .quotient) count)
+        (by
+          intro index inside hit
+          have same:=slot_injective (Workspace.pointer base .quotient) count index (by omega) (by omega) hit
+          omega)
+        (by
+          intro index inside
+          exact Workspace.separate base .quotient .normalizedNumerator (by intro same;cases same) count index
+            (by change count<16;omega) (by change index<17;omega))
+      rw [kept,written]
+      exact cells.2.2.1
+    refine ⟨finalDigits,remainderLow,remainderHigh,⟨tail.entry,?_,?_,?_,?_,?_,?_,?_,price⟩⟩
+    · have combined:=tail.state
+      rw [static] at combined
+      exact combined
+    · intro index inside
+      by_cases last : index=count
+      · subst index
+        simpa only [finalDigits,if_pos rfl,ite_true] using outputLast
+      · simpa only [finalDigits,if_neg last] using tail.image index (by omega)
+    · intro index inside
+      by_cases last : index=count
+      · simpa only [finalDigits,if_pos last] using digitSmall
+      · simpa only [finalDigits,if_neg last] using tail.digits index (by omega)
+    · have positive : 0<TwoDigitSubtract.divisorNumber divisorLow divisorHigh:=by
+        unfold TwoDigitSubtract.divisorNumber
+        have h:=checked.divisorHighLarge
+        omega
+      have remainder:=(TwoDigitSubtract.pair_from_quotient (contents count) carryLow carryHigh digit divisorLow divisorHigh
+        (checked.inputSmall count (by omega)) checked.carryLowSmall digitSmall checked.divisorLowSmall checked.divisorHighSmall positive digitNumber).2.2
+      have step : TwoDigitSubtract.divisorNumber divisorLow divisorHigh*digit.toNat+
+          ((TwoDigitSubtract.firstLow (contents count) digit divisorLow).toNat+
+            4294967296*(TwoDigitSubtract.secondLow (contents count) carryLow digit divisorLow divisorHigh).toNat)=
+          TwoDigitSubtract.window (contents count) carryLow carryHigh:=by
+        rw [digitNumber,remainder]
+        exact Nat.div_add_mod _ _
+      have scaled:=congrArg (fun value:Nat=>value*2^(32*count)) step
+      have power : 2^(32*(count+1))=4294967296*2^(32*count):=by
+        rw [show 32*(count+1)=32+32*count by omega,Nat.pow_add]
+      have tailValue:=tail.value
+      rw [number,lowNumber]
+      simp only [finalDigits,if_pos rfl,ite_true]
+      rw [number,power]
+      unfold TwoDigitSubtract.window at scaled
+      nlinarith [scaled,tailValue]
+    · intro name notTop notMiddle notLow notQ notR notI notK notAgain notJ
+      exact (tail.other name notTop notMiddle notLow notQ notR notI notK notAgain notJ).trans
+        (body_other (decClockHOLFinite source) middle base count (contents count) carryLow carryHigh divisorLow divisorHigh current.j current.window bodyRun name
+          notTop notMiddle notLow notQ notR notI notK notAgain notJ)
+    · intro query outsideQ outsideUN
+      rw [tail.away query (by intro index inside;exact outsideQ index (by omega)) (by intro index inside;exact outsideUN index (by omega)),written]
+      exact Subtract.digitMemory_away _ base count digit (contents count) carryLow divisorLow divisorHigh query
+        (outsideUN (0+count) (by omega)) (outsideUN (1+count) (by omega)) (outsideQ count (by omega)) (outsideUN (count+2) (by omega))
+    · intro positive
+      by_cases zero : count=0
+      · subst count
+        have finalSame : target=middle:=by
+          have read:=Single.loop_test middle 0 (by decide) next.j
+          have done:=Subtract.while_done middle test body read
+          exact congrArg Prod.snd (tailRun.symm.trans done)
+        rw [finalSame,written]
+        exact cells.2.2.2
+      · exact tail.topZero (by omega)
+
+/-- The derived physical quotient/remainder obey ordinary natural division. -/
+theorem LoopResult.division {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {contents quotient : Nat→ BitVec 64} {count : Nat} {carryLow carryHigh divisorLow divisorHigh remainderLow remainderHigh : BitVec 64}
+    (checked : LoopResult source target base contents count carryLow carryHigh divisorLow divisorHigh quotient remainderLow remainderHigh) :
+    number quotient count=((carryLow.toNat+4294967296*carryHigh.toNat)*2^(32*count)+number contents count)/TwoDigitSubtract.divisorNumber divisorLow divisorHigh ∧
+    remainderLow.toNat+4294967296*remainderHigh.toNat=((carryLow.toNat+4294967296*carryHigh.toNat)*2^(32*count)+number contents count)%TwoDigitSubtract.divisorNumber divisorLow divisorHigh := by
+  have positive : 0<TwoDigitSubtract.divisorNumber divisorLow divisorHigh:=by
+    have small:=checked.entry.carryRange
+    omega
+  constructor
+  · rw [←checked.value,Nat.mul_add_div positive,Nat.div_eq_of_lt checked.entry.carryRange,Nat.add_zero]
+  · rw [←checked.value,Nat.mul_add_mod_self_left,Nat.mod_eq_of_lt checked.entry.carryRange]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.loop_normal
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.LoopResult.division
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The two actual top normalized numerator words form a carry below the
+normalized divisor. This comes from the original32-bit input and the same
+normalization factor; no future quotient-loop range is assumed. -/
+theorem Ready.initial_carry {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64}
+    {u v : Nat→BitVec 64} {length bits : Nat} (ready : Ready source base u v length bits) :
+    (Normalized.extended u bits length (length-1)).toNat+
+      4294967296*(Normalized.extended u bits length length).toNat<
+      TwoDigitSubtract.divisorNumber (Normalized.digit v bits 0) (Normalized.digit v bits 1) := by
+  have large:=ready.entry.large
+  have lastInside : length-1<length:=by omega
+  have balance:=Normalized.digit_balance u bits (length-1) ready.bitsSmall
+    (by intro index inside;exact ready.entry.uSmall index (by omega))
+  have incomingBound : (Normalized.incoming u bits (length-1)).toNat<2^bits:=by
+    have nonzero : length-1≠0:=by omega
+    obtain ⟨previous,previousEq⟩:=Nat.exists_eq_succ_of_ne_zero nonzero
+    rw [previousEq,Normalized.incoming]
+    exact Normalize.high_bound (u previous) bits ready.bitsSmall (ready.entry.uSmall previous (by omega))
+  have lastSmall:=ready.entry.uSmall (length-1) lastInside
+  have normalizedDivisor : TwoDigitSubtract.divisorNumber (Normalized.digit v bits 0) (Normalized.digit v bits 1)=number v 2*2^bits:=by
+    simpa only [number,TwoDigitSubtract.divisorNumber,Nat.mul_zero,Nat.mul_one,Nat.pow_zero,Nat.zero_add,Nat.one_mul,show (2:Nat)^32=4294967296 by decide] using ready.v_number
+  have divisorLarge : 4294967296≤number v 2:=by
+    simp only [number,Nat.mul_zero,Nat.mul_one,Nat.pow_zero,Nat.zero_add,Nat.one_mul]
+    have positive:=ready.entry.leadingPositive
+    omega
+  have scaled:=Nat.mul_le_mul_right (2^bits) divisorLarge
+  have carryIndex : Normalized.incoming u bits length=Normalized.incoming u bits (length-1+1):=by rw [show length-1+1=length by omega]
+  rw [Normalized.extended,if_pos lastInside,Normalized.extended,if_neg (by omega),carryIndex,balance.2,normalizedDivisor]
+  nlinarith
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.Ready.initial_carry
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Pure description of the original two leading-divisor declarations
+and original j initialization at the first outer guard. -/
+def start (source : PanSemStateFiniteExact 64 Guest.HostMemory) (v : Nat→BitVec 64) (length bits : Nat) :=
+  bind (bind (bind source "vtop" (Normalized.digit v bits 1)) "vsec" (Normalized.digit v bits 0)) "j" (BitVec.ofNat 64 (length-1))
+
+private theorem start_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (v : Nat→BitVec 64) (length bits : Nat) (name : String)
+    (notTop : ofString name≠ofString "vtop") (notSecond : ofString name≠ofString "vsec") (notJ : ofString name≠ofString "j") :
+    (start source v length bits).locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
+  (bind_lookup_other _ "j" name _ (Ne.symm notJ)).trans ((bind_lookup_other _ "vsec" name _ (Ne.symm notSecond)).trans
+    (bind_lookup_other _ "vtop" name _ (Ne.symm notTop)))
+
+/-- The already checked physical normalization supplies every initial
+loop invariant, including its derived carry range and actual mapped words. -/
+theorem normalization_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (ready : Normalization.Ready source base u v length bits)
+    (installed : OriginalCode.Installed source.code)
+    (q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient)))) :
+    Entry (start source v length bits) base (Normalized.extended u bits length) (length-1)
+      (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+      (Normalized.digit v bits 0) (Normalized.digit v bits 1) := by
+  have large:=ready.entry.large
+  have small:=ready.entry.small
+  have uBounds:=ready.u_number.2
+  refine ⟨⟨ready.entry.context.global,ready.entry.context.domain,ready.entry.context.arena,ready.entry.context.aligned⟩,
+    installed,by omega,?_,?_,?_,bind_lookup_same _ _ _,?_,?_,?_,?_,?_,?_,?_,?_,ready.vImage 0 (by decide),ready.vImage 1 (by decide),
+    uBounds (length-1) (by omega),uBounds length (by omega),?_,ready.top_large.2,ready.top_large.1,ready.initial_carry⟩
+  · exact (start_other source v length bits "un" (by decide) (by decide) (by decide)).trans ready.entry.un
+  · exact (start_other source v length bits "vn" (by decide) (by decide) (by decide)).trans ready.entry.vn
+  · exact (start_other source v length bits "q" (by decide) (by decide) (by decide)).trans q
+  · exact (start_other source v length bits "n" (by decide) (by decide) (by decide)).trans ready.entry.n
+  · exact ⟨0#64,(start_other source v length bits "i" (by decide) (by decide) (by decide)).trans ready.i⟩
+  · exact (bind_lookup_other _ "j" "vtop" _ (by decide)).trans ((bind_lookup_other _ "vsec" "vtop" _ (by decide)).trans (bind_lookup_same _ _ _))
+  · exact (bind_lookup_other _ "j" "vsec" _ (by decide)).trans (bind_lookup_same _ _ _)
+  · intro index inside
+    exact ready.uImage index (by omega)
+  · intro index inside
+    exact uBounds index (by omega)
+  · exact ready.uImage (length-1) (by omega)
+  · change source.memory (slot (Workspace.pointer base .normalizedNumerator) (length-1+1))=.word (Normalized.extended u bits length length)
+    simpa only [show length-1+1=length by omega] using ready.uImage length (by omega)
+  · exact (Normalize.first_balance (v 0) bits ready.bitsSmall (ready.entry.vSmall 0 (by decide))).1
+
+private theorem top_pair_number (contents : Nat→BitVec 64) (count : Nat) :
+    ((contents count).toNat+4294967296*(contents (count+1)).toNat)*2^(32*count)+number contents count=number contents (count+2) := by
+  have power : 2^(32*(count+1))=4294967296*2^(32*count):=by
+    rw [show 32*(count+1)=32+32*count by omega,Nat.pow_add]
+  rw [number,number,power]
+  ring
+
+/-- The loop's actual low prefix and top carry represent the whole
+normalized numerator, hence the original numerator times the same factor. -/
+theorem normalization_number (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (ready : Normalization.Ready source base u v length bits) :
+    ((Normalized.extended u bits length (length-1)).toNat+4294967296*(Normalized.extended u bits length length).toNat)*2^(32*(length-1))+
+      number (Normalized.extended u bits length) (length-1)=number u length*2^bits := by
+  have large:=ready.entry.large
+  have pair:=top_pair_number (Normalized.extended u bits length) (length-1)
+  rw [show length-1+1=length by omega,show length-1+2=length+1 by omega] at pair
+  exact pair.trans ready.u_number.1
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.normalization_entry
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.normalization_number

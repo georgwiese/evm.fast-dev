@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.OriginalCode
 import InitECandidate.Solver.GasBudget.ArithmeticQuietClock
 import InitECandidate.Solver.Input.ClockCostScoped
 
@@ -737,3 +738,71 @@ end InitECandidate.Solver.GasBudget.ArithmeticEffects
 #print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.fixed_price
 #print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.fixed_clock_spent
 #print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.fixed_call_spent
+
+
+namespace InitECandidate.Solver.GasBudget.ArithmeticEffects
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+
+-- Current literal entries, independent of the retired whole-EVM environment.
+def Kind.currentIndex : Kind→Nat
+  | .add_sat => 397
+  | .bit_length64 => 71
+  | .bswap64 => 18
+  | .ceil_log2 => 31
+  | .digits_len => 60
+  | .digits_to_u256 => 59
+  | .div64by32 => 57
+  | .max => 27
+  | .min => 26
+  | .mul64x64 => 53
+  | .nlz32 => 56
+  | .sat_word => 396
+  | .u256_add => 50
+  | .u256_add_carry => 49
+  | .u256_and => 46
+  | .u256_eq => 39
+  | .u256_fits_word => 35
+  | .u256_from_word => 33
+  | .u256_is_zero => 36
+  | .u256_limb => 37
+  | .u256_low => 34
+  | .u256_lt => 40
+  | .u256_neg => 52
+  | .u256_not => 45
+  | .u256_or => 47
+  | .u256_shl => 75
+  | .u256_shr => 76
+  | .u256_slt => 42
+  | .u256_sub => 51
+  | .u256_xor => 48
+  | .u256_abs => 66
+  | .u256_bit => 38
+  | .u256_bit_length => 72
+  | .u256_byte => 79
+  | .u256_cmp => 44
+  | .u256_from_be => 80
+  | .u256_gt => 41
+  | .u256_mul => 54
+  | .u256_mul_full => 55
+  | .u256_sar => 77
+  | .u256_sgt => 43
+  | .u256_byte_length => 73
+  | .u256_exp => 74
+  | .u256_signextend => 78
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem current_index (kind : Kind) :
+    (functionsHOL Input.OriginalCode.program)[kind.currentIndex]?=some (kind.name,kind.signature) := by
+  cases kind <;> rfl
+
+/-- All arithmetic catalogue entries are the unchanged current software
+bodies. This code context assumes no arithmetic result or future success. -/
+theorem current_environment (code) (installed : Input.OriginalCode.Installed code) : Environment code := by
+  intro kind
+  exact Input.OriginalCode.indexed code installed kind.currentIndex (kind.name,kind.signature) (current_index kind)
+
+end InitECandidate.Solver.GasBudget.ArithmeticEffects
+
+#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.current_index
+#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.current_environment

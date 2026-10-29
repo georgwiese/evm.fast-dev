@@ -1,4 +1,4 @@
-import InitECandidate.Solver.GasBudget.MemoryCostNoException
+import InitECandidate.Solver.GasBudget.ArithmeticClockPrice
 import InitECandidate.Solver.Input.PureStraight
 
 namespace InitECandidate.Solver.GasBudget.Mul64
@@ -118,3 +118,66 @@ end InitECandidate.Solver.GasBudget.Mul64
 
 #print axioms InitECandidate.Solver.GasBudget.Mul64.execute
 #print axioms InitECandidate.Solver.GasBudget.Mul64.zero
+
+
+namespace InitECandidate.Solver.GasBudget.Mul64
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+
+/-- Actual current two-word multiply signature for the existing checked
+value execution; no unrelated dispatch/memory-cost proof root is imported. -/
+theorem current_code (code) (installed : Input.OriginalCode.Installed code) :
+    code.lookup (ofString "mul64x64")=some ([(ofString "a",.one),(ofString "b",.one)],body,.comb [.one,.one]) := by
+  have known:=ArithmeticEffects.current_environment code installed .mul64x64
+  simpa only [ArithmeticEffects.Kind.name,ArithmeticEffects.Kind.signature,ArithmeticEffects.Kind.original,ArithmeticEffects.Kind.body,
+    body,Guest.guestFn_mul64x64,shapeToHOL,List.map_cons,List.map_nil] using known
+
+end InitECandidate.Solver.GasBudget.Mul64
+
+#print axioms InitECandidate.Solver.GasBudget.Mul64.current_code
+
+namespace InitECandidate.Solver.GasBudget.Mul64
+open Flapjack
+
+/-- Exact natural interpretation of the source primitive used by the real
+mul64x64 and wide multipliers, including the overflow word. -/
+theorem carry_number (left right : BitVec 64) :
+    (wordAddCarryHOL left right 0#64).1.toNat+2^64*(wordAddCarryHOL left right 0#64).2.toNat=left.toNat+right.toNat := by
+  have leftBound:=left.isLt
+  have rightBound:=right.isLt
+  by_cases overflow : 2^64≤left.toNat+right.toNat
+  all_goals simp [wordAddCarryHOL,overflow]
+  all_goals omega
+
+theorem carry_low_number (left right : BitVec 64) :
+    (wordAddCarryHOL left right 0#64).1.toNat=(left.toNat+right.toNat)%2^64 := by
+  simp [wordAddCarryHOL]
+
+theorem carry_high_number (left right : BitVec 64) :
+    (wordAddCarryHOL left right 0#64).2.toNat=(left.toNat+right.toNat)/2^64 := by
+  have full:=carry_number left right
+  have split:=Nat.mod_add_div (left.toNat+right.toNat) (2^64)
+  rw [carry_low_number] at full
+  omega
+
+theorem low_half_number (word : BitVec 64) : (word &&& 4294967295#64).toNat=word.toNat%2^32 := by
+  rw [BitVec.toNat_and]
+  change word.toNat &&& (2^32-1)=word.toNat%2^32
+  exact Nat.and_two_pow_sub_one_eq_mod word.toNat 32
+
+theorem high_half_number (word : BitVec 64) : (word>>>(32:Nat)).toNat=word.toNat/2^32 := by
+  rw [BitVec.toNat_ushiftRight,Nat.shiftRight_eq_div_pow]
+
+theorem halves_number (word : BitVec 64) :
+    (word &&& 4294967295#64).toNat+2^32*(word>>>(32:Nat)).toNat=word.toNat := by
+  rw [low_half_number,high_half_number]
+  exact Nat.mod_add_div word.toNat (2^32)
+
+end InitECandidate.Solver.GasBudget.Mul64
+
+#print axioms InitECandidate.Solver.GasBudget.Mul64.carry_number
+#print axioms InitECandidate.Solver.GasBudget.Mul64.carry_low_number
+#print axioms InitECandidate.Solver.GasBudget.Mul64.carry_high_number
+#print axioms InitECandidate.Solver.GasBudget.Mul64.low_half_number
+#print axioms InitECandidate.Solver.GasBudget.Mul64.high_half_number
+#print axioms InitECandidate.Solver.GasBudget.Mul64.halves_number

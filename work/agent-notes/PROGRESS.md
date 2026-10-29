@@ -4411,3 +4411,35 @@ row/header data, but current main Data traces only carry the earlier decoded
 input, so inspect and retain the real parent contract through the intervening
 calls. Remaining execution/wrappers/main, uniform target composition,
 dominant-slack review and final cleanup remain open.
+
+
+## Geometric Taylor arithmetic and standalone current arithmetic values
+
+The checked natural recurrence has a finite positive-prefix limit: fewer
+than1280continuing steps for256-bit terms. A numerator≥512denominator
+forces doubling before index257; the other branch forces halving from
+index1024. Generic doubling/halving/quotient lemmas establish these claims
+without assuming an infinite path or a successful future helper. This is
+not yet a bound for the actual taylor_exponential body: its real multiply,
+divide, overflow and loop-guard execution still must supply that recurrence.
+
+The44-entry arithmetic catalogue is now checked directly against the current
+Software AST, with fresh literal positions, independent of the retired
+whole-EVM environment. The existing Mul64 value and U256 zero/equality
+proofs now import only their needed arithmetic/tuple/return dependencies.
+Their original proof text and APIs are retained; each has an actual current
+code-entry theorem. Natural carry/low/high-half identities are checked. The
+real four-limb number is below2^256, and the actual zero-test returns0 exactly
+when that number is positive. Full multiply/divide numerical contracts remain
+open. No executable or challenge hypothesis was changed.
+
+Validation: current-taylor-geometric-arithmetic-v2.log PASS204jobs,
+current-main-geometric-compatibility-v1.log PASS3090jobs and
+current-arithmetic-value-imports-v2.log PASS735jobs, permitted printed axioms
+only. Index8700modules/18250facts; inventory8745/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage55%weekly/0resetcredits. Remaining: actual Taylor arithmetic/
+progress, parent-header field-size facts and current header validation,
+execution/wrappers/main, uniform target composition, dominant-slack review
+and final cleanup. Earlier header normal contracts retain allocation/input
+geometry but do not yet expose all materialized parent field-size facts.

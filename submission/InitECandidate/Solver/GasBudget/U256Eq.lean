@@ -84,3 +84,18 @@ end InitECandidate.Solver.GasBudget.U256Eq
 #print axioms InitECandidate.Solver.GasBudget.U256Eq.execute
 #print axioms InitECandidate.Solver.GasBudget.U256Eq.environment
 #print axioms InitECandidate.Solver.GasBudget.U256Eq.call_execute
+
+
+namespace InitECandidate.Solver.GasBudget.U256Eq
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+
+theorem current_code (code) (installed : Input.OriginalCode.Installed code) :
+    code.lookup (ofString "u256_eq")=some (formals,body,.one) := by
+  have known:=ArithmeticEffects.current_environment code installed .u256_eq
+  simpa only [ArithmeticEffects.Kind.name,ArithmeticEffects.Kind.signature,ArithmeticEffects.Kind.original,
+    body,formals,Input.RlpWrite.U256Value.tupleShape,Guest.guestFn_u256_eq,shapeToHOL,List.map_cons,List.map_nil] using known
+
+end InitECandidate.Solver.GasBudget.U256Eq
+
+#print axioms InitECandidate.Solver.GasBudget.U256Eq.current_code

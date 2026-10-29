@@ -1,4 +1,5 @@
-import InitECandidate.Solver.GasBudget.RegularChargeCall
+import InitECandidate.Solver.Input.PureReturn
+import InitECandidate.Solver.GasBudget.ArithmeticClockPrice
 import InitECandidate.Solver.Input.RlpWrite.U256Value
 
 namespace InitECandidate.Solver.GasBudget.U256Zero
@@ -53,3 +54,80 @@ end InitECandidate.Solver.GasBudget.U256Zero
 #print axioms InitECandidate.Solver.GasBudget.U256Zero.mixed_zero
 #print axioms InitECandidate.Solver.GasBudget.U256Zero.execute
 #print axioms InitECandidate.Solver.GasBudget.U256Zero.call_execute
+
+
+namespace InitECandidate.Solver.GasBudget.U256Zero
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+
+theorem current_code (code) (installed : Input.OriginalCode.Installed code) :
+    code.lookup (ofString "u256_is_zero")=some (formals,body,.one) := by
+  have known:=ArithmeticEffects.current_environment code installed .u256_is_zero
+  simpa only [ArithmeticEffects.Kind.name,ArithmeticEffects.Kind.signature,ArithmeticEffects.Kind.original,
+    body,formals,Input.RlpWrite.U256Value.tupleShape,Guest.guestFn_u256_is_zero,shapeToHOL,List.map_cons,List.map_nil] using known
+
+end InitECandidate.Solver.GasBudget.U256Zero
+
+#print axioms InitECandidate.Solver.GasBudget.U256Zero.current_code
+
+namespace InitECandidate.Solver.GasBudget.U256Zero
+
+/-- Little-endian natural value of the actual four64-bit scalar limbs. -/
+def number (words : Quad) : Nat:=
+  (words 0).toNat+2^64*(words 1).toNat+2^128*(words 2).toNat+2^192*(words 3).toNat
+
+theorem number_lt (words : Quad) : number words<2^256 := by
+  have first:=(words 0).isLt
+  have second:=(words 1).isLt
+  have third:=(words 2).isLt
+  have fourth:=(words 3).isLt
+  unfold number
+  omega
+
+theorem number_zero (words : Quad) : number words=0 ↔ ∀ index,words index=0#64 := by
+  constructor
+  · intro zero index
+    unfold number at zero
+    obtain ⟨index,inside⟩:=index
+    have cases : index=0 ∨ index=1 ∨ index=2 ∨ index=3:=by omega
+    rcases cases with rfl|rfl|rfl|rfl
+    · apply BitVec.eq_of_toNat_eq
+      change (words 0).toNat=0
+      omega
+    · apply BitVec.eq_of_toNat_eq
+      change (words 1).toNat=0
+      omega
+    · apply BitVec.eq_of_toNat_eq
+      change (words 2).toNat=0
+      omega
+    · apply BitVec.eq_of_toNat_eq
+      change (words 3).toNat=0
+      omega
+  · intro zero
+    simp [number,zero]
+
+theorem mixed_number_zero (words : Quad) : mixed words=0#64 ↔ number words=0 :=
+  (mixed_zero words).trans (number_zero words).symm
+
+/-- The real software zero-test result is zero exactly when its current
+256-bit natural value is positive. This supplies the actual Taylor guard. -/
+theorem resultWord_zero (words : Quad) : resultWord words=0#64 ↔ 0<number words := by
+  constructor
+  · intro active
+    by_cases zero : number words=0
+    · have allZero:=(mixed_number_zero words).mpr zero
+      simp [resultWord,allZero] at active
+    · omega
+  · intro positive
+    have nonzero : mixed words≠0#64:=by
+      intro zero
+      have valueZero:=(mixed_number_zero words).mp zero
+      omega
+    simp [resultWord,nonzero]
+
+end InitECandidate.Solver.GasBudget.U256Zero
+
+#print axioms InitECandidate.Solver.GasBudget.U256Zero.number_lt
+#print axioms InitECandidate.Solver.GasBudget.U256Zero.number_zero
+#print axioms InitECandidate.Solver.GasBudget.U256Zero.mixed_number_zero
+#print axioms InitECandidate.Solver.GasBudget.U256Zero.resultWord_zero

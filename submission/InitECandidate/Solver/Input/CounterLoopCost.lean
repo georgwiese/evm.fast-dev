@@ -159,3 +159,129 @@ end InitECandidate.Solver.Input.CounterFlow
 #print axioms InitECandidate.Solver.Input.CounterFlow.signed_loop_cost
 
 #print axioms InitECandidate.Solver.Input.CounterFlow.loop_snapshot_cost
+
+namespace InitECandidate.Solver.Input.GeometricLoop
+
+/-- A positive natural term doubled by each real continuing step reaches
+the word limit after at most its bit width many such steps. -/
+theorem doubling_lower (values : Nat→Nat) (steps : Nat) (positive : 0<values 0)
+    (grows : ∀ index<steps,2*values index≤values (index+1)) : 2^steps≤values steps := by
+  induction steps with
+  | zero=>simpa using (show 1≤values 0 from by omega)
+  | succ steps ih=>
+    have previous:=ih (by intro index inside; exact grows index (by omega))
+    calc
+      2^(steps+1)=2*2^steps:=by rw [Nat.pow_succ,Nat.mul_comm]
+      _≤2*values steps:=Nat.mul_le_mul_left 2 previous
+      _≤values (steps+1):=grows steps (by omega)
+
+theorem doubling_exceeds_word (values : Nat→Nat) (bits : Nat) (positive : 0<values 0)
+    (grows : ∀ index<bits,2*values index≤values (index+1)) (bounded : values bits<2^bits) : False :=
+  Nat.not_le_of_lt bounded (doubling_lower values bits positive grows)
+
+/-- Repeated halving consumes a finite unsigned word in at most its bit
+width many actual continuing steps, including truncating integer division. -/
+theorem halving_weighted (values : Nat→Nat) (steps : Nat)
+    (shrinks : ∀ index<steps,2*values (index+1)≤values index) : 2^steps*values steps≤values 0 := by
+  induction steps with
+  | zero=>simp
+  | succ steps ih=>
+    have previous:=ih (by intro index inside; exact shrinks index (by omega))
+    calc
+      2^(steps+1)*values (steps+1)=2^steps*(2*values (steps+1)):=by rw [Nat.pow_succ,Nat.mul_assoc]
+      _≤2^steps*values steps:=Nat.mul_le_mul_left _ (shrinks steps (by omega))
+      _≤values 0:=previous
+
+theorem halving_zero (values : Nat→Nat) (bits : Nat) (bounded : values 0<2^bits)
+    (shrinks : ∀ index<bits,2*values (index+1)≤values index) : values bits=0 := by
+  have weighted:=halving_weighted values bits shrinks
+  by_cases zero : values bits=0
+  · exact zero
+  · have positive : 1≤values bits:=by omega
+    have power : 2^bits≤2^bits*values bits:=by simpa using Nat.mul_le_mul_left (2^bits) positive
+    omega
+
+theorem quotient_double (accumulator numerator divisor : Nat) (positive : 0<divisor) (large : 2*divisor≤numerator) :
+    2*accumulator≤accumulator*numerator/divisor := by
+  apply (Nat.le_div_iff_mul_le positive).mpr
+  calc
+    (2*accumulator)*divisor=accumulator*(2*divisor):=by ac_rfl
+    _≤accumulator*numerator:=Nat.mul_le_mul_left accumulator large
+
+theorem quotient_half (accumulator numerator divisor : Nat) (small : 2*numerator≤divisor) :
+    2*(accumulator*numerator/divisor)≤accumulator := by
+  by_cases zero : numerator=0
+  · simp [zero]
+  · have paid : (2*(accumulator*numerator/divisor))*numerator≤accumulator*numerator:=by
+      calc
+        (2*(accumulator*numerator/divisor))*numerator=(accumulator*numerator/divisor)*(2*numerator):=by ac_rfl
+        _≤(accumulator*numerator/divisor)*divisor:=Nat.mul_le_mul_left _ small
+        _≤accumulator*numerator:=Nat.div_mul_le_self _ _
+    apply Nat.le_of_not_gt
+    intro smaller
+    have strict:=Nat.mul_lt_mul_of_pos_right smaller (by omega : 0<numerator)
+    omega
+
+/-- Numerical branch used by the unchanged Taylor loop: before index257,
+a numerator at least512denominator forces doubling of every normal term. -/
+theorem taylor_large_step (accumulator numerator denominator index : Nat)
+    (denominatorPositive : 0<denominator) (indexPositive : 0<index) (indexBound : index≤256)
+    (large : 512*denominator≤numerator) :
+    2*accumulator≤accumulator*numerator/(denominator*index) := by
+  apply quotient_double accumulator numerator (denominator*index) (Nat.mul_pos denominatorPositive indexPositive)
+  have bound:=Nat.mul_le_mul_left denominator indexBound
+  omega
+
+/-- In the other branch the actual Taylor term halves from index1024 on.
+This is a natural recurrence fact; the real arithmetic-call bridge is separate. -/
+theorem taylor_small_step (accumulator numerator denominator index : Nat)
+    (indexBound : 1024≤index) (small : numerator<512*denominator) :
+    2*(accumulator*numerator/(denominator*index))≤accumulator := by
+  apply quotient_half
+  have bound:=Nat.mul_le_mul_left denominator indexBound
+  omega
+
+end InitECandidate.Solver.Input.GeometricLoop
+
+#print axioms InitECandidate.Solver.Input.GeometricLoop.doubling_lower
+#print axioms InitECandidate.Solver.Input.GeometricLoop.doubling_exceeds_word
+#print axioms InitECandidate.Solver.Input.GeometricLoop.halving_weighted
+#print axioms InitECandidate.Solver.Input.GeometricLoop.halving_zero
+#print axioms InitECandidate.Solver.Input.GeometricLoop.quotient_double
+#print axioms InitECandidate.Solver.Input.GeometricLoop.quotient_half
+#print axioms InitECandidate.Solver.Input.GeometricLoop.taylor_large_step
+#print axioms InitECandidate.Solver.Input.GeometricLoop.taylor_small_step
+
+namespace InitECandidate.Solver.Input.GeometricLoop
+
+/-- Any positive finite-word Taylor prefix obeying the exact natural
+recurrence has fewer than1280continuing steps. This does not assume an
+infinite execution, a future successful arithmetic call or a loop result. -/
+theorem taylor_positive_prefix (values : Nat→Nat) (numerator denominator steps : Nat)
+    (denominatorPositive : 0<denominator)
+    (terms : ∀ index≤steps,0<values index ∧ values index<2^256)
+    (recurrence : ∀ index<steps,values (index+1)=values index*numerator/(denominator*(index+1))) : steps<1280 := by
+  apply Nat.lt_of_not_ge
+  intro long
+  by_cases large : 512*denominator≤numerator
+  · have grows : ∀ index<256,2*values index≤values (index+1):=by
+      intro index inside
+      rw [recurrence index (by omega)]
+      exact taylor_large_step (values index) numerator denominator (index+1) denominatorPositive (by omega) (by omega) large
+    exact doubling_exceeds_word values 256 (terms 0 (by omega)).1 grows (terms 256 (by omega)).2
+  · have small : numerator<512*denominator:=by omega
+    let shifted:=fun index=>values (1023+index)
+    have shrinks : ∀ index<256,2*shifted (index+1)≤shifted index:=by
+      intro index inside
+      change 2*values (1023+(index+1))≤values (1023+index)
+      have same : 1023+(index+1)=(1023+index)+1:=by omega
+      rw [same,recurrence (1023+index) (by omega)]
+      exact taylor_small_step (values (1023+index)) numerator denominator (1023+index+1) (by omega) small
+    have zero:=halving_zero shifted 256 (terms 1023 (by omega)).2 shrinks
+    have positive:= (terms 1279 (by omega)).1
+    change values 1279=0 at zero
+    omega
+
+end InitECandidate.Solver.Input.GeometricLoop
+
+#print axioms InitECandidate.Solver.Input.GeometricLoop.taylor_positive_prefix

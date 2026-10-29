@@ -24,21 +24,21 @@ theorem NodeOutput.prepend (source ready target : PanSemStateFiniteExact 64 Gues
     domain:=output.domain.trans domain
     endian:=output.endian.trans endian
     code:=output.code.trans code
-    heapGrows:=grows.trans output.heapGrows
+    heapGrows:=Nat.le_trans grows output.heapGrows
     olderPrefix:=fun query before=>(output.olderPrefix query before).trans (olderMemory query before)
     oldPathFields:=fields.trans old base output.oldPathFields members
     protectedMemory:=by
       intro address safe before
       have currentSafe:=safe.of_fields old base address same fields
-      exact (output.protectedMemory address currentSafe (before.trans_le grows)).trans (protectedWords address safe before)
+      exact (output.protectedMemory address currentSafe (Nat.lt_of_lt_of_le before grows)).trans (protectedWords address safe before)
     freshMembers:=by
       intro node live
       rcases output.freshMembers node live with old|fresh
       · exact Or.inl (by rwa [same] at old)
-      · exact Or.inr (grows.trans fresh)
+      · exact Or.inr (Nat.le_trans grows fresh)
     protectedGraph:=by
       intro address safe before away
-      exact output.protectedGraph address (safe.of_fields old base address same fields) (before.trans_le grows) away
+      exact output.protectedGraph address (safe.of_fields old base address same fields) (Nat.lt_of_lt_of_le before grows) away
     activeRegistry:=by intro active; exact (output.activeRegistry active).trans same
     tags:=fun node live active=>(output.tags node (members node live) active).trans (tags node live active)
     oldMember:=fun node live=>output.oldMember node (members node live) }⟩

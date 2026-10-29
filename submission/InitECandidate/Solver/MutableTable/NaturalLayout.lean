@@ -1,5 +1,5 @@
-import InitECandidate.Solver.MutableTable.KeyHash
-import InitECandidate.Solver.MutableTable.ByteStore
+import InitECandidate.Solver.MutableTable.KeyWidths
+import InitECandidate.Solver.WitnessRadix.AllocatedArena
 import InitECandidate.Solver.WitnessRadix.AllocationDomain
 
 namespace InitECandidate.Solver.MutableTable.NaturalLayout
@@ -69,7 +69,7 @@ theorem byte_cell (kind : KeyHash.Kind) (plan : Plan) (valid : Valid kind plan) 
     panByteAlignHOL (width := 64) (cell plan pool offset) = cell plan pool (8 * (offset / 8)) := by
   have aligned := valid.aligned pool
   apply BitVec.eq_of_toNat_eq
-  rw [ByteStore.aligned_number, number kind plan valid pool offset inside,
+  rw [AllocatedBytes.aligned_number, number kind plan valid pool offset inside,
     number kind plan valid pool (8 * (offset / 8)) (by omega)]
   omega
 

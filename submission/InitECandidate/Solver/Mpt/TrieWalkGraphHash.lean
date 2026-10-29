@@ -5,31 +5,6 @@ namespace InitECandidate.Solver.Mpt.TrieWalk
 open Flapjack PanSemStateFiniteExact GasBudget
 open WitnessRadix
 
-/-- Structural membership depends only on valid nodes and their tags. -/
-theorem Graph.footprint_transport (memory memory' : Memory) (domain domain' : BitVec 64 → Prop)
-    (graph : Graph memory domain) (next : Graph memory' domain') (validEq : next.valid=graph.valid)
-    (tags : ∀ node,graph.valid node → node≠0#64 → wordAt memory' node=wordAt memory node)
-    (query : BitVec 64) (required : next.Footprint query) : graph.Footprint query := by
-  cases required with
-  | header node member active =>
-    exact .header query (by rwa [validEq] at member) active
-  | pointer node member active tag =>
-    have oldMember : graph.valid node := by rwa [validEq] at member
-    rw [tags node oldMember active] at tag
-    exact .pointer node oldMember active tag
-  | size node member active tag =>
-    have oldMember : graph.valid node := by rwa [validEq] at member
-    rw [tags node oldMember active] at tag
-    exact .size node oldMember active tag
-  | extension node member active tag =>
-    have oldMember : graph.valid node := by rwa [validEq] at member
-    rw [tags node oldMember active] at tag
-    exact .extension node oldMember active tag
-  | branch node member active notHash notLeaf notExtension index inside =>
-    have oldMember : graph.valid node := by rwa [validEq] at member
-    rw [tags node oldMember active] at notHash notLeaf notExtension
-    exact .branch node oldMember active notHash notLeaf notExtension index inside
-
 /-- Reconstruct the incoming trie graph after real hash writes, retaining
 its protection from the separate nibble-conversion buffer. -/
 theorem Graph.after_hash (source post : PanSemStateFiniteExact 64 Guest.HostMemory)

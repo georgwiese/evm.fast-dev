@@ -1,5 +1,6 @@
-import InitECandidate.Solver.Mpt.TrieWalkExtensionCost
-import InitECandidate.Solver.Mpt.TrieWalkRank
+import InitECandidate.Solver.GasBudget.Frame
+import InitECandidate.Solver.Mpt.TrieWalkProgram
+import InitECandidate.Solver.WitnessRadix.AllocatedBytes
 
 namespace InitECandidate.Solver.Mpt.TrieWalk
 open Flapjack PanSemStateFiniteExact GasBudget

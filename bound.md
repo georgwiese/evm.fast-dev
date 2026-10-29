@@ -1448,3 +1448,36 @@ replacement closure0/fixed files unchanged. Policy PASS65519entries/
 2485553664bytes. Claim infinity; no global finite target K/full verification.
 Usage37%weekly/0resetcredits. Next: actual allocator-derived normal trie
 frames/loop invariant, indexed builder, remaining main and target steps.
+
+
+## Complete current insertion loop and actual normal tree output
+
+The unchanged current _mpt_insert_node249 now checks at36790body source
+clocks on every outcome. The actual normal iteration either clears go or
+strictly advances the consumed key length; its rank allows at most65iterations.
+A genuine normal full insertion returns a registered root and derives the
+real evolving heap, preserved older words/tags, bounded values, path bytes,
+node/path separation and protected query storage for subsequent insertions.
+This is a local physical-entry theorem, not yet the whole indexed builder.
+
+Actual normal bounded allocations now derive their own persistent room from
+the observed guards plus no-wrap supplied by earlier ordinary ownership.
+Scalar/branch constructors retain their complete actual field writes and
+older memory; ordinary rounding geometry is separate from persistent guards.
+No future allocation or successful graph output is an entry hypothesis.
+
+Separated shared region geometry, key-width data and scratch/graph frame
+facts from retired hash-map, accelerator and parser execution dependencies.
+Restored explicit normal-helper imports after the earlier cost-only cleanup;
+updated small natural-comparison and field-distinctness proofs. Compatibility
+exports retain their old names. Fixed program/semantics/ROM files unchanged.
+
+Validation: current-trie-node-cells-v3.log PASS2149jobs;
+current-trie-physical-cleanup-v5.log PASS2199jobs;
+current-trie-insert-normal-v3.log PASS2394jobs, including the current complete
+payload-to-trie regression and shared region compatibility module. Printed
+axioms permitted only. Index8686modules/17783facts; inventory8731/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K or
+full verification. Next: current unsecured key/setter and actual indexed-loop
+invariant, remaining main and target-step composition. Five historical
+untracked RLP WIPs remain untouched/unclaimed. Usage38%weekly/0resetcredits.

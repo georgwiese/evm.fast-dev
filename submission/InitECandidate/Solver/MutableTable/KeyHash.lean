@@ -1,3 +1,4 @@
+import InitECandidate.Solver.MutableTable.KeyWidths
 import InitECandidate.Solver.MutableTable.HashSizedMapped
 import InitECandidate.Solver.MutableTable.HashByteRuntime.Call
 import InitECandidate.Solver.MutableTable.HashMemory32
@@ -7,11 +8,6 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 open WitnessRadix
 
-/-- Exactly the key widths used by original table constructors. -/
-inductive Kind where | account | indexedAccount | word | storage | indexedStorage
-  deriving DecidableEq
-
-def keySize : Kind → Nat | .account => 20 | .indexedAccount => 28 | .word => 32 | .storage => 52 | .indexedStorage => 60
 def hashPrice : Kind → Nat
   | .indexedAccount => MemeqByteRuntime.price 28 + 1
   | .indexedStorage => MemeqByteRuntime.price 60 + 1
@@ -29,7 +25,6 @@ theorem observed_view (source : PanSemStateFiniteExact 64 Guest.HostMemory) (poi
   have actual := MemeqByteRuntime.observed_read source pointer byte.val (mapped byte.val byte.isLt)
   simpa only [MemeqByteRuntime.observed, observedKey, Memeq32.toUInt8, UInt8.ofNat_bitVecToNat, byteAddress] using actual
 
-theorem key_size_small (kind : Kind) : keySize kind ≤ 64 := by cases kind <;> decide
 theorem hash_price_positive (kind : Kind) : 0 < hashPrice kind := by cases kind <;> decide
 
 /-- Uniform real hash caller for every key width in the unchanged program.

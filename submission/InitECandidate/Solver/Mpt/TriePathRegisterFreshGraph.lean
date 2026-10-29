@@ -27,7 +27,7 @@ theorem Graph.register_fresh_path {memory : Memory} {domain : BitVec 64 → Prop
   have nextRegions:=(regions.weaken graph nodeLower upper nodeLower nextUpper (Nat.le_refl _) grows).register graph node data nodeLower nextUpper floor arena aligned before
   have nextDisjoint:=disjoint.register graph node data (by
     intro old member active different
-    exact Or.inr ((regions old member active).2.2.2.trans fresh))
+    exact Or.inr (Nat.le_trans (regions old member active).2.2.2 fresh))
   let nextValues:=Values.register graph node data limit values leaf (by
     intro notHash notLeaf notExtension
     have impossible : False:=tag.elim notLeaf notExtension

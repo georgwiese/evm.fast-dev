@@ -16,7 +16,7 @@ theorem Graph.Regions.weaken {memory : Memory} {domain : BitVec 64  →  Prop}
     (first : smaller≤lower) (last : upper≤larger) : graph.Regions smaller larger := by
   intro node member active
   obtain ⟨floor,arena,aligned,before⟩:=regions node member active
-  exact ⟨first.trans floor,arena,aligned,before.trans last⟩
+  exact ⟨Nat.le_trans first floor,arena,aligned,Nat.le_trans before last⟩
 
 /-- Real registration adds only one actual node allocation to the old
 registry. All physical facts for old nodes remain at the same current memory. -/

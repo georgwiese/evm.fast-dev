@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.NodeConstructorAssigned
+import InitECandidate.Solver.PanFieldStoresFrame
 
 namespace InitECandidate.Solver.Mpt.NodeConstructor
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -25,11 +26,11 @@ theorem physical_of_fields (kind : Kind) (source target : PanSemStateFiniteExact
     (memory : target.memory=WordWrites.write source.memory (FieldStores.writes heap (fields kind words))) :
     Physical kind source target heap words := by
   have amount : (BitVec.ofNat 64 (bytes kind)).toNat=bytes kind:=by cases kind <;> rfl
-  have growth:=PersistentAlloc.guards heap (BitVec.ofNat 64 (bytes kind)) (by rw [amount]; exact arena.upper)
+  have growth:=rounded_ordinary heap (BitVec.ofNat 64 (bytes kind)) (by rw [amount]; exact arena.upper)
   rw [amount] at growth
   have nextArena : AllocatedBytes.Arena (PersistentAlloc.rounded heap (BitVec.ofNat 64 (bytes kind))) 0:=
-    ⟨by have first:=arena.lower; have grows:=growth.2.2.1; omega,by have last:=growth.2.2.2.1; omega⟩
-  refine ⟨arena,domain,endian,?_,nextArena,growth.2.2.2.2,growth.2.2.1,?_,?_⟩
+    ⟨by have first:=arena.lower; have grows:=growth.1; omega,by have last:=growth.2.1; omega⟩
+  refine ⟨arena,domain,endian,?_,nextArena,growth.2.2,growth.1,?_,?_⟩
   · rw [globals]
     simp [HolFiniteMapExact.update,FUPDATE]
   · intro field member
@@ -52,7 +53,7 @@ theorem scalar_physical (kind : Kind) (scalar : kind≠.branch)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),target)) :
     value=.val (.word heap) ∧ Physical kind source target heap words := by
-  obtain ⟨answer,nodeArena,positive,frame⟩:=scalar_normal kind scalar source target heap words inputs domain heapCell arena aligned installed value normal
+  obtain ⟨answer,nodeArena,positive,frame⟩:=scalar_normal_from_arena kind scalar source target heap words inputs domain heapCell arena aligned installed value normal
   exact ⟨answer,physical_of_fields kind source target heap words nodeArena aligned
     (by have same:=congrArg PanSemStateFiniteExact.memaddrs frame; exact same) (by have same:=congrArg PanSemStateFiniteExact.be frame; exact same)
     (congrArg PanSemStateFiniteExact.globals frame) (congrArg PanSemStateFiniteExact.memory frame)⟩

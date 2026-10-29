@@ -62,7 +62,7 @@ theorem Graph.PathRegions.weaken {memory : Memory} {domain : BitVec 64 → Prop}
     graph.PathRegions smaller larger := by
   intro node member active tag
   obtain ⟨floor,before⟩:=regions node member active tag
-  exact ⟨first.trans floor,before.trans last⟩
+  exact ⟨Nat.le_trans first floor,Nat.le_trans before last⟩
 
 theorem Graph.PathRegions.of_agreement (memory memory' : Memory) (domain domain' : BitVec 64 → Prop)
     (graph : Graph memory domain) (next : Graph memory' domain') (lower upper : Nat) (regions : graph.PathRegions lower upper)

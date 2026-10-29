@@ -28,7 +28,7 @@ theorem prefix_entry_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
   obtain ⟨funded,child,returned,inner,run,checked,continued,endpoint⟩:=Input.CallNormal.scoped_normal source target "pl" .one (ofString "common_prefix_length") prefixArguments _
     CommonPrefix.body afterPrefix callee .one args called value normal
   obtain ⟨prefixLength,answer,bound,cost,frame⟩:=CommonPrefix.body_normal (callEntryStateHOLFinite source callee) child oldLength length
-    ((Nat.min_le_right _ _).trans small) installed alCell blCell returned run
+    (Nat.le_trans (Nat.min_le_right _ _) small) installed alCell blCell returned run
   let ready:=Input.CallNormal.continuationEntry source child "pl" returned
   have clockEq : ready.clock=child.clock:=rfl
   have price : source.clock-ready.clock≤length.toNat+2:=by

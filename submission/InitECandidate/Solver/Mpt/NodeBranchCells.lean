@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.NodeConstructorMemory
+import Mathlib.Tactic.IntervalCases
 
 namespace InitECandidate.Solver.Mpt.NodeConstructor
 open Flapjack PanSemStateFiniteExact WitnessRadix

@@ -1,7 +1,7 @@
 import InitECandidate.Solver.WitnessRadix.WordWrites
 import InitECandidate.Solver.WitnessRadix.StateSteps
 import InitECandidate.Solver.Input.QuietClock
-import InitECandidate.Solver.MutableTable.MemoryRegion
+import InitECandidate.Solver.MutableTable.MemoryRegionCore
 
 namespace InitECandidate.Solver.Mpt.LocalFields
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix

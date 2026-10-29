@@ -15,13 +15,10 @@ theorem branch_physical_of_fields (source target : PanSemStateFiniteExact 64 Gue
     (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be)
     (globals : target.globals=source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded heap 176#64))))
     (memory : target.memory=StoreWord.put (Zero.finalMemory source.memory heap 176) heap 3#64) : BranchPhysical source target heap := by
-  have growth:=PersistentAlloc.guards heap 176#64 arena.upper
-  change ¬PersistentAlloc.heapEnd-heap<176#64 ∧ ¬PersistentAlloc.heapEnd<PersistentAlloc.rounded heap 176#64 ∧
-    heap.toNat+176≤(PersistentAlloc.rounded heap 176#64).toNat ∧ (PersistentAlloc.rounded heap 176#64).toNat≤33806089496 ∧
-    (PersistentAlloc.rounded heap 176#64).toNat%8=0 at growth
+  have growth:=rounded_ordinary heap 176#64 arena.upper
   have nextArena : AllocatedBytes.Arena (PersistentAlloc.rounded heap 176#64) 0:=
-    ⟨by have first:=arena.lower; have grows:=growth.2.2.1; omega,by have last:=growth.2.2.2.1; omega⟩
-  refine ⟨⟨arena,domain,endian,?_,nextArena,growth.2.2.2.2,growth.2.2.1,?_,?_⟩,?_,?_⟩
+    ⟨by have first:=arena.lower; have grows:=growth.1; omega,by have last:=growth.2.1; omega⟩
+  refine ⟨⟨arena,domain,endian,?_,nextArena,growth.2.2,growth.1,?_,?_⟩,?_,?_⟩
   · change target.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 176#64)))
     rw [globals]
     simp [HolFiniteMapExact.update,FUPDATE]

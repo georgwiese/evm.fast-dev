@@ -28,18 +28,18 @@ theorem Graph.register_borrowed_paths {memory : Memory} {domain : BitVec 64 → 
   · apply Graph.PathRegions.register graph lower nextUpper (regions.weaken graph lower upper lower nextUpper (Nat.le_refl _) grows) node data
     intro pathTag
     rw [pointerStored,lengthStored]
-    exact ⟨buffer.bounds.1,buffer.bounds.2.trans grows⟩
+    exact ⟨buffer.bounds.1,Nat.le_trans buffer.bounds.2 grows⟩
   · apply separated.register graph node data
     · intro current member active pathTag index inside nodeActive offset within
       exact (paths.span current member active pathTag).apart_before memory domain be _ node _ _ arena
-        ((regions current member active pathTag).2.trans fresh) index inside offset within
+        (Nat.le_trans (regions current member active pathTag).2 fresh) index inside offset within
     · intro pathTag index inside owner ownerMember ownerActive offset within
       rw [lengthStored] at inside
       rw [pointerStored]
       rcases ownerMember with old|new
       · exact buffer.apart index inside owner old ownerActive offset within
       · subst owner
-        exact buffer.span.apart_before memory domain be pointer node length.toNat _ arena (buffer.bounds.2.trans fresh) index inside offset within
+        exact buffer.span.apart_before memory domain be pointer node length.toNat _ arena (Nat.le_trans buffer.bounds.2 fresh) index inside offset within
 
 end InitECandidate.Solver.Mpt.TrieWalk
 

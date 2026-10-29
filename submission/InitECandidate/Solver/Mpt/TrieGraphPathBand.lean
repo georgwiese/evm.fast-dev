@@ -50,7 +50,7 @@ theorem Graph.PathBuffer.of_aligned_band (source target : PanSemStateFiniteExact
     (memory : ∀ query : BitVec 64,cutoff≤query.toNat→query.toNat<upper→target.memory query=source.memory query) :
     next.PathBuffer target.be lower upper pointer length := by
   refine ⟨buffer.span.of_aligned_band source target pointer length cutoff upper aligned
-    (above.trans buffer.bounds.1) buffer.bounds.2 domain endian memory,buffer.bounds,?_⟩
+    (Nat.le_trans above buffer.bounds.1) buffer.bounds.2 domain endian memory,buffer.bounds,?_⟩
   intro index inside owner member active offset offsetInside
   have oldMember : graph.valid owner:=by rwa [same] at member
   rw [tags owner oldMember active] at offsetInside

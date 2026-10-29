@@ -15,8 +15,9 @@ theorem fields_distinct (kind : Kind) (words : String→BitVec 64) (heap : BitVe
   have injective : Function.Injective (fun offset : BitVec 64=>heap+offset):=by
     intro first second same
     exact (BitVec.add_right_inj heap).1 same
-  have shifted:=offsets.map injective
-  simpa only [FieldStores.writes,List.map_map,Function.comp_def] using shifted
+  have shifted:=List.Pairwise.map (S := fun first second : BitVec 64=>first≠second) (fun offset : BitVec 64=>heap+offset)
+    (fun first second different equal=>different (injective equal)) offsets
+  simpa only [List.Nodup,FieldStores.writes,List.map_map,Function.comp_def] using shifted
 
 /-- Every actual scalar field, including constructor tags and saved ABI
 words, follows from the real last-write memory effect of normal execution. -/
@@ -28,7 +29,7 @@ theorem scalar_normal_cells (kind : Kind) (scalar : kind≠.branch)
     (installed : Input.OriginalCode.Installed source.code) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (body kind)=(some (.returned value),target)) :
     ∀ field∈fields kind words,target.memory (heap+BitVec.ofNat 64 field.offset)=.word field.value.word := by
-  obtain ⟨valueEq,nodeArena,positive,frame⟩:=scalar_normal kind scalar source target heap words inputs domain heapCell arena aligned installed value normal
+  obtain ⟨valueEq,nodeArena,positive,frame⟩:=scalar_normal_from_arena kind scalar source target heap words inputs domain heapCell arena aligned installed value normal
   have memory:=congrArg PanSemStateFiniteExact.memory frame
   change target.memory=WordWrites.write source.memory (FieldStores.writes heap (fields kind words)) at memory
   intro field inside

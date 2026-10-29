@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.NodeBranchConstructor
+import InitECandidate.Solver.Mpt.NodeConstructorNormal
 import InitECandidate.Solver.WitnessRadix.ZeroNormal
 
 namespace InitECandidate.Solver.Mpt.NodeConstructor
@@ -18,10 +19,11 @@ theorem branch_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
     emptyLocalsHOLFinite target=emptyLocalsHOLFinite
       {PersistentAlloc.post {source with clock:=source.clock-9} heap 176#64 with
         memory:=StoreWord.put (Zero.finalMemory source.memory heap 176) heap 3#64} := by
+  have heapBound:=heap_bound_of_normal .branch source target heap heapCell arena installed value normal
   rw [allocation_shape] at normal
   obtain ⟨room,positive,inner,tailRun,endpoint⟩:=PersistentAlloc.call_normal source target "nd" [.const 176#64] (tail .branch) heap 176#64 rfl
-    (PersistentAlloc.original_code source.code installed) (Input.Trap.original_code source.code installed) heapCell (by have upper:=arena.upper; omega) value normal
-  have nodeArena : AllocatedBytes.Arena heap 176:=⟨arena.lower,room⟩
+    (PersistentAlloc.original_code source.code installed) (Input.Trap.original_code source.code installed) heapCell heapBound value normal
+  have nodeArena : AllocatedBytes.Arena heap 176:=⟨arena.lower,by omega⟩
   let ready:=QueryBranch.bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 176#64) "nd" heap
   have node : ready.locals.lookup (ofString "nd")=some (.val (.word heap)):=QueryBranch.bind_lookup_same _ _ _
   have args : evalListHOLFinite ready (h:=fun query=>Classical.propDecidable (ready.memaddrs query)) branchArguments=some (Zero.values heap 176):=by

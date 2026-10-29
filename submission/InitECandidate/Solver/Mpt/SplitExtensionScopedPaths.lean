@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.InsertionHelperEnvironment
+import InitECandidate.Solver.Mpt.SplitExtensionNormal
 import InitECandidate.Solver.Input.ScopedCallNone
 
 namespace InitECandidate.Solver.Mpt.SplitExtension

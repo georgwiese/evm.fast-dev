@@ -6186,6 +6186,7 @@
     "submission/InitECandidate/Solver/MutableTable/ItemScopedNormal.lean",
     "submission/InitECandidate/Solver/MutableTable/KeyCompare.lean",
     "submission/InitECandidate/Solver/MutableTable/KeyHash.lean",
+    "submission/InitECandidate/Solver/MutableTable/KeyWidths.lean",
     "submission/InitECandidate/Solver/MutableTable/KeysAfterOutput.lean",
     "submission/InitECandidate/Solver/MutableTable/KeysAllocation.lean",
     "submission/InitECandidate/Solver/MutableTable/KeysCall.lean",
@@ -6264,6 +6265,7 @@
     "submission/InitECandidate/Solver/MutableTable/MemoryModelValue.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryModelValueProperty.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryRegion.lean",
+    "submission/InitECandidate/Solver/MutableTable/MemoryRegionCore.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryRegionQuery.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryRegionSeparation.lean",
     "submission/InitECandidate/Solver/MutableTable/MemoryRegionWord.lean",
@@ -7636,6 +7638,7 @@
     "submission/InitECandidate/Solver/WitnessRadix/AllocationGlobalExecution.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AllocationGlobalNormal.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AllocationGlobals.lean",
+    "submission/InitECandidate/Solver/WitnessRadix/AllocationNoWrapTrace.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AllocationNormal.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AllocationNormalExpected.lean",
     "submission/InitECandidate/Solver/WitnessRadix/AllocationRequest.lean",
@@ -8733,8 +8736,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65519,
-  "package_bytes": 2485553664,
+  "package_entries": 65522,
+  "package_bytes": 2485564223,
   "claim": {
     "K": "infinity"
   },

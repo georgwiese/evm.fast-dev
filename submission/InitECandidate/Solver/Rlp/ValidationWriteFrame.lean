@@ -4,14 +4,6 @@ namespace InitECandidate.Solver.Rlp.Validation
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-/-- Ordinary words above the incoming scratch cursor are untouched. -/
-def Above (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff : Nat) : Prop :=
-  ∀ query,cutoff≤query.toNat → target.memory query=source.memory query
-
-theorem Above.refl (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff : Nat) : Above source source cutoff := fun _ _=>rfl
-theorem Above.trans (source middle target : PanSemStateFiniteExact 64 Guest.HostMemory) (cutoff : Nat)
-    (first : Above source middle cutoff) (second : Above middle target cutoff) : Above source target cutoff :=
-  fun query upper=>(second query upper).trans (first query upper)
 
 theorem push_none_above (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
     (rootEnd cursor limit position ending payload after : BitVec 64) (frames : List Frame)

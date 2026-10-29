@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Mpt.TrieWalkValues
-import InitECandidate.Solver.Mpt.TrieWalkGraphHash
+import InitECandidate.Solver.Mpt.TrieWalkGraphProtection
 
 namespace InitECandidate.Solver.Mpt.TrieWalk
 open Flapjack PanSemStateFiniteExact GasBudget

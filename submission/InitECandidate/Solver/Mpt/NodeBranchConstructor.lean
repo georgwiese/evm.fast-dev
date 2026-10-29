@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.NodeBranchProgram
-import InitECandidate.Solver.WitnessRadix.AllocationTrace
+import InitECandidate.Solver.WitnessRadix.AllocatedBytes
+import InitECandidate.Solver.WitnessRadix.AllocationNoWrapTrace
 import InitECandidate.Solver.WitnessRadix.ZeroCost
 import InitECandidate.Solver.Input.ClockCostCurrent
 
@@ -31,12 +32,13 @@ theorem branch_body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (
     have shape:=allocation_shape .branch
     change body .branch=.decCall (ofString "nd") .one (ofString "alloc") [.const 176#64] (tail .branch) at shape
     rw [←shape]
-  rcases PersistentAlloc.scoped_trace source output.2 "nd" [.const 176#64] (tail .branch) heap 176#64 rfl installed heapCell (by have upper:=arena.upper; omega) output.1 actual with stopped|reached
-  · exact stopped.trans (by omega)
+  rcases PersistentAlloc.scoped_trace_no_wrap source output.2 "nd" [.const 176#64] (tail .branch) heap 176#64 rfl installed heapCell (by change heap.toNat+176+7<2^64; have upper:=arena.upper; omega) output.1 actual with stopped|reached
+  · exact Nat.le_trans stopped (by omega)
   · obtain ⟨funded,room,inner,continued,endpoint⟩:=reached
+    change heap.toNat+176≤2952790016 at room
     let ready:=QueryBranch.bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 176#64) "nd" heap
     have node : ready.locals.lookup (ofString "nd")=some (.val (.word heap)):=QueryBranch.bind_lookup_same _ _ _
-    have nodeArena : AllocatedBytes.Arena heap 176:=⟨arena.lower,room⟩
+    have nodeArena : AllocatedBytes.Arena heap 176:=⟨arena.lower,by omega⟩
     have tailPrice:=branch_tail_cost ready heap node domain nodeArena aligned installed
     rw [continued] at tailPrice
     change source.clock-1-inner.clock≤8 at tailPrice

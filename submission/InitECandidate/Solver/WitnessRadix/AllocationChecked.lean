@@ -115,8 +115,27 @@ theorem reached_cursor (source target : PanSemStateFiniteExact 64 Guest.HostMemo
   refine ⟨pointer, valueEq, ?_, bound, aligned⟩
   exact heapEq.trans (by simp [emptyLocalsHOLFinite, post, HolFiniteMapExact.update, FUPDATE])
 
+/-- For a real nonwrapping request, the observed second allocator guard
+supplies natural persistent room. No initial persistent heap bound is needed;
+the caller derives no-wrap from its earlier arena and bounded request. -/
+theorem post_of_normal_no_wrap (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer amount : BitVec 64)
+    (amountLocal : source.locals.lookup (ofString "n")=some (.val (.word amount)))
+    (heapGlobal : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (noWrap : pointer.toNat+amount.toNat+7<2^64)
+    (trapCode : source.code.lookup (ofString "trap_with")=some (Input.Trap.formals,Input.Trap.body,.one))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
+    value=.val (.word pointer) ∧ pointer.toNat+amount.toNat≤2952790016 ∧
+      emptyLocalsHOLFinite target=emptyLocalsHOLFinite (post source pointer amount) := by
+  obtain ⟨answer,bounded,aligned,frame⟩:=checked_post_of_normal source target pointer amount amountLocal heapGlobal trapCode value normal
+  have number:=rounded_nat pointer amount noWrap
+  have grows : pointer.toNat+amount.toNat≤(rounded pointer amount).toNat:=by rw [number]; omega
+  exact ⟨answer,by omega,frame⟩
+
 end InitECandidate.Solver.WitnessRadix.PersistentAlloc
 
 #print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.rounded_aligned_word
 #print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.checked_post_of_normal
 #print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.reached_cursor
+
+#print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.post_of_normal_no_wrap

@@ -1,5 +1,5 @@
 import InitECandidate.Solver.PanFieldStores
-import InitECandidate.Solver.MutableTable.MemoryRegion
+import InitECandidate.Solver.MutableTable.MemoryRegionCore
 
 namespace InitECandidate.Solver.FieldStores
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

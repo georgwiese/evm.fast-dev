@@ -36,7 +36,7 @@ theorem assigned_normal (kind : Kind) (scalar : kind≠.branch)
   subst actualBody
   subst actualCallee
   subst actualShape
-  obtain ⟨answer,arena,positive,frame⟩:=scalar_normal kind scalar (callEntryStateHOLFinite source callee) childTarget heap words inputs domain
+  obtain ⟨answer,arena,positive,frame⟩:=scalar_normal_from_arena kind scalar (callEntryStateHOLFinite source callee) childTarget heap words inputs domain
     heapCell frontier aligned installed returned run
   have restored:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) frame
   have callerEq : {childTarget with locals:=source.locals}=

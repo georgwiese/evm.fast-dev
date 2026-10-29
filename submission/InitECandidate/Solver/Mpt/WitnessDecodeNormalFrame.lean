@@ -1,4 +1,5 @@
-import InitECandidate.Solver.Rlp.ValidationWriteFrame
+import InitECandidate.Solver.Rlp.ValidationArena
+import InitECandidate.Solver.WitnessRadix.AllocatedBytes
 import InitECandidate.Solver.Input.LocalEffects
 
 namespace InitECandidate.Solver.Mpt.WitnessDecode
@@ -53,10 +54,10 @@ theorem NormalFrame.compose (source middle target : PanSemStateFiniteExact 64 Gu
     (grows : heap.toNat≤nextHeap.toNat) (drops : nextCursor.toNat≤cursor.toNat) : NormalFrame source target heap cursor limit := by
   obtain ⟨heap3,cell,arena,aligned,nextGrows⟩:=second.nextHeap
   obtain ⟨cursor3,scratch,nextDrops⟩:=second.nextScratch
-  exact ⟨⟨heap3,cell,arena,aligned,grows.trans nextGrows⟩,⟨cursor3,scratch,nextDrops.trans drops⟩,
+  exact ⟨⟨heap3,cell,arena,aligned,Nat.le_trans grows nextGrows⟩,⟨cursor3,scratch,Nat.le_trans nextDrops drops⟩,
     second.domain.trans first.domain,second.endian.trans first.endian,second.code.trans first.code,
     fun key notHeap notScratch=>(second.globals key notHeap notScratch).trans (first.globals key notHeap notScratch),
-    fun query above below=>(second.memory query (drops.trans above) (below.trans_le grows)).trans (first.memory query above below)⟩
+    fun query above below=>(second.memory query (Nat.le_trans drops above) (Nat.lt_of_lt_of_le below grows)).trans (first.memory query above below)⟩
 
 end InitECandidate.Solver.Mpt.WitnessDecode
 

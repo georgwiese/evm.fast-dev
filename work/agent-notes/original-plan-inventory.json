@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 8728,
+  "solver_modules": 8731,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 18,
@@ -60,7 +60,7 @@
     "LocCost": 1,
     "MemoryCost": 1,
     "Mpt": 1098,
-    "MutableTable": 491,
+    "MutableTable": 493,
     "NopBound": 1,
     "NopCost": 1,
     "NopCostTight": 1,
@@ -87,7 +87,7 @@
     "TargetClock": 1,
     "WeightedTrace": 1,
     "WitnessAllocationPlan": 1,
-    "WitnessRadix": 203,
+    "WitnessRadix": 204,
     "WordStatic": 862,
     "WordToStackBound": 48,
     "WordToWordBound": 1
@@ -127,77 +127,77 @@
     "original_mutable_key_operations": [
       {
         "module": "MutableTable.GetGeneralCall",
-        "solver_dependency_count": 134,
+        "solver_dependency_count": 135,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.HasGeneralCall",
-        "solver_dependency_count": 129,
+        "solver_dependency_count": 130,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.InsertGeneralCall",
-        "solver_dependency_count": 156,
+        "solver_dependency_count": 157,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.SetNoGrowthBudget",
-        "solver_dependency_count": 173,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.MemoryModelEntry",
-        "solver_dependency_count": 158,
-        "imports_replacement_ast": false
-      },
-      {
-        "module": "MutableTable.MemoryModelInsertCall",
         "solver_dependency_count": 174,
         "imports_replacement_ast": false
       },
       {
+        "module": "MutableTable.MemoryModelEntry",
+        "solver_dependency_count": 159,
+        "imports_replacement_ast": false
+      },
+      {
+        "module": "MutableTable.MemoryModelInsertCall",
+        "solver_dependency_count": 175,
+        "imports_replacement_ast": false
+      },
+      {
         "module": "MutableTable.MemoryModelSetCall",
-        "solver_dependency_count": 210,
+        "solver_dependency_count": 211,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.GrowRuntime.CallerBudget",
-        "solver_dependency_count": 311,
+        "solver_dependency_count": 312,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.SetModelHeap",
-        "solver_dependency_count": 328,
+        "solver_dependency_count": 329,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.DeleteModelBudget",
-        "solver_dependency_count": 261,
+        "solver_dependency_count": 262,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.ItemCall",
-        "solver_dependency_count": 197,
+        "solver_dependency_count": 198,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.KeysCall",
-        "solver_dependency_count": 209,
+        "solver_dependency_count": 212,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.TruncateBudget",
-        "solver_dependency_count": 346,
+        "solver_dependency_count": 347,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.DeleteFinalSlots",
-        "solver_dependency_count": 165,
+        "solver_dependency_count": 166,
         "imports_replacement_ast": false
       },
       {
         "module": "MutableTable.TableRuntime.Budget",
-        "solver_dependency_count": 210,
+        "solver_dependency_count": 211,
         "imports_replacement_ast": false
       }
     ],

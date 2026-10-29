@@ -1,7 +1,7 @@
 import InitECandidate.Solver.Input.PayloadHeaderProgram
 import InitECandidate.Solver.Input.WordEnvironment
 import InitECandidate.Solver.Input.OriginalCode
-import InitECandidate.Solver.GasBudget.OriginalCodeEnvironment
+import InitECandidate.Solver.Input.OriginalEntry
 
 namespace InitECandidate.Solver.Input.PayloadHeader
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -13,8 +13,8 @@ def values (si : BitVec 64) : List (ValueHOL 64):=[.val (.word si)]
 set_option maxRecDepth 100000 in
 theorem original_code (code) (installed : OriginalCode.Installed code) :
     code.lookup (ofString "payload_header")=some (formals,body,.one) := by
-  have checked:=OriginalCode.indexed code installed 800 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.guestFn_payload_header) (by rfl)
-  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.guestFn_payload_header,
+  have checked:=OriginalCode.indexed code installed 788 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_payload_header) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,Guest.Software.guestFn_payload_header,
     shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
 theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (si : BitVec 64)

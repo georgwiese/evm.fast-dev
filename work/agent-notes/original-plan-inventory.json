@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 8681,
+  "solver_modules": 8682,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 18,
@@ -39,7 +39,7 @@
     "ConstructorSyntax": 1,
     "CrepStatic": 864,
     "CrepToLoopBound": 19,
-    "CurrentKeccak": 21,
+    "CurrentKeccak": 22,
     "DictionaryValues": 1,
     "EncoderBound": 1,
     "EncoderClock": 1,

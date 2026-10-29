@@ -961,6 +961,7 @@
     "submission/InitECandidate/Solver/CurrentKeccak/BlocksMemory.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/Call.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/Cost.lean",
+    "submission/InitECandidate/Solver/CurrentKeccak/DynamicCost.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/Environment.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/Globals.lean",
     "submission/InitECandidate/Solver/CurrentKeccak/HashSyntax.lean",
@@ -8686,8 +8687,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65471,
-  "package_bytes": 2485195991,
+  "package_entries": 65472,
+  "package_bytes": 2485198925,
   "claim": {
     "K": "infinity"
   },

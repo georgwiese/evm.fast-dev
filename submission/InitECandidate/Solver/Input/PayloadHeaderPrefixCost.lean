@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.PayloadHeaderProgram
-import InitECandidate.Solver.WitnessRadix.KeccakAnyDynamic
+import InitECandidate.Solver.CurrentKeccak.DynamicCost
 import InitECandidate.Solver.WitnessRadix.AllocationCost
 
 namespace InitECandidate.Solver.Input.PayloadHeader
@@ -19,9 +19,9 @@ theorem zero_fixed (code) (installed : OriginalCode.Installed code) (dst : ExpHO
 theorem hash_fixed (code) (installed : OriginalCode.Installed code) (pointer out : ExpHOL 64) (length : Nat)
     (small : length+136<2^64) :
     ClockCost.Bound code (.call (some (none,none)) (ofString "keccak256") [pointer,.const (BitVec.ofNat 64 length),out])
-      (Keccak256.AnyCost.bodyPrice length+1) := by
+      (CurrentKeccak.Hash.bodyPrice length+1) := by
   intro source codeEq
-  exact Keccak256.AnyCost.dynamic_call_cost source pointer (.const (BitVec.ofNat 64 length)) out length
+  exact CurrentKeccak.Hash.dynamic_call_cost source pointer (.const (BitVec.ofNat 64 length)) out length
     (by rw [codeEq]; exact installed) small rfl
 
 set_option maxRecDepth 100000 in
@@ -31,9 +31,9 @@ source allowance, including every allocator/hash/copy/store failure. The
 arbitrary real remaining code is charged separately at its own allowance. -/
 theorem prefix_cost (code) (installed : OriginalCode.Installed code) (tail : ProgHOL 64) (tailPrice : Nat)
     (priced : ClockCost.Bound code tail tailPrice) :
-    ClockCost.Bound code (CallPrefix.program actions tail) (tailPrice+1011) := by
+    ClockCost.Bound code (CallPrefix.program actions tail) (tailPrice+1035) := by
   apply widen
-  · simp only [actions,parts,body,Guest.guestFn_payload_header,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+  · simp only [actions,parts,body,Guest.Software.guestFn_payload_header,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
       Option.map_some,Option.map_none,CallPrefix.cut,
       show ofString "alloc"≠ofString "block_rlp_length" from by decide,if_false,if_true,CallPrefix.program]
     repeat' first
@@ -45,7 +45,7 @@ theorem prefix_cost (code) (installed : OriginalCode.Installed code) (tail : Pro
       | exact ClockCost.of_quiet code _ (QuietClock.store_byte code _ _)
       | exact zero_fixed code installed _ _ (by decide)
       | exact hash_fixed code installed _ _ _ (by decide)
-  · unfold ZeroAny.price Keccak256.AnyCost.bodyPrice
+  · unfold ZeroAny.price CurrentKeccak.Hash.bodyPrice
     omega
 
 end InitECandidate.Solver.Input.PayloadHeader

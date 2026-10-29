@@ -4054,3 +4054,29 @@ replacement closure0/fixed files unchanged. Incremental policy PASS65471
 entries/2485195991bytes, recovering room beneath the package entry limit.
 No global finite target K/full verification; claim infinity. Continue actual
 payload_header/block length/trie/header hash, later main and target steps.
+
+
+## Current payload-header prefix and dynamic software Keccak pricing
+
+Retargeted the shared payload_header syntax/code entry to actual Software788
+and removed its unnecessary gas/old-table catalogue import. The initial
+payload-header prefix now costs≤1035source ticks on every outcome, through
+all eight real allocations, clears, stores and the ommer hash. The actual
+block_rlp_length continuation and reached action execution remain explicit;
+an early stopped prefix cannot return a fabricated header.
+
+A current dynamic Keccak caller-price helper covers real pointer/output
+expression failures and ABI shapes using the actual44*(bytes/136)+689body
+bound. The previous prefix's older Keccak price is no longer used here.
+No input mapping, later allocation room or hash success is assumed for cost.
+
+Validation: current-payload-header-prefix-v2.log PASS2694jobs including current
+main transaction/data proofs and the current payload-header code environment.
+Printed axioms permitted only. Index8638modules/17564facts; inventory8682/
+replacement closure0/fixed files unchanged. Incremental policy PASS65472
+entries/2485198925bytes. Earlier exploratory catalogue dependency failures
+were not indexed; narrowing the actual code-entry import resolves this target.
+No global finite target K/full verification; claim infinity.
+Usage31%weekly/0resetcredits. Next: derive actual payload/raw/header-buffer
+entries and header fields from the retained decoded payload, then compose
+block length, real indexed tries and remaining header/main work.

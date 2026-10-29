@@ -43,54 +43,35 @@ theorem first_three_hash_cells (source target : PanSemStateFiniteExact 64 Guest.
       sszState.globals.lookup (ofString "keccak_pad")=some (.val (.word (BitVec.ofNat 64 (cursor+584)))) ∧
       sszState.globals.lookup (ofString "sha_st")=some (.val (.word (BitVec.ofNat 64 cursor))) ∧
       sszState.globals.lookup (ofString "sha_pad")=some (.val (.word (BitVec.ofNat 64 (cursor+64)))) := by
-  obtain ⟨shaState,keccakState,sszState,shaRun,keccakRun,sszRun,afterSsz,sszCode,sszScalars,offsets,chunk,zeros,finalHeap,room,sszAligned⟩:=
-    first_three source target cursor installed scalars heap zero bounded aligned actual
-  obtain ⟨shaBound,shaGlobals⟩:=sha_call source shaState cursor installed scalars heap bounded aligned shaRun
-  have shaCode : OriginalCode.Installed shaState.code := by
-    rw [(evaluation_fields source shaState _ none shaRun).2.2.2]
-    exact installed
-  have shaScalars:=written_scalars source shaState cursor shaActions scalars shaGlobals
-  have shaHeap : shaState.globals.lookup (ofString "heap_ptr")=some (.val (.word (BitVec.ofNat 64 (cursor+192)))) := by
-    rw [shaGlobals]
-    simpa [shaActions,InitializerAllocations.totalBytes,InitializerAllocations.constant] using InitializerAllocations.template_heap source cursor shaActions heap sha_valid
-  obtain ⟨keccakBound,keccakGlobals⟩:=keccak_call shaState keccakState (cursor+192) shaCode shaScalars shaHeap shaBound (by omega) keccakRun
-  have keccakCode : OriginalCode.Installed keccakState.code := by
-    rw [(evaluation_fields shaState keccakState _ none keccakRun).2.2.2]
-    exact shaCode
-  have keccakScalars:=written_scalars shaState keccakState (cursor+192) keccakActions shaScalars keccakGlobals
-  have keccakHeap : keccakState.globals.lookup (ofString "heap_ptr")=some (.val (.word (BitVec.ofNat 64 (cursor+720)))) := by
-    rw [keccakGlobals]
-    simpa [keccakActions,InitializerAllocations.totalBytes,InitializerAllocations.constant,Nat.add_assoc] using InitializerAllocations.template_heap shaState (cursor+192) keccakActions shaHeap keccak_valid
-  have shaZero : shaState.globals.lookup (ofString "zero_hashes")=some (.val (.word 0#64)) :=
-    (shaGlobals _).trans ((InitializerAllocations.template_other source cursor shaActions _ (by decide)
-      (by intro action member; simp [shaActions] at member; rcases member with rfl|rfl <;> decide)).trans zero)
-  have keccakZero : keccakState.globals.lookup (ofString "zero_hashes")=some (.val (.word 0#64)) :=
-    (keccakGlobals _).trans ((InitializerAllocations.template_other shaState (cursor+192) keccakActions _ (by decide)
-      (by intro action member; simp [keccakActions] at member; rcases member with rfl|rfl|rfl <;> decide)).trans shaZero)
-  obtain ⟨sszBound,sszGlobals⟩:=ssz_call keccakState sszState (cursor+720) keccakCode keccakScalars keccakHeap keccakZero (by omega) (by omega) sszRun
+  obtain ⟨sszState,afterSsz,sszCode,sszScalars,sszHeap,sszRoom,sszAligned,sszGlobals⟩:=
+    first_three_templates source target cursor installed scalars heap zero bounded aligned actual
+  let shaTemplate:=InitializerAllocations.template source cursor shaActions
+  let keccakTemplate:=InitializerAllocations.template shaTemplate (cursor+192) keccakActions
   have keep (key : MlS) (different : key≠ofString "heap_ptr")
-      (notWritten : ∀ action∈sszActions,key≠ofString action.name) : sszState.globals.lookup key=keccakState.globals.lookup key :=
-    (sszGlobals key).trans (InitializerAllocations.template_other keccakState (cursor+720) sszActions key different notWritten)
-  have stateCell := (keep (ofString "keccak_st") (by decide)
-    (by intro action member; simp [sszActions] at member; rcases member with rfl|rfl|rfl <;> decide)).trans
-    ((keccakGlobals _).trans (template_state shaState (cursor+192)))
-  have padCell := (keep (ofString "keccak_pad") (by decide)
-    (by intro action member; simp [sszActions] at member; rcases member with rfl|rfl|rfl <;> decide)).trans
-    ((keccakGlobals _).trans (template_pad shaState (cursor+192)))
+      (notWritten : ∀ action∈sszActions,key≠ofString action.name) :
+      sszState.globals.lookup key=keccakTemplate.globals.lookup key:=by
+    rw [sszGlobals]
+    exact InitializerAllocations.template_other keccakTemplate (cursor+720) sszActions key different notWritten
+  have stateCell:=(keep (ofString "keccak_st") (by decide)
+    (by intro action member;simp only [sszActions,List.mem_cons,List.not_mem_nil,or_false] at member;rcases member with rfl|rfl|rfl <;> decide)).trans
+    (template_state shaTemplate (cursor+192))
+  have padCell:=(keep (ofString "keccak_pad") (by decide)
+    (by intro action member;simp only [sszActions,List.mem_cons,List.not_mem_nil,or_false] at member;rcases member with rfl|rfl|rfl <;> decide)).trans
+    (template_pad shaTemplate (cursor+192))
   have shaKept (key : MlS) (different : key≠ofString "heap_ptr")
       (notSsz : ∀ action∈sszActions,key≠ofString action.name)
       (notKeccak : ∀ action∈keccakActions,key≠ofString action.name) :
-      sszState.globals.lookup key=shaState.globals.lookup key :=
-    (keep key different notSsz).trans ((keccakGlobals key).trans
-      (InitializerAllocations.template_other shaState (cursor+192) keccakActions key different notKeccak))
-  have shaStateCell := (shaKept (ofString "sha_st") (by decide)
-    (by intro action member; simp [sszActions] at member; rcases member with rfl|rfl|rfl <;> decide)
-    (by intro action member; simp [keccakActions] at member; rcases member with rfl|rfl|rfl <;> decide)).trans
-    ((shaGlobals _).trans (template_sha_state source cursor))
-  have shaPadCell := (shaKept (ofString "sha_pad") (by decide)
-    (by intro action member; simp [sszActions] at member; rcases member with rfl|rfl|rfl <;> decide)
-    (by intro action member; simp [keccakActions] at member; rcases member with rfl|rfl|rfl <;> decide)).trans
-    ((shaGlobals _).trans (template_sha_pad source cursor))
+      sszState.globals.lookup key=shaTemplate.globals.lookup key:=
+    (keep key different notSsz).trans
+      (InitializerAllocations.template_other shaTemplate (cursor+192) keccakActions key different notKeccak)
+  have shaStateCell:=(shaKept (ofString "sha_st") (by decide)
+    (by intro action member;simp only [sszActions,List.mem_cons,List.not_mem_nil,or_false] at member;rcases member with rfl|rfl|rfl <;> decide)
+    (by intro action member;simp only [keccakActions,List.mem_cons,List.not_mem_nil,or_false] at member;rcases member with rfl|rfl|rfl <;> decide)).trans
+    (template_sha_state source cursor)
+  have shaPadCell:=(shaKept (ofString "sha_pad") (by decide)
+    (by intro action member;simp only [sszActions,List.mem_cons,List.not_mem_nil,or_false] at member;rcases member with rfl|rfl|rfl <;> decide)
+    (by intro action member;simp only [keccakActions,List.mem_cons,List.not_mem_nil,or_false] at member;rcases member with rfl|rfl|rfl <;> decide)).trans
+    (template_sha_pad source cursor)
   exact ⟨sszState,afterSsz,sszCode,by simpa only [Nat.add_assoc] using stateCell,
     by simpa only [Nat.add_assoc] using padCell,shaStateCell,shaPadCell⟩
 

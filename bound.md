@@ -3057,3 +3057,45 @@ must be retained through main. Actual Taylor/header validation/main,
 uniform target composition, exact K evaluation, slack review and cleanup
 remain in the same active goal. No executable or fixed challenge assumption
 changed; historical untracked RlpLength/RlpWrite WIPs stay untouched.
+
+
+## Actual u256 workspace allocation, startup and decoder/root transport
+
+The same real first five startup calls now derive u256_ws=2701134824 and
+its640-byte extent ending at2701135464. The initial zero pointer comes from
+main's genuine scalar declarations and survives the actual SHA/Keccak/SSZ
+and MPT allocations. A normally returning u256_ws_init extracts its actual
+allocator success, persistent room and exact global/post-state; no future
+allocation return or aggregate room is supplied. All later initializers
+preserve this pointer, and their actual completed sequence keeps the heap
+at least2701135464, including the real EVM release.
+
+The pointer now survives the actual caught decoder and complete root-entry
+prefix. Shared workspace frames cover this additional key. The initializer
+that writes u256_ws is explicitly restricted to preserving other keys;
+legacy SSZ/MPT frame interfaces are checked with that real restriction.
+This is a helper-proof key condition, not a changed source/challenge premise.
+
+The first-three-call theorem now retains the entire derived global template,
+including untouched globals. Existing SHA/Keccak workspace construction
+reuses that shared result, removing duplicated allocation-call reasoning.
+Source, source semantics, ROM and fixed proofs remain unchanged.
+
+Validation: current-u256-startup-root-frame-v1.log PASS1610jobs, including
+existing startup/decoder/root and hash-workspace APIs. All12new printed
+facts have only permitted axioms. Index8700modules/18418facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Overall effort estimate
+remains50%, plausible40–60%. Usage31%weekly/0resetcredits, ordinary usage
+allowed. No new candidate paths; package remains exactly65536entries.
+
+Next: derive mapped/disjoint word slots for the actual640-byte layout and
+its literal q16/r8 zero-fill loops. The runtime Data/main continuation must
+retain the new u256 pointer. In particular, the older input-pointer lower
+bound2701134824 remains too weak by itself to show input/workspace separation:
+use the newly proved actual startup heap minimum2701135464 when exposing the
+input allocation, rather than assuming separation. Then connect the actual
+one-digit division wrapper/reconstruction and two-digit normalization/
+subtraction/remainder stores. Taylor/current header validation/main,
+uniform target composition, exact K, slack review and final cleanup remain
+in the same active goal. Historical untracked RlpLength/RlpWrite WIPs untouched.

@@ -4,7 +4,7 @@ namespace InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
--- Preserve the seven-key public API. The shared ten-key proofs live in the core;
+-- Preserve the seven-key public API. Shared workspace proofs live in the core;
 -- mpt_init has its own restricted proof because it initializes the MPT workspace keys.
 
 theorem trap_with (code) (installed : OriginalCode.Installed code) (workspace : WorkspaceKey := .offsets) :
@@ -79,6 +79,7 @@ theorem u256_ws_init (code) (installed : OriginalCode.Installed code) (workspace
     GlobalEffects.Preserves (workspaceKey workspace) code (Code.body .u256_ws_init) := by
   simpa only [WorkspaceFrameCore.workspaceKey_fromLegacy] using
     WorkspaceFrameCore.u256_ws_init code installed (WorkspaceFrameCore.fromLegacy workspace)
+      (by cases workspace <;> intro impossible <;> cases impossible)
 
 theorem secp256k1_init (code) (installed : OriginalCode.Installed code) (workspace : WorkspaceKey := .offsets) :
     GlobalEffects.Preserves (workspaceKey workspace) code (Code.body .secp256k1_init) := by

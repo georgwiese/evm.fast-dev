@@ -5,7 +5,7 @@ namespace InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrameCore
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
-inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | shaState | shaPad | mptHash | mptKey | mptEmpty
+inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | shaState | shaPad | mptHash | mptKey | mptEmpty | u256Ws
 
 def workspaceKey : WorkspaceKey → MlS
   | .offsets => ofString "ssz_offs"
@@ -18,8 +18,9 @@ def workspaceKey : WorkspaceKey → MlS
   | .mptEmpty => ofString "empty_trie_root"
   | .shaState => ofString "sha_st"
   | .shaPad => ofString "sha_pad"
+  | .u256Ws => ofString "u256_ws"
 
-/-- Shared current-syntax frames, including the MPT buffer after its initializer. -/
+/-- Shared current-syntax frames for initialized workspace pointers. -/
 def fromLegacy : OffsetsFrame.WorkspaceKey → WorkspaceKey
   | .offsets => .offsets
   | .lengthChunk => .lengthChunk
@@ -447,7 +448,7 @@ theorem keccak256 (code) (installed : OriginalCode.Installed code) (workspace : 
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 4000000 in
-theorem u256_ws_init (code) (installed : OriginalCode.Installed code) (workspace : WorkspaceKey := .offsets) :
+theorem u256_ws_init (code) (installed : OriginalCode.Installed code) (workspace : WorkspaceKey := .offsets) (notSelf : workspace≠.u256Ws) :
     GlobalEffects.Preserves (workspaceKey workspace) code (Code.body .u256_ws_init) := by
   simp only [Code.body, Code.entry, Code.declaration, GasBudget.OriginalCodeEnvironment.originalEntry,
     declToHOL, funDeclToHOL, Guest.Software.guestFn_u256_ws_init, progToHOL, expToHOL,
@@ -455,7 +456,7 @@ theorem u256_ws_init (code) (installed : OriginalCode.Installed code) (workspace
   exact (GlobalEffects.sequence (workspaceKey workspace) code _ _
   (GlobalEffects.conditional (workspaceKey workspace) code _ _ _
   (GlobalEffects.global_call_body (workspaceKey workspace) code _ (Code.name .alloc) _ (Code.formals .alloc) (Code.body .alloc) (Code.shape .alloc)
-  (by cases workspace <;> decide) (Code.installed code installed .alloc) (alloc code installed workspace))
+  (by cases workspace <;> first | decide | exact (notSelf rfl).elim) (Code.installed code installed .alloc) (alloc code installed workspace))
   (GlobalEffects.skip (workspaceKey workspace) code))
   (GlobalEffects.returned (workspaceKey workspace) code _))
 

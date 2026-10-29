@@ -83,6 +83,24 @@ theorem main_cells {input : Guest.InputBlob}
       (decoder.globals (key workspace) (decoder_prefix workspace source.code sourceCode))
   exact ⟨(kept .offsets).trans cells.1, (kept .lengthChunk).trans cells.2.1, (kept .zeroHashes).trans cells.2.2⟩
 
+/-- The real current u256 workspace pointer survives startup, the caught
+input decoder and the complete current root-entry call prefix. -/
+theorem main_u256_cell {input : Guest.InputBlob}
+    {origin source decoded current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (entry : Main.Entry input origin)
+    (startup : evaluateHOLFiniteState (Main.memoryState origin) (withTail routines .skip)=(none,source))
+    (decoder : CallPrefix.Execution source DecoderPrefix.actions decoded)
+    (root : CallPrefix.Execution decoded CurrentHash.RootEntry.actions current) :
+    current.globals.lookup (ofString "u256_ws")=some (.val (.word 2701134824#64)) := by
+  have sourceCode : OriginalCode.Installed source.code:=by
+    rw [(evaluation_fields (Main.memoryState origin) source _ none startup).2.2.2]
+    exact entry.code
+  have decodedCode : OriginalCode.Installed decoded.code:=by rw [decoder.runtime.2.2.2.1];exact sourceCode
+  have pointer:=(U256Workspace.main_cells input origin source entry startup).1
+  have kept:=(root.globals (key .u256Ws) (root_prefix .u256Ws decoded.code decodedCode)).trans
+    (decoder.globals (key .u256Ws) (decoder_prefix .u256Ws source.code sourceCode))
+  exact kept.trans pointer
+
 end InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame.handler_preserves
@@ -90,3 +108,5 @@ end InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame.decoder_prefix
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame.root_prefix
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame.main_cells
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame.main_u256_cell

@@ -4974,3 +4974,41 @@ enter runtime Data. Two-digit normalization/subtraction/remainder stores,
 Taylor/current header validation/main, uniform target composition, exact K,
 slack review and cleanup remain in the same active goal. Historical
 untracked RlpLength/RlpWrite WIPs stay untouched.
+
+
+## Literal quotient/remainder clearing and real tail reconstruction
+
+The original digits_divmod(62) q16/r8 loops are extracted from the actual
+Software AST. Their exact zero-store/index-increment bodies and full loops
+now have checked execution models, with no incoming memory-content premise.
+Each loop costs its remaining counter distance on every outcome, including
+short clocks (16and8ticks from their real zero index). A genuine normal
+exit derives its own required funding and exact physical post-state.
+
+Every cleared slot is zero. Cells outside the actual write range survive,
+and the initialized image of any distinct workspace buffer survives the
+clear. The workspace global/domain/arena context and every other live local
+binding are retained. These facts use the checked physical slot separation;
+no future store/loop/helper outcome is an entry premise.
+
+The actual digits_to_u256 tail-call form, used by both wrapper return paths,
+also now has its exact four-word value/frame,1caller-tick all-outcome bound
+and genuine normal-return funding contract. The existing scoped-call API
+remains checked. Straight-line target work is still separate from these
+source-clock allowances.
+
+Validation: current-digit-clear-tail-return-v2.log PASS1029jobs; all19new
+printed facts have only permitted axioms. Index8700modules/18447facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Overall effort estimate
+remains50%, plausible40–60%. Usage31%weekly/0resetcredits, ordinary usage
+allowed. No new candidate paths; package remains exactly65536entries.
+
+Next: use the real zero images and one-digit divider's frame to reconstruct
+the full quotient/remainder buffers and connect the unchanged digits_divmod
+one-digit tail and whole wrapper. Retain u256 in runtime Data and derive
+input/workspace separation from actual startup heap minimum2701135464.
+Two-digit normalization/subtraction/remainder stores, Taylor/current header
+validation/main, uniform target composition, exact K, slack review and
+cleanup remain in the same active goal. Source/semantics/ROM/fixed proofs and
+historical untracked RlpLength/RlpWrite WIPs remain untouched.

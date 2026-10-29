@@ -17,6 +17,7 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
   have keyGlobal:=returned.globals (ofString "mpt_key_scratch") (by decide)
   have emptyGlobal:=returned.globals (ofString "empty_trie_root") (by decide)
   have shaStateGlobal:=returned.globals (ofString "sha_st") (by decide)
+  have u256Global:=returned.globals (ofString "u256_ws") (by decide)
   have shaPadGlobal:=returned.globals (ofString "sha_pad") (by decide)
   obtain ⟨entry,value,inputs,entryFrame,bodyRun,checked⟩:=returned
   obtain ⟨heap,heapCell,valueEq,targetArena,physical⟩:=state_init_normal_memory inputs value bodyRun
@@ -36,7 +37,7 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
     ⟨currentArena.code,currentArena.domain,hashes.1.trans data.keccak.stateGlobal,hashes.2.1.trans data.keccak.padGlobal,
       data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
   exact data.of_interval currentArena little environment (hashes.2.2.trans data.mptHash) (keyGlobal.trans data.mptKey)
-    (emptyGlobal.trans data.mptEmpty) (shaStateGlobal.trans data.shaState) (shaPadGlobal.trans data.shaPad) heapNow data.siLocal
+    (emptyGlobal.trans data.mptEmpty) (shaStateGlobal.trans data.shaState) (shaPadGlobal.trans data.shaPad) (u256Global.trans data.u256) heapNow data.siLocal
     (fun query low high=>frame.memory query (by omega))
 
 /-- Main's actual complete state-init prefix now resumes with retained

@@ -8,7 +8,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
 /-- These are exactly the global cells used by the current verification
 input contract. Block-hash and EVM globals may change independently. -/
-def dataGlobals : List MlS := [ofString "scratch_ptr",ofString "frame_mem_ptr",ofString "heap_ptr",ofString "keccak_st",ofString "keccak_pad",ofString "mpt_hash_scratch",ofString "mpt_key_scratch",ofString "empty_trie_root",ofString "sha_st",ofString "sha_pad"]
+def dataGlobals : List MlS := [ofString "scratch_ptr",ofString "frame_mem_ptr",ofString "heap_ptr",ofString "keccak_st",ofString "keccak_pad",ofString "mpt_hash_scratch",ofString "mpt_key_scratch",ofString "empty_trie_root",ofString "sha_st",ofString "sha_pad",ofString "u256_ws"]
 
 theorem Data.with_globals {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
@@ -27,7 +27,7 @@ theorem Data.with_globals {input : Guest.InputBlob} {source : PanSemStateFiniteE
   have nextHeap : NormalHeapEffects.AtLeast (boundary+32) {source with globals:=globals} :=
     ⟨heap,(kept _ (by simp [dataGlobals])).trans cell,lower,upper,aligned⟩
   exact data.of_interval arena data.little environment (kept _ (by simp [dataGlobals]) |>.trans data.mptHash) (kept _ (by simp [dataGlobals]) |>.trans data.mptKey) (kept _ (by simp [dataGlobals]) |>.trans data.mptEmpty)
-    (kept _ (by simp [dataGlobals]) |>.trans data.shaState) (kept _ (by simp [dataGlobals]) |>.trans data.shaPad) nextHeap data.siLocal
+    (kept _ (by simp [dataGlobals]) |>.trans data.shaState) (kept _ (by simp [dataGlobals]) |>.trans data.shaPad) (kept _ (by simp [dataGlobals]) |>.trans data.u256) nextHeap data.siLocal
     (by intros; rfl)
 
 /-- An observed normal assignment to an unrelated global preserves the

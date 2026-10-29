@@ -18,7 +18,7 @@ theorem HeaderFrame.data {input : Guest.InputBlob} {source current : PanSemState
     ⟨cursor,frontier.cell,by have afterHeader:=frontier.afterHeader; omega,frontier.bounded,frontier.aligned⟩
   exact data.of_interval arena (frame.endian.trans data.little) (frame.environment source current pointer record heap data.keccak)
     ((frame.globals _ (by decide)).trans data.mptHash) ((frame.globals _ (by decide)).trans data.mptKey) ((frame.globals _ (by decide)).trans data.mptEmpty)
-    ((frame.globals _ (by decide)).trans data.shaState) ((frame.globals _ (by decide)).trans data.shaPad) nextHeap (frame.si.trans data.siLocal)
+    ((frame.globals _ (by decide)).trans data.shaState) ((frame.globals _ (by decide)).trans data.shaPad) ((frame.globals _ (by decide)).trans data.u256) nextHeap (frame.si.trans data.siLocal)
     (fun query lower upper=>frame.older query lower (by omega))
 
 /-- The four actual scoped root-buffer bindings remain live through the

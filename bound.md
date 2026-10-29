@@ -3370,3 +3370,34 @@ two-digit Taylor divisor path's normalization, actual subtraction and final
 remainder stores. Taylor/header/main, uniform target composition, exact K,
 dominant slack review and cleanup remain open. Historical untracked
 RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.
+
+
+## Actual u256 workspace pointer retained through the main prefix
+
+The current31-helper root-hash graph now retains u256_ws on every outcome,
+using the existing checked current startup/helper frames. WorkspaceEntry.main
+derives its actual2701134824pointer from the same startup/decoder/root trace.
+Actual root allocation and hashing retain this field at the real caller.
+
+The runtime Data contract now carries that concrete pointer through the
+actual header validation, databases, state initialization, payload-header
+hashing, transaction/withdrawal tries, request encoding/hashing and version
+check. Every input-data transport supplies its preserved global from the
+same real call/frame. The previously proved before-validate_header prefix
+and its479872713926source allowance replay with the stronger data model.
+No extra workspace pointer premise was added to the whole-source entry.
+
+Validation: current-u256-runtime-global-v1.log PASS3100jobs, including the
+complete current TransactionData main-prefix theorem; permitted printed
+axioms. Claim infinity; no global finite target K/full verifier success.
+Effort estimate remains50%, plausible40–60%. Usage32%weekly/0resetcredits,
+ordinary usage allowed. No new candidate paths; replacement closure0 and
+fixed files unchanged. The package stays65536entries.
+
+Next: strengthen the selected actual input allocation lower bound from the
+real startup heap minimum2701135464 and retain its separation geometry in
+runtime Data. Then connect arithmetic memory frames, complete two-digit
+Taylor normalization/subtraction/remainder stores, Taylor/header/main,
+uniform target composition, exact K, dominant slack review and cleanup.
+Historical untracked RlpLength/RlpWrite WIPs and executable/fixed premises
+stay untouched.

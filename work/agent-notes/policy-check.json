@@ -2679,7 +2679,9 @@
     "submission/InitECandidate/Solver/Input/CurrentU256/Swap.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/BlockLengthCall.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/BlockLengthData.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/BlockLengthReached.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/BlockLengthReturned.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/BlockSizeGuard.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/CodeEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/CopiedInput.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DataActions.lean",
@@ -2716,6 +2718,7 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderOmmer.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderPhysical.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderStores.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderTrieEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderZero.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadImage.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/RunAttempt.lean",
@@ -8729,8 +8732,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65515,
-  "package_bytes": 2485539481,
+  "package_entries": 65518,
+  "package_bytes": 2485551402,
   "claim": {
     "K": "infinity"
   },

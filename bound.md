@@ -1378,3 +1378,25 @@ closure0/fixed files unchanged. Incremental policy PASS65515entries/
 2485539481bytes. Claim infinity; no global finite target K/full verification.
 Usage36%weekly/0resetcredits. Next: actual guard/trie entry and indexed tries,
 then remaining main and uniform target steps.
+
+
+## Actual size guard and complete payload-header prefix to indexed tries
+
+Every actual outcome of the unchanged payload_header now either stops
+within396931061source-clock ticks, without a normal header return, or
+reaches its genuine first indexed-trie caller within that price. The
+reached caller retains the complete physical input/header/witness contract.
+Its actual block-length result is nonwrapping, and the real original8MiB
+size guard derives encoded≤8388608and withdrawalCount≤335544. No future
+trie, guard or helper success is assumed; the guard proof needs no exception
+shape premise. Added exact current-callee transport for reached scoped calls.
+
+Validation: current-payload-trie-entry-v2.log PASS2140jobs. Printed axioms
+permitted only. An earlier pair of checks briefly overlapped and collided
+in the build cache; both failed logs are unclaimed, and the final single
+clean build covers their affected dependency closure. Index8682modules/
+17777facts; inventory8727/replacement closure0/fixed files unchanged.
+Incremental policy PASS65518entries/2485551402bytes. Claim infinity; no
+global finite target K/full verification. Usage36%weekly/0resetcredits.
+Next: retarget/reuse the original pure trie insertion proofs and construct
+actual indexed-trie invariants, then remaining main and uniform target steps.

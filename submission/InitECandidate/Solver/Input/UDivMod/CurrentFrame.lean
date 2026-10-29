@@ -6080,3 +6080,355 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.after_input
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.numerator_top
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def firstExpression (input : String) : ExpHOL 64:=.op .and [
+  .shift .lsl (.load .one (localVar input)) (localVar "s"),.const 4294967295#64]
+def firstStore (input output : String) : ProgHOL 64:=.store (localVar output) (firstExpression input)
+def topExpression (input : String) : ExpHOL 64:=.shift .lsr
+  (.load .one (address input (.op .sub [localVar "m",.const 1#64]))) remaining
+def topStore (input output : String) : ProgHOL 64:=.store (address output (localVar "m")) (topExpression input)
+
+private def findFirst (wanted : MlS) : ProgHOL 64→Option (ProgHOL 64)
+  | .store (.var .local name) (.op .and [.shift .lsl (.load .one (.var .local input)) (.var .local count),.const mask])=>
+    if name=wanted then some (.store (.var .local name) (.op .and [.shift .lsl (.load .one (.var .local input)) (.var .local count),.const mask])) else none
+  | .dec _ _ _ rest=>findFirst wanted rest
+  | .seq first rest=>(findFirst wanted first).orElse (fun _=>findFirst wanted rest)
+  | .ite _ yes no=>(findFirst wanted yes).orElse (fun _=>findFirst wanted no)
+  | .while _ contents=>findFirst wanted contents
+  | .decCall _ _ _ _ rest=>findFirst wanted rest
+  | _=>none
+
+private def findTop : ProgHOL 64→Option (ProgHOL 64)
+  | .store destination (.shift .lsr value amount)=>some (.store destination (.shift .lsr value amount))
+  | .dec _ _ _ rest=>findTop rest
+  | .seq first rest=>(findTop first).orElse (fun _=>findTop rest)
+  | .ite _ yes no=>(findTop yes).orElse (fun _=>findTop no)
+  | .while _ contents=>findTop contents
+  | .decCall _ _ _ _ rest=>findTop rest
+  | _=>none
+
+set_option maxRecDepth 100000 in
+theorem divisor_first_literal : findFirst (ofString "vn") Single.body=some (firstStore "v" "vn") := by
+  simp [findFirst,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    firstStore,firstExpression,localVar]
+
+set_option maxRecDepth 100000 in
+theorem numerator_first_literal : findFirst (ofString "un") Single.body=some (firstStore "u" "un") := by
+  have different : ofString "vn"≠ofString "un":=by decide
+  simp [findFirst,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    firstStore,firstExpression,localVar,different]
+
+set_option maxRecDepth 100000 in
+theorem numerator_top_literal : findTop Single.body=some (topStore "u" "un") := by
+  simp [findTop,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    topStore,topExpression,address,remaining,localVar]
+
+private theorem indexed_address_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (pointer : BitVec 64)
+    (indexExpression : ExpHOL 64) (index : Nat)
+    (pointerCell : source.locals.lookup (ofString name)=some (.val (.word pointer)))
+    (indexRead : eval source indexExpression=some (.val (.word (BitVec.ofNat 64 index)))) :
+    eval source (address name indexExpression)=some (.val (.word (slot pointer index))) := by
+  simp only [eval] at indexRead
+  simp [eval,address,localVar,evalHOLExact,evalListHOLExact,toExact,pointerCell,indexRead,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+    slot,BitVec.ofNat_mul,Nat.mul_comm]
+
+private theorem counter_previous_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (length : Nat) (positive : 0<length)
+    (cell : source.locals.lookup (ofString name)=some (.val (.word (BitVec.ofNat 64 length)))) :
+    eval source (.op .sub [localVar name,.const 1#64])=some (.val (.word (BitVec.ofNat 64 (length-1)))) := by
+  have difference:=BitVec.ofNat_sub_ofNat_of_le (w:=64) length 1 (by decide) positive
+  simp [eval,localVar,evalHOLExact,evalListHOLExact,toExact,cell,valueIsWord,valueWord,wordOpHOL,wordOp,difference]
+
+/-- The original separate lowest-word store reads the actual input word and
+writes its exact masked shift, without spending a source call/loop tick. -/
+theorem first_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (inputName outputName : String) (input output : BitVec 64)
+    (contents : Nat→BitVec 64) (length bits : Nat) (buffers : Buffers source input output contents length) (positive : 0<length) (bitsSmall : bits≤31)
+    (inputCell : source.locals.lookup (ofString inputName)=some (.val (.word input)))
+    (outputCell : source.locals.lookup (ofString outputName)=some (.val (.word output)))
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits)))) :
+    evaluateHOLFiniteState source (firstStore inputName outputName)=(none,{source with
+      memory:=StoreWord.put source.memory output (Normalize.first (contents 0) bits)}) := by
+  have mapped : source.memaddrs input:=by simpa [slot] using buffers.inputMapped 0 positive
+  have cell : source.memory input=.word (contents 0):=by simpa [slot] using buffers.image 0 positive
+  have loaded:=Witness.load_word_read source (localVar inputName) input (contents 0) (Subtract.local_read source inputName input inputCell) mapped cell
+  have bitsNumber : (BitVec.ofNat 64 bits).toNat=bits:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have shifted:=shift_read source .lsl (.load .one (localVar inputName)) (localVar "s") (contents 0) (BitVec.ofNat 64 bits) ((contents 0)<<<bits)
+    loaded (Subtract.local_read source "s" _ s) (by simp [wordShiftHOL,bitsNumber,show bits<64 from by omega])
+  have masked:=Subtract.binary_read source .and _ (.const 4294967295#64) _ 4294967295#64 (Normalize.first (contents 0) bits) shifted rfl rfl
+  exact StoreWord.execute source (localVar outputName) (firstExpression inputName) output _
+    (Subtract.local_read source outputName output outputCell) masked (by simpa [slot] using buffers.outputMapped 0 positive)
+
+/-- The original extra UN[m] store loads U[m-1], shifts by32-s and writes
+its genuine outgoing carry. The allocated seventeenth slot is admitted. -/
+theorem top_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (inputName outputName : String) (input output : BitVec 64)
+    (contents : Nat→BitVec 64) (length bits : Nat) (buffers : Buffers source input output contents length) (positive : 0<length) (bitsSmall : bits≤31)
+    (inputCell : source.locals.lookup (ofString inputName)=some (.val (.word input)))
+    (outputCell : source.locals.lookup (ofString outputName)=some (.val (.word output)))
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))))
+    (m : source.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 length))))
+    (topMapped : source.memaddrs (slot output length)) :
+    evaluateHOLFiniteState source (topStore inputName outputName)=(none,{source with
+      memory:=StoreWord.put source.memory (slot output length) (Normalized.incoming contents bits length)}) := by
+  have prevRead:=counter_previous_read source "m" length positive m
+  have indexInside : length-1<length:=by omega
+  have loaded:=Witness.load_word_read source (address inputName (.op .sub [localVar "m",.const 1#64])) _ (contents (length-1))
+    (indexed_address_read source inputName input _ (length-1) inputCell prevRead)
+    (buffers.inputMapped (length-1) indexInside) (buffers.image (length-1) indexInside)
+  have restNumber : (BitVec.ofNat 64 (32-bits)).toNat=32-bits:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have shifted:=shift_read source .lsr _ remaining (contents (length-1)) (BitVec.ofNat 64 (32-bits)) (Normalize.high (contents (length-1)) bits)
+    loaded (remaining_read source bits bitsSmall s) (by simp [wordShiftHOL,restNumber,Normalize.high,show 32-bits<64 from by omega])
+  have same : Normalize.high (contents (length-1)) bits=Normalized.incoming contents bits length:=by
+    cases length with
+    | zero=>omega
+    | succ length=>rfl
+  rw [same] at shifted
+  exact StoreWord.execute source (address outputName (localVar "m")) (topExpression inputName) _ _
+    (indexed_address_read source outputName output _ length outputCell (Subtract.local_read source "m" _ m)) shifted topMapped
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.divisor_first_literal
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.numerator_first_literal
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.numerator_top_literal
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.first_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.top_execute
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def array (input output counter : String) : ProgHOL 64:=
+  .seq (.assign .local (ofString "i") (.op .sub [localVar counter,.const 1#64]))
+    (.seq (loop input output) (firstStore input output))
+
+def arrayPost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64) (bits length : Nat) :=
+  let started:=bind source "i" (BitVec.ofNat 64 (length-1))
+  let normalized:=after started pointer contents bits (length-1) (length-1)
+  {normalized with memory:=StoreWord.put normalized.memory pointer (Normalize.first (contents 0) bits)}
+
+/-- Actual counter initialization, entire descending loop and separate
+lowest-word store, with the complete physical input image retained. -/
+theorem array_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (inputName outputName counter : String) (input output : BitVec 64)
+    (contents : Nat→BitVec 64) (length bits : Nat) (buffers : Buffers source input output contents length) (positive : 0<length) (bitsSmall : bits≤31)
+    (inputCell : source.locals.lookup (ofString inputName)=some (.val (.word input)))
+    (outputCell : source.locals.lookup (ofString outputName)=some (.val (.word output)))
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))))
+    (count : source.locals.lookup (ofString counter)=some (.val (.word (BitVec.ofNat 64 length))))
+    (old : BitVec 64) (i : source.locals.lookup (ofString "i")=some (.val (.word old)))
+    (notInput : ofString "i"≠ofString inputName) (notOutput : ofString "i"≠ofString outputName) (enough : length-1≤source.clock) :
+    evaluateHOLFiniteState source (array inputName outputName counter)=(none,arrayPost source output contents bits length) := by
+  let started:=bind source "i" (BitVec.ofNat 64 (length-1))
+  let normalized:=after started output contents bits (length-1) (length-1)
+  have model : Entry started inputName outputName input output contents length bits (length-1):=
+    ⟨⟨buffers.small,buffers.image,buffers.inputMapped,buffers.outputMapped,buffers.separate⟩,by omega,bitsSmall,
+      (bind_lookup_other _ "i" inputName _ notInput).trans inputCell,
+      (bind_lookup_other _ "i" outputName _ notOutput).trans outputCell,
+      (bind_lookup_other _ "i" "s" _ (by decide)).trans s,bind_lookup_same _ _ _,notInput,notOutput⟩
+  have loopRun : evaluateHOLFiniteState started (loop inputName outputName)=(none,normalized):=
+    loop_execute started inputName outputName input output contents length bits (length-1) model enough
+  have mapped : normalized.memaddrs=source.memaddrs:=by
+    have fields:=congrArg PanSemStateFiniteExact.memaddrs (after_frame started output contents bits (length-1) (length-1))
+    exact fields
+  have nextBuffers : Buffers normalized input output contents length:=by
+    refine ⟨buffers.small,after_input started input output contents length bits (length-1) model.buffers (by omega),?_,?_,buffers.separate⟩
+    · intro index inside;rw [mapped];exact buffers.inputMapped index inside
+    · intro index inside;rw [mapped];exact buffers.outputMapped index inside
+  have nextInput : normalized.locals.lookup (ofString inputName)=some (.val (.word input)):=
+    (after_other started output contents bits (length-1) (length-1) inputName notInput).trans model.inputCell
+  have nextOutput : normalized.locals.lookup (ofString outputName)=some (.val (.word output)):=
+    (after_other started output contents bits (length-1) (length-1) outputName notOutput).trans model.outputCell
+  have nextS : normalized.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))):=
+    (after_other started output contents bits (length-1) (length-1) "s" (by decide)).trans model.s
+  have firstRun:=first_execute normalized inputName outputName input output contents length bits nextBuffers positive bitsSmall nextInput nextOutput nextS
+  have tailRun : evaluateHOLFiniteState started (.seq (loop inputName outputName) (firstStore inputName outputName))=(none,arrayPost source output contents bits length):=by
+    rw [evaluateHOLFiniteState_seq_line780,loopRun]
+    exact firstRun
+  have reset:=StateSteps.assign_execute source "i" (.op .sub [localVar counter,.const 1#64]) old (BitVec.ofNat 64 (length-1)) i
+    (counter_previous_read source counter length positive count)
+  rw [array,evaluateHOLFiniteState_seq_line780,reset]
+  exact tailRun
+
+theorem arrayPost_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64) (bits length : Nat) :
+    arrayPost source pointer contents bits length={source with
+      locals:=(arrayPost source pointer contents bits length).locals,
+      memory:=(arrayPost source pointer contents bits length).memory,clock:=source.clock-(length-1)} := by
+  let started:=bind source "i" (BitVec.ofNat 64 (length-1))
+  let target:=arrayPost source pointer contents bits length
+  have frame:=after_frame started pointer contents bits (length-1) (length-1)
+  have clock : target.clock=source.clock-(length-1):=by
+    have fields:=congrArg PanSemStateFiniteExact.clock frame
+    exact fields
+  have static : target={source with locals:=target.locals,memory:=target.memory,clock:=target.clock}:=by
+    have fields:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>
+      {state with locals:=target.locals,memory:=target.memory,clock:=target.clock}) frame
+    exact fields
+  rw [clock] at static
+  exact static
+
+/-- Complete actual normalized output, now including its separate index0 store. -/
+theorem arrayPost_image (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64) (bits length : Nat)
+    (positive : 0<length) (small : length≤16) :
+    Image (arrayPost source pointer contents bits length) pointer (Normalized.digit contents bits) length := by
+  intro index inside
+  by_cases zero : index=0
+  · subst index
+    simp [arrayPost,slot,StoreWord.put,Normalized.digit]
+  · have outside : slot pointer index≠pointer:=by
+      intro hit
+      have same:=slot_injective pointer index 0 (by omega) (by decide) (by simpa [slot] using hit)
+      omega
+    change StoreWord.put _ pointer _ (slot pointer index)=_
+    rw [StoreWord.put,if_neg outside]
+    exact after_written _ pointer contents bits (length-1) (by omega) index (by omega) (by omega)
+
+/-- No word outside the complete normalized output range changes. -/
+theorem arrayPost_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64) (contents : Nat→BitVec 64) (bits length : Nat)
+    (positive : 0<length) (outside : ∀ index,index<length→query≠slot pointer index) :
+    (arrayPost source pointer contents bits length).memory query=source.memory query := by
+  have firstOutside : query≠pointer:=by simpa [slot] using outside 0 positive
+  change StoreWord.put _ pointer _ query=_
+  rw [StoreWord.put,if_neg firstOutside]
+  exact after_away _ pointer query contents bits (length-1) (by intro index positive inside;exact outside index (by omega))
+
+/-- Actual normal completion supplies the entire output image and its own
+funding; future successful normalization is never an entry premise. -/
+theorem array_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (inputName outputName counter : String) (input output : BitVec 64)
+    (contents : Nat→BitVec 64) (length bits : Nat) (buffers : Buffers source input output contents length) (positive : 0<length) (bitsSmall : bits≤31)
+    (inputCell : source.locals.lookup (ofString inputName)=some (.val (.word input)))
+    (outputCell : source.locals.lookup (ofString outputName)=some (.val (.word output)))
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))))
+    (count : source.locals.lookup (ofString counter)=some (.val (.word (BitVec.ofNat 64 length))))
+    (old : BitVec 64) (i : source.locals.lookup (ofString "i")=some (.val (.word old)))
+    (notInput : ofString "i"≠ofString inputName) (notOutput : ofString "i"≠ofString outputName)
+    (normal : evaluateHOLFiniteState source (array inputName outputName counter)=(none,target)) :
+    length-1≤source.clock ∧ target=arrayPost source output contents bits length ∧ Image target output (Normalized.digit contents bits) length := by
+  let base:={source with clock:=length-1}
+  let final:=arrayPost base output contents bits length
+  have baseBuffers : Buffers base input output contents length:=⟨buffers.small,buffers.image,buffers.inputMapped,buffers.outputMapped,buffers.separate⟩
+  have baseRun:=array_execute base inputName outputName counter input output contents length bits baseBuffers positive bitsSmall inputCell outputCell s count old i notInput notOutput (by rfl)
+  have zero : final.clock=0:=by
+    have fields:=congrArg PanSemStateFiniteExact.clock (arrayPost_frame base output contents bits length)
+    change final.clock=(length-1)-(length-1) at fields
+    omega
+  have funded:=(ClockCost.normal_from_zero_clock source final target (array inputName outputName counter) (length-1) none none baseRun zero (by decide) normal (by decide)).1
+  have expected:=array_execute source inputName outputName counter input output contents length bits buffers positive bitsSmall inputCell outputCell s count old i notInput notOutput funded
+  have endpoint : target=arrayPost source output contents bits length:=congrArg Prod.snd (normal.symm.trans expected)
+  exact ⟨funded,endpoint,by rw [endpoint];exact arrayPost_image source output contents bits length positive buffers.small⟩
+
+/-- All stopped and short-clock outcomes fit the actual counted loop allowance. -/
+theorem array_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (inputName outputName counter : String) (input output : BitVec 64)
+    (contents : Nat→BitVec 64) (length bits : Nat) (buffers : Buffers source input output contents length) (positive : 0<length) (bitsSmall : bits≤31)
+    (inputCell : source.locals.lookup (ofString inputName)=some (.val (.word input)))
+    (outputCell : source.locals.lookup (ofString outputName)=some (.val (.word output)))
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))))
+    (count : source.locals.lookup (ofString counter)=some (.val (.word (BitVec.ofNat 64 length))))
+    (old : BitVec 64) (i : source.locals.lookup (ofString "i")=some (.val (.word old)))
+    (notInput : ofString "i"≠ofString inputName) (notOutput : ofString "i"≠ofString outputName) :
+    source.clock-(evaluateHOLFiniteState source (array inputName outputName counter)).2.clock≤length-1 := by
+  by_cases enough : length-1≤source.clock
+  · rw [array_execute source inputName outputName counter input output contents length bits buffers positive bitsSmall inputCell outputCell s count old i notInput notOutput enough]
+    have fields:=congrArg PanSemStateFiniteExact.clock (arrayPost_frame source output contents bits length)
+    change (arrayPost source output contents bits length).clock=source.clock-(length-1) at fields
+    change source.clock-(arrayPost source output contents bits length).clock≤length-1
+    omega
+  · omega
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.array_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_frame
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_image
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_away
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.array_normal
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.array_cost
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+private theorem sequence_four (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b c tail : ProgHOL 64) :
+    evaluateHOLFiniteState source (.seq a (.seq b (.seq c tail)))=
+      evaluateHOLFiniteState source (.seq (.seq a (.seq b c)) tail) := by
+  simp only [evaluateHOLFiniteState_seq_line780]
+  generalize firstRun : evaluateHOLFiniteState source a=firstResult
+  obtain ⟨first,middle⟩:=firstResult
+  cases first with
+  | some result=>rfl
+  | none=>
+    generalize secondRun : evaluateHOLFiniteState middle b=secondResult
+    obtain ⟨second,next⟩:=secondResult
+    cases second with
+    | some result=>rfl
+    | none=>
+      generalize thirdRun : evaluateHOLFiniteState next c=thirdResult
+      obtain ⟨third,last⟩:=thirdResult
+      cases third <;> rfl
+
+/-- The original right-associated syntax resumes any actual continuation
+from the same complete normalized output; no executable is reassociated. -/
+theorem array_continue (source : PanSemStateFiniteExact 64 Guest.HostMemory) (inputName outputName counter : String) (input output : BitVec 64)
+    (contents : Nat→BitVec 64) (length bits : Nat) (buffers : Buffers source input output contents length) (positive : 0<length) (bitsSmall : bits≤31)
+    (inputCell : source.locals.lookup (ofString inputName)=some (.val (.word input)))
+    (outputCell : source.locals.lookup (ofString outputName)=some (.val (.word output)))
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))))
+    (count : source.locals.lookup (ofString counter)=some (.val (.word (BitVec.ofNat 64 length))))
+    (old : BitVec 64) (i : source.locals.lookup (ofString "i")=some (.val (.word old)))
+    (notInput : ofString "i"≠ofString inputName) (notOutput : ofString "i"≠ofString outputName) (enough : length-1≤source.clock)
+    (continuation : ProgHOL 64) :
+    evaluateHOLFiniteState source (.seq (.assign .local (ofString "i") (.op .sub [localVar counter,.const 1#64]))
+      (.seq (loop inputName outputName) (.seq (firstStore inputName outputName) continuation)))=
+      evaluateHOLFiniteState (arrayPost source output contents bits length) continuation := by
+  rw [sequence_four]
+  have actual:=array_execute source inputName outputName counter input output contents length bits buffers positive bitsSmall inputCell outputCell s count old i notInput notOutput enough
+  change evaluateHOLFiniteState source (.seq (array inputName outputName counter) continuation)=_
+  rw [evaluateHOLFiniteState_seq_line780,actual]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.array_continue
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+theorem arrayPost_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64) (bits length : Nat)
+    (name : String) (notI : ofString "i"≠ofString name) :
+    (arrayPost source pointer contents bits length).locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
+  (after_other (bind source "i" (BitVec.ofNat 64 (length-1))) pointer contents bits (length-1) (length-1) name notI).trans
+    (bind_lookup_other source "i" name _ notI)
+
+theorem arrayPost_index (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64) (bits length : Nat) :
+    (arrayPost source pointer contents bits length).locals.lookup (ofString "i")=some (.val (.word 0#64)) :=
+  after_index (bind source "i" (BitVec.ofNat 64 (length-1))) pointer contents bits (length-1) (bind_lookup_same _ _ _)
+
+/-- The same actually allocated workspace remains available at the next block. -/
+theorem arrayPost_context (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base pointer : BitVec 64) (context : Workspace.Context source base)
+    (contents : Nat→BitVec 64) (bits length : Nat) : Workspace.Context (arrayPost source pointer contents bits length) base := by
+  have frame:=arrayPost_frame source pointer contents bits length
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs frame
+  change (arrayPost source pointer contents bits length).globals=source.globals at globals
+  change (arrayPost source pointer contents bits length).memaddrs=source.memaddrs at domain
+  refine ⟨?_,domain.trans context.domain,context.arena,context.aligned⟩
+  rw [globals]
+  exact context.global
+
+/-- The full numerator array block, including the first-word store, retains
+its actual extra carry word even at physical index16. -/
+theorem arrayPost_numerator_top (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (context : Workspace.Context source base)
+    (contents : Nat→BitVec 64) (length bits : Nat) (positive : 0<length) (small : length≤16) :
+    (arrayPost source (Workspace.pointer base .normalizedNumerator) contents bits length).memory
+      (slot (Workspace.pointer base .normalizedNumerator) length)=source.memory (slot (Workspace.pointer base .normalizedNumerator) length) := by
+  apply arrayPost_away _ _ _ _ _ _ positive
+  intro index inside
+  exact Subtract.slots_different source base context length index (by omega) (by omega) (by omega)
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_other
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_index
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_context
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_numerator_top

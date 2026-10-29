@@ -3694,3 +3694,41 @@ its current window-range/prefix/suffix invariant, final remainder stores
 and actual two-digit caller/Taylor/header/main. Uniform target composition,
 exact K, dominant slack review and final cleanup remain. Historical untracked
 RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.
+
+
+## Complete physical normalization array blocks and boundary stores
+
+The original separate VN/UN lowest-word stores and extra UN[m] carry store
+are now identified literally and executed with their real loads, variable
+shifts, masks and mapped destinations. The extra store admits the actual
+seventeenth normalized numerator slot. They consume0source call/loop ticks.
+
+Counter initialization, the complete original descending loop and the
+separate lowest-word store now form one checked array block. Actual normal
+completion derives its own length-1funding and complete physical normalized
+image, exact clock and static-field frame. Every stopped/short-clock outcome
+costs≤length-1. The original right-associated continuation syntax resumes
+from that same proved state using a checked semantic sequence identity;
+no executable bytes are reassociated or replaced.
+
+The post-state retains all locals except i, sets i=0 and retains the actual
+allocated workspace context. Its complete write range is checked. The extra
+numerator carry survives the whole block, including the lowest-word store
+and the seventeenth-slot case. The incoming input image/pointer/s/count
+premises remain obligations of the earlier actual normalization caller.
+
+Validation: current-normalization-complete-array-v2.log PASS1126jobs; all16new
+printed facts have only permitted axioms. Index8700modules/18619facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage34%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: connect the actual nlz32 return to both array blocks and the intervening
+extra-top store. Derive their entries from actual n/m/u/v/un/vn bindings and
+mapped input images, then expose the real vtop/vsec/outer-loop continuation.
+Actual captured digit loads, outer-loop range/prefix/suffix invariant, final
+remainder extraction and complete two-digit caller/Taylor/header/main remain.
+Uniform target composition, exact K, dominant slack review and final cleanup
+remain open. Historical untracked WIPs and executable/fixed premises stay
+untouched; source-clock bounds still omit straight-line target work.

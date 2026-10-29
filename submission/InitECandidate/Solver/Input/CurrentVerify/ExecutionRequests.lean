@@ -5,6 +5,9 @@ import InitECandidate.Solver.Input.AssignNormal
 import InitECandidate.Solver.Input.ScalarStoreMemory
 import InitECandidate.Solver.Input.ConstantCounterCost
 import InitECandidate.Solver.Input.ClockCostCurrentValue
+import InitECandidate.Solver.Input.CounterStrideLoop
+import InitECandidate.Solver.Input.LoopNormalExit
+import InitECandidate.Solver.Input.WordTripleEnvironment
 import InitECandidate.Solver.WitnessRadix.CopyNormalCall
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
@@ -1919,3 +1922,324 @@ end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
 #print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_iteration_advance
 #print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_iteration_local
 #print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.finish_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def blockArguments : List (ExpHOL 64):=[.var .global (ofString "sha_st"),.op .add [localVar "p",localVar "i"]]
+def blockCall : ProgHOL 64:=.call (some (none,none)) (ofString "sha256_block") blockArguments
+def blockIncrement : ProgHOL 64:=.assign .local (ofString "i") (.op .add [localVar "i",.const 64#64])
+def blockIteration : ProgHOL 64:=.seq blockCall blockIncrement
+def blockTest : ExpHOL 64:=.cmp .notLower (localVar "len") (.op .add [localVar "i",.const 64#64])
+def blocks : ProgHOL 64:=.while blockTest blockIteration
+
+theorem block_iteration_local : LocalPrefix (ofString "len") blockIteration :=
+  .seq (.call none _ _ (by simp)) (.assign (ofString "i") _ (by decide))
+
+theorem block_iteration_advance : CounterFlow.Advances (ofString "i") 64 blockIteration :=
+  CounterFlow.sequence (ofString "i") blockCall blockIncrement 0 64
+    (CounterFlow.preserved _ _ (.call none _ _ (by simp))) (CounterFlow.increment_by _ 64)
+
+theorem block_iteration_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code blockIteration 1 := by
+  have called:=ClockCost.call_body code (some none) (ofString "sha256_block") blockArguments
+    (Code.formals .block) (Code.body .block) (Code.shape .block) 0
+    (Code.installed code installed .block) (block_cost code)
+  exact ClockCost.sequence code blockCall blockIncrement 1 0 called (ClockCost.assign code (ofString "i") _)
+
+theorem block_test_reads (length : Nat) (small : length+64<2^64) :
+    CounterFlow.NamedStride.Reads (ofString "len") blockTest 64 length := by
+  intro source word counter count bounded
+  have encoded : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have sum : (word+64#64).toNat=word.toNat+64:=by
+    rw [BitVec.toNat_add_of_lt (by change word.toNat+64<2^64; omega)]; rfl
+  by_cases active : word.toNat+64≤length
+  · have lower : ¬BitVec.ofNat 64 length<word+64#64:=by change ¬(BitVec.ofNat 64 length).toNat<(word+64#64).toNat; rw [encoded,sum]; omega
+    simp [evalHOLFinite,evalHOLExact,evalListHOLExact,toExact,blockTest,localVar,counter,count,valueIsWord,valueWord,wordOpHOL,wordOp,
+      Flapjack.Compiler.Encoders.Asm.wordCmpHOL,lower,active]
+  · have lower : BitVec.ofNat 64 length<word+64#64:=by change (BitVec.ofNat 64 length).toNat<(word+64#64).toNat; rw [encoded,sum]; omega
+    simp [evalHOLFinite,evalHOLExact,evalListHOLExact,toExact,blockTest,localVar,counter,count,valueIsWord,valueWord,wordOpHOL,wordOp,
+      Flapjack.Compiler.Encoders.Asm.wordCmpHOL,lower,active]
+
+/-- Actual block calls and loop ticks, including failures. Expanded compression
+work is accounted for separately when translating to target steps. -/
+theorem blocks_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (length : Nat)
+    (small : length+64<2^64) (installed : OriginalCode.Installed source.code)
+    (valid : CounterFlow.NamedStride.Invariant (ofString "len") length source) :
+    source.clock-(evaluateHOLFiniteState source blocks).2.clock≤2*(length/64) := by
+  have priced:=CounterFlow.NamedStride.loop_cost (ofString "len") source.code blockTest blockIteration 64 length 1 (by decide) (by omega)
+    block_iteration_advance block_iteration_local.summary_full (block_test_reads length small) (block_iteration_cost source.code installed) source rfl valid
+  exact Nat.le_trans priced (Nat.mul_le_mul_left 2 (Nat.div_le_div_right (Nat.sub_le _ _)))
+
+/-- The normally completed real loop supplies its own short padding remainder. -/
+theorem blocks_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (length : Nat)
+    (small : length+64<2^64) (valid : CounterFlow.NamedStride.Invariant (ofString "len") length source)
+    (normal : evaluateHOLFiniteState source blocks=(none,post)) :
+    ∃ word,post.locals.lookup (ofString "i")=some (.val (.word word)) ∧
+      post.locals.lookup (ofString "len")=some (.val (.word (BitVec.ofNat 64 length))) ∧ word.toNat≤length ∧ length-word.toNat<64 := by
+  have next:=CounterFlow.NamedStride.loop_normal (ofString "len") source.code blockTest blockIteration 64 length (by decide) (by omega)
+    block_iteration_advance block_iteration_local.summary_full (block_test_reads length small) source post rfl valid normal
+  obtain ⟨word,counter,count,bounded⟩:=next
+  have ended:=loop_normal_exit blockTest blockIteration (fun current=>(block_iteration_local.summary_full current).2.2.1) source post normal
+  have read:=block_test_reads length small post word counter count bounded
+  have inactive : ¬word.toNat+64≤length:=by
+    intro active
+    rw [if_pos active] at read
+    have contradiction:=ended.symm.trans read
+    cases contradiction
+  exact ⟨word,counter,count,bounded,by omega⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.block_iteration_local
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.block_iteration_advance
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.block_iteration_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.block_test_reads
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.blocks_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.blocks_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def state : ExpHOL 64:=.var .global (ofString "sha_st")
+def pad : ExpHOL 64:=.var .global (ofString "sha_pad")
+def remainder : ExpHOL 64:=.op .sub [localVar "len",localVar "i"]
+def zeroPad : ProgHOL 64:=.call (some (none,none)) (ofString "memzero") [pad,.const 128#64]
+def copyPad : ProgHOL 64:=.call (some (none,none)) (ofString "memcpy") [pad,.op .add [localVar "p",localVar "i"],localVar "rem"]
+def padFirst : ProgHOL 64:=.storeByte (.op .add [pad,localVar "rem"]) (.const 128#64)
+def selectTotal : ProgHOL 64:=.ite (.cmp .notLower (localVar "rem") (.const 56#64))
+  (.assign .local (ofString "total") (.const 128#64)) .skip
+def storeLength : ProgHOL 64:=.call (some (none,none)) (ofString "st_be64")
+  [.op .sub [.op .add [pad,localVar "total"],.const 8#64],.shift .lsl (localVar "len") (.const 3#64)]
+def absorbPad : ProgHOL 64:=.call (some (none,none)) (ofString "sha256_block") [state,pad]
+def extraPad : ProgHOL 64:=.ite (.cmp .equal (localVar "total") (.const 128#64))
+  (.call (some (none,none)) (ofString "sha256_block") [state,.op .add [pad,.const 64#64]]) .skip
+def digestCall : ProgHOL 64:=.call (some (none,none)) (ofString "sha256_finish") [state,localVar "out"]
+def finalTail : ProgHOL 64:=.seq selectTotal (.seq storeLength (.seq absorbPad (.seq extraPad (.seq digestCall (.return (.const 0#64))))))
+def paddingFinish : ProgHOL 64:=.seq padFirst (.dec (ofString "total") .one (.const 64#64) finalTail)
+def paddingTail : ProgHOL 64:=.seq zeroPad (.seq copyPad paddingFinish)
+def afterBlocks : ProgHOL 64:=.dec (ofString "rem") .one remainder paddingTail
+def initCall : ProgHOL 64:=.call (some (none,none)) (ofString "sha256_state_init") [state]
+
+set_option maxRecDepth 100000 in
+theorem hash_shape : Code.body .hash=.seq initCall (.dec (ofString "i") .one (.const 0#64) (.seq blocks afterBlocks)) := by
+  simp only [Code.body,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,
+    Guest.Software.guestFn_sha256,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,
+    initCall,state,blocks,blockTest,blockIteration,blockCall,blockArguments,blockIncrement,afterBlocks,remainder,paddingTail,
+    zeroPad,copyPad,paddingFinish,padFirst,pad,finalTail,selectTotal,storeLength,absorbPad,extraPad,digestCall,localVar]
+
+set_option maxRecDepth 100000 in
+theorem bswap_supported : StraightBody.accepts (CurrentStartup.Code.body .bswap64)=true := by
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_bswap64,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  rfl
+
+set_option maxRecDepth 100000 in
+/-- Current aligned bswap and two-BE32 fallback paths, including failures. -/
+theorem be64_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code (CurrentStartup.Code.body .st_be64) 3 := by
+  have swap : ClockCost.Bound code (CurrentStartup.Code.body .bswap64) 0:=
+    ClockCost.of_quiet code _ (StraightBody.effects (ofString "x") code _ bswap_supported).1
+  have be32 (args : List (ExpHOL 64)) : ClockCost.Bound code (.call (some (none,none)) (ofString "st_be32") args) 1:=
+    ClockCost.call_body code (some none) (ofString "st_be32") args
+      (CurrentStartup.Code.formals .st_be32) (CurrentStartup.Code.body .st_be32) (CurrentStartup.Code.shape .st_be32) 0
+      (CurrentStartup.Code.installed code installed .st_be32) (be32_cost code)
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_st_be64,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  refine ClockCost.sequence code _ _ 1 2 ?_ ?_
+  · apply ClockCost.conditional code _ _ _ 1 0
+    · apply ClockCost.scoped_body code _ _ (ofString "bswap64") _ _
+        (CurrentStartup.Code.formals .bswap64) (CurrentStartup.Code.body .bswap64) (CurrentStartup.Code.shape .bswap64) 0 0
+        (CurrentStartup.Code.installed code installed .bswap64) swap
+      exact ClockCost.sequence code _ _ 0 0 (ClockCost.store code _ _) (ClockCost.returned code _)
+    · exact ClockCost.skip code
+  · exact ClockCost.sequence code _ _ 1 1 (be32 _) (ClockCost.sequence code _ _ 1 0 (be32 _) (ClockCost.returned code _))
+
+theorem compression_call_cost (code) (installed : OriginalCode.Installed code) (args : List (ExpHOL 64)) :
+    ClockCost.Bound code (.call (some (none,none)) (ofString "sha256_block") args) 1 :=
+  ClockCost.call_body code (some none) (ofString "sha256_block") args
+    (Code.formals .block) (Code.body .block) (Code.shape .block) 0 (Code.installed code installed .block) (block_cost code)
+
+theorem final_tail_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code finalTail 23 := by
+  have digest:=ClockCost.call_body code (some none) (ofString "sha256_finish") [state,localVar "out"]
+    (Code.formals .finish) (Code.body .finish) (Code.shape .finish) 16 (Code.installed code installed .finish) (finish_cost code installed)
+  have last : ClockCost.Bound code (.seq digestCall (.return (.const 0#64))) 17:=
+    ClockCost.sequence code _ _ 17 0 digest (ClockCost.returned code _)
+  have extra : ClockCost.Bound code extraPad 1:=by
+    simpa only [extraPad,Nat.max_zero] using ClockCost.conditional code _ _ _ 1 0
+      (compression_call_cost code installed _) (ClockCost.skip code)
+  have two : ClockCost.Bound code (.seq extraPad (.seq digestCall (.return (.const 0#64)))) 18:=
+    ClockCost.sequence code _ _ 1 17 extra last
+  have three : ClockCost.Bound code (.seq absorbPad (.seq extraPad (.seq digestCall (.return (.const 0#64))))) 19:=
+    ClockCost.sequence code _ _ 1 18 (compression_call_cost code installed _) two
+  have stored:=ClockCost.call_body code (some none) (ofString "st_be64")
+    [.op .sub [.op .add [pad,localVar "total"],.const 8#64],.shift .lsl (localVar "len") (.const 3#64)]
+    (CurrentStartup.Code.formals .st_be64) (CurrentStartup.Code.body .st_be64) (CurrentStartup.Code.shape .st_be64) 3
+    (CurrentStartup.Code.installed code installed .st_be64) (be64_cost code installed)
+  have four : ClockCost.Bound code (.seq storeLength (.seq absorbPad (.seq extraPad (.seq digestCall (.return (.const 0#64)))))) 23:=
+    ClockCost.sequence code _ _ 4 19 stored three
+  have select : ClockCost.Bound code selectTotal 0:=ClockCost.conditional code _ _ _ 0 0
+    (ClockCost.assign code (ofString "total") _) (ClockCost.skip code)
+  exact ClockCost.sequence code _ _ 0 23 select four
+
+theorem padding_finish_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code paddingFinish 23 := by
+  have tail:=ClockCost.declared code (ofString "total") .one (.const 64#64) finalTail 23 (final_tail_cost code installed)
+  exact ClockCost.sequence code _ _ 0 23 (ClockCost.of_quiet code _ (QuietClock.store_byte code _ _)) tail
+
+/-- The genuine short remainder suffices, including invalid pointer/read/store
+outcomes. Neither memory mapping nor a later successful hash is assumed. -/
+theorem padding_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (rem : Nat)
+    (small : rem<64) (installed : OriginalCode.Installed source.code)
+    (remCell : source.locals.lookup (ofString "rem")=some (.val (.word (BitVec.ofNat 64 rem)))) :
+    source.clock-(evaluateHOLFiniteState source paddingTail).2.clock≤267 := by
+  have zero:=BufferDynamicCost.zero_cost source pad (.const 128#64) 128 installed (by decide) rfl
+  have zeroPrice : source.clock-(evaluateHOLFiniteState source zeroPad).2.clock≤165:=zero
+  apply ClockCost.sequence_reached_current source zeroPad _ 165 102 zeroPrice
+  intro middle normal
+  have codeEq:=(evaluation_fields source middle zeroPad none normal).2.2.2
+  have nextInstalled : OriginalCode.Installed middle.code:=by rw [codeEq]; exact installed
+  have nextRem : middle.locals.lookup (ofString "rem")=some (.val (.word (BitVec.ofNat 64 rem))):=
+    (CallNormal.ignored_lookup source middle (ofString "rem") (ofString "memzero") [pad,.const 128#64] normal).trans remCell
+  have remRead : eval middle (localVar "rem")=some (.val (.word (BitVec.ofNat 64 rem))):=by
+    simp [eval,evalHOLExact,toExact,localVar,nextRem]
+  have copy:=BufferDynamicCost.copy_cost middle pad (.op .add [localVar "p",localVar "i"]) (localVar "rem") rem
+    nextInstalled (by omega) remRead
+  have copyBound : CopyAny.price rem+1≤79:=by unfold CopyAny.price; omega
+  have copyPrice : middle.clock-(evaluateHOLFiniteState middle copyPad).2.clock≤79:=Nat.le_trans copy copyBound
+  exact ClockCost.sequence_current middle copyPad paddingFinish 79 23 copyPrice (padding_finish_cost middle.code nextInstalled)
+
+theorem after_blocks_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (length : Nat) (word : BitVec 64)
+    (small : length+64<2^64) (installed : OriginalCode.Installed source.code)
+    (counter : source.locals.lookup (ofString "i")=some (.val (.word word)))
+    (count : source.locals.lookup (ofString "len")=some (.val (.word (BitVec.ofNat 64 length))))
+    (bounded : word.toNat≤length) (short : length-word.toNat<64) :
+    source.clock-(evaluateHOLFiniteState source afterBlocks).2.clock≤267 := by
+  have number : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have difference : BitVec.ofNat 64 length-word=BitVec.ofNat 64 (length-word.toNat):=by
+    apply BitVec.eq_of_toNat_eq
+    rw [BitVec.toNat_sub_of_le (by change word.toNat≤(BitVec.ofNat 64 length).toNat; rw [number]; exact bounded),number,
+      BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have read : eval source remainder=some (.val (.word (BitVec.ofNat 64 (length-word.toNat)))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,remainder,localVar,counter,count,valueIsWord,valueWord,wordOpHOL,wordOp,difference]
+  exact ClockCost.declared_current source "rem" remainder (BitVec.ofNat 64 (length-word.toNat)) paddingTail 267 read
+    (padding_cost (QueryBranch.bind source "rem" (BitVec.ofNat 64 (length-word.toNat))) (length-word.toNat) short installed (bind_lookup_same _ _ _))
+
+def bodyPrice (length : Nat) : Nat:=2*(length/64)+268
+
+theorem loop_tail_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (length : Nat)
+    (small : length+64<2^64) (installed : OriginalCode.Installed source.code)
+    (valid : CounterFlow.NamedStride.Invariant (ofString "len") length source) :
+    source.clock-(evaluateHOLFiniteState source (.seq blocks afterBlocks)).2.clock≤2*(length/64)+267 := by
+  apply ClockCost.sequence_reached_current source blocks afterBlocks (2*(length/64)) 267 (blocks_cost source length small installed valid)
+  intro middle normal
+  obtain ⟨word,counter,count,bounded,short⟩:=blocks_normal source middle length small valid normal
+  have sameCode:=(evaluation_fields source middle blocks none normal).2.2.2
+  exact after_blocks_cost middle length word small (by rw [sameCode]; exact installed) counter count bounded short
+
+/-- Complete unchanged general SHA on every outcome. This prices source
+calls/loop ticks; expanded straight-line target work remains separate. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (length : Nat)
+    (small : length+64<2^64) (installed : OriginalCode.Installed source.code)
+    (count : source.locals.lookup (ofString "len")=some (.val (.word (BitVec.ofNat 64 length)))) :
+    source.clock-(evaluateHOLFiniteState source (Code.body .hash)).2.clock≤bodyPrice length := by
+  rw [hash_shape]
+  have initial:=ClockCost.call_body source.code (some none) (ofString "sha256_state_init") [state]
+    (Code.formals .stateInit) (Code.body .stateInit) (Code.shape .stateInit) 0 (Code.installed source.code installed .stateInit) (state_cost source.code)
+  have first : source.clock-(evaluateHOLFiniteState source initCall).2.clock≤1:=initial source rfl
+  have combined:=ClockCost.sequence_reached_current source initCall _ 1 (2*(length/64)+267) first (by
+    intro middle normal
+    have nextCount : middle.locals.lookup (ofString "len")=some (.val (.word (BitVec.ofNat 64 length))):=
+      (CallNormal.ignored_lookup source middle (ofString "len") (ofString "sha256_state_init") [state] normal).trans count
+    have sameCode:=(evaluation_fields source middle initCall none normal).2.2.2
+    have nextInstalled : OriginalCode.Installed middle.code:=by rw [sameCode]; exact installed
+    apply ClockCost.declared_current middle "i" (.const 0#64) 0#64 (.seq blocks afterBlocks) (2*(length/64)+267) rfl
+    exact loop_tail_cost (QueryBranch.bind middle "i" 0#64) length small nextInstalled
+      ⟨0#64,bind_lookup_same _ _ _,(bind_lookup_other middle "i" "len" 0#64 (by decide)).trans nextCount,by simp⟩)
+  have total : 1+(2*(length/64)+267)=bodyPrice length:=by unfold bodyPrice; omega
+  rw [total] at combined
+  exact combined
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.hash_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.bswap_supported
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be64_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.compression_call_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.final_tail_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.padding_finish_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.padding_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.after_blocks_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.loop_tail_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.body_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def values (pointer out : BitVec 64) (length : Nat) : List (ValueHOL 64):=
+  [.val (.word pointer),.val (.word (BitVec.ofNat 64 length)),.val (.word out)]
+theorem hash_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "sha256")=some ([(ofString "p",.one),(ofString "len",.one),(ofString "out",.one)],Code.body .hash,.one) := by
+  simpa only [Code.name,Code.formals,Code.shape,Code.entry,Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_sha256,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+    using Code.installed code installed .hash
+
+theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (pointer out : BitVec 64) (length : Nat)
+    (code : codeFn (ofString "sha256")=some ([(ofString "p",.one),(ofString "len",.one),(ofString "out",.one)],Code.body .hash,.one)) :
+    ∃ callee : HolFiniteMapExact MlS (ValueHOL 64),
+      lookupCodeHOLFinite codeFn (ofString "sha256") (values pointer out length)=some (Code.body .hash,callee,.one) ∧
+      callee.lookup (ofString "p")=some (.val (.word pointer)) ∧
+      callee.lookup (ofString "len")=some (.val (.word (BitVec.ofNat 64 length))) ∧
+      callee.lookup (ofString "out")=some (.val (.word out)) :=
+  word_triple_environment codeFn (ofString "sha256") (ofString "p") (ofString "len") (ofString "out")
+    (Code.body .hash) .one pointer (BitVec.ofNat 64 length) out (by decide) (by decide) (by decide) code
+
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (arguments : List (ExpHOL 64))
+    (pointer out : BitVec 64) (length : Nat) (small : length+64<2^64)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (values pointer out length)) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "sha256") arguments)).2.clock≤bodyPrice length+1 := by
+  obtain ⟨callee,called,pointerCell,count,outCell⟩:=environment source.code.lookup pointer out length (hash_code source.code installed)
+  exact ClockCost.call_current source (some none) (ofString "sha256") arguments (values pointer out length) (Code.body .hash) callee .one (bodyPrice length)
+    args called (body_cost (callEntryStateHOLFinite source callee) length small installed count)
+
+/-- Price the real size expression alone; failed or ill-typed pointer reads
+stop before the body and remain covered by the same allowance. -/
+theorem dynamic_call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer size out : ExpHOL 64) (length : Nat)
+    (installed : OriginalCode.Installed source.code) (small : length+64<2^64)
+    (sizeRead : eval source size=some (.val (.word (BitVec.ofNat 64 length)))) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "sha256") [pointer,size,out])).2.clock≤bodyPrice length+1 := by
+  have code:=hash_code source.code installed
+  cases pointerRead : eval source pointer with
+  | none=>
+    have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [pointer,size,out]=none:=by
+      simp only [eval] at pointerRead
+      simp [evalListHOLFinite,evalListHOLExact,pointerRead]
+    rw [evaluateHOLFiniteState_call,args]; simp
+  | some pointerValue=>
+    cases outRead : eval source out with
+    | none=>
+      have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [pointer,size,out]=none:=by
+        simp only [eval] at pointerRead sizeRead outRead
+        simp [evalListHOLFinite,evalListHOLExact,pointerRead,sizeRead,outRead]
+      rw [evaluateHOLFiniteState_call,args]; simp
+    | some outValue=>
+      have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [pointer,size,out]=
+          some [pointerValue,.val (.word (BitVec.ofNat 64 length)),outValue]:=by
+        simp only [eval] at pointerRead sizeRead outRead
+        simp [evalListHOLFinite,evalListHOLExact,pointerRead,sizeRead,outRead]
+      cases called : lookupCodeHOLFinite source.code.lookup (ofString "sha256") [pointerValue,.val (.word (BitVec.ofNat 64 length)),outValue] with
+      | none=>rw [evaluateHOLFiniteState_call,args]; simp only; rw [called]; simp
+      | some data=>
+        obtain ⟨actual,callee,shape⟩:=data
+        obtain ⟨pointerWord,sizeWord,outWord,pointerEq,sizeEq,outEq⟩:=CallNormal.three_scalar_words source.code.lookup (ofString "sha256")
+          (ofString "p") (ofString "len") (ofString "out") (Code.body .hash) actual .one shape code pointerValue (.val (.word (BitVec.ofNat 64 length))) outValue callee called
+        rw [pointerEq,outEq] at args
+        exact call_cost source [pointer,size,out] pointerWord outWord length small installed args
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.hash_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.environment
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.call_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.dynamic_call_cost

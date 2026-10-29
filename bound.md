@@ -53,9 +53,10 @@ and owned input slices before its incoming heap. Each actual iteration costs
 iterations construct the next complete model; the whole original encoder
 costs≤157284452body source ticks on every outcome. Its actual normal return
 supplies the real count≤5, owned rows, checked heap and complete earlier-memory
-frame. The actual main caller connection is checked. Request hashes, the remaining
-main continuation, uniform target composition, dominant-slack review and
-final cleanup remain open.
+frame. The actual main caller connection is checked. General software SHA now has a
+complete all-outcome body source allowance2*(bytes/64)+268, plus1caller tick.
+Its complete caller memory frame, request hashes, the remaining main continuation,
+uniform target composition, dominant-slack review and final cleanup remain open.
 
 ## Earlier checked milestones, in order
 
@@ -2197,3 +2198,29 @@ verifier success. Usage50%weekly/0resetcredits. Next: share the existing stride
 rule across actual n/len locals, SHA block loop/padding/output frames, actual
 request-hash and BAL/main continuation, formal target composition, dominant-
 slack review and final cleanup.
+
+
+## Current complete general SHA source-clock allowance
+
+CounterFlow.NamedStride now shares the checked stride transition/cost/normal
+argument across the actual length-local name. Existing n-based public APIs
+remain specializations; current Keccak and all selected clients rebuild.
+The real SHA len-based64-byte block loop costs≤2*(length/64)source ticks on
+every outcome and derives its own normal exit remainder<64.
+
+The literal general SHA shape, padding, length writer, one/two final blocks
+and eight-word digest loop compose to≤2*(length/64)+268body source ticks,
+plus1caller tick. The current st_be64's aligned bswap and two-BE32 fallback
+are both included (≤3body ticks); no straight-body assumption is imposed.
+The actual three-word p/len/out ABI and known-size dynamic caller cover
+failed or ill-typed other argument expressions as well. No successful pointer
+mapping, future read, completed hash or cryptographic result is assumed.
+Expanded compression/straight-line target work remains separate.
+
+Validation: current-general-sha-block-loop-v1.log PASS2710jobs and
+current-general-sha-body-cost-v4.log PASS2710jobs, permitted printed axioms
+only. Index8700modules/18065facts; inventory8745/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage50%weekly/0resetcredits. Next: complete actual SHA workspace/
+output/caller memory frames, request-hash loop and BAL/main continuation,
+formal target composition, dominant-slack review and final cleanup.

@@ -1304,3 +1304,28 @@ payload-header regression. Printed axioms permitted only. Index8669modules/
 global finite target K/full verification; claim infinity. Usage35%weekly,
 0resetcredits. Next: current block-length composition, indexed tries,
 remaining main and uniform target steps.
+
+
+## Block-length tails cover the current allocator-derived input budget
+
+The transaction size/step/loop/phase contracts now cover slices up to
+251655056bytes, replacing the historical134217712-byte premise. The pure
+byte-size arithmetic remains nonwrapping; the generic transaction encoded
+sum cap is817878932. The reached block tail still costs≤12*txCount+
+43*withdrawalCount+33source ticks and derives its genuine returned word,
+withdrawal lower bound and pure state frame. Its generic encoded upper cap
+is817879876+57*withdrawalCount. This is a size cap, not the runtime bound.
+
+Moved code-frame transport beside its code structures and narrowed the old
+memory-frame import. The actual current tail can now be imported without
+the unrelated historical whole-header execution proof. Added the missing
+explicit HeapFrame import at the withdrawal scalar proof. No program or
+semantics changed. Historical WholeBlock/BlockCurrent wrappers have not been
+retargeted and are not claimed checked; the new current composition follows.
+
+Validation: current-rlp-block-tail-v2.log PASS2123jobs, including the complete
+current encoder and physical-header regression. Printed axioms permitted
+only. Index8669modules/17749facts; inventory8714/replacement closure0/fixed
+files unchanged. No global finite target K/full verification; claim infinity.
+Usage35%weekly/0resetcredits. Next: actual current block-length call and
+physical caller, indexed tries, remaining main and uniform target steps.

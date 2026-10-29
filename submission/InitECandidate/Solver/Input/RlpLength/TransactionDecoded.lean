@@ -8,7 +8,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 /-- Instantiate the actual loop using the real decoder result, including all
 record pointers and conditional first-byte reads. Slice bytes are charged once. -/
 theorem tx_decoded_loop (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
-    (pointer array : BitVec 64) (start length : Nat) (lengthBound : length≤134217712)
+    (pointer array : BitVec 64) (start length : Nat) (lengthBound : length≤251655056)
     (domain : source.memaddrs=InitE.ordinaryDomain) (heap : Blob.HeapInput source input pointer)
     (records : VarList.Records source input pointer array start length)
     (txs : source.locals.lookup (ofString "txs")=some (.val (.word (VarList.decodedArray array length))))
@@ -23,7 +23,7 @@ theorem tx_decoded_loop (source : PanSemStateFiniteExact 64 Guest.HostMemory) (i
       evaluateHOLFiniteState source transactionLoop=(none,target) ∧ target={source with locals:=target.locals,clock:=source.clock-paid} ∧
       target.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 (VarList.decodedCount input start length)))) ∧
       target.locals.lookup (ofString "tl")=some (.val (.word (BitVec.ofNat 64 finalSum))) ∧
-      finalSum≤length+9*VarList.decodedCount input start length ∧ finalSum≤436207564 ∧ (BitVec.ofNat 64 finalSum).toNat=finalSum ∧
+      finalSum≤length+9*VarList.decodedCount input start length ∧ finalSum≤817878932 ∧ (BitVec.ofNat 64 finalSum).toNat=finalSum ∧
       (∀ name : String,ofString "tl"≠ofString name→ ofString "i"≠ofString name→target.locals.lookup (ofString name)=source.locals.lookup (ofString name)) := by
   classical
   let count:=VarList.decodedCount input start length
@@ -38,7 +38,7 @@ theorem tx_decoded_loop (source : PanSemStateFiniteExact 64 Guest.HostMemory) (i
     obtain ⟨mapped,stored⟩:=cells index inside
     obtain ⟨pointerMapped,pointerStored,loaded⟩:=pointersRead index inside
     exact ⟨mapped,stored,pointerMapped,pointerStored,loaded⟩
-  have prefixBound : ∀ position≤count,VarList.sumPrefix (fun j=>(lengths j).toNat) position≤134217712 := by
+  have prefixBound : ∀ position≤count,VarList.sumPrefix (fun j=>(lengths j).toNat) position≤251655056 := by
     intro position inside
     have mono:=VarList.sum_prefix_mono (fun j=>(lengths j).toNat) position count inside
     change VarList.sumPrefix (fun j=>(lengths j).toNat) count≤length at totalBound

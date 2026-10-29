@@ -14,7 +14,7 @@ theorem bind_twice {F : Type} (source : PanSemStateFiniteExact 64 F) (name : Str
   exact congrArg (fun locals=>{source with locals:=locals}) mapEq
 
 theorem tx_after_first_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (first n : BitVec 64) (index sum : Nat)
-    (small : n.toNat≤134217712)
+    (small : n.toNat≤251655056)
     (fb : source.locals.lookup (ofString "fb")=some (.val (.word first)))
     (len : source.locals.lookup (ofString "n")=some (.val (.word n)))
     (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))))

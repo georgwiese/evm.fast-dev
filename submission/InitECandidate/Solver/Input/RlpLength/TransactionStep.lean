@@ -7,7 +7,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 /-- One actual transaction-length loop body, including the conditional first
 byte read, legacy/raw branch, typed wrapping call and all local scopes. -/
 theorem tx_body_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array pointer n : BitVec 64) (byte : UInt8) (index sum : Nat)
-    (small : n.toNat≤134217712)
+    (small : n.toNat≤251655056)
     (txs : source.locals.lookup (ofString "txs")=some (.val (.word array)))
     (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))))
     (tl : source.locals.lookup (ofString "tl")=some (.val (.word (BitVec.ofNat 64 sum))))

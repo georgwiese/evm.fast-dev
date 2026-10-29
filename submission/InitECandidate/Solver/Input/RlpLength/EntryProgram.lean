@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.HeaderEncoding.Frames
+import InitECandidate.Solver.Input.HeaderEncoding.SuffixArithmetic
 import InitECandidate.Solver.Input.RlpLength.TransactionPhase
 
 namespace InitECandidate.Solver.Input.RlpLength.Block

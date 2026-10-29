@@ -6,7 +6,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 theorem assign_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (first n old : BitVec 64) (name : String)
-    (expressions : List (ExpHOL 64)) (small : n.toNat≤134217712)
+    (expressions : List (ExpHOL 64)) (small : n.toNat≤251655056)
     (present : source.locals.lookup (ofString name)=some (.val (.word old)))
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) expressions=some [.val (.word first),.val (.word n)])
     (code : source.code.lookup (ofString "rlp_bytes_encoded_len")=some (formals,body,.one))

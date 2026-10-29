@@ -4,11 +4,6 @@ namespace InitECandidate.Solver.Input.HeaderEncoding
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-theorem Codes.of_code (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (same : target.code=source.code) (codes : Codes source) : Codes target := by
-  refine ⟨?_,RlpWrite.U256Put.Codes.of_code source target same codes.u256Codes,?_⟩
-  · rw [same]; exact codes.u256Code
-  · rw [same]; exact codes.wordCode
-
 /-- The exact optional pair terminates in its literal final p assignment,
 including both actual writer calls and the old-header memory invariant. -/
 theorem optional_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (original : Memory) (header buffer old : BitVec 64)

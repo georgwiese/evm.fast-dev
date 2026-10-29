@@ -6,7 +6,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- Exact actual byte-string size function for input-sized records. Both
 branches return a natural size in[n,n+9], without word-addition overflow. -/
-theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (first n : BitVec 64) (small : n.toNat≤134217712)
+theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (first n : BitVec 64) (small : n.toNat≤251655056)
     (fb : source.locals.lookup (ofString "first_byte")=some (.val (.word first)))
     (len : source.locals.lookup (ofString "n")=some (.val (.word n)))
     (headerCode : source.code.lookup (ofString "rlp_header_len")=some (Header.formals,Header.body,.one))

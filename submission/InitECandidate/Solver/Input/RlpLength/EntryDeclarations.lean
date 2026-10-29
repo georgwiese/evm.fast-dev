@@ -6,7 +6,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 structure Data (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
     (pointer array payload : BitVec 64) (txStart txLength wdStart wdCount : Nat) : Prop where
-  txBound : txLength≤134217712
+  txBound : txLength≤251655056
   wdSmall : wdCount<2^31
   heap : Blob.HeapInput source input pointer
   records : VarList.Records source input pointer array txStart txLength
@@ -57,7 +57,7 @@ theorem after_release_execute (source : PanSemStateFiniteExact 64 Guest.HostMemo
     (he : source.locals.lookup (ofString "he")=some (HeaderEncoding.encodedPair headerStart headerLength))
     (pl : source.locals.lookup (ofString "pl")=some (.val (.word payload)))
     (enough : 12*VarList.decodedCount input txStart txLength+43*wdCount+33≤source.clock) :
-    ∃ target encoded paid,25*wdCount≤encoded ∧ encoded≤436208508+57*wdCount ∧
+    ∃ target encoded paid,25*wdCount≤encoded ∧ encoded≤817879876+57*wdCount ∧
       paid≤12*VarList.decodedCount input txStart txLength+43*wdCount+33 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
       evaluateHOLFiniteState source afterRelease=(some (.returned (.val (.word (BitVec.ofNat 64 encoded)))),target) ∧
       emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-paid} := by

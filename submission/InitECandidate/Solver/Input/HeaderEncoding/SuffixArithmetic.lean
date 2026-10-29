@@ -37,8 +37,18 @@ theorem start_difference (header buffer : BitVec 64) (geometry : Geometry header
   rw [BitVec.toNat_sub_of_le ordered,number,lengthNumber,destination]
   omega
 
+theorem TailCodes.of_code (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (same : target.code=source.code) (codes : TailCodes source) : TailCodes target := by
+  refine ⟨?_,?_,?_⟩
+  all_goals rw [same]
+  · exact codes.listLength
+  · exact codes.headerLength
+  · exact codes.listWriter
+
 end InitECandidate.Solver.Input.HeaderEncoding
 
 #print axioms InitECandidate.Solver.Input.HeaderEncoding.suffix_shape
 #print axioms InitECandidate.Solver.Input.HeaderEncoding.payload_difference
 #print axioms InitECandidate.Solver.Input.HeaderEncoding.start_difference
+
+#print axioms InitECandidate.Solver.Input.HeaderEncoding.TailCodes.of_code

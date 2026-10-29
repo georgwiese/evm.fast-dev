@@ -4,14 +4,6 @@ namespace InitECandidate.Solver.Input.HeaderEncoding
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
-theorem TailCodes.of_code (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
-    (same : target.code=source.code) (codes : TailCodes source) : TailCodes target := by
-  refine ⟨?_,?_,?_⟩
-  all_goals rw [same]
-  · exact codes.listLength
-  · exact codes.headerLength
-  · exact codes.listWriter
-
 theorem rest_budgets : sizes baseRest=816 ∧ costs baseRest=1188 := by decide
 
 /-- All fields following the first parent hash, the real optional guard and

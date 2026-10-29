@@ -23,7 +23,7 @@ Decoded records establish transaction loads and aggregate size; the preceding
 encoded-header bound and phase entry are still explicit. -/
 theorem transaction_phase_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
     (pointer array payload : BitVec 64) (txStart txLength wdStart wdCount total : Nat)
-    (txLengthBound : txLength≤134217712) (wdSmall : wdCount<2^31) (totalSmall : total≤2^31)
+    (txLengthBound : txLength≤251655056) (wdSmall : wdCount<2^31) (totalSmall : total≤2^31)
     (domain : source.memaddrs=InitE.ordinaryDomain) (heap : Blob.HeapInput source input pointer)
     (records : VarList.Records source input pointer array txStart txLength) (inside : wdStart+44*wdCount≤input.length%2^64)
     (txs : source.locals.lookup (ofString "txs")=some (.val (.word (VarList.decodedArray array txLength))))
@@ -41,7 +41,7 @@ theorem transaction_phase_execute (source : PanSemStateFiniteExact 64 Guest.Host
     (headerCode : source.code.lookup (ofString "rlp_header_len")=some (Header.formals,Header.body,.one))
     (beCode : source.code.lookup (ofString "rlp_be_len")=some (Be.formals,Be.body,.one))
     (enough : 12*VarList.decodedCount input txStart txLength+43*wdCount+33≤source.clock) :
-    ∃ target encoded paid,25*wdCount≤encoded ∧ encoded≤total+436207564+57*wdCount+28 ∧
+    ∃ target encoded paid,25*wdCount≤encoded ∧ encoded≤total+817878932+57*wdCount+28 ∧
       paid≤12*VarList.decodedCount input txStart txLength+43*wdCount+33 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
       evaluateHOLFiniteState source transactionPhase=(some (.returned (.val (.word (BitVec.ofNat 64 encoded)))),target) ∧
       emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with clock:=source.clock-paid} := by

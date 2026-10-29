@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.RlpLength.WithdrawalProgram
+import InitECandidate.Solver.Input.HeapFrame
 
 namespace InitECandidate.Solver.Input.RlpLength.Withdrawal
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

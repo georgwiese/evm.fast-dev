@@ -51,9 +51,16 @@ theorem bytes_field (source : PanSemStateFiniteExact 64 Guest.HostMemory) (origi
     have away:=before_away (address buffer position) query (length+9) buffer.toNat destination (by omega) context.geometry.bufferAligned before
     exact (frame query away).trans (context.oldMemory query before)
 
+theorem Codes.of_code (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (same : target.code=source.code) (codes : Codes source) : Codes target := by
+  refine ⟨?_,RlpWrite.U256Put.Codes.of_code source target same codes.u256Codes,?_⟩
+  · rw [same]; exact codes.u256Code
+  · rw [same]; exact codes.wordCode
+
 end InitECandidate.Solver.Input.HeaderEncoding
 
 #print axioms InitECandidate.Solver.Input.HeaderEncoding.Geometry.position_arena
 #print axioms InitECandidate.Solver.Input.HeaderEncoding.Geometry.position_number
 #print axioms InitECandidate.Solver.Input.HeaderEncoding.Geometry.cursor_number
 #print axioms InitECandidate.Solver.Input.HeaderEncoding.bytes_field
+
+#print axioms InitECandidate.Solver.Input.HeaderEncoding.Codes.of_code

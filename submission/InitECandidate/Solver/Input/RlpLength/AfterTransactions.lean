@@ -9,7 +9,7 @@ initialization and complete final phase. The preceding header-size premise
 remains explicit; the transaction contribution is the checked aggregate bound. -/
 theorem after_transactions_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (input : Guest.InputBlob)
     (pointer payload oldI : BitVec 64) (start count total txSum : Nat)
-    (countSmall : count<2^31) (totalSmall : total≤2^31) (txBound : txSum≤436207564)
+    (countSmall : count<2^31) (totalSmall : total≤2^31) (txBound : txSum≤817878932)
     (heap : Blob.HeapInput source input pointer) (inside : start+44*count≤input.length%2^64)
     (pl : source.locals.lookup (ofString "pl")=some (.val (.word payload)))
     (i : source.locals.lookup (ofString "i")=some (.val (.word oldI)))

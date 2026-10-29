@@ -17,6 +17,7 @@ theorem cost_word_multiple (src dst : BitVec 64) (length : Nat) (multiple : leng
     have d := Nat.mod_add_div length 8
     omega
   · rw [cost,if_neg mask,CopyBytes.suffixCost,Nat.sub_zero,multiple,Nat.add_zero]
+    exact Nat.le_refl _
 
 /-- The unchanged memcpy at its actual mapped operands, with every clock
 budget covered. Sufficient funding gives its exact execution; otherwise its

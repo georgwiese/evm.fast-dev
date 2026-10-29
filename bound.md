@@ -1678,3 +1678,32 @@ current-indexed-root-cache-v1.log PASS3080jobs, including actual main transactio
 data and payload-to-trie regressions. Printed axioms permitted only. Claim
 infinity; no global finite target K/full verification. Next: current root
 calculation, remaining main and uniform target-step composition.
+
+
+## Current uncached root calculation and actual normal output
+
+The actual _node_rlp_fill258 now stops within2body source ticks at the
+real startup scratch/frame cursors: after its mark and48-byte scratch
+allocation, its first frame store is below the actual ordinary memory domain.
+Every clock and outcome is covered, with no assumed successful future helper.
+At an actual uncached node, current node_rlp259 stops within3body ticks and
+node_hash264 within4; no actual normal return can reach their later encoder,
+allocation or Keccak suffixes.
+
+Current mpt_root265 now costs≤5body ticks from its physical local entry,
+covering both the owned32-byte empty-root copy and uncached nonempty root.
+Any actual normal root return selects the empty-root branch, returns0,
+retains all nonlocal metadata and preserves every word outside its actual
+output span. This is still a local entry theorem: the builder/root caller
+must connect the saved output local, original empty-root buffer global and
+retained startup arena to the reached suffix before claiming a whole builder.
+
+Consolidated the new scratch/encoder/hash/root proofs into one helper module
+to save a package entry. Fixed an exposed reflexive Nat comparison in the
+existing pure copy-cost lemma. Fixed executable/ROM/semantics unchanged.
+Validation: current-trie-root-consolidated-v1.log PASS3084jobs, with current
+indexed setup, actual main transaction data and payload-to-trie regressions.
+Printed axioms permitted only. Index8698modules/17840facts; inventory8743/
+replacement closure0/fixed files unchanged. Claim infinity; no global finite
+target K/full verification. Usage42%weekly/0resetcredits. Next: actual complete
+indexed-builder/root caller, remaining main and uniform target steps.

@@ -1,4 +1,5 @@
-import InitECandidate.Solver.GasBudget.U256Arithmetic
+import InitECandidate.Solver.GasBudget.U256Eq
+import InitECandidate.Solver.Input.OriginalEntry
 
 namespace InitECandidate.Solver.GasBudget.U256LessThan
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -76,3 +77,66 @@ end InitECandidate.Solver.GasBudget.U256LessThan
 #print axioms InitECandidate.Solver.GasBudget.U256LessThan.binary
 
 #print axioms InitECandidate.Solver.GasBudget.U256LessThan.environment
+
+namespace InitECandidate.Solver.GasBudget.U256LessThan
+
+/-- The actual limb comparison agrees with the full natural256-bit values. -/
+theorem resultWord_one_iff_number_lt (a b : Quad) : resultWord a b=1#64 ↔ U256Zero.number a<U256Zero.number b := by
+  have a0:=(a 0).isLt
+  have a1:=(a 1).isLt
+  have a2:=(a 2).isLt
+  have a3:=(a 3).isLt
+  have b0:=(b 0).isLt
+  have b1:=(b 1).isLt
+  have b2:=(b 2).isLt
+  have b3:=(b 3).isLt
+  have selected : resultWord a b=1#64 ↔
+      (if a 3≠b 3 then a 3<b 3 else if a 2≠b 2 then a 2<b 2 else if a 1≠b 1 then a 1<b 1 else a 0<b 0):=by
+    unfold resultWord
+    split_ifs <;> simp_all
+  rw [selected]
+  by_cases same3 : a 3=b 3
+  · have number3:=congrArg BitVec.toNat same3
+    simp only [same3,ne_eq,not_true_eq_false,↓reduceIte]
+    by_cases same2 : a 2=b 2
+    · have number2:=congrArg BitVec.toNat same2
+      simp only [same2,ne_eq,not_true_eq_false,↓reduceIte]
+      by_cases same1 : a 1=b 1
+      · have number1:=congrArg BitVec.toNat same1
+        simp only [same1,ne_eq,not_true_eq_false,↓reduceIte,BitVec.lt_def]
+        unfold U256Zero.number
+        omega
+      · have different : (a 1).toNat≠(b 1).toNat:=fun equal=>same1 (BitVec.eq_of_toNat_eq equal)
+        simp only [if_pos same1,BitVec.lt_def]
+        unfold U256Zero.number
+        omega
+    · have different : (a 2).toNat≠(b 2).toNat:=fun equal=>same2 (BitVec.eq_of_toNat_eq equal)
+      simp only [if_pos same2,BitVec.lt_def]
+      unfold U256Zero.number
+      omega
+  · have different : (a 3).toNat≠(b 3).toNat:=fun equal=>same3 (BitVec.eq_of_toNat_eq equal)
+    simp only [if_pos same3,BitVec.lt_def]
+    unfold U256Zero.number
+    omega
+
+theorem resultWord_zero_iff_number_le (a b : Quad) : resultWord a b=0#64 ↔ U256Zero.number b≤U256Zero.number a := by
+  have one:=resultWord_one_iff_number_lt a b
+  have bits:=binary a b
+  constructor
+  · intro zero
+    have notLess : ¬ U256Zero.number a<U256Zero.number b:=by
+      intro lower
+      have value:=one.mpr lower
+      rw [zero] at value
+      cases value
+    omega
+  · intro notLess
+    rcases bits with zero|positive
+    · exact zero
+    · have lower:=one.mp positive
+      omega
+
+end InitECandidate.Solver.GasBudget.U256LessThan
+
+#print axioms InitECandidate.Solver.GasBudget.U256LessThan.resultWord_one_iff_number_lt
+#print axioms InitECandidate.Solver.GasBudget.U256LessThan.resultWord_zero_iff_number_le

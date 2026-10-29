@@ -3280,3 +3280,28 @@ separation using the actual startup heap minimum2701135464. Taylor/header
 validation/main, uniform target composition, exact K, dominant slack review
 and cleanup remain open. No executable/fixed challenge premise or historical
 untracked RlpLength/RlpWrite WIP changed.
+
+
+## Current256-bit comparison value and dependency cleanup
+
+The actual u256_lt result now agrees with the complete natural256-bit
+values:1iff a<b,0iff b≤a. Its existing physical execution and real scoped
+caller remain checked. The proof uses each real64-bit limb bound, not an
+assumed mathematical comparison result.
+
+The helper now imports its actual equality/ABI and declaration dependencies
+instead of the old arithmetic umbrella, which pulled unrelated stale EVM
+proofs into this current path. The shared pure_value_execute fact is now
+generic in the host-memory type; this removes an accidental Guest.HostMemory
+import dependency without weakening its exact execution statement.
+
+Validation: current-u256-less-number-v2.log PASS742jobs, including the real
+scoped caller and generic return helper; both new facts have only permitted
+axioms. Index8700modules/18493facts; inventory8745/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verifier
+success. Effort estimate50%, plausible40–60%. Usage32%weekly/0resetcredits,
+ordinary usage allowed. No new candidate paths; package stays65536entries.
+Next: complete the actual u256 division wrapper, the two-digit Taylor path,
+actual runtime workspace/input separation, Taylor/header/main and uniform
+target composition, exact K, dominant slack review and cleanup. Historical
+untracked RlpLength/RlpWrite WIPs and executable/fixed premises are untouched.

@@ -213,6 +213,7 @@ theorem body_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     (normal : evaluateHOLFiniteState source Indexed.body=(some (.returned value),target)) :
     count=0 ∧ value=.val (.word 0#64) ∧ target.memaddrs=source.memaddrs ∧ target.be=source.be ∧ target.code=source.code ∧
       target.globals.lookup (ofString "heap_ptr")=some (.val (.word data.heap)) ∧ HeapGlobals source target ∧
+      MemoryMetadata.erase target=MemoryMetadata.erase source ∧
       ∀ query : BitVec 64,query.toNat<data.heap.toNat→CopyGeneral.Away out query 32→target.memory query=source.memory query := by
   have zero:=normal_count_zero data roots value normal
   subst count
@@ -264,8 +265,27 @@ theorem body_normal {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
   change target.globals=(HeapScope.releasePost copied data.heap).globals at finalGlobals
   have finalMemory:=congrArg PanSemStateFiniteExact.memory finalFrame
   change target.memory=copied.memory at finalMemory
+  have releasedMetadata : MemoryMetadata.erase (HeapScope.releasePost copied data.heap)=MemoryMetadata.erase (HeapScope.releasePost entered data.heap):=
+    congrArg (fun state=>HeapScope.releasePost state data.heap) copyFrame
+  have restoredMetadata : MemoryMetadata.erase (HeapScope.releasePost entered data.heap)=MemoryMetadata.erase source:=by
+    obtain ⟨arena,enteredEq⟩:=Indexed.setup_from_execution source entered data.heap data.installed data.heapCell data.domain data.heapArena data.heapAligned execution
+    rw [enteredEq]
+    have restoredGlobals : (source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded data.heap 16#64)))).update
+        (ofString "heap_ptr",.val (.word data.heap))=source.globals:=by
+      apply HolFiniteMapExact.ext
+      funext name
+      simp only [HolFiniteMapExact.lookup_update_pointwise]
+      by_cases same : name=ofString "heap_ptr"
+      · subst name; simpa using data.heapCell.symm
+      · simp [same]
+    change {MemoryMetadata.erase source with globals:=((source.globals.update (ofString "heap_ptr",.val (.word (PersistentAlloc.rounded data.heap 16#64)))).update
+      (ofString "heap_ptr",.val (.word data.heap)))}=MemoryMetadata.erase source
+    rw [restoredGlobals]
+    rfl
+  have metadata : MemoryMetadata.erase target=MemoryMetadata.erase source:=
+    (MemoryMetadata.of_frame finalFrame).trans (releasedMetadata.trans restoredMetadata)
   have fields:=evaluation_fields source target Indexed.body (some (.returned value)) normal
-  refine ⟨rfl,valueEq,fields.1,fields.2.1,fields.2.2.2,?_,?_,?_⟩
+  refine ⟨rfl,valueEq,fields.1,fields.2.1,fields.2.2.2,?_,?_,metadata,?_⟩
   · rw [finalGlobals]
     simp [HeapScope.releasePost,HolFiniteMapExact.update,FUPDATE]
   · intro name other

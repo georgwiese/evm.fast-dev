@@ -1780,3 +1780,24 @@ Incremental policy65534entries/2485762167bytes. Claim infinity; no global finite
 target K or full verifier success. Usage43%weekly/0resetcredits. Next: actual
 main transaction continuation and withdrawals/header suffix, remaining main,
 then uniform target-step composition and final cleanup.
+
+## Actual main reaches the withdrawal suffix with zero transactions
+
+The complete current builder normal contract now also retains all nonlocal
+metadata after its saved heap is released. The literal transaction-trie caller
+uses that same observed return to retain PhysicalHeader (all input data,
+31 header cells, four root-buffer locals and the original heap frontier) and
+derive the actual decoded transaction count zero. A generic physical-header
+transport covers later writers beyond those header cells. The actual whole
+payload-header trace through this caller either stops or reaches its unchanged
+withdrawal suffix within463781938977source ticks. The prior block-size and
+withdrawal-count guard facts remain live. No future helper return is assumed.
+
+Validation: current-main-after-transaction-v2.log PASS2707jobs; permitted
+printed axioms only. Index8698modules/17856facts; inventory8743/replacement
+closure0/fixed files unchanged. Incremental policy65534entries/2485773208bytes.
+An existing AllocatedAwayBelow helper needed its explicit CopyGeneralMemory
+import after the earlier foundation cleanup; its proof now checks. Claim
+infinity; no global finite target K/full verifier success. Usage44%weekly/
+0resetcredits. Next: withdrawal encoder/loop and trie, rest of payload_header
+and main, uniform target steps, final cleanup.

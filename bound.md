@@ -3732,3 +3732,52 @@ remainder extraction and complete two-digit caller/Taylor/header/main remain.
 Uniform target composition, exact K, dominant slack review and final cleanup
 remain open. Historical untracked WIPs and executable/fixed premises stay
 untouched; source-clock bounds still omit straight-line target work.
+
+
+## Actual nlz32 caller connected to the complete normalization prefix
+
+The original scoped s/nlz32 call and its complete right-associated two-array
+normalization prefix are identified literally, with the actual later
+vtop/vsec/outer-loop continuation still inside s's original scope.
+Its real argument is loaded from the mapped physical V[1] of the same
+current n=2 entry. The checked original nlz32 callee supplies s≤31 and both
+shifted-leading-digit bounds; no future normalization result/count is supplied.
+
+That actual returned binding now enters the real VN block, UN[m] carry
+store and UN block. From the same original input images, these stages
+construct a complete Ready state: original U/V retained, actual normalized
+UN[m+1]/VN[2] images, real pointer/count/s bindings, i=0 and allocated context.
+Their actual numbers are U*2^s and D*2^s, and the actual normalized top divisor
+digit lies in[2^31,2^32). The body costs m source ticks on every outcome;
+its real normal return derives its own funding. Including the actual nlz32
+call, the bounded prefix costs≤m+1 and a funded actual call reaches its same
+original continuation with exact remaining clock and lexical s restoration.
+
+Only UN[0..m] and VN[0..1] are written. All other memory and all locals
+except i are preserved by the body, and all other source fields remain exact.
+Entry conditions are still the actual two-digit caller's m/n/u/v/un/vn/i
+bindings, fixed installed code, original mapped32-bit images,2≤m≤16 and
+nonzero leading divisor digit. The earlier real divmnu/digits_divmod caller
+must derive those conditions. Source clocks still omit straight-line target work.
+
+Validation: current-normalization-prefix-v2.log PASS1126jobs; all14new printed
+facts have only permitted axioms. Index8700modules/18633facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage34%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: original vtop/vsec loads and outer j initialization; real three-digit
+captures and qhat/rhat declarations, then the checked per-digit phase.
+Use an actual two-word carried remainder at UN[j]/UN[j+1], below the actual
+normalized divisor, plus the untouched lower prefix. A step consumes the
+next lower digit through window=low+2^32*carry, so the existing remainder
+proof derives the next carry bound. Induct over actual j, retaining the
+quotient image and D*Q+R conservation; prove untouched quotient suffix and
+memory frames from actual stores. The initial carry bound follows from
+U<2^(32*m), D≥2^32 and the checked common normalization factor. This is the
+remaining proof plan, not a checked outer-loop theorem.
+
+Final remainder extraction, complete two-digit caller/Taylor/header/main,
+uniform target composition, exact K, dominant slack review and cleanup remain.
+Historical untracked WIPs and executable/fixed premises stay untouched.

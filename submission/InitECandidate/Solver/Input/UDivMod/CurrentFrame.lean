@@ -6432,3 +6432,427 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_index
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_context
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.NormalizeLoop.arrayPost_numerator_top
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Real original inputs/pointers at the two-digit normalization entry. -/
+structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length : Nat) : Prop where
+  context : Workspace.Context source base
+  large : 2≤length
+  small : length≤16
+  un : source.locals.lookup (ofString "un")=some (.val (.word (Workspace.pointer base .normalizedNumerator)))
+  vn : source.locals.lookup (ofString "vn")=some (.val (.word (Workspace.pointer base .normalizedDivisor)))
+  uCell : source.locals.lookup (ofString "u")=some (.val (.word (Workspace.pointer base .numerator)))
+  vCell : source.locals.lookup (ofString "v")=some (.val (.word (Workspace.pointer base .divisor)))
+  m : source.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 length)))
+  n : source.locals.lookup (ofString "n")=some (.val (.word 2#64))
+  i : ∃ old,source.locals.lookup (ofString "i")=some (.val (.word old))
+  uImage : Image source (Workspace.pointer base .numerator) u length
+  vImage : Image source (Workspace.pointer base .divisor) v 2
+  uSmall : ∀ index,index<length→(u index).toNat<4294967296
+  vSmall : ∀ index,index<2→(v index).toNat<4294967296
+  leadingPositive : 0<(v 1).toNat
+
+private theorem Entry.withClock {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length : Nat}
+    (checked : Entry source base u v length) (clock : Nat) : Entry {source with clock:=clock} base u v length :=
+  ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.large,checked.small,
+    checked.un,checked.vn,checked.uCell,checked.vCell,checked.m,checked.n,checked.i,checked.uImage,checked.vImage,checked.uSmall,checked.vSmall,checked.leadingPositive⟩
+
+private theorem Entry.bindS {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length : Nat}
+    (checked : Entry source base u v length) (bits : Nat) : Entry (bind source "s" (BitVec.ofNat 64 bits)) base u v length := by
+  refine ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.large,checked.small,
+    ?_,?_,?_,?_,?_,?_,?_,checked.uImage,checked.vImage,checked.uSmall,checked.vSmall,checked.leadingPositive⟩
+  · exact (bind_lookup_other _ "s" "un" _ (by decide)).trans checked.un
+  · exact (bind_lookup_other _ "s" "vn" _ (by decide)).trans checked.vn
+  · exact (bind_lookup_other _ "s" "u" _ (by decide)).trans checked.uCell
+  · exact (bind_lookup_other _ "s" "v" _ (by decide)).trans checked.vCell
+  · exact (bind_lookup_other _ "s" "m" _ (by decide)).trans checked.m
+  · exact (bind_lookup_other _ "s" "n" _ (by decide)).trans checked.n
+  · obtain ⟨old,cell⟩:=checked.i
+    exact ⟨old,(bind_lookup_other _ "s" "i" _ (by decide)).trans cell⟩
+
+private theorem Entry.u_buffers {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length : Nat}
+    (checked : Entry source base u v length) :
+    NormalizeLoop.Buffers source (Workspace.pointer base .numerator) (Workspace.pointer base .normalizedNumerator) u length :=
+  NormalizeLoop.workspace_buffers source base checked.context .numerator .normalizedNumerator (by intro same;cases same)
+    u length checked.small checked.small (by change length≤17;have bound:=checked.small;omega) checked.uImage
+
+private theorem Entry.v_buffers {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length : Nat}
+    (checked : Entry source base u v length) :
+    NormalizeLoop.Buffers source (Workspace.pointer base .divisor) (Workspace.pointer base .normalizedDivisor) v 2 :=
+  NormalizeLoop.workspace_buffers source base checked.context .divisor .normalizedDivisor (by intro same;cases same)
+    v 2 (by decide) (by decide) (by decide) checked.vImage
+
+private theorem Entry.after_array {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length : Nat}
+    (checked : Entry source base u v length) (output : Workspace.Buffer) (contents : Nat→BitVec 64) (bits count : Nat)
+    (positive : 0<count) (inside : count≤Workspace.count output) (notU : .numerator≠output) (notV : .divisor≠output) :
+    Entry (NormalizeLoop.arrayPost source (Workspace.pointer base output) contents bits count) base u v length := by
+  refine ⟨NormalizeLoop.arrayPost_context source base _ checked.context contents bits count,checked.large,checked.small,
+    ?_,?_,?_,?_,?_,?_,⟨0#64,NormalizeLoop.arrayPost_index source _ contents bits count⟩,?_,?_,checked.uSmall,checked.vSmall,checked.leadingPositive⟩
+  · exact (NormalizeLoop.arrayPost_other source _ contents bits count "un" (by decide)).trans checked.un
+  · exact (NormalizeLoop.arrayPost_other source _ contents bits count "vn" (by decide)).trans checked.vn
+  · exact (NormalizeLoop.arrayPost_other source _ contents bits count "u" (by decide)).trans checked.uCell
+  · exact (NormalizeLoop.arrayPost_other source _ contents bits count "v" (by decide)).trans checked.vCell
+  · exact (NormalizeLoop.arrayPost_other source _ contents bits count "m" (by decide)).trans checked.m
+  · exact (NormalizeLoop.arrayPost_other source _ contents bits count "n" (by decide)).trans checked.n
+  · intro index bound
+    rw [NormalizeLoop.arrayPost_away source _ _ contents bits count positive (by
+      intro written inRange
+      exact Workspace.separate base .numerator output notU index written (by change index<16;have h:=checked.small;omega) (by omega))]
+    exact checked.uImage index bound
+  · intro index bound
+    rw [NormalizeLoop.arrayPost_away source _ _ contents bits count positive (by
+      intro written inRange
+      exact Workspace.separate base .divisor output notV index written (by change index<8;omega) (by omega))]
+    exact checked.vImage index bound
+
+def divisorPost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (v : Nat→BitVec 64) (bits : Nat) :=
+  NormalizeLoop.arrayPost source (Workspace.pointer base .normalizedDivisor) v bits 2
+
+def topPost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat) :=
+  let normalized:=divisorPost source base v bits
+  {normalized with memory:=StoreWord.put normalized.memory (slot (Workspace.pointer base .normalizedNumerator) length) (Normalized.incoming u bits length)}
+
+def post (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat) :=
+  NormalizeLoop.arrayPost (topPost source base u v length bits) (Workspace.pointer base .normalizedNumerator) u bits length
+
+private theorem Entry.after_divisor {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length : Nat}
+    (checked : Entry source base u v length) (bits : Nat) : Entry (divisorPost source base v bits) base u v length :=
+  checked.after_array .normalizedDivisor v bits 2 (by decide) (by decide) (by intro same;cases same) (by intro same;cases same)
+
+private theorem Entry.after_top {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length : Nat}
+    (checked : Entry source base u v length) (bits : Nat) : Entry (topPost source base u v length bits) base u v length := by
+  have previous:=checked.after_divisor bits
+  refine ⟨⟨previous.context.global,previous.context.domain,previous.context.arena,previous.context.aligned⟩,previous.large,previous.small,
+    previous.un,previous.vn,previous.uCell,previous.vCell,previous.m,previous.n,previous.i,?_,?_,previous.uSmall,previous.vSmall,previous.leadingPositive⟩
+  · intro index inside
+    have separate:=Workspace.separate base .numerator .normalizedNumerator (by intro same;cases same) index length (by change index<16;have bound:=checked.small;omega) (by change length<17;have bound:=checked.small;omega)
+    change StoreWord.put _ _ _ (slot (Workspace.pointer base .numerator) index)=_
+    rw [StoreWord.put,if_neg separate]
+    exact previous.uImage index inside
+  · intro index inside
+    have separate:=Workspace.separate base .divisor .normalizedNumerator (by intro same;cases same) index length (by change index<8;omega) (by change length<17;have bound:=checked.small;omega)
+    change StoreWord.put _ _ _ (slot (Workspace.pointer base .divisor) index)=_
+    rw [StoreWord.put,if_neg separate]
+    exact previous.vImage index inside
+
+/-- The original right-associated normalization code after the s call,
+with the genuine later vtop/vsec/outer-loop continuation kept explicit. -/
+def body (continuation : ProgHOL 64) : ProgHOL 64:=
+  .seq (.assign .local (ofString "i") (.op .sub [localVar "n",.const 1#64]))
+    (.seq (NormalizeLoop.loop "v" "vn") (.seq (NormalizeLoop.firstStore "v" "vn")
+      (.seq (NormalizeLoop.topStore "u" "un")
+        (.seq (.assign .local (ofString "i") (.op .sub [localVar "m",.const 1#64]))
+          (.seq (NormalizeLoop.loop "u" "un") (.seq (NormalizeLoop.firstStore "u" "un") continuation))))))
+
+/-- Both actual array blocks and the actual intervening top store execute
+from the same real input images and retain the original continuation. -/
+theorem body_continue (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat)
+    (checked : Entry source base u v length) (bitsSmall : bits≤31)
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))))
+    (enough : length≤source.clock) (continuation : ProgHOL 64) :
+    evaluateHOLFiniteState source (body continuation)=evaluateHOLFiniteState (post source base u v length bits) continuation := by
+  let vn:=divisorPost source base v bits
+  let top:=topPost source base u v length bits
+  let next : ProgHOL 64:=.seq (.assign .local (ofString "i") (.op .sub [localVar "m",.const 1#64]))
+    (.seq (NormalizeLoop.loop "u" "un") (.seq (NormalizeLoop.firstStore "u" "un") continuation))
+  obtain ⟨old,i⟩:=checked.i
+  have vnRun:=NormalizeLoop.array_continue source "v" "vn" "n" (Workspace.pointer base .divisor) (Workspace.pointer base .normalizedDivisor)
+    v 2 bits checked.v_buffers (by decide) bitsSmall checked.vCell checked.vn s checked.n old i (by decide) (by decide)
+    (by have lower:=checked.large;omega) (.seq (NormalizeLoop.topStore "u" "un") next)
+  have vnEntry : Entry vn base u v length:=checked.after_divisor bits
+  have sVn : vn.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))):=
+    (NormalizeLoop.arrayPost_other source _ v bits 2 "s" (by decide)).trans s
+  have topRun : evaluateHOLFiniteState vn (NormalizeLoop.topStore "u" "un")=(none,top):=
+    NormalizeLoop.top_execute vn "u" "un" (Workspace.pointer base .numerator) (Workspace.pointer base .normalizedNumerator) u length bits vnEntry.u_buffers
+      (by have lower:=checked.large;omega) bitsSmall vnEntry.uCell vnEntry.un sVn vnEntry.m
+      (Workspace.slot_mapped vn base vnEntry.context .normalizedNumerator length (by change length<17;have upper:=checked.small;omega))
+  have topEntry : Entry top base u v length:=checked.after_top bits
+  have topI : top.locals.lookup (ofString "i")=some (.val (.word 0#64)):=NormalizeLoop.arrayPost_index source _ v bits 2
+  have clockVn : vn.clock=source.clock-1:=by
+    have clock:=congrArg PanSemStateFiniteExact.clock (NormalizeLoop.arrayPost_frame source (Workspace.pointer base .normalizedDivisor) v bits 2)
+    exact clock
+  have unRun:=NormalizeLoop.array_continue top "u" "un" "m" (Workspace.pointer base .numerator) (Workspace.pointer base .normalizedNumerator)
+    u length bits topEntry.u_buffers (by have lower:=checked.large;omega) bitsSmall topEntry.uCell topEntry.un sVn topEntry.m 0#64 topI
+    (by decide) (by decide) (by change length-1≤vn.clock;have lower:=checked.large;omega) continuation
+  rw [body,vnRun]
+  change evaluateHOLFiniteState vn (.seq (NormalizeLoop.topStore "u" "un") next)=_
+  rw [evaluateHOLFiniteState_seq_line780,topRun]
+  exact unRun
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.body_continue
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+private theorem Entry.after_post {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length : Nat}
+    (checked : Entry source base u v length) (bits : Nat) : Entry (post source base u v length bits) base u v length :=
+  (checked.after_top bits).after_array .normalizedNumerator u bits length (by have bound:=checked.large;omega)
+    (by change length≤17;have bound:=checked.small;omega) (by intro same;cases same) (by intro same;cases same)
+
+/-- Both complete normalized images and all actual bindings at the real
+post-normalization continuation, including nlz32's true shift bounds. -/
+structure Ready (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat) : Prop where
+  entry : Entry source base u v length
+  bitsSmall : bits≤31
+  s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits)))
+  i : source.locals.lookup (ofString "i")=some (.val (.word 0#64))
+  uImage : Image source (Workspace.pointer base .normalizedNumerator) (Normalized.extended u bits length) (length+1)
+  vImage : Image source (Workspace.pointer base .normalizedDivisor) (Normalized.digit v bits) 2
+  lower : 2147483648≤(v 1).toNat*2^bits
+  upper : (v 1).toNat*2^bits<4294967296
+
+/-- The exact combined physical post-state supplies both normalized images;
+all inputs and pointer bindings are retained by the same real stores. -/
+theorem post_ready (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat)
+    (checked : Entry source base u v length) (bitsSmall : bits≤31)
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))))
+    (lower : 2147483648≤(v 1).toNat*2^bits) (upper : (v 1).toNat*2^bits<4294967296) :
+    Ready (post source base u v length bits) base u v length bits := by
+  let vn:=divisorPost source base v bits
+  let top:=topPost source base u v length bits
+  have topEntry : Entry top base u v length:=checked.after_top bits
+  have positive : 0<length:=by have bound:=checked.large;omega
+  have sVn : vn.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))):=
+    (NormalizeLoop.arrayPost_other source _ v bits 2 "s" (by decide)).trans s
+  have unImage:=NormalizeLoop.arrayPost_image top (Workspace.pointer base .normalizedNumerator) u bits length positive checked.small
+  have vnImage : Image vn (Workspace.pointer base .normalizedDivisor) (Normalized.digit v bits) 2:=
+    NormalizeLoop.arrayPost_image source _ v bits 2 (by decide) (by decide)
+  refine ⟨checked.after_post bits,bitsSmall,?_,NormalizeLoop.arrayPost_index top _ u bits length,?_,?_,lower,upper⟩
+  · exact (NormalizeLoop.arrayPost_other top _ u bits length "s" (by decide)).trans sVn
+  · intro index inside
+    by_cases ordinary : index<length
+    · simpa only [post,top,Normalized.extended,if_pos ordinary] using unImage index ordinary
+    · have last : index=length:=by omega
+      subst index
+      rw [Normalized.extended,if_neg (by omega)]
+      have retained:=NormalizeLoop.arrayPost_numerator_top top base topEntry.context u length bits positive checked.small
+      have stored : top.memory (slot (Workspace.pointer base .normalizedNumerator) length)=.word (Normalized.incoming u bits length):=by
+        simp [top,topPost,StoreWord.put]
+      exact retained.trans stored
+  · intro index inside
+    have kept:=NormalizeLoop.arrayPost_away top (Workspace.pointer base .normalizedNumerator) (slot (Workspace.pointer base .normalizedDivisor) index) u bits length positive (by
+      intro written inRange
+      exact Workspace.separate base .normalizedDivisor .normalizedNumerator (by intro same;cases same) index written
+        (by change index<8;omega) (by change written<17;have bound:=checked.small;omega))
+    have separate:=Workspace.separate base .normalizedDivisor .normalizedNumerator (by intro same;cases same) index length
+      (by change index<8;omega) (by change length<17;have bound:=checked.small;omega)
+    have topSame : top.memory (slot (Workspace.pointer base .normalizedDivisor) index)=vn.memory (slot (Workspace.pointer base .normalizedDivisor) index):=by
+      simp only [top,topPost,vn,StoreWord.put,if_neg separate]
+    exact kept.trans (topSame.trans (vnImage index inside))
+
+/-- Exact normal clock and unchanged static fields of both normalization arrays. -/
+theorem post_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat) (positive : 0<length) :
+    post source base u v length bits={source with
+      locals:=(post source base u v length bits).locals,memory:=(post source base u v length bits).memory,
+      clock:=source.clock-length} := by
+  let vn:=divisorPost source base v bits
+  let top:=topPost source base u v length bits
+  let target:=post source base u v length bits
+  have vnFrame:=NormalizeLoop.arrayPost_frame source (Workspace.pointer base .normalizedDivisor) v bits 2
+  have unFrame:=NormalizeLoop.arrayPost_frame top (Workspace.pointer base .normalizedNumerator) u bits length
+  have topStatic : top={source with locals:=top.locals,memory:=top.memory,clock:=top.clock}:=by
+    have fields:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>
+      {state with locals:=top.locals,memory:=top.memory,clock:=top.clock}) vnFrame
+    exact fields
+  have unStatic : target={top with locals:=target.locals,memory:=target.memory,clock:=target.clock}:=by
+    have fields:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>
+      {state with locals:=target.locals,memory:=target.memory,clock:=target.clock}) unFrame
+    exact fields
+  have topClock : top.clock=source.clock-1:=by
+    have fields:=congrArg PanSemStateFiniteExact.clock vnFrame
+    exact fields
+  have unClock : target.clock=top.clock-(length-1):=by
+    have fields:=congrArg PanSemStateFiniteExact.clock unFrame
+    exact fields
+  have clock : target.clock=source.clock-length:=by omega
+  have fields:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>
+    {state with locals:=target.locals,memory:=target.memory,clock:=target.clock}) topStatic
+  have static : target={source with locals:=target.locals,memory:=target.memory,clock:=target.clock}:=unStatic.trans fields
+  rw [clock] at static
+  exact static
+
+/-- Every actually represented normalized numerator word is32-bit. -/
+theorem Ready.u_number {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length bits : Nat}
+    (ready : Ready source base u v length bits) :
+    number (Normalized.extended u bits length) (length+1)=number u length*2^bits ∧
+      ∀ index,index≤length→(Normalized.extended u bits length index).toNat<4294967296 :=
+  ⟨Normalized.extended_number u bits length ready.bitsSmall ready.entry.uSmall,
+    fun index inside=>Normalized.extended_small u bits length index ready.bitsSmall ready.entry.uSmall inside⟩
+
+theorem Ready.v_number {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length bits : Nat}
+    (ready : Ready source base u v length bits) :
+    number (Normalized.digit v bits) 2=number v 2*2^bits :=
+  Normalized.divisor_number v bits 2 ready.bitsSmall (by decide) ready.entry.vSmall ready.upper
+
+theorem Ready.top_large {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length bits : Nat}
+    (ready : Ready source base u v length bits) :
+    2147483648≤(Normalized.digit v bits 1).toNat ∧ (Normalized.digit v bits 1).toNat<4294967296 :=
+  Nlz32.normalized_digit (v 1) (v 0) bits ready.bitsSmall ready.lower ready.upper
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.post_ready
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.post_frame
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.Ready.u_number
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.Ready.v_number
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.Ready.top_large
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def program : ProgHOL 64:=body .skip
+
+theorem program_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat)
+    (checked : Entry source base u v length) (bitsSmall : bits≤31)
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits)))) (enough : length≤source.clock) :
+    evaluateHOLFiniteState source program=(none,post source base u v length bits) := by
+  rw [program,body_continue source base u v length bits checked bitsSmall s enough .skip,evaluateHOLFiniteState_skip]
+
+/-- The whole two-array normalization body has an all-outcome m-tick bound. -/
+theorem program_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat)
+    (checked : Entry source base u v length) (bitsSmall : bits≤31)
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits)))) :
+    source.clock-(evaluateHOLFiniteState source program).2.clock≤length := by
+  by_cases enough : length≤source.clock
+  · rw [program_execute source base u v length bits checked bitsSmall s enough]
+    have clock:=congrArg PanSemStateFiniteExact.clock (post_frame source base u v length bits (by have bound:=checked.large;omega))
+    change (post source base u v length bits).clock=source.clock-length at clock
+    change source.clock-(post source base u v length bits).clock≤length
+    omega
+  · omega
+
+theorem program_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat)
+    (checked : Entry source base u v length) (bitsSmall : bits≤31)
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))))
+    (normal : evaluateHOLFiniteState source program=(none,target)) :
+    length≤source.clock ∧ target=post source base u v length bits := by
+  let baseSource:={source with clock:=length}
+  let baseTarget:=post baseSource base u v length bits
+  have baseRun:=program_execute baseSource base u v length bits (checked.withClock length) bitsSmall s (by rfl)
+  have zero : baseTarget.clock=0:=by
+    have clock:=congrArg PanSemStateFiniteExact.clock (post_frame baseSource base u v length bits (by have bound:=checked.large;omega))
+    change baseTarget.clock=length-length at clock
+    omega
+  have funded:=(ClockCost.normal_from_zero_clock source baseTarget target program length none none baseRun zero (by decide) normal (by decide)).1
+  have expected:=program_execute source base u v length bits checked bitsSmall s funded
+  exact ⟨funded,congrArg Prod.snd (normal.symm.trans expected)⟩
+
+def arguments : List (ExpHOL 64):=[.load .one (NormalizeLoop.address "v" (.op .sub [localVar "n",.const 1#64]))]
+def call (continuation : ProgHOL 64) : ProgHOL 64:=.decCall (ofString "s") .one (ofString "nlz32") arguments (body continuation)
+
+private def findCall : ProgHOL 64→Option (ProgHOL 64)
+  | .decCall name shape function args rest=>
+    if function=ofString "nlz32" then some (.decCall name shape function args rest) else findCall rest
+  | .dec _ _ _ rest=>findCall rest
+  | .seq first rest=>(findCall first).orElse (fun _=>findCall rest)
+  | .ite _ yes no=>(findCall yes).orElse (fun _=>findCall no)
+  | .while _ contents=>findCall contents
+  | _=>none
+
+set_option maxRecDepth 100000 in
+/-- The actual original s call and both normalization arrays, retaining its
+real vtop/vsec/outer-loop continuation inside the original s scope. -/
+theorem literal_call : ∃ continuation,findCall Single.body=some (call continuation) := by
+  have different : ofString "div64by32"≠ofString "nlz32":=by decide
+  simp [findCall,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    call,arguments,body,NormalizeLoop.loop,NormalizeLoop.body,NormalizeLoop.test,NormalizeLoop.expression,NormalizeLoop.address,
+    NormalizeLoop.previous,NormalizeLoop.remaining,NormalizeLoop.firstStore,NormalizeLoop.firstExpression,NormalizeLoop.topStore,NormalizeLoop.topExpression,
+    localVar,different]
+
+private theorem arguments_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length : Nat)
+    (checked : Entry source base u v length) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some [.val (.word (v 1))] := by
+  have previous:=NormalizeLoop.counter_previous_read source "n" 2 (by decide) checked.n
+  have address:=NormalizeLoop.indexed_address_read source "v" (Workspace.pointer base .divisor) _ 1 checked.vCell previous
+  have loaded:=Witness.load_word_read source _ _ (v 1) address
+    (Workspace.slot_mapped source base checked.context .divisor 1 (by decide)) (checked.vImage 1 (by decide))
+  simp only [eval] at loaded
+  simp only [arguments,evalListHOLFinite,evalListHOLExact]
+  rw [loaded]
+
+/-- The real nlz32 caller supplies s and its bounds to both original array
+blocks. The actual ready state, clock and resumed s scope all come from
+that same execution, without a supplied future callee/output oracle. -/
+theorem prefix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length : Nat)
+    (checked : Entry source base u v length) (installed : OriginalCode.Installed source.code)
+    (enough : length+1≤source.clock) (continuation : ProgHOL 64) :
+    ∃ bits,
+      Ready (post (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits) base u v length bits ∧
+      (post (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits).clock=source.clock-(length+1) ∧
+      evaluateHOLFiniteState source (call continuation)=
+        (let result:=evaluateHOLFiniteState (post (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits) continuation
+         (result.1,restore source "s" result.2)) := by
+  obtain ⟨bits,bitsSmall,lower,upper,actual⟩:=Nlz32.call_execute source (v 1) "s" arguments (body continuation) installed
+    (checked.vSmall 1 (by decide)) checked.leadingPositive (arguments_read source base u v length checked) (by omega)
+  let entered:=bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)
+  have next : Entry entered base u v length:=(checked.withClock (source.clock-1)).bindS bits
+  have s : entered.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 bits))):=bind_lookup_same _ _ _
+  have normalized:=post_ready entered base u v length bits next bitsSmall s lower upper
+  have clock : (post entered base u v length bits).clock=source.clock-(length+1):=by
+    have projected:=congrArg PanSemStateFiniteExact.clock (post_frame entered base u v length bits (by have bound:=checked.large;omega))
+    change (post entered base u v length bits).clock=source.clock-1-length at projected
+    omega
+  refine ⟨bits,normalized,clock,?_⟩
+  rw [call,actual]
+  change (let result:=evaluateHOLFiniteState entered (body continuation);(result.1,restore source "s" result.2))=_
+  rw [body_continue entered base u v length bits next bitsSmall s (by change length≤source.clock-1;omega) continuation]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.program_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.program_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.program_normal
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.literal_call
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.prefix_execute
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Both arrays change only the i binding; the top store changes no locals. -/
+theorem post_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat)
+    (name : String) (notI : ofString "i"≠ofString name) :
+    (post source base u v length bits).locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
+  (NormalizeLoop.arrayPost_other (topPost source base u v length bits) (Workspace.pointer base .normalizedNumerator) u bits length name notI).trans
+    (NormalizeLoop.arrayPost_other source (Workspace.pointer base .normalizedDivisor) v bits 2 name notI)
+
+/-- No original normalization store reaches outside the real UN[0..m]
+and VN[0..1] ranges, including the extra top-word write. -/
+theorem post_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base query : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat)
+    (positive : 0<length)
+    (outsideU : ∀ index,index≤length→query≠slot (Workspace.pointer base .normalizedNumerator) index)
+    (outsideV : ∀ index,index<2→query≠slot (Workspace.pointer base .normalizedDivisor) index) :
+    (post source base u v length bits).memory query=source.memory query := by
+  have un:=NormalizeLoop.arrayPost_away (topPost source base u v length bits) (Workspace.pointer base .normalizedNumerator) query u bits length positive
+    (by intro index inside;exact outsideU index (by omega))
+  have top : (topPost source base u v length bits).memory query=(divisorPost source base v bits).memory query:=by
+    simp only [topPost,StoreWord.put,if_neg (outsideU length (by omega))]
+  have vn:=NormalizeLoop.arrayPost_away source (Workspace.pointer base .normalizedDivisor) query v bits 2 (by decide) outsideV
+  exact un.trans (top.trans vn)
+
+/-- The actual scoped nlz32 call plus the complete two-array prefix costs
+at most m+1source ticks, including all short-clock executions. -/
+theorem prefix_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length : Nat)
+    (checked : Entry source base u v length) (installed : OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source (call .skip)).2.clock≤length+1 := by
+  by_cases enough : length+1≤source.clock
+  · obtain ⟨bits,ready,clock,actual⟩:=prefix_execute source base u v length checked installed enough .skip
+    rw [actual]
+    simp only [evaluateHOLFiniteState_skip]
+    change source.clock-(post (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits).clock≤length+1
+    rw [clock]
+    omega
+  · omega
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.post_other
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.post_away
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.prefix_cost

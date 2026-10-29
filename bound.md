@@ -2321,3 +2321,32 @@ inventory8745/replacement closure0/fixed files unchanged. Claim infinity; no
 global finite target K/full verifier success. Usage51%weekly/0resetcredits.
 Next: actual compute_requests_hash loop/caller and BAL/main continuation,
 formal target composition, dominant-slack review and final cleanup.
+
+
+## Actual request-hash row loop and input preservation
+
+The literal compute_requests_hash781 body, main caller and arr/n/out ABI are
+checked. Data.general_sha derives the real startup state64/pad128 workspace
+from the already retained main input contract. A physical Image exposes the
+encoder's real owned rows independently of the temporary allocator's current
+heap pointer; its actual len load prices each SHA iteration≤7864489source
+ticks on every outcome, with no later successful hash/read premise.
+
+A real normally completed row SHA preserves every word at or above2701131968
+and below the original heap; this includes all remaining rows, older input
+and header data. Its output address geometry follows from the actual counter
+and bounded/aligned old heap. The real i++ constructs the next complete loop
+model. Actual signed test/progress gives≤39322450source ticks for all five
+rows including loop ticks. A genuine normal exit derives index=count and the
+same physical image/prefix. Setup allocation, final concatenated digest,
+release and main caller composition remain open.
+
+Validation: current-request-hash-syntax-v2.log PASS2712jobs,
+current-request-hash-model-v3.log PASS2712jobs, current-request-hash-loop-cost-v1.log
+PASS2712jobs and current-request-hash-loop-normal-v1.log PASS2712jobs. Permitted
+printed axioms only. Index8700modules/18134facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K/full
+verifier success. Usage51%weekly/0resetcredits. Next: derive this loop entry
+from its actual mark/temporary allocation, final digest/release, main request-
+hash/BAL continuation, formal target composition, dominant-slack review and
+final cleanup.

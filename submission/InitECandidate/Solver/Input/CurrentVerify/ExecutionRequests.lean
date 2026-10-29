@@ -1668,3 +1668,398 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.caller_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.to_after_encoder
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.to_before_hash
+
+namespace InitECandidate.Solver.Input.CurrentVerify
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- These are the actual startup SHA allocations already retained by the
+complete decoded-input/main-prefix contract. -/
+theorem Data.general_sha {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary) : GeneralSha.Environment source 2701131776#64 2701131840#64 :=
+  ⟨data.arena.code,data.arena.domain,data.shaState,data.shaPad,by constructor <;> decide,by constructor <;> decide,by decide,by decide⟩
+
+namespace RequestHash
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_compute_requests_hash with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "arr",.one),(ofString "n",.one),(ofString "out",.one)]
+def arguments : List (ExpHOL 64):=[.rfield 0 (localVar "reqs"),.rfield 1 (localVar "reqs"),localVar "rh"]
+def caller : ProgHOL 64:=.call (some (none,none)) (ofString "compute_requests_hash") arguments
+def afterHash : ProgHOL 64:=match ExecutionRequests.afterEncode with | .seq _ rest=>rest | _=>.skip
+
+def rowAddress : ExpHOL 64:=.op .add [localVar "arr",.panop .mul [localVar "i",.const 16#64]]
+def hashArguments : List (ExpHOL 64):=[.load .one rowAddress,.load .one (.op .add [localVar "arr",.panop .mul [localVar "i",.const 16#64],.const 8#64]),
+  .op .add [localVar "cat",.panop .mul [localVar "i",.const 32#64]]]
+def hashCall : ProgHOL 64:=.call (some (none,none)) (ofString "sha256") hashArguments
+def increment : ProgHOL 64:=.assign .local (ofString "i") (.op .add [localVar "i",.const 1#64])
+def iteration : ProgHOL 64:=.seq hashCall increment
+def test : ExpHOL 64:=.cmp .less (localVar "i") (localVar "n")
+def loop : ProgHOL 64:=.while test iteration
+def digestSize : ExpHOL 64:=.panop .mul [localVar "n",.const 32#64]
+def finalArguments : List (ExpHOL 64):=[localVar "cat",digestSize,localVar "out"]
+def finalCall : ProgHOL 64:=.call (some (none,none)) (ofString "sha256") finalArguments
+def releaseCall : ProgHOL 64:=.call (some (none,none)) (ofString "heap_release") [localVar "mark"]
+def afterLoop : ProgHOL 64:=.seq finalCall (.seq releaseCall (.return (.const 0#64)))
+def allocated : ProgHOL 64:=.dec (ofString "i") .one (.const 0#64) (.seq loop afterLoop)
+def allocationArguments : List (ExpHOL 64):=[.op .add [digestSize,.const 8#64]]
+def afterMark : ProgHOL 64:=.decCall (ofString "cat") .one (ofString "alloc") allocationArguments allocated
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "compute_requests_hash")=some (formals,body,.one) := by
+  have checked:=OriginalCode.indexed code installed 781 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_compute_requests_hash) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,Guest.Software.guestFn_compute_requests_hash,
+    formals,body,paramToHOL,shapeToHOL,List.map_cons,List.map_nil] using checked
+
+set_option maxRecDepth 100000 in
+theorem body_shape : body=.decCall (ofString "mark") .one (ofString "heap_mark") [] afterMark := by
+  simp only [body,Guest.Software.guestFn_compute_requests_hash,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
+    afterMark,allocationArguments,allocated,loop,test,iteration,hashCall,hashArguments,rowAddress,increment,afterLoop,finalCall,finalArguments,
+    digestSize,releaseCall,localVar]
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem caller_shape : ExecutionRequests.afterEncode=.seq caller afterHash := by
+  simp only [afterHash,ExecutionRequests.afterEncode,PayloadHeaderWithdrawals.afterRoot,PayloadHeaderWithdrawals.afterLoop,
+    PayloadHeaderWithdrawals.loopAndAfter,PayloadHeaderWithdrawals.afterArray,PayloadHeaderWithdrawals.afterCount,
+    PayloadHeaderEntry.afterTransactionTrie,PayloadHeaderEntry.afterSizeGuard,PayloadHeader.afterLength,
+    PayloadHeader.lengthCall,PayloadHeader.parts,PayloadHeader.body,Guest.Software.guestFn_payload_header,progToHOL,expToHOL,shapeToHOL,
+    List.map_cons,List.map_nil,Option.map_none,Option.map_some,CallPrefix.cut,show ofString "alloc"≠ofString "block_rlp_length" from by decide,
+    if_false,if_true,caller,arguments,localVar]
+
+theorem iteration_advance : CounterFlow.Advances (ofString "i") 1 iteration :=
+  CounterFlow.sequence (ofString "i") hashCall increment 0 1
+    (CounterFlow.preserved _ _ (.call none _ _ (by simp))) (CounterFlow.increment _)
+
+theorem iteration_local (key : MlS) (different : key≠ofString "i") : LocalPrefix key iteration :=
+  .seq (.call none _ _ (by simp)) (.assign _ _ different)
+
+end RequestHash
+end InitECandidate.Solver.Input.CurrentVerify
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.general_sha
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.caller_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.iteration_advance
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.iteration_local
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Physical encoded rows, independently of the current heap pointer after
+the hash function's own temporary allocation. -/
+structure Image (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array heap : BitVec 64)
+    (count : Nat) (slices : Nat→BitVec 64×BitVec 64) : Prop where
+  countBound : count≤5
+  arrayArena : AllocatedBytes.Arena array 80
+  arrayAligned : array.toNat%8=0
+  arrayBefore : array.toNat+80≤heap.toNat
+  rows : ∀ row<count,source.memory (array+BitVec.ofNat 64 (16*row))=.word (slices row).1 ∧
+    source.memory (array+BitVec.ofNat 64 (16*row+8))=.word (slices row).2 ∧ ExecutionRequests.EncodedSlice array heap (slices row).1 (slices row).2
+
+theorem Image.of_returned {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (rows : ExecutionRequests.Returned source array heap count slices) : Image source array heap count slices :=
+  ⟨rows.countBound,rows.arrayArena,rows.arrayAligned,rows.arrayBefore,rows.rows⟩
+
+theorem Image.row_number {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (image : Image source array heap count slices) (row offset : Nat)
+    (inside : 16*row+offset<80) : (array+BitVec.ofNat 64 (16*row+offset)).toNat=array.toNat+16*row+offset := by
+  have number:=byteAddress_toNat array (16*row+offset) (by have bounded:=image.arrayArena.upper; omega)
+  simpa only [byteAddress,Nat.add_assoc] using number
+
+theorem Image.of_prefix {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (image : Image source array heap count slices)
+    (frame : ∀ query : BitVec 64,array.toNat≤query.toNat→ query.toNat<heap.toNat→ target.memory query=source.memory query) : Image target array heap count slices := by
+  refine ⟨image.countBound,image.arrayArena,image.arrayAligned,image.arrayBefore,?_⟩
+  intro row inside
+  obtain ⟨pointerCell,lengthCell,owned⟩:=image.rows row inside
+  have rowBound : row<5:=by have bound:=image.countBound; omega
+  have first:=image.row_number row 0 (by omega)
+  have second:=image.row_number row 8 (by omega)
+  simp only [Nat.add_zero] at first
+  exact ⟨(frame _ (by rw [first]; omega) (by rw [first]; have before:=image.arrayBefore; omega)).trans pointerCell,
+    (frame _ (by rw [second]; omega) (by rw [second]; have before:=image.arrayBefore; omega)).trans lengthCell,owned⟩
+
+structure LoopModel (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array heap : BitVec 64)
+    (count : Nat) (slices : Nat→BitVec 64×BitVec 64) where
+  index : Nat
+  indexBound : index≤count
+  image : Image source array heap count slices
+  environment : GeneralSha.Environment source 2701131776#64 2701131840#64
+  arrayLower : 2701131968≤array.toNat
+  heapBound : heap.toNat≤2952790016
+  heapAligned : heap.toNat%8=0
+  counter : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index)))
+  countCell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))
+  arrayCell : source.locals.lookup (ofString "arr")=some (.val (.word array))
+  catCell : source.locals.lookup (ofString "cat")=some (.val (.word heap))
+
+/-- Read the real owned length row at the actual loop counter. -/
+theorem LoopModel.length_read {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) (active : model.index<count) :
+    eval source (.load .one (.op .add [localVar "arr",.panop .mul [localVar "i",.const 16#64],.const 8#64]))=
+      some (.val (.word (slices model.index).2)) := by
+  have inside : 16*model.index+8<80:=by have small:=model.image.countBound; omega
+  have address : eval source (.op .add [localVar "arr",.panop .mul [localVar "i",.const 16#64],.const 8#64])=
+      some (.val (.word (array+BitVec.ofNat 64 (16*model.index+8)))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,model.arrayCell,model.counter,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+      BitVec.ofNat_add,BitVec.ofNat_mul,Nat.mul_comm,BitVec.add_assoc]
+  have mapped:=AllocatedBytes.word_mapped source array 80 (16*model.index+8) model.environment.domain model.image.arrayArena inside model.image.arrayAligned (by omega)
+  exact Witness.load_word_read source _ _ _ address mapped (model.image.rows model.index active).2.1
+
+/-- Source ticks for the actual row SHA call and its real increment. Errors
+and short clocks are included; no successful hash is supplied. -/
+theorem LoopModel.iteration_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) (active : model.index<count) :
+    source.clock-(evaluateHOLFiniteState source iteration).2.clock≤7864489 := by
+  have owned:=(model.image.rows model.index active).2.2
+  have sizeRead : eval source (.load .one (.op .add [localVar "arr",.panop .mul [localVar "i",.const 16#64],.const 8#64]))=
+      some (.val (.word (BitVec.ofNat 64 (slices model.index).2.toNat))):=by
+    simpa only [BitVec.ofNat_toNat,BitVec.setWidth_eq] using model.length_read active
+  have called:=GeneralSha.dynamic_call_cost source (.load .one rowAddress)
+    (.load .one (.op .add [localVar "arr",.panop .mul [localVar "i",.const 16#64],.const 8#64]))
+    (.op .add [localVar "cat",.panop .mul [localVar "i",.const 32#64]]) (slices model.index).2.toNat model.environment.installed
+    (by have bound:=owned.bounded; omega) sizeRead
+  have allowance : GeneralSha.bodyPrice (slices model.index).2.toNat+1≤7864489:=by
+    unfold GeneralSha.bodyPrice
+    have bound:=owned.bounded
+    omega
+  have price : source.clock-(evaluateHOLFiniteState source hashCall).2.clock≤7864489:=Nat.le_trans called allowance
+  exact ClockCost.sequence_current source hashCall increment 7864489 0 price (ClockCost.assign source.code (ofString "i") _)
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.Image.of_returned
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.Image.row_number
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.Image.of_prefix
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.length_read
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.iteration_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem LoopModel.pointer_read {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) (active : model.index<count) :
+    eval source (.load .one rowAddress)=some (.val (.word (slices model.index).1)) := by
+  have inside : 16*model.index<80:=by have small:=model.image.countBound; omega
+  have address : eval source rowAddress=some (.val (.word (array+BitVec.ofNat 64 (16*model.index)))):=by
+    simp [eval,rowAddress,evalHOLExact,evalListHOLExact,toExact,localVar,model.arrayCell,model.counter,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+      BitVec.ofNat_mul,Nat.mul_comm]
+  have mapped:=AllocatedBytes.word_mapped source array 80 (16*model.index) model.environment.domain model.image.arrayArena inside model.image.arrayAligned (by omega)
+  exact Witness.load_word_read source _ _ _ address mapped (model.image.rows model.index active).1
+
+theorem LoopModel.hash_args {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) (active : model.index<count) :
+    evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) hashArguments=
+      some (GeneralSha.values (slices model.index).1 (heap+BitVec.ofNat 64 (32*model.index)) (slices model.index).2.toNat) := by
+  have pointerRead:=model.pointer_read active
+  have sizeRead:=model.length_read active
+  have outputRead : eval source (.op .add [localVar "cat",.panop .mul [localVar "i",.const 32#64]])=
+      some (.val (.word (heap+BitVec.ofNat 64 (32*model.index)))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,model.catCell,model.counter,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+      BitVec.ofNat_mul,Nat.mul_comm]
+  simp only [eval] at pointerRead sizeRead outputRead
+  simp [hashArguments,GeneralSha.values,evalListHOLFinite,evalListHOLExact,pointerRead,sizeRead,outputRead,BitVec.ofNat_toNat,BitVec.setWidth_eq]
+
+/-- A real completed row hash leaves every earlier non-workspace word alone.
+The output address geometry follows from the actual small counter/current heap;
+no output read, completed later hash or extra allocation funding is supplied. -/
+theorem LoopModel.hash_memory {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) (active : model.index<count)
+    (normal : evaluateHOLFiniteState source hashCall=(none,post)) (query : BitVec 64)
+    (above : 2701131968≤query.toNat) (below : query.toNat<heap.toNat) : post.memory query=source.memory query := by
+  have owned:=(model.image.rows model.index active).2.2
+  have indexBound : model.index<5:=by have bound:=model.image.countBound; omega
+  have aboveAway (pointer : BitVec 64) (length : Nat) (arena : AllocatedBytes.Arena pointer length)
+      (before : pointer.toNat+length≤query.toNat) : CopyGeneral.Away pointer query length:=by
+    intro offset inside
+    have number:=byteAddress_toNat pointer offset (by have bound:=arena.upper; omega)
+    have backing : (panByteAlignHOL (width:=64) (byteAddress pointer offset)).toNat≤pointer.toNat+offset:=by
+      rw [AllocatedBytes.aligned_number,←number]
+      omega
+    constructor
+    · intro same; have equal:=congrArg BitVec.toNat same; rw [number] at equal; omega
+    · intro same; have equal:=congrArg BitVec.toNat same; omega
+  have stateAway:=aboveAway 2701131776#64 64 model.environment.stateArena (by change 2701131840≤query.toNat; omega)
+  have padAway:=aboveAway 2701131840#64 128 model.environment.padArena above
+  have heapArena : AllocatedBytes.Arena heap 160:=
+    ⟨by have low:=model.arrayLower; have before:=model.image.arrayBefore; omega,by have high:=model.heapBound; omega⟩
+  have outputArena : AllocatedBytes.Arena (heap+BitVec.ofNat 64 (32*model.index)) 32:=
+    AllocatedBytes.Arena.subrange heap 160 (32*model.index) 32 heapArena (by omega)
+  have number : (heap+BitVec.ofNat 64 (32*model.index)).toNat=heap.toNat+32*model.index:=
+    byteAddress_toNat heap (32*model.index) (by have high:=model.heapBound; omega)
+  have aligned : (heap+BitVec.ofNat 64 (32*model.index)).toNat%8=0:=by rw [number]; have old:=model.heapAligned; omega
+  have outAway:=AllocatedBytes.Arena.away_below (heap+BitVec.ofNat 64 (32*model.index)) query 32 outputArena aligned (by rw [number]; omega)
+  exact GeneralSha.call_memory source post 2701131776#64 2701131840#64 (slices model.index).1 (heap+BitVec.ofNat 64 (32*model.index)) query
+    (slices model.index).2.toNat (by have bound:=owned.bounded; omega) model.environment hashArguments (model.hash_args active) owned.arena
+    (fun offset inside=>(stateAway offset inside).1) padAway outAway normal
+
+/-- Normal iteration derives the next physical image and its real increment.
+The retained prefix includes every request row and older decoded/header data. -/
+theorem LoopModel.iteration_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) (active : model.index<count)
+    (normal : evaluateHOLFiniteState source iteration=(none,post)) :
+    ∃ next : LoopModel post array heap count slices,next.index=model.index+1 ∧
+      ∀ query : BitVec 64,2701131968≤query.toNat→ query.toNat<heap.toNat→ post.memory query=source.memory query := by
+  obtain ⟨hashed,hashRun,incrementRun⟩:=sequence_none source post hashCall increment normal
+  have assigned:=LocalEffects.assign hashed.code (ofString "i") (.op .add [localVar "i",.const 1#64]) hashed rfl
+  change LocalEffects.erase (evaluateHOLFiniteState hashed increment).2=LocalEffects.erase hashed at assigned
+  rw [incrementRun] at assigned
+  have memory (query : BitVec 64) (above : 2701131968≤query.toNat) (below : query.toNat<heap.toNat) : post.memory query=source.memory query:=
+    (congrFun (LocalEffects.memory_of_erase hashed post assigned) query).trans (model.hash_memory active hashRun query above below)
+  have kept (key : MlS) (different : key≠ofString "i") : post.locals.lookup key=source.locals.lookup key:=by
+    have summary:=(iteration_local key different).summary_full source
+    unfold LocalSummary at summary
+    rw [normal] at summary
+    exact summary.1 rfl
+  have counter : post.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 (model.index+1)))):=by
+    simpa only [BitVec.ofNat_add] using iteration_advance source post (BitVec.ofNat 64 model.index) model.counter normal
+  have image : Image post array heap count slices:=model.image.of_prefix (fun query lower upper=>memory query (by have low:=model.arrayLower; omega) upper)
+  have globals : ∀ key,GlobalEffects.Preserves key source.code iteration:=fun key=>
+    GlobalEffects.sequence key source.code hashCall increment (GeneralSha.call_globals key source.code model.environment.installed hashArguments)
+      (GlobalEffects.assign key source.code (ofString "i") _)
+  have environment:=model.environment.after iteration none globals normal
+  refine ⟨⟨model.index+1,by have bound:=model.indexBound; omega,image,environment,model.arrayLower,model.heapBound,model.heapAligned,
+    counter,(kept _ (by decide)).trans model.countCell,(kept _ (by decide)).trans model.arrayCell,(kept _ (by decide)).trans model.catCell⟩,rfl,memory⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.pointer_read
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.hash_args
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.hash_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.iteration_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def LoopModel.clocked {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) (clock : Nat) :
+    LoopModel {source with clock:=clock} array heap count slices :=
+  ⟨model.index,model.indexBound,⟨model.image.countBound,model.image.arrayArena,model.image.arrayAligned,model.image.arrayBefore,model.image.rows⟩,
+    model.environment.of_frame rfl,model.arrayLower,model.heapBound,model.heapAligned,model.counter,model.countCell,model.arrayCell,model.catCell⟩
+
+def loopRank (count : Nat) (source : PanSemStateFiniteExact 64 Guest.HostMemory) :=count-(CounterFlow.counterWord source (ofString "i")).toNat
+
+theorem LoopModel.rank {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) : loopRank count source=count-model.index := by
+  have number : (BitVec.ofNat 64 model.index).toNat=model.index:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have bounded:=model.indexBound; have small:=model.image.countBound; omega)]
+  simp [loopRank,CounterFlow.counterWord,model.counter,valueWord,number]
+
+theorem LoopModel.test_read {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) :
+    eval source test=some (.val (.word (if model.index<count then 1#64 else 0#64))) := by
+  have indexSmall : model.index<9223372036854775808:=by have bound:=model.indexBound; have small:=model.image.countBound; omega
+  have countSmall : count<9223372036854775808:=by have small:=model.image.countBound; omega
+  have indexNumber : (BitVec.ofNat 64 model.index).toNat=model.index:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have countNumber : (BitVec.ofNat 64 count).toNat=count:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  simp [eval,test,evalHOLExact,toExact,localVar,model.counter,model.countCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,
+    Flapjack.Compiler.Encoders.Asm.holAsmSignedLess,indexNumber,countNumber,indexSmall,countSmall]
+
+theorem LoopModel.active_of_test {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) (word : BitVec 64)
+    (read : eval source test=some (.val (.word word))) (nonzero : word≠0#64) : model.index<count := by
+  apply Classical.byContradiction
+  intro inactive
+  have expected:=model.test_read
+  rw [if_neg inactive] at expected
+  have zero : word=0#64:=by
+    simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
+  exact nonzero zero
+
+/-- Every outcome of the real row loop is priced from its actual invariant.
+Only normally continuing row calls must construct a next image. -/
+theorem LoopModel.loop_cost_ranked {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤7864490*loopRank count source := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>Nonempty (LoopModel current array heap count slices)
+  have priced : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→ invariant current→ ∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) test=some (.val (.word word))→
+      word≠0#64→ current.clock≠0→ current.clock-1-(evaluateHOLFiniteState (decClockHOLFinite current) iteration).2.clock≤7864489:=by
+    intro current codeEq valid word read nonzero funded
+    obtain ⟨live⟩:=valid
+    exact (live.clocked (current.clock-1)).iteration_cost (live.active_of_test word read nonzero)
+  have progress : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→ invariant current→ ∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) test=some (.val (.word word))→ word≠0#64→
+      0<loopRank count current ∧ (current.clock≠0→ let output:=evaluateHOLFiniteState (decClockHOLFinite current) iteration
+        (output.1=none ∨ output.1=some .continue)→ invariant output.2 ∧ loopRank count output.2<loopRank count current):=by
+    intro current codeEq valid word read nonzero
+    obtain ⟨live⟩:=valid
+    have active:=live.active_of_test word read nonzero
+    have before:=live.rank
+    refine ⟨by rw [before]; omega,?_⟩
+    intro funded
+    dsimp only
+    intro continuing
+    let output:=evaluateHOLFiniteState (decClockHOLFinite current) iteration
+    have normal : output.1=none:=by
+      rcases continuing with normal|continued
+      · exact normal
+      · exact (((iteration_local (ofString "n") (by decide)).summary_full (decClockHOLFinite current)).2.2.2 continued).elim
+    have run : evaluateHOLFiniteState (decClockHOLFinite current) iteration=(none,output.2):=Prod.ext normal rfl
+    obtain ⟨next,indexEq,memory⟩:=(live.clocked (current.clock-1)).iteration_normal active run
+    change next.index=live.index+1 at indexEq
+    have after:=next.rank
+    exact ⟨⟨next⟩,by rw [before,after,indexEq]; omega⟩
+  exact ClockCost.ranked_loop_current source.code test iteration 7864489 invariant (loopRank count) priced progress source rfl ⟨model⟩
+
+theorem LoopModel.loop_uniform {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤39322450 := by
+  have priced:=model.loop_cost_ranked
+  rw [model.rank] at priced
+  have countBound:=model.image.countBound
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.rank
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.test_read
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.active_of_test
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.loop_cost_ranked
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.loop_uniform
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RequestHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- A normally completed actual row loop visits precisely count rows and
+retains the complete physical image plus every older non-workspace word. -/
+theorem LoopModel.loop_normal {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (model : LoopModel source array heap count slices)
+    (normal : evaluateHOLFiniteState source loop=(none,post)) :
+    ∃ final : LoopModel post array heap count slices,final.index=count ∧
+      ∀ query : BitVec 64,2701131968≤query.toNat→ query.toNat<heap.toNat→ post.memory query=source.memory query := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ live : LoopModel current array heap count slices,
+    ∀ query : BitVec 64,2701131968≤query.toNat→ query.toNat<heap.toNat→ current.memory query=source.memory query
+  have initial : invariant source:=⟨model,fun query above below=>rfl⟩
+  have step : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→ invariant current→ ∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) test=some (.val (.word word))→
+      word≠0#64→ current.clock≠0→ ∀ target,evaluateHOLFiniteState (decClockHOLFinite current) iteration=(none,target)→ invariant target:=by
+    intro current codeEq valid word read nonzero funded target bodyRun
+    obtain ⟨live,memory⟩:=valid
+    obtain ⟨next,indexEq,nextMemory⟩:=(live.clocked (current.clock-1)).iteration_normal (live.active_of_test word read nonzero) bodyRun
+    exact ⟨next,fun query above below=>(nextMemory query above below).trans (memory query above below)⟩
+  obtain ⟨final,memory⟩:=loop_invariant_no_control source.code test iteration
+    (fun current=>((iteration_local (ofString "n") (by decide)).summary_full current).2.2) invariant step source post rfl initial normal
+  have exited:=loop_normal_exit test iteration
+    (fun current=>((iteration_local (ofString "n") (by decide)).summary_full current).2.2.1) source post normal
+  have expected:=final.test_read
+  have finished : final.index=count:=by
+    by_cases active : final.index<count
+    · rw [if_pos active] at expected
+      have impossible : (0#64 : BitVec 64)=1#64:=by
+        simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using exited.symm.trans expected
+      exact False.elim ((by decide : (0#64 : BitVec 64)≠1#64) impossible)
+    · have bounded:=final.indexBound
+      omega
+  exact ⟨final,finished,memory⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RequestHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.LoopModel.loop_normal

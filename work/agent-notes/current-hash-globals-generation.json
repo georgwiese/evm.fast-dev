@@ -74,6 +74,8 @@
     "zero_hashes",
     "keccak_st",
     "keccak_pad",
+    "sha_st",
+    "sha_pad",
     "mpt_hash_scratch",
     "mpt_key_scratch",
     "empty_trie_root"
@@ -86,11 +88,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Base.lean",
-      "sha256": "4b678075bd012f4aa79eef46b4b9e4ca6c006b9f97a126405b9c2b7dd53f0de0"
+      "sha256": "5d907cb0519081b370bb4d6f86faec99daf924ea754561ae9ff70069b3a408bb"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/SharedEffects.lean",
-      "sha256": "9c77266f18407dbd8c61193bdae8d98eafe552c5061efad8cd166ed14d139152"
+      "sha256": "be4b4b10c29c278ea77e7286dd01701a239723dd83e3602d9ebcc7bc462051a8"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Effects.lean",

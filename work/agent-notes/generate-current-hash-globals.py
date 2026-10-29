@@ -102,7 +102,7 @@ end InitECandidate.Solver.Input.CurrentHash
 #print axioms InitECandidate.Solver.Input.CurrentHash.Code.installed
 '''
 emit(folder/'Code.lean', code)
-emit(folder/'Base.lean', 'import InitECandidate.Solver.Input.CurrentHash.Code\nimport InitECandidate.Solver.Input.CurrentStartup.Base\n\nnamespace InitECandidate.Solver.Input.CurrentHash\nopen Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact\nopen Flapjack.Basis.Pure.MlString\n\n/-- Fixed globals retained by the actual request-hash closure on every outcome. -/\ninductive Cursor where | scratch | frame | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | mptHash | mptKey | mptEmpty\n\ndef key : Cursor → MlS\n  | .scratch => ofString "scratch_ptr"\n  | .frame => ofString "frame_mem_ptr"\n  | .offsets => ofString "ssz_offs"\n  | .lengthChunk => ofString "ssz_len_chunk"\n  | .zeroHashes => ofString "zero_hashes"\n  | .keccakState => ofString "keccak_st"\n  | .keccakPad => ofString "keccak_pad"\n  | .mptHash => ofString "mpt_hash_scratch"\n  | .mptKey => ofString "mpt_key_scratch"\n  | .mptEmpty => ofString "empty_trie_root"\n\nend InitECandidate.Solver.Input.CurrentHash\n')
+emit(folder/'Base.lean', 'import InitECandidate.Solver.Input.CurrentHash.Code\nimport InitECandidate.Solver.Input.CurrentStartup.Base\n\nnamespace InitECandidate.Solver.Input.CurrentHash\nopen Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact\nopen Flapjack.Basis.Pure.MlString\n\n/-- Fixed globals retained by the actual request-hash closure on every outcome. -/\ninductive Cursor where | scratch | frame | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | mptHash | mptKey | mptEmpty | shaState | shaPad\n\ndef key : Cursor → MlS\n  | .scratch => ofString "scratch_ptr"\n  | .frame => ofString "frame_mem_ptr"\n  | .offsets => ofString "ssz_offs"\n  | .lengthChunk => ofString "ssz_len_chunk"\n  | .zeroHashes => ofString "zero_hashes"\n  | .keccakState => ofString "keccak_st"\n  | .keccakPad => ofString "keccak_pad"\n  | .mptHash => ofString "mpt_hash_scratch"\n  | .mptKey => ofString "mpt_key_scratch"\n  | .mptEmpty => ofString "empty_trie_root"\n  | .shaState => ofString "sha_st"\n  | .shaPad => ofString "sha_pad"\n\nend InitECandidate.Solver.Input.CurrentHash\n')
 # Reuse checked startup effects for arena, SSZ and Keccak workspace keys.
 shared_text = 'import InitECandidate.Solver.Input.CurrentHash.Base\nimport InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame\n'
 shared_text += ''.join('import InitECandidate.Solver.Input.CurrentStartup.'+module(n)+'\n' for n in order if n in shared)
@@ -125,6 +125,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.{n} code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.{n} code installed .mptKey
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.{n} code installed .mptEmpty
+  | shaState => exact CurrentStartup.WorkspaceFrameCore.{n} code installed .shaState
+  | shaPad => exact CurrentStartup.WorkspaceFrameCore.{n} code installed .shaPad
 end {owner}
 '''
 shared_text += '\nend SharedEffects\nend InitECandidate.Solver.Input.CurrentHash\n'
@@ -155,7 +157,7 @@ def proof(tree):
         if vs[1]=='VarKind.local':return f'(GlobalEffects.assign {common} _ _)'
         assert vs[1]=='VarKind.global',vs
         target=json.loads(vs[2]);assignments[target]+=1
-        assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad','mpt_hash_scratch','mpt_key_scratch','empty_trie_root'),target
+        assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad','sha_st','sha_pad','mpt_hash_scratch','mpt_key_scratch','empty_trie_root'),target
         return f'(GlobalEffects.global_other {common} _ _ (by cases cursor <;> decide))'
     if head in ('Prog.call','Prog.decCall'):
         callee=json.loads(vs[2] if head=='Prog.call' else vs[3])
@@ -169,7 +171,7 @@ def proof(tree):
         assert info.count('none')>=1,info
         if 'VarKind.global' in info:
             target=json.loads(info[info.index('VarKind.global')+2] if info[info.index('VarKind.global')+1]==',' else info[info.index('VarKind.global')+1])
-            assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad','mpt_hash_scratch','mpt_key_scratch','empty_trie_root'),target
+            assert target not in ('scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad','sha_st','sha_pad','mpt_hash_scratch','mpt_key_scratch','empty_trie_root'),target
             return (f'(GlobalEffects.global_call_body {common} _ (Code.name .{callee}) _ '
                     f'(Code.formals .{callee}) (Code.body .{callee}) (Code.shape .{callee})\n'
                     f'  (by cases cursor <;> decide) {entry} {pure})')
@@ -224,7 +226,7 @@ report={'source':'Guest/SoftwareAst.lean','source_sha256':hashlib.sha256(source.
         'roots':roots,'extra_roots':extra_roots,'order':order,'closure_functions':len(order),'syntax_constructors':dict(constructors),
         'global_assignment_names':dict(assignments),'reused_startup_functions':sorted(set(order)&shared),'acyclic_scan':True,'lean_build_required':True,
         'retained_handwritten_functions':['sha256_pair'],
-        'preserved_globals':['scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad','mpt_hash_scratch', 'mpt_key_scratch', 'empty_trie_root'],
+        'preserved_globals':['scratch_ptr','frame_mem_ptr','ssz_offs','ssz_len_chunk','zero_hashes','keccak_st','keccak_pad','sha_st','sha_pad','mpt_hash_scratch', 'mpt_key_scratch', 'empty_trie_root'],
         'scope':'Generator/scanner output; not proof validation, timing or a whole-program bound.'}
 if not CHECK_ONLY:
     (ROOT/'work/agent-notes/current-hash-globals-generation.json').write_text(json.dumps(report,indent=2)+'\n')

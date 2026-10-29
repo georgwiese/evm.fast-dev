@@ -4,7 +4,7 @@ namespace InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
-inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad
+inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | shaState | shaPad
 
 def workspaceKey : WorkspaceKey → MlS
   | .offsets => ofString "ssz_offs"
@@ -12,5 +12,7 @@ def workspaceKey : WorkspaceKey → MlS
   | .zeroHashes => ofString "zero_hashes"
   | .keccakState => ofString "keccak_st"
   | .keccakPad => ofString "keccak_pad"
+  | .shaState => ofString "sha_st"
+  | .shaPad => ofString "sha_pad"
 
 end InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame

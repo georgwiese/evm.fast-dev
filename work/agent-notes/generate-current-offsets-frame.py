@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate shared current workspace frames and the legacy five-key interface.
+"""Generate shared current workspace frames and the legacy seven-key interface.
 
 The emitted proofs still require Lean validation; source scanning and string
 specialization are not semantic evidence on their own.
@@ -30,7 +30,7 @@ namespace InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
-inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad
+inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | shaState | shaPad
 
 def workspaceKey : WorkspaceKey → MlS
   | .offsets => ofString "ssz_offs"
@@ -38,6 +38,8 @@ def workspaceKey : WorkspaceKey → MlS
   | .zeroHashes => ofString "zero_hashes"
   | .keccakState => ofString "keccak_st"
   | .keccakPad => ofString "keccak_pad"
+  | .shaState => ofString "sha_st"
+  | .shaPad => ofString "sha_pad"
 
 -- Actual-syntax effects for all three SSZ workspace globals. The default keeps
 -- the existing offsets API. No initializer success or readable buffer is assumed.
@@ -65,8 +67,8 @@ theorem {name} (code) (installed : OriginalCode.Installed code) (workspace : Wor
 '''+proof
 text+='\nend InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame\n\n'
 text+=''.join(f'#print axioms InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame.{name}\n' for name in order)
-# Keep the large proofs in a single eight-key core. mpt_init writes the new key,
-# so its restricted proof stays in the original five-key compatibility module.
+# Keep the large proofs in a single ten-key core. mpt_init writes the new key,
+# so its restricted proof stays in the restricted seven-key compatibility module.
 header, rest = text.split('\nset_option maxRecDepth', 1)
 body = ('set_option maxRecDepth' + rest).split('\nend InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame', 1)[0]
 blocks = [b for b in re.split(r'(?=set_option maxRecDepth 100000 in\nset_option maxHeartbeats 4000000 in\ntheorem )', body) if b.strip()]
@@ -74,7 +76,7 @@ names = [re.search(r'theorem (\w+)', b)[1] for b in blocks]
 assert names == order
 keys = header[:header.index('-- Actual-syntax')].replace('import InitECandidate.Solver.Input.GlobalEffectsCaught\n', '')
 keys += 'end InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame\n'
-core = header.replace('import InitECandidate.Solver.Input.CurrentStartup.Base', 'import InitECandidate.Solver.Input.CurrentStartup.OffsetsKeys').replace('CurrentStartup.OffsetsFrame', 'CurrentStartup.WorkspaceFrameCore').replace('| keccakPad\n', '| keccakPad | mptHash | mptKey | mptEmpty\n').replace('  | .keccakPad => ofString "keccak_pad"', '  | .keccakPad => ofString "keccak_pad"\n  | .mptHash => ofString "mpt_hash_scratch"\n  | .mptKey => ofString "mpt_key_scratch"\n  | .mptEmpty => ofString "empty_trie_root"')
+core = header.replace('import InitECandidate.Solver.Input.CurrentStartup.Base', 'import InitECandidate.Solver.Input.CurrentStartup.OffsetsKeys').replace('CurrentStartup.OffsetsFrame', 'CurrentStartup.WorkspaceFrameCore').replace('| shaPad\n', '| shaPad | mptHash | mptKey | mptEmpty\n').replace('  | .keccakPad => ofString "keccak_pad"', '  | .keccakPad => ofString "keccak_pad"\n  | .mptHash => ofString "mpt_hash_scratch"\n  | .mptKey => ofString "mpt_key_scratch"\n  | .mptEmpty => ofString "empty_trie_root"')
 core = core[:core.index('-- Actual-syntax')] + '''/-- Shared current-syntax frames, including the MPT buffer after its initializer. -/
 def fromLegacy : OffsetsFrame.WorkspaceKey → WorkspaceKey
   | .offsets => .offsets
@@ -82,6 +84,8 @@ def fromLegacy : OffsetsFrame.WorkspaceKey → WorkspaceKey
   | .zeroHashes => .zeroHashes
   | .keccakState => .keccakState
   | .keccakPad => .keccakPad
+  | .shaState => .shaState
+  | .shaPad => .shaPad
 
 @[simp] theorem workspaceKey_fromLegacy (key : OffsetsFrame.WorkspaceKey) :
     workspaceKey (fromLegacy key) = OffsetsFrame.workspaceKey key := by
@@ -96,7 +100,7 @@ namespace InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
--- Preserve the five-key public API. The shared eight-key proofs live in the core;
+-- Preserve the seven-key public API. The shared ten-key proofs live in the core;
 -- mpt_init has its own restricted proof because it initializes the MPT workspace keys.
 '''
 for n, b in zip(names, blocks):
@@ -125,8 +129,8 @@ report = {'fixed_source': 'Guest/SoftwareAst.lean',
           'roots': roots, 'order': order, 'inputs': inputs,
           'generated_sources': [{'path': str((folder/name).relative_to(ROOT)),
                                  'sha256': hashlib.sha256((folder/name).read_bytes()).hexdigest()} for name in outputs],
-          'protected_globals': ['ssz_offs', 'ssz_len_chunk', 'zero_hashes', 'keccak_st', 'keccak_pad', 'mpt_hash_scratch', 'mpt_key_scratch', 'empty_trie_root'],
-          'restricted_initializer': 'mpt_init preserves only the original five keys',
+          'protected_globals': ['ssz_offs', 'ssz_len_chunk', 'zero_hashes', 'keccak_st', 'keccak_pad', 'sha_st', 'sha_pad', 'mpt_hash_scratch', 'mpt_key_scratch', 'empty_trie_root'],
+          'restricted_initializer': 'mpt_init preserves the seven non-MPT keys',
           'scope': 'Generated actual all-outcome global frames; not proof validation, ownership or a runtime bound.'}
 if not check:
     (ROOT/'work/agent-notes/current-offsets-frame-generation.json').write_text(json.dumps(report, indent=2)+'\n')

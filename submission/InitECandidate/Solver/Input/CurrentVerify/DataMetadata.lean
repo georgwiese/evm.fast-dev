@@ -27,7 +27,7 @@ theorem Data.of_metadata {input : Guest.InputBlob} {source target : PanSemStateF
       data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
   obtain ⟨cursor,cell,lower,upper,aligned⟩:=data.heap
   have heap : NormalHeapEffects.AtLeast (boundary+32) target:=⟨cursor,by rw [globals]; exact cell,lower,upper,aligned⟩
-  exact data.of_interval arena (endian.trans data.little) environment (by rw [globals]; exact data.mptHash) (by rw [globals]; exact data.mptKey) (by rw [globals]; exact data.mptEmpty) heap siLocal memory
+  exact data.of_interval arena (endian.trans data.little) environment (by rw [globals]; exact data.mptHash) (by rw [globals]; exact data.mptKey) (by rw [globals]; exact data.mptEmpty) (by rw [globals]; exact data.shaState) (by rw [globals]; exact data.shaPad) heap siLocal memory
 
 /-- Transport current decoded inputs through a same-execution heap
 advance and bounded fresh writes. Every other global is retained; actual
@@ -48,6 +48,7 @@ theorem Data.of_heap_frame {input : Guest.InputBlob} {source target : PanSemStat
       data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
   exact data.of_interval arena (endian.trans data.little) environment
     ((globals _ (by decide)).trans data.mptHash) ((globals _ (by decide)).trans data.mptKey) ((globals _ (by decide)).trans data.mptEmpty)
+    ((globals _ (by decide)).trans data.shaState) ((globals _ (by decide)).trans data.shaPad)
     heap siLocal memory
 
 end InitECandidate.Solver.Input.CurrentVerify

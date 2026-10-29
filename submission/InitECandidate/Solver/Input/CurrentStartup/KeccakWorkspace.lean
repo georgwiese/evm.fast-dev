@@ -17,9 +17,21 @@ private theorem template_pad (source : PanSemStateFiniteExact 64 Guest.HostMemor
   simp [keccakActions,InitializerAllocations.template,InitializerAllocations.reserve,InitializerAllocations.constant,putGlobal,HolFiniteMapExact.update,FUPDATE,Nat.add_assoc,
     show ofString "heap_ptr"≠ofString "keccak_pad" from by decide]
 
+private theorem template_sha_state (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) :
+    (InitializerAllocations.template source cursor shaActions).globals.lookup (ofString "sha_st")=
+      some (.val (.word (BitVec.ofNat 64 cursor))) := by
+  simp [shaActions,InitializerAllocations.template,InitializerAllocations.reserve,InitializerAllocations.constant,putGlobal,HolFiniteMapExact.update,FUPDATE,
+    show ofString "heap_ptr"≠ofString "sha_st" from by decide,show ofString "sha_pad"≠ofString "sha_st" from by decide]
+
+private theorem template_sha_pad (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) :
+    (InitializerAllocations.template source cursor shaActions).globals.lookup (ofString "sha_pad")=
+      some (.val (.word (BitVec.ofNat 64 (cursor+64)))) := by
+  simp [shaActions,InitializerAllocations.template,InitializerAllocations.reserve,InitializerAllocations.constant,putGlobal,HolFiniteMapExact.update,FUPDATE,
+    show ofString "heap_ptr"≠ofString "sha_pad" from by decide]
+
 /-- Derive the actual state/pad addresses from the same normally completed
 first three startup calls. The SSZ initializer preserves both real bindings. -/
-theorem first_three_keccak (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat)
+theorem first_three_hash_cells (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat)
     (installed : OriginalCode.Installed source.code) (scalars : OriginalScalarGlobals.Scalars source.globals)
     (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word (BitVec.ofNat 64 cursor))))
     (zero : source.globals.lookup (ofString "zero_hashes")=some (.val (.word 0#64)))
@@ -28,7 +40,9 @@ theorem first_three_keccak (source target : PanSemStateFiniteExact 64 Guest.Host
     ∃ sszState,evaluateHOLFiniteState sszState (withTail (routines.drop 3) .skip)=(none,target) ∧
       OriginalCode.Installed sszState.code ∧
       sszState.globals.lookup (ofString "keccak_st")=some (.val (.word (BitVec.ofNat 64 (cursor+384)))) ∧
-      sszState.globals.lookup (ofString "keccak_pad")=some (.val (.word (BitVec.ofNat 64 (cursor+584)))) := by
+      sszState.globals.lookup (ofString "keccak_pad")=some (.val (.word (BitVec.ofNat 64 (cursor+584)))) ∧
+      sszState.globals.lookup (ofString "sha_st")=some (.val (.word (BitVec.ofNat 64 cursor))) ∧
+      sszState.globals.lookup (ofString "sha_pad")=some (.val (.word (BitVec.ofNat 64 (cursor+64)))) := by
   obtain ⟨shaState,keccakState,sszState,shaRun,keccakRun,sszRun,afterSsz,sszCode,sszScalars,offsets,chunk,zeros,finalHeap,room,sszAligned⟩:=
     first_three source target cursor installed scalars heap zero bounded aligned actual
   obtain ⟨shaBound,shaGlobals⟩:=sha_call source shaState cursor installed scalars heap bounded aligned shaRun
@@ -63,7 +77,22 @@ theorem first_three_keccak (source target : PanSemStateFiniteExact 64 Guest.Host
   have padCell := (keep (ofString "keccak_pad") (by decide)
     (by intro action member; simp [sszActions] at member; rcases member with rfl|rfl|rfl <;> decide)).trans
     ((keccakGlobals _).trans (template_pad shaState (cursor+192)))
-  exact ⟨sszState,afterSsz,sszCode,by simpa only [Nat.add_assoc] using stateCell,by simpa only [Nat.add_assoc] using padCell⟩
+  have shaKept (key : MlS) (different : key≠ofString "heap_ptr")
+      (notSsz : ∀ action∈sszActions,key≠ofString action.name)
+      (notKeccak : ∀ action∈keccakActions,key≠ofString action.name) :
+      sszState.globals.lookup key=shaState.globals.lookup key :=
+    (keep key different notSsz).trans ((keccakGlobals key).trans
+      (InitializerAllocations.template_other shaState (cursor+192) keccakActions key different notKeccak))
+  have shaStateCell := (shaKept (ofString "sha_st") (by decide)
+    (by intro action member; simp [sszActions] at member; rcases member with rfl|rfl|rfl <;> decide)
+    (by intro action member; simp [keccakActions] at member; rcases member with rfl|rfl|rfl <;> decide)).trans
+    ((shaGlobals _).trans (template_sha_state source cursor))
+  have shaPadCell := (shaKept (ofString "sha_pad") (by decide)
+    (by intro action member; simp [sszActions] at member; rcases member with rfl|rfl|rfl <;> decide)
+    (by intro action member; simp [keccakActions] at member; rcases member with rfl|rfl|rfl <;> decide)).trans
+    ((shaGlobals _).trans (template_sha_pad source cursor))
+  exact ⟨sszState,afterSsz,sszCode,by simpa only [Nat.add_assoc] using stateCell,
+    by simpa only [Nat.add_assoc] using padCell,shaStateCell,shaPadCell⟩
 
 /-- The actual completed main startup retains state0xa1000180 and
 pad0xa1000248 through all later initializers. -/
@@ -76,16 +105,34 @@ theorem main_keccak_cells (input : Guest.InputBlob) (origin target : PanSemState
   rw [entry.base] at heap
   have zero:=(Main.memory_other origin (ofString "zero_hashes") (by decide) (by decide) (by decide)).trans
     (entry.zeros (ofString "zero_hashes") OriginalScalarGlobals.ssz_names.2.2)
-  obtain ⟨sszState,suffix,code,stateCell,padCell⟩:=first_three_keccak (Main.memoryState origin) target InitE.sourceBase entry.code (Main.memory_scalars input origin entry) heap zero (by decide) (by decide) actual
+  obtain ⟨sszState,suffix,code,stateCell,padCell,shaStateCell,shaPadCell⟩:=first_three_hash_cells (Main.memoryState origin) target InitE.sourceBase entry.code (Main.memory_scalars input origin entry) heap zero (by decide) (by decide) actual
   have preserved (workspace : OffsetsFrame.WorkspaceKey) : target.globals.lookup (OffsetsFrame.workspaceKey workspace)=sszState.globals.lookup (OffsetsFrame.workspaceKey workspace) := by
     have frame:=later_prefix sszState.code code (routines.drop 3) (fun routine member=>member) workspace sszState rfl
     rw [suffix] at frame
     exact congrArg Prod.snd frame
   exact ⟨(preserved .keccakState).trans stateCell,(preserved .keccakPad).trans padCell⟩
 
+
+/-- The same completed startup allocates and retains the actual SHA state and pad. -/
+theorem main_sha_cells (input : Guest.InputBlob) (origin target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (entry : Main.Entry input origin)
+    (actual : evaluateHOLFiniteState (Main.memoryState origin) (withTail routines .skip)=(none,target)) :
+    target.globals.lookup (ofString "sha_st")=some (.val (.word 2701131776#64)) ∧
+    target.globals.lookup (ofString "sha_pad")=some (.val (.word 2701131840#64)) := by
+  have heap:=(Main.memory_globals origin).1
+  rw [entry.base] at heap
+  have zero:=(Main.memory_other origin (ofString "zero_hashes") (by decide) (by decide) (by decide)).trans
+    (entry.zeros (ofString "zero_hashes") OriginalScalarGlobals.ssz_names.2.2)
+  obtain ⟨sszState,suffix,code,stateCell,padCell,shaStateCell,shaPadCell⟩:=first_three_hash_cells (Main.memoryState origin) target InitE.sourceBase entry.code (Main.memory_scalars input origin entry) heap zero (by decide) (by decide) actual
+  have preserved (workspace : OffsetsFrame.WorkspaceKey) : target.globals.lookup (OffsetsFrame.workspaceKey workspace)=sszState.globals.lookup (OffsetsFrame.workspaceKey workspace) := by
+    have frame:=later_prefix sszState.code code (routines.drop 3) (fun routine member=>member) workspace sszState rfl
+    rw [suffix] at frame
+    exact congrArg Prod.snd frame
+  exact ⟨(preserved .shaState).trans shaStateCell,(preserved .shaPad).trans shaPadCell⟩
+
 end InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace
 
-#print axioms InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace.first_three_keccak
+#print axioms InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace.first_three_hash_cells
 #print axioms InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace.main_keccak_cells
 
 namespace InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame
@@ -112,6 +159,30 @@ theorem main_keccak_cells {input : Guest.InputBlob}
       (decoder.globals (key workspace) (decoder_prefix workspace source.code sourceCode))
   exact ⟨(kept .keccakState).trans cells.1,(kept .keccakPad).trans cells.2⟩
 
+
+/-- Actual main decoder and root-allocation prefixes retain both initialized
+software-hash pointers, including earlier handler/stopped alternatives. -/
+theorem main_sha_cells {input : Guest.InputBlob}
+    {origin source decoded current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    (entry : Main.Entry input origin)
+    (startup : evaluateHOLFiniteState (Main.memoryState origin) (withTail routines .skip)=(none,source))
+    (decoder : CallPrefix.Execution source DecoderPrefix.actions decoded)
+    (root : CallPrefix.Execution decoded CurrentHash.RootEntry.actions current) :
+    current.globals.lookup (ofString "sha_st")=some (.val (.word 2701131776#64)) ∧
+    current.globals.lookup (ofString "sha_pad")=some (.val (.word 2701131840#64)) := by
+  have sourceCode : OriginalCode.Installed source.code := by
+    rw [(evaluation_fields (Main.memoryState origin) source _ none startup).2.2.2]
+    exact entry.code
+  have decodedCode : OriginalCode.Installed decoded.code := by rw [decoder.runtime.2.2.2.1]; exact sourceCode
+  have cells:=EarlyWorkspace.main_sha_cells input origin source entry startup
+  have kept (workspace : WorkspaceKey) : current.globals.lookup (key workspace)=source.globals.lookup (key workspace) :=
+    (root.globals (key workspace) (root_prefix workspace decoded.code decodedCode)).trans
+      (decoder.globals (key workspace) (decoder_prefix workspace source.code sourceCode))
+  exact ⟨(kept .shaState).trans cells.1,(kept .shaPad).trans cells.2⟩
+
 end InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame.main_keccak_cells
+
+#print axioms InitECandidate.Solver.Input.CurrentStartup.EarlyWorkspace.main_sha_cells
+#print axioms InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrame.main_sha_cells

@@ -29,6 +29,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptKey
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptEmpty
+  | shaState => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .shaState
+  | shaPad => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .shaPad
 end TrapWith
 
 namespace Alloc
@@ -45,6 +47,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptKey
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptEmpty
+  | shaState => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .shaState
+  | shaPad => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .shaPad
 end Alloc
 
 namespace HeapMark
@@ -61,6 +65,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptKey
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptEmpty
+  | shaState => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .shaState
+  | shaPad => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .shaPad
 end HeapMark
 
 namespace HeapRelease
@@ -77,6 +83,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptKey
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptEmpty
+  | shaState => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .shaState
+  | shaPad => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .shaPad
 end HeapRelease
 
 namespace Memcpy
@@ -93,6 +101,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptKey
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptEmpty
+  | shaState => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .shaState
+  | shaPad => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .shaPad
 end Memcpy
 
 namespace Memzero
@@ -109,6 +119,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptKey
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptEmpty
+  | shaState => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .shaState
+  | shaPad => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .shaPad
 end Memzero
 
 namespace StLe32
@@ -125,6 +137,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptKey
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptEmpty
+  | shaState => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .shaState
+  | shaPad => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .shaPad
 end StLe32
 
 namespace StLe64
@@ -141,6 +155,8 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptKey
   | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptEmpty
+  | shaState => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .shaState
+  | shaPad => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .shaPad
 end StLe64
 
 end SharedEffects

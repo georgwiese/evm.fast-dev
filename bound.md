@@ -45,8 +45,11 @@ all decoded inputs and header fields. Any reached continuation has zero actual
 transactions and withdrawals, derived from the real trie executions.
 
 These are all-outcome source-clock allowances, not formal target-step bounds.
-Execution requests and hashes, the remaining main continuation, uniform target
-composition, dominant-slack review and final cleanup remain open.
+Actual SHA state/pad globals now survive startup and this complete main prefix.
+The request encoder receives the real five-list image, with nonwrapping sizes
+and owned input slices before its incoming heap. Its loop and hashes, the
+remaining main continuation, uniform target composition, dominant-slack review
+and final cleanup remain open.
 
 ## Earlier checked milestones, in order
 
@@ -418,7 +421,7 @@ build evidence, not complete verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:16%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:47%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them
@@ -1973,3 +1976,33 @@ Claim infinity; no global finite target K/full verifier success. Usage46%weekly/
 0resetcredits. Next: retain actual SHA state/pad globals for the general SHA
 hash caller, execution-request encoding/hash/BAL suffix and remaining main,
 then formal target composition, dominant-slack review and cleanup.
+
+## Actual SHA startup cells and request-encoder entry
+
+The same first three startup calls now derive all four SHA/Keccak pointers
+in one proof. Actual sha_st2701131776 and sha_pad2701131840 survive the later
+initializers, decoder/root allocation, entire original request-SSZ graph,
+header validator, databases, state initializer and both indexed tries.
+Workspace/Core/Cursor and full verification Data retain these actual global
+cells; all normal transports derive them from the same caller executions.
+The source program, SHA instructions and allocated bytes are unchanged.
+
+ExecutionRequests checks the literal current main request caller and original
+function780 ABI, derives its real RQ pointer and callee entry from Data, and
+uses the one decoded five-list byte budget to prove every cnt*sz is nonwrapping.
+All copied list bytes lie in their actual owned input slices before the real
+incoming heap. No later allocation room, encoder/hash normal return or main
+success is supplied. The complete encoder loop and SHA body/caller proofs are
+still next.
+
+Cleanup: DataActions is folded into its DataGlobals transport module without
+changing theorem names or behavior. Its sole importer is updated, and the
+new ExecutionRequests module uses the freed package entry. Removed stale
+bookkeeping for the retired startup theorem/module.
+
+Validation: current-sha-workspace-v1.log PASS1847jobs and
+current-main-sha-inputs-v4.log PASS2709jobs. Printed axioms permitted only.
+Index8700modules/17945facts; inventory8745/replacement closure0/fixed files
+unchanged. Claim infinity; no global finite target K/full verifier success.
+Usage47%weekly/0resetcredits. Continue with actual request encoder/hash/BAL,
+remaining main, formal target composition, dominant-slack review and cleanup.

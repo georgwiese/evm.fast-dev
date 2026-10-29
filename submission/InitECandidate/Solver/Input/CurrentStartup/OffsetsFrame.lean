@@ -4,7 +4,7 @@ namespace InitECandidate.Solver.Input.CurrentStartup.OffsetsFrame
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
--- Preserve the five-key public API. The shared eight-key proofs live in the core;
+-- Preserve the seven-key public API. The shared ten-key proofs live in the core;
 -- mpt_init has its own restricted proof because it initializes the MPT workspace keys.
 
 theorem trap_with (code) (installed : OriginalCode.Installed code) (workspace : WorkspaceKey := .offsets) :

@@ -3,7 +3,7 @@ import InitECandidate.Solver.Input.CallPrefixTrace
 import InitECandidate.Solver.Input.CallPrefixLocals
 import InitECandidate.Solver.Input.ClockCost
 import InitECandidate.Solver.Input.QuietHandlerClock
-import InitECandidate.Solver.Input.CurrentVerify.DataActions
+import InitECandidate.Solver.Input.CurrentVerify.DataGlobals
 import InitECandidate.Solver.Input.CurrentVerify.HeaderReturned
 
 namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt

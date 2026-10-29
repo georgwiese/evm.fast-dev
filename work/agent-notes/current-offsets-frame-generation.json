@@ -238,15 +238,15 @@
   "generated_sources": [
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsKeys.lean",
-      "sha256": "ba8e59f34b04b9a81bdce67ec13e38bac26ed2c6ddc05631ed3034ad691ac841"
+      "sha256": "3534fa3aa5b4d5f42671ca7ab707e56550771c9db6ba8021814e53705c6ffd25"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspaceFrameCore.lean",
-      "sha256": "919af42c5aa761a4a999d133ac6e01bc70f25f2dfa7fd56217cabfaea8c721ff"
+      "sha256": "f3d835497bfc6920d39dfa1b9337068d6a40e9f995e47b1adaaf83f718cedacd"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsFrame.lean",
-      "sha256": "ae8f6812c670368008b8a834138e9457667b4b97ab6d48bfdbd7758ef92f8d46"
+      "sha256": "6378aa38a98a0814c373f2e0fe90e4148a13b188e8b02190bf2e8734fe0eea9d"
     }
   ],
   "protected_globals": [
@@ -255,10 +255,12 @@
     "zero_hashes",
     "keccak_st",
     "keccak_pad",
+    "sha_st",
+    "sha_pad",
     "mpt_hash_scratch",
     "mpt_key_scratch",
     "empty_trie_root"
   ],
-  "restricted_initializer": "mpt_init preserves only the original five keys",
+  "restricted_initializer": "mpt_init preserves the seven non-MPT keys",
   "scope": "Generated actual all-outcome global frames; not proof validation, ownership or a runtime bound."
 }

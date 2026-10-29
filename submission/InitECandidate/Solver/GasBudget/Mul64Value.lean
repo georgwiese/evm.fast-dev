@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Ring
+import InitECandidate.Solver.Input.ScopedCallNormal
 import InitECandidate.Solver.GasBudget.U256Zero
 import InitECandidate.Solver.Input.CallResume
 import InitECandidate.Solver.Input.WordTupleFour
@@ -588,6 +589,8 @@ private theorem carry_left_zero (a : BitVec 64) : wordAddCarryHOL 0#64 a 0#64=(a
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 6000000 in
+set_option linter.unusedSimpArgs false in
+set_option linter.unnecessarySeqFocus false in
 /-- Actual straight-line accumulation after the sixteen original products,
 specialized to the scalar right operand used by Taylor. -/
 theorem scalar_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -1507,3 +1510,350 @@ end InitECandidate.Solver.GasBudget.U256Multiply
 #print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_product
 #print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_overflow
 #print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_low_product
+
+
+namespace InitECandidate.Solver.GasBudget.Mul64
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- Actual normal results derive both their value and the source funding;
+no successful future callee execution is supplied as an entry premise. -/
+def NormalResult (source : PanSemStateFiniteExact 64 Guest.HostMemory) (program : ProgHOL 64)
+    (expected : ValueHOL 64) (paid : Nat) : Prop:=
+  ∀ post returned,evaluateHOLFiniteState source program=(some (.returned returned),post)→
+    paid≤source.clock ∧ returned=expected ∧
+      emptyLocalsHOLFinite post=emptyLocalsHOLFinite {source with clock:=source.clock-paid}
+
+theorem value_zero_right (a : BitVec 64) : value a 0#64=.rStruct [.val (.word 0#64),.val (.word 0#64)] := by
+  have product:=parts_product a 0#64
+  simp only [BitVec.toNat_zero,Nat.mul_zero] at product
+  have low : (parts a 0#64).1=0#64:=BitVec.eq_of_toNat_eq (by change (parts a 0#64).1.toNat=0;omega)
+  have high : (parts a 0#64).2=0#64:=BitVec.eq_of_toNat_eq (by change (parts a 0#64).2.toNat=0;omega)
+  simp only [value,low,high]
+
+theorem scoped_normal_result (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b : BitVec 64)
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64) (expected : ValueHOL 64) (paid : Nat)
+    (installed : Input.OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+      some [.val (.word a),.val (.word b)])
+    (next : NormalResult (setVarHOLFinite (ofString name) (value a b) {source with clock:=source.clock-1}) continuation expected paid) :
+    NormalResult source (.decCall (ofString name) (.comb [.one,.one]) (ofString "mul64x64") arguments continuation) expected (paid+1) := by
+  intro post returned normal
+  obtain ⟨callee,called,aLocal,bLocal⟩:=environment source.code.lookup a b (current_code source.code installed)
+  have funded:=(Input.CallNormal.scoped_normal source post name (.comb [.one,.one]) (ofString "mul64x64") arguments _
+    body continuation callee (.comb [.one,.one]) args called returned normal).1
+  rw [call_execute source a b name arguments continuation installed args funded] at normal
+  let canonical:=setVarHOLFinite (ofString name) (value a b) {source with clock:=source.clock-1}
+  let output:=evaluateHOLFiniteState canonical continuation
+  change (output.1,restore source name output.2)=(some (.returned returned),post) at normal
+  have resumed : evaluateHOLFiniteState canonical continuation=(some (.returned returned),output.2):=by
+    apply Prod.ext
+    · change output.1=some (.returned returned)
+      exact congrArg Prod.fst normal
+    · rfl
+  obtain ⟨enough,result,frame⟩:=next output.2 returned resumed
+  have more : paid≤source.clock-1:=enough
+  refine ⟨by omega,result,?_⟩
+  have postEq : restore source name output.2=post:=congrArg Prod.snd normal
+  rw [←postEq]
+  change emptyLocalsHOLFinite output.2=emptyLocalsHOLFinite {source with clock:=source.clock-(paid+1)}
+  change emptyLocalsHOLFinite output.2=emptyLocalsHOLFinite {source with clock:=source.clock-1-paid} at frame
+  have clockEq : source.clock-1-paid=source.clock-(paid+1):=by omega
+  simpa only [clockEq] using frame
+
+end InitECandidate.Solver.GasBudget.Mul64
+
+#print axioms InitECandidate.Solver.GasBudget.Mul64.value_zero_right
+#print axioms InitECandidate.Solver.GasBudget.Mul64.scoped_normal_result
+
+namespace InitECandidate.Solver.GasBudget.U256Multiply
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+set_option maxRecDepth 10000 in
+theorem full_code (code) (installed : Input.OriginalCode.Installed code) :
+    code.lookup (ofString "u256_mul_full")=some ([(ofString "a",Input.RlpWrite.U256Value.tupleShape),
+      (ofString "b",Input.RlpWrite.U256Value.tupleShape)],fullBody,.comb [.one,.one,.one,.one,.one,.one,.one,.one]) := by
+  have known:=ArithmeticEffects.current_environment code installed .u256_mul_full
+  simpa only [ArithmeticEffects.Kind.name,ArithmeticEffects.Kind.signature,ArithmeticEffects.Kind.original,
+    fullBody,ArithmeticEffects.Kind.body,Input.RlpWrite.U256Value.tupleShape,Guest.guestFn_u256_mul_full,shapeToHOL,List.map_cons,List.map_nil] using known
+
+set_option maxRecDepth 10000 in
+theorem full_shape : fullBody=
+    (.decCall (ofString "p00") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 0 (localVar "a"),.rfield 0 (localVar "b")]
+    (.decCall (ofString "p01") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 0 (localVar "a"),.rfield 1 (localVar "b")]
+    (.decCall (ofString "p10") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 1 (localVar "a"),.rfield 0 (localVar "b")]
+    (.decCall (ofString "p02") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 0 (localVar "a"),.rfield 2 (localVar "b")]
+    (.decCall (ofString "p11") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 1 (localVar "a"),.rfield 1 (localVar "b")]
+    (.decCall (ofString "p20") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 2 (localVar "a"),.rfield 0 (localVar "b")]
+    (.decCall (ofString "p03") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 0 (localVar "a"),.rfield 3 (localVar "b")]
+    (.decCall (ofString "p12") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 1 (localVar "a"),.rfield 2 (localVar "b")]
+    (.decCall (ofString "p21") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 2 (localVar "a"),.rfield 1 (localVar "b")]
+    (.decCall (ofString "p30") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 3 (localVar "a"),.rfield 0 (localVar "b")]
+    (.decCall (ofString "p13") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 1 (localVar "a"),.rfield 3 (localVar "b")]
+    (.decCall (ofString "p22") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 2 (localVar "a"),.rfield 2 (localVar "b")]
+    (.decCall (ofString "p31") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 3 (localVar "a"),.rfield 1 (localVar "b")]
+    (.decCall (ofString "p23") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 2 (localVar "a"),.rfield 3 (localVar "b")]
+    (.decCall (ofString "p32") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 3 (localVar "a"),.rfield 2 (localVar "b")]
+    (.decCall (ofString "p33") (.comb [.one,.one]) (ofString "mul64x64") [.rfield 3 (localVar "a"),.rfield 3 (localVar "b")]
+    afterProducts)))))))))))))))) := by
+  simp only [afterProducts,dropProductCalls,fullBody,ArithmeticEffects.Kind.body,ArithmeticEffects.Kind.signature,
+    ArithmeticEffects.Kind.original,Guest.guestFn_u256_mul_full,progToHOL,expToHOL,shapeToHOL,localVar,List.map_cons,List.map_nil]
+
+set_option maxRecDepth 10000 in
+set_option maxHeartbeats 1000000 in
+set_option linter.unusedSimpArgs false in
+/-- Every actual normal full-width multiplication with a scalar right input
+supplies the checked eight-limb product, clock funding and full frame. -/
+theorem scalar_normal (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (Input.RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (Input.RlpWrite.U256Value.tuple (wordQuad b))) :
+    Mul64.NormalResult source fullBody (scalarValue a b) 16 := by
+  classical
+  have aRead : source.locals.lookup (MlString.implode [97#8])=some (Input.RlpWrite.U256Value.tuple a):=aLocal
+  have bRead : source.locals.lookup (MlString.implode [98#8])=some (.rStruct [.val (.word b),.val (.word 0#64),.val (.word 0#64),.val (.word 0#64)]):=bLocal
+  rw [full_shape]
+  refine Mul64.scoped_normal_result source (a 0) b "p00" _ _ _ 15 installed ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,aRead,bRead] <;> rfl
+  generalize eqFull1 : setVarHOLFinite (ofString "p00") (Mul64.value (a 0) b) {source with clock:=source.clock-1}=full1
+  have fullLookup1 (key : MlS) : full1.locals.lookup key=
+    (if ofString "p00"==key then some (Mul64.value (a 0) b) else source.locals.lookup key):=by
+    rw [←eqFull1]
+    rfl
+  have installedFull1 : Input.OriginalCode.Installed full1.code:=by
+    rw [←eqFull1]
+    exact installed
+  refine Mul64.scoped_normal_result full1 (a 0) 0#64 "p01" _ _ _ 14 installedFull1 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull2 : setVarHOLFinite (ofString "p01") (Mul64.value (a 0) 0#64) {full1 with clock:=full1.clock-1}=full2
+  have fullLookup2 (key : MlS) : full2.locals.lookup key=
+    (if ofString "p01"==key then some (Mul64.value (a 0) 0#64) else full1.locals.lookup key):=by
+    rw [←eqFull2]
+    rfl
+  have installedFull2 : Input.OriginalCode.Installed full2.code:=by
+    rw [←eqFull2]
+    exact installedFull1
+  refine Mul64.scoped_normal_result full2 (a 1) b "p10" _ _ _ 13 installedFull2 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull3 : setVarHOLFinite (ofString "p10") (Mul64.value (a 1) b) {full2 with clock:=full2.clock-1}=full3
+  have fullLookup3 (key : MlS) : full3.locals.lookup key=
+    (if ofString "p10"==key then some (Mul64.value (a 1) b) else full2.locals.lookup key):=by
+    rw [←eqFull3]
+    rfl
+  have installedFull3 : Input.OriginalCode.Installed full3.code:=by
+    rw [←eqFull3]
+    exact installedFull2
+  refine Mul64.scoped_normal_result full3 (a 0) 0#64 "p02" _ _ _ 12 installedFull3 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull4 : setVarHOLFinite (ofString "p02") (Mul64.value (a 0) 0#64) {full3 with clock:=full3.clock-1}=full4
+  have fullLookup4 (key : MlS) : full4.locals.lookup key=
+    (if ofString "p02"==key then some (Mul64.value (a 0) 0#64) else full3.locals.lookup key):=by
+    rw [←eqFull4]
+    rfl
+  have installedFull4 : Input.OriginalCode.Installed full4.code:=by
+    rw [←eqFull4]
+    exact installedFull3
+  refine Mul64.scoped_normal_result full4 (a 1) 0#64 "p11" _ _ _ 11 installedFull4 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull5 : setVarHOLFinite (ofString "p11") (Mul64.value (a 1) 0#64) {full4 with clock:=full4.clock-1}=full5
+  have fullLookup5 (key : MlS) : full5.locals.lookup key=
+    (if ofString "p11"==key then some (Mul64.value (a 1) 0#64) else full4.locals.lookup key):=by
+    rw [←eqFull5]
+    rfl
+  have installedFull5 : Input.OriginalCode.Installed full5.code:=by
+    rw [←eqFull5]
+    exact installedFull4
+  refine Mul64.scoped_normal_result full5 (a 2) b "p20" _ _ _ 10 installedFull5 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull6 : setVarHOLFinite (ofString "p20") (Mul64.value (a 2) b) {full5 with clock:=full5.clock-1}=full6
+  have fullLookup6 (key : MlS) : full6.locals.lookup key=
+    (if ofString "p20"==key then some (Mul64.value (a 2) b) else full5.locals.lookup key):=by
+    rw [←eqFull6]
+    rfl
+  have installedFull6 : Input.OriginalCode.Installed full6.code:=by
+    rw [←eqFull6]
+    exact installedFull5
+  refine Mul64.scoped_normal_result full6 (a 0) 0#64 "p03" _ _ _ 9 installedFull6 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull7 : setVarHOLFinite (ofString "p03") (Mul64.value (a 0) 0#64) {full6 with clock:=full6.clock-1}=full7
+  have fullLookup7 (key : MlS) : full7.locals.lookup key=
+    (if ofString "p03"==key then some (Mul64.value (a 0) 0#64) else full6.locals.lookup key):=by
+    rw [←eqFull7]
+    rfl
+  have installedFull7 : Input.OriginalCode.Installed full7.code:=by
+    rw [←eqFull7]
+    exact installedFull6
+  refine Mul64.scoped_normal_result full7 (a 1) 0#64 "p12" _ _ _ 8 installedFull7 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull8 : setVarHOLFinite (ofString "p12") (Mul64.value (a 1) 0#64) {full7 with clock:=full7.clock-1}=full8
+  have fullLookup8 (key : MlS) : full8.locals.lookup key=
+    (if ofString "p12"==key then some (Mul64.value (a 1) 0#64) else full7.locals.lookup key):=by
+    rw [←eqFull8]
+    rfl
+  have installedFull8 : Input.OriginalCode.Installed full8.code:=by
+    rw [←eqFull8]
+    exact installedFull7
+  refine Mul64.scoped_normal_result full8 (a 2) 0#64 "p21" _ _ _ 7 installedFull8 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull9 : setVarHOLFinite (ofString "p21") (Mul64.value (a 2) 0#64) {full8 with clock:=full8.clock-1}=full9
+  have fullLookup9 (key : MlS) : full9.locals.lookup key=
+    (if ofString "p21"==key then some (Mul64.value (a 2) 0#64) else full8.locals.lookup key):=by
+    rw [←eqFull9]
+    rfl
+  have installedFull9 : Input.OriginalCode.Installed full9.code:=by
+    rw [←eqFull9]
+    exact installedFull8
+  refine Mul64.scoped_normal_result full9 (a 3) b "p30" _ _ _ 6 installedFull9 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull10 : setVarHOLFinite (ofString "p30") (Mul64.value (a 3) b) {full9 with clock:=full9.clock-1}=full10
+  have fullLookup10 (key : MlS) : full10.locals.lookup key=
+    (if ofString "p30"==key then some (Mul64.value (a 3) b) else full9.locals.lookup key):=by
+    rw [←eqFull10]
+    rfl
+  have installedFull10 : Input.OriginalCode.Installed full10.code:=by
+    rw [←eqFull10]
+    exact installedFull9
+  refine Mul64.scoped_normal_result full10 (a 1) 0#64 "p13" _ _ _ 5 installedFull10 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull11 : setVarHOLFinite (ofString "p13") (Mul64.value (a 1) 0#64) {full10 with clock:=full10.clock-1}=full11
+  have fullLookup11 (key : MlS) : full11.locals.lookup key=
+    (if ofString "p13"==key then some (Mul64.value (a 1) 0#64) else full10.locals.lookup key):=by
+    rw [←eqFull11]
+    rfl
+  have installedFull11 : Input.OriginalCode.Installed full11.code:=by
+    rw [←eqFull11]
+    exact installedFull10
+  refine Mul64.scoped_normal_result full11 (a 2) 0#64 "p22" _ _ _ 4 installedFull11 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull12 : setVarHOLFinite (ofString "p22") (Mul64.value (a 2) 0#64) {full11 with clock:=full11.clock-1}=full12
+  have fullLookup12 (key : MlS) : full12.locals.lookup key=
+    (if ofString "p22"==key then some (Mul64.value (a 2) 0#64) else full11.locals.lookup key):=by
+    rw [←eqFull12]
+    rfl
+  have installedFull12 : Input.OriginalCode.Installed full12.code:=by
+    rw [←eqFull12]
+    exact installedFull11
+  refine Mul64.scoped_normal_result full12 (a 3) 0#64 "p31" _ _ _ 3 installedFull12 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull13 : setVarHOLFinite (ofString "p31") (Mul64.value (a 3) 0#64) {full12 with clock:=full12.clock-1}=full13
+  have fullLookup13 (key : MlS) : full13.locals.lookup key=
+    (if ofString "p31"==key then some (Mul64.value (a 3) 0#64) else full12.locals.lookup key):=by
+    rw [←eqFull13]
+    rfl
+  have installedFull13 : Input.OriginalCode.Installed full13.code:=by
+    rw [←eqFull13]
+    exact installedFull12
+  refine Mul64.scoped_normal_result full13 (a 2) 0#64 "p23" _ _ _ 2 installedFull13 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull14 : setVarHOLFinite (ofString "p23") (Mul64.value (a 2) 0#64) {full13 with clock:=full13.clock-1}=full14
+  have fullLookup14 (key : MlS) : full14.locals.lookup key=
+    (if ofString "p23"==key then some (Mul64.value (a 2) 0#64) else full13.locals.lookup key):=by
+    rw [←eqFull14]
+    rfl
+  have installedFull14 : Input.OriginalCode.Installed full14.code:=by
+    rw [←eqFull14]
+    exact installedFull13
+  refine Mul64.scoped_normal_result full14 (a 3) 0#64 "p32" _ _ _ 1 installedFull14 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull15 : setVarHOLFinite (ofString "p32") (Mul64.value (a 3) 0#64) {full14 with clock:=full14.clock-1}=full15
+  have fullLookup15 (key : MlS) : full15.locals.lookup key=
+    (if ofString "p32"==key then some (Mul64.value (a 3) 0#64) else full14.locals.lookup key):=by
+    rw [←eqFull15]
+    rfl
+  have installedFull15 : Input.OriginalCode.Installed full15.code:=by
+    rw [←eqFull15]
+    exact installedFull14
+  refine Mul64.scoped_normal_result full15 (a 3) 0#64 "p33" _ _ _ 0 installedFull15 ?_ ?_
+  · simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,ofString,localVar,Input.RlpWrite.U256Value.tuple,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1,aRead,bRead] <;> rfl
+  generalize eqFull16 : setVarHOLFinite (ofString "p33") (Mul64.value (a 3) 0#64) {full15 with clock:=full15.clock-1}=full16
+  have fullLookup16 (key : MlS) : full16.locals.lookup key=
+    (if ofString "p33"==key then some (Mul64.value (a 3) 0#64) else full15.locals.lookup key):=by
+    rw [←eqFull16]
+    rfl
+  have installedFull16 : Input.OriginalCode.Installed full16.code:=by
+    rw [←eqFull16]
+    exact installedFull15
+  have actual00 : full16.locals.lookup (ofString "p00")=some (Mul64.value (a 0) b):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual01 : full16.locals.lookup (ofString "p01")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual02 : full16.locals.lookup (ofString "p02")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual03 : full16.locals.lookup (ofString "p03")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual10 : full16.locals.lookup (ofString "p10")=some (Mul64.value (a 1) b):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual11 : full16.locals.lookup (ofString "p11")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual12 : full16.locals.lookup (ofString "p12")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual13 : full16.locals.lookup (ofString "p13")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual20 : full16.locals.lookup (ofString "p20")=some (Mul64.value (a 2) b):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual21 : full16.locals.lookup (ofString "p21")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual22 : full16.locals.lookup (ofString "p22")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual23 : full16.locals.lookup (ofString "p23")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual30 : full16.locals.lookup (ofString "p30")=some (Mul64.value (a 3) b):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual31 : full16.locals.lookup (ofString "p31")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual32 : full16.locals.lookup (ofString "p32")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  have actual33 : full16.locals.lookup (ofString "p33")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=by
+    simp [ofString,Mul64.value_zero_right,fullLookup16,fullLookup15,fullLookup14,fullLookup13,fullLookup12,fullLookup11,fullLookup10,fullLookup9,fullLookup8,fullLookup7,fullLookup6,fullLookup5,fullLookup4,fullLookup3,fullLookup2,fullLookup1]
+  obtain ⟨target,run,frame⟩:=scalar_tail full16 a b actual00 actual01 actual02 actual03 actual10 actual11 actual12 actual13 actual20 actual21 actual22 actual23 actual30 actual31 actual32 actual33
+  intro post returned normal
+  have same:=normal.symm.trans run
+  have result : returned=scalarValue a b:=by
+    simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using congrArg Prod.fst same
+  have postEq : post=target:=congrArg Prod.snd same
+  exact ⟨Nat.zero_le _,result,postEq ▸ frame⟩
+
+end InitECandidate.Solver.GasBudget.U256Multiply
+
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.full_code
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.full_shape
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_normal
+
+namespace InitECandidate.Solver.GasBudget.U256Multiply
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- Actual callee return through the genuine current two-quadruple ABI.
+The result, seventeen caller ticks and canonical resumption are derived
+from the same successful child run. -/
+theorem scalar_resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code)
+    (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "u256_mul_full")
+      [Input.RlpWrite.U256Value.tuple a,Input.RlpWrite.U256Value.tuple (wordQuad b)]=some (actual,callee,shape))
+    (returned : ValueHOL 64)
+    (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(some (.returned returned),target)) :
+    returned=scalarValue a b ∧ 17≤source.clock ∧
+      Input.CallNormal.continuationEntry source target name returned=
+        setVarHOLFinite (ofString name) (scalarValue a b) {source with clock:=source.clock-17} := by
+  obtain ⟨expected,lookup,aCell,bCell⟩:=Input.RlpWrite.U256Value.pair_environment source.code.lookup
+    (ofString "u256_mul_full") fullBody (.comb [.one,.one,.one,.one,.one,.one,.one,.one]) a (wordQuad b)
+    (full_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans lookup)
+  have bodyEq : actual=fullBody:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at aCell bCell
+  rw [bodyEq] at run
+  obtain ⟨funded,result,frame⟩:=scalar_normal (callEntryStateHOLFinite source callee) a b installed aCell bCell target returned run
+  have more : 16≤source.clock-1:=funded
+  have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) frame
+  have canonical : {target with locals:=source.locals}={source with clock:=source.clock-17} := by
+    simpa only [emptyLocalsHOLFinite,callEntryStateHOLFinite,Nat.sub_sub] using callerFrame
+  exact ⟨result,by omega,by simp only [Input.CallNormal.continuationEntry,result,canonical]⟩
+
+end InitECandidate.Solver.GasBudget.U256Multiply
+
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_resume

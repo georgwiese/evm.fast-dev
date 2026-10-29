@@ -2697,3 +2697,36 @@ axioms permitted. Index8700modules/18284facts; inventory8745/replacement
 closure0/fixed files unchanged. Claim infinity; no global finite target K or
 full verifier success. Overall estimate remains50%, plausible40–60%. Usage57%
 weekly/0resetcredits. No executable or challenge hypothesis changed.
+
+
+## Actual sixteen-product full multiplication and caller resumption
+
+The previous tail assumptions are now derived from the same actual original
+u256_mul_full execution with a scalar right operand. The real sixteen
+mul64x64 calls supply all sixteen physical local bindings, including the
+twelve zero products. Every actual normal full-body return derives at least
+16incoming source ticks, returns the exact checked eight-limb scalarValue,
+and retains the complete nonlocal frame at exactly16ticks spent. No future
+helper success, result or funding is assumed. The genuine current two-quad
+ABI and actual callee return now resume the caller with this value and the
+canonical full caller state after17source ticks, deriving that funding too.
+Together with scalar_product/scalar_overflow, this closes the numerical
+multiplication/overflow bridge for the original Taylor scalar numerator.
+The Taylor step connection and numerical division still remain open.
+
+The long generated accumulation proof now suppresses repetitive unused-simp
+and sequence-focus lints locally; its checked execution statements and
+proofs are unchanged. Existing UDivMod.ArithmeticBits/ArithmeticInvariant
+provide checked restoring-division conservation lemmas to inspect for reuse
+by actual div64by32 (32iterations, lo/d names and incoming high remainder).
+The wider digits/Knuth numerical bridge and its physical workspace still
+need proof; no division correctness is inferred from this reuse opportunity.
+
+Validation: current-wide-multiply-scalar-normal-v2.log PASS986jobs; all printed
+axioms permitted. Index8700modules/18290facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K or
+full verifier success. Overall estimate remains50%, plausible40–60%. Latest
+account read29%weekly/0resetcredits, ordinary usage allowed (earlier read57%).
+No executable or challenge hypothesis changed. Remaining current parent-header
+validation/execution/wrappers/main, uniform target composition, dominant-slack
+review and final cleanup stay in the active goal.

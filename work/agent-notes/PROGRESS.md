@@ -4647,3 +4647,53 @@ overflow; all other paths clear again. This should give≤3loop-body ticks
 yet been formalized. Remaining wide-division numeric/physical contracts,
 Taylor, current parent-header validation/execution/wrappers/main, uniform
 target composition, dominant-slack review and final cleanup stay open.
+
+
+## Literal quotient correction: three ticks and exact two-digit arithmetic
+
+The original divmnu again-loop is extracted syntactically and its actual
+clear/compare/decrement/add/set instructions have a checked execution model.
+With normalized vtop in[2^31,2^32), its current-state rank is at most3 and
+strictly decreases at every real continuing body. Its whole loop costs≤3
+source ticks on every outcome, including exhausted clocks; there are at
+most2actual corrections on any normal exit. The loop preserves all
+nonlocal fields. No completed loop trace or future helper is an entry premise.
+
+The unsigned correction comparison prevents decrementing qhat=0. Each real
+correction therefore subtracts exactly1naturally and adds exactlyvtop to
+rhat without64-bit wrap. The actual normal-exit proof derives its finite
+Trace, exact qhat/rhat/count conservation, zero again flag and failed final
+correction guard. Trace.preserves transports mathematical invariants through
+that same actual history. For genuine32-bit quotient/second/low digits, the
+word guard is exactly rhat*2^32+low<qhat*second, including its room test.
+
+Starting with an upper quotient estimate, this actual history returns the
+exact quotient for a two-digit divisor and the exact natural remainder
+rhat*2^32+low-qhat*second. The ordinary div64by32 initial estimate is proved
+upper from its real remainder<top; the original max-digit initialization is
+proved upper and conserving on its genuine digit-sized numerator range.
+Their actual surrounding caller/array states still need connection. This
+is not yet a complete divmnu or wide-division contract.
+
+For Taylor, numerical division can specialize to at most2divisor digits
+during the first1280iterations:1280*11684671=14956378880<2^34. This inspected
+plan avoids general8-digit quotient correctness; general runtime still needs
+all actual reached helper paths. The actual Taylor counter/denominator and
+physical workspace facts must be connected before applying this reasoning.
+
+Validation: current-qhat-normal-v1.log PASS980jobs and
+current-qhat-quotient-v2.log PASS980jobs; printed axioms permitted. Final log
+covers all current source facts including the strengthened trace conclusion.
+Index8700modules/18335facts; inventory8745/replacement closure0/fixed files
+unchanged. Claim infinity; no global finite target K or full verifier success.
+Overall estimate remains50%, plausible40–60%. Usage29%weekly/0resetcredits,
+ordinary usage allowed. No executable or challenge hypothesis changed.
+
+Next: real u256_to_digits/digits_len images and leading nonzero digit,
+normalization stores and digit-array division. The actual640-byte u256_ws
+allocation/global still must be retained from startup through main. The
+one-digit path can use the checked div64by32 helper. Two-digit quotient
+correction now has its numerical contract; its two subtraction/store steps
+still must construct the next real remainder image. Taylor/current parent
+header validation/execution/wrappers/main, uniform target composition,
+dominant-slack review and cleanup remain open in the same active goal.

@@ -8618,7 +8618,7 @@
       "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -8738,7 +8738,7 @@
       "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -8814,7 +8814,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -8838,7 +8838,7 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -8910,7 +8910,7 @@
       "sha256": "0ccb23656f25fed27209cc0afb3aba632f83b20052f384c3e35d9b18ed32a26f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -8954,7 +8954,7 @@
       "sha256": "a216a35096856e7f5f2f90ddd9a79f012451c267220837ab976ce6faae2ae805",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-geometric-compatibility-v1.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -8986,7 +8986,7 @@
       "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -14422,7 +14422,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -14502,7 +14502,7 @@
       "sha256": "33ed90c3932c7504426b5025443ebde0efb549cf9f3f03a24f55c7c520801f7d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -15446,7 +15446,7 @@
       "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -15454,7 +15454,7 @@
       "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -15470,7 +15470,7 @@
       "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -15514,7 +15514,7 @@
       "sha256": "c73b9d6a36d7eead87a9a4d6403b7e1d85eb4b11fbdc1e62990069e4cc4762f7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -15530,7 +15530,7 @@
       "sha256": "20173bfc0be92fd55a429fd1ea073813938aaf677579072bb7ba14ea82993fae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -15602,7 +15602,7 @@
       "sha256": "8a15b62df4d5519e39db92e038aa29b0eae6b5a41c6776fdaca6e69eefb2f2c9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-geometric-compatibility-v1.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -15610,7 +15610,7 @@
       "sha256": "d44f1627a4df64f26ad35579993307127df21abce1ae13f05863505283c1891f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-geometric-compatibility-v1.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -15626,7 +15626,7 @@
       "sha256": "9b23b5b4e0ff8a89cfa2a840588ef19924b6ff46b002c57eecb97ff56569f555",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-main-geometric-compatibility-v1.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -16914,7 +16914,7 @@
       "sha256": "444b58e3f4c9b086dade918533a469c8c2ce06d0ca52050f3fbdf863a789b7fa",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -17102,7 +17102,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -18198,7 +18198,7 @@
       "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -18222,7 +18222,7 @@
       "sha256": "6b494efa06e32dcd2cdce30dcdca29e5708536080fb8f8dc7be57b2f2818047e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -18242,7 +18242,7 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -18822,7 +18822,7 @@
       "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -19566,7 +19566,7 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -19830,7 +19830,7 @@
       "sha256": "4f1e9b801540e7bbd98f41af0f7295c1461c8ef2c53fdf5a40d8e14b4a64076f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -20238,7 +20238,7 @@
       "sha256": "b725c35d372769b184a7352bee49dd3de097bc4b8e3e3a81885f4495f8d5f3a6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -20246,7 +20246,7 @@
       "sha256": "aac58c94aacb1bfe1021ea99eac0e2a4c72d178728480cac34d4b224d59dae5f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -20254,7 +20254,7 @@
       "sha256": "5eda7386460d7ac336e402646a8e64ff3e7ba31b2ec5a91dbecb777b45287ae0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -20275,10 +20275,10 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/UDivMod/CurrentCost.lean",
-      "sha256": "aeace036cd60f383bc6f90eb4fef290323e0f24dc8d4984768356712b2a4e629",
+      "sha256": "7df29368a40ba9e879e2656b6bc8e637156ddfbb33fd2900fb5013a976dbb835",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -20294,7 +20294,7 @@
       "sha256": "e4b328ab63ec418b1097feee84d1ae07b7a68b670cd4773ebd1e51b555cfe651",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -20302,7 +20302,7 @@
       "sha256": "2addb93cce7c89b4f9e83a09a7b2e60f4ef94386d424ad6ce032bcb8c6f5e978",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -20310,7 +20310,7 @@
       "sha256": "75d7b306308c7798cc3085e372c0ad0cdaf4abbdd7bda0a2938fb2efbff3c5ad",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -20318,7 +20318,7 @@
       "sha256": "63a61eb7c31df333869886489c3237d01154341500afec23ea1ffd803340b6ab",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -20326,7 +20326,7 @@
       "sha256": "37e1a0fbf390bb488d434ec16b286b165b245a60a9f1e3622b1f537df05e9bdf",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -21062,7 +21062,7 @@
       "sha256": "a3b0e5f4dcde0ebdc40eb3f10db33fcc4444dc4c015570723e129b393ecfc851",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -21078,7 +21078,7 @@
       "sha256": "13747d7cb56ef98501b63d6f67cb10f055849531aa57e69c18d74fe1aa00d348",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -21122,7 +21122,7 @@
       "sha256": "383ea041122511ecf4b192599c7449eef3222fa5f713733420cf2c73e52028a0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -32618,7 +32618,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -37918,7 +37918,7 @@
       "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -37926,7 +37926,7 @@
       "sha256": "02071e2394e8a909552d0d29cc091e76ecb5a43b2909b69ab4dd731d1a5bf044",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -38014,7 +38014,7 @@
       "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -38722,7 +38722,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-nlz32-complete-v3.log"
+        "current-qhat-quotient-v2.log"
       ]
     },
     {
@@ -89847,7 +89847,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89857,7 +89857,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90028,7 +90028,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94311,7 +94311,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94779,7 +94779,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94789,7 +94789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95064,7 +95064,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95074,7 +95074,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95094,7 +95094,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95104,7 +95104,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95114,7 +95114,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95124,7 +95124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95134,7 +95134,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95144,7 +95144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95154,7 +95154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95164,7 +95164,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95413,7 +95413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95568,7 +95568,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95578,7 +95578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95588,7 +95588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95596,7 +95596,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95606,7 +95606,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95615,7 +95615,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95672,7 +95672,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95682,7 +95682,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100988,7 +100988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100998,7 +100998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101008,7 +101008,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101018,7 +101018,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101091,7 +101091,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101101,7 +101101,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101897,7 +101897,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101907,7 +101907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101953,7 +101953,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101963,7 +101963,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103449,7 +103449,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -103459,7 +103459,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108661,7 +108661,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -108671,7 +108671,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112815,7 +112815,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112999,7 +112999,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113009,7 +113009,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113019,7 +113019,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113029,7 +113029,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113039,7 +113039,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113049,7 +113049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113059,7 +113059,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113069,7 +113069,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113077,7 +113077,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113085,7 +113085,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113095,7 +113095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113104,7 +113104,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113114,7 +113114,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113124,7 +113124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113408,7 +113408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113418,7 +113418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113428,7 +113428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113438,7 +113438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113448,7 +113448,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113458,7 +113458,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113468,7 +113468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113478,7 +113478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113488,7 +113488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113498,7 +113498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113508,7 +113508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113518,7 +113518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113528,7 +113528,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113538,7 +113538,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113548,7 +113548,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113558,7 +113558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113568,7 +113568,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113578,7 +113578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113588,7 +113588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113813,7 +113813,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113821,7 +113821,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113858,7 +113858,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113868,7 +113868,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113878,7 +113878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113888,7 +113888,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -115033,7 +115033,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -117297,7 +117297,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121587,7 +121587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -125147,7 +125147,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -144492,7 +144492,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -151131,7 +151131,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -151628,7 +151628,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -162885,7 +162885,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-main-geometric-compatibility-v1.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -168566,7 +168566,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -177137,7 +177137,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -183375,7 +183375,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -191389,7 +191389,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -191399,7 +191399,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -191409,7 +191409,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -191419,7 +191419,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -191449,7 +191449,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205437,7 +205437,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205446,7 +205446,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205454,7 +205454,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205464,7 +205464,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205474,7 +205474,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205484,7 +205484,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205494,7 +205494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205504,7 +205504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205514,7 +205514,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205524,7 +205524,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205534,7 +205534,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205544,7 +205544,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205554,7 +205554,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205564,7 +205564,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205574,7 +205574,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205584,7 +205584,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205593,7 +205593,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205603,7 +205603,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205613,7 +205613,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205623,7 +205623,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205633,7 +205633,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205643,7 +205643,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205653,7 +205653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205663,7 +205663,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205673,7 +205673,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205683,7 +205683,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205693,7 +205693,180 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-nlz32-complete-v3.log",
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.literal_loop",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.step_bindings",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.body_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.stage_rank_bound",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.stage_rank_step",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.body_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.loop_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.body_safe",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.loop_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.correction_positive",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.step_arithmetic",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.loop_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.Trace.preserves",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.corrects_iff",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.Trace.quotient",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.initial_upper",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.max_initial_upper",
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.UDivMod.QhatCorrection.normal_digit",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-qhat-quotient-v2.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

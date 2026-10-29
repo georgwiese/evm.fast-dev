@@ -1,3 +1,6 @@
+import InitECandidate.Solver.Input.LoopSummaryInvariant
+import InitECandidate.Solver.Input.LoopNormalExit
+import InitECandidate.Solver.Input.ClockCostLoop
 import InitECandidate.Solver.Input.PureReturn
 import InitECandidate.Solver.Input.CallResume
 import InitECandidate.Solver.Input.WordTripleEnvironment
@@ -846,3 +849,609 @@ end InitECandidate.Solver.Input.UDivMod.Nlz32
 
 #print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.normalized_digit
 #print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.resume
+
+
+namespace InitECandidate.Solver.Input.UDivMod.QhatCorrection
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+def test : ExpHOL 64:=.cmp .equal (localVar "again") (.const 1#64)
+def roomTest : ExpHOL 64:=.cmp .lower (localVar "rhat") (.const 4294967296#64)
+def leftEstimate : ExpHOL 64:=.op .or [.shift .lsl (localVar "rhat") (.const 32#64),localVar "ujn2"]
+def rightEstimate : ExpHOL 64:=.panop .mul [localVar "qhat",localVar "vsec"]
+def estimateTest : ExpHOL 64:=.cmp .lower leftEstimate rightEstimate
+def quotientExpression : ExpHOL 64:=.op .sub [localVar "qhat",.const 1#64]
+def remainderExpression : ExpHOL 64:=.op .add [localVar "rhat",localVar "vtop"]
+def correct : ProgHOL 64:=.seq (.assign .local (ofString "qhat") quotientExpression)
+  (.seq (.assign .local (ofString "rhat") remainderExpression) (.assign .local (ofString "again") (.const 1#64)))
+def branch : ProgHOL 64:=.ite roomTest (.ite estimateTest correct .skip) .skip
+def body : ProgHOL 64:=.seq (.assign .local (ofString "again") (.const 0#64)) branch
+def loop : ProgHOL 64:=.while test body
+
+def divmnuBody : ProgHOL 64:=match Guest.Software.guestFn_divmnu with | .function fn=>progToHOL fn.body | _=>.skip
+private def findLoop : ProgHOL 64→Option (ProgHOL 64)
+  | .while condition body=>
+    match condition with
+    | .cmp .equal (.var .local name) (.const word)=>
+      if name=ofString "again" ∧ word=1#64 then some (.while condition body) else findLoop body
+    | _=>findLoop body
+  | .seq first rest=>(findLoop first).orElse (fun _=>findLoop rest)
+  | .ite _ first rest=>(findLoop first).orElse (fun _=>findLoop rest)
+  | .dec _ _ _ rest=>findLoop rest
+  | .decCall _ _ _ _ rest=>findLoop rest
+  | _=>none
+
+set_option maxRecDepth 100000 in
+/-- Syntactic extraction of the literal original divmnu correction loop. -/
+theorem literal_loop : findLoop divmnuBody=some loop := by
+  simp [findLoop,divmnuBody,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    loop,test,body,branch,roomTest,estimateTest,leftEstimate,rightEstimate,correct,quotientExpression,remainderExpression,localVar]
+
+structure Bindings (source : PanSemStateFiniteExact 64 Guest.HostMemory) (q r flag top second low : BitVec 64) : Prop where
+  qCell : source.locals.lookup (ofString "qhat")=some (.val (.word q))
+  rCell : source.locals.lookup (ofString "rhat")=some (.val (.word r))
+  flagCell : source.locals.lookup (ofString "again")=some (.val (.word flag))
+  topCell : source.locals.lookup (ofString "vtop")=some (.val (.word top))
+  secondCell : source.locals.lookup (ofString "vsec")=some (.val (.word second))
+  lowCell : source.locals.lookup (ofString "ujn2")=some (.val (.word low))
+
+private theorem Bindings.set_again {source : PanSemStateFiniteExact 64 Guest.HostMemory} {q r flag top second low : BitVec 64}
+    (ready : Bindings source q r flag top second low) (next : BitVec 64) :
+    Bindings (bind source "again" next) q r next top second low := by
+  exact ⟨(bind_lookup_other source "again" "qhat" next (by decide)).trans ready.qCell,
+    (bind_lookup_other source "again" "rhat" next (by decide)).trans ready.rCell,bind_lookup_same _ _ _,
+    (bind_lookup_other source "again" "vtop" next (by decide)).trans ready.topCell,
+    (bind_lookup_other source "again" "vsec" next (by decide)).trans ready.secondCell,
+    (bind_lookup_other source "again" "ujn2" next (by decide)).trans ready.lowCell⟩
+
+private theorem Bindings.set_qhat {source : PanSemStateFiniteExact 64 Guest.HostMemory} {q r flag top second low : BitVec 64}
+    (ready : Bindings source q r flag top second low) (next : BitVec 64) :
+    Bindings (bind source "qhat" next) next r flag top second low := by
+  exact ⟨bind_lookup_same _ _ _,(bind_lookup_other source "qhat" "rhat" next (by decide)).trans ready.rCell,
+    (bind_lookup_other source "qhat" "again" next (by decide)).trans ready.flagCell,
+    (bind_lookup_other source "qhat" "vtop" next (by decide)).trans ready.topCell,
+    (bind_lookup_other source "qhat" "vsec" next (by decide)).trans ready.secondCell,
+    (bind_lookup_other source "qhat" "ujn2" next (by decide)).trans ready.lowCell⟩
+
+private theorem Bindings.set_rhat {source : PanSemStateFiniteExact 64 Guest.HostMemory} {q r flag top second low : BitVec 64}
+    (ready : Bindings source q r flag top second low) (next : BitVec 64) :
+    Bindings (bind source "rhat" next) q next flag top second low := by
+  exact ⟨(bind_lookup_other source "rhat" "qhat" next (by decide)).trans ready.qCell,bind_lookup_same _ _ _,
+    (bind_lookup_other source "rhat" "again" next (by decide)).trans ready.flagCell,
+    (bind_lookup_other source "rhat" "vtop" next (by decide)).trans ready.topCell,
+    (bind_lookup_other source "rhat" "vsec" next (by decide)).trans ready.secondCell,
+    (bind_lookup_other source "rhat" "ujn2" next (by decide)).trans ready.lowCell⟩
+
+def corrects (q r second low : BitVec 64) : Prop:=
+  r.toNat<4294967296 ∧ ((r<<<(32:Nat)) ||| low).toNat<(q*second).toNat
+instance (q r second low : BitVec 64) : Decidable (corrects q r second low):=inferInstanceAs (Decidable (_∧_))
+def nextQ (q r second low : BitVec 64) : BitVec 64:=if corrects q r second low then q-1#64 else q
+def nextR (q r top second low : BitVec 64) : BitVec 64:=if corrects q r second low then r+top else r
+def nextFlag (q r second low : BitVec 64) : BitVec 64:=if corrects q r second low then 1#64 else 0#64
+def step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (q r top second low : BitVec 64) :=
+  let cleared:=bind source "again" 0#64
+  if corrects q r second low then bind (bind (bind cleared "qhat" (q-1#64)) "rhat" (r+top)) "again" 1#64 else cleared
+
+theorem step_bindings (source : PanSemStateFiniteExact 64 Guest.HostMemory) (q r flag top second low : BitVec 64)
+    (ready : Bindings source q r flag top second low) :
+    Bindings (step source q r top second low) (nextQ q r second low) (nextR q r top second low) (nextFlag q r second low) top second low := by
+  by_cases take : corrects q r second low
+  · simp only [step,nextQ,nextR,nextFlag,if_pos take]
+    exact (((ready.set_again 0#64).set_qhat (q-1#64)).set_rhat (r+top)).set_again 1#64
+  · simp only [step,nextQ,nextR,nextFlag,if_neg take]
+    exact ready.set_again 0#64
+
+theorem body_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (q r flag top second low : BitVec 64)
+    (ready : Bindings source q r flag top second low) :
+    evaluateHOLFiniteState source body=(none,step source q r top second low) := by
+  classical
+  let cleared:=bind source "again" 0#64
+  have clearReady : Bindings cleared q r 0#64 top second low:=ready.set_again 0#64
+  have clearRun:=WitnessRadix.StateSteps.assign_execute source "again" (.const 0#64) flag 0#64 ready.flagCell rfl
+  have roomRead : eval cleared roomTest=some (.val (.word (if r.toNat<4294967296 then 1#64 else 0#64))):=by
+    simp [eval,roomTest,localVar,evalHOLExact,toExact,clearReady.rCell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def]
+  have estimateRead : eval cleared estimateTest=some (.val (.word (if ((r<<<(32:Nat)) ||| low).toNat<(q*second).toNat then 1#64 else 0#64))):=by
+    simp [eval,estimateTest,leftEstimate,rightEstimate,localVar,evalHOLExact,evalListHOLExact,toExact,
+      clearReady.rCell,clearReady.qCell,clearReady.secondCell,clearReady.lowCell,valueWord,valueIsWord,wordOpHOL,wordOp,
+      wordShiftHOL,panOpHOL,OrOp.or,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def]
+  simp only [eval] at roomRead estimateRead
+  rw [body,WitnessRadix.StateSteps.next_sequence source cleared _ _ clearRun (Nat.le_refl _)]
+  rw [branch,evaluateHOLFiniteState_ite,roomRead]
+  by_cases room : r.toNat<4294967296
+  · rw [if_pos room]
+    simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide)]
+    rw [evaluateHOLFiniteState_ite,estimateRead]
+    by_cases take : ((r<<<(32:Nat)) ||| low).toNat<(q*second).toNat
+    · rw [if_pos take]
+      simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide)]
+      have qRead : eval cleared quotientExpression=some (.val (.word (q-1#64))):=by
+        simp [eval,quotientExpression,evalHOLExact,evalListHOLExact,toExact,localVar,clearReady.qCell,valueWord,valueIsWord,wordOpHOL,wordOp]
+      have qRun:=WitnessRadix.StateSteps.assign_execute cleared "qhat" quotientExpression q (q-1#64) clearReady.qCell qRead
+      let qPost:=bind cleared "qhat" (q-1#64)
+      have qReady : Bindings qPost (q-1#64) r 0#64 top second low:=clearReady.set_qhat (q-1#64)
+      have rRead : eval qPost remainderExpression=some (.val (.word (r+top))):=by
+        simp [eval,remainderExpression,evalHOLExact,evalListHOLExact,toExact,localVar,qReady.rCell,qReady.topCell,valueWord,valueIsWord,wordOpHOL,wordOp]
+      have rRun:=WitnessRadix.StateSteps.assign_execute qPost "rhat" remainderExpression r (r+top) qReady.rCell rRead
+      let rPost:=bind qPost "rhat" (r+top)
+      have rReady : Bindings rPost (q-1#64) (r+top) 0#64 top second low:=qReady.set_rhat (r+top)
+      have againRun:=WitnessRadix.StateSteps.assign_execute rPost "again" (.const 1#64) 0#64 1#64 rReady.flagCell rfl
+      rw [correct,WitnessRadix.StateSteps.next_sequence cleared qPost _ _ qRun (Nat.le_refl _),
+        WitnessRadix.StateSteps.next_sequence qPost rPost _ _ rRun (Nat.le_refl _)]
+      have active : corrects q r second low:=⟨room,take⟩
+      simpa only [step,if_pos active] using againRun
+    · rw [if_neg take]
+      have inactive : ¬corrects q r second low:=fun active=>take active.2
+      simp only [if_pos (show (0#64 : BitVec 64)=0 from rfl),evaluateHOLFiniteState_skip,step,if_neg inactive]
+      rfl
+  · rw [if_neg room]
+    have inactive : ¬corrects q r second low:=fun active=>room active.1
+    simp only [if_pos (show (0#64 : BitVec 64)=0 from rfl),evaluateHOLFiniteState_skip,step,if_neg inactive]
+    rfl
+
+end InitECandidate.Solver.Input.UDivMod.QhatCorrection
+
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.literal_loop
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.step_bindings
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.body_execute
+
+
+namespace InitECandidate.Solver.Input.UDivMod.QhatCorrection
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+def stageRank (r flag : BitVec 64) : Nat:=
+  if flag=1#64 then if r.toNat<2147483648 then 3 else if r.toNat<4294967296 then 2 else 1 else 0
+private def readWord (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) : BitVec 64:=
+  valueWord ((source.locals.lookup (ofString name)).getD (.val (.word 0#64)))
+def rank (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Nat:=stageRank (readWord source "rhat") (readWord source "again")
+
+theorem stage_rank_bound (r flag : BitVec 64) : stageRank r flag≤3 := by
+  unfold stageRank
+  split_ifs <;> omega
+
+private theorem stage_rank_positive (r : BitVec 64) : 0<stageRank r 1#64 := by
+  simp only [stageRank,if_pos rfl]
+  split_ifs <;> omega
+
+private theorem rank_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (q r flag top second low : BitVec 64)
+    (ready : Bindings source q r flag top second low) : rank source=stageRank r flag := by
+  simp only [rank,readWord,ready.rCell,ready.flagCell,Option.getD_some,valueWord]
+
+/-- Each continuing correction increases the remainder estimate by at least
+half a digit; every other outcome clears the real again flag. -/
+theorem stage_rank_step (q r top second low : BitVec 64)
+    (topLarge : 2147483648≤top.toNat) (topSmall : top.toNat<4294967296) :
+    stageRank (nextR q r top second low) (nextFlag q r second low)<stageRank r 1#64 := by
+  by_cases active : corrects q r second low
+  · have room : r.toNat<4294967296:=active.1
+    have increment : (r+top).toNat=r.toNat+top.toNat:=by
+      rw [BitVec.toNat_add,Nat.mod_eq_of_lt (by omega)]
+    simp only [nextR,nextFlag,if_pos active,stageRank,if_pos rfl,increment]
+    split_ifs <;> omega
+  · have positive:=stage_rank_positive r
+    simpa only [nextFlag,if_neg active,stageRank,if_neg (show (0#64 : BitVec 64)≠1#64 by decide),if_pos rfl] using positive
+
+theorem body_cost (code) : ClockCost.Bound code body 0 := by
+  unfold body branch correct
+  exact ClockCost.sequence code _ _ 0 0 (ClockCost.assign code _ _)
+    (ClockCost.conditional code _ _ _ 0 0
+      (ClockCost.conditional code _ _ _ 0 0
+        (ClockCost.sequence code _ _ 0 0 (ClockCost.assign code _ _)
+          (ClockCost.sequence code _ _ 0 0 (ClockCost.assign code _ _) (ClockCost.assign code _ _)))
+        (ClockCost.skip code)) (ClockCost.skip code))
+
+private theorem test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (flag : BitVec 64)
+    (cell : source.locals.lookup (ofString "again")=some (.val (.word flag))) :
+    evalHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) test=
+      some (.val (.word (if flag=1#64 then 1#64 else 0#64))) := by
+  rw [finite_eval]
+  simp [eval,test,evalHOLExact,toExact,localVar,cell,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+
+/-- All actual outcomes of the literal current correction loop cost≤3
+source ticks, including clock exhaustion. No completed trace is assumed. -/
+theorem loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (q r flag top second low : BitVec 64)
+    (ready : Bindings source q r flag top second low)
+    (topLarge : 2147483648≤top.toNat) (topSmall : top.toNat<4294967296) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤3 := by
+  classical
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ q r flag,Bindings current q r flag top second low
+  have progress : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,
+      current.code=source.code→invariant current→∀ observed : BitVec 64,
+      evalHOLFinite current (h:=fun address=>Classical.propDecidable (current.memaddrs address)) test=some (.val (.word observed))→
+      observed≠0→0<rank current ∧ (current.clock≠0→
+        let output:=evaluateHOLFiniteState (decClockHOLFinite current) body
+        (output.1=none ∨ output.1=some .continue)→invariant output.2 ∧ rank output.2<rank current) := by
+    intro current installed valid observed actual nonzero
+    obtain ⟨q,r,flag,currentReady⟩:=valid
+    have expected:=test_read current flag currentReady.flagCell
+    have active : flag=1#64:=by
+      by_contra inactive
+      rw [if_neg inactive] at expected
+      have zero : observed=0#64:=by
+        simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans expected
+      exact nonzero zero
+    subst flag
+    have oldRank:=rank_read current q r 1#64 top second low currentReady
+    refine ⟨by rw [oldRank];exact stage_rank_positive r,?_⟩
+    intro funded
+    have entryReady : Bindings (decClockHOLFinite current) q r 1#64 top second low:=
+      ⟨currentReady.qCell,currentReady.rCell,currentReady.flagCell,currentReady.topCell,currentReady.secondCell,currentReady.lowCell⟩
+    have run:=body_execute (decClockHOLFinite current) q r 1#64 top second low entryReady
+    dsimp only
+    intro continuing
+    rw [run]
+    have nextReady:=step_bindings (decClockHOLFinite current) q r 1#64 top second low entryReady
+    refine ⟨⟨nextQ q r second low,nextR q r top second low,nextFlag q r second low,nextReady⟩,?_⟩
+    rw [rank_read _ _ _ _ _ _ _ nextReady,oldRank]
+    exact stage_rank_step q r top second low topLarge topSmall
+  have bounded:=ClockCost.ranked_loop source.code test body 0 invariant rank (body_cost source.code) progress source rfl ⟨q,r,flag,ready⟩
+  have small : rank source≤3:=by rw [rank_read _ _ _ _ _ _ _ ready];exact stage_rank_bound r flag
+  change source.clock-(evaluateHOLFiniteState source loop).2.clock≤(0+1)*rank source at bounded
+  omega
+
+end InitECandidate.Solver.Input.UDivMod.QhatCorrection
+
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.stage_rank_bound
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.stage_rank_step
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.body_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.loop_cost
+
+
+namespace InitECandidate.Solver.Input.UDivMod.QhatCorrection
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+theorem body_safe : LocalPrefix (ofString "vtop") body := by
+  unfold body branch correct
+  exact .seq (.assign _ _ (by decide)) (.ite _
+    (.ite _ (.seq (.assign _ _ (by decide)) (.seq (.assign _ _ (by decide)) (.assign _ _ (by decide)))) .skip) .skip)
+
+theorem loop_frame (code) : LocalEffects.Preserves code loop := by
+  unfold loop body branch correct
+  exact LocalEffects.loop code _ _
+    (LocalEffects.sequence code _ _ (LocalEffects.assign code _ _)
+      (LocalEffects.conditional code _ _ _
+        (LocalEffects.conditional code _ _ _
+          (LocalEffects.sequence code _ _ (LocalEffects.assign code _ _)
+            (LocalEffects.sequence code _ _ (LocalEffects.assign code _ _) (LocalEffects.assign code _ _)))
+          (LocalEffects.skip code)) (LocalEffects.skip code)))
+
+/-- The actual unsigned comparison cannot correct a zero quotient, so its
+subtraction never wraps, regardless of the second divisor digit. -/
+theorem correction_positive (q r second low : BitVec 64) (active : corrects q r second low) : 0<q.toNat := by
+  by_contra bad
+  have zero : q=0#64:=BitVec.eq_of_toNat_eq (by change q.toNat=0;omega)
+  have impossible:=active.2
+  simp only [zero,BitVec.zero_mul,BitVec.toNat_zero,Nat.not_lt_zero] at impossible
+
+/-- Exact natural effect of a real correction, including the guard that
+prevents quotient wrap and the32-bit room that prevents remainder wrap. -/
+theorem step_arithmetic (q r top second low : BitVec 64) (topSmall : top.toNat<4294967296) :
+    (nextQ q r second low).toNat+(if corrects q r second low then 1 else 0)=q.toNat ∧
+      (nextR q r top second low).toNat=r.toNat+(if corrects q r second low then 1 else 0)*top.toNat := by
+  by_cases active : corrects q r second low
+  · have positive:=correction_positive q r second low active
+    have room:=active.1
+    have oneBelow : (1#64 : BitVec 64)≤q:=by change 1≤q.toNat;omega
+    have quotient : (q-1#64).toNat+1=q.toNat:=by
+      rw [BitVec.toNat_sub_of_le oneBelow]
+      change q.toNat-1+1=q.toNat
+      omega
+    have remainder : (r+top).toNat=r.toNat+top.toNat:=by
+      rw [BitVec.toNat_add,Nat.mod_eq_of_lt (by omega)]
+    simpa only [nextQ,nextR,if_pos active,Nat.one_mul] using And.intro quotient remainder
+  · simp [nextQ,nextR,active]
+
+end InitECandidate.Solver.Input.UDivMod.QhatCorrection
+
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.body_safe
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.loop_frame
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.correction_positive
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.step_arithmetic
+
+
+namespace InitECandidate.Solver.Input.UDivMod.QhatCorrection
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+private theorem step_rank_budget (q r top second low : BitVec 64)
+    (topLarge : 2147483648≤top.toNat) (topSmall : top.toNat<4294967296) :
+    (if corrects q r second low then 1 else 0)+stageRank (nextR q r top second low) 1#64≤stageRank r 1#64 := by
+  by_cases active : corrects q r second low
+  · have smaller:=stage_rank_step q r top second low topLarge topSmall
+    simp only [nextFlag,if_pos active] at smaller ⊢
+    omega
+  · simp only [nextR,if_neg active,Nat.zero_add]
+    omega
+
+/-- Finite sequence of the actual enabled quotient corrections. -/
+inductive Trace (top second low : BitVec 64) : BitVec 64→BitVec 64→BitVec 64→BitVec 64→Nat→Prop where
+  | refl (q r : BitVec 64) : Trace top second low q r q r 0
+  | snoc {q0 r0 q r : BitVec 64} {count : Nat}
+      (previous : Trace top second low q0 r0 q r count) (active : corrects q r second low) :
+      Trace top second low q0 r0 (q-1#64) (r+top) (count+1)
+
+theorem Trace.preserves {top second low q0 r0 finalQ finalR : BitVec 64} {count : Nat}
+    (route : Trace top second low q0 r0 finalQ finalR count) (property : BitVec 64→BitVec 64→Prop)
+    (initial : property q0 r0)
+    (advance : ∀ q r,property q r→corrects q r second low→property (q-1#64) (r+top)) : property finalQ finalR := by
+  induction route with
+  | refl=>exact initial
+  | snoc previous active ih=>exact advance _ _ ih active
+
+/-- An actual normal exit has made at most two genuine corrections. The
+returned local estimates retain exact natural subtraction/addition history,
+stop at the literal guard, and preserve every nonlocal field. -/
+theorem loop_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (q r top second low : BitVec 64)
+    (ready : Bindings source q r 1#64 top second low)
+    (topLarge : 2147483648≤top.toNat) (topSmall : top.toNat<4294967296)
+    (normal : evaluateHOLFiniteState source loop=(none,post)) :
+    ∃ finalQ finalR corrections,corrections≤2 ∧ Bindings post finalQ finalR 0#64 top second low ∧
+      finalQ.toNat+corrections=q.toNat ∧ finalR.toNat=r.toNat+corrections*top.toNat ∧
+      ¬corrects finalQ finalR second low ∧ Trace top second low q r finalQ finalR corrections ∧
+      LocalEffects.erase post=LocalEffects.erase source := by
+  classical
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>
+    ∃ currentQ currentR flag corrections,Bindings current currentQ currentR flag top second low ∧
+      (flag=1#64 ∨ (flag=0#64 ∧ ¬corrects currentQ currentR second low)) ∧
+      currentQ.toNat+corrections=q.toNat ∧ currentR.toNat=r.toNat+corrections*top.toNat ∧
+      corrections+stageRank currentR 1#64≤stageRank r 1#64 ∧ Trace top second low q r currentQ currentR corrections
+  have initial : invariant source:=by
+    exact ⟨q,r,1#64,0,ready,Or.inl rfl,by simp,by simp,by simp,Trace.refl q r⟩
+  have transition : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→invariant current→
+      ∀ observed : BitVec 64,
+      evalHOLFinite current (h:=fun address=>Classical.propDecidable (current.memaddrs address)) test=some (.val (.word observed))→
+      observed≠0→current.clock≠0→∀ target,evaluateHOLFiniteState (decClockHOLFinite current) body=(none,target)→invariant target := by
+    intro current installed valid observed actual nonzero funded target run
+    obtain ⟨currentQ,currentR,flag,corrections,currentReady,flagFact,quotientOld,remainderOld,budgetOld,route⟩:=valid
+    have expected:=test_read current flag currentReady.flagCell
+    have activeFlag : flag=1#64:=by
+      by_contra inactive
+      rw [if_neg inactive] at expected
+      have zero : observed=0#64:=by
+        simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans expected
+      exact nonzero zero
+    subst flag
+    have entryReady : Bindings (decClockHOLFinite current) currentQ currentR 1#64 top second low:=
+      ⟨currentReady.qCell,currentReady.rCell,currentReady.flagCell,currentReady.topCell,currentReady.secondCell,currentReady.lowCell⟩
+    have expectedRun:=body_execute (decClockHOLFinite current) currentQ currentR 1#64 top second low entryReady
+    have targetEq : target=step (decClockHOLFinite current) currentQ currentR top second low:=congrArg Prod.snd (run.symm.trans expectedRun)
+    rw [targetEq]
+    have nextReady:=step_bindings (decClockHOLFinite current) currentQ currentR 1#64 top second low entryReady
+    let added : Nat:=if corrects currentQ currentR second low then 1 else 0
+    obtain ⟨quotientStep,remainderStep⟩:=step_arithmetic currentQ currentR top second low topSmall
+    have quotientNumber : (nextQ currentQ currentR second low).toNat+added=currentQ.toNat:=quotientStep
+    have remainderNumber : (nextR currentQ currentR top second low).toNat=currentR.toNat+added*top.toNat:=remainderStep
+    have budgetStep : added+stageRank (nextR currentQ currentR top second low) 1#64≤stageRank currentR 1#64:=
+      step_rank_budget currentQ currentR top second low topLarge topSmall
+    refine ⟨nextQ currentQ currentR second low,nextR currentQ currentR top second low,nextFlag currentQ currentR second low,
+      corrections+added,nextReady,?_,?_,?_,?_,?_⟩
+    · by_cases active : corrects currentQ currentR second low
+      · exact Or.inl (by simp only [nextFlag,if_pos active])
+      · exact Or.inr ⟨by simp only [nextFlag,if_neg active],by simpa only [nextQ,nextR,if_neg active] using active⟩
+    · omega
+    · rw [remainderNumber,remainderOld,Nat.add_mul]
+      omega
+    · omega
+    · by_cases active : corrects currentQ currentR second low
+      · simpa only [nextQ,nextR,if_pos active,added] using Trace.snoc route active
+      · simpa only [nextQ,nextR,if_neg active,added,Nat.add_zero] using route
+  have completed:=loop_invariant_summary source.code (ofString "vtop") test body (fun current=>body_safe.summary_full current)
+    invariant transition source post rfl initial normal
+  obtain ⟨finalQ,finalR,flag,corrections,postReady,flagFact,quotient,remainder,budget,route⟩:=completed
+  have noBreak : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,(evaluateHOLFiniteState current body).1≠some .break:=by
+    intro current
+    have summary:=body_safe.summary_full current
+    unfold LocalSummary at summary
+    exact summary.2.2.1
+  have exit:=loop_normal_exit test body noBreak source post normal
+  have expectedExit:=test_read post flag postReady.flagCell
+  have inactive : flag≠1#64:=by
+    intro active
+    rw [if_pos active] at expectedExit
+    have impossible : (0#64 : BitVec 64)=1#64:=by
+      simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using exit.symm.trans expectedExit
+    exact (by decide : (0#64 : BitVec 64)≠1#64) impossible
+  obtain ⟨zero,stopped⟩ : flag=0#64 ∧ ¬corrects finalQ finalR second low:=by
+    rcases flagFact with active|stopped
+    · exact (inactive active).elim
+    · exact stopped
+  rw [zero] at postReady
+  have bound : corrections≤2:=by
+    have upper:=stage_rank_bound r 1#64
+    have positive:=stage_rank_positive finalR
+    omega
+  have frame:=loop_frame source.code source rfl
+  rw [normal] at frame
+  exact ⟨finalQ,finalR,corrections,bound,postReady,quotient,remainder,stopped,route,frame⟩
+
+end InitECandidate.Solver.Input.UDivMod.QhatCorrection
+
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.loop_normal
+
+
+namespace InitECandidate.Solver.Input.UDivMod.QhatCorrection
+open Flapjack
+
+/-- On genuine32-bit digits, the original wrapped-word comparison is exactly
+the natural quotient-correction inequality, including the room guard. -/
+theorem corrects_iff (q r second low : BitVec 64) (qSmall : q.toNat<4294967296)
+    (secondSmall : second.toNat<4294967296) (lowSmall : low.toNat<4294967296) :
+    corrects q r second low ↔ r.toNat*4294967296+low.toNat<q.toNat*second.toNat := by
+  have productBound : q.toNat*second.toNat<2^64:=by
+    calc _≤4294967295*4294967295:=Nat.mul_le_mul (by omega) (by omega)
+         _<2^64:=by decide
+  have productNumber : (q*second).toNat=q.toNat*second.toNat:=by
+    rw [BitVec.toNat_mul,Nat.mod_eq_of_lt productBound]
+  have leftNumber (room : r.toNat<4294967296) : ((r<<<(32:Nat)) ||| low).toNat=r.toNat*4294967296+low.toNat:=by
+    have shifted : (r<<<(32:Nat)).toNat=r.toNat*4294967296:=by
+      rw [BitVec.toNat_shiftLeft,Nat.shiftLeft_eq,Nat.mod_eq_of_lt (by omega)]
+    rw [BitVec.toNat_or,shifted]
+    have joined:=Nat.two_pow_add_eq_or_of_lt (i:=32) lowSmall r.toNat
+    change r.toNat*2^32 ||| low.toNat=r.toNat*2^32+low.toNat
+    rw [Nat.mul_comm r.toNat (2^32)]
+    exact joined.symm
+  constructor
+  · intro active
+    have compared:=active.2
+    rw [leftNumber active.1,productNumber] at compared
+    exact compared
+  · intro compared
+    have room : r.toNat<4294967296:=by omega
+    exact ⟨room,by rw [leftNumber room,productNumber];exact compared⟩
+
+end InitECandidate.Solver.Input.UDivMod.QhatCorrection
+
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.Trace.preserves
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.corrects_iff
+
+
+namespace InitECandidate.Solver.Input.UDivMod.QhatCorrection
+open Flapjack
+
+/-- Starting from an upper quotient estimate, the actual enabled correction
+history ends at the exact quotient for a two-digit divisor. -/
+theorem Trace.quotient {top second low q0 r0 finalQ finalR : BitVec 64} {count : Nat}
+    (route : Trace top second low q0 r0 finalQ finalR count)
+    (topLarge : 2147483648≤top.toNat) (topSmall : top.toNat<4294967296)
+    (qSmall : q0.toNat<4294967296) (secondSmall : second.toNat<4294967296) (lowSmall : low.toNat<4294967296)
+    (initialUpper : ((q0.toNat*top.toNat+r0.toNat)*4294967296+low.toNat)/(top.toNat*4294967296+second.toNat)≤q0.toNat)
+    (stopped : ¬corrects finalQ finalR second low) :
+    finalQ.toNat=((q0.toNat*top.toNat+r0.toNat)*4294967296+low.toNat)/(top.toNat*4294967296+second.toNat) := by
+  let upperPart:=q0.toNat*top.toNat+r0.toNat
+  let divisor:=top.toNat*4294967296+second.toNat
+  let total:=upperPart*4294967296+low.toNat
+  have positive : 0<divisor:=by dsimp [divisor];omega
+  let property:=fun q r : BitVec 64=>q.toNat<4294967296 ∧ q.toNat*top.toNat+r.toNat=upperPart ∧ total/divisor≤q.toNat
+  have initial : property q0 r0:=⟨qSmall,rfl,initialUpper⟩
+  have advance : ∀ q r : BitVec 64,property q r→corrects q r second low→property (q-1#64) (r+top) := by
+    intro q r valid active
+    obtain ⟨small,conserved,lower⟩:=valid
+    obtain ⟨quotient,remainder⟩:=step_arithmetic q r top second low topSmall
+    simp only [nextQ,nextR,if_pos active,Nat.one_mul] at quotient remainder
+    have compared:=(corrects_iff q r second low small secondSmall lowSmall).mp active
+    have below : total<q.toNat*divisor:=by
+      dsimp [total,divisor]
+      rw [←conserved]
+      nlinarith [compared]
+    have quotientBelow : total/divisor<q.toNat:=(Nat.div_lt_iff_lt_mul positive).mpr below
+    refine ⟨by omega,?_,by omega⟩
+    calc (q-1#64).toNat*top.toNat+(r+top).toNat=
+          ((q-1#64).toNat+1)*top.toNat+r.toNat:=by rw [remainder];ring
+      _=upperPart:=by rw [quotient,conserved]
+  obtain ⟨finalSmall,conserved,lower⟩:=route.preserves property initial advance
+  have compared : finalQ.toNat*second.toNat≤finalR.toNat*4294967296+low.toNat:=by
+    by_contra bad
+    exact stopped ((corrects_iff finalQ finalR second low finalSmall secondSmall lowSmall).mpr (by omega))
+  have productBelow : finalQ.toNat*divisor≤total:=by
+    dsimp [total,divisor]
+    rw [←conserved]
+    nlinarith [compared]
+  have upper : finalQ.toNat≤total/divisor:=(Nat.le_div_iff_mul_le positive).mpr productBelow
+  exact Nat.le_antisymm upper lower
+
+/-- The ordinary div64by32 estimate is an upper estimate because its
+returned remainder is below the top divisor digit. -/
+theorem initial_upper (q r top second low : BitVec 64)
+    (remainderSmall : r.toNat<top.toNat) (lowSmall : low.toNat<4294967296) :
+    ((q.toNat*top.toNat+r.toNat)*4294967296+low.toNat)/(top.toNat*4294967296+second.toNat)≤q.toNat := by
+  have positive : 0<top.toNat*4294967296+second.toNat:=by omega
+  have below : (q.toNat*top.toNat+r.toNat)*4294967296+low.toNat<
+      (q.toNat+1)*(top.toNat*4294967296+second.toNat):=by
+    nlinarith [Nat.zero_le ((q.toNat+1)*second.toNat)]
+  have upper:= (Nat.div_lt_iff_lt_mul positive).mpr below
+  omega
+
+end InitECandidate.Solver.Input.UDivMod.QhatCorrection
+
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.Trace.quotient
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.initial_upper
+
+
+namespace InitECandidate.Solver.Input.UDivMod.QhatCorrection
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+
+private theorem join_number (high low : BitVec 64) (highSmall : high.toNat<4294967296) (lowSmall : low.toNat<4294967296) :
+    ((high<<<(32:Nat)) ||| low).toNat=high.toNat*4294967296+low.toNat := by
+  have shifted : (high<<<(32:Nat)).toNat=high.toNat*4294967296:=by
+    rw [BitVec.toNat_shiftLeft,Nat.shiftLeft_eq,Nat.mod_eq_of_lt (by omega)]
+  rw [BitVec.toNat_or,shifted]
+  have joined:=Nat.two_pow_add_eq_or_of_lt (i:=32) lowSmall high.toNat
+  change high.toNat*2^32 ||| low.toNat=high.toNat*2^32+low.toNat
+  rw [Nat.mul_comm high.toNat (2^32)]
+  exact joined.symm
+
+/-- The original max-digit estimate branch conserves the high two input
+digits and gives an upper quotient estimate whenever the quotient is a digit. -/
+theorem max_initial_upper (high middle low top second : BitVec 64)
+    (highSmall : high.toNat<4294967296) (middleSmall : middle.toNat<4294967296) (topSmall : top.toNat<4294967296)
+    (highAtLeast : top.toNat≤high.toNat)
+    (digitRange : (high.toNat*4294967296+middle.toNat)*4294967296+low.toNat<
+      (top.toNat*4294967296+second.toNat)*4294967296) :
+    let estimate:=((high<<<(32:Nat)) ||| middle)-(4294967295#64*top)
+    4294967295*top.toNat+estimate.toNat=high.toNat*4294967296+middle.toNat ∧
+      ((4294967295*top.toNat+estimate.toNat)*4294967296+low.toNat)/(top.toNat*4294967296+second.toNat)≤4294967295 := by
+  have joined:=join_number high middle highSmall middleSmall
+  have product : (4294967295#64*top).toNat=4294967295*top.toNat:=by
+    rw [BitVec.toNat_mul]
+    change (4294967295*top.toNat)%2^64=4294967295*top.toNat
+    rw [Nat.mod_eq_of_lt (by omega)]
+  have before : (4294967295#64*top)≤((high<<<(32:Nat)) ||| middle):=by
+    change (4294967295#64*top).toNat≤((high<<<(32:Nat)) ||| middle).toNat
+    rw [product,joined]
+    omega
+  have difference:=BitVec.toNat_sub_of_le before
+  rw [product,joined] at difference
+  have conserved : 4294967295*top.toNat+(((high<<<(32:Nat)) ||| middle)-(4294967295#64*top)).toNat=
+      high.toNat*4294967296+middle.toNat:=by omega
+  refine ⟨conserved,?_⟩
+  rw [conserved]
+  have positive : 0<top.toNat*4294967296+second.toNat:=by omega
+  have below : ((high.toNat*4294967296+middle.toNat)*4294967296+low.toNat)/(top.toNat*4294967296+second.toNat)<4294967296:=
+    (Nat.div_lt_iff_lt_mul positive).mpr (by simpa only [Nat.mul_comm] using digitRange)
+  omega
+
+/-- The actual correction loop produces the exact quotient digit and full
+remainder for the two-digit numerical case used by the Taylor denominator. -/
+theorem normal_digit (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (q r top second low : BitVec 64)
+    (ready : Bindings source q r 1#64 top second low)
+    (topLarge : 2147483648≤top.toNat) (topSmall : top.toNat<4294967296)
+    (qSmall : q.toNat<4294967296) (secondSmall : second.toNat<4294967296) (lowSmall : low.toNat<4294967296)
+    (initialUpper : ((q.toNat*top.toNat+r.toNat)*4294967296+low.toNat)/(top.toNat*4294967296+second.toNat)≤q.toNat)
+    (normal : evaluateHOLFiniteState source loop=(none,post)) :
+    ∃ finalQ finalR corrections,corrections≤2 ∧ Bindings post finalQ finalR 0#64 top second low ∧
+      finalQ.toNat=((q.toNat*top.toNat+r.toNat)*4294967296+low.toNat)/(top.toNat*4294967296+second.toNat) ∧
+      finalR.toNat*4294967296+low.toNat-finalQ.toNat*second.toNat=
+        ((q.toNat*top.toNat+r.toNat)*4294967296+low.toNat)%(top.toNat*4294967296+second.toNat) ∧
+      finalR.toNat*4294967296+low.toNat-finalQ.toNat*second.toNat<top.toNat*4294967296+second.toNat ∧
+      LocalEffects.erase post=LocalEffects.erase source := by
+  obtain ⟨finalQ,finalR,corrections,bound,postReady,quotientHistory,remainderHistory,stopped,route,frame⟩:=
+    loop_normal source post q r top second low ready topLarge topSmall normal
+  have quotient:=route.quotient topLarge topSmall qSmall secondSmall lowSmall initialUpper stopped
+  have finalSmall : finalQ.toNat<4294967296:=by omega
+  have compared : finalQ.toNat*second.toNat≤finalR.toNat*4294967296+low.toNat:=by
+    by_contra bad
+    exact stopped ((corrects_iff finalQ finalR second low finalSmall secondSmall lowSmall).mpr (by omega))
+  have conserved : finalQ.toNat*top.toNat+finalR.toNat=q.toNat*top.toNat+r.toNat:=by
+    calc _=(finalQ.toNat+corrections)*top.toNat+r.toNat:=by rw [remainderHistory];ring
+         _=q.toNat*top.toNat+r.toNat:=by rw [quotientHistory]
+  let divisor:=top.toNat*4294967296+second.toNat
+  let total:=(q.toNat*top.toNat+r.toNat)*4294967296+low.toNat
+  let remaining:=finalR.toNat*4294967296+low.toNat-finalQ.toNat*second.toNat
+  have positive : 0<divisor:=by dsimp [divisor];omega
+  have addition : finalQ.toNat*divisor+remaining=total:=by
+    have balance:=Nat.sub_add_cancel compared
+    dsimp [remaining,divisor,total]
+    rw [←conserved]
+    nlinarith [balance]
+  have standard:=Nat.mod_add_div total divisor
+  change finalQ.toNat=total/divisor at quotient
+  rw [←quotient] at standard
+  have remainder : remaining=total%divisor:=by nlinarith [addition,standard]
+  have remainderBound : remaining<divisor:=by rw [remainder];exact Nat.mod_lt _ positive
+  exact ⟨finalQ,finalR,corrections,bound,postReady,quotient,remainder,remainderBound,frame⟩
+
+end InitECandidate.Solver.Input.UDivMod.QhatCorrection
+
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.max_initial_upper
+#print axioms InitECandidate.Solver.Input.UDivMod.QhatCorrection.normal_digit

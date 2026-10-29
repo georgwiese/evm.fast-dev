@@ -1,5 +1,7 @@
 import InitECandidate.Solver.Mpt.CurrentIndexedLoop
 import InitECandidate.Solver.Mpt.IndexedPrefixCost
+import InitECandidate.Solver.Mpt.CurrentTrieRoot
+import InitECandidate.Solver.Input.HeapScopeCost
 
 namespace InitECandidate.Solver.Mpt.CurrentIndexed
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -33,7 +35,9 @@ theorem Entry.setup {source current : PanSemStateFiniteExact 64 Guest.HostMemory
     (data : Entry source array count out limit slices) (execution : CallPrefix.Execution source Indexed.actions current) :
     ∃ cutoff,Nonempty (LoopModel current data.heap array count cutoff limit slices) ∧
       current.clock=source.clock-3 ∧
-      (∀ query : BitVec 64,query.toNat<data.heap.toNat→current.memory query=source.memory query) ∧ HeapGlobals source current := by
+      (∀ query : BitVec 64,query.toNat<data.heap.toNat→current.memory query=source.memory query) ∧ HeapGlobals source current ∧
+      current.locals.lookup (ofString "out")=source.locals.lookup (ofString "out") ∧
+      current.locals.lookup (ofString "mark")=some (.val (.word data.heap)) := by
   obtain ⟨arena,currentEq⟩:=Indexed.setup_from_execution source current data.heap data.installed data.heapCell data.domain data.heapArena data.heapAligned execution
   rw [currentEq]
   let ready:=Indexed.loopEntry source data.heap
@@ -63,7 +67,8 @@ theorem Entry.setup {source current : PanSemStateFiniteExact 64 Guest.HostMemory
     paths:=TrieWalk.Graph.PathBytes.empty ready.memory ready.memaddrs ready.be
     pathRegions:=TrieWalk.Graph.PathRegions.empty ready.memory ready.memaddrs cutoff cutoff
     separated:=TrieWalk.Graph.PathSeparated.empty ready.memory ready.memaddrs }
-  exact ⟨cutoff,⟨model⟩,Indexed.loop_entry_clock source data.heap,older,globals⟩
+  exact ⟨cutoff,⟨model⟩,Indexed.loop_entry_clock source data.heap,older,globals,
+    saved "out" (by decide) (by decide) (by decide),Indexed.loop_entry_mark source data.heap⟩
 
 /-- Every builder outcome stops in its complete prefix allowance or reaches
 the actual initialized loop with the same original continuation. -/
@@ -75,12 +80,14 @@ theorem to_loop {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {arra
       ∃ current inner cutoff,Nonempty (LoopModel current data.heap array count cutoff limit slices) ∧
         current.clock≤source.clock ∧ source.clock-current.clock≤4 ∧ post.clock=inner.clock ∧
         evaluateHOLFiniteState current Indexed.loopAndAfter=(outcome,inner) ∧
-        (∀ query : BitVec 64,query.toNat<data.heap.toNat→current.memory query=source.memory query) ∧ HeapGlobals source current := by
+        (∀ query : BitVec 64,query.toNat<data.heap.toNat→current.memory query=source.memory query) ∧ HeapGlobals source current ∧
+        current.locals.lookup (ofString "out")=source.locals.lookup (ofString "out") ∧
+        current.locals.lookup (ofString "mark")=some (.val (.word data.heap)) := by
   rcases Indexed.prefix_trace source post data.installed outcome run with stopped|reached
   · exact Or.inl stopped
   · obtain ⟨current,inner,execution,forward,price,endpoint,remaining⟩:=reached
-    obtain ⟨cutoff,model,clock,memory,globals⟩:=data.setup execution
-    exact Or.inr ⟨current,inner,cutoff,model,forward,price,endpoint,remaining,memory,globals⟩
+    obtain ⟨cutoff,model,clock,memory,globals,outCell,markCell⟩:=data.setup execution
+    exact Or.inr ⟨current,inner,cutoff,model,forward,price,endpoint,remaining,memory,globals,outCell,markCell⟩
 
 /-- Complete prefix and repeated loop, priced only through its actual normal
 continuation. The final root calculation remains an explicit suffix. -/
@@ -92,10 +99,11 @@ theorem to_after_loop {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
       (∃ model : LoopModel current data.heap array count cutoff limit slices,model.index.toNat=count) ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤36827*count+4 ∧ post.clock=inner.clock ∧
       evaluateHOLFiniteState current Indexed.afterLoop=(outcome,inner) ∧ HeapGlobals source current ∧
-      (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<data.heap.toNat→current.memory query=source.memory query) := by
+      (∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<data.heap.toNat→current.memory query=source.memory query) ∧
+      current.locals.lookup (ofString "out")=some (.val (.word out)) ∧ current.locals.lookup (ofString "mark")=some (.val (.word data.heap)) := by
   rcases to_loop data outcome run with stopped|reached
   · exact Or.inl (by have price:=stopped.1; omega)
-  · obtain ⟨entered,inner,cutoff,⟨model⟩,forward,price,endpoint,remaining,older,globals⟩:=reached
+  · obtain ⟨entered,inner,cutoff,⟨model⟩,forward,price,endpoint,remaining,older,globals,outEntered,markEntered⟩:=reached
     rw [Indexed.loop_shape,evaluateHOLFiniteState_seq_line780] at remaining
     have loopPrice:=loop_cost model
     have loopForward:=evaluateHOLFiniteState_clock_le entered (.while Indexed.test Indexed.loopBody)
@@ -108,14 +116,95 @@ theorem to_after_loop {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
       obtain ⟨next,finished,grows,nextGlobals,nextMemory⟩:=loop_normal model computed
       exact Or.inr ⟨current,inner,cutoff,⟨next,finished⟩,Nat.le_trans loopForward forward,by omega,endpoint,remaining,
         fun name other=>(nextGlobals name other).trans (globals name other),
-        fun query above before=>(nextMemory query above before).trans (older query before)⟩
+        (fun query above before=>(nextMemory query above before).trans (older query before)),
+        (Indexed.loop_saved entered current (ofString "out") (by decide) (by decide) computed).trans (outEntered.trans data.outCell),
+        (Indexed.loop_saved entered current (ofString "mark") (by decide) (by decide) computed).trans markEntered⟩
     | some result=>
       have clocks:=congrArg (fun output=>output.2.clock) remaining
       change current.clock=inner.clock at clocks
       exact Or.inl (by rw [endpoint,←clocks]; omega)
+
+/-- Earlier startup supplies the actual empty-root buffer global; the
+payload header supplies its owned output. These physical facts are separate
+from the fresh-row entry and contain no successful future call premise. -/
+structure RootInputs (source : PanSemStateFiniteExact 64 Guest.HostMemory) (out empty : BitVec 64) : Prop where
+  arena : CurrentStartup.ArenaState source
+  emptyGlobal : source.globals.lookup (ofString "empty_trie_root")=some (.val (.word empty))
+  emptyArena : AllocatedBytes.Arena empty 32
+  outArena : AllocatedBytes.Arena out 32
+
+def rootArguments : List (ExpHOL 64):=[localVar "m",localVar "out"]
+def rootCall : ProgHOL 64:=.call (some (none,none)) (ofString "mpt_root") rootArguments
+def releaseArguments : List (ExpHOL 64):=[localVar "mark"]
+def releaseCall : ProgHOL 64:=.call (some (none,none)) (ofString "heap_release") releaseArguments
+
+set_option maxRecDepth 100000 in
+theorem after_loop_shape : Indexed.afterLoop=.seq rootCall (.seq releaseCall (.return (.const 0#64))) := by
+  simp only [Indexed.afterLoop,Indexed.loopAndAfter,Indexed.afterNew,Indexed.afterMark,Indexed.body,Guest.guestFn_build_mpt_indexed,
+    progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,rootCall,rootArguments,releaseCall,releaseArguments,localVar]
+
+/-- The real root call, real heap release and final return cost at most
+seven source ticks, including every stopped/short-clock outcome. -/
+theorem after_loop_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {m array out empty : BitVec 64}
+    {count cutoff limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
+    (model : LoopModel source m array count cutoff limit slices) (roots : RootInputs source out empty)
+    (outCell : source.locals.lookup (ofString "out")=some (.val (.word out))) :
+    source.clock-(evaluateHOLFiniteState source Indexed.afterLoop).2.clock≤7 := by
+  obtain ⟨callee,called,mLocal,outLocal⟩:=word_pair_environment source.code.lookup (ofString "mpt_root") (ofString "m") (ofString "out")
+    CurrentTrieRoot.Root.body .one m out (by decide) (CurrentTrieRoot.Root.original_code source.code model.installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) rootArguments=some [.val (.word m),.val (.word out)]:=by
+    simp [rootArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,model.mCell,outCell]
+  have mapped : source.memaddrs m:=by
+    simpa only [byteAddress,BitVec.add_zero] using AllocatedBytes.word_mapped source m 16 0 model.domain model.headerArena (by decide) model.headerAligned (by decide)
+  let entry : CurrentTrieRoot.Root.Entry (callEntryStateHOLFinite source callee) m out empty model.root cutoff model.heap.toNat:={
+    arena:=⟨roots.arena.scratch,roots.arena.frame,roots.arena.domain,roots.arena.code⟩
+    mCell:=mLocal,outCell:=outLocal,headerMapped:=mapped,rootStored:=model.rootStored
+    emptyGlobal:=roots.emptyGlobal,emptyArena:=roots.emptyArena,outArena:=roots.outArena
+    graph:=model.graph,member:=model.member,regions:=model.regions,uncached:=model.rootUncached }
+  have price:=ClockCost.call_current source (some none) (ofString "mpt_root") rootArguments _ CurrentTrieRoot.Root.body callee .one 5 args called
+    (CurrentTrieRoot.Root.body_cost entry)
+  have released : ClockCost.Bound source.code releaseCall 1:=HeapScope.release_call_cost source.code model.installed (some none) releaseArguments
+  have tail : ClockCost.Bound source.code (.seq releaseCall (.return (.const 0#64))) 1:=by
+    exact ClockCost.sequence source.code _ _ 1 0 released (ClockCost.returned source.code _)
+  rw [after_loop_shape]
+  exact ClockCost.sequence_current source rootCall _ 6 1 price tail
+
+/-- Complete unchanged current266, from actual physical rows and startup
+buffers. Prefix, repeated loop, root calculation and heap release are all
+included; no helper success or final normal return is assumed. -/
+theorem body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array out empty : BitVec 64}
+    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
+    (data : Entry source array count out limit slices) (roots : RootInputs source out empty) :
+    source.clock-(evaluateHOLFiniteState source Indexed.body).2.clock≤36827*count+11 := by
+  let output:=evaluateHOLFiniteState source Indexed.body
+  rcases to_after_loop data output.1 rfl with stopped|reached
+  · exact Nat.le_trans stopped (by omega)
+  · obtain ⟨current,inner,cutoff,⟨model,finished⟩,forward,price,endpoint,remaining,globals,older,outCell,markCell⟩:=reached
+    have currentRoots : RootInputs current out empty:={
+      arena:=⟨(globals _ (by decide)).trans roots.arena.scratch,(globals _ (by decide)).trans roots.arena.frame,model.domain,model.installed⟩
+      emptyGlobal:=(globals _ (by decide)).trans roots.emptyGlobal,emptyArena:=roots.emptyArena,outArena:=roots.outArena }
+    have suffix:=after_loop_cost model currentRoots outCell
+    have nextClock:=evaluateHOLFiniteState_clock_le current Indexed.afterLoop
+    rw [remaining] at suffix nextClock
+    change current.clock-inner.clock≤7 at suffix
+    change inner.clock≤current.clock at nextClock
+    change source.clock-output.2.clock≤36827*count+11
+    have clocks : output.2.clock=inner.clock:=endpoint
+    rw [clocks]
+    omega
+
+theorem uniform_body_cost {source : PanSemStateFiniteExact 64 Guest.HostMemory} {array out empty : BitVec 64}
+    {count limit : Nat} {slices : Nat→BitVec 64×BitVec 64}
+    (data : Entry source array count out limit slices) (roots : RootInputs source out empty) (bounded : count≤12582752) :
+    source.clock-(evaluateHOLFiniteState source Indexed.body).2.clock≤463385007915 := by
+  have price:=body_cost data roots
+  omega
 
 end InitECandidate.Solver.Mpt.CurrentIndexed
 
 #print axioms InitECandidate.Solver.Mpt.CurrentIndexed.Entry.setup
 #print axioms InitECandidate.Solver.Mpt.CurrentIndexed.to_loop
 #print axioms InitECandidate.Solver.Mpt.CurrentIndexed.to_after_loop
+#print axioms InitECandidate.Solver.Mpt.CurrentIndexed.after_loop_cost
+#print axioms InitECandidate.Solver.Mpt.CurrentIndexed.body_cost
+#print axioms InitECandidate.Solver.Mpt.CurrentIndexed.uniform_body_cost

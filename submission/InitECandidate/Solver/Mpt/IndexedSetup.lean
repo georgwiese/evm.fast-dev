@@ -65,6 +65,10 @@ theorem loop_entry_locals (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
       (loopEntry source heap).locals.lookup (ofString "i")=some (.val (.word 0#64)) := by
   simp [loopEntry,newEntry,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
 
+theorem loop_entry_mark (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) :
+    (loopEntry source heap).locals.lookup (ofString "mark")=some (.val (.word heap)) := by
+  simp [loopEntry,newEntry,marked,Input.CallPrefix.heapMarked,NewTrie.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+
 theorem loop_entry_saved (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) (key : MlS)
     (otherMark : ofString "mark"≠key) (otherM : ofString "m"≠key) (otherI : ofString "i"≠key) :
     (loopEntry source heap).locals.lookup key=source.locals.lookup key := by
@@ -89,6 +93,7 @@ end InitECandidate.Solver.Mpt.Indexed
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_cells
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_older
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_locals
+#print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_mark
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_saved
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_heap
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_entry_globals

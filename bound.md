@@ -1707,3 +1707,29 @@ Printed axioms permitted only. Index8698modules/17840facts; inventory8743/
 replacement closure0/fixed files unchanged. Claim infinity; no global finite
 target K/full verification. Usage42%weekly/0resetcredits. Next: actual complete
 indexed-builder/root caller, remaining main and uniform target steps.
+
+
+## Complete unchanged indexed builder allowance, including its final root
+
+The unchanged build_mpt_indexed266 now costs≤36827*count+11body source
+ticks on every outcome, from its actual row/heap entry and owned startup/output
+buffers. At count≤12582752this is463385007915body ticks. The final root call,
+heap release and return cost≤7; the constructor/prefix and complete repeated
+loop are included. The original output local and heap mark are derived from
+the real prefix and preserved by the actual loop syntax and normal exit.
+
+This is a complete local helper bound, not yet a whole-main bound. Main must
+still supply the actual empty_trie_root global and output-buffer contract at
+its first transaction-trie call, then retain its genuine normal continuation.
+The root proof already excludes normal returns from uncached nonempty roots;
+showing that positive row counts actually return nonzero roots is an additional
+reachability fact still to prove, before using it to prune later main work.
+
+Validation: current-indexed-whole-cost-v3.log PASS1621jobs;
+current-indexed-whole-regression-v1.log PASS3084jobs, including actual main
+transaction data and payload-to-trie regression. Printed axioms permitted
+only. Index8698modules/17846facts; inventory8743/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verification.
+Usage43%weekly/0resetcredits. Next: actual startup empty-root buffer/main
+caller, normal builder reachability and remaining main, then uniform target
+steps. Five historical RLP WIPs remain untouched/unclaimed.

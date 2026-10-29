@@ -21,6 +21,21 @@ theorem loop_body_limit : Input.LocalPrefix (ofString "n") loopBody := by
   apply Input.LocalPrefix.decCall _ _ _ _ (by decide)
   exact Input.LocalPrefix.seq (.call none _ _ (by simp)) (.assign _ _ (by decide))
 
+theorem loop_body_preserves (key : MlS) (notIndex : key≠ofString "i") (notLength : key≠ofString "klen") :
+    Input.LocalPrefix key loopBody := by
+  rw [loop_body_shape]
+  exact Input.LocalPrefix.decCall _ _ _ _ notLength
+    (Input.LocalPrefix.seq (.call none _ _ (by simp)) (.assign _ _ notIndex))
+
+theorem loop_saved (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (key : MlS)
+    (notIndex : key≠ofString "i") (notLength : key≠ofString "klen")
+    (normal : evaluateHOLFiniteState source (.while test loopBody)=(none,target)) :
+    target.locals.lookup key=source.locals.lookup key := by
+  have summary:=(Input.LocalPrefix.loop test (loop_body_preserves key notIndex notLength)).summary_full source
+  unfold Input.LocalSummary at summary
+  rw [normal] at summary
+  exact summary.1 rfl
+
 theorem loop_body_advance : Input.CounterFlow.Advances (ofString "i") 1 loopBody := by
   rw [loop_body_shape]
   apply Input.CounterFlow.scoped_call (ofString "i") "klen" .one _ _ _ 1 (by decide)
@@ -38,5 +53,7 @@ end InitECandidate.Solver.Mpt.Indexed
 
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_body_shape
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_body_limit
+#print axioms InitECandidate.Solver.Mpt.Indexed.loop_body_preserves
+#print axioms InitECandidate.Solver.Mpt.Indexed.loop_saved
 #print axioms InitECandidate.Solver.Mpt.Indexed.loop_body_advance
 #print axioms InitECandidate.Solver.Mpt.Indexed.test_read

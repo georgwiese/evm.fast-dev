@@ -24,13 +24,8 @@ theorem Data.with_globals {input : Guest.InputBlob} {source : PanSemStateFiniteE
   obtain ⟨heap,cell,lower,upper,aligned⟩:=data.heap
   have nextHeap : NormalHeapEffects.AtLeast (boundary+32) {source with globals:=globals} :=
     ⟨heap,(kept _ (by simp [dataGlobals])).trans cell,lower,upper,aligned⟩
-  obtain ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,nodeImage,codeImage,headerImage⟩:=data.witnesses
-  have memory (query : BitVec 64) (_low : 2701134824≤query.toNat) (_high : query.toNat<boundary) :
-      ({source with globals:=globals} : PanSemStateFiniteExact 64 Guest.HostMemory).memory query=source.memory query := rfl
-  exact ⟨arena,data.little,environment,(kept _ (by simp [dataGlobals])).trans data.mptHash,nextHeap,data.siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
-    data.payloadCell,data.gasCell,data.gasBound,data.payload.of_interval (by intros; rfl) nextHeap,
-    data.copied.of_interval boundary (by have before:=data.recordInside.2; omega) rfl rfl memory,nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
-    nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩
+  exact data.of_interval arena data.little environment (kept _ (by simp [dataGlobals]) |>.trans data.mptHash) nextHeap data.siLocal
+    (by intros; rfl)
 
 /-- An observed normal assignment to an unrelated global preserves the
 complete physical input contract and the original SI binding. -/

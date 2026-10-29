@@ -4154,3 +4154,31 @@ Claim infinity; no global finite target K or full verification.
 Usage32%weekly/0resetcredits. Next: retain the decoded SI parent field used
 by the remaining stores, complete the root buffers/header fields and connect
 actual block length, indexed tries, remaining main and uniform target steps.
+
+
+## Complete actual header prefix and all physical header words
+
+Retained the decoder's real SI+24parent-root pointer through current main.
+Consolidated all decoded input transports into Data.of_interval, replacing
+repeated header/database/global/state-return reconstruction with that common
+checked memory-frame theorem; the stronger Data contract uses fewer lines.
+
+The current continuing payload_header prefix now derives all eight actual
+allocations, all seven auxiliary buffers, all header stores and the genuine
+block_rlp_length caller state. Every allocator request's room comes from its
+own observed normal return. The actual buffers occupy exactly424bytes from
+the incoming aligned heap. All31final header words are checked, including
+the genuine base-fee limbs, borrowed input pointers and fresh output pointers.
+The decoded/copied images derive all borrowed raw, parent and bounded extra
+byte spans, plus input/transaction-array/payload-cell separation before the
+real temporary frontier. No later length/trie/hash result is assumed.
+
+Validation: current-payload-header-spans-v1.log PASS2715jobs including actual
+main transaction/data/state-return contracts and the complete header chain.
+Printed axioms permitted only. Index8650modules/17647facts; inventory8694/
+replacement closure0/fixed files unchanged. Incremental policy PASS65484
+entries/2485325271bytes. No global finite target K/full verification; claim
+infinity. Usage33%weekly/0resetcredits. Next: turn these physical header
+facts into actual block-length cost/return contracts, then indexed tries,
+remaining main and the uniform target-step theorem. Existing older encoder
+helpers still have pre-rebase import/allocator-premise issues to port.

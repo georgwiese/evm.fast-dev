@@ -31,17 +31,8 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
   have environment : CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64:=
     ⟨currentArena.code,currentArena.domain,hashes.1.trans data.keccak.stateGlobal,hashes.2.1.trans data.keccak.padGlobal,
       data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
-  obtain ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,nodeImage,codeImage,headerImage⟩:=data.witnesses
-  have interval (query : BitVec 64) (_lower : 2701134824≤query.toNat) (upper : query.toNat<boundary) : current.memory query=caller.memory query:=frame.memory query (by omega)
-  have siFrame : current.memory si=caller.memory si:=frame.memory si (by have before:=nodeImage.siBefore; omega)
-  have gasNumber : (record+88#64).toNat=record.toNat+88:=byteAddress_toNat record 88 (by have upper:=data.recordArena.upper; omega)
-  have gasFrame : current.memory (record+88#64)=caller.memory (record+88#64):=frame.memory _ (by rw [gasNumber]; have before:=data.recordInside.2; omega)
-  exact ⟨currentArena,little,environment,hashes.2.2.trans data.mptHash,heapNow,data.siLocal,data.siArena,data.siAligned,
-    data.recordArena,data.recordAligned,data.recordInside,siFrame.trans data.payloadCell,gasFrame.trans data.gasCell,data.gasBound,
-    data.payload.of_interval (fun query lower upper=>frame.memory query (by omega)) heapNow,
-    data.copied.of_interval boundary (by have before:=data.recordInside.2; omega) (currentArena.domain.trans data.arena.domain.symm) (little.trans data.little.symm) interval,
-    nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
-    nodeImage.of_interval (by decide) interval,codeImage.of_interval (by decide) interval,headerImage.of_interval (by decide) interval⟩
+  exact data.of_interval currentArena little environment (hashes.2.2.trans data.mptHash) heapNow data.siLocal
+    (fun query low high=>frame.memory query (by omega))
 
 /-- Main's actual complete state-init prefix now resumes with retained
 physical inputs as well as the same original continued execution. -/

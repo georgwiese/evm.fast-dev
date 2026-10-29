@@ -29,21 +29,9 @@ theorem after_headers_data {input : Guest.InputBlob} {source target : PanSemStat
     ⟨nextHeap,returned.context.heapCell,by have h:=returned.heapAfter; omega,returned.context.heapBound,returned.context.heapAligned⟩
   have siLocal : ready.locals.lookup (ofString "si")=some (.val (.word si)) :=
     (CallNormal.continuation_lookup_other source target "vh" "si" _ (by decide)).trans data.siLocal
-  obtain ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,nodeImage,codeImage,headerImage⟩:=data.witnesses
-  have memory (query : BitVec 64) (low : 2701134824≤query.toNat) (high : query.toNat<boundary) : ready.memory query=source.memory query :=
-    returned.input.words query low high
-  have siFrame : ready.memory si=source.memory si := memory si nodeImage.siLower (by have h:=nodeImage.siBefore; omega)
-  have gasNumber : (record+88#64).toNat=record.toNat+88 := byteAddress_toNat record 88 (by have h:=data.recordArena.upper; omega)
-  have gasFrame : ready.memory (record+88#64)=source.memory (record+88#64) := by
-    apply memory
-    · rw [gasNumber]; have h:=data.recordInside.1; omega
-    · rw [gasNumber]; have h:=data.recordInside.2; omega
-  exact ⟨arena,little,environment,(returned.globals (ofString "mpt_hash_scratch") (by decide)).trans data.mptHash,nextHeapData,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
-    siFrame.trans data.payloadCell,gasFrame.trans data.gasCell,data.gasBound,
-    data.payload.of_interval (fun query lower upper=>memory query (Nat.le_trans data.recordInside.1 lower) upper) nextHeapData,
-    data.copied.of_interval boundary (by have before:=data.recordInside.2; omega) (arena.domain.trans data.arena.domain.symm) (little.trans data.little.symm) memory,
-    nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
-    nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩
+  exact data.of_interval arena little environment
+    ((returned.globals (ofString "mpt_hash_scratch") (by decide)).trans data.mptHash) nextHeapData siLocal
+    (fun query low high=>returned.input.words query low high)
 
 /-- The actual reached after-header continuation has main's full physical
 inputs. Both the validator's paid clock and the final original lexical

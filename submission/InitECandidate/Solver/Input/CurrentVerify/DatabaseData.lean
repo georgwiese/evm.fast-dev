@@ -30,21 +30,8 @@ theorem after_database_data {input : Guest.InputBlob} {source target : PanSemSta
   obtain ⟨heap,heapCell,heapLower,heapUpper,heapAligned⟩ := returned.heap
   have heap : NormalHeapEffects.AtLeast (boundary+32) ready :=
     ⟨heap,heapCell,by have := returned.tableAfter; change upper≤table.toNat at this; omega,heapUpper,heapAligned⟩
-  obtain ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,nodeImage,codeImage,headerImage⟩ := data.witnesses
-  have memory (query : BitVec 64) (low : 2701134824≤query.toNat) (high : query.toNat<boundary) : ready.memory query=source.memory query :=
-    returned.input.words query low (by change query.toNat<upper; omega)
-  have siFrame : ready.memory si=source.memory si := memory si nodeImage.siLower (by have := nodeImage.siBefore; omega)
-  have gasNumber : (record+88#64).toNat=record.toNat+88 := byteAddress_toNat record 88 (by have := data.recordArena.upper; omega)
-  have gasFrame : ready.memory (record+88#64)=source.memory (record+88#64) := by
-    apply memory
-    · rw [gasNumber]; have := data.recordInside.1; omega
-    · rw [gasNumber]; have := data.recordInside.2; omega
-  exact ⟨arena,returned.little,environment,returned.outCell,heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
-    siFrame.trans data.payloadCell,gasFrame.trans data.gasCell,data.gasBound,
-    data.payload.of_interval (fun query lower upper=>memory query (Nat.le_trans data.recordInside.1 lower) upper) heap,
-    data.copied.of_interval boundary (by have before:=data.recordInside.2; omega) (arena.domain.trans data.arena.domain.symm) (returned.little.trans data.little.symm) memory,
-    nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
-    nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩
+  exact data.of_interval arena returned.little environment returned.outCell heap siLocal
+    (fun query low high=>returned.input.words query low (by change query.toNat<upper; omega))
 
 end InitECandidate.Solver.Input.CurrentVerify
 

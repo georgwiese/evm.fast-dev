@@ -50,9 +50,10 @@ The request encoder receives the real five-list image, with nonwrapping sizes
 and owned input slices before its incoming heap. Each actual iteration costs
 ≤(its encoded bytes)/8+10source ticks (uniformly31456889). Actual normal
 iterations construct the next complete model; the whole original encoder
-costs≤157284452body source ticks on every outcome. The whole normal returned
-array/caller connection, request hashes, remaining main, uniform target
-composition, dominant-slack review and final cleanup remain open.
+costs≤157284452body source ticks on every outcome. Its actual normal return
+supplies the real count≤5, owned rows, checked heap and complete earlier-memory
+frame. The actual main caller connection, request hashes, remaining main,
+uniform target composition, dominant-slack review and final cleanup remain open.
 
 ## Earlier checked milestones, in order
 
@@ -2115,3 +2116,27 @@ fixed files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage49%weekly/0resetcredits. Next: complete normal loop exit/returned
 array and actual main caller frame, requests SHA/BAL and remaining main, formal
 target composition, dominant-slack review and final cleanup.
+
+## Complete actual encoder normal return and physical rows for hashing
+
+The real normal loop exit has visited all five types, has the actual emitted
+count≤5 and initialized row prefix, and retains monotone checked heap,
+nonheap globals and all memory before its original array. The original tuple
+return is read from those actual arr/n bindings. Real setup/loop/return traces
+now derive the full encode_execution_requests normal result: returned(array,
+count), physical owned rows and bounded/aligned current heap, with every older
+caller memory cell and other global retained through the original scopes.
+
+Returned exposes this physical result independently of retired loop locals,
+and transports it through the actual caller restoration. Its blobs have real
+mapped extents and lengths1..251655057, entirely before the returned heap.
+No future hash or main success is supplied. The complete encoder's all-outcome
+source allowance remains157284452body ticks; target steps remain open.
+
+Validation: current-requests-body-normal-v1.log PASS2709jobs; permitted printed
+axioms only. Index8700modules/18016facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage49%weekly/0resetcredits. Next: retain the actual post-header heap
+frontier through the withdrawal/root prefix (needed to frame header buffers
+past requests), actual main encoder caller/requests SHA/BAL, remaining main,
+formal target composition, dominant-slack review and cleanup.

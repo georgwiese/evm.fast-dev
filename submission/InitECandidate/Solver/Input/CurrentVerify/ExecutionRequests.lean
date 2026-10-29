@@ -1303,6 +1303,119 @@ theorem body_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 
     change source.clock-output.2.clock≤157284452
     omega
 
+/-- The actual normal loop exit has visited all five types and contains
+exactly its emitted row prefix. Heap growth, other globals and all earlier
+memory are derived from those same normal iterations. -/
+theorem LoopModel.loop_normal {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts)
+    (normal : evaluateHOLFiniteState source (.while loopTest iterationBody)=(none,post)) :
+    ∃ final : LoopModel input post pointer rq array start size counts,final.index=5 ∧ model.heap.toNat≤final.heap.toNat ∧
+      HeapGlobals source post ∧ ∀ query : BitVec 64,query.toNat<array.toNat→ post.memory query=source.memory query := by
+  let invariant:=fun current : PanSemStateFiniteExact 64 Guest.HostMemory=>∃ live : LoopModel input current pointer rq array start size counts,
+    model.heap.toNat≤live.heap.toNat ∧ HeapGlobals source current ∧
+    ∀ query : BitVec 64,query.toNat<array.toNat→ current.memory query=source.memory query
+  have initial : invariant source:=⟨model,Nat.le_refl _,fun key other=>rfl,fun query before=>rfl⟩
+  have step : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→ invariant current→ ∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) loopTest=some (.val (.word word))→
+      word≠0#64→ current.clock≠0→ ∀ target,evaluateHOLFiniteState (decClockHOLFinite current) iterationBody=(none,target)→ invariant target:=by
+    intro current codeEq valid word read nonzero funded target bodyRun
+    obtain ⟨live,priorGrowth,globals,memory⟩:=valid
+    obtain ⟨next,indexEq,grows,nextGlobals,nextMemory⟩:=(live.clocked (current.clock-1)).iteration_normal (live.active_of_test word read nonzero) bodyRun
+    exact ⟨next,Nat.le_trans priorGrowth grows,fun key other=>(nextGlobals key other).trans (globals key other),
+      fun query before=>(nextMemory query before).trans (memory query before)⟩
+  obtain ⟨final,grows,globals,memory⟩:=loop_invariant_no_control source.code loopTest iterationBody
+    (fun current=>(iteration_request_local.summary_full current).2.2) invariant step source post rfl initial normal
+  have exited:=loop_normal_exit loopTest iterationBody (fun current=>(iteration_request_local.summary_full current).2.2.1) source post normal
+  have expected:=final.test_read
+  have finished : final.index=5:=by
+    by_cases active : final.index<5
+    · rw [if_pos active] at expected
+      have impossible : (0#64 : BitVec 64)=1#64:=by
+        simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using exited.symm.trans expected
+      exact False.elim ((by decide : (0#64 : BitVec 64)≠1#64) impossible)
+    · have bounded:=final.indexBound
+      omega
+  exact ⟨final,finished,grows,globals,memory⟩
+
+/-- Physical result of the actual encoder, without its retired local
+loop variables. This is the input image needed by request hashing. -/
+structure Returned (source : PanSemStateFiniteExact 64 Guest.HostMemory) (array heap : BitVec 64)
+    (count : Nat) (slices : Nat→BitVec 64×BitVec 64) : Prop where
+  countBound : count≤5
+  arrayArena : AllocatedBytes.Arena array 80
+  arrayAligned : array.toNat%8=0
+  arrayBefore : array.toNat+80≤heap.toNat
+  heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+  heapBound : heap.toNat≤2952790016
+  heapAligned : heap.toNat%8=0
+  rows : ∀ row<count,source.memory (array+BitVec.ofNat 64 (16*row))=.word (slices row).1 ∧
+    source.memory (array+BitVec.ofNat 64 (16*row+8))=.word (slices row).2 ∧ EncodedSlice array heap (slices row).1 (slices row).2
+
+theorem Returned.of_frame {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {array heap : BitVec 64}
+    {count : Nat} {slices : Nat→BitVec 64×BitVec 64} (data : Returned source array heap count slices)
+    (frame : LocalEffects.erase target=LocalEffects.erase source) : Returned target array heap count slices := by
+  have memory:=LocalEffects.memory_of_erase source target frame
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  change target.globals=source.globals at globals
+  refine ⟨data.countBound,data.arrayArena,data.arrayAligned,data.arrayBefore,by rw [globals]; exact data.heapCell,data.heapBound,data.heapAligned,?_⟩
+  intro row inside
+  obtain ⟨pointerCell,lengthCell,bounds⟩:=data.rows row inside
+  exact ⟨(congrFun memory _).trans pointerCell,(congrFun memory _).trans lengthCell,bounds⟩
+
+theorem LoopModel.returned {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq array : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (model : LoopModel input source pointer rq array start size counts) (finished : model.index=5) :
+    Returned source array model.heap model.emitted model.slices :=
+  ⟨by have bounded:=model.emittedBound; omega,model.arrayArena,model.arrayAligned,model.arrayBefore,
+    model.heapCell,model.heapBound,model.heapAligned,model.rows⟩
+
+theorem setup_request_local : LocalPrefix (ofString "rq") (CallPrefix.program setupActions .skip) := by
+  unfold setupActions CallPrefix.program
+  exact .decCall (ofString "arr") .one (ofString "alloc") setupArguments (by decide)
+    (.dec (ofString "n") .one (.const 0#64) (by decide) (.dec (ofString "i") .one (.const 0#64) (by decide) .skip))
+
+/-- The true normal whole encoder returns its actual array/count tuple,
+owned emitted rows and checked heap. All preceding caller memory and other
+globals survive this same execution; no hash return is assumed. -/
+theorem body_normal {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer rq heap : BitVec 64} {start size : Nat} {counts : Nat→BitVec 64}
+    (entry : Entry input source pointer rq heap start size counts) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ count nextHeap slices,value=.rStruct [.val (.word heap),.val (.word (BitVec.ofNat 64 count))] ∧
+      Returned post heap nextHeap count slices ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,query.toNat<heap.toNat→ post.memory query=source.memory query := by
+  have never : NoReturn.Never (CallPrefix.program setupActions .skip):=by
+    intro F current returned
+    exact (setup_request_local.summary_full current).2.1 returned
+  have expanded:=normal
+  rw [setup_shape] at expanded
+  obtain ⟨current,inner,execution,tailRun,clock,metadata⟩:=CallPrefix.normal_frame_trace source post setupActions requestsLoopAndReturn value never expanded
+  obtain ⟨model,indexEq,emittedEq,heapEq,memoryEq⟩:=setup_model entry execution
+  have setupEq:=(setup_reached entry execution).2
+  rw [loop_shape] at tailRun
+  obtain ⟨exited,loopRun,returnRun⟩:=sequence_returned current inner (.while loopTest iterationBody) loopReturn value
+    (fun returned=>(LocalPrefix.loop loopTest iteration_request_local).summary_full current |>.2.1 returned) tailRun
+  obtain ⟨final,finished,grows,loopGlobals,loopMemory⟩:=model.loop_normal loopRun
+  obtain ⟨observed,innerEq⟩:=return_normal exited inner (.rstruct [localVar "arr",localVar "n"]) value returnRun
+  have expected : eval exited (.rstruct [localVar "arr",localVar "n"])=some (.rStruct [.val (.word heap),.val (.word (BitVec.ofNat 64 final.emitted))]):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,final.arrayCell,final.emittedCell]
+  have answer:=Option.some.inj (observed.symm.trans expected)
+  rw [innerEq] at metadata
+  change LocalEffects.erase post=LocalEffects.erase exited at metadata
+  have returned:=(final.returned finished).of_frame metadata
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change post.globals=exited.globals at globals
+  have heapFrame : HeapGlobals source post:=by
+    intro key other
+    rw [globals]
+    apply (loopGlobals key other).trans
+    rw [setupEq]
+    simp [setupState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,other,Ne.symm other]
+  have memory:=LocalEffects.memory_of_erase exited post metadata
+  exact ⟨final.emitted,final.heap,final.slices,answer,returned,heapFrame,
+    fun query before=>(congrFun memory query).trans ((loopMemory query before).trans (congrFun memoryEq query))⟩
+
 end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.original_code
@@ -1405,3 +1518,10 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.loop_uniform
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.body_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.loop_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.Returned.of_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.returned
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.setup_request_local
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.body_normal

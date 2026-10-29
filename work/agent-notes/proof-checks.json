@@ -4350,7 +4350,7 @@
       "sha256": "a3c5552372b71dc67d99f1d35ad7d17810d49a549574d1ead4eb9074a3d34cc5",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -4358,7 +4358,7 @@
       "sha256": "dc768d7924080939787d4a3dd58f652073fd509430b8719cf9a49e615aabc957",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -4378,7 +4378,7 @@
       "sha256": "5964df3b2f853c9e5cdc80a1b5dd74133b56d5246e02e0e853323bdcbd0372e3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -5891,10 +5891,10 @@
     },
     {
       "path": "submission/InitECandidate/Solver/GasBudget/Mul64Value.lean",
-      "sha256": "fc6b797fd864a014bf07c35a33195cf8c11aa437509190afb80c3230f2dd7d79",
+      "sha256": "1ea89038af8634d35187d85115bc39f9f628f2fbe07e3ef41483bb7072051898",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -8618,7 +8618,7 @@
       "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-wide-division-wrapper-zero-v3.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -8738,7 +8738,7 @@
       "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-wide-division-wrapper-zero-v3.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -8814,7 +8814,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -8838,7 +8838,7 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -8986,7 +8986,7 @@
       "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -14422,7 +14422,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -14502,7 +14502,7 @@
       "sha256": "33ed90c3932c7504426b5025443ebde0efb549cf9f3f03a24f55c7c520801f7d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -15446,7 +15446,7 @@
       "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -15454,7 +15454,7 @@
       "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -15470,7 +15470,7 @@
       "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -15482,7 +15482,7 @@
       "sha256": "e42751907e33fb019cb6d5cbb451f10e5efbaf23cdf8608c2d6ad688975ac1b3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -15490,7 +15490,7 @@
       "sha256": "1d2bdcae27c9816657057947e766783f3eac37fdf80316bd5a33d2f11fb403db",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -17102,7 +17102,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -18198,7 +18198,7 @@
       "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -18230,7 +18230,7 @@
       "sha256": "8e5065f7902f83e0c0f57085fe76765cb089d57b12af7778ae25fb4293a1989f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -18242,7 +18242,7 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -18822,7 +18822,7 @@
       "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -19566,7 +19566,7 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-wide-division-wrapper-zero-v3.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -21138,7 +21138,7 @@
       "sha256": "a7cfe374c278163f0af0aad1ac737fa4f4d6268d106aa4d136299a1b1e9f9d3a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-wide-division-wrapper-zero-v3.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -32618,7 +32618,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-wide-division-wrapper-zero-v3.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -37734,7 +37734,7 @@
       "sha256": "499a7062f31ec74e4568f2533ae4aa29bac2c8aa419be8aa4fdb6f87eb2a510e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-wide-division-wrapper-zero-v3.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -38014,7 +38014,7 @@
       "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-wide-division-wrapper-zero-v3.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -38722,7 +38722,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-mul64-natural-product-v4.log"
+        "current-wide-multiply-word-v3.log"
       ]
     },
     {
@@ -89857,7 +89857,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90028,7 +90028,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94311,7 +94311,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94779,7 +94779,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -94789,7 +94789,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -95413,7 +95413,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96627,7 +96627,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -96637,7 +96637,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100988,7 +100988,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -100998,7 +100998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101008,7 +101008,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101018,7 +101018,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101027,7 +101027,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101036,7 +101036,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101045,7 +101045,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-wide-division-wrapper-zero-v3.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101897,7 +101897,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101907,7 +101907,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112815,7 +112815,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112835,7 +112835,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112845,7 +112845,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -112999,7 +112999,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113009,7 +113009,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113019,7 +113019,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113029,7 +113029,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113039,7 +113039,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113049,7 +113049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113059,7 +113059,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113069,7 +113069,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113077,7 +113077,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113085,7 +113085,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113095,7 +113095,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113104,7 +113104,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113114,7 +113114,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113124,7 +113124,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113134,7 +113134,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113144,7 +113144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113154,7 +113154,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113358,7 +113358,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113368,7 +113368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113378,7 +113378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113388,7 +113388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113398,7 +113398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113408,7 +113408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113418,7 +113418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113428,7 +113428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113438,7 +113438,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113448,7 +113448,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113458,7 +113458,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113468,7 +113468,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113478,7 +113478,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113488,7 +113488,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113498,7 +113498,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113508,7 +113508,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113518,7 +113518,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113528,7 +113528,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113538,7 +113538,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113548,7 +113548,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113558,7 +113558,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113568,7 +113568,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113578,7 +113578,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113588,7 +113588,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113813,7 +113813,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113821,7 +113821,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113858,7 +113858,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113868,7 +113868,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113878,7 +113878,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -113888,7 +113888,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116682,7 +116682,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116692,7 +116692,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116744,7 +116744,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116754,7 +116754,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -116764,7 +116764,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -177137,7 +177137,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204899,7 +204899,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204909,7 +204909,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204919,7 +204919,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204928,7 +204928,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204938,7 +204938,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204948,7 +204948,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204958,7 +204958,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204966,7 +204966,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -204976,7 +204976,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205152,7 +205152,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205161,7 +205161,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205170,7 +205170,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205180,7 +205180,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205188,7 +205188,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205197,7 +205197,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -205207,7 +205207,127 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-mul64-natural-product-v4.log",
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Mul64.environment",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.Mul64.call_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.shape",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.word_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.word_product",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.word_guard",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.word_arguments",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.current_code",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.word_cost",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.word_normal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.from_word_code",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.GasBudget.U256Multiply.from_word_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-wide-multiply-word-v3.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

@@ -4485,3 +4485,26 @@ Validation: current-mul64-natural-product-v4.log PASS861jobs; all printed
 axioms permitted. Index8700modules/18268facts; inventory8745/replacement
 closure0/fixed files unchanged. Claim infinity; no global finite target K or
 full verifier success. Overall estimate remains50%, plausible40–60%.
+
+
+## Current wide multiplication fast branch and actual word conversion
+
+The original u256_mul fast branch now has an exact functional contract for
+two one-word four-limb inputs. Its real mul64x64 call returns the exact
+128-bit product in the low two output limbs, with the upper two limbs zero.
+The checked caller resumption spends exactly one source tick and preserves
+all nonlocal state. Its all-outcome allowance is1body source tick, including
+clock0. Every actual normal return derives clock funding and the concrete
+result, without assuming a future successful helper. The original
+u256_from_word conversion and current signatures are checked as well. These
+facts cover the actual Taylor initial product and index/denominator products;
+their Taylor caller connection, full-width product and numerical division
+contracts remain open. The actual program and challenge assumptions are fixed.
+
+Validation: current-wide-multiply-word-v3.log PASS868jobs; all printed axioms
+permitted. Index8700modules/18280facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no global finite target K or full
+verifier success. Overall estimate remains50%, plausible40–60%. Usage57%
+weekly/0resetcredits. Remaining parent-header validation/execution/wrappers/
+main, uniform target composition, dominant-slack review and cleanup remain
+part of the same active goal.

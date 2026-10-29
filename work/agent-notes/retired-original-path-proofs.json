@@ -1,0 +1,452 @@
+{
+  "reason": "Obsolete alternative path-model branch for the pre-rebase witness/state initialization; current Software normal-frame proofs supersede it.",
+  "recovery_commit": "6843032c72fcd2337669030fb81d382a2de89fec",
+  "seed": "InitECandidate.Solver.Mpt.WitnessCorePathInvariant",
+  "outside_solver_import_audit": "No imports of Solver found in fixed submission library or Solution.lean.",
+  "removed": [
+    {
+      "module": "InitECandidate.Solver.Input.MainRunAttemptPathInitialized",
+      "path": "submission/InitECandidate/Solver/Input/MainRunAttemptPathInitialized.lean",
+      "sha256": "b35507fadd35e7f424557e37937e5c05a5463aa61d4efa9d0f62b1714d340ce9",
+      "lines": 63,
+      "printed_facts": [
+        "InitECandidate.Solver.Input.Main.RunAttemptConstructors.path_initialized_of_actual"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Input.MainRunAttemptPathPayloadHeaderEntry",
+      "path": "submission/InitECandidate/Solver/Input/MainRunAttemptPathPayloadHeaderEntry.lean",
+      "sha256": "c89c86681a7bc19ebf61642e0958bb48bd2776773624e6bad26480fd2a3fa7e0",
+      "lines": 85,
+      "printed_facts": [
+        "InitECandidate.Solver.Input.Main.RunAttemptConstructors.path_payload_header_entry_of_actual",
+        "InitECandidate.Solver.Input.Main.RunAttemptConstructors.PathPayloadHeaderEntry.heap_geometry",
+        "InitECandidate.Solver.Input.Main.RunAttemptConstructors.PathPayloadHeaderEntry.to_entry"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Input.MainRunAttemptPathTransactions",
+      "path": "submission/InitECandidate/Solver/Input/MainRunAttemptPathTransactions.lean",
+      "sha256": "d685e3f11a6273367e4165c61d4070b74ed93ef4e5f851469d98809a86a00ba0",
+      "lines": 62,
+      "printed_facts": [
+        "InitECandidate.Solver.Input.Main.RunAttemptConstructors.path_transactions_of_actual"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.FromWitnessCall",
+      "path": "submission/InitECandidate/Solver/Mpt/FromWitnessCall.lean",
+      "sha256": "3e4c01a889ce33c94228271493beeb7ea39f271ff97e9abb8227e42a921aba38",
+      "lines": 74,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.FromWitness.scoped_normal",
+        "InitECandidate.Solver.Mpt.FromWitness.call_cost"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.FromWitnessNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/FromWitnessNormal.lean",
+      "sha256": "740c4217401951d122fe6b14f19614131773c14b61fab3113c1188968cbf11f5",
+      "lines": 121,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.FromWitness.body_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.FromWitnessOutput",
+      "path": "submission/InitECandidate/Solver/Mpt/FromWitnessOutput.lean",
+      "sha256": "fdbbeb043c1bbd307c4b0830d6aedfffeaee9e11770fbcef3e9110f997f23eb9",
+      "lines": 38,
+      "printed_facts": []
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.StateInitPathBoundaryNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/StateInitPathBoundaryNormal.lean",
+      "sha256": "7f2f293fc06d893ad8a529a4e40fbe2410c0d600a8d66d7d15255dbcf549b8f1",
+      "lines": 38,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.StateInit.PathOutput.with_locals",
+        "InitECandidate.Solver.Mpt.StateInit.path_normal_of_boundary"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.StateInitPathNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/StateInitPathNormal.lean",
+      "sha256": "57ce885230dc1b9b239c2d869322447b17115d93ba99d3b8a6121be21ba14f5a",
+      "lines": 214,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.StateInit.path_body_normal",
+        "InitECandidate.Solver.Mpt.StateInit.PathOutput.to_output"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.StateInitPathOutputFrame",
+      "path": "submission/InitECandidate/Solver/Mpt/StateInitPathOutputFrame.lean",
+      "sha256": "2dd2eb3ca7d150ba666e13d75ebe1374cdd1d8f8e9ff42a1206df94eddac9aa5",
+      "lines": 63,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.StateInit.PathOutput.of_erase"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.StateInitRootPathInstalled",
+      "path": "submission/InitECandidate/Solver/Mpt/StateInitRootPathInstalled.lean",
+      "sha256": "aaf59eee9ec953ef3dcf88a7d5f6d10d8368b395da4ac2189c10401eca864e32",
+      "lines": 105,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.StateInit.root_path_installed_of_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.StateInitRootPathNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/StateInitRootPathNormal.lean",
+      "sha256": "cdf6cec094cfe02db6b3957d0aed800186b4d98383451fe18267a28060d2696b",
+      "lines": 61,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.StateInit.root_call_path_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.StateInitRootPathStore",
+      "path": "submission/InitECandidate/Solver/Mpt/StateInitRootPathStore.lean",
+      "sha256": "7fb5dc0c056b2056eac9ee997a247a6e654facc7941ad842e81fce34ff0be9cc",
+      "lines": 55,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.StateInit.install_root_paths",
+        "InitECandidate.Solver.Mpt.StateInit.after_root_paths_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathAgreement",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathAgreement.lean",
+      "sha256": "f032a6108bdf1dcc3b030911f32240d44ff843f0e210ca1f3490b0f8c0c36937",
+      "lines": 33,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.of_agreement"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathBodyNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathBodyNormal.lean",
+      "sha256": "1186cf7134b7f6136baabc3db05663d9a90b29074b245729d2489ec8992d493b",
+      "lines": 107,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.path_body_normal",
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathCompleted.registry",
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathCompleted.to_rich_completed"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathBranchCounter",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathBranchCounter.lean",
+      "sha256": "266e6c5a19bd6f0813c33a97baa49531f3c2a9b630c60cd9215db4fb2360c19d",
+      "lines": 73,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.branch_counter"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathBranchLast",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathBranchLast.lean",
+      "sha256": "1438908319ce2bc05a899f44876fcf3352856d50bbbceda52bbaac641155ce62",
+      "lines": 160,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.branch_last_paths_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathBranchNext",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathBranchNext.lean",
+      "sha256": "5baa2758f6455b7f64f6a8fa91100e12d9c49f22b17e7bb6d6cb8b5bdfb39f7a",
+      "lines": 131,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.branch_advanced_paths"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathBranchScope",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathBranchScope.lean",
+      "sha256": "21f727b5ad13cd9b7713fe3066a2429513699be0547f77eddb571366e131455d",
+      "lines": 84,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.branch_paths_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathCache",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathCache.lean",
+      "sha256": "06b14e9348f554c415ae19c17bd81e2bdf8ca77b340119d0f84eb026a77d3661",
+      "lines": 58,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.cache"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathDatabaseFrame",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathDatabaseFrame.lean",
+      "sha256": "98d70e0dd47e5a071e73f914d5f0c6cacb75334e793cc3a6210baf4ba950174f",
+      "lines": 44,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.database_frame"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathDecode",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathDecode.lean",
+      "sha256": "87f15b581d9e287f92dea64049917d41e53e2689c97c6d7268845e815df5bed4",
+      "lines": 134,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathInvariant.decode_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathExtension",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathExtension.lean",
+      "sha256": "2559a62847cf5d89951652a06e7ec3373bc924af5e8891de67c65c40a15de8e1",
+      "lines": 110,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.extension_paths_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathFrame",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathFrame.lean",
+      "sha256": "f14c5b9af92e62f6c19fa735305fed3b95ec70b952426f2b0355425ab9fe56fa",
+      "lines": 82,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.of_fields",
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.normal_frame",
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathInvariant.dec_clock"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathInvariant",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathInvariant.lean",
+      "sha256": "642da503a52ab385cff906aabfe26b7695e50e320cecd020e3df6a108ae9be29",
+      "lines": 58,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathInvariant.rich",
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathInvariant.initial"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathLoopNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathLoopNormal.lean",
+      "sha256": "852f2d4edab44525ea36a38b7307f5077fb0a57a71f6cba0a967217773ce0feb",
+      "lines": 69,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathInvariant.loop_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathPayloadFrame",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathPayloadFrame.lean",
+      "sha256": "b90c5ba311170bc909b716724aa13c01b511ba3ca9ea6709e172264ae7d6a3c5",
+      "lines": 62,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.of_payload_paths",
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.replace_head_paths"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathRegister",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathRegister.lean",
+      "sha256": "b02ebf10825ea5ee2611956c6e0728f76df93f0be28b9ad2b21b32d65c33c68a",
+      "lines": 49,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.registered"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathRegistryExtend",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathRegistryExtend.lean",
+      "sha256": "af5a5614ded876aa8658a5551c6d9dea9b5fda1860874abf882ffc51bacc7bb7",
+      "lines": 54,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.node_added"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathRegistryPush",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathRegistryPush.lean",
+      "sha256": "b8095e7ac881ebc7aa4a55ddf79036cec7c28ca8127595f2bf3e49ad21b3bda0",
+      "lines": 80,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.record_added"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathRelabel",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathRelabel.lean",
+      "sha256": "d7fabb0138abf41884ff43d60072366db22a413b0c9b7b0e019a91e20b9e8d0f",
+      "lines": 76,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessRecord.Payload.storage_extension",
+        "InitECandidate.Solver.Mpt.WitnessRecord.Payload.storage_branch",
+        "InitECandidate.Solver.Mpt.WitnessRecord.Payload.PathBytes.same_storage",
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.relabel"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathResolve",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathResolve.lean",
+      "sha256": "77e971e9de7b51e4a9c94433e0515717261fb66b98791f70520a9836c0f47a60",
+      "lines": 126,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathInvariant.resolve_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathReturn",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathReturn.lean",
+      "sha256": "32c0175f1c75c1340263e7b21829f4e862e8d1c03885c295273904f3755b51d9",
+      "lines": 101,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathInvariant.return_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathReturnNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathReturnNormal.lean",
+      "sha256": "d2bfb8e0248824913e68d025ccc55f3929001f3e89194594cb5363d44a28a8a8",
+      "lines": 76,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.return_paths_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathReturnStages",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathReturnStages.lean",
+      "sha256": "360b145af74edd2dbb62dcfc986c5664e30b54dc4322aa51892f2a8ca899cc3f",
+      "lines": 51,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.return_stages_paths_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathStep",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathStep.lean",
+      "sha256": "72fda7760195e09d239f56577b7f50e695991cb30b3f5855d565b0488e402386",
+      "lines": 35,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.PathInvariant.body_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessCorePathTransport",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessCorePathTransport.lean",
+      "sha256": "2c1107dce6d0493aa2df67ae715a54d63d6266f55380212a6b8f7e1b374a4d99",
+      "lines": 94,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.transport",
+        "InitECandidate.Solver.Mpt.WitnessCore.Stack.ActiveRegistry.PathModel.transport_registered"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessMaterializePathAdvance",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessMaterializePathAdvance.lean",
+      "sha256": "462e14db06d44532c2fe83844dd7e0bbf1c7ef3adb5d63c7a2057eec2e8852cb",
+      "lines": 25,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.PathOutput.advance_frame"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessMaterializePathNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessMaterializePathNormal.lean",
+      "sha256": "1526893c150a2ef319094d7075aa2cb75a61e0a3cf5d7a6f5586d141184c1ddd",
+      "lines": 121,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.path_body_normal",
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.path_body_normal_prefix"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessMaterializePathOutput",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessMaterializePathOutput.lean",
+      "sha256": "c5259191a6c6ab1012966dd0e11d271e5ca287fe69c458c307b999a7f3e4e559",
+      "lines": 83,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.PathOutput.of_completed",
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.PathOutput.of_fields",
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.PathOutput.of_erase",
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.PathOutput.release",
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.PathOutput.to_rich_output"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessMptWrapperPathNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessMptWrapperPathNormal.lean",
+      "sha256": "fde58ea14faf8f1d3affd2075bcd3070cf3f00b7fddf4261f577380bc8f091a5",
+      "lines": 79,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessMaterializeMpt.path_body_normal",
+        "InitECandidate.Solver.Mpt.WitnessMaterializeMpt.path_body_normal_prefix"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessPathRegistryJoin",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessPathRegistryJoin.lean",
+      "sha256": "ec581bbb1ce2e0077a2a26ffe5a009df9ba1cac55a45d4b4cf01d32843be6fbd",
+      "lines": 71,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.PathOutput.join_registry_paths"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessRootCachePathNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessRootCachePathNormal.lean",
+      "sha256": "fb26143c859a53967172e17c6654599acafedb126e56bf65781ae57345bef41e",
+      "lines": 139,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.cache_allocated_path_normal",
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.cache_allocated_path_normal_prefix"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessRootMaterializePathNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessRootMaterializePathNormal.lean",
+      "sha256": "ea6171564a1590a9000587a14ae55207638a0f436a23583164cb4903cceac758",
+      "lines": 116,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.after_lookup_path_normal",
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.after_lookup_path_normal_prefix",
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.after_lookup_path_normal_prefix_scratch"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessRootPathNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessRootPathNormal.lean",
+      "sha256": "17ca6920b2f4821e2f652dc30e3d091ec477c6e5a499b4a7fcdf0a25aa87f759",
+      "lines": 110,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.empty_path_output",
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.path_body_normal",
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.path_body_normal_prefix",
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.path_body_normal_prefix_scratch"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessRootPathRegistryNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessRootPathRegistryNormal.lean",
+      "sha256": "c89bd1541dbdaa6b5df7c0f9555680d97d70e5781dceaea43351fc7b0eee134e",
+      "lines": 78,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessMaterialize.registered_path_body_normal",
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.registered_path_body_normal"
+      ]
+    },
+    {
+      "module": "InitECandidate.Solver.Mpt.WitnessRootSuffixPathNormal",
+      "path": "submission/InitECandidate/Solver/Mpt/WitnessRootSuffixPathNormal.lean",
+      "sha256": "a97991136fc3db93847a92ac48445b7d35019e17f0bdb69dd9cf3637be303e21",
+      "lines": 57,
+      "printed_facts": [
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.suffix_path_normal",
+        "InitECandidate.Solver.Mpt.WitnessDecodeRoot.suffix_path_normal_prefix"
+      ]
+    }
+  ],
+  "removed_index_modules": 45,
+  "removed_index_facts": 75
+}

@@ -4032,3 +4032,25 @@ No global finite target K/full verification; claim infinity.
 Usage30%weekly/0resetcredits. Next: retire unused pre-rebase alternative path
 proofs to recover package entries, then actual payload_header/hash and later
 main/execution/target-step composition.
+
+
+## Retired obsolete alternative path-proof branch
+
+Removed46unused Solver modules (3805lines) rooted at the older
+WitnessCorePathInvariant alternative. Its recursive/path state-initialization
+branch is superseded by the current actual Software normal-frame proof.
+The reverse import closure contains no current proof, and no fixed library or
+Solution module imports Solver. All remaining Solver imports resolve.
+
+The retired-original-path-proofs.json manifest records every path/hash/fact
+and recovery commit6843032c7. Removed dead module/fact entries from the live
+proof index; Git retains their complete history. Kept the separate older
+payload-header and generic proof helpers for porting, and preserved all five
+pre-rebase untracked WIPs untouched.
+
+Validation: current-main-cleanup-regression-v1.log PASS2688jobs/permitted
+printed axioms only. Live index8637modules/17563facts; inventory8681/
+replacement closure0/fixed files unchanged. Incremental policy PASS65471
+entries/2485195991bytes, recovering room beneath the package entry limit.
+No global finite target K/full verification; claim infinity. Continue actual
+payload_header/block length/trie/header hash, later main and target steps.

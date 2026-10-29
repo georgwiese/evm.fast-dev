@@ -2937,3 +2937,37 @@ image. Derive and retain the current640-byte u256_ws allocation/global from
 startup, then connect Taylor/current parent-header validation/execution/
 wrappers/main. Uniform target composition, exact K evaluation,
 dominant-slack review and final cleanup remain in the active goal.
+
+
+## Actual digits_to_u256 reconstruction and caller
+
+The unchanged digits_to_u256(59) now reads the eight real mapped cells and
+returns the exact four-word tuple produced by its literal OR/left-shift
+expressions, at every body clock including0. It spends0body source ticks,
+and its actual unary scalar/four-word-return ABI prices the ordinary caller
+at1tick before the continuation, on every outcome. A funded real caller
+resumes with the exact tuple and unchanged physical state; the actual normal
+child-return contract supplies that same continuation without inventing
+funding for the caller's separate tick.
+
+For genuine32-bit digits, the returned tuple's natural value equals the
+little-endian digit-array value. Converting any real four-word input to
+digits and reconstructing it returns exactly the original four words.
+These are checked actual read/shift/OR and arithmetic contracts, not an
+assumed numerical wide-division oracle. The full divmnu/wide-division
+contract and its current startup workspace entry remain open.
+
+Validation: current-digits-to-words-call-v2.log PASS1022jobs; all11new printed
+facts have only permitted axioms. Index8700modules/18381facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Overall effort estimate
+remains50%, plausible40–60%. Usage30%weekly/0resetcredits, ordinary usage
+allowed. No executable or fixed challenge assumption changed.
+
+Next: actual one-digit divmnu descending loop and its real quotient stores/
+remainder return, using the checked div64by32 scalar helper and the digit
+images. Then two-digit normalization, subtraction/store and next remainder
+images. Derive/retain the current640-byte u256_ws allocation/global from
+startup before connecting actual Taylor/header validation/main. Uniform
+target composition, exact K, slack review and cleanup remain in the same
+active goal. The5historical untracked RlpLength/RlpWrite WIPs stay untouched.

@@ -708,3 +708,208 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.Length
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.call_execute
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.resume
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def words (contents : Nat→BitVec 64) : Quad:=fun index=>
+  contents (2*index.val) ||| (contents (2*index.val+1)<<<(32:Nat))
+
+theorem pair_number (low high : BitVec 64) (lowSmall : low.toNat<2^32) (highSmall : high.toNat<2^32) :
+    (low ||| (high<<<(32:Nat))).toNat=low.toNat+2^32*high.toNat := by
+  have shifted : (high<<<(32:Nat)).toNat=2^32*high.toNat:=by
+    rw [BitVec.toNat_shiftLeft,Nat.shiftLeft_eq,Nat.mod_eq_of_lt (by nlinarith)]
+    omega
+  rw [BitVec.toNat_or,shifted,Nat.or_comm]
+  exact (Nat.two_pow_add_eq_or_of_lt (i:=32) lowSmall high.toNat).symm.trans (by omega)
+
+theorem words_number (contents : Nat→BitVec 64) (small : ∀ index,index<8→(contents index).toNat<2^32) :
+    quadNumber (words contents)=number contents 8 := by
+  change (contents 0 ||| contents 1<<<(32:Nat)).toNat+2^64*(contents 2 ||| contents 3<<<(32:Nat)).toNat+
+    2^128*(contents 4 ||| contents 5<<<(32:Nat)).toNat+2^192*(contents 6 ||| contents 7<<<(32:Nat)).toNat=number contents 8
+  rw [pair_number _ _ (small 0 (by decide)) (small 1 (by decide)),
+    pair_number _ _ (small 2 (by decide)) (small 3 (by decide)),
+    pair_number _ _ (small 4 (by decide)) (small 5 (by decide)),
+    pair_number _ _ (small 6 (by decide)) (small 7 (by decide))]
+  simp only [number]
+  omega
+
+theorem digit_inverse (value : Quad) : words (digit value)=value := by
+  funext index
+  obtain ⟨index,inside⟩:=index
+  have cases : index=0 ∨ index=1 ∨ index=2 ∨ index=3:=by omega
+  rcases cases with rfl|rfl|rfl|rfl
+  · apply BitVec.eq_of_toNat_eq
+    have joined:=pair_number (digit value 0) (digit value 1)
+      (digit_small value _ (by decide)) (digit_small value _ (by decide))
+    have split:=half_number (value 0)
+    change (digit value 0 ||| digit value 1<<<(32:Nat)).toNat=(value 0).toNat
+    simp only [digit] at joined ⊢
+    omega
+  · apply BitVec.eq_of_toNat_eq
+    have joined:=pair_number (digit value 2) (digit value 3)
+      (digit_small value _ (by decide)) (digit_small value _ (by decide))
+    have split:=half_number (value 1)
+    change (digit value 2 ||| digit value 3<<<(32:Nat)).toNat=(value 1).toNat
+    simp only [digit] at joined ⊢
+    omega
+  · apply BitVec.eq_of_toNat_eq
+    have joined:=pair_number (digit value 4) (digit value 5)
+      (digit_small value _ (by decide)) (digit_small value _ (by decide))
+    have split:=half_number (value 2)
+    change (digit value 4 ||| digit value 5<<<(32:Nat)).toNat=(value 2).toNat
+    simp only [digit] at joined ⊢
+    omega
+  · apply BitVec.eq_of_toNat_eq
+    have joined:=pair_number (digit value 6) (digit value 7)
+      (digit_small value _ (by decide)) (digit_small value _ (by decide))
+    have split:=half_number (value 3)
+    change (digit value 6 ||| digit value 7<<<(32:Nat)).toNat=(value 3).toNat
+    simp only [digit] at joined ⊢
+    omega
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_digits_to_u256 with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "p",.one)]
+def limb (index : Nat) : ExpHOL 64:=.op .or [.load .one (ToDigits.destination (2*index)),
+  .shift .lsl (.load .one (ToDigits.destination (2*index+1))) (.const 32#64)]
+def expression : ExpHOL 64:=.rstruct [limb 0,limb 1,limb 2,limb 3]
+
+theorem body_shape : body=.return expression := by
+  simp [body,Guest.Software.guestFn_digits_to_u256,progToHOL,expToHOL,shapeToHOL,expression,limb,ToDigits.destination,localVar]
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "digits_to_u256")=some (formals,body,RlpWrite.U256Value.tupleShape) := by
+  have checked:=OriginalCode.indexed code installed 59 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_digits_to_u256) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,RlpWrite.U256Value.tupleShape,
+    Guest.Software.guestFn_digits_to_u256,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+private theorem limb_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64)
+    (index : Fin 4) (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→source.memaddrs (slot pointer index)) :
+    eval source (limb index.val)=some (.val (.word (words contents index))) := by
+  have loInside : 2*index.val<8:=by omega
+  have hiInside : 2*index.val+1<8:=by omega
+  have lo:=Witness.load_word_read source (ToDigits.destination (2*index.val)) _ _
+    (ToDigits.destination_read source pointer _ p) (mapped _ loInside) (image _ loInside)
+  have hi:=Witness.load_word_read source (ToDigits.destination (2*index.val+1)) _ _
+    (ToDigits.destination_read source pointer _ p) (mapped _ hiInside) (image _ hiInside)
+  simp only [eval] at lo hi ⊢
+  rw [limb,evalHOLExact]
+  simp only [evalListHOLExact]
+  rw [lo,evalHOLExact,hi]
+  simp [evalHOLExact,words,valueIsWord,valueWord,wordOpHOL,wordOp,wordShiftHOL,OrOp.or]
+
+/-- The original read/OR/shift return reconstructs the actual physical digits,
+changes no nonlocal state and spends no body source ticks. -/
+theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64)
+    (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→source.memaddrs (slot pointer index)) :
+    evaluateHOLFiniteState source body=
+      (some (.returned (RlpWrite.U256Value.tuple (words contents))),emptyLocalsHOLFinite source) := by
+  classical
+  have lo:=limb_read source pointer contents 0 p image mapped
+  have mid:=limb_read source pointer contents 1 p image mapped
+  have high:=limb_read source pointer contents 2 p image mapped
+  have top:=limb_read source pointer contents 3 p image mapped
+  simp only [eval] at lo mid high top
+  change evalHOLExact source.toExact (limb 0)=_ at lo
+  change evalHOLExact source.toExact (limb 1)=_ at mid
+  change evalHOLExact source.toExact (limb 2)=_ at high
+  change evalHOLExact source.toExact (limb 3)=_ at top
+  rw [body_shape,evaluateHOLFiniteState_return,expression,evalHOLExact]
+  simp only [evalListHOLExact]
+  rw [lo,mid,high,top]
+  simp [RlpWrite.U256Value.tuple,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+
+theorem body_cost (code) : ClockCost.Bound code body 0 := by
+  rw [body_shape]
+  exact ClockCost.returned code _
+
+theorem call_cost (code) (installed : OriginalCode.Installed code) (name : String)
+    (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64) (tailPrice : Nat)
+    (tailBound : ClockCost.Bound code continuation tailPrice) :
+    ClockCost.Bound code (.decCall (ofString name) RlpWrite.U256Value.tupleShape (ofString "digits_to_u256") arguments continuation) (tailPrice+1) := by
+  simpa only [Nat.zero_add] using ClockCost.scoped_body code (ofString name) RlpWrite.U256Value.tupleShape
+    (ofString "digits_to_u256") arguments continuation formals body RlpWrite.U256Value.tupleShape 0 tailPrice
+    (original_code code installed) (body_cost code) tailBound
+
+/-- Actual unary scalar ABI with the genuine four-word return shape. -/
+theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (pointer : BitVec 64)
+    (code : codeFn (ofString "digits_to_u256")=some (formals,body,RlpWrite.U256Value.tupleShape)) :
+    ∃ callee : HolFiniteMapExact MlS (ValueHOL 64),
+      lookupCodeHOLFinite codeFn (ofString "digits_to_u256") [.val (.word pointer)]=some (body,callee,RlpWrite.U256Value.tupleShape) ∧
+      callee.lookup (ofString "p")=some (.val (.word pointer)) := by
+  let rawLocals : MlS→Option (ValueHOL 64):=fun name=>if name=ofString "p" then some (.val (.word pointer)) else none
+  have valid : (formals.map Prod.fst).Nodup ∧ formals.length=([.val (.word pointer)] : List (ValueHOL 64)).length ∧
+      ((formals.zip [.val (.word pointer)]).all (fun pair=>shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2)))=true:=by
+    simp [formals,shapeOfHOLExact,shapeEqHOL_eq_true]
+  have raw : lookupCodeHOLExact codeFn (ofString "digits_to_u256") [.val (.word pointer)]=
+      some (body,rawLocals,RlpWrite.U256Value.tupleShape):=by
+    simp only [lookupCodeHOLExact,code,valid,↓reduceIte]
+    rfl
+  obtain ⟨callee,called,locals⟩:=CodeEnvironment.finite_lookup codeFn _ _ _ _ _ raw
+  refine ⟨callee,called,?_⟩
+  rw [locals]
+  simp [rawLocals]
+
+theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64)
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word pointer)])
+    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→source.memaddrs (slot pointer index))
+    (enough : 1≤source.clock) :
+    evaluateHOLFiniteState source (.decCall (ofString name) RlpWrite.U256Value.tupleShape (ofString "digits_to_u256") arguments continuation)=
+      (let output:=evaluateHOLFiniteState (setVarHOLFinite (ofString name) (RlpWrite.U256Value.tuple (words contents))
+        {source with clock:=source.clock-1}) continuation
+       (output.1,restore source name output.2)) := by
+  obtain ⟨callee,called,pCell⟩:=environment source.code.lookup pointer (original_code source.code installed)
+  have run:=execute (callEntryStateHOLFinite source callee) pointer contents pCell image mapped
+  exact CallNormal.return_execute source _ name RlpWrite.U256Value.tupleShape (ofString "digits_to_u256") arguments _
+    body continuation callee RlpWrite.U256Value.tupleShape (RlpWrite.U256Value.tuple (words contents)) args called enough run
+    (by simp [RlpWrite.U256Value.tuple,RlpWrite.U256Value.tupleShape,shapeOfHOLExact,shapeEqHOL_eq_true])
+
+/-- The actual normal child run determines the reconstructed value and the
+unchanged physical caller state with its one-call decrement. -/
+theorem resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (pointer : BitVec 64)
+    (contents : Nat→BitVec 64) (installed : OriginalCode.Installed source.code)
+    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→source.memaddrs (slot pointer index))
+    (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "digits_to_u256") [.val (.word pointer)]=some (actual,callee,shape))
+    (returned : ValueHOL 64)
+    (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(some (.returned returned),target)) :
+    returned=RlpWrite.U256Value.tuple (words contents) ∧
+      CallNormal.continuationEntry source target name returned=
+        setVarHOLFinite (ofString name) (RlpWrite.U256Value.tuple (words contents)) {source with clock:=source.clock-1} := by
+  obtain ⟨expected,lookup,pCell⟩:=environment source.code.lookup pointer (original_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans lookup)
+  have bodyEq : actual=body:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at pCell
+  rw [bodyEq] at run
+  have completed:=execute (callEntryStateHOLFinite source callee) pointer contents pCell image mapped
+  have actualEq:=run.symm.trans completed
+  have result : returned=RlpWrite.U256Value.tuple (words contents):=by
+    simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using congrArg Prod.fst actualEq
+  have targetEq : target=emptyLocalsHOLFinite (callEntryStateHOLFinite source callee):=congrArg Prod.snd actualEq
+  refine ⟨result,?_⟩
+  simp only [CallNormal.continuationEntry,result,targetEq]
+  rfl
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.pair_number
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.words_number
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.digit_inverse
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.body_shape
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.original_code
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.body_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.call_cost
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.environment
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.call_execute
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords.resume

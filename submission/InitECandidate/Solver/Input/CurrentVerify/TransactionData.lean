@@ -1,3 +1,5 @@
+import InitECandidate.Solver.MutableTable.MemeqAnyCall
+import InitECandidate.Solver.Input.MemeqReadOnly
 import InitECandidate.Solver.Input.CurrentRlp.HeaderCall
 import InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 import InitECandidate.Solver.Input.CurrentVerify.TransactionNonempty
@@ -780,3 +782,142 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_header_hash_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_block_hash
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Reuse completed physical header facts across actual read-only checks,
+with only their real caller bindings supplied separately. -/
+theorem AfterHeader.of_frame {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (frame : LocalEffects.erase target=LocalEffects.erase source)
+    (siCell : target.locals.lookup (ofString "si")=some (.val (.word si)))
+    (hdrCell : target.locals.lookup (ofString "hdr")=some (.val (.word header)))
+    (plCell : target.locals.lookup (ofString "pl")=some (.val (.word record))) :
+    AfterHeader input target pointer si record gasWord header boundary encoded := by
+  have memory:=LocalEffects.memory_of_erase source target frame
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  change target.globals=source.globals at globals
+  obtain ⟨heap,cell,lower,upper,aligned⟩:=physical.heapAfter
+  have heapAfter : NormalHeapEffects.AtLeast ((PayloadHeaderEntry.headerFrontier header).toNat+16) target:=
+    ⟨heap,by rw [globals]; exact cell,lower,upper,aligned⟩
+  have cells (offset : Nat) (inside : offset≤240) : target.memory (HeaderEncoding.address header offset)=source.memory (HeaderEncoding.address header offset):=congrFun memory _
+  exact {physical with
+    data:=physical.data.of_frame frame siCell,headerCell:=hdrCell,payloadCell:=plCell,heapAfter:=heapAfter,
+    fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory target.memory header field cells (physical.fields field member),
+    optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory target.memory header field cells (physical.optional field member)}
+
+def blockCompareRight : ExpHOL 64:=.op .add [.load .one (.op .add [localVar "pl",.const 0#64]),.const 472#64]
+def blockCompareArguments : List (ExpHOL 64):=[localVar "bh",blockCompareRight,.const 32#64]
+def blockCompareGuard : ProgHOL 64:=.ite (.cmp .equal (localVar "eq") (.const 0#64)) (.raise (ofString "BlockErr") (.const 5#64)) .skip
+def afterBlockCompareResult : ProgHOL 64:=match afterBlockHash with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def beforeVersionedHashes : ProgHOL 64:=match afterBlockCompareResult with | .seq _ (.seq _ rest)=>rest | _=>.skip
+def blockCompareActions : List CallPrefix.Action:=[.scoped (ofString "eq") .one (ofString "memeq") blockCompareArguments,
+  .command blockCompareGuard,.command .skip]
+
+set_option maxRecDepth 100000 in
+theorem block_compare_shape : afterBlockHash=CallPrefix.program blockCompareActions beforeVersionedHashes:=by
+  simp only [afterPayloadHeader,payloadHeaderCall,afterTransactionScan,transactionScanTail,afterTransactionCount,afterTransactionArray,
+    transactionDeclarations,afterStateInit,afterCodes,afterNodes,nodeCall,afterHeaders,headerCall,afterPayload,body,
+    Guest.Software.guestFn_run_attempt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,
+    CallPrefix.cut,↓reduceIte,blockHashAllocation,afterBlockHashAllocation,afterBlockHash,CallPrefix.program,
+    blockCompareActions,blockCompareArguments,blockCompareRight,blockCompareGuard,afterBlockCompareResult,beforeVersionedHashes,localVar]
+  trivial
+
+theorem block_compare_guard_pure : PureDecision blockCompareGuard:=.ite _ (.raised _ _) .skip
+
+/-- The existing all-outcome comparison allowance also covers malformed
+operand reads. Its following literal guard and skip consume no source ticks. -/
+theorem block_compare_prefix_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (installed : OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source (CallPrefix.program blockCompareActions .skip)).2.clock≤129 := by
+  exact MutableTable.MemeqAny.scoped_cost source (localVar "bh") blockCompareRight (ofString "eq") (.seq blockCompareGuard (.seq .skip .skip))
+    (MutableTable.MemeqAny.original_code source.code installed)
+    (ClockCost.sequence source.code blockCompareGuard (.seq .skip .skip) 0 0
+      (ClockCost.conditional source.code _ _ _ 0 0 (ClockCost.raised source.code _ _) (ClockCost.skip source.code))
+      (ClockCost.sequence source.code .skip .skip 0 0 (ClockCost.skip source.code) (ClockCost.skip source.code)))
+
+theorem block_compare_prefix_frame (code) (installed : OriginalCode.Installed code) :
+    LocalEffects.Preserves code (CallPrefix.program blockCompareActions .skip) := by
+  apply LocalEffects.scoped_body code _ _ _ _ _ Memeq32.formals Memeq32.body .one
+    (MutableTable.MemeqAny.original_code code installed) (MutableTable.MemeqAny.readonly code)
+  exact LocalEffects.sequence code blockCompareGuard (.seq .skip .skip)
+    (LocalEffects.conditional code _ _ _ (LocalEffects.raised code _ _) (LocalEffects.skip code))
+    (LocalEffects.sequence code .skip .skip (LocalEffects.skip code) (LocalEffects.skip code))
+
+/-- Every actually reached comparison prefix keeps the physical main model.
+Its tested result and raised exceptions come from that same execution. -/
+theorem block_compare_reached {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (execution : CallPrefix.Execution source blockCompareActions target) :
+    AfterHeader input target pointer si record gasWord header boundary encoded := by
+  have observed:=execution.erase .skip
+  rw [evaluateHOLFiniteState_skip] at observed
+  have retained:=block_compare_prefix_frame source.code physical.data.arena.code source rfl
+  have frame : LocalEffects.erase target=LocalEffects.erase source:=observed.symm.trans retained
+  have saved (key : MlS) (different : key≠ofString "eq") : target.locals.lookup key=source.locals.lookup key:=by
+    apply execution.keeps_local key
+    intro action member
+    simp [blockCompareActions] at member
+    rcases member with rfl|rfl|rfl
+    · exact CallPrefix.KeepsLocal.scoped key (ofString "eq") .one (ofString "memeq") blockCompareArguments different
+    · exact CallPrefix.KeepsLocal.decision key blockCompareGuard block_compare_guard_pure
+    · exact CallPrefix.KeepsLocal.decision key .skip .skip
+  exact physical.of_frame frame ((saved _ (by decide)).trans physical.data.siLocal)
+    ((saved _ (by decide)).trans physical.headerCell) ((saved _ (by decide)).trans physical.payloadCell)
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.AfterHeader.of_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_compare_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_compare_guard_pure
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_compare_prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_compare_prefix_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_compare_reached
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The actual block-hash comparison and BlockErr5 guard either stop or
+reach the original version check with all main/header facts retained. -/
+theorem after_block_hash_compare_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterBlockHash=(outcome,post)) :
+    source.clock-post.clock≤129 ∨ ∃ current inner,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤129 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current beforeVersionedHashes=(outcome,inner) := by
+  rw [block_compare_shape] at run
+  rcases CallPrefix.priced_frame_trace source post blockCompareActions beforeVersionedHashes 129
+    (block_compare_prefix_cost source physical.data.arena.code) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    exact Or.inr ⟨current,inner,block_compare_reached physical execution,forward,price,endpoint,continued⟩
+
+/-- Whole original run_attempt prefix through the actual header-hash
+comparison; the next code is the literal is_valid_versioned_hashes caller. -/
+theorem to_before_versioned_hashes {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤479872713925 ∨ ∃ current inner header encoded,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤479872713925 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeVersionedHashes=(outcome,inner) := by
+  rcases to_after_block_hash data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨before,target,header,encoded,physical,forward,price,endpoint,continued⟩:=reached
+    rcases after_block_hash_compare_trace physical outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,retained,compareForward,comparePrice,scope,rest⟩:=reached
+      have scopeClock:=scope.clock
+      exact Or.inr ⟨current,inner,header,encoded,retained,by omega,by omega,endpoint.trans scopeClock,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_block_hash_compare_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_before_versioned_hashes

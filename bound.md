@@ -41,7 +41,7 @@ through both actual payload-header indexed tries. The complete unchanged
 withdrawal encoder costs≤201body source ticks; its real loop costs≤203 per
 row. The actual run_attempt prefix through payload_header, both indexed tries,
 request encoding/hashing, final BAL hash and header hash either stops or reaches the original
-comparison continuation within479872713796source ticks, retaining all decoded
+version-check caller within479872713925source ticks, retaining all decoded
 inputs/header fields and the actual restored heap. The request array/count≤5 and every helper entry are derived
 from that same execution. Any reached continuation has zero actual transactions
 and withdrawals, derived from the real trie executions.
@@ -2466,7 +2466,7 @@ bounded aligned heap and the derived zero transaction/withdrawal counts.
 No later hash result, success, funding or extra entry hypothesis is assumed.
 
 The complete original prefix through that call either stops or reaches its
-unchanged comparison continuation within479872713796source ticks. Header
+unchanged version-check caller within479872713925source ticks. Header
 caller alone costs476485158959. These remain source-clock allowances; global
 uniform target-step composition remains open. Joining the previously separate
 proof paths exposed two identically named node-constructor shape lemmas;
@@ -2514,7 +2514,7 @@ inputs, with real caller SI/PL/hdr and derived zero TX/WD counts retained.
 
 This prefix costs≤2306source ticks. The complete run_attempt prefix through
 payload_header and header hashing either stops or reaches the original
-comparison continuation within479872713796source ticks. This is not a
+version-check caller within479872713925source ticks. This is not a
 uniform target-step K. Main comparison/version/header validation/execution,
 formal target composition, dominant-slack review and final cleanup remain open.
 
@@ -2523,3 +2523,24 @@ current-main-header-hash-complete-v1.log PASS3090jobs, permitted printed
 axioms only. Index8700modules/18196facts; inventory8745/replacement closure0/
 fixed files unchanged. Claim infinity; no full verifier success.
 Usage54%weekly/0resetcredits. No executable or entry hypothesis changed.
+
+
+## Actual main header comparison and version-check entry
+
+The real block-hash memeq call, BlockErr5 guard and following skip now have
+an all-outcome source allowance129 using the existing comparison caller
+contract. Its physical read-only frame and actual lexical bindings retain
+the complete decoded input, header, heap and derived zero TX/WD counts.
+The reusable AfterHeader.of_frame contract now handles later read-only checks.
+
+The complete unchanged run_attempt prefix either stops or reaches its actual
+is_valid_versioned_hashes caller within479872713925source ticks. No equality
+result, future guard success or external hypothesis is supplied. The remaining
+version/header validation/execution and formal uniform target composition
+remain open, followed by dominant-slack review and cleanup.
+
+Validation: current-main-header-compare-v2.log PASS3090jobs and
+current-main-header-compare-complete-v1.log PASS3090jobs, permitted printed
+axioms only. Index8700modules/18204facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage54%weekly/0resetcredits.

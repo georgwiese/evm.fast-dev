@@ -4360,3 +4360,24 @@ current-main-header-hash-complete-v1.log PASS3090jobs, permitted printed
 axioms only. Index8700modules/18196facts; inventory8745/replacement closure0/
 fixed files unchanged. Claim infinity; no full verifier success.
 Usage54%weekly/0resetcredits. No executable or entry hypothesis changed.
+
+
+## Actual main header comparison and version-check entry
+
+The real block-hash memeq call, BlockErr5 guard and following skip now have
+an all-outcome source allowance129 using the existing comparison caller
+contract. Its physical read-only frame and actual lexical bindings retain
+the complete decoded input, header, heap and derived zero TX/WD counts.
+The reusable AfterHeader.of_frame contract now handles later read-only checks.
+
+The complete unchanged run_attempt prefix either stops or reaches its actual
+is_valid_versioned_hashes caller within479872713925source ticks. No equality
+result, future guard success or external hypothesis is supplied. The remaining
+version/header validation/execution and formal uniform target composition
+remain open, followed by dominant-slack review and cleanup.
+
+Validation: current-main-header-compare-v2.log PASS3090jobs and
+current-main-header-compare-complete-v1.log PASS3090jobs, permitted printed
+axioms only. Index8700modules/18204facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage54%weekly/0resetcredits.

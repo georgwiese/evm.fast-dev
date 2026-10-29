@@ -2439,3 +2439,348 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.Single
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.after_clearing_execute
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.after_clearing_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Clear
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+
+theorem after_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (index rounds : Nat) :
+    after source pointer index rounds={source with
+      locals:=(after source pointer index rounds).locals,
+      memory:=(after source pointer index rounds).memory,clock:=source.clock-rounds} := by
+  have frame:=after_state source pointer index rounds
+  have written:=congrArg PanSemStateFiniteExact.memory frame
+  change (after source pointer index rounds).memory=memory source.memory pointer index rounds at written
+  rw [←written] at frame
+  exact frame
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Clear
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def body : ProgHOL 64:=Clear.divmodBody
+def lessTest : ExpHOL 64:=.cmp .lower (localVar "mm") (localVar "n")
+def underflowArguments : List (ExpHOL 64):=[localVar "u"]
+def guard : ProgHOL 64:=.ite lessTest (.call none (ofString "digits_to_u256") underflowArguments) .skip
+def resetIndex : ProgHOL 64:=.assign .local (ofString "i") (.const 0#64)
+def afterQuotient : ProgHOL 64:=.seq guard (.seq resetIndex (.seq (Clear.loop "r" 8) (Single.afterClearing Single.wideArguments)))
+def afterCounts : ProgHOL 64:=.dec (ofString "i") .one (.const 0#64) (.seq (Clear.loop "q" 16) afterQuotient)
+def price (length : Nat) : Nat:=if length=0 then 17 else 34*length+26
+
+private def findCounts : ProgHOL 64→ Option (ProgHOL 64)
+  | .dec name shape expression rest=>
+    if name=ofString "i" then some (.dec name shape expression rest) else findCounts rest
+  | .decCall _ _ _ _ rest=>findCounts rest
+  | .seq first rest=>(findCounts first).orElse (fun _=>findCounts rest)
+  | .ite _ yes no=>(findCounts yes).orElse (fun _=>findCounts no)
+  | _=>none
+
+theorem literal_counts : findCounts body=some afterCounts := by
+  simp [findCounts,body,Clear.divmodBody,Guest.Software.guestFn_digits_divmod,progToHOL,expToHOL,shapeToHOL,
+    afterCounts,afterQuotient,guard,lessTest,underflowArguments,resetIndex,Clear.loop,Clear.test,Clear.body,Clear.address,Clear.increment,
+    Single.afterClearing,Single.wideArguments,Single.returnArguments,localVar,
+    show ofString "q"≠ofString "i" by decide,show ofString "r"≠ofString "i" by decide,show ofString "v"≠ofString "i" by decide]
+
+/-- Facts after the actual two length calls on the one-digit-divisor path.
+The zero case retains the real eight cells read by its early return. -/
+structure Scanned (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (length : Nat) : Prop where
+  context : Workspace.Context source base
+  installed : OriginalCode.Installed source.code
+  small : length≤16
+  q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient)))
+  r : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder)))
+  u : source.locals.lookup (ofString "u")=some (.val (.word (Workspace.pointer base .numerator)))
+  v : source.locals.lookup (ofString "v")=some (.val (.word (Workspace.pointer base .divisor)))
+  n : source.locals.lookup (ofString "n")=some (.val (.word 1#64))
+  mm : source.locals.lookup (ofString "mm")=some (.val (.word (BitVec.ofNat 64 length)))
+  image : Image source (Workspace.pointer base .numerator) contents length
+  divisorCell : source.memory (Workspace.pointer base .divisor)=.word divisor
+  divisorSmall : divisor.toNat<2^32
+  positive : 0<divisor.toNat
+  digitsSmall : ∀ index,index<length→ (contents index).toNat<2^32
+  zeroCase : length=0→ Image source (Workspace.pointer base .numerator) (fun _=>0#64) 8
+
+theorem Scanned.withClock {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→ BitVec 64} {length : Nat} (checked : Scanned source base divisor contents length) (clock : Nat) :
+    Scanned {source with clock:=clock} base divisor contents length :=
+  ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.installed,checked.small,
+    checked.q,checked.r,checked.u,checked.v,checked.n,checked.mm,checked.image,checked.divisorCell,
+    checked.divisorSmall,checked.positive,checked.digitsSmall,checked.zeroCase⟩
+
+theorem Scanned.bindIndex {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→ BitVec 64} {length : Nat} (checked : Scanned source base divisor contents length) (word : BitVec 64) :
+    Scanned (bind source "i" word) base divisor contents length := by
+  refine ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.installed,checked.small,
+    ?_,?_,?_,?_,?_,?_,checked.image,checked.divisorCell,checked.divisorSmall,checked.positive,checked.digitsSmall,checked.zeroCase⟩
+  · exact (bind_lookup_other source "i" "q" _ (by decide)).trans checked.q
+  · exact (bind_lookup_other source "i" "r" _ (by decide)).trans checked.r
+  · exact (bind_lookup_other source "i" "u" _ (by decide)).trans checked.u
+  · exact (bind_lookup_other source "i" "v" _ (by decide)).trans checked.v
+  · exact (bind_lookup_other source "i" "n" _ (by decide)).trans checked.n
+  · exact (bind_lookup_other source "i" "mm" _ (by decide)).trans checked.mm
+
+/-- The actual clear preserves every scanned argument and future input read
+when its workspace buffer differs from the numerator and divisor arrays. -/
+theorem Scanned.afterClear {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base divisor : BitVec 64}
+    {contents : Nat→ BitVec 64} {length : Nat} (checked : Scanned source base divisor contents length)
+    (cleared : Workspace.Buffer) (notNumerator : Workspace.Buffer.numerator≠cleared) (notDivisor : Workspace.Buffer.divisor≠cleared) :
+    Scanned (Clear.after source (Workspace.pointer base cleared) 0 (Workspace.count cleared)) base divisor contents length := by
+  let pointer:=Workspace.pointer base cleared
+  let target:=Clear.after source pointer 0 (Workspace.count cleared)
+  have state:=Clear.after_state source pointer 0 (Workspace.count cleared)
+  have code:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.code) state
+  change target.code=source.code at code
+  have targetCode : OriginalCode.Installed target.code:=by rw [code];exact checked.installed
+  have divisorAway : ∀ index,index<Workspace.count cleared→ Workspace.pointer base .divisor≠slot pointer index:=by
+    intro index inside
+    simpa only [slot,Nat.mul_zero,show BitVec.ofNat 64 0=0#64 from rfl,BitVec.add_zero] using
+      Workspace.separate base .divisor cleared notDivisor 0 index (by decide) inside
+  have divisorKept:=Clear.after_away source pointer (Workspace.pointer base .divisor) (Workspace.count cleared) divisorAway
+  refine ⟨Clear.after_context source base pointer (Workspace.count cleared) checked.context,targetCode,checked.small,
+    ?_,?_,?_,?_,?_,?_,?_,divisorKept.trans checked.divisorCell,checked.divisorSmall,checked.positive,checked.digitsSmall,?_⟩
+  · exact (Clear.after_other source pointer 0 _ "q" (by decide)).trans checked.q
+  · exact (Clear.after_other source pointer 0 _ "r" (by decide)).trans checked.r
+  · exact (Clear.after_other source pointer 0 _ "u" (by decide)).trans checked.u
+  · exact (Clear.after_other source pointer 0 _ "v" (by decide)).trans checked.v
+  · exact (Clear.after_other source pointer 0 _ "n" (by decide)).trans checked.n
+  · exact (Clear.after_other source pointer 0 _ "mm" (by decide)).trans checked.mm
+  · exact Clear.after_workspace_image source base cleared .numerator notNumerator contents length checked.small checked.image
+  · intro zero
+    exact Clear.after_workspace_image source base cleared .numerator notNumerator (fun _=>0#64) 8 (by decide) (checked.zeroCase zero)
+
+private theorem guard_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (length : Nat) (checked : Scanned source base divisor contents length) :
+    eval source lessTest=some (.val (.word (if length=0 then 1#64 else 0#64))) := by
+  have encoded : (BitVec.ofNat 64 length).toNat=length:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have small:=checked.small;omega)]
+  have nLocal:=checked.n
+  have mmLocal:=checked.mm
+  simp [eval,lessTest,localVar,evalHOLExact,toExact,nLocal,mmLocal,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,encoded]
+
+private theorem wide_arguments (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (length : Nat) (checked : Scanned source base divisor contents length) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) Single.wideArguments=
+      some (Single.values (Workspace.pointer base .quotient) (Workspace.pointer base .remainder) (Workspace.pointer base .numerator)
+        (Workspace.pointer base .divisor) length) := by
+  have qLocal:=checked.q
+  have rLocal:=checked.r
+  have uLocal:=checked.u
+  have vLocal:=checked.v
+  have nLocal:=checked.n
+  have mmLocal:=checked.mm
+  simp [Single.wideArguments,Single.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,
+    qLocal,rLocal,uLocal,vLocal,nLocal,mmLocal]
+
+theorem price_lower (length : Nat) : 16≤price length := by
+  by_cases zero : length=0 <;> simp [price,zero] <;> omega
+
+theorem price_upper (length : Nat) : price length≤34*length+26 := by
+  by_cases zero : length=0 <;> simp [price,zero]
+
+structure Result (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (length : Nat) (quotient : Nat→ BitVec 64) (remainder : BitVec 64) : Prop where
+  run : evaluateHOLFiniteState source afterCounts=(some (.returned (RlpWrite.U256Value.tuple (Single.remainderWords remainder))),target)
+  state : target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-price length}
+  quotientImage : Image target (Workspace.pointer base .quotient) (Single.padded quotient length) 16
+  quotientEq : number quotient length=number contents length/divisor.toNat
+  remainderEq : remainder.toNat=number contents length%divisor.toNat
+  small : remainder.toNat<divisor.toNat
+  away : ∀ query,(∀ index,index<16→ query≠slot (Workspace.pointer base .quotient) index)→
+    (∀ index,index<8→ query≠slot (Workspace.pointer base .remainder) index)→ target.memory query=source.memory query
+
+set_option maxHeartbeats 800000 in
+/-- Exact execution of the real post-scan wrapper, including its early
+zero-numerator return and the positive division branch. -/
+theorem after_counts_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (length : Nat) (checked : Scanned source base divisor contents length)
+    (enough : price length≤source.clock) :
+    ∃ target quotient remainder,Result source target base divisor contents length quotient remainder := by
+  classical
+  let indexed:=bind source "i" 0#64
+  have indexedModel : Scanned indexed base divisor contents length:=checked.bindIndex 0#64
+  let qPointer:=Workspace.pointer base .quotient
+  let rPointer:=Workspace.pointer base .remainder
+  let qCleared:=Clear.after indexed qPointer 0 16
+  have qRun:=Clear.loop_execute indexed "q" qPointer 16 0 16 (by decide) rfl indexedModel.q (bind_lookup_same _ _ _) (by decide)
+    (by intro index inside;exact Workspace.slot_mapped indexed base indexedModel.context .quotient index inside)
+    (by change 16≤source.clock;exact Nat.le_trans (price_lower length) enough)
+  have qModel : Scanned qCleared base divisor contents length:=indexedModel.afterClear .quotient
+    (by intro impossible;cases impossible) (by intro impossible;cases impossible)
+  have qFrame : qCleared={source with locals:=qCleared.locals,memory:=qCleared.memory,clock:=source.clock-16}:=
+    Clear.after_frame indexed qPointer 0 16
+  have qClock : qCleared.clock=source.clock-16:=congrArg PanSemStateFiniteExact.clock qFrame
+  have qIndex : qCleared.locals.lookup (ofString "i")=some (.val (.word 16#64)):=by
+    simpa using Clear.after_index indexed qPointer 0 16 (bind_lookup_same _ _ _)
+  have qZero : Image qCleared qPointer (fun _=>0#64) 16:=Clear.after_image indexed qPointer 16
+  have qAway : ∀ query,(∀ index,index<16→ query≠slot qPointer index)→ qCleared.memory query=source.memory query:=by
+    intro query outside
+    exact Clear.after_away indexed qPointer query 16 outside
+  have qDefinition : qCleared=Clear.after indexed qPointer 0 16:=rfl
+  rw [←qDefinition] at qRun
+  clear_value qCleared
+  by_cases zero : length=0
+  · subst length
+    have uArgs : evalListHOLFinite qCleared (h:=fun query=>Classical.propDecidable (qCleared.memaddrs query)) underflowArguments=
+        some [.val (.word (Workspace.pointer base .numerator))]:=by
+      have uLocal:=qModel.u
+      simp [underflowArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,uLocal]
+    have returned:=ToWords.tail_execute qCleared (Workspace.pointer base .numerator) (fun _=>0#64) underflowArguments qModel.installed
+      uArgs (qModel.zeroCase rfl)
+      (by intro index inside;exact Workspace.slot_mapped qCleared base qModel.context .numerator index (by change index<16;omega))
+      (by
+        have funded : 17≤source.clock:=by simpa [price] using enough
+        omega)
+    have zeroWords : ToWords.words (fun _=>0#64)=Single.remainderWords 0#64:=by
+      funext index
+      simp [ToWords.words,Single.remainderWords]
+    rw [zeroWords] at returned
+    let inner:=emptyLocalsHOLFinite {qCleared with clock:=qCleared.clock-1}
+    have guardRun : evaluateHOLFiniteState qCleared guard=(some (.returned (RlpWrite.U256Value.tuple (Single.remainderWords 0#64))),inner):=by
+      have tested:=guard_read qCleared base divisor contents 0 qModel
+      simp only [eval,if_pos rfl] at tested
+      rw [guard,evaluateHOLFiniteState_ite,tested]
+      simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide)]
+      exact returned
+    have continued : evaluateHOLFiniteState qCleared afterQuotient=
+        (some (.returned (RlpWrite.U256Value.tuple (Single.remainderWords 0#64))),inner):=by
+      rw [afterQuotient,evaluateHOLFiniteState_seq_line780,guardRun]
+    have indexedRun : evaluateHOLFiniteState indexed (.seq (Clear.loop "q" 16) afterQuotient)=
+        (some (.returned (RlpWrite.U256Value.tuple (Single.remainderWords 0#64))),inner):=by
+      rw [evaluateHOLFiniteState_seq_line780,qRun]
+      exact continued
+    have declared:=ScalarScope.declare_execute source inner "i" (.const 0#64) 0#64 (.seq (Clear.loop "q" 16) afterQuotient) _ rfl indexedRun
+    let target:=restore source "i" inner
+    refine ⟨target,(fun _=>0#64),0#64,⟨?_,?_,?_,by simp [number],by simp [number],checked.positive,?_⟩⟩
+    · exact declared
+    · have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=target.locals,memory:=target.memory,clock:=state.clock-1}) qFrame
+      change target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-16-1} at frame
+      change target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-17}
+      simpa only [Nat.sub_sub] using frame
+    · intro index inside
+      change qCleared.memory (slot qPointer index)=.word (Single.padded (fun _=>0#64) 0 index)
+      simpa [Single.padded] using qZero index inside
+    · intro query outsideQ outsideR
+      exact qAway query outsideQ
+  · have funded : 34*length+26≤source.clock:=by simpa only [price,if_neg zero] using enough
+    let reset:=bind qCleared "i" 0#64
+    have resetModel : Scanned reset base divisor contents length:=qModel.bindIndex 0#64
+    let rCleared:=Clear.after reset rPointer 0 8
+    have rRun:=Clear.loop_execute reset "r" rPointer 8 0 8 (by decide) rfl resetModel.r (bind_lookup_same _ _ _) (by decide)
+      (by intro index inside;exact Workspace.slot_mapped reset base resetModel.context .remainder index inside)
+      (by change 8≤qCleared.clock;omega)
+    have rModel : Scanned rCleared base divisor contents length:=resetModel.afterClear .remainder
+      (by intro impossible;cases impossible) (by intro impossible;cases impossible)
+    have rFrame : rCleared={qCleared with locals:=rCleared.locals,memory:=rCleared.memory,clock:=qCleared.clock-8}:=
+      Clear.after_frame reset rPointer 0 8
+    have rClock : rCleared.clock=source.clock-24:=by
+      have clock:=congrArg PanSemStateFiniteExact.clock rFrame
+      change rCleared.clock=qCleared.clock-8 at clock
+      omega
+    have rZero : Image rCleared rPointer (fun _=>0#64) 8:=Clear.after_image reset rPointer 8
+    have rQuotient : Image rCleared qPointer (fun _=>0#64) 16:=
+      Clear.after_workspace_image reset base .remainder .quotient (by intro impossible;cases impossible) (fun _=>0#64) 16 (by decide) qZero
+    have rAway : ∀ query,(∀ index,index<8→ query≠slot rPointer index)→ rCleared.memory query=qCleared.memory query:=by
+      intro query outside
+      exact Clear.after_away reset rPointer query 8 outside
+    have rDefinition : rCleared=Clear.after reset rPointer 0 8:=rfl
+    rw [←rDefinition] at rRun
+    clear_value rCleared
+    obtain ⟨middle,quotient,remainder,result,tailRun⟩:=Single.after_clearing_execute rCleared base divisor rModel.context rModel.installed
+      contents length rModel.small rModel.image rModel.divisorCell rModel.divisorSmall rModel.positive rModel.digitsSmall
+      rZero rModel.r Single.wideArguments (wide_arguments rCleared base divisor contents length rModel) (by omega)
+    let inner:=emptyLocalsHOLFinite {middle with clock:=middle.clock-1}
+    have guardRun : evaluateHOLFiniteState qCleared guard=(none,qCleared):=by
+      have tested:=guard_read qCleared base divisor contents length qModel
+      simp only [eval,if_neg zero] at tested
+      rw [guard,evaluateHOLFiniteState_ite,tested]
+      simp
+    have resetRun : evaluateHOLFiniteState qCleared resetIndex=(none,reset):=
+      StateSteps.assign_execute qCleared "i" (.const 0#64) 16#64 0#64 qIndex rfl
+    have continued : evaluateHOLFiniteState qCleared afterQuotient=
+        (some (.returned (RlpWrite.U256Value.tuple (Single.remainderWords remainder))),inner):=by
+      rw [afterQuotient,evaluateHOLFiniteState_seq_line780,guardRun]
+      change evaluateHOLFiniteState qCleared (.seq resetIndex (.seq (Clear.loop "r" 8) (Single.afterClearing Single.wideArguments)))=_
+      rw [evaluateHOLFiniteState_seq_line780,resetRun]
+      change evaluateHOLFiniteState reset (.seq (Clear.loop "r" 8) (Single.afterClearing Single.wideArguments))=_
+      rw [evaluateHOLFiniteState_seq_line780,rRun]
+      exact tailRun
+    have indexedRun : evaluateHOLFiniteState indexed (.seq (Clear.loop "q" 16) afterQuotient)=
+        (some (.returned (RlpWrite.U256Value.tuple (Single.remainderWords remainder))),inner):=by
+      rw [evaluateHOLFiniteState_seq_line780,qRun]
+      exact continued
+    have declared:=ScalarScope.declare_execute source inner "i" (.const 0#64) 0#64 (.seq (Clear.loop "q" 16) afterQuotient) _ rfl indexedRun
+    let target:=restore source "i" inner
+    refine ⟨target,quotient,remainder,⟨?_,?_,?_,result.quotientEq,result.remainderEq,result.small,?_⟩⟩
+    · exact declared
+    · have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=target.locals,memory:=target.memory,clock:=state.clock-1}) result.state
+      change target={rCleared with locals:=target.locals,memory:=target.memory,clock:=rCleared.clock-(34*length+1)-1} at frame
+      rw [rFrame,qFrame] at frame
+      change target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-16-8-(34*length+1)-1} at frame
+      have subtract : source.clock-16-8-(34*length+1)-1=source.clock-(34*length+26):=by omega
+      simpa only [price,if_neg zero,subtract] using frame
+    · exact result.quotient_image rQuotient
+    · intro query outsideQ outsideR
+      change middle.memory query=source.memory query
+      rw [result.away query (by intro index inside;exact outsideQ index (by have small:=checked.small;omega))
+        (by simpa [slot] using outsideR 0 (by decide))]
+      exact (rAway query outsideR).trans (qAway query outsideQ)
+
+
+/-- Every outcome of the actual post-scan wrapper spends at most its
+length-dependent allowance, including an insufficient incoming clock. -/
+theorem after_counts_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (length : Nat) (checked : Scanned source base divisor contents length) :
+    source.clock-(evaluateHOLFiniteState source afterCounts).2.clock≤price length := by
+  by_cases enough : price length≤source.clock
+  · obtain ⟨target,quotient,remainder,result⟩:=after_counts_execute source base divisor contents length checked enough
+    rw [result.run]
+    have clock:=congrArg PanSemStateFiniteExact.clock result.state
+    change target.clock=source.clock-price length at clock
+    change source.clock-target.clock≤price length
+    omega
+  · omega
+
+/-- A real normal return supplies its own funding, numerical remainder,
+full quotient image, and complete memory frame. -/
+theorem after_counts_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (length : Nat) (checked : Scanned source base divisor contents length)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterCounts=(some (.returned returned),post)) :
+    ∃ quotient remainder,price length≤source.clock ∧
+      returned=RlpWrite.U256Value.tuple (Single.remainderWords remainder) ∧
+      Result source post base divisor contents length quotient remainder := by
+  obtain ⟨baseTarget,baseQ,baseR,baseResult⟩:=after_counts_execute {source with clock:=price length}
+    base divisor contents length (checked.withClock (price length)) (by rfl)
+  have zero : baseTarget.clock=0:=by
+    have clock:=congrArg PanSemStateFiniteExact.clock baseResult.state
+    change baseTarget.clock=price length-price length at clock
+    omega
+  have funded:=(ClockCost.normal_from_zero_clock source baseTarget post afterCounts (price length) _ _ baseResult.run zero
+    (by intro impossible;cases impossible) normal (by intro impossible;cases impossible)).1
+  obtain ⟨target,quotient,remainder,result⟩:=after_counts_execute source base divisor contents length checked funded
+  have output:=normal.symm.trans result.run
+  have same : post=target:=congrArg Prod.snd output
+  have value : returned=RlpWrite.U256Value.tuple (Single.remainderWords remainder):=by
+    have values:=congrArg Prod.fst output
+    cases values
+    rfl
+  exact ⟨quotient,remainder,funded,value,same.symm ▸ result⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.literal_counts
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.Scanned.withClock
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.Scanned.bindIndex
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.Scanned.afterClear
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Clear.after_frame
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.price_lower
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.price_upper
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.after_counts_execute
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.after_counts_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.after_counts_normal

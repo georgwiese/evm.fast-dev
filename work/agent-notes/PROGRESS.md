@@ -5051,3 +5051,31 @@ Two-digit normalization/subtraction/remainder stores, Taylor/current header
 validation/main, uniform target composition, exact K, slack review and
 cleanup remain in the active goal. No executable/fixed challenge premise or
 historical untracked RlpLength/RlpWrite WIP changed.
+
+
+## Complete real post-scan one-digit division wrapper
+
+The actual digits_divmod i declaration, q16 clear, mm<n guard, index reset,
+r8 clear, divmnu call and final tail return now have one complete checked
+execution contract. The zero-numerator path really returns from u before
+clearing r. The positive path retains the full16-word quotient and exact
+natural remainder, with only the actual quotient/remainder buffers writable.
+A real normal return derives its own funding and all of these physical facts.
+Every outcome, including short-clock timeouts, spends at most17source ticks
+when the scanned length is0, otherwise34*length+26 (298at8,570at16).
+These are source-clock allowances, not the final target evaluator bound.
+
+Validation: current-divmod-clearing-normal-v1.log PASS1030jobs; all10new
+printed facts have only permitted axioms. Index8700modules/18467facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Effort estimate remains
+50%, plausible40–60%. Usage31%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays exactly65536entries.
+
+Next: connect the original wrapper's three pointer declarations, divisor
+conversion and actual length scans, then its u256 caller. Retain u256 in
+runtime Data and derive input/workspace separation using the actual startup
+heap minimum2701135464. Two-digit normalization/subtraction/remainder stores,
+Taylor/header validation/main, uniform target composition, exact K, dominant
+slack review and cleanup remain open. No executable/fixed challenge premise
+or historical untracked RlpLength/RlpWrite WIP changed.

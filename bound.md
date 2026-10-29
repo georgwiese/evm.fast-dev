@@ -1077,3 +1077,28 @@ Index8643modules/17597facts; inventory8687/replacement closure0/fixed files
 unchanged. Incremental policy PASS65477entries/2485243625bytes. Claim infinity; no global finite target K or full verification.
 Usage32%weekly/0resetcredits. Next: actual remaining header fields and block
 length, indexed tries, remaining main and uniform target-step composition.
+
+
+## Current header scalar/nonce/base-fee continuation
+
+Connected the actual post-ommer stores, genuine transaction-root allocation,
+four-word difficulty zero, all six scalar payload loads/stores, prev-randao
+pointer, nonce allocation/clear and actual checked four-word base-fee store.
+Main's original continuing prefix now derives the real base-fee values,
+earlier-input memory frame and actual next aligned/bounded persistent heap.
+A shared allocation-frontier helper now carries the real2952790016ceiling
+and derives each reached request's room. The seven hash/clear and scalar
+word-store helpers preserve the same original remaining action execution.
+
+Narrowed U256Store's import to its actual WordTupleFour definitions, removing
+an unrelated block-length/bit-length proof chain. Added BeStep's missing
+explicit BindingLookup import. No Pancake/source/semantics change.
+
+Validation: current-payload-header-basefee-v1.log PASS1898jobs, including
+BeStep and the complete new header-prefix chain. Printed axioms permitted
+only. Index8647modules/17632facts; inventory8691/replacement closure0/fixed
+files unchanged. Incremental policy PASS65481entries/2485298099bytes.
+Claim infinity; no global finite target K or full verification.
+Usage32%weekly/0resetcredits. Next: retain the decoded SI parent field used
+by the remaining stores, complete the root buffers/header fields and connect
+actual block length, indexed tries, remaining main and uniform target steps.

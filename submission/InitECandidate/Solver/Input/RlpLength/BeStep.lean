@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.RlpLength.BeProgram
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 
 namespace InitECandidate.Solver.Input.RlpLength.Be
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact

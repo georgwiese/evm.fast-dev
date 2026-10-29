@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.RlpWrite.U256Value
+import InitECandidate.Solver.Input.WordTupleFour
 import InitECandidate.Solver.WitnessRadix.WordWrites
 
 namespace InitECandidate.Solver.Input.RlpWrite.U256Value

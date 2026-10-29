@@ -2655,6 +2655,7 @@
     "submission/InitECandidate/Solver/Input/CurrentU256/Program.lean",
     "submission/InitECandidate/Solver/Input/CurrentU256/Swap.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/CodeEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/CopiedInput.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DataActions.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DataGlobals.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseCall.lean",
@@ -2676,7 +2677,14 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/NodeBuildReached.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/NodeEntry.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/NodePrefix.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderBaseFee.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderEntry.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderFields.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderFrame.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderHash.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderOmmer.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderStores.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadHeaderZero.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/PayloadImage.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/RunAttempt.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/RunInputs.lean",
@@ -8688,8 +8696,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65473,
-  "package_bytes": 2485205526,
+  "package_entries": 65481,
+  "package_bytes": 2485298099,
   "claim": {
     "K": "infinity"
   },

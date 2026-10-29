@@ -1603,3 +1603,33 @@ files unchanged. Claim infinity; no global finite target K/full verification.
 Usage40%weekly/0resetcredits. Next: actual root calculation/cache evidence,
 remaining main and uniform target-step composition. Five historical untracked
 RLP WIPs remain untouched/unclaimed.
+
+
+## Real cache mutation facts and current leaf insertion outputs
+
+Added a separate zero-cache preservation contract, without requiring an
+arbitrary decoded graph to start uncached. Real node allocation separation
+proves that structural/value/child stores cannot alias cache8or24; actual
+invalidation stores preserve zero caches and clear the visited node's caches.
+Real scalar and branch constructors derive empty caches directly from their
+checked field writes. These facts concern actual memory, with no new oracle
+or unproved global hypothesis.
+
+The current two-leaf branch builder now returns its genuine branch with
+empty caches, through both real side stores and caller restoration. Leaf
+splitting returns an uncached branch or fresh extension. Matching-leaf
+replacement preserves existing zero caches; the complete current leaf helper
+and assigned caller retain zero caches across all old graph nodes and return
+an uncached root whenever the visited leaf was uncached. Shared extension-side
+outputs also retain the cache frame. The complete insertion-loop/root cache
+connection is still open; no whole-builder or global runtime bound is claimed.
+
+Validation: current-trie-two-leaf-cache-v1.log PASS1193jobs;
+current-trie-leaf-split-cache-v1.log PASS1229jobs;
+current-trie-leaf-normal-cache-v1.log PASS1269jobs;
+current-trie-cache-leaf-regression-v2.log PASS3080jobs, including actual current
+main transaction data, indexed loop/setup and payload-to-trie regressions.
+Printed axioms permitted only. Usage41%weekly/0resetcredits. Claim infinity;
+no global finite target K/full verification. Next: complete extension splitting
+and insertion-loop cache evidence, actual root calculation, remaining main and
+uniform target-step composition. Five historical RLP WIPs untouched/unclaimed.

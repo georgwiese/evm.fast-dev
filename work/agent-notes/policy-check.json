@@ -5605,6 +5605,7 @@
     "submission/InitECandidate/Solver/Mpt/TransientSetProgram.lean",
     "submission/InitECandidate/Solver/Mpt/TransientSetZero.lean",
     "submission/InitECandidate/Solver/Mpt/TransientSetZeroPrefix.lean",
+    "submission/InitECandidate/Solver/Mpt/TrieCacheMutation.lean",
     "submission/InitECandidate/Solver/Mpt/TrieChildSlot.lean",
     "submission/InitECandidate/Solver/Mpt/TrieChildStoreNormal.lean",
     "submission/InitECandidate/Solver/Mpt/TrieGraphBranchFields.lean",
@@ -8746,8 +8747,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65532,
-  "package_bytes": 2485672150,
+  "package_entries": 65533,
+  "package_bytes": 2485686373,
   "claim": {
     "K": "infinity"
   },

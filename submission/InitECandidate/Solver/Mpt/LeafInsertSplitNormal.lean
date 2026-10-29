@@ -37,7 +37,7 @@ theorem split_scope_path_normal (source target : PanSemStateFiniteExact 64 Guest
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
-            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ TrieWalk.Uncached target.memory root := by
   obtain ⟨ready,inner,prefixLength,bound,prefixCell,localsEq,frame,price,continued,endpoint⟩:=prefix_entry_normal source target (wordAt source.memory (node+32#64))
     (wordAt source.memory (node+40#64)) key length small installed leftCell oldLengthCell keyCell lengthCell value normal
   have memoryEq:=congrArg PanSemStateFiniteExact.memory frame
@@ -65,7 +65,7 @@ theorem split_scope_path_normal (source target : PanSemStateFiniteExact 64 Guest
     rw [memoryEq,current _ (by decide)]
     exact oldLengthCell
   have readyBound : prefixLength.toNat≤min (wordAt ready.memory (node+40#64)).toNat length.toNat:=by rw [memoryEq]; exact bound
-  obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection⟩:=
+  obtain ⟨finalDomain,finalEndian,finalCode,finalPrice,finalMemory,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,finalFresh,finalProtection,rootClean⟩:=
     after_prefix_path_normal ready inner heap node key length pointer size prefixLength base limit nodeLower pathLower property baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated
       currentQuery currentMember active currentLeaf readyBound ((current _ (by decide)).trans nodeCell) currentLeft currentLength
       ((current _ (by decide)).trans keyCell) ((current _ (by decide)).trans lengthCell) ((current _ (by decide)).trans pointerCell) ((current _ (by decide)).trans sizeCell) prefixCell
@@ -85,7 +85,7 @@ theorem split_scope_path_normal (source target : PanSemStateFiniteExact 64 Guest
     exact finalProtection address (safe.of_fields graph base address same pureFields) before away
   rw [endpoint]
   exact ⟨finalDomain.trans domainEq,finalEndian.trans endianEq,finalCode.trans codeEq,spent,preserved,finalHeap,root,answer,finalHeapCell,finalArena,finalAligned,grows,
-    next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩
+    next,inclusion,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection,rootClean⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

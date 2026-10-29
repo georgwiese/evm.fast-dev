@@ -37,12 +37,12 @@ theorem scoped_path_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
           next.PathBuffer ready.be pathLower finalHeap.toNat key1 length1.toNat ∧ next.PathBuffer ready.be pathLower finalHeap.toNat key2 length2.toNat ∧
           (∀ node,next.valid node → graph.valid node ∨ heap.toNat≤node.toNat) ∧
           (∀ query : BitVec 64,graph.ProtectedWord query → query.toNat<heap.toNat →
-            TrieWalk.PathWordAway key1 length1.toNat query → TrieWalk.PathWordAway key2 length2.toNat query → next.ProtectedWord query) := by
+            TrieWalk.PathWordAway key1 length1.toNat query → TrieWalk.PathWordAway key2 length2.toNat query → next.ProtectedWord query) ∧ TrieWalk.Uncached ready.memory heap := by
   obtain ⟨callee,called,inputs1,inputs2⟩:=environment source key1 length1 pointer1 size1 key2 length2 pointer2 size2 (original_code source.code installed)
   obtain ⟨funded,target,returned,inner,run,checked,continued,endpoint⟩:=Input.CallNormal.scoped_normal source post name .one
     (ofString "_create_branch_from_two_leaves") arguments (TwoLeaves.values key1 length1 pointer1 size1 key2 length2 pointer2 size2)
     body continuation callee .one argsRead called value normal
-  obtain ⟨answer,domainEq,endianEq,codeEq,prefixMemory,finalHeap,nextHeapCell,nextArena,nextAligned,grows,branchTag,next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,first,other,provenance,protection⟩:=
+  obtain ⟨answer,domainEq,endianEq,codeEq,prefixMemory,finalHeap,nextHeapCell,nextArena,nextAligned,grows,branchTag,next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,first,other,provenance,protection,clean⟩:=
     body_path_normal (callEntryStateHOLFinite source callee) target heap key1 length1 pointer1 size1 key2 length2 pointer2 size2 graph limit nodeLower pathLower property
       values regions disjoint paths pathRegions separated buffer1 buffer2 inputs1 inputs2 payload1 extra1 payload2 extra2 floor empty domain heapCell frontier aligned installed returned run
   let ready:=Input.CallNormal.continuationEntry source target name returned
@@ -56,7 +56,7 @@ theorem scoped_path_normal (source post : PanSemStateFiniteExact 64 Guest.HostMe
   have clockEq : ready.clock=target.clock:=rfl
   have spent : source.clock-ready.clock≤236:=by rw [clockEq]; omega
   exact ⟨ready,inner,localCell,localsEq,domainEq,endianEq,codeEq,spent,continued,endpoint,prefixMemory,finalHeap,nextHeapCell,nextArena,nextAligned,grows,branchTag,
-    next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,first,other,provenance,protection⟩
+    next,oldMember,branchMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,first,other,provenance,protection,clean⟩
 
 end InitECandidate.Solver.Mpt.TwoLeaves
 

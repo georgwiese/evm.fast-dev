@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.TriePathBuffer
 import InitECandidate.Solver.Mpt.TrieProtectedGrowth
+import InitECandidate.Solver.Mpt.TrieCacheMutation
 
 namespace InitECandidate.Solver.Mpt.TwoLeaves
 open Flapjack PanSemStateFiniteExact WitnessRadix GasBudget
@@ -20,6 +21,7 @@ structure SideOutput (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   heapGrows : incoming.toNat≤heap.toNat
   branchTag : wordAt post.memory branch=3#64
   olderPrefix : ∀ query : BitVec 64,query.toNat<branch.toNat → post.memory query=source.memory query
+  cacheFrame : old.CacheFrame post.memory
   graph : TrieWalk.Graph post.memory post.memaddrs
   oldMember : ∀ node,old.valid node → graph.valid node
   branchMember : graph.valid branch

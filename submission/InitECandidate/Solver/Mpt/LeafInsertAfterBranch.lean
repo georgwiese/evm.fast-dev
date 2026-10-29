@@ -3,6 +3,7 @@ import InitECandidate.Solver.Mpt.ExtensionConstructorTail
 import InitECandidate.Solver.Mpt.ExtensionConstructorPathGraph
 import InitECandidate.Solver.Input.TailCallNoFallthrough
 import InitECandidate.Solver.Mpt.NodeConstructorProtected
+import InitECandidate.Solver.Mpt.TrieCacheMutation
 
 namespace InitECandidate.Solver.Mpt.InsertLeaf
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -32,7 +33,8 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           (∀ node,next.valid node → graph.valid node ∨ heap.toNat≤node.toNat) ∧
           (∀ query : BitVec 64,graph.ProtectedWord query → query.toNat<heap.toNat →
-            TrieWalk.PathWordAway key prefixLength.toNat query → next.ProtectedWord query) := by
+            TrieWalk.PathWordAway key prefixLength.toNat query → next.ProtectedWord query) ∧
+          (TrieWalk.Uncached source.memory branch→TrieWalk.Uncached target.memory root) := by
   by_cases zero : prefixLength=0#64
   · have read : eval source prefixPositive=some (.val (.word 0#64)):=by
       simp [eval,prefixPositive,localVar,evalHOLExact,toExact,prefixCell,zero,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
@@ -48,7 +50,7 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
     have answer : value=.val (.word branch):=Option.some.inj (observed.symm.trans expected)
     rw [endpoint]
     exact ⟨rfl,rfl,rfl,(by change source.clock-source.clock≤3; omega),(by intro query before; rfl),heap,branch,answer,heapCell,frontier,aligned,Nat.le_refl _,
-      graph,(fun _ live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro node live; exact Or.inl live),(by intro query safe _before _away; exact safe)⟩
+      graph,(fun _ live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro node live; exact Or.inl live),(by intro query safe _before _away; exact safe),(by intro clean; exact clean)⟩
   · have positive : 0<prefixLength.toNat:=by
       by_contra bad
       have number : prefixLength.toNat=(0#64).toNat:=by change prefixLength.toNat=0; omega
@@ -86,7 +88,8 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
       (by
         intro query safe before away
         exact (physical.path_protected .extension (Or.inr rfl) source target heap _ graph next nodeLower regions members query safe before
-          (by simpa [NodeConstructor.extensionWords] using away)).2)⟩
+          (by simpa [NodeConstructor.extensionWords] using away)).2),
+      (fun _=>physical.uncached (Or.inr rfl))⟩
 
 end InitECandidate.Solver.Mpt.InsertLeaf
 

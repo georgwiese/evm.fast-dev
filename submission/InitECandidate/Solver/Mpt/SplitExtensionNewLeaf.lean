@@ -109,6 +109,11 @@ theorem new_leaf_normal (source target : PanSemStateFiniteExact 64 Guest.HostMem
     heapGrows:=grows
     branchTag:=finalTag
     olderPrefix:=prefixMemory
+    cacheFrame:=by
+      intro node live active offset cache zero
+      have retained:=(physical.cache_frame graph nodeLower regions) node live active offset cache zero
+      exact (base.cache_child_store nodeLower (PersistentAlloc.rounded heap 64#64).toNat baseRegions baseDisjoint branch heap (32+index*8) slot currentMember branchActive)
+        node ((members node).mpr (Or.inl live)) active offset cache retained
     graph:=next
     oldMember:=finalMembers
     freshMembers:=by

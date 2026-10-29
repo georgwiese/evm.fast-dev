@@ -77,6 +77,7 @@ theorem new_side_normal (source target : PanSemStateFiniteExact 64 Guest.HostMem
       heapGrows:=Nat.le_refl _
       branchTag:=branchTag
       olderPrefix:=prefixMemory
+      cacheFrame:=graph.cache_branch_value source nodeLower heap.toNat regions disjoint branch pointer size branchMember branchActive tag
       graph:=next
       oldMember:=by intro node member; rw [same]; exact member
       freshMembers:=by intro node live; rw [same] at live; exact Or.inl live

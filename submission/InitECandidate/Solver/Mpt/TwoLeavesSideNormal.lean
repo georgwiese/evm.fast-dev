@@ -73,6 +73,7 @@ theorem side_normal (second : Bool) (source post : PanSemStateFiniteExact 64 Gue
       heapGrows:=Nat.le_refl _
       branchTag:=branchTag
       olderPrefix:=prefixMemory
+      cacheFrame:=graph.cache_branch_value source nodeLower heap.toNat regions disjoint branch pointer size branchMember branchActive tag
       graph:=next
       oldMember:=by intro node member; rw [same]; exact member
       freshMembers:=by intro node member; rw [same] at member; exact Or.inl member
@@ -94,7 +95,7 @@ theorem side_normal (second : Bool) (source post : PanSemStateFiniteExact 64 Gue
       have numeric : length.toNat=(0#64).toNat:=by change length.toNat=0; omega
       exact zero (BitVec.toNat_inj.mp numeric)
     have leafRun : evaluateHOLFiniteState source (leafScope second)=(none,post):=(nonzero_choice second source length zero lengthCell).symm.trans normal
-    obtain ⟨localsEq,domainEq,endianEq,codeEq,nextHeapCell,nextArena,nextAligned,grows,nextTag,prefixMemory,next,members,nextBranch,nextLeaf,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,first,other,protection⟩:=
+    obtain ⟨localsEq,domainEq,endianEq,codeEq,nextHeapCell,nextArena,nextAligned,grows,nextTag,prefixMemory,next,members,nextBranch,nextLeaf,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,first,other,protection,caches⟩:=
       leaf_side_paths second source post heap key length pointer size otherKey otherLength branch graph limit nodeLower pathLower property
         values regions disjoint paths pathRegions separated buffer otherBuffer positive floor keyCell lengthCell pointerCell sizeCell payload extra domain heapCell frontier aligned installed
         branchCell branchMember branchActive tag leafRun
@@ -110,6 +111,7 @@ theorem side_normal (second : Bool) (source post : PanSemStateFiniteExact 64 Gue
       heapGrows:=grows
       branchTag:=nextTag
       olderPrefix:=prefixMemory
+      cacheFrame:=caches
       graph:=next
       oldMember:=fun node member=>(members node).mpr (Or.inl member)
       freshMembers:=by

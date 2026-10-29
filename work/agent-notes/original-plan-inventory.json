@@ -15,7 +15,7 @@
   "previous_reference": "7d656e5b6878aa420de793d9d6f689fa26ec0842",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 8741,
+  "solver_modules": 8742,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 18,
@@ -59,7 +59,7 @@
     "LabCostTight": 1,
     "LocCost": 1,
     "MemoryCost": 1,
-    "Mpt": 1106,
+    "Mpt": 1107,
     "MutableTable": 493,
     "NopBound": 1,
     "NopCost": 1,

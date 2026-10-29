@@ -44,7 +44,7 @@ theorem body_path_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
           next.PathBuffer post.be pathLower finalHeap.toNat key1 length1.toNat ∧ next.PathBuffer post.be pathLower finalHeap.toNat key2 length2.toNat ∧
           (∀ node,next.valid node → graph.valid node ∨ heap.toNat≤node.toNat) ∧
           (∀ query : BitVec 64,graph.ProtectedWord query → query.toNat<heap.toNat →
-            TrieWalk.PathWordAway key1 length1.toNat query → TrieWalk.PathWordAway key2 length2.toNat query → next.ProtectedWord query) := by
+            TrieWalk.PathWordAway key1 length1.toNat query → TrieWalk.PathWordAway key2 length2.toNat query → next.ProtectedWord query) ∧ TrieWalk.Uncached post.memory heap := by
   obtain ⟨ready,inner,branchCell,localsEq,physical,codeEq,continued,endpoint,base,members,member,baseRegions,baseDisjoint,⟨baseValues⟩,basePaths,basePathRegions,baseSeparated,first,other⟩:=
     branch_entry source post heap key1 length1 key2 length2 graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated buffer1 buffer2
       floor empty domain heapCell frontier aligned installed value normal
@@ -106,11 +106,13 @@ theorem body_path_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     have baseSafe:=(physical.protected source ready heap graph base nodeLower regions members query safe before).2
     have firstSafe:=firstOutput.protectedGraph query baseSafe (before.trans_le grows) firstAway
     exact secondOutput.protectedGraph query firstSafe (before.trans_le (grows.trans firstOutput.heapGrows)) secondAway
+  have cleanFirst:=firstOutput.cacheFrame.uncached base heap member physical.uncached
+  have cleanLast:=secondOutput.cacheFrame.uncached firstOutput.graph heap firstOutput.branchMember cleanFirst
   rw [endpoint,innerEq]
   exact ⟨answer,secondOutput.domain.trans (firstOutput.domain.trans physical.allocation.domain),secondOutput.endian.trans (firstOutput.endian.trans physical.allocation.endian),
     secondOutput.code.trans (firstOutput.code.trans codeEq),prefixMemory,secondOutput.heap,secondOutput.heapCell,secondOutput.heapArena,secondOutput.heapAligned,
     grows.trans (firstOutput.heapGrows.trans secondOutput.heapGrows),secondOutput.branchTag,secondOutput.graph,oldMember,secondOutput.branchMember,
-    secondOutput.regions,secondOutput.disjoint,⟨secondOutput.values⟩,secondOutput.paths,secondOutput.pathRegions,secondOutput.separated,secondOutput.otherBuffer,secondOutput.buffer,provenance,protection⟩
+    secondOutput.regions,secondOutput.disjoint,⟨secondOutput.values⟩,secondOutput.paths,secondOutput.pathRegions,secondOutput.separated,secondOutput.otherBuffer,secondOutput.buffer,provenance,protection,cleanLast⟩
 
 end InitECandidate.Solver.Mpt.TwoLeaves
 

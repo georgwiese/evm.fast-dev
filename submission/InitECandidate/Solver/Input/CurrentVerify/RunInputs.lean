@@ -34,6 +34,8 @@ structure Data (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Gue
   shaState : source.globals.lookup (ofString "sha_st")=some (.val (.word 2701131776#64))
   shaPad : source.globals.lookup (ofString "sha_pad")=some (.val (.word 2701131840#64))
   u256 : source.globals.lookup (ofString "u256_ws")=some (.val (.word 2701134824#64))
+  inputAfterWorkspace : 2701135464≤pointer.toNat
+  siAfterInput : pointer.toNat+input.length%2^64+8≤si.toNat
   heap : NormalHeapEffects.AtLeast (boundary+32) source
   siLocal : source.locals.lookup (ofString "si")=some (.val (.word si))
   siArena : AllocatedBytes.Arena si 96
@@ -91,7 +93,7 @@ theorem Data.of_interval {input : Guest.InputBlob} {source target : PanSemStateF
       omega
   have requests : RequestImage input target pointer si boundary:=⟨rq,requestStart,requestSize,counts,(siFrame 32 (by decide)).trans rqStored,
     requestImage.of_memory (by intro index inside; exact ⟨requestMemory (16*index) (by omega),requestMemory (16*index+8) (by omega)⟩),requestBefore⟩
-  exact ⟨arena,little,environment,mptHash,mptKey,mptEmpty,shaState,shaPad,u256,heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
+  exact ⟨arena,little,environment,mptHash,mptKey,mptEmpty,shaState,shaPad,u256,data.inputAfterWorkspace,data.siAfterInput,heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
     payloadCell,(siFrame 24 (by decide)).trans data.parentCell,gasFrame.trans data.gasCell,data.gasBound,
     data.payload.of_interval (fun query lower upper=>memory query (Nat.le_trans data.recordInside.1 lower) upper) heap,
     data.copied.of_interval boundary (by have before:=data.recordInside.2; omega) (arena.domain.trans data.arena.domain.symm) (little.trans data.little.symm) memory,
@@ -129,6 +131,9 @@ theorem main_inputs {input : Guest.InputBlob} {decoded current post : PanSemStat
     Data input post origin.pointer origin.word record gasWord root.toNat := by
   obtain ⟨arena,next,heap,si⟩ := CurrentHash.RootHash.main_returned_state ready workspace actual
   obtain ⟨siArena,siAligned,recordArena,recordAligned,payloadCell,gasCell,gasBound⟩ := CurrentHash.RootHash.main_payload_cells ready workspace actual
+  have siAfterInput : origin.pointer.toNat+input.length%2^64+8≤origin.word.toNat:=by
+    obtain ⟨headerSource,headerReady,headerPost,nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,data,frame,clock⟩:=ready.snapshot
+    exact data.context.statelessLower
   have recordInside : 2701134824≤record.toNat ∧ record.toNat+136≤root.toNat := by
     obtain ⟨headerSource,headerReady,headerPost,nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,data,frame,clock⟩:=ready.snapshot
     exact ⟨by have a:=data.context.pointerLower; have b:=data.context.statelessLower; have c:=data.context.recordAfter; omega,by have h:=ready.rootAfter; omega⟩
@@ -140,7 +145,7 @@ theorem main_inputs {input : Guest.InputBlob} {decoded current post : PanSemStat
       (by rw [number]; have lower:=data.context.pointerLower; have before:=data.context.statelessLower; omega)
       (by rw [number]; have before:=data.context.recordAfter; have rootBefore:=ready.rootAfter; omega)
     simpa only [BitVec.add_assoc,show 18#64+8#64=26#64 from by decide] using keptParent.trans parent
-  exact ⟨arena,next.little,next.keccak_environment,next.mptHash,next.mptKey,next.mptEmpty,next.shaState,next.shaPad,next.u256,heap,si,siArena,siAligned,recordArena,recordAligned,recordInside,payloadCell,parentCell,gasCell,gasBound,main_payload_image ready workspace actual,main_copied_input ready workspace actual,
+  exact ⟨arena,next.little,next.keccak_environment,next.mptHash,next.mptKey,next.mptEmpty,next.shaState,next.shaPad,next.u256,ready.run.input_lower,siAfterInput,heap,si,siArena,siAligned,recordArena,recordAligned,recordInside,payloadCell,parentCell,gasCell,gasBound,main_payload_image ready workspace actual,main_copied_input ready workspace actual,
     CurrentHash.RootHash.main_witness_images ready workspace actual,by
       obtain ⟨requestStart,requestSize,counts,cell,image,before⟩:=CurrentHash.RootHash.main_requests_image ready workspace actual
       exact ⟨rq,requestStart,requestSize,counts,cell,image,before⟩⟩

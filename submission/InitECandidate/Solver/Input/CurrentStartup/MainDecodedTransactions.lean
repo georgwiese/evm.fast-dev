@@ -40,7 +40,7 @@ theorem WitnessHeadersReturn.Snapshot.transactions_bounded
 transaction records, real pointer/count fields, and uniform count/byte bounds. -/
 theorem MainDecodedState.transactions
     {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701134824 source)
+    (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701135464 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
     (execution : CallPrefix.Execution source DecoderPrefix.actions target)
     (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) :

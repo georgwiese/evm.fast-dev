@@ -3401,3 +3401,35 @@ Taylor normalization/subtraction/remainder stores, Taylor/header/main,
 uniform target composition, exact K, dominant slack review and cleanup.
 Historical untracked RlpLength/RlpWrite WIPs and executable/fixed premises
 stay untouched.
+
+
+## Actual main-derived input/workspace separation
+
+The selected stateless decoder run now retains the actual copied-input
+lower bound2701135464, derived from the real initialized u256 allocation
+and the same preceding heap/setup/input-allocation execution. Whole-source
+main/root cuts use U256Workspace.main_cells to supply this bound; no extra
+separation premise was added to those source-observation statements.
+Older SSZ-only consumers receive the proved weaker bound explicitly.
+
+Runtime Data now retains this copied-input lower bound and the actual
+stateless-record-after-input ownership. Its existing normal frames carry
+both through the full main prefix. The concrete mapped u256 context is
+obtained from that same Data's actual global/domain. The complete640-byte
+workspace and every real buffer word end before copied input, SI and payload
+records. This includes all16quotient slots and the17normalized numerator
+slots; no pointer-wrap or distinct-buffer premise is supplied by a future run.
+
+Validation: current-u256-input-separation-v3.log PASS3100jobs, including
+actual main before-validate_header and all4new printed facts; only permitted
+axioms. Claim infinity; no global finite target K/full verifier success.
+Effort estimate remains50%, plausible40–60%. Usage33%weekly/0resetcredits,
+ordinary usage allowed. No new candidate paths; replacement closure0/fixed
+files unchanged, package65536entries.
+
+Next: use the actual stronger input boundary to transport decoded data
+through arithmetic's legitimate workspace writes, and connect the completed
+one-digit assigned division contract. Two-digit Taylor normalization,
+subtraction/remainder stores, Taylor/header/main, uniform target composition,
+exact K, dominant slack review and cleanup remain open. Historical untracked
+RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.

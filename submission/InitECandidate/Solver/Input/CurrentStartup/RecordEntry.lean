@@ -51,6 +51,7 @@ theorem separated (input : Guest.InputBlob)
   let target := decoderOrigin.post
   let pointer := decoderOrigin.pointer
   obtain ⟨lengthBound, initial, heap, bytes, pCell, lenCell, offsets, lower, aligned, room, separation, frontier, returned⟩ := actual
+  have lower : 2701134824≤pointer.toNat:=Nat.le_trans (by decide) lower
   obtain ⟨extent, tag, version, firstOffset, witnessLower, witnessUpper⟩ :=
     CanonicalHeader.first_offset input source target pointer initial bytes pCell lenCell offsets lower aligned room (.val (.word decoderOrigin.word)) returned
   obtain ⟨before, paid, price, funded, beforeEq, beforeBytes, continuation⟩ :=

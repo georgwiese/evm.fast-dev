@@ -101,7 +101,7 @@ theorem separated_first (input : Guest.InputBlob) (word : BitVec 64)
       Guest.GasLimit.le32 input 2 = 16 ∧ 16 ≤ Guest.GasLimit.le32 input 6 ∧
       Guest.GasLimit.le32 input 6 ≤ input.length % 2^64 - 2 := by
   obtain ⟨source, target, pointer, lengthBound, initial, heap, bytes, pCell, lenCell, offsets, lower, aligned, room, separation, frontier, returned⟩ := actual
-  exact first_offset input source target pointer initial bytes pCell lenCell offsets lower aligned room (.val (.word word)) returned
+  exact first_offset input source target pointer initial bytes pCell lenCell offsets (by omega) aligned room (.val (.word word)) returned
 
 end InitECandidate.Solver.Input.CurrentStartup.CanonicalHeader
 

@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Input.CurrentVerify.RunInputs
 import InitECandidate.Solver.PanHeapGlobals
+import InitECandidate.Solver.Input.UDivMod.CurrentFrame
 
 namespace InitECandidate.Solver.Input.CurrentVerify
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -56,3 +57,40 @@ end InitECandidate.Solver.Input.CurrentVerify
 #print axioms InitECandidate.Solver.Input.CurrentVerify.Data.of_metadata
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.Data.of_heap_frame
+
+
+namespace InitECandidate.Solver.Input.CurrentVerify
+open Flapjack PanSemStateFiniteExact
+
+/-- The same reached main data supplies the real mapped u256 workspace. -/
+theorem Data.u256_workspace {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary) :
+    UDivMod.WideDigits.Workspace.Context source 2701134824#64 :=
+  UDivMod.WideDigits.Workspace.current source data.u256 data.arena.domain
+
+/-- The complete allocated workspace is before the copied input, stateless
+record and payload record, all from their actual startup/decoder ownership. -/
+theorem Data.workspace_separation {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary) :
+    2701134824+640≤pointer.toNat ∧ 2701134824+640≤si.toNat ∧ 2701134824+640≤record.toNat := by
+  have inputLower:=data.inputAfterWorkspace
+  have siAfter:=data.siAfterInput
+  have recordAfter:=data.copied.beforeRecord
+  omega
+
+theorem Data.workspace_slot_before_input {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (buffer : UDivMod.WideDigits.Workspace.Buffer) (index : Nat) (inside : index<UDivMod.WideDigits.Workspace.count buffer) :
+    (UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer 2701134824#64 buffer) index).toNat+8≤pointer.toNat := by
+  have location:=UDivMod.WideDigits.Workspace.slot_number source 2701134824#64 data.u256_workspace buffer index inside
+  have extent:=UDivMod.WideDigits.Workspace.fits buffer
+  have lower:=data.inputAfterWorkspace
+  change (UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer 2701134824#64 buffer) index).toNat=
+    2701134824+UDivMod.WideDigits.Workspace.offset buffer+8*index at location
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.u256_workspace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.workspace_separation
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.workspace_slot_before_input

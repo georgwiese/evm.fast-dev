@@ -50,7 +50,7 @@ def Cut (input : Guest.InputBlob) (decoded : PanSemStateFiniteExact 64 Guest.Hos
 
 theorem cut {input : Guest.InputBlob} {source decoded post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {result : Option (PanSemResultExact 64)} (initial : CurrentStartup.HostState input source)
-    (heap : NormalHeapEffects.AtLeast 2701134824 source)
+    (heap : NormalHeapEffects.AtLeast 2701135464 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
     (decoder : CallPrefix.Execution source CurrentStartup.DecoderPrefix.actions decoded)
     (actual : evaluateHOLFiniteState decoded HashPrefix.decoderTail = (result, post))
@@ -123,7 +123,7 @@ theorem ThroughDecoder.with_ready {input : Guest.InputBlob} {source post : PanSe
 
 theorem refine_decoder {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {result : Option (PanSemResultExact 64)} (initial : CurrentStartup.HostState input source)
-    (heap : NormalHeapEffects.AtLeast 2701134824 source)
+    (heap : NormalHeapEffects.AtLeast 2701135464 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
     (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000)
     (original : CurrentStartup.MainDecodedState.Cut input source result post) : ThroughDecoder input source result post := by
@@ -155,7 +155,7 @@ theorem reached (input : Guest.InputBlob) (outcome : HolOutcome) (events : List 
   rcases startup with continued | stopped
   · obtain ⟨middle, startupRun, initial, actual⟩ := continued
     exact Or.inl ⟨middle, startupRun, initial, refine_decoder initial
-      ((CurrentStartup.MptWorkspace.main_cells input origin middle entry startupRun).2)
+      ((CurrentStartup.U256Workspace.main_cells input origin middle entry startupRun).2)
       (CurrentStartup.EarlyWorkspace.main_offsets input origin middle entry startupRun) gas actual⟩
   · exact Or.inr stopped
 

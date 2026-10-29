@@ -9,7 +9,7 @@ open Flapjack.Basis.Pure.MlString
 /-- The original decoded witness snapshot at main's actual after-decoder
 state, including its real si binding and exact selected decoder run. -/
 theorem current {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
-    (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701134824 source)
+    (initial : HostState input source) (heap : NormalHeapEffects.AtLeast 2701135464 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
     (execution : CallPrefix.Execution source DecoderPrefix.actions target)
     (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) :
@@ -38,7 +38,7 @@ def Cut (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.Host
 return. Every real earlier stopped prefix is retained as the other alternative. -/
 theorem cut (input : Guest.InputBlob) (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     (result : Option (PanSemResultExact 64)) (initial : HostState input source)
-    (heap : NormalHeapEffects.AtLeast 2701134824 source)
+    (heap : NormalHeapEffects.AtLeast 2701135464 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
     (actual : evaluateHOLFiniteState source afterStartup = (result, post))
     (gas : Guest.GasLimit.declaredGasLimit input ≤ 200000000) : Cut input source result post := by
@@ -71,7 +71,7 @@ theorem reached (input : Guest.InputBlob) (outcome : HolOutcome) (events : List 
   rcases startup with continued | stopped
   · obtain ⟨middle, startupRun, initial, actual⟩ := continued
     exact Or.inl ⟨middle, startupRun, initial, cut input middle target result initial
-      ((MptWorkspace.main_cells input origin middle entry startupRun).2)
+      ((U256Workspace.main_cells input origin middle entry startupRun).2)
       (EarlyWorkspace.main_offsets input origin middle entry startupRun) actual gas⟩
   · exact Or.inr stopped
 

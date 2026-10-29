@@ -54,7 +54,7 @@ structure Ready (input : Guest.InputBlob) (decoded current : PanSemStateFiniteEx
 derive the hash-entry image and separation. No extra allocation room, returned
 hash result or assumed future clock is added. -/
 theorem allocated {input : Guest.InputBlob} {source decoded current : PanSemStateFiniteExact 64 Guest.HostMemory}
-    (initial : CurrentStartup.HostState input source) (heap : NormalHeapEffects.AtLeast 2701134824 source)
+    (initial : CurrentStartup.HostState input source) (heap : NormalHeapEffects.AtLeast 2701135464 source)
     (offsets : source.globals.lookup (ofString "ssz_offs") = some (.val (.word 2701132528#64)))
     (decoder : CallPrefix.Execution source CurrentStartup.DecoderPrefix.actions decoded)
     (allocation : CallPrefix.Execution decoded actions current)

@@ -2297,3 +2297,27 @@ success. Usage51%weekly/0resetcredits. Next: separate completed SHA into its
 own helper module while consolidating related loop utilities to retain the
 package entry cap; actual request-hash and BAL/main continuation, formal
 target composition, dominant-slack review and final cleanup.
+
+
+## Completed SHA/helper module cleanup
+
+The checked general SHA contracts now live in CurrentVerify/GeneralSha.lean,
+with explicit minimal proof dependencies and one namespace/axiom-print block.
+ExecutionRequests.lean imports this module and retains the request encoder/
+main-prefix proofs. Moved theorem names and proof text match the previous
+checked checkpoint; no hypothesis or executable changed.
+
+CounterStrideLoop's named-stride rules/public n-specializations were merged
+into the related existing CounterStrideCost module, and all seven import
+sites were repointed. Deleting the old module offsets the new SHA module:
+the package remains exactly65536entries. The proof index now drops deleted
+module paths before recording successful builds, so moves cannot leave a
+nonexistent module recorded as current checked source.
+
+Validation: standalone current-general-sha-module-cleanup-v2.log PASS819jobs
+and current-sha-module-client-cleanup-v1.log PASS2712jobs. Permitted printed
+axioms only. Index8700modules/18113facts (one moved module added/one removed);
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity; no
+global finite target K/full verifier success. Usage51%weekly/0resetcredits.
+Next: actual compute_requests_hash loop/caller and BAL/main continuation,
+formal target composition, dominant-slack review and final cleanup.

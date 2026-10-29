@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Mpt.NibblesCompactProgram
-import InitECandidate.Solver.Input.CounterStrideLoop
+import InitECandidate.Solver.Input.CounterStrideCost
 
 namespace InitECandidate.Solver.Mpt.NibblesCompact
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix

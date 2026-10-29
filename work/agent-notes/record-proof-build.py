@@ -39,7 +39,9 @@ for log_name in args.logs:
                            'dependency_reference': reference}
 record_path = notes / 'proof-checks.json'
 record = json.loads(record_path.read_text())
-modules = {entry['path']: entry for entry in record['modules']}
+modules = {entry['path']: entry for entry in record['modules']
+           if (root / entry['path']).is_file()}
+removed = len(record['modules']) - len(modules)
 theorems = {entry['theorem']: entry for entry in record['theorems']}
 added = 0
 for source in sorted((root / 'submission/InitECandidate/Solver' / args.subdirectory).rglob('*.lean')):
@@ -56,4 +58,4 @@ for source in sorted((root / 'submission/InitECandidate/Solver' / args.subdirect
 record['modules'] = sorted(modules.values(), key=lambda entry: entry['path'])
 record['theorems'] = list(theorems.values())
 record_path.write_text(json.dumps(record, indent=2) + '\n')
-print(json.dumps({'added_modules': added, 'checked_modules': len(modules), 'main_theorems': len(theorems)}))
+print(json.dumps({'added_modules': added, 'removed_modules': removed, 'checked_modules': len(modules), 'main_theorems': len(theorems)}))

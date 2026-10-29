@@ -1,5 +1,5 @@
 import InitECandidate.Solver.WitnessRadix.KeccakAbsorbAnyCost
-import InitECandidate.Solver.Input.CounterStrideLoop
+import InitECandidate.Solver.Input.CounterStrideCost
 import InitECandidate.Solver.Input.LoopNormalExit
 
 namespace InitECandidate.Solver.WitnessRadix.Keccak256.AnyCost

@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.CounterStrideLoop
+import InitECandidate.Solver.Input.CounterStrideCost
 import InitECandidate.Solver.Input.ByteStoreLocal
 import InitECandidate.Solver.Input.ByteStoreClock
 import InitECandidate.Solver.WitnessRadix.CopyWordProgram

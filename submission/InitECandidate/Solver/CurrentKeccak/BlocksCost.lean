@@ -1,6 +1,6 @@
 import InitECandidate.Solver.CurrentKeccak.HashSyntax
 import InitECandidate.Solver.CurrentKeccak.AbsorbCost
-import InitECandidate.Solver.Input.CounterStrideLoop
+import InitECandidate.Solver.Input.CounterStrideCost
 import InitECandidate.Solver.Input.LoopNormalExit
 
 namespace InitECandidate.Solver.CurrentKeccak.Hash

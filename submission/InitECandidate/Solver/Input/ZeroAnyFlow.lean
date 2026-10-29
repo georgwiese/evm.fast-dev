@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.CounterStrideLoop
+import InitECandidate.Solver.Input.CounterStrideCost
 import InitECandidate.Solver.Input.ZeroByteFlow
 import InitECandidate.Solver.WitnessRadix.ZeroConditions
 import InitECandidate.Solver.WitnessRadix.ZeroLoopTail

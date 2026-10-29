@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Mpt.KeyToNibblesAnyFlow
-import InitECandidate.Solver.Input.CounterStrideLoop
+import InitECandidate.Solver.Input.CounterStrideCost
 import InitECandidate.Solver.Input.WhileNormalGuard
 import InitECandidate.Solver.Input.ClockCostSequenceReached
 

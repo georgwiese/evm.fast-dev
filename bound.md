@@ -1850,3 +1850,25 @@ success. Usage44%weekly/0resetcredits. Next: combine current word/byte/list
 writer contracts into the unchanged withdrawal encoder, then its loop and
 indexed trie, remaining header/main and uniform target steps. Cleanup remains
 on the plan; historical five RLP WIPs are untouched/unclaimed.
+
+## Complete current withdrawal encoder cost
+
+The unchanged encode_withdrawal_rlp (current779) now has a complete201-body-
+source-tick all-outcome bound. Its own genuine alloc64 capacity check derives
+buffer ownership; each of the three actual word writers reads the same older
+44-byte input record, and the address writer derives its exact21-byte size.
+Real caller restoration and p=p+w updates retain the input image and buffer
+context. The final actual list helper and pair return are included. No future
+allocator, writer or normal suffix is assumed; failed allocations, malformed
+destinations, stopped helper calls and short clocks are covered.
+
+Reusable same-run normal word/address/advance/final-list contracts also retain
+all input bytes and bounded writes. The whole encoder's composed normal-return
+contract and the surrounding withdrawal loop/trie are next; the global target
+bound, remaining header/main and final cleanup are still outstanding.
+
+Validation: current-withdrawal-encoder-cost-v2.log PASS2709jobs; permitted
+printed axioms only. Index8700modules/17892facts; inventory8745/replacement
+closure0/fixed files unchanged. Incremental policy65536entries/2485844740bytes
+(entry cap full). Claim infinity; no global finite target K/full verifier
+success. Usage45%weekly/0resetcredits. Five historical RLP WIPs untouched.

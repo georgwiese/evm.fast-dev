@@ -1,6 +1,11 @@
 import InitECandidate.Solver.Input.CurrentRlp.BytesWrite
 import InitECandidate.Solver.Input.NoReturnAtoms
+import InitECandidate.Solver.Input.WordPairEnvironment
+import InitECandidate.Solver.WitnessRadix.AllocationNoWrapTrace
 import InitECandidate.Solver.Input.CurrentRlp.HeaderSuffix
+import InitECandidate.Solver.Input.RlpLength.WithdrawalProgram
+import InitECandidate.Solver.Input.InputImageFrame
+import InitECandidate.Solver.WitnessRadix.AllocatedAwayBelow
 
 namespace InitECandidate.Solver.Input.CurrentRlp
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
@@ -237,6 +242,420 @@ theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
 
 end FinishList
 
+namespace Withdrawal
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_encode_withdrawal_rlp with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "wd",.one)]
+def returnShape : ShapeHOL:=.comb [.one,.one]
+def advance : ProgHOL 64:=.assign .local (ofString "p") (.op .add [localVar "p",localVar "w"])
+def wordArguments (offset : Nat) : List (ExpHOL 64):=[localVar "p",Scalar.flat64 (localVar "wd") (if offset=0 then [] else [offset])]
+def addressArguments : List (ExpHOL 64):=[localVar "p",.op .add [localVar "wd",.const 16#64],.const 20#64]
+def secondCall : ProgHOL 64:=.call (some (some (.local,ofString "w"),none)) (ofString "rlp_encode_word") (wordArguments 8)
+def addressCall : ProgHOL 64:=.call (some (some (.local,ofString "w"),none)) (ofString "rlp_encode_bytes") addressArguments
+def thirdCall : ProgHOL 64:=.call (some (some (.local,ofString "w"),none)) (ofString "rlp_encode_word") (wordArguments 36)
+def finishArguments : List (ExpHOL 64):=[localVar "buf",localVar "p"]
+def returnPair : ProgHOL 64:=.return (.rstruct [localVar "buf",localVar "total"])
+def afterWords : ProgHOL 64:=.decCall (ofString "total") .one (ofString "rlp_finish_list") finishArguments returnPair
+def afterThird : ProgHOL 64:=.seq advance afterWords
+def afterAddress : ProgHOL 64:=.seq advance (.seq thirdCall afterThird)
+def afterSecond : ProgHOL 64:=.seq advance (.seq addressCall afterAddress)
+def afterFirst : ProgHOL 64:=.seq advance (.seq secondCall afterSecond)
+def afterPointer : ProgHOL 64:=.decCall (ofString "w") .one (ofString "rlp_encode_word") (wordArguments 0) afterFirst
+def afterBuffer : ProgHOL 64:=.dec (ofString "p") .one (.op .add [localVar "buf",.const 9#64]) afterPointer
+
+set_option maxRecDepth 100000 in
+theorem body_shape : body=.decCall (ofString "buf") .one (ofString "alloc") [.const 64#64] afterBuffer := by
+  simp only [body,Guest.Software.guestFn_encode_withdrawal_rlp,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
+    afterBuffer,afterPointer,afterFirst,afterSecond,afterAddress,afterThird,afterWords,advance,secondCall,addressCall,thirdCall,wordArguments,addressArguments,
+    finishArguments,returnPair,Scalar.flat64,Scalar.flat32,Scalar.flatAddress,Scalar.shift,localVar,List.nil_append,List.cons_append,List.append_nil]
+  rfl
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "encode_withdrawal_rlp")=some (formals,body,returnShape) := by
+  have checked:=OriginalCode.indexed code installed 779 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_encode_withdrawal_rlp) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,returnShape,Guest.Software.guestFn_encode_withdrawal_rlp,
+    paramToHOL,shapeToHOL,List.map_cons,List.map_nil] using checked
+
+/-- The real withdrawal writer's live buffer, current position and copied
+44-byte input record. All spans precede the independently derived future
+heap frontier; no future helper normality is part of this contract. -/
+structure Writer (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer buffer : BitVec 64) (start position : Nat) : Prop where
+  installed : OriginalCode.Installed source.code
+  domain : source.memaddrs=InitE.ordinaryDomain
+  bufferArena : AllocatedBytes.Arena buffer 64
+  bufferAligned : buffer.toNat%8=0
+  inputArena : AllocatedBytes.Arena pointer (input.length%2^64)
+  inputBefore : pointer.toNat+input.length%2^64≤buffer.toNat
+  heap : Blob.HeapInput source input pointer
+  inside : start+44≤input.length%2^64
+  wdCell : source.locals.lookup (ofString "wd")=some (.val (.word (pointer+BitVec.ofNat 64 start)))
+  bufferCell : source.locals.lookup (ofString "buf")=some (.val (.word buffer))
+  positionCell : source.locals.lookup (ofString "p")=some (.val (.word (buffer+BitVec.ofNat 64 position)))
+
+/-- A same-execution bounded writer frame keeps every input byte and all
+nonlocal state needed by the next scalar read. Only the next real local
+bindings are supplied separately. -/
+theorem Writer.of_write {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (frame : WriteFrame source target buffer 64) (nextPosition : Nat)
+    (wd : target.locals.lookup (ofString "wd")=some (.val (.word (pointer+BitVec.ofNat 64 start))))
+    (buf : target.locals.lookup (ofString "buf")=some (.val (.word buffer)))
+    (p : target.locals.lookup (ofString "p")=some (.val (.word (buffer+BitVec.ofNat 64 nextPosition)))) :
+    Writer input target pointer buffer start nextPosition := by
+  have domain:=MemoryMetadata.domain frame.metadata
+  change target.memaddrs=source.memaddrs at domain
+  have endian:=MemoryMetadata.endian frame.metadata
+  change target.be=source.be at endian
+  have code:=MemoryMetadata.code frame.metadata
+  change target.code=source.code at code
+  refine ⟨by rw [code]; exact model.installed,domain.trans model.domain,model.bufferArena,model.bufferAligned,model.inputArena,model.inputBefore,?_,model.inside,wd,buf,p⟩
+  apply Blob.HeapInput.of_words source target input pointer model.heap domain endian
+  intro offset inside
+  have number:=byteAddress_toNat pointer offset (by have room:=model.inputArena.upper; omega)
+  have backing:=AllocatedBytes.aligned_number (pointer+BitVec.ofNat 64 offset)
+  have below : (panByteAlignHOL (width:=64) (pointer+BitVec.ofNat 64 offset)).toNat<buffer.toNat:=by
+    change (pointer+BitVec.ofNat 64 offset).toNat=pointer.toNat+offset at number
+    have before:=model.inputBefore
+    omega
+  exact frame.memory _ (model.bufferArena.away_below buffer _ 64 model.bufferAligned below)
+
+/-- The current flattened scalar expression reads the same actual input
+record at each of the writer's three word positions. -/
+theorem Writer.scalar_read {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (offset : Nat) (inside : offset≤36) :
+    eval source (Scalar.flat64 (localVar "wd") (if offset=0 then [] else [offset]))=
+      some (.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input (start+offset))))) := by
+  exact RlpLength.Withdrawal.scalar_read source input pointer start offset model.heap (by have limit:=model.inside; omega) model.wdCell
+
+def wordCall (offset : Nat) : ProgHOL 64:=.call (some (some (.local,ofString "w"),none)) (ofString "rlp_encode_word") (wordArguments offset)
+
+/-- The actual current word writer reads the same copied withdrawal
+scalar and costs at most nineteen ticks including its assigned caller. -/
+theorem Writer.word_call_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (offset : Nat) (inside : offset≤36) : source.clock-(evaluateHOLFiniteState source (wordCall offset)).2.clock≤19 := by
+  have scalar:=model.scalar_read offset inside
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) (wordArguments offset)=
+      some [.val (.word (buffer+BitVec.ofNat 64 position)),.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input (start+offset))))]:=by
+    simp only [eval] at scalar
+    simp only [wordArguments,evalListHOLFinite,evalListHOLExact,scalar]
+    simp [evalHOLExact,toExact,localVar,model.positionCell]
+  obtain ⟨callee,called,d,w⟩:=RlpWrite.WordWrite.environment source.code.lookup (buffer+BitVec.ofNat 64 position)
+    (BitVec.ofNat 64 (Guest.GasLimit.le64 input (start+offset))) (WordWrite.original_code source.code model.installed)
+  exact ClockCost.call_current source (some (some (ofString "w"))) (ofString "rlp_encode_word") (wordArguments offset) _ WordWrite.body callee .one 18
+    args called (WordWrite.body_cost (callEntryStateHOLFinite source callee) _ _ model.installed d w)
+
+/-- A real normal assigned word writer derives its new length, actual
+local update and complete retained input/buffer context for the next step. -/
+theorem Writer.word_call_normal {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (offset : Nat) (inside : offset≤36) (room : position+9≤64)
+    (normal : evaluateHOLFiniteState source (wordCall offset)=(none,target)) :
+    ∃ encoded,1≤encoded ∧ encoded≤9 ∧ target.locals=source.locals.update (ofString "w",.val (.word (BitVec.ofNat 64 encoded))) ∧
+      target.locals.lookup (ofString "w")=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
+      Writer input target pointer buffer start position ∧ WriteFrame source target buffer 64 := by
+  have scalar:=model.scalar_read offset inside
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) (wordArguments offset)=
+      some [.val (.word (buffer+BitVec.ofNat 64 position)),.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input (start+offset))))]:=by
+    simp only [eval] at scalar
+    simp only [wordArguments,evalListHOLFinite,evalListHOLExact,scalar]
+    simp [evalHOLExact,toExact,localVar,model.positionCell]
+  obtain ⟨callee,called,d,w⟩:=RlpWrite.WordWrite.environment source.code.lookup (buffer+BitVec.ofNat 64 position)
+    (BitVec.ofNat 64 (Guest.GasLimit.le64 input (start+offset))) (WordWrite.original_code source.code model.installed)
+  obtain ⟨funded,child,returned,run,endpoint⟩:=CallNormal.local_known source target (ofString "w") (ofString "rlp_encode_word") (wordArguments offset) _
+    WordWrite.body callee .one args called normal
+  obtain ⟨encoded,positive,bounded,answer,price,frame⟩:=WordWrite.body_normal (callEntryStateHOLFinite source callee) child
+    (buffer+BitVec.ofNat 64 position) (BitVec.ofNat 64 (Guest.GasLimit.le64 input (start+offset))) model.installed d w returned run
+  have finalFrame : WriteFrame source target buffer 64:=by
+    rw [endpoint,answer]
+    exact (show WriteFrame source (bind {child with locals:=source.locals} "w" (BitVec.ofNat 64 encoded)) (buffer+BitVec.ofNat 64 position) 9 from
+      ⟨frame.metadata,frame.memory⟩).shift buffer position 9 64 room
+  have localsEq : target.locals=source.locals.update (ofString "w",.val (.word (BitVec.ofNat 64 encoded))):=by
+    rw [endpoint,answer]
+    rfl
+  have saved (name : String) (other : ofString "w"≠ofString name) : target.locals.lookup (ofString name)=source.locals.lookup (ofString name):=by
+    rw [localsEq]
+    simp [HolFiniteMapExact.update,FUPDATE,other]
+  have current:=model.of_write finalFrame position ((saved "wd" (by decide)).trans model.wdCell)
+    ((saved "buf" (by decide)).trans model.bufferCell) ((saved "p" (by decide)).trans model.positionCell)
+  exact ⟨encoded,positive,bounded,localsEq,by rw [localsEq]; simp [HolFiniteMapExact.update,FUPDATE],current,finalFrame⟩
+
+/-- The actual pointer assignment advances by the returned encoded size,
+retaining the same input, heap and already written buffer bytes. -/
+theorem Writer.advance_normal {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position) (encoded : Nat)
+    (w : source.locals.lookup (ofString "w")=some (.val (.word (BitVec.ofNat 64 encoded))))
+    (normal : evaluateHOLFiniteState source advance=(none,target)) :
+    Writer input target pointer buffer start (position+encoded) ∧ WriteFrame source target buffer 64 := by
+  have read : eval source (.op .add [localVar "p",localVar "w"])=some (.val (.word (buffer+BitVec.ofNat 64 (position+encoded)))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,model.positionCell,w,valueIsWord,valueWord,wordOpHOL,wordOp,BitVec.ofNat_add,BitVec.add_assoc]
+  have executed:=StateSteps.assign_execute source "p" (.op .add [localVar "p",localVar "w"]) (buffer+BitVec.ofNat 64 position)
+    (buffer+BitVec.ofNat 64 (position+encoded)) model.positionCell read
+  have endpoint : target=bind source "p" (buffer+BitVec.ofNat 64 (position+encoded)):=congrArg Prod.snd (normal.symm.trans executed)
+  have frame : WriteFrame source target buffer 64:=by rw [endpoint]; exact ⟨rfl,by intros; rfl⟩
+  have wd : target.locals.lookup (ofString "wd")=some (.val (.word (pointer+BitVec.ofNat 64 start))):=by
+    rw [endpoint]
+    exact (bind_lookup_other _ "p" "wd" _ (by decide)).trans model.wdCell
+  have buf : target.locals.lookup (ofString "buf")=some (.val (.word buffer)):=by
+    rw [endpoint]
+    exact (bind_lookup_other _ "p" "buf" _ (by decide)).trans model.bufferCell
+  have p : target.locals.lookup (ofString "p")=some (.val (.word (buffer+BitVec.ofNat 64 (position+encoded)))):=by rw [endpoint]; exact bind_lookup_same _ _ _
+  exact ⟨model.of_write frame (position+encoded) wd buf p,frame⟩
+
+/-- The address writer's real arguments are the current position and
+its owned twenty bytes inside the same original withdrawal record. -/
+theorem Writer.address_args {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position) :
+    evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) addressArguments=
+      some [.val (.word (buffer+BitVec.ofNat 64 position)),.val (.word (pointer+BitVec.ofNat 64 (start+16))),.val (.word 20#64)] := by
+  simp [addressArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,model.positionCell,model.wdCell,
+    valueIsWord,valueWord,wordOpHOL,wordOp,BitVec.ofNat_add,BitVec.add_assoc]
+
+theorem Writer.address_call_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (room : position+29≤64) : source.clock-(evaluateHOLFiniteState source addressCall).2.clock≤41 := by
+  obtain ⟨callee,called,d,s,n⟩:=RlpWrite.BytesWrite.environment source.code.lookup (buffer+BitVec.ofNat 64 position) (pointer+BitVec.ofNat 64 (start+16)) 20#64
+    (BytesWrite.original_code source.code model.installed)
+  have inputArena : AllocatedBytes.Arena (pointer+BitVec.ofNat 64 (start+16)) 20:=model.inputArena.subrange pointer _ (start+16) 20 (by have extent:=model.inside; omega)
+  have outputArena : AllocatedBytes.Arena (buffer+BitVec.ofNat 64 position) 29:=model.bufferArena.subrange buffer 64 position 29 room
+  exact ClockCost.call_current source (some (some (ofString "w"))) (ofString "rlp_encode_bytes") addressArguments _ BytesWrite.body callee .one 40
+    model.address_args called (BytesWrite.body_cost (callEntryStateHOLFinite source callee) _ _ 20 (by decide) model.installed model.domain d s n inputArena outputArena)
+
+/-- The real assigned address writer returns exactly21, retains the next
+word's input and keeps its writes inside the original64-byte buffer. -/
+theorem Writer.address_call_normal {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (room : position+29≤64) (normal : evaluateHOLFiniteState source addressCall=(none,target)) :
+    target.locals=source.locals.update (ofString "w",.val (.word 21#64)) ∧ target.locals.lookup (ofString "w")=some (.val (.word 21#64)) ∧
+      Writer input target pointer buffer start position ∧ WriteFrame source target buffer 64 := by
+  obtain ⟨callee,called,d,s,n⟩:=RlpWrite.BytesWrite.environment source.code.lookup (buffer+BitVec.ofNat 64 position) (pointer+BitVec.ofNat 64 (start+16)) 20#64
+    (BytesWrite.original_code source.code model.installed)
+  obtain ⟨funded,child,returned,run,endpoint⟩:=CallNormal.local_known source target (ofString "w") (ofString "rlp_encode_bytes") addressArguments _
+    BytesWrite.body callee .one model.address_args called normal
+  have inputArena : AllocatedBytes.Arena (pointer+BitVec.ofNat 64 (start+16)) 20:=model.inputArena.subrange pointer _ (start+16) 20 (by have extent:=model.inside; omega)
+  have outputArena : AllocatedBytes.Arena (buffer+BitVec.ofNat 64 position) 29:=model.bufferArena.subrange buffer 64 position 29 room
+  obtain ⟨encoded,lower,positive,bounded,number,answer,price,frame⟩:=BytesWrite.body_normal (callEntryStateHOLFinite source callee) child
+    (buffer+BitVec.ofNat 64 position) (pointer+BitVec.ofNat 64 (start+16)) 20 (by decide) model.installed model.domain d s n inputArena outputArena returned run
+  have answer21:=BytesWrite.twenty_normal_value (callEntryStateHOLFinite source callee) child _ _ model.installed d s n returned run
+  have finalFrame : WriteFrame source target buffer 64:=by
+    rw [endpoint,answer21]
+    exact (show WriteFrame source (bind {child with locals:=source.locals} "w" 21#64) (buffer+BitVec.ofNat 64 position) 29 from
+      ⟨frame.metadata,frame.memory⟩).shift buffer position 29 64 room
+  have localsEq : target.locals=source.locals.update (ofString "w",.val (.word 21#64)):=by rw [endpoint,answer21]; rfl
+  have saved (name : String) (other : ofString "w"≠ofString name) : target.locals.lookup (ofString name)=source.locals.lookup (ofString name):=by
+    rw [localsEq]
+    simp [HolFiniteMapExact.update,FUPDATE,other]
+  have current:=model.of_write finalFrame position ((saved "wd" (by decide)).trans model.wdCell)
+    ((saved "buf" (by decide)).trans model.bufferCell) ((saved "p" (by decide)).trans model.positionCell)
+  exact ⟨localsEq,by rw [localsEq]; simp [HolFiniteMapExact.update,FUPDATE],current,finalFrame⟩
+
+/-- The actual list-finisher caller and final pair return, at the position
+supplied by the preceding four real field writers, on every outcome. -/
+theorem Writer.finish_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (lower : 9≤position) (upper : position≤57) : source.clock-(evaluateHOLFiniteState source afterWords).2.clock≤101 := by
+  obtain ⟨callee,called,d,p⟩:=word_pair_environment source.code.lookup (ofString "rlp_finish_list") (ofString "dst") (ofString "payload_end")
+    FinishList.body .one buffer (buffer+BitVec.ofNat 64 position) (by decide) (FinishList.original_code source.code model.installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) finishArguments=
+      some [.val (.word buffer),.val (.word (buffer+BitVec.ofNat 64 position))]:=by
+    simp [finishArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,model.bufferCell,model.positionCell]
+  rw [afterWords]
+  exact ClockCost.scoped_reached_current source "total" .one (ofString "rlp_finish_list") finishArguments _ FinishList.body returnPair callee .one 100 0 args called
+    (FinishList.body_cost (callEntryStateHOLFinite source callee) buffer position model.installed model.domain model.bufferArena lower upper d p)
+    (by
+      intro child returned normal checked
+      let current:=CallNormal.continuationEntry source child "total" returned
+      exact ClockCost.returned current.code (.rstruct [localVar "buf",localVar "total"]) current rfl)
+
+/-- The same observed final list call supplies the actual encoded pair,
+owned positive output and retained physical writer frame. -/
+theorem Writer.finish_normal {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (lower : 9≤position) (upper : position≤57) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source afterWords=(some (.returned value),target)) :
+    ∃ encoded,1≤encoded ∧ encoded≤57 ∧ value=.rStruct [.val (.word buffer),.val (.word (BitVec.ofNat 64 encoded))] ∧ WriteFrame source target buffer 64 := by
+  obtain ⟨callee,called,d,p⟩:=word_pair_environment source.code.lookup (ofString "rlp_finish_list") (ofString "dst") (ofString "payload_end")
+    FinishList.body .one buffer (buffer+BitVec.ofNat 64 position) (by decide) (FinishList.original_code source.code model.installed)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) finishArguments=
+      some [.val (.word buffer),.val (.word (buffer+BitVec.ofNat 64 position))]:=by
+    simp [finishArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,model.bufferCell,model.positionCell]
+  rw [afterWords] at normal
+  obtain ⟨funded,child,returned,inner,run,checked,continued,endpoint⟩:=CallNormal.scoped_normal source target "total" .one (ofString "rlp_finish_list")
+    finishArguments _ FinishList.body returnPair callee .one args called value normal
+  obtain ⟨encoded,positive,bounded,answer,price,frame⟩:=FinishList.body_normal (callEntryStateHOLFinite source callee) child buffer position
+    model.installed model.domain model.bufferArena lower upper d p returned run
+  let current:=CallNormal.continuationEntry source child "total" returned
+  have buf : current.locals.lookup (ofString "buf")=some (.val (.word buffer)):=
+    (CallNormal.continuation_lookup_other source child "total" "buf" returned (by decide)).trans model.bufferCell
+  have total : current.locals.lookup (ofString "total")=some (.val (.word (BitVec.ofNat 64 encoded))):=by rw [CallNormal.continuation_lookup_same,answer]
+  obtain ⟨observed,innerEq⟩:=return_normal current inner (.rstruct [localVar "buf",localVar "total"]) value continued
+  have expected : eval current (.rstruct [localVar "buf",localVar "total"])=some (.rStruct [.val (.word buffer),.val (.word (BitVec.ofNat 64 encoded))]):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,buf,total]
+  refine ⟨encoded,positive,bounded,Option.some.inj (observed.symm.trans expected),?_⟩
+  rw [endpoint,innerEq]
+  exact ⟨frame.metadata,frame.memory⟩
+
+theorem advance_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) :
+    source.clock-(evaluateHOLFiniteState source advance).2.clock≤0 :=
+  ClockCost.of_quiet source.code advance (QuietClock.assign source.code _ _) source rfl
+
+/-- After the final actual word return, pointer advance and the genuine
+list-finisher suffix account for every outcome in101source ticks. -/
+theorem Writer.after_third_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (encoded : Nat) (w : source.locals.lookup (ofString "w")=some (.val (.word (BitVec.ofNat 64 encoded))))
+    (lower : 9≤position+encoded) (upper : position+encoded≤57) : source.clock-(evaluateHOLFiniteState source afterThird).2.clock≤101 := by
+  rw [afterThird]
+  exact ClockCost.sequence_reached_current source advance afterWords 0 101 (advance_cost source) (by
+    intro current normal
+    obtain ⟨next,frame⟩:=model.advance_normal encoded w normal
+    exact next.finish_cost lower upper)
+
+/-- The third word call is reached only after the actual address length
+has advanced the pointer; its normal output supplies the final position. -/
+theorem Writer.after_address_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (w : source.locals.lookup (ofString "w")=some (.val (.word 21#64))) (upper : position+21≤48) :
+    source.clock-(evaluateHOLFiniteState source afterAddress).2.clock≤120 := by
+  rw [afterAddress]
+  exact ClockCost.sequence_reached_current source advance (.seq thirdCall afterThird) 0 120 (advance_cost source) (by
+    intro current normal
+    obtain ⟨next,frame⟩:=model.advance_normal 21 w normal
+    exact ClockCost.sequence_reached_current current thirdCall afterThird 19 101 (next.word_call_cost 36 (by decide)) (by
+      intro target callRun
+      obtain ⟨encoded,positive,bounded,localsEq,wCell,final,memory⟩:=next.word_call_normal 36 (by decide) (by omega) callRun
+      exact final.after_third_cost encoded wCell (by omega) (by omega)))
+
+/-- The address-call price is combined only with its same-run exact21-byte
+normal result, keeping the third word inside the original buffer. -/
+theorem Writer.after_second_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (encoded : Nat) (w : source.locals.lookup (ofString "w")=some (.val (.word (BitVec.ofNat 64 encoded))))
+    (upper : position+encoded≤27) : source.clock-(evaluateHOLFiniteState source afterSecond).2.clock≤161 := by
+  rw [afterSecond]
+  exact ClockCost.sequence_reached_current source advance (.seq addressCall afterAddress) 0 161 (advance_cost source) (by
+    intro current normal
+    obtain ⟨next,frame⟩:=model.advance_normal encoded w normal
+    exact ClockCost.sequence_reached_current current addressCall afterAddress 41 120 (next.address_call_cost (by omega)) (by
+      intro target callRun
+      obtain ⟨localsEq,wCell,final,memory⟩:=next.address_call_normal (by omega) callRun
+      exact final.after_address_cost wCell (by omega)))
+
+/-- Every outcome of the unchanged suffix after the first word is bounded,
+including both assigned word writers, the address writer and list finisher. -/
+theorem Writer.after_first_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start position : Nat} (model : Writer input source pointer buffer start position)
+    (encoded : Nat) (w : source.locals.lookup (ofString "w")=some (.val (.word (BitVec.ofNat 64 encoded))))
+    (upper : position+encoded≤18) : source.clock-(evaluateHOLFiniteState source afterFirst).2.clock≤180 := by
+  rw [afterFirst]
+  exact ClockCost.sequence_reached_current source advance (.seq secondCall afterSecond) 0 180 (advance_cost source) (by
+    intro current normal
+    obtain ⟨next,frame⟩:=model.advance_normal encoded w normal
+    exact ClockCost.sequence_reached_current current secondCall afterSecond 19 161 (next.word_call_cost 8 (by decide)) (by
+      intro target callRun
+      obtain ⟨encodedNext,positive,bounded,localsEq,wCell,final,memory⟩:=next.word_call_normal 8 (by decide) (by omega) callRun
+      exact final.after_second_cost encodedNext wCell (by omega)))
+
+/-- The first real scoped word call supplies its own encoded length and
+restored current writer context; no normal suffix is assumed. -/
+theorem Writer.after_pointer_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer buffer : BitVec 64} {start : Nat} (model : Writer input source pointer buffer start 9) :
+    source.clock-(evaluateHOLFiniteState source afterPointer).2.clock≤199 := by
+  have scalar:=model.scalar_read 0 (by decide)
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) (wordArguments 0)=
+      some [.val (.word (buffer+9#64)),.val (.word (BitVec.ofNat 64 (Guest.GasLimit.le64 input start)))]:=by
+    simp only [eval] at scalar
+    simp only [wordArguments,evalListHOLFinite,evalListHOLExact,scalar]
+    simpa [evalHOLExact,toExact,localVar,model.positionCell] using scalar
+  obtain ⟨callee,called,d,w⟩:=RlpWrite.WordWrite.environment source.code.lookup (buffer+9#64)
+    (BitVec.ofNat 64 (Guest.GasLimit.le64 input start)) (WordWrite.original_code source.code model.installed)
+  rw [afterPointer]
+  exact ClockCost.scoped_reached_current source "w" .one (ofString "rlp_encode_word") (wordArguments 0) _ WordWrite.body afterFirst callee .one 18 180 args called
+    (WordWrite.body_cost (callEntryStateHOLFinite source callee) _ _ model.installed d w) (by
+      intro child returned normal checked
+      obtain ⟨encoded,positive,bounded,answer,price,frame⟩:=WordWrite.body_normal (callEntryStateHOLFinite source callee) child
+        (buffer+9#64) (BitVec.ofNat 64 (Guest.GasLimit.le64 input start)) model.installed d w returned normal
+      let current:=CallNormal.continuationEntry source child "w" returned
+      have totalFrame : WriteFrame source current buffer 64:=
+        (show WriteFrame source current (buffer+9#64) 9 from ⟨frame.metadata,frame.memory⟩).shift buffer 9 9 64 (by decide)
+      have wd : current.locals.lookup (ofString "wd")=some (.val (.word (pointer+BitVec.ofNat 64 start))):=
+        (CallNormal.continuation_lookup_other source child "w" "wd" returned (by decide)).trans model.wdCell
+      have buf : current.locals.lookup (ofString "buf")=some (.val (.word buffer)):=
+        (CallNormal.continuation_lookup_other source child "w" "buf" returned (by decide)).trans model.bufferCell
+      have p : current.locals.lookup (ofString "p")=some (.val (.word (buffer+9#64))):=
+        (CallNormal.continuation_lookup_other source child "w" "p" returned (by decide)).trans model.positionCell
+      have wCell : current.locals.lookup (ofString "w")=some (.val (.word (BitVec.ofNat 64 encoded))):=by rw [CallNormal.continuation_lookup_same,answer]
+      exact (model.of_write totalFrame 9 wd buf p).after_first_cost encoded wCell (by omega))
+
+/-- The pure initial position declaration exposes the exact writer model
+at buffer+9. Its metadata and bytes are those already owned by the caller. -/
+theorem after_buffer_cost (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer buffer : BitVec 64) (start : Nat)
+    (model : Writer input (bind source "p" (buffer+9#64)) pointer buffer start 9) :
+    source.clock-(evaluateHOLFiniteState source afterBuffer).2.clock≤199 := by
+  have buf : source.locals.lookup (ofString "buf")=some (.val (.word buffer)):=by
+    simpa [QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using model.bufferCell
+  have read : eval source (.op .add [localVar "buf",.const 9#64])=some (.val (.word (buffer+9#64))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,buf,valueIsWord,valueWord,wordOpHOL,wordOp]
+  rw [afterBuffer]
+  exact ClockCost.declared_current source "p" _ (buffer+9#64) afterPointer 199 read model.after_pointer_cost
+
+/-- Current physical entry for one44-byte withdrawal. The actual buffer
+allocation remains to be executed; only the older input and current heap
+are supplied. Its own capacity check derives all future buffer room. -/
+structure Entry (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer heap : BitVec 64) (start : Nat) : Prop where
+  installed : OriginalCode.Installed source.code
+  domain : source.memaddrs=InitE.ordinaryDomain
+  heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+  heapArena : AllocatedBytes.Arena heap 0
+  heapBound : heap.toNat≤2952790016
+  heapAligned : heap.toNat%8=0
+  inputArena : AllocatedBytes.Arena pointer (input.length%2^64)
+  inputBefore : pointer.toNat+input.length%2^64≤heap.toNat
+  image : Blob.HeapInput source input pointer
+  inside : start+44≤input.length%2^64
+  wdCell : source.locals.lookup (ofString "wd")=some (.val (.word (pointer+BitVec.ofNat 64 start)))
+
+/-- Complete unchanged current779, including the genuine allocation,
+all four field writers, list movement/header and final pair return. Every
+outcome is covered, with no successful allocation or writer oracle. -/
+theorem body_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer heap : BitVec 64} {start : Nat} (entry : Entry input source pointer heap start) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤201 := by
+  let output:=evaluateHOLFiniteState source body
+  have actual : evaluateHOLFiniteState source (.decCall (ofString "buf") .one (ofString "alloc") [.const 64#64] afterBuffer)=(output.1,output.2):=by
+    rw [←body_shape]
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.const 64#64]=some (PersistentAlloc.values 64#64):=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,PersistentAlloc.values]
+  have noWrap : heap.toNat+(64#64 : BitVec 64).toNat+7<2^64:=by have upper:=entry.heapBound; change heap.toNat+64+7<2^64; omega
+  rcases PersistentAlloc.scoped_trace_no_wrap source output.2 "buf" [.const 64#64] afterBuffer heap 64#64 args entry.installed entry.heapCell noWrap output.1 actual with stopped|reached
+  · exact Nat.le_trans stopped (by decide)
+  · obtain ⟨funded,room,inner,continued,endpoint⟩:=reached
+    let current:=bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 64#64) "buf" heap
+    let ready:=bind current "p" (heap+9#64)
+    have wd : ready.locals.lookup (ofString "wd")=some (.val (.word (pointer+BitVec.ofNat 64 start))):=
+      (bind_lookup_other current "p" "wd" _ (by decide)).trans ((bind_lookup_other _ "buf" "wd" _ (by decide)).trans entry.wdCell)
+    have buf : ready.locals.lookup (ofString "buf")=some (.val (.word heap)):=
+      (bind_lookup_other current "p" "buf" _ (by decide)).trans (bind_lookup_same _ _ _)
+    have model : Writer input ready pointer heap start 9:={
+      installed:=entry.installed,domain:=entry.domain,bufferArena:=⟨entry.heapArena.lower,by change heap.toNat+64≤2952790016 at room; omega⟩
+      bufferAligned:=entry.heapAligned,inputArena:=entry.inputArena,inputBefore:=entry.inputBefore
+      heap:=Blob.HeapInput.of_fields source ready input pointer rfl rfl rfl entry.image,inside:=entry.inside,wdCell:=wd,bufferCell:=buf,positionCell:=bind_lookup_same _ _ _ }
+    have remaining:=after_buffer_cost input current pointer heap start model
+    rw [continued] at remaining
+    change source.clock-1-inner.clock≤199 at remaining
+    change source.clock-output.2.clock≤201
+    have clocks:=congrArg PanSemStateFiniteExact.clock endpoint
+    change output.2.clock=inner.clock at clocks
+    rw [clocks]
+    omega
+
+end Withdrawal
+
 end InitECandidate.Solver.Input.CurrentRlp
 
 #print axioms InitECandidate.Solver.Input.CurrentRlp.HeaderWrite.short_body_normal
@@ -248,3 +667,34 @@ end InitECandidate.Solver.Input.CurrentRlp
 
 #print axioms InitECandidate.Solver.Input.CurrentRlp.FinishList.body_cost
 #print axioms InitECandidate.Solver.Input.CurrentRlp.FinishList.body_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.original_code
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.of_write
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.scalar_read
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.word_call_cost
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.word_call_normal
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.advance_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.address_args
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.address_call_cost
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.address_call_normal
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.finish_cost
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.finish_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.advance_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.after_third_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.after_address_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.after_second_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.after_first_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.Writer.after_pointer_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.after_buffer_cost
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.Withdrawal.body_cost

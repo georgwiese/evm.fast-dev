@@ -39,10 +39,11 @@ not a theorem or target ceiling.
 The current startup/input/header/gas/two-database/state-init path is connected
 through both actual payload-header indexed tries. The complete unchanged
 withdrawal encoder costs≤201body source ticks; its real loop costs≤203 per
-row. The actual payload_header execution through both tries either stops or
-reaches execution-request encoding within476207133311source ticks, retaining
-all decoded inputs and header fields. Any reached continuation has zero actual
-transactions and withdrawals, derived from the real trie executions.
+row. The actual payload_header execution through both tries and complete request
+encoding either stops or reaches request hashing within476364417764source
+ticks, retaining all decoded inputs and header fields plus the actual owned
+request array/count≤5. Any reached continuation has zero actual transactions
+and withdrawals, derived from the real trie executions.
 
 These are all-outcome source-clock allowances, not formal target-step bounds.
 Actual SHA state/pad globals now survive startup and this complete main prefix.
@@ -52,8 +53,9 @@ and owned input slices before its incoming heap. Each actual iteration costs
 iterations construct the next complete model; the whole original encoder
 costs≤157284452body source ticks on every outcome. Its actual normal return
 supplies the real count≤5, owned rows, checked heap and complete earlier-memory
-frame. The actual main caller connection, request hashes, remaining main,
-uniform target composition, dominant-slack review and final cleanup remain open.
+frame. The actual main caller connection is checked. Request hashes, the remaining
+main continuation, uniform target composition, dominant-slack review and
+final cleanup remain open.
 
 ## Earlier checked milestones, in order
 
@@ -2140,3 +2142,30 @@ success. Usage49%weekly/0resetcredits. Next: retain the actual post-header heap
 frontier through the withdrawal/root prefix (needed to frame header buffers
 past requests), actual main encoder caller/requests SHA/BAL, remaining main,
 formal target composition, dominant-slack review and cleanup.
+
+## Actual main request encoder caller and full prefix to request hashing
+
+BeforeRequests now retains the actual heap past headerFrontier+16. This is
+derived from the same completed withdrawal-array allocation and normally
+restored indexed-root caller, without a new global hypothesis. It establishes
+that encoder allocations follow every already allocated header buffer.
+
+The same literal scoped encode_execution_requests invocation supplies its
+actual returned array, count≤5 and physical rows at the real reqs binding.
+The complete Data, all31header fields, RH/BH bindings, original bl/zero-TX/WD
+facts and stronger header/heap frontier survive that same body return and
+caller restoration. No later hash or main success is supplied. The actual
+caller costs≤157284453source ticks or reaches its unchanged continuation.
+
+Composing it with the prior two-tries/header trace gives the full original
+payload_header prefix to compute_requests_hash:≤476364417764source ticks or
+an actual reached BeforeHash continuation. Its real request inputs and output
+buffer, decoded inputs and initialized SHA/Keccak pointers are retained.
+This is a source-clock prefix theorem, not the global formal target bound.
+
+Validation: current-main-before-requests-hash-v1.log PASS2709jobs, permitted
+printed axioms only. Index8700modules/18021facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K/full
+verifier success. Usage49%weekly/0resetcredits. Next: actual general SHA/block/
+finish contracts, request-hash loop/caller and BAL Keccak suffix, remaining
+main, formal target composition, dominant-slack review and final cleanup.

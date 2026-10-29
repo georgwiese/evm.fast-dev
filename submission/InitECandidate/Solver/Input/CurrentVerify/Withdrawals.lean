@@ -944,7 +944,8 @@ theorem to_after_root {input : Guest.InputBlob} {source current post : PanSemSta
     (physical : PhysicalHeader input source current pointer si record gasWord boundary header) (small : Payload.withdrawalCount input≤335544)
     (outcome : Option (PanSemResultExact 64)) (actual : evaluateHOLFiniteState current afterTransactionTrie=(outcome,post)) :
     (current.clock-post.clock≤12425194334 ∧ ∀ value,outcome≠some (.returned value)) ∨
-      ∃ next inner,Data input next pointer si record gasWord boundary ∧ Payload.withdrawalCount input=0 ∧
+      ∃ next inner,Data input next pointer si record gasWord boundary ∧
+        NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) next ∧ Payload.withdrawalCount input=0 ∧
         (∀ name : String,ofString "nwd"≠ofString name→ ofString "i"≠ofString name→ ofString "e"≠ofString name→ next.locals.lookup (ofString name)=current.locals.lookup (ofString name)) ∧
         (∀ query : BitVec 64,query.toNat<header.toNat+248→ next.memory query=current.memory query) ∧
         next.clock≤current.clock ∧ current.clock-next.clock≤12425194334 ∧ post.clock=inner.clock ∧
@@ -980,7 +981,11 @@ theorem to_after_root {input : Guest.InputBlob} {source current post : PanSemSta
             omega
           · exact physical.buffers.withdrawals.away_below (withdrawalBase header) query 32 aligned (by rw [numbers.withdrawals]; omega)
         exact first.trans (older query (by rw [numbers.frontier]; omega))
-      exact Or.inr ⟨next,inner,retained,zero,kept,headerMemory,Nat.le_trans rootForward forward,by omega,endpoint,remaining⟩
+      have globals:=congrArg PanSemStateFiniteExact.globals metadata
+      change next.globals=entered.globals at globals
+      have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) next:=
+        ⟨model.heap,by rw [globals]; exact model.heapCell,by have before:=model.arrayBefore; omega,model.heapBound,model.heapAligned⟩
+      exact Or.inr ⟨next,inner,retained,heapAfter,zero,kept,headerMemory,Nat.le_trans rootForward forward,by omega,endpoint,remaining⟩
     | some result=>
       have clocks:=congrArg (fun output=>output.2.clock) remaining
       have observed:=congrArg Prod.fst remaining
@@ -998,6 +1003,7 @@ cells; no requests/hash/main success is part of this contract. -/
 structure BeforeRequests (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer si record gasWord : BitVec 64) (boundary : Nat) (header : BitVec 64) (encoded : Nat) : Prop where
   data : Data input current pointer si record gasWord boundary
+  heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) current
   transactionsZero : VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)=0
   withdrawalsZero : Payload.withdrawalCount input=0
   buffers : HeaderBuffers header
@@ -1029,7 +1035,7 @@ theorem to_before_requests {input : Guest.InputBlob} {source post : PanSemStateF
   · obtain ⟨header,entered,outer,encoded,physical,txZero,encodedBound,wdBound,number,blCell,forward,price,endpoint,remaining⟩:=reached
     rcases to_after_root physical wdBound outcome remaining with stopped|reached
     · exact Or.inl ⟨by have priced:=stopped.1; rw [endpoint]; omega,stopped.2⟩
-    · obtain ⟨next,inner,retained,wdZero,saved,memory,nextForward,nextPrice,nextEndpoint,continuation⟩:=reached
+    · obtain ⟨next,inner,retained,heapAfter,wdZero,saved,memory,nextForward,nextPrice,nextEndpoint,continuation⟩:=reached
       have cells (offset : Nat) (small : offset≤240) : next.memory (HeaderEncoding.address header offset)=entered.memory (HeaderEncoding.address header offset):=by
         apply memory
         have address:=byteAddress_toNat header offset (by have room:=physical.buffers.ommer.headerArena.upper; omega)
@@ -1037,7 +1043,7 @@ theorem to_before_requests {input : Guest.InputBlob} {source post : PanSemStateF
         change (header+BitVec.ofNat 64 offset).toNat<header.toNat+248
         omega
       have result : BeforeRequests input next pointer si record gasWord boundary header encoded:={
-        data:=retained,transactionsZero:=txZero,withdrawalsZero:=wdZero,buffers:=physical.buffers,before:=physical.before,geometry:=physical.geometry
+        data:=retained,heapAfter:=heapAfter,transactionsZero:=txZero,withdrawalsZero:=wdZero,buffers:=physical.buffers,before:=physical.before,geometry:=physical.geometry
         fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells entered.memory next.memory header field cells (physical.fields field member)
         optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells entered.memory next.memory header field cells (physical.optional field member)
         headerCell:=(saved "h" (by decide) (by decide) (by decide)).trans physical.frame.header

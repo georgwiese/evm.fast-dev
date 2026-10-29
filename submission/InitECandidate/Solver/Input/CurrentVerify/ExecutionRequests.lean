@@ -1416,6 +1416,142 @@ theorem body_normal {input : Guest.InputBlob} {source post : PanSemStateFiniteEx
   exact ⟨final.emitted,final.heap,final.slices,answer,returned,heapFrame,
     fun query before=>(congrFun memory query).trans ((loopMemory query before).trans (congrFun memoryEq query))⟩
 
+theorem retained_header {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : BeforeRequests input source pointer si record gasWord boundary header encoded)
+    (data : Data input target pointer si record gasWord boundary)
+    (heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) target)
+    (saved : ∀ name : String,ofString "reqs"≠ofString name→ target.locals.lookup (ofString name)=source.locals.lookup (ofString name))
+    (memory : ∀ query : BitVec 64,query.toNat<header.toNat+248→ target.memory query=source.memory query) :
+    BeforeRequests input target pointer si record gasWord boundary header encoded := by
+  have cells (offset : Nat) (small : offset≤240) : target.memory (HeaderEncoding.address header offset)=source.memory (HeaderEncoding.address header offset):=by
+    apply memory
+    have number:=byteAddress_toNat header offset (by have upper:=physical.buffers.ommer.headerArena.upper; omega)
+    change (header+BitVec.ofNat 64 offset).toNat=header.toNat+offset at number
+    change (header+BitVec.ofNat 64 offset).toNat<header.toNat+248
+    omega
+  exact {physical with
+    data:=data,heapAfter:=heapAfter,
+    fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory target.memory header field cells (physical.fields field member),
+    optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory target.memory header field cells (physical.optional field member),
+    headerCell:=(saved "h" (by decide)).trans physical.headerCell,payloadCell:=(saved "pl" (by decide)).trans physical.payloadCell,
+    requestsCell:=(saved "rh" (by decide)).trans physical.requestsCell,balanceCell:=(saved "bh" (by decide)).trans physical.balanceCell,
+    sizeCell:=(saved "bl" (by decide)).trans physical.sizeCell}
+
+/-- The literal reached main encoder invocation supplies its true row
+array and bounded count at the same hashing continuation. Header/input
+facts and hash workspaces are retained using the actual earlier heap. -/
+theorem main_encoder_output {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : BeforeRequests input source pointer si record gasWord boundary header encoded)
+    (actual : CallPrefix.Reaches source (.scoped (ofString "reqs") resultShape (ofString "encode_execution_requests") arguments) target) :
+    ∃ array nextHeap count slices,BeforeRequests input target pointer si record gasWord boundary header encoded ∧
+      Returned target array nextHeap count slices ∧
+      target.locals.lookup (ofString "reqs")=some (.rStruct [.val (.word array),.val (.word (BitVec.ofNat 64 count))]) ∧
+      (headerFrontier header).toNat+16≤array.toNat := by
+  obtain ⟨rq,array,start,size,counts,callee,args,called,entry⟩:=main_entry physical.data
+  obtain ⟨child,returned,bodyRun,endpoint⟩:=actual.scoped_known (ofString "reqs") resultShape (ofString "encode_execution_requests") arguments
+    [.val (.word rq)] body callee resultShape args called
+  obtain ⟨count,nextHeap,slices,answer,rows,globals,older⟩:=body_normal entry returned bodyRun
+  have returnedRows : Returned target array nextHeap count slices:=by rw [endpoint]; exact rows.of_frame rfl
+  have heapFrame : HeapGlobals source target:=by intro key other; rw [endpoint]; exact globals key other
+  have fields:=evaluation_fields (callEntryStateHOLFinite source callee) child body (some (.returned returned)) bodyRun
+  have domain : target.memaddrs=source.memaddrs:=by rw [endpoint]; exact fields.1
+  have endian : target.be=source.be:=by rw [endpoint]; exact fields.2.1
+  have code : target.code=source.code:=by rw [endpoint]; exact fields.2.2.2
+  have memory (query : BitVec 64) (before : query.toNat<array.toNat) : target.memory query=source.memory query:=by rw [endpoint]; exact older query before
+  obtain ⟨oldHeap,oldCell,oldLower,oldBound,oldAligned⟩:=physical.heapAfter
+  have oldEq : oldHeap=array:=by
+    simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using oldCell.symm.trans entry.heapCell
+  rw [oldEq] at oldLower
+  have numbers:=physical.buffers.numbers header
+  have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) target:=
+    ⟨nextHeap,returnedRows.heapCell,by have afterArray:=returnedRows.arrayBefore; omega,returnedRows.heapBound,returnedRows.heapAligned⟩
+  have heap : NormalHeapEffects.AtLeast (boundary+32) target:=by
+    have afterArray:=returnedRows.arrayBefore
+    have beforeHeader:=physical.before
+    rw [numbers.frontier] at oldLower
+    exact ⟨nextHeap,returnedRows.heapCell,by omega,returnedRows.heapBound,returnedRows.heapAligned⟩
+  have saved (name : String) (different : ofString "reqs"≠ofString name) : target.locals.lookup (ofString name)=source.locals.lookup (ofString name):=by
+    rw [endpoint]
+    exact CallNormal.continuation_lookup_other source child "reqs" name returned different
+  have retained:=physical.data.of_heap_frame domain endian code heapFrame heap ((saved "si" (by decide)).trans physical.data.siLocal) (by
+    intro query lower before
+    apply memory
+    have beforeHeader:=physical.before
+    rw [numbers.frontier] at oldLower
+    omega)
+  have headerMemory (query : BitVec 64) (before : query.toNat<header.toNat+248) : target.memory query=source.memory query:=by
+    apply memory
+    rw [numbers.frontier] at oldLower
+    omega
+  have reqs : target.locals.lookup (ofString "reqs")=some (.rStruct [.val (.word array),.val (.word (BitVec.ofNat 64 count))]):=by
+    rw [endpoint]
+    change (CallNormal.continuationEntry source child "reqs" returned).locals.lookup (ofString "reqs")=_
+    rw [CallNormal.continuation_lookup_same,answer]
+  exact ⟨array,nextHeap,count,slices,retained_header physical retained heapAfter saved headerMemory,returnedRows,reqs,oldLower⟩
+
+def callerActions : List CallPrefix.Action:=[.scoped (ofString "reqs") resultShape (ofString "encode_execution_requests") arguments]
+
+def BeforeHash (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer si record gasWord : BitVec 64) (boundary : Nat) (header : BitVec 64) (encoded : Nat) : Prop:=
+  ∃ array heap count slices,BeforeRequests input source pointer si record gasWord boundary header encoded ∧ Returned source array heap count slices ∧
+    source.locals.lookup (ofString "reqs")=some (.rStruct [.val (.word array),.val (.word (BitVec.ofNat 64 count))]) ∧
+    (headerFrontier header).toNat+16≤array.toNat
+
+theorem caller_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary) :
+    source.clock-(evaluateHOLFiniteState source (CallPrefix.program callerActions .skip)).2.clock≤157284453 := by
+  obtain ⟨rq,heap,start,size,counts,callee,args,called,entry⟩:=main_entry data
+  exact ClockCost.scoped_current source (ofString "reqs") resultShape (ofString "encode_execution_requests") arguments [.val (.word rq)]
+    body .skip callee resultShape 157284452 0 args called (body_cost entry) (ClockCost.skip source.code)
+
+/-- The actual main encoder caller either stops within its full allowance
+or reaches its unchanged hashing continuation with the real row result,
+retained headers/input and zero transaction/withdrawal facts. -/
+theorem to_after_encoder {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : BeforeRequests input source pointer si record gasWord boundary header encoded)
+    (outcome : Option (PanSemResultExact 64)) (actual : evaluateHOLFiniteState source PayloadHeaderWithdrawals.afterRoot=(outcome,post)) :
+    (source.clock-post.clock≤157284453 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ current inner,BeforeHash input current pointer si record gasWord boundary header encoded ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤157284453 ∧ post.clock=inner.clock ∧
+        evaluateHOLFiniteState current afterEncode=(outcome,inner) := by
+  have expanded:=actual
+  rw [caller_shape] at expanded
+  change evaluateHOLFiniteState source (CallPrefix.program callerActions afterEncode)=(outcome,post) at expanded
+  rcases CallPrefix.priced_trace source post callerActions afterEncode 157284453 (caller_cost physical.data) outcome expanded with stopped|reached
+  · refine Or.inl ⟨stopped.1,?_⟩
+    intro value returned
+    have safe : LocalPrefix (ofString "si") (CallPrefix.program callerActions .skip):=
+      .decCall (ofString "reqs") resultShape (ofString "encode_execution_requests") arguments (by decide) .skip
+    apply (safe.summary_full source).2.1 value
+    rw [←stopped.2]
+    exact returned
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    have called : CallPrefix.Reaches source (.scoped (ofString "reqs") resultShape (ofString "encode_execution_requests") arguments) current:=by
+      cases execution with
+      | step first next=>cases next; exact first
+    exact Or.inr ⟨current,inner,main_encoder_output physical called,forward,price,endpoint,continued⟩
+
+/-- Complete original payload-header trace to its real request-hash caller,
+with every earlier stopped alternative and complete physical hash inputs. -/
+theorem to_before_hash {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (checked : RunAttempt.TransactionsNonempty input) (outcome : Option (PanSemResultExact 64))
+    (actual : evaluateHOLFiniteState source PayloadHeader.body=(outcome,post)) :
+    (source.clock-post.clock≤476364417764 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ header current inner encoded,BeforeHash input current pointer si record gasWord boundary header encoded ∧
+        current.clock≤source.clock ∧ source.clock-current.clock≤476364417764 ∧ post.clock=inner.clock ∧
+        evaluateHOLFiniteState current afterEncode=(outcome,inner) := by
+  rcases PayloadHeaderWithdrawals.to_before_requests data checked outcome actual with stopped|reached
+  · exact Or.inl ⟨by have price:=stopped.1; omega,stopped.2⟩
+  · obtain ⟨header,entered,outer,encoded,physical,forward,price,endpoint,remaining⟩:=reached
+    rcases to_after_encoder physical outcome remaining with stopped|reached
+    · exact Or.inl ⟨by have cost:=stopped.1; rw [endpoint]; omega,stopped.2⟩
+    · obtain ⟨current,inner,ready,nextForward,nextPrice,nextEndpoint,continued⟩:=reached
+      exact Or.inr ⟨header,current,inner,encoded,ready,Nat.le_trans nextForward forward,by omega,endpoint.trans nextEndpoint,continued⟩
+
 end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.original_code
@@ -1525,3 +1661,10 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.LoopModel.returned
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.setup_request_local
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.body_normal
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.retained_header
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.main_encoder_output
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.caller_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.to_after_encoder
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests.to_before_hash

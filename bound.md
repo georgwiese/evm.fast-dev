@@ -1954,3 +1954,22 @@ cap full). Claim infinity; no global finite target K/full verifier success.
 Usage46%weekly/0resetcredits. Next: retain the actual decoded request image
 through Data, requests encoder/hash/BAL suffix, remaining current main, formal
 target-step composition, dominant-slack review and cleanup.
+
+## Decoded execution requests survive the complete actual main prefix
+
+Main's same real decoder/root return now derives the SI+32 request-record
+pointer and full Requests.DecodedImage: all ten actual pointer/count cells,
+validated five-list layout and arithmetic, copied input extent and owned
+80-byte record before the original allocation boundary. This physical image
+is now part of Data and is transported by every existing actual earlier-
+memory frame, heap advance and caller restoration through both indexed tries.
+No execution-request encoder/hash return is assumed.
+
+Validation: current-main-request-image-v1.log PASS2709jobs, including all
+actual main users of the strengthened Data contract. Printed axioms permitted
+only. Index8700modules/17935facts; inventory8745/replacement closure0/fixed files
+unchanged. Incremental policy65536entries/2485938423bytes (entry cap full).
+Claim infinity; no global finite target K/full verifier success. Usage46%weekly/
+0resetcredits. Next: retain actual SHA state/pad globals for the general SHA
+hash caller, execution-request encoding/hash/BAL suffix and remaining main,
+then formal target composition, dominant-slack review and cleanup.

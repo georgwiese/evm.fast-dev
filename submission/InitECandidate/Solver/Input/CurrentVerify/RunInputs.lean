@@ -15,6 +15,12 @@ def Witnesses (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Gues
     CurrentStartup.WitnessArrays.Image input source pointer si codes codeStart codeLength boundary 56 65536 (2^31) ∧
     CurrentStartup.WitnessArrays.Image input source pointer si headers headerStart headerLength boundary 72 1024 256
 
+/-- The same actual decoded execution requests, including their SI
+pointer, complete validated layout and original physical memory boundary. -/
+def RequestImage (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer si : BitVec 64) (boundary : Nat) : Prop:=
+  ∃ rq start size counts,source.memory (si+32#64)=.word rq ∧ Requests.DecodedImage input source pointer rq start size counts ∧ rq.toNat+80≤boundary
+
 /-- Physical inputs at the actual current verification/run_attempt entry.
 No later header, database, scratch allocation or EVM success is assumed. -/
 structure Data (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
@@ -39,6 +45,7 @@ structure Data (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Gue
   payload : PayloadImage input source pointer record boundary
   copied : CopiedInput input source pointer record
   witnesses : Witnesses input source pointer si boundary
+  requests : RequestImage input source pointer si boundary
 
 /-- Shared transport of all decoded input facts through an actual earlier
 memory interval. The advanced heap and hash/arena state are independently
@@ -66,12 +73,24 @@ theorem Data.of_interval {input : Guest.InputBlob} {source target : PanSemStateF
   have gasNumber : (record+88#64).toNat=record.toNat+88:=byteAddress_toNat record 88 (by have upper:=data.recordArena.upper; omega)
   have gasFrame : target.memory (record+88#64)=source.memory (record+88#64):=memory _
     (by rw [gasNumber]; have lower:=data.recordInside.1; omega) (by rw [gasNumber]; have before:=data.recordInside.2; omega)
+  obtain ⟨rq,requestStart,requestSize,counts,rqStored,requestImage,requestBefore⟩:=data.requests
+  have requestMemory (offset : Nat) (inside : offset<80) : target.memory (rq+BitVec.ofNat 64 offset)=source.memory (rq+BitVec.ofNat 64 offset):=by
+    have number:=byteAddress_toNat rq offset (by have upper:=requestImage.cursorArena.upper; omega)
+    apply memory
+    · change (rq+BitVec.ofNat 64 offset).toNat=rq.toNat+offset at number
+      have lower:=requestImage.inputLower
+      have afterInput:=requestImage.cursorAfterInput
+      omega
+    · change (rq+BitVec.ofNat 64 offset).toNat=rq.toNat+offset at number
+      omega
+  have requests : RequestImage input target pointer si boundary:=⟨rq,requestStart,requestSize,counts,(siFrame 32 (by decide)).trans rqStored,
+    requestImage.of_memory (by intro index inside; exact ⟨requestMemory (16*index) (by omega),requestMemory (16*index+8) (by omega)⟩),requestBefore⟩
   exact ⟨arena,little,environment,mptHash,mptKey,mptEmpty,heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
     payloadCell,(siFrame 24 (by decide)).trans data.parentCell,gasFrame.trans data.gasCell,data.gasBound,
     data.payload.of_interval (fun query lower upper=>memory query (Nat.le_trans data.recordInside.1 lower) upper) heap,
     data.copied.of_interval boundary (by have before:=data.recordInside.2; omega) (arena.domain.trans data.arena.domain.symm) (little.trans data.little.symm) memory,
-    nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
-    nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩
+    ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
+    nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩,requests⟩
 
 theorem Data.of_frame {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
@@ -116,7 +135,9 @@ theorem main_inputs {input : Guest.InputBlob} {decoded current post : PanSemStat
       (by rw [number]; have before:=data.context.recordAfter; have rootBefore:=ready.rootAfter; omega)
     simpa only [BitVec.add_assoc,show 18#64+8#64=26#64 from by decide] using keptParent.trans parent
   exact ⟨arena,next.little,next.keccak_environment,next.mptHash,next.mptKey,next.mptEmpty,heap,si,siArena,siAligned,recordArena,recordAligned,recordInside,payloadCell,parentCell,gasCell,gasBound,main_payload_image ready workspace actual,main_copied_input ready workspace actual,
-    CurrentHash.RootHash.main_witness_images ready workspace actual⟩
+    CurrentHash.RootHash.main_witness_images ready workspace actual,by
+      obtain ⟨requestStart,requestSize,counts,cell,image,before⟩:=CurrentHash.RootHash.main_requests_image ready workspace actual
+      exact ⟨rq,requestStart,requestSize,counts,cell,image,before⟩⟩
 
 /-- The genuine eight-wrapper prefix carries these same physical inputs to
 its actual run_attempt entry, or stops within eight source caller ticks. -/

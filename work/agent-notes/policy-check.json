@@ -2550,6 +2550,9 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/NewPrefix.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewReturned.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarArrays.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarContext.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewStores.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuild/BodyCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuild/Budget.lean",
@@ -8715,8 +8718,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65500,
-  "package_bytes": 2485397130,
+  "package_entries": 65503,
+  "package_bytes": 2485418086,
   "claim": {
     "K": "infinity"
   },

@@ -8574,7 +8574,7 @@
       "sha256": "fbbe24de402a4de6e921f86587f42bf6041eb2710f735d159481ad2ba5fe71f4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -8582,7 +8582,7 @@
       "sha256": "31f9509980c8838f63fecd33d9b924e1720399204a2382b93e15d9e0c4fed612",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -8666,7 +8666,7 @@
       "sha256": "13679d586abfd4e16026c7efaf983c52b4c1c6f17b824a54f1f4151f463ef54e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -8742,7 +8742,7 @@
       "sha256": "1a5f410b236e82d3a2591db120aa26ee37ca60c76b25ef080bcba60af1b3fcde",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -8766,7 +8766,7 @@
       "sha256": "54e876e2ea77c7ac83aeebf587e722bd69776d47c28d0d405fb79aec64273624",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -8798,7 +8798,7 @@
       "sha256": "d046f37e3506bbb7a82cf411bbcbfe665f26170a6ba17a6a949b07225d0dbef3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -8822,7 +8822,7 @@
       "sha256": "e6781483e78a78bd17065de1599de31e3e9d810163c23268230561c2c89f99ca",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -8910,7 +8910,7 @@
       "sha256": "20ec6ec56134a17476fec7fe6301f62afa5802e3a26bb231b3a702e4192ebebb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -9326,7 +9326,7 @@
       "sha256": "5cc47879b4fe23db12f948694f1a267aeb97e87454b977deb3b2b51db8e943e0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -10902,7 +10902,7 @@
       "sha256": "369677d62ba4f578175d8bb696e8800d7b5e80834ddf725f02f8031e74178722",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12054,7 +12054,7 @@
       "sha256": "414f87e6988fdc66c396bdb84cc9e65ed8cdc548d7d73ae683eea3665656b2fd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12486,7 +12486,7 @@
       "sha256": "8b550e9425b66dfb781d0a3b46f43cfaf2d842a83916b0ca528f503647ca291e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12518,7 +12518,7 @@
       "sha256": "1c0444d1dbfdf5f22a3845bae6381bb44e260171f28c15eb64b89ebdfa35fec1",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12526,7 +12526,7 @@
       "sha256": "3ceee625a17b7bd6942071babb4e4d80e077768b63ef0c2f2070b1b5a7595520",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12534,7 +12534,7 @@
       "sha256": "7d219d67e4a0f966d03e556aa813a6b35a5bff367da8ef689c166c258cd4ede1",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12590,7 +12590,7 @@
       "sha256": "a851564cbd92f2467ea968a57143737ea378b598c7d2ca9031aaeb02f070012d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12750,7 +12750,7 @@
       "sha256": "82cb4e6eed89f184906266846baf7a9ac6b0ba4e6c9af7db8dcac3355bd55532",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12758,7 +12758,7 @@
       "sha256": "f37b5a3e566691d6b0963eded6a4a15849dfabe0e3b26ce3bb3c0dc693473703",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12766,7 +12766,7 @@
       "sha256": "b230076c1f252f9dffaf305997b3c23690400204899313357b0aed6dee30f5ab",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12774,7 +12774,7 @@
       "sha256": "0474cb1bebe23f9f10742104a1a75ec7928059a0cad59eb51a9f09f405861043",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12782,7 +12782,7 @@
       "sha256": "a6b74c09b546fc7e5e11c45b9e82f66b1700234bcde99e7976dfb1a219a37dcb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -12794,11 +12794,35 @@
       ]
     },
     {
+      "path": "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarArrays.lean",
+      "sha256": "d490c6df0f9cd35078e80ba69607144002aa1785a29939ea140cdba15d052f19",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-table-scalar-normal-v5.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarContext.lean",
+      "sha256": "47460d202a1b9dabd1fd291371427d9c9aae6c1d2309b98e6d63e95ae89da9e7",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-table-scalar-normal-v5.log"
+      ]
+    },
+    {
+      "path": "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarFrame.lean",
+      "sha256": "13fe532daafb622d19ceee80879c014a8c3861837f95fb4f90e0eef3d4e3eea4",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
+      "successful_logs": [
+        "current-table-scalar-normal-v5.log"
+      ]
+    },
+    {
       "path": "submission/InitECandidate/Solver/Input/CurrentTable/NewStores.lean",
       "sha256": "3b71abf1a48a5c0a3c7dacee815d0c32b4e89e2e438690d8558b4547abfd5037",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -13882,7 +13906,7 @@
       "sha256": "9bf4f68a6d137589aa6ec016f998a38d87c6a1e97698781569b3d150e8de2378",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -13962,7 +13986,7 @@
       "sha256": "33ed90c3932c7504426b5025443ebde0efb549cf9f3f03a24f55c7c520801f7d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -14138,7 +14162,7 @@
       "sha256": "5e22bd7a0245e87bf42b83ace67458027f39979a2e0da03d69e5e75e569e50d6",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -14510,7 +14534,7 @@
       "sha256": "8dc656b0caed4502e075cd23951b4e554d02007e33826d46130e3f6bdd62c237",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -14678,7 +14702,7 @@
       "sha256": "32d384b0a1c20ee8afba2faf869a6deb2107548e0801e5b7ab7c2fb7f121067c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -14846,7 +14870,7 @@
       "sha256": "c13b1c1f9b5f4bbb5208e46564045ea9e26e70bce19b4d340d95711546c1528a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -14854,7 +14878,7 @@
       "sha256": "40a6669e3c82a809fadf0cb91b20e45efc54261b8c3ad2554cb58ae63ffbb5dd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -14870,7 +14894,7 @@
       "sha256": "261861d6c1db1c9497108699feaf9726e964d84e3468fff99c42b9c6fc20b94d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -14910,7 +14934,7 @@
       "sha256": "c73b9d6a36d7eead87a9a4d6403b7e1d85eb4b11fbdc1e62990069e4cc4762f7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -14926,7 +14950,7 @@
       "sha256": "20173bfc0be92fd55a429fd1ea073813938aaf677579072bb7ba14ea82993fae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -14958,7 +14982,7 @@
       "sha256": "68967b7da8399166c922ffb1b3ef5d14177b91ad2689b647bd578bafa0d140b3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -15898,7 +15922,7 @@
       "sha256": "70265fe5006d42f482202008499631410a2f12b8992ec6a48c1dd564a0d7b5d7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -16150,7 +16174,7 @@
       "sha256": "1f29d1109ed9c9d8fc33520ceddad0e2ba6422a6a3d57a5bac30ab4b93dc4bb0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -16498,7 +16522,7 @@
       "sha256": "f7b799c571b6f246ce423208806be8ed7540525ff6d0c476b4d6087f5bdb3a5e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -17402,7 +17426,7 @@
       "sha256": "8dee1452342ebe0d3a7ed7534c0f7926dd717250d1f32b4a25e9883ef5cc3800",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -17410,7 +17434,7 @@
       "sha256": "89f1080e712143945810ebe6c6e1e5bf89893412048fd4ec463d2a6e03d9d45f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -17554,7 +17578,7 @@
       "sha256": "fc41b9da357680d2ba38f53829b8e6bfc81b8dc13daeb7fd359e1f72e652de49",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -17578,7 +17602,7 @@
       "sha256": "6b494efa06e32dcd2cdce30dcdca29e5708536080fb8f8dc7be57b2f2818047e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -17594,7 +17618,7 @@
       "sha256": "ee0d7a5bc520aee5ed6e49678b9efc9839077e5b8e147cf64e1f8aa419b96c74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -17602,7 +17626,7 @@
       "sha256": "fd4b142862a214c56d86b7276616e6852aee03f89dd4b3769e3b72d6415db4d0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -18170,7 +18194,7 @@
       "sha256": "9775acd58680fb3247dda431e5f15ce470d140b0f331bb15b683faca21d56114",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -18650,7 +18674,7 @@
       "sha256": "b092dec973c2654b67709039f6a2f5b815ad14021bcfd1204c0e241c32a8dcee",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -18690,7 +18714,7 @@
       "sha256": "260583f2ead6709d5362e5604721117c5700c7825da6ef97e20c7db50fe81e74",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -18698,7 +18722,7 @@
       "sha256": "1b4ffbd4c8d0f128088ac538eebca8ab5b9da7f6358308c1b34f4c5184163d9a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -18706,7 +18730,7 @@
       "sha256": "ff0cd79fe5bf906954760d09c84ecc8b2d8083828ab22f66bcda2c40eedd2e03",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -18754,7 +18778,7 @@
       "sha256": "5a9a85e3d83b15a4ecd39c009d2731b3d090554e6d488789a8c1e52e4a8b8af8",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -18798,7 +18822,7 @@
       "sha256": "88d874513969ebc1d8dcbec979b123eaa6cbfbb303e9f50353d050d4a6520670",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -18818,7 +18842,7 @@
       "sha256": "2ff1919c8bf9703c8d25adb1eaccbc0e00510452858a47b24adb7f5f91d150fe",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -19270,7 +19294,7 @@
       "sha256": "4450f713a9fcc64fb1f5a12664d971aea9327d9984a7cc4a381bc15d284b69c7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -19278,7 +19302,7 @@
       "sha256": "9049c70243bdf689fb9548a82de10265db97c602e5a2bc3cc20d81dfa01f4259",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -20106,7 +20130,7 @@
       "sha256": "633d733f7bad0e1724aafae8b60d6cda037625e18257f1d983bae37436d86eed",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -20114,7 +20138,7 @@
       "sha256": "4327161056ae5aae8634b32aed28193da70e8e6cd5155615b95b25bd96a7dbd7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -30846,7 +30870,7 @@
       "sha256": "05f98e75379a1524ce09a970adb2e6ed57bfbecc572a9eb81d6dfd972fab252a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -35954,7 +35978,7 @@
       "sha256": "499a7062f31ec74e4568f2533ae4aa29bac2c8aa419be8aa4fdb6f87eb2a510e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -35962,7 +35986,7 @@
       "sha256": "ee9bb64eb3798d686940c1640c3244848a8a84b46a5fc38050302f0a954fe15d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -35978,7 +36002,7 @@
       "sha256": "171c2f5e12ec2af53161728555b9fdab36f930e37fce74c594b74f223a6c2ec4",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -35990,7 +36014,7 @@
       "sha256": "48b8273d1ee0afe2ebd278206864053392a9f22092141292fd2c364c89313ff7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36026,7 +36050,7 @@
       "sha256": "ef1996cabff66a28dcc85099cd2c1bb68c9c4c03c476763f49425d887ef1632e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36034,7 +36058,7 @@
       "sha256": "bc418c84679717e18c5a28b41d81ff91e3d04c9c9552ff20ab59d46e4831e4e7",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36042,7 +36066,7 @@
       "sha256": "8b2d86e96522c7b741325eb8314840ff1a97693e480a02888d2e164c9c845bce",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36082,7 +36106,7 @@
       "sha256": "96e075a2d7be581b74bb881e7370ab05ade1d801665d39d64a107df365dbeb93",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36118,7 +36142,7 @@
       "sha256": "0a0ed2723ddd4337e71c7b6f3a9e4fea82225b3f383b343e2012bee77371b073",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36126,7 +36150,7 @@
       "sha256": "2350b11ff4750643c2745374601d17eed59e324eaa38890663be4c94e9db4b33",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36134,7 +36158,7 @@
       "sha256": "02071e2394e8a909552d0d29cc091e76ecb5a43b2909b69ab4dd731d1a5bf044",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36158,7 +36182,7 @@
       "sha256": "437ded0bbc2dbeea0eb5909575a2895a32e0335a9ce8bed077dc09d9cfa06016",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36166,7 +36190,7 @@
       "sha256": "40fce38b23cfb2246214da156ede18d95ef9bb9f5e66ada5a2ce6cdba4ccf1ce",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36174,7 +36198,7 @@
       "sha256": "355b873f0b8ccbc72cb2b20a46e2d1b47111fc2fee90b546a4295073e1db8b52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36214,7 +36238,7 @@
       "sha256": "2b91d6b6b9bf55a7f08181bdfbf0dd43cf10714f61ec72be1857eb0ba4b6b5ae",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36222,7 +36246,7 @@
       "sha256": "9bf469db054912ee33f4aed500be2e85029f2a7f6c5476b0bf0dbe31b8104c4e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36230,7 +36254,7 @@
       "sha256": "5f4f94c543c77f028eccb5e14d46cb47a84e9495bf8a4208605eb2db6c2e6b1d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36238,7 +36262,7 @@
       "sha256": "a0de5ea30c7795fb5332b93cacd4dd90d63e15da12c167a40d23f356ba067a9a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36246,7 +36270,7 @@
       "sha256": "da45009935dfa9cbab0514a1517be821503768a952cb1377b5eb02b6cca7c229",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36254,7 +36278,7 @@
       "sha256": "7e6a3a0a18e079fbdaf302eb726e96997a66c8618d00bdefd26805ef663b504c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36262,7 +36286,7 @@
       "sha256": "a8b0233748e0f03e90e628b79d3215046558dc40d2e9f89691cca80f462e4427",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36270,7 +36294,7 @@
       "sha256": "6e5ac25c2f99e8ffbcbc7044ccf9e92173523e851534130d22521b7032ad521e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36278,7 +36302,7 @@
       "sha256": "20faa123672a458c7b2275fc4263ee1834eea1d7ea21946e1a030b0fffab0cbe",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36286,7 +36310,7 @@
       "sha256": "be37cf170b6e9a242bd3dd80eec72b548717c29974fb6072f6aa620120278d0a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36294,7 +36318,7 @@
       "sha256": "6760d66a0555e60fa210403fb24f65cee97d7a10953f30e23a24495b94ad9c47",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36302,7 +36326,7 @@
       "sha256": "e2f9ec59685a1f69d92b0889a17ac23654dc04999b98b4a72e2ce5c4ab95189a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36322,7 +36346,7 @@
       "sha256": "832b514beaabd38cf1255c01ca18fa7ac669ccd94587c67675317aa3bf6e6478",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36330,7 +36354,7 @@
       "sha256": "c86aaa98cb40110454a66ab9cf6e28429e25b02d0c3fb2825b6ed997b05d54c3",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36338,7 +36362,7 @@
       "sha256": "d0e3bfb76862423368d30674b138427e06e4695339119a0369ae7d07a156cf2c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36350,7 +36374,7 @@
       "sha256": "fc743bf3e5927a7104aa44050be7c9e5814fea88481499be913ab577365a85cb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36362,7 +36386,7 @@
       "sha256": "e0563280b246c8b81be243957ee904589af035808a20fbc0a1f57aeba15d6d32",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36378,7 +36402,7 @@
       "sha256": "ce7e858cc7f3e554a1c15b3b8055ca0a2ac2d29313cc6e347db6b044f9284840",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36474,7 +36498,7 @@
       "sha256": "babf783081e24e2e1427660b43c0732e9e34a791f0b5c641034c7727c9889aff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36490,7 +36514,7 @@
       "sha256": "7ba65fa9a88c2c4d97ef54e99a05b930559bf73aece6a749ceecac8d298764cd",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36498,7 +36522,7 @@
       "sha256": "4f031eb1eb80c368101802103cdc7e5c6fb39283f6fdb2a94f3abd5bc9f482d9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36514,7 +36538,7 @@
       "sha256": "9364d37cec80d77dfaaa07b6b087a641c028a5b6ca8bc68bb36c12f89d30c14d",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36522,7 +36546,7 @@
       "sha256": "89dc173fc43c00c73f44635e501a282f3553d1e361e5efe12487b5946e7a5acb",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36754,7 +36778,7 @@
       "sha256": "00496c0a1c173eb32d8df0463c59b14de29c7328603a98dc6b0c112fbb93934c",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36762,7 +36786,7 @@
       "sha256": "c6fdc8a09e4996d2da0b16a6a0440a2fd69ee375557bb530b76a1f8448514a52",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36770,7 +36794,7 @@
       "sha256": "afd581628da544649c453743c68b58e6b4ca94482d391efb1ffb14781ce68394",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36778,7 +36802,7 @@
       "sha256": "2fff59466ce3299a8761387286fc7c63f313eee4a1255155cce0053d4ed1776a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36786,7 +36810,7 @@
       "sha256": "ec1bf723f03a1ac0bfe94da02c09ce084671bd3fdccd0ada35781ed1e1d902e0",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36802,7 +36826,7 @@
       "sha256": "2941b3ac83ce909b1a8068ce503772b29ea52a43f11c608f4f0a7abe48b4744b",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36810,7 +36834,7 @@
       "sha256": "6ab96ace982f411c854278c50e9b95392fef23147aced50f944fc2eb92a55d11",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36818,7 +36842,7 @@
       "sha256": "e43d813f36d73b97ba1da6d69ba3606285c1de8ee703a7a3b6d49c8f1b04f06a",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36862,7 +36886,7 @@
       "sha256": "8f49ab54eee9c84ca80f88b46280f91b35ce5733da0518b387ef9af69a01c763",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36874,7 +36898,7 @@
       "sha256": "28e77a3f74ebcea4b2b99d9994fdef0f8ba6e9826549224c94bd947df61f1612",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36882,7 +36906,7 @@
       "sha256": "5acb07092e466bcbd01ab17e1841b1ae72c53c6a26984bfd8923690ae1550f70",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36914,7 +36938,7 @@
       "sha256": "4fbd0b346b4b3d65871b1e581ddd8d1bff0aa019c89c4de728f542512047afda",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -36922,7 +36946,7 @@
       "sha256": "751b89698479201e036a489982de317a96f8cc9901949acc630acdac40624387",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -37002,7 +37026,7 @@
       "sha256": "18293761d3208f32f393fd4b61cdd264e8a2c459a854ba9ab19a7805a5fe68ff",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -37010,7 +37034,7 @@
       "sha256": "ad93b859ea4ff36f33ef1e17afb91976d4a5a58818be76b60a7451b19df94c65",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -37018,7 +37042,7 @@
       "sha256": "733106c9b8bbc99ede453052fe54fb84dfff7b672fbf3eb496f2a0690b286d8e",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -37030,7 +37054,7 @@
       "sha256": "104f957ee6467f61139e398592cea612344885923e9a992c512316efabe50b88",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -37046,7 +37070,7 @@
       "sha256": "e24e77f84db7341fc326c851ad3cd01e54972f09455b3ea9bac2f7bd97ac0899",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -37086,7 +37110,7 @@
       "sha256": "ed75627b8cf895b6cd5cee9eaf393508abf3eb5cac71e8c7a6c9b5b9a01ad5d9",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -37118,7 +37142,7 @@
       "sha256": "e521ffe5733615cbbbb0b5fc42121f5f4074d920552c89927bb8c38394f6249f",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -37146,7 +37170,7 @@
       "sha256": "58aaf5113da81e01cfc85f1d940a36b379c6ad9178d5ffd9378e7c36a1d77c45",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
       "successful_logs": [
-        "current-witness-root-state-main-regression-v2.log"
+        "current-table-scalar-normal-v5.log"
       ]
     },
     {
@@ -87585,7 +87609,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87594,7 +87618,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87602,13 +87626,13 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
       "theorem": "InitECandidate.Solver.Input.Framing.framed_length_word",
       "axioms": [],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87617,7 +87641,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87654,7 +87678,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87664,7 +87688,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87674,7 +87698,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87684,7 +87708,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87694,7 +87718,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87704,7 +87728,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87714,7 +87738,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87724,7 +87748,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87734,7 +87758,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87744,7 +87768,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87754,7 +87778,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87763,7 +87787,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87772,7 +87796,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87782,7 +87806,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87792,7 +87816,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87802,7 +87826,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87811,7 +87835,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87821,7 +87845,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87851,7 +87875,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87861,7 +87885,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87871,7 +87895,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87881,7 +87905,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87891,7 +87915,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87901,7 +87925,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87911,7 +87935,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87921,7 +87945,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87940,7 +87964,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87949,7 +87973,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87959,7 +87983,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87969,7 +87993,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -87979,7 +88003,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88009,7 +88033,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88019,7 +88043,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88029,7 +88053,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88039,7 +88063,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88049,7 +88073,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88057,7 +88081,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88066,7 +88090,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88102,7 +88126,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88112,7 +88136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88122,7 +88146,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88132,7 +88156,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88142,7 +88166,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88152,7 +88176,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88161,7 +88185,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88171,7 +88195,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88181,7 +88205,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88191,7 +88215,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88201,7 +88225,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88211,7 +88235,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88220,7 +88244,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88248,7 +88272,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88258,7 +88282,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88278,7 +88302,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88288,7 +88312,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88298,7 +88322,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88318,7 +88342,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88328,7 +88352,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88387,7 +88411,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88397,7 +88421,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88407,7 +88431,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88477,7 +88501,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88563,7 +88587,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88573,7 +88597,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88583,7 +88607,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88593,7 +88617,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88936,7 +88960,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88946,7 +88970,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88956,7 +88980,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88966,7 +88990,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88974,7 +88998,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88982,7 +89006,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -88992,7 +89016,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89002,7 +89026,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89012,7 +89036,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89022,7 +89046,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89032,7 +89056,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89093,7 +89117,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89101,7 +89125,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89111,7 +89135,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89121,7 +89145,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89131,7 +89155,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89141,7 +89165,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89151,7 +89175,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89161,7 +89185,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89171,7 +89195,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89181,7 +89205,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89190,7 +89214,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89199,7 +89223,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89209,7 +89233,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89219,7 +89243,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89229,7 +89253,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89239,7 +89263,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89249,7 +89273,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89259,7 +89283,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89541,7 +89565,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89551,7 +89575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89561,7 +89585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89569,7 +89593,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89577,7 +89601,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89587,7 +89611,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89597,7 +89621,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89607,7 +89631,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89617,7 +89641,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89667,7 +89691,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89677,7 +89701,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89687,7 +89711,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89697,7 +89721,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89707,7 +89731,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -89716,7 +89740,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90257,7 +90281,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90266,7 +90290,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90275,7 +90299,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90284,7 +90308,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90293,7 +90317,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90302,7 +90326,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90312,7 +90336,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90322,7 +90346,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90525,7 +90549,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90534,7 +90558,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90543,7 +90567,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90552,7 +90576,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90561,7 +90585,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90570,7 +90594,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90863,7 +90887,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90872,7 +90896,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -90881,7 +90905,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91087,7 +91111,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91097,7 +91121,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91107,7 +91131,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91117,7 +91141,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91126,7 +91150,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91384,7 +91408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91394,7 +91418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -91404,7 +91428,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92048,7 +92072,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92502,7 +92526,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92512,7 +92536,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92522,7 +92546,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92970,7 +92994,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -92980,7 +93004,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93604,7 +93628,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93859,7 +93883,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -93869,7 +93893,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99009,7 +99033,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99019,7 +99043,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99029,7 +99053,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99039,7 +99063,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99048,7 +99072,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99057,7 +99081,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99066,7 +99090,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99075,7 +99099,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99084,7 +99108,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99093,7 +99117,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99102,7 +99126,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99112,7 +99136,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99122,7 +99146,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99131,7 +99155,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99140,7 +99164,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99150,7 +99174,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99206,7 +99230,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99216,7 +99240,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99918,7 +99942,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99928,7 +99952,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99974,7 +99998,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -99984,7 +100008,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101470,7 +101494,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -101480,7 +101504,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -105317,7 +105341,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106330,7 +106354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106340,7 +106364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106350,7 +106374,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106360,7 +106384,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106370,7 +106394,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106380,7 +106404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106390,7 +106414,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106482,7 +106506,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -106492,7 +106516,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110813,7 +110837,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110823,7 +110847,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -110995,7 +111019,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111005,7 +111029,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111015,7 +111039,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111025,7 +111049,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111035,7 +111059,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111045,7 +111069,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111055,7 +111079,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111065,7 +111089,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111073,7 +111097,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111081,7 +111105,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111091,7 +111115,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111100,7 +111124,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111110,7 +111134,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111120,7 +111144,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111398,7 +111422,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111408,7 +111432,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111418,7 +111442,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111428,7 +111452,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111438,7 +111462,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111448,7 +111472,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111458,7 +111482,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111468,7 +111492,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111478,7 +111502,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111488,7 +111512,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111498,7 +111522,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111508,7 +111532,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111518,7 +111542,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111528,7 +111552,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111538,7 +111562,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111548,7 +111572,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111558,7 +111582,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111568,7 +111592,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111578,7 +111602,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111803,7 +111827,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111811,7 +111835,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111848,7 +111872,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111858,7 +111882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111868,7 +111892,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -111878,7 +111902,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119970,7 +119994,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -119980,7 +120004,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -121546,7 +121570,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -122344,7 +122368,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -122354,7 +122378,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -122364,7 +122388,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -122374,7 +122398,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -122384,7 +122408,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -122394,7 +122418,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124370,7 +124394,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124380,7 +124404,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124390,7 +124414,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -124400,7 +124424,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -147324,7 +147348,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -148629,7 +148653,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -160937,7 +160961,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -172633,7 +172657,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -174100,7 +174124,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -175209,7 +175233,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -176942,7 +176966,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -186366,7 +186390,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -187395,7 +187419,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189551,7 +189575,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189561,7 +189585,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189571,7 +189595,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189581,7 +189605,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189591,7 +189615,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189601,7 +189625,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189611,7 +189635,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189641,7 +189665,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189651,7 +189675,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189661,7 +189685,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189700,7 +189724,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189710,7 +189734,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189720,7 +189744,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189769,7 +189793,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189779,7 +189803,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189789,7 +189813,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189799,7 +189823,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189809,7 +189833,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189819,7 +189843,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189839,7 +189863,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189848,7 +189872,7 @@
         "propext",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -189858,7 +189882,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -192474,7 +192498,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -192482,7 +192506,7 @@
       "axioms": [
         "propext"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -195330,7 +195354,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -195340,7 +195364,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -195350,7 +195374,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -195360,7 +195384,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -195420,7 +195444,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -195566,7 +195590,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -195626,7 +195650,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -195636,7 +195660,7 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     },
     {
@@ -195767,6 +195791,76 @@
         "Quot.sound"
       ],
       "successful_log": "current-witness-root-state-main-regression-v2.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentTable.New.ScalarTail.allocated",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-table-scalar-normal-v5.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentTable.New.scalar_arrays_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-table-scalar-normal-v5.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentTable.New.ScalarContext.after_array",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-table-scalar-normal-v5.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentTable.New.scalar_final_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-table-scalar-normal-v5.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentTable.New.scalar_prefix_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-table-scalar-normal-v5.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentTable.New.scalar_fields_execute",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-table-scalar-normal-v5.log",
+      "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
+    },
+    {
+      "theorem": "InitECandidate.Solver.Input.CurrentTable.New.body_scalar_normal_frame",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "successful_log": "current-table-scalar-normal-v5.log",
       "dependency_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb"
     }
   ],

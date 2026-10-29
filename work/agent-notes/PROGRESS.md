@@ -3926,3 +3926,26 @@ generator --check PASS. Index8665modules/17586facts; inventory8710/replacement
 closure0/fixed files unchanged. Incremental policy PASS65500entries/
 2485397130bytes. No full verification claimed. Usage29%weekly/0resetcredits.
 Continue the actual state-init table/allocation suffix and earlier-input frame.
+
+
+## Current Patricia constructor frames for every scalar key width
+
+The actual htab_new116 now returns its real fresh header and complete normal
+persistent frame for arbitrary scalar key widths, with capacity at least two.
+All four allocations derive their own room from the same observed execution;
+the actual stride expression, capacity guard and11header stores are retained.
+Earlier words, every nonheap global and complete runtime metadata survive,
+and the actual final heap remains bounded/aligned and advances monotonically.
+No initialized array contents or old hashmap model is assumed.
+
+Reused the current generic array-allocation/store trace and mapped header
+stores. A small scalar context/tail composition shares the keys/nodes/order
+proof across widths20/32/52 and beyond. Existing32-byte physical Patricia
+lookup/insertion contracts retain their separate stronger image guarantees.
+
+Validation: current-table-scalar-normal-v5.log PASS741jobs/permitted printed
+axioms only. Index8668modules/17593facts; inventory8713/replacement closure0/
+fixed files unchanged. Incremental policy PASS65503entries/2485418086bytes.
+No global finite target K or full verification; claim infinity.
+Usage30%weekly/0resetcredits. Continue the actual state-init suffix and whole
+normal earlier-input/runtime/heap frame, then continued main/target steps.

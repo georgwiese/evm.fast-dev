@@ -3012,3 +3012,48 @@ remainder stores, startup u256_ws ownership/global, actual Taylor/header/
 main and uniform target-step composition remain open. Exact K evaluation,
 slack review and cleanup remain in the same active goal. No executable or
 fixed challenge assumption changed; historical untracked WIPs untouched.
+
+
+## Complete actual one-digit divmnu function and ignored caller
+
+The unchanged divmnu(61) now has a complete one-digit-path contract, from
+its genuine six scalar arguments through both outer declarations, divisor
+load, k=0/j=m setup, full quotient loop, final remainder store and early
+function return. The quotient image is the exact natural quotient, and the
+stored remainder is the exact natural remainder below the actual positive
+32-bit divisor. Every quotient digit remains32-bit. All memory outside the
+written quotient slots and remainder word survives; all other physical
+fields are retained with the exact remaining clock.
+
+The full body costs≤34*count source ticks (≤272for8digits) on every outcome,
+including short clocks. Its real normal return derives its own full funding
+and actual0return value. The real six-scalar ABI and ignored-result call now
+have≤34*count+1ticks (≤273) allowances. A normally continuing actual caller
+derives that funding and obtains its real quotient/remainder memory, exact
+restored caller locals and canonical remaining clock. No completed later
+helper or future funding is an entry premise.
+
+The physical Buffers model is separated from local Entry bindings. Changing
+lexical locals or a clock preserves the physical model; the real ABI derives
+the six fresh callee bindings. This permits actual callers whose local
+names/count variables differ from the formal names, without requiring fake
+caller argument bindings. Their current mapped images, divisor bounds and
+buffer separation still must be derived in the surrounding real division
+wrapper and startup workspace trace.
+
+Validation: current-single-digit-call-normal-v2.log PASS1029jobs; all12new
+printed facts have only permitted axioms. Index8700modules/18406facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Overall effort estimate
+remains50%, plausible40–60%. Usage30%weekly/0resetcredits, ordinary usage
+allowed. No new candidate paths; package remains exactly65536entries.
+
+Next: current workspace640-byte slot geometry and zero-fill images needed
+by digits_divmod, then connect its actual one-digit caller/result to the
+four-word quotient/remainder reconstruction. Two-digit normalization and
+subtraction/store/remainder contracts remain open; they can use the checked
+qhat correction quotient theorem. The startup u256_ws allocation/global
+must be retained through main. Actual Taylor/header validation/main,
+uniform target composition, exact K evaluation, slack review and cleanup
+remain in the same active goal. No executable or fixed challenge assumption
+changed; historical untracked RlpLength/RlpWrite WIPs stay untouched.

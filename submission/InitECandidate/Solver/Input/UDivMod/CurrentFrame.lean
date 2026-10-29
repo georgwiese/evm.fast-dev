@@ -1,5 +1,6 @@
 import Flapjack.Pancake.Semantics.PanSem.ClockTimeout
 import InitECandidate.Solver.WitnessRadix.RestoreLookup
+import InitECandidate.Solver.Input.ClockCostCurrentCall
 import InitECandidate.Solver.Input.LoadWord
 import InitECandidate.Solver.Input.IgnoredCallNormal
 import InitECandidate.Solver.Input.WordTupleFour
@@ -93,7 +94,7 @@ def digit (words : Quad) (index : Nat) : BitVec 64:=match index with
   | 4=>words 2 &&& 4294967295#64 | 5=>words 2>>>(32:Nat)
   | 6=>words 3 &&& 4294967295#64 | _=>words 3>>>(32:Nat)
 
-def number (contents : Nat→BitVec 64) : Nat→Nat
+def number (contents : Nat→ BitVec 64) : Nat→ Nat
   | 0=>0
   | count+1=>number contents count+2^(32*count)*(contents count).toNat
 
@@ -132,7 +133,7 @@ theorem digits_number (words : Quad) : number (digit words) 8=quadNumber words :
   simp only [number,digit,quadNumber]
   omega
 
-theorem number_zero (contents : Nat→BitVec 64) (count : Nat) (zero : ∀ index,index<count→contents index=0#64) :
+theorem number_zero (contents : Nat→ BitVec 64) (count : Nat) (zero : ∀ index,index<count→ contents index=0#64) :
     number contents count=0 := by
   induction count with
   | zero=>rfl
@@ -141,8 +142,8 @@ theorem number_zero (contents : Nat→BitVec 64) (count : Nat) (zero : ∀ index
     simp
 
 def slot (pointer : BitVec 64) (index : Nat) : BitVec 64:=pointer+BitVec.ofNat 64 (8*index)
-def Image (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64) (count : Nat) : Prop:=
-  ∀ index,index<count→source.memory (slot pointer index)=.word (contents index)
+def Image (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→ BitVec 64) (count : Nat) : Prop:=
+  ∀ index,index<count→ source.memory (slot pointer index)=.word (contents index)
 
 theorem slot_injective (pointer : BitVec 64) (left right : Nat) (leftSmall : left<16) (rightSmall : right<16)
     (same : slot pointer left=slot pointer right) : left=right := by
@@ -152,13 +153,13 @@ theorem slot_injective (pointer : BitVec 64) (left right : Nat) (leftSmall : lef
   rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega),BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)] at native
   omega
 
-def writeMemory (memory : BitVec 64→HolWordLab 64) (pointer : BitVec 64) (contents : Nat→BitVec 64) : Nat→BitVec 64→HolWordLab 64
+def writeMemory (memory : BitVec 64→ HolWordLab 64) (pointer : BitVec 64) (contents : Nat→ BitVec 64) : Nat→ BitVec 64→ HolWordLab 64
   | 0=>memory
   | count+1=>StoreWord.put (writeMemory memory pointer contents count) (slot pointer count) (contents count)
-def written (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64) (count : Nat) :=
+def written (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→ BitVec 64) (count : Nat) :=
   {source with memory:=writeMemory source.memory pointer contents count}
 
-theorem written_image (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64)
+theorem written_image (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→ BitVec 64)
     (count : Nat) (small : count≤16) : Image (written source pointer contents count) pointer contents count := by
   intro index inside
   change writeMemory source.memory pointer contents count (slot pointer index)=.word (contents index)
@@ -175,8 +176,8 @@ theorem written_image (source : PanSemStateFiniteExact 64 Guest.HostMemory) (poi
       simp only [StoreWord.put,if_neg away]
       exact ih (by omega) (by omega)
 
-theorem written_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64) (contents : Nat→BitVec 64)
-    (count : Nat) (away : ∀ index,index<count→query≠slot pointer index) :
+theorem written_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64) (contents : Nat→ BitVec 64)
+    (count : Nat) (away : ∀ index,index<count→ query≠slot pointer index) :
     (written source pointer contents count).memory query=source.memory query := by
   change writeMemory source.memory pointer contents count query=source.memory query
   induction count with
@@ -187,7 +188,7 @@ theorem written_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (poin
 
 theorem mapped_arena (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
     (domain : source.memaddrs=InitE.ordinaryDomain) (arena : AllocatedBytes.Arena pointer 64)
-    (aligned : pointer.toNat%8=0) : ∀ index,index<8→source.memaddrs (slot pointer index) := by
+    (aligned : pointer.toNat%8=0) : ∀ index,index<8→ source.memaddrs (slot pointer index) := by
   intro index inside
   exact AllocatedBytes.word_mapped source pointer 64 (8*index) domain arena (by omega) aligned (by omega)
 
@@ -212,7 +213,7 @@ def destination (index : Nat) : ExpHOL 64:=
 def expression (index : Nat) : ExpHOL 64:=
   if index%2=0 then .op .and [.rfield (index/2) (localVar "a"),.const 4294967295#64]
   else .shift .lsr (.rfield (index/2) (localVar "a")) (.const 32#64)
-def stores (index : Nat) : Nat→ProgHOL 64
+def stores (index : Nat) : Nat→ ProgHOL 64
   | 0=>.return (.const 0#64)
   | count+1=>.seq (.store (destination index) (expression index)) (stores (index+1) count)
 
@@ -249,7 +250,7 @@ theorem stores_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (po
     (inside : index+count≤8)
     (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (a : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple words))
-    (mapped : ∀ index,index<8→source.memaddrs (slot pointer index)) :
+    (mapped : ∀ index,index<8→ source.memaddrs (slot pointer index)) :
     evaluateHOLFiniteState (written source pointer (digit words) index) (stores index count)=
       (some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite (written source pointer (digit words) (index+count))) := by
   classical
@@ -273,7 +274,7 @@ theorem stores_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (po
 theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (words : Quad)
     (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (a : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple words))
-    (mapped : ∀ index,index<8→source.memaddrs (slot pointer index)) :
+    (mapped : ∀ index,index<8→ source.memaddrs (slot pointer index)) :
     evaluateHOLFiniteState source body=
       (some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite (written source pointer (digit words) 8)) := by
   rw [body_shape]
@@ -304,7 +305,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 private def rawLocals (pointer : BitVec 64) (words : Quad) (name : MlS) : Option (ValueHOL 64):=
   if name=ofString "a" then some (RlpWrite.U256Value.tuple words) else if name=ofString "p" then some (.val (.word pointer)) else none
 
-theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (pointer : BitVec 64) (words : Quad)
+theorem environment (codeFn : MlS→ Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (pointer : BitVec 64) (words : Quad)
     (code : codeFn (ofString "u256_to_digits")=some (formals,body,.one)) :
     ∃ callee : HolFiniteMapExact MlS (ValueHOL 64),
       lookupCodeHOLFinite codeFn (ofString "u256_to_digits") [.val (.word pointer),RlpWrite.U256Value.tuple words]=some (body,callee,.one) ∧
@@ -331,7 +332,7 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (poin
     (arguments : List (ExpHOL 64)) (installed : OriginalCode.Installed source.code)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
       some [.val (.word pointer),RlpWrite.U256Value.tuple words])
-    (mapped : ∀ index,index<8→source.memaddrs (slot pointer index)) (enough : 1≤source.clock) :
+    (mapped : ∀ index,index<8→ source.memaddrs (slot pointer index)) (enough : 1≤source.clock) :
     evaluateHOLFiniteState source (.call (some (none,none)) (ofString "u256_to_digits") arguments)=(none,callerPost source pointer words) := by
   obtain ⟨callee,called,pCell,aCell⟩:=environment source.code.lookup pointer words (original_code source.code installed)
   have run:=execute (callEntryStateHOLFinite source callee) pointer words pCell aCell mapped
@@ -349,7 +350,7 @@ theorem call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (arguments : List (ExpHOL 64)) (installed : OriginalCode.Installed source.code)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
       some [.val (.word pointer),RlpWrite.U256Value.tuple words])
-    (mapped : ∀ index,index<8→source.memaddrs (slot pointer index))
+    (mapped : ∀ index,index<8→ source.memaddrs (slot pointer index))
     (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "u256_to_digits") arguments)=(none,post)) :
     1≤source.clock ∧ post=callerPost source pointer words := by
   obtain ⟨callee,called,pCell,aCell⟩:=environment source.code.lookup pointer words (original_code source.code installed)
@@ -362,7 +363,7 @@ theorem caller_image (source : PanSemStateFiniteExact 64 Guest.HostMemory) (poin
   written_image source pointer (digit words) 8 (by decide)
 
 theorem caller_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64) (words : Quad)
-    (away : ∀ index,index<8→query≠slot pointer index) : (callerPost source pointer words).memory query=source.memory query :=
+    (away : ∀ index,index<8→ query≠slot pointer index) : (callerPost source pointer words).memory query=source.memory query :=
   written_away source pointer query (digit words) 8 away
 
 theorem caller_away_range (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64) (words : Quad)
@@ -393,24 +394,24 @@ namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Length
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
-def result (contents : Nat→BitVec 64) : Nat→Nat
+def result (contents : Nat→ BitVec 64) : Nat→ Nat
   | 0=>0
   | count+1=>if contents count=0#64 then result contents count else count+1
-def scans (contents : Nat→BitVec 64) : Nat→Nat
+def scans (contents : Nat→ BitVec 64) : Nat→ Nat
   | 0=>0
   | count+1=>if contents count=0#64 then scans contents count+1 else 1
 
-theorem result_bound (contents : Nat→BitVec 64) (count : Nat) : result contents count≤count := by
+theorem result_bound (contents : Nat→ BitVec 64) (count : Nat) : result contents count≤count := by
   induction count with
   | zero=>rfl
   | succ count ih=>simp only [result];split_ifs <;> omega
 
-theorem scans_bound (contents : Nat→BitVec 64) (count : Nat) : scans contents count≤count := by
+theorem scans_bound (contents : Nat→ BitVec 64) (count : Nat) : scans contents count≤count := by
   induction count with
   | zero=>rfl
   | succ count ih=>simp only [scans];split_ifs <;> omega
 
-theorem result_zero (contents : Nat→BitVec 64) (count : Nat) : result contents count=0 ↔ ∀ index,index<count→contents index=0#64 := by
+theorem result_zero (contents : Nat→ BitVec 64) (count : Nat) : result contents count=0 ↔ ∀ index,index<count→ contents index=0#64 := by
   induction count with
   | zero=>simp [result]
   | succ count ih=>
@@ -429,7 +430,7 @@ theorem result_zero (contents : Nat→BitVec 64) (count : Nat) : result contents
       · intro all
         exact (zero (all count (by omega))).elim
 
-theorem result_leading (contents : Nat→BitVec 64) (count : Nat) (positive : 0<result contents count) :
+theorem result_leading (contents : Nat→ BitVec 64) (count : Nat) (positive : 0<result contents count) :
     contents (result contents count-1)≠0#64 := by
   induction count with
   | zero=>simp [result] at positive
@@ -439,7 +440,7 @@ theorem result_leading (contents : Nat→BitVec 64) (count : Nat) (positive : 0<
       exact ih positive
     · simpa only [result,if_neg zero,Nat.add_sub_cancel] using zero
 
-theorem result_suffix (contents : Nat→BitVec 64) (count index : Nat)
+theorem result_suffix (contents : Nat→ BitVec 64) (count index : Nat)
     (after : result contents count≤index) (inside : index<count) : contents index=0#64 := by
   induction count with
   | zero=>omega
@@ -498,7 +499,7 @@ private theorem address_read (source : PanSemStateFiniteExact 64 Guest.HostMemor
     slot,BitVec.ofNat_mul,Nat.mul_comm]
 
 /-- Exact real body at a mapped digit, including its early caller return. -/
-theorem body_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64) (count : Nat)
+theorem body_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→ BitVec 64) (count : Nat)
     (positive : 0<count)
     (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
@@ -525,11 +526,11 @@ theorem body_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
 
 /-- Complete actual scan, at every clock, over the initialized physical image. -/
 theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
-    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (contents : Nat→ BitVec 64) (count : Nat) (small : count≤8)
     (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
     (image : Image source pointer contents count)
-    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index)) :
+    (mapped : ∀ index,index<count→ source.memaddrs (slot pointer index)) :
     evaluateHOLFiniteState source body=
       if scans contents count≤source.clock then
         (some (.returned (.val (.word (BitVec.ofNat 64 (result contents count))))),
@@ -570,7 +571,7 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer :
         have nextImage : Image next pointer contents count:=by
           intro index inside
           exact image index (by omega)
-        have nextMapped : ∀ index,index<count→next.memaddrs (slot pointer index):=by
+        have nextMapped : ∀ index,index<count→ next.memaddrs (slot pointer index):=by
           intro index inside
           exact mapped index (by omega)
         have tailRun:=ih next (by omega) nextP nextN nextImage nextMapped
@@ -594,11 +595,11 @@ theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer :
 
 /-- All outcomes of the real mapped scan spend at most its initial digit count. -/
 theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
-    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (contents : Nat→ BitVec 64) (count : Nat) (small : count≤8)
     (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
     (image : Image source pointer contents count)
-    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index)) :
+    (mapped : ∀ index,index<count→ source.memaddrs (slot pointer index)) :
     source.clock-(evaluateHOLFiniteState source body).2.clock≤count := by
   rw [execute source pointer contents count small p n image mapped]
   have scansBound:=scans_bound contents count
@@ -610,11 +611,11 @@ theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
 
 /-- An actual normal return supplies its own funding, exact length and frame. -/
 theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
-    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (contents : Nat→ BitVec 64) (count : Nat) (small : count≤8)
     (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
     (image : Image source pointer contents count)
-    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index)) (returned : ValueHOL 64)
+    (mapped : ∀ index,index<count→ source.memaddrs (slot pointer index)) (returned : ValueHOL 64)
     (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
     scans contents count≤source.clock ∧ returned=.val (.word (BitVec.ofNat 64 (result contents count))) ∧
       post=emptyLocalsHOLFinite {source with clock:=source.clock-scans contents count} := by
@@ -626,7 +627,7 @@ theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     cases normal.1
 
 /-- Trimming the leading zero cells does not change the represented number. -/
-theorem trimmed_number (contents : Nat→BitVec 64) (count : Nat) :
+theorem trimmed_number (contents : Nat→ BitVec 64) (count : Nat) :
     number contents (result contents count)=number contents count := by
   induction count with
   | zero=>rfl
@@ -635,7 +636,7 @@ theorem trimmed_number (contents : Nat→BitVec 64) (count : Nat) :
     · simpa [result,zero,number] using ih
     · simp only [result,if_neg zero]
 
-theorem positive_length (contents : Nat→BitVec 64) (count : Nat) (positive : 0<number contents count) :
+theorem positive_length (contents : Nat→ BitVec 64) (count : Nat) (positive : 0<number contents count) :
     0<result contents count := by
   by_contra zero
   have all:=(result_zero contents count).1 (by omega)
@@ -644,13 +645,13 @@ theorem positive_length (contents : Nat→BitVec 64) (count : Nat) (positive : 0
 
 /-- Real scalar ABI and current physical image price the scoped caller. -/
 theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
-    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (contents : Nat→ BitVec 64) (count : Nat) (small : count≤8)
     (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64) (tailPrice : Nat)
     (installed : OriginalCode.Installed source.code)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
       some [.val (.word pointer),.val (.word (BitVec.ofNat 64 count))])
     (image : Image source pointer contents count)
-    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index))
+    (mapped : ∀ index,index<count→ source.memaddrs (slot pointer index))
     (tailBound : ClockCost.Bound source.code continuation tailPrice) :
     source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "digits_len") arguments continuation)).2.clock≤
       count+tailPrice+1 := by
@@ -662,13 +663,13 @@ theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer
 /-- A funded actual caller returns the real length and resumes with its exact
 scan charge. Early returns need only their actual number of scans. -/
 theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
-    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (contents : Nat→ BitVec 64) (count : Nat) (small : count≤8)
     (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
     (installed : OriginalCode.Installed source.code)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
       some [.val (.word pointer),.val (.word (BitVec.ofNat 64 count))])
     (image : Image source pointer contents count)
-    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index))
+    (mapped : ∀ index,index<count→ source.memaddrs (slot pointer index))
     (enough : scans contents count+1≤source.clock) :
     evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "digits_len") arguments continuation)=
       (let output:=evaluateHOLFiniteState (bind {source with clock:=source.clock-1-scans contents count}
@@ -685,10 +686,10 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (poin
 /-- A real normally returning child supplies the exact caller continuation.
 The caller's own call tick is charged separately by the scoped-call rules. -/
 theorem resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (pointer : BitVec 64)
-    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (contents : Nat→ BitVec 64) (count : Nat) (small : count≤8)
     (installed : OriginalCode.Installed source.code)
     (image : Image source pointer contents count)
-    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index))
+    (mapped : ∀ index,index<count→ source.memaddrs (slot pointer index))
     (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
     (called : lookupCodeHOLFinite source.code.lookup (ofString "digits_len")
       [.val (.word pointer),.val (.word (BitVec.ofNat 64 count))]=some (actual,callee,shape))
@@ -740,7 +741,7 @@ namespace InitECandidate.Solver.Input.UDivMod.WideDigits.ToWords
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 
-def words (contents : Nat→BitVec 64) : Quad:=fun index=>
+def words (contents : Nat→ BitVec 64) : Quad:=fun index=>
   contents (2*index.val) ||| (contents (2*index.val+1)<<<(32:Nat))
 
 theorem pair_number (low high : BitVec 64) (lowSmall : low.toNat<2^32) (highSmall : high.toNat<2^32) :
@@ -751,7 +752,7 @@ theorem pair_number (low high : BitVec 64) (lowSmall : low.toNat<2^32) (highSmal
   rw [BitVec.toNat_or,shifted,Nat.or_comm]
   exact (Nat.two_pow_add_eq_or_of_lt (i:=32) lowSmall high.toNat).symm.trans (by omega)
 
-theorem words_number (contents : Nat→BitVec 64) (small : ∀ index,index<8→(contents index).toNat<2^32) :
+theorem words_number (contents : Nat→ BitVec 64) (small : ∀ index,index<8→ (contents index).toNat<2^32) :
     quadNumber (words contents)=number contents 8 := by
   change (contents 0 ||| contents 1<<<(32:Nat)).toNat+2^64*(contents 2 ||| contents 3<<<(32:Nat)).toNat+
     2^128*(contents 4 ||| contents 5<<<(32:Nat)).toNat+2^192*(contents 6 ||| contents 7<<<(32:Nat)).toNat=number contents 8
@@ -812,9 +813,9 @@ theorem original_code (code) (installed : OriginalCode.Installed code) :
   simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,RlpWrite.U256Value.tupleShape,
     Guest.Software.guestFn_digits_to_u256,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
 
-private theorem limb_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64)
+private theorem limb_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→ BitVec 64)
     (index : Fin 4) (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
-    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→source.memaddrs (slot pointer index)) :
+    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→ source.memaddrs (slot pointer index)) :
     eval source (limb index.val)=some (.val (.word (words contents index))) := by
   have loInside : 2*index.val<8:=by omega
   have hiInside : 2*index.val+1<8:=by omega
@@ -830,9 +831,9 @@ private theorem limb_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
 
 /-- The original read/OR/shift return reconstructs the actual physical digits,
 changes no nonlocal state and spends no body source ticks. -/
-theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64)
+theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→ BitVec 64)
     (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
-    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→source.memaddrs (slot pointer index)) :
+    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→ source.memaddrs (slot pointer index)) :
     evaluateHOLFiniteState source body=
       (some (.returned (RlpWrite.U256Value.tuple (words contents))),emptyLocalsHOLFinite source) := by
   classical
@@ -863,12 +864,12 @@ theorem call_cost (code) (installed : OriginalCode.Installed code) (name : Strin
     (original_code code installed) (body_cost code) tailBound
 
 /-- Actual unary scalar ABI with the genuine four-word return shape. -/
-theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (pointer : BitVec 64)
+theorem environment (codeFn : MlS→ Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL)) (pointer : BitVec 64)
     (code : codeFn (ofString "digits_to_u256")=some (formals,body,RlpWrite.U256Value.tupleShape)) :
     ∃ callee : HolFiniteMapExact MlS (ValueHOL 64),
       lookupCodeHOLFinite codeFn (ofString "digits_to_u256") [.val (.word pointer)]=some (body,callee,RlpWrite.U256Value.tupleShape) ∧
       callee.lookup (ofString "p")=some (.val (.word pointer)) := by
-  let rawLocals : MlS→Option (ValueHOL 64):=fun name=>if name=ofString "p" then some (.val (.word pointer)) else none
+  let rawLocals : MlS→ Option (ValueHOL 64):=fun name=>if name=ofString "p" then some (.val (.word pointer)) else none
   have valid : (formals.map Prod.fst).Nodup ∧ formals.length=([.val (.word pointer)] : List (ValueHOL 64)).length ∧
       ((formals.zip [.val (.word pointer)]).all (fun pair=>shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2)))=true:=by
     simp [formals,shapeOfHOLExact,shapeEqHOL_eq_true]
@@ -881,11 +882,11 @@ theorem environment (codeFn : MlS→Option (List (MlS×ShapeHOL)×ProgHOL 64×Sh
   rw [locals]
   simp [rawLocals]
 
-theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64)
+theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→ BitVec 64)
     (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
     (installed : OriginalCode.Installed source.code)
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word pointer)])
-    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→source.memaddrs (slot pointer index))
+    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→ source.memaddrs (slot pointer index))
     (enough : 1≤source.clock) :
     evaluateHOLFiniteState source (.decCall (ofString name) RlpWrite.U256Value.tupleShape (ofString "digits_to_u256") arguments continuation)=
       (let output:=evaluateHOLFiniteState (setVarHOLFinite (ofString name) (RlpWrite.U256Value.tuple (words contents))
@@ -900,8 +901,8 @@ theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (poin
 /-- The actual normal child run determines the reconstructed value and the
 unchanged physical caller state with its one-call decrement. -/
 theorem resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (pointer : BitVec 64)
-    (contents : Nat→BitVec 64) (installed : OriginalCode.Installed source.code)
-    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→source.memaddrs (slot pointer index))
+    (contents : Nat→ BitVec 64) (installed : OriginalCode.Installed source.code)
+    (image : Image source pointer contents 8) (mapped : ∀ index,index<8→ source.memaddrs (slot pointer index))
     (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
     (called : lookupCodeHOLFinite source.code.lookup (ofString "digits_to_u256") [.val (.word pointer)]=some (actual,callee,shape))
     (returned : ValueHOL 64)
@@ -1161,30 +1162,30 @@ private theorem loop_test (source : PanSemStateFiniteExact 64 Guest.HostMemory) 
   rw [finite_eval]
   simp [eval,loopTest,localVar,evalHOLExact,toExact,j,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,encoded]
 
-private theorem number_congr (left right : Nat→BitVec 64) (count : Nat)
-    (agree : ∀ index,index<count→left index=right index) : number left count=number right count := by
+private theorem number_congr (left right : Nat→ BitVec 64) (count : Nat)
+    (agree : ∀ index,index<count→ left index=right index) : number left count=number right count := by
   induction count with
   | zero=>rfl
   | succ count ih=>rw [number,number,agree count (by omega),ih (by intro index inside;exact agree index (by omega))]
 
 structure LoopResult (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer : BitVec 64)
-    (contents : Nat→BitVec 64) (divisor high : BitVec 64) (count : Nat) (quotient : Nat→BitVec 64) (remainder : BitVec 64) : Prop where
+    (contents : Nat→ BitVec 64) (divisor high : BitVec 64) (count : Nat) (quotient : Nat→ BitVec 64) (remainder : BitVec 64) : Prop where
   run : evaluateHOLFiniteState source loop=(none,target)
   state : target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-34*count}
   image : Image target qPointer quotient count
-  digits : ∀ index,index<count→(quotient index).toNat<2^32
+  digits : ∀ index,index<count→ (quotient index).toNat<2^32
   small : remainder.toNat<divisor.toNat
   value : divisor.toNat*number quotient count+remainder.toNat=high.toNat*2^(32*count)+number contents count
   index : target.locals.lookup (ofString "j")=some (.val (.word 0#64))
   carry : target.locals.lookup (ofString "k")=some (.val (.word remainder))
   other : ∀ name : String,ofString name≠ofString "j"→ ofString name≠ofString "k"→ ofString name≠ofString "qr"→
     target.locals.lookup (ofString name)=source.locals.lookup (ofString name)
-  away : ∀ query,(∀ index,index<count→query≠slot qPointer index)→target.memory query=source.memory query
+  away : ∀ query,(∀ index,index<count→ query≠slot qPointer index)→ target.memory query=source.memory query
 
 /-- Full physical one-digit division loop: actual quotient stores, exact
 natural division identity, carried remainder and protected-memory frame. -/
 theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer uPointer high divisor : BitVec 64)
-    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (contents : Nat→ BitVec 64) (count : Nat) (small : count≤8)
     (installed : OriginalCode.Installed source.code)
     (qCell : source.locals.lookup (ofString "q")=some (.val (.word qPointer)))
     (uCell : source.locals.lookup (ofString "u")=some (.val (.word uPointer)))
@@ -1192,11 +1193,11 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPoi
     (kCell : source.locals.lookup (ofString "k")=some (.val (.word high)))
     (dCell : source.locals.lookup (ofString "d")=some (.val (.word divisor)))
     (image : Image source uPointer contents count)
-    (inputMapped : ∀ index,index<count→source.memaddrs (slot uPointer index))
-    (outputMapped : ∀ index,index<count→source.memaddrs (slot qPointer index))
-    (separate : ∀ inputIndex,inputIndex<count→∀ outputIndex,outputIndex<count→slot uPointer inputIndex≠slot qPointer outputIndex)
+    (inputMapped : ∀ index,index<count→ source.memaddrs (slot uPointer index))
+    (outputMapped : ∀ index,index<count→ source.memaddrs (slot qPointer index))
+    (separate : ∀ inputIndex,inputIndex<count→ ∀ outputIndex,outputIndex<count→ slot uPointer inputIndex≠slot qPointer outputIndex)
     (divisorSmall : divisor.toNat<2^32) (highSmall : high.toNat<divisor.toNat)
-    (digitsSmall : ∀ index,index<count→(contents index).toNat<2^32)
+    (digitsSmall : ∀ index,index<count→ (contents index).toNat<2^32)
     (enough : 34*count≤source.clock) :
     ∃ target quotient remainder,LoopResult source target qPointer contents divisor high count quotient remainder := by
   classical
@@ -1235,17 +1236,17 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPoi
       (next_other entry qPointer count digit carry "u" (by decide) (by decide) (by decide)).trans uCell
     have midD : middle.locals.lookup (ofString "d")=some (.val (.word divisor)):=
       (next_other entry qPointer count digit carry "d" (by decide) (by decide) (by decide)).trans dCell
-    have midInput : ∀ index,index<count→middle.memaddrs (slot uPointer index):=by
+    have midInput : ∀ index,index<count→ middle.memaddrs (slot uPointer index):=by
       intro index inside
       exact inputMapped index (by omega)
-    have midOutput : ∀ index,index<count→middle.memaddrs (slot qPointer index):=by
+    have midOutput : ∀ index,index<count→ middle.memaddrs (slot qPointer index):=by
       intro index inside
       exact outputMapped index (by omega)
     obtain ⟨target,tailDigits,finalR,tailRun⟩:=ih middle carry (by omega) (by rw [middleCode];exact installed)
       midQ midU (next_index entry qPointer count digit carry) (next_remainder entry qPointer count digit carry) midD
       middleImage midInput midOutput (by intro i hi j hj;exact separate i (by omega) j (by omega)) carrySmall
       (by intro index inside;exact digitsSmall index (by omega)) (by rw [middleClock];omega)
-    let finalDigits : Nat→BitVec 64:=fun index=>if index=count then digit else tailDigits index
+    let finalDigits : Nat→ BitVec 64:=fun index=>if index=count then digit else tailDigits index
     have lowNumber : number finalDigits count=number tailDigits count:=number_congr finalDigits tailDigits count
       (by intro index inside;simp only [finalDigits,if_neg (show index≠count by omega)])
     have test:=loop_test source (count+1) small jCell
@@ -1292,7 +1293,7 @@ theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPoi
         StoreWord.put,if_neg (outside count (by omega))]
 
 theorem loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer uPointer high divisor : BitVec 64)
-    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (contents : Nat→ BitVec 64) (count : Nat) (small : count≤8)
     (installed : OriginalCode.Installed source.code)
     (qCell : source.locals.lookup (ofString "q")=some (.val (.word qPointer)))
     (uCell : source.locals.lookup (ofString "u")=some (.val (.word uPointer)))
@@ -1300,11 +1301,11 @@ theorem loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointe
     (kCell : source.locals.lookup (ofString "k")=some (.val (.word high)))
     (dCell : source.locals.lookup (ofString "d")=some (.val (.word divisor)))
     (image : Image source uPointer contents count)
-    (inputMapped : ∀ index,index<count→source.memaddrs (slot uPointer index))
-    (outputMapped : ∀ index,index<count→source.memaddrs (slot qPointer index))
-    (separate : ∀ inputIndex,inputIndex<count→∀ outputIndex,outputIndex<count→slot uPointer inputIndex≠slot qPointer outputIndex)
+    (inputMapped : ∀ index,index<count→ source.memaddrs (slot uPointer index))
+    (outputMapped : ∀ index,index<count→ source.memaddrs (slot qPointer index))
+    (separate : ∀ inputIndex,inputIndex<count→ ∀ outputIndex,outputIndex<count→ slot uPointer inputIndex≠slot qPointer outputIndex)
     (divisorSmall : divisor.toNat<2^32) (highSmall : high.toNat<divisor.toNat)
-    (digitsSmall : ∀ index,index<count→(contents index).toNat<2^32)
+    (digitsSmall : ∀ index,index<count→ (contents index).toNat<2^32)
     : source.clock-(evaluateHOLFiniteState source loop).2.clock≤34*count := by
   by_cases enough : 34*count≤source.clock
   · obtain ⟨target,quotient,remainder,checked⟩:=loop_execute source qPointer uPointer high divisor contents count small installed
@@ -1317,7 +1318,7 @@ theorem loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointe
   · omega
 
 theorem loop_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer uPointer high divisor : BitVec 64)
-    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (contents : Nat→ BitVec 64) (count : Nat) (small : count≤8)
     (installed : OriginalCode.Installed source.code)
     (qCell : source.locals.lookup (ofString "q")=some (.val (.word qPointer)))
     (uCell : source.locals.lookup (ofString "u")=some (.val (.word uPointer)))
@@ -1325,11 +1326,11 @@ theorem loop_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
     (kCell : source.locals.lookup (ofString "k")=some (.val (.word high)))
     (dCell : source.locals.lookup (ofString "d")=some (.val (.word divisor)))
     (image : Image source uPointer contents count)
-    (inputMapped : ∀ index,index<count→source.memaddrs (slot uPointer index))
-    (outputMapped : ∀ index,index<count→source.memaddrs (slot qPointer index))
-    (separate : ∀ inputIndex,inputIndex<count→∀ outputIndex,outputIndex<count→slot uPointer inputIndex≠slot qPointer outputIndex)
+    (inputMapped : ∀ index,index<count→ source.memaddrs (slot uPointer index))
+    (outputMapped : ∀ index,index<count→ source.memaddrs (slot qPointer index))
+    (separate : ∀ inputIndex,inputIndex<count→ ∀ outputIndex,outputIndex<count→ slot uPointer inputIndex≠slot qPointer outputIndex)
     (divisorSmall : divisor.toNat<2^32) (highSmall : high.toNat<divisor.toNat)
-    (digitsSmall : ∀ index,index<count→(contents index).toNat<2^32)
+    (digitsSmall : ∀ index,index<count→ (contents index).toNat<2^32)
     (normal : evaluateHOLFiniteState source loop=(none,post)) :
     ∃ quotient remainder,34*count≤source.clock ∧ LoopResult source post qPointer contents divisor high count quotient remainder := by
   let fundedSource:={source with clock:=34*count}
@@ -1348,7 +1349,7 @@ theorem loop_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
 /-- The real quotient image and carried word are the ordinary natural quotient
 and remainder; the physical execution itself supplies the conservation law. -/
 theorem LoopResult.division {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {qPointer : BitVec 64}
-    {contents quotient : Nat→BitVec 64} {divisor high remainder : BitVec 64} {count : Nat}
+    {contents quotient : Nat→ BitVec 64} {divisor high remainder : BitVec 64} {count : Nat}
     (checked : LoopResult source target qPointer contents divisor high count quotient remainder) :
     number quotient count=(high.toNat*2^(32*count)+number contents count)/divisor.toNat ∧
       remainder.toNat=(high.toNat*2^(32*count)+number contents count)%divisor.toNat := by
@@ -1356,6 +1357,369 @@ theorem LoopResult.division {source target : PanSemStateFiniteExact 64 Guest.Hos
   constructor
   · rw [←checked.value,Nat.mul_add_div positive,Nat.div_eq_of_lt checked.small,Nat.add_zero]
   · rw [←checked.value,Nat.mul_add_mod_self_left,Nat.mod_eq_of_lt checked.small]
+
+/-- Current initialized buffers and divisor, independent of caller locals. -/
+structure Buffers (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) : Prop where
+  small : count≤8
+  installed : OriginalCode.Installed source.code
+  image : Image source uPointer contents count
+  inputMapped : ∀ index,index<count→ source.memaddrs (slot uPointer index)
+  outputMapped : ∀ index,index<count→ source.memaddrs (slot qPointer index)
+  separate : ∀ inputIndex,inputIndex<count→ ∀ outputIndex,outputIndex<count→ slot uPointer inputIndex≠slot qPointer outputIndex
+  remainderSeparate : ∀ index,index<count→ rPointer≠slot qPointer index
+  divisorMapped : source.memaddrs vPointer
+  divisorCell : source.memory vPointer=.word divisor
+  remainderMapped : source.memaddrs rPointer
+  divisorSmall : divisor.toNat<2^32
+  positive : 0<divisor.toNat
+  digitsSmall : ∀ index,index<count→ (contents index).toNat<2^32
+
+/-- Actual one-digit function argument bindings and its physical buffers. -/
+structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) extends Buffers source qPointer rPointer uPointer vPointer divisor contents count : Prop where
+  qCell : source.locals.lookup (ofString "q")=some (.val (.word (qPointer)))
+  rCell : source.locals.lookup (ofString "r")=some (.val (.word (rPointer)))
+  uCell : source.locals.lookup (ofString "u")=some (.val (.word (uPointer)))
+  vCell : source.locals.lookup (ofString "v")=some (.val (.word (vPointer)))
+  mCell : source.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 count)))
+  nCell : source.locals.lookup (ofString "n")=some (.val (.word (1#64)))
+
+theorem Buffers.withClock {source : PanSemStateFiniteExact 64 Guest.HostMemory} {qPointer rPointer uPointer vPointer divisor : BitVec 64}
+    {contents : Nat→ BitVec 64} {count : Nat}
+    (checked : Buffers source qPointer rPointer uPointer vPointer divisor contents count) (clock : Nat) :
+    Buffers {source with clock:=clock} qPointer rPointer uPointer vPointer divisor contents count := by
+  exact ⟨checked.small,
+    checked.installed,
+    checked.image,
+    checked.inputMapped,
+    checked.outputMapped,
+    checked.separate,
+    checked.remainderSeparate,
+    checked.divisorMapped,
+    checked.divisorCell,
+    checked.remainderMapped,
+    checked.divisorSmall,
+    checked.positive,
+    checked.digitsSmall⟩
+
+theorem Buffers.withLocals {source : PanSemStateFiniteExact 64 Guest.HostMemory} {qPointer rPointer uPointer vPointer divisor : BitVec 64}
+    {contents : Nat→ BitVec 64} {count : Nat}
+    (checked : Buffers source qPointer rPointer uPointer vPointer divisor contents count) (locals : HolFiniteMapExact MlS (ValueHOL 64)) :
+    Buffers {source with locals:=locals} qPointer rPointer uPointer vPointer divisor contents count := by
+  exact ⟨checked.small,
+    checked.installed,
+    checked.image,
+    checked.inputMapped,
+    checked.outputMapped,
+    checked.separate,
+    checked.remainderSeparate,
+    checked.divisorMapped,
+    checked.divisorCell,
+    checked.remainderMapped,
+    checked.divisorSmall,
+    checked.positive,
+    checked.digitsSmall⟩
+
+theorem Entry.withClock {source : PanSemStateFiniteExact 64 Guest.HostMemory} {qPointer rPointer uPointer vPointer divisor : BitVec 64}
+    {contents : Nat→ BitVec 64} {count : Nat}
+    (checked : Entry source qPointer rPointer uPointer vPointer divisor contents count) (clock : Nat) :
+    Entry {source with clock:=clock} qPointer rPointer uPointer vPointer divisor contents count := by
+  exact ⟨checked.toBuffers.withClock clock,checked.qCell,
+    checked.rCell,
+    checked.uCell,
+    checked.vCell,
+    checked.mCell,
+    checked.nCell⟩
+
+theorem Entry.bindWord {source : PanSemStateFiniteExact 64 Guest.HostMemory} {qPointer rPointer uPointer vPointer divisor : BitVec 64}
+    {contents : Nat→ BitVec 64} {count : Nat}
+    (checked : Entry source qPointer rPointer uPointer vPointer divisor contents count) (name : String) (word : BitVec 64)
+    (allowed : name="i" ∨ name="j" ∨ name="d" ∨ name="k") :
+    Entry (bind source name word) qPointer rPointer uPointer vPointer divisor contents count := by
+  exact ⟨checked.toBuffers.withLocals (bind source name word).locals,(bind_lookup_other source name "q" word (by rcases allowed with rfl|rfl|rfl|rfl <;> decide)).trans checked.qCell,
+    (bind_lookup_other source name "r" word (by rcases allowed with rfl|rfl|rfl|rfl <;> decide)).trans checked.rCell,
+    (bind_lookup_other source name "u" word (by rcases allowed with rfl|rfl|rfl|rfl <;> decide)).trans checked.uCell,
+    (bind_lookup_other source name "v" word (by rcases allowed with rfl|rfl|rfl|rfl <;> decide)).trans checked.vCell,
+    (bind_lookup_other source name "m" word (by rcases allowed with rfl|rfl|rfl|rfl <;> decide)).trans checked.mCell,
+    (bind_lookup_other source name "n" word (by rcases allowed with rfl|rfl|rfl|rfl <;> decide)).trans checked.nCell⟩
+
+structure BranchResult (program : ProgHOL 64) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (qPointer rPointer divisor : BitVec 64) (contents : Nat→ BitVec 64) (count : Nat)
+    (quotient : Nat→ BitVec 64) (remainder : BitVec 64) : Prop where
+  run : evaluateHOLFiniteState source program=(some (.returned (.val (.word 0#64))),target)
+  state : target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-34*count}
+  image : Image target qPointer quotient count
+  digits : ∀ index,index<count→ (quotient index).toNat<2^32
+  remainderCell : target.memory rPointer=.word remainder
+  quotientEq : number quotient count=number contents count/divisor.toNat
+  remainderEq : remainder.toNat=number contents count%divisor.toNat
+  small : remainder.toNat<divisor.toNat
+  away : ∀ query,(∀ index,index<count→ query≠slot qPointer index)→ query≠rPointer→ target.memory query=source.memory query
+
+/-- The actual one-digit branch initializes the real loop, writes its final
+remainder and returns0 through both genuine lexical declarations. -/
+theorem branch_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (checked : Entry source qPointer rPointer uPointer vPointer divisor contents count)
+    (oldJ : BitVec 64) (jCell : source.locals.lookup (ofString "j")=some (.val (.word oldJ))) (enough : 34*count≤source.clock) :
+    ∃ target quotient remainder,BranchResult oneBranch source target qPointer rPointer divisor contents count quotient remainder := by
+  classical
+  let dEntry:=bind source "d" divisor
+  let kEntry:=bind dEntry "k" 0#64
+  let indexed:=bind kEntry "j" (BitVec.ofNat 64 count)
+  have dModel:=checked.bindWord "d" divisor (by simp)
+  have kModel:=dModel.bindWord "k" 0#64 (by simp)
+  have indexedModel:=kModel.bindWord "j" (BitVec.ofNat 64 count) (by simp)
+  have kJ : kEntry.locals.lookup (ofString "j")=some (.val (.word oldJ)):=
+    (bind_lookup_other dEntry "k" "j" _ (by decide)).trans ((bind_lookup_other source "d" "j" _ (by decide)).trans jCell)
+  have indexedK : indexed.locals.lookup (ofString "k")=some (.val (.word 0#64)):=
+    (bind_lookup_other kEntry "j" "k" _ (by decide)).trans (bind_lookup_same dEntry "k" _)
+  have indexedD : indexed.locals.lookup (ofString "d")=some (.val (.word divisor)):=
+    (bind_lookup_other kEntry "j" "d" _ (by decide)).trans ((bind_lookup_other dEntry "k" "d" _ (by decide)).trans (bind_lookup_same source "d" _))
+  obtain ⟨loopTarget,quotient,remainder,checkedLoop⟩:=loop_execute indexed qPointer uPointer 0#64 divisor contents count checked.small checked.installed
+    indexedModel.qCell indexedModel.uCell (bind_lookup_same kEntry "j" _) indexedK indexedD indexedModel.image
+    indexedModel.inputMapped indexedModel.outputMapped indexedModel.separate checked.divisorSmall checked.positive checked.digitsSmall enough
+  have rLocal : loopTarget.locals.lookup (ofString "r")=some (.val (.word rPointer)):=
+    (checkedLoop.other "r" (by decide) (by decide) (by decide)).trans indexedModel.rCell
+  have rRead : eval loopTarget (localVar "r")=some (.val (.word rPointer)):=by
+    simp [eval,localVar,evalHOLExact,toExact,rLocal]
+  have kRead : eval loopTarget (localVar "k")=some (.val (.word remainder)):=by
+    simp [eval,localVar,evalHOLExact,toExact,checkedLoop.carry]
+  have mappedR : loopTarget.memaddrs rPointer:=by
+    have domain:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>state.memaddrs) checkedLoop.state
+    change loopTarget.memaddrs=indexed.memaddrs at domain
+    rw [domain]
+    exact checked.remainderMapped
+  let stored:={loopTarget with memory:=StoreWord.put loopTarget.memory rPointer remainder}
+  have storedRun:=StoreWord.execute loopTarget (localVar "r") (localVar "k") rPointer remainder rRead kRead mappedR
+  have returnRun : evaluateHOLFiniteState stored (.return (.const 0#64))=
+      (some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite stored):=by
+    simp [evaluateHOLFiniteState_return,evalHOLExact,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+  have finished : evaluateHOLFiniteState loopTarget finish=(some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite stored):=by
+    rw [finish,evaluateHOLFiniteState_seq_line780,storedRun]
+    exact returnRun
+  have mLocal : kEntry.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 count))):=kModel.mCell
+  have mRead : eval kEntry (localVar "m")=some (.val (.word (BitVec.ofNat 64 count))):=by
+    simp [eval,localVar,evalHOLExact,toExact,mLocal]
+  have initializedRun : evaluateHOLFiniteState kEntry initialized=
+      (some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite stored):=by
+    rw [initialized,evaluateHOLFiniteState_seq_line780,
+      StateSteps.assign_execute kEntry "j" (localVar "m") oldJ (BitVec.ofNat 64 count) kJ mRead]
+    change evaluateHOLFiniteState indexed (.seq loop finish)=_
+    rw [evaluateHOLFiniteState_seq_line780,checkedLoop.run]
+    exact finished
+  have declaredK:=ScalarScope.declare_execute dEntry (emptyLocalsHOLFinite stored) "k" (.const 0#64) 0#64 initialized _ rfl initializedRun
+  have vRead : eval source (localVar "v")=some (.val (.word vPointer)):=by
+    simp [eval,localVar,evalHOLExact,toExact,checked.vCell]
+  have dRead:=Witness.load_word_read source (localVar "v") vPointer divisor vRead checked.divisorMapped checked.divisorCell
+  have declaredD:=ScalarScope.declare_execute source (restore dEntry "k" (emptyLocalsHOLFinite stored)) "d"
+    (.load .one (localVar "v")) divisor (.dec (ofString "k") .one (.const 0#64) initialized) _ dRead declaredK
+  let target:=restore source "d" (restore dEntry "k" (emptyLocalsHOLFinite stored))
+  refine ⟨target,quotient,remainder,⟨?_,?_,?_,checkedLoop.digits,?_,?_,?_,checkedLoop.small,?_⟩⟩
+  · exact declaredD
+  · have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=target.locals,memory:=target.memory}) checkedLoop.state
+    change target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-34*count} at frame
+    exact frame
+  · intro index inside
+    change StoreWord.put loopTarget.memory rPointer remainder (slot qPointer index)=.word (quotient index)
+    rw [StoreWord.put,if_neg (Ne.symm (checked.remainderSeparate index inside))]
+    exact checkedLoop.image index inside
+  · change StoreWord.put loopTarget.memory rPointer remainder rPointer=.word remainder
+    simp [StoreWord.put]
+  · simpa only [BitVec.toNat_ofNat,Nat.zero_mod,Nat.zero_mul,Nat.zero_add] using checkedLoop.division.1
+  · simpa only [BitVec.toNat_ofNat,Nat.zero_mod,Nat.zero_mul,Nat.zero_add] using checkedLoop.division.2
+  · intro query outside notR
+    change StoreWord.put loopTarget.memory rPointer remainder query=source.memory query
+    rw [StoreWord.put,if_neg notR]
+    exact checkedLoop.away query outside
+
+/-- Complete unchanged divmnu execution on its genuine one-digit path,
+including both outer declarations and the branch's early function return. -/
+theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (checked : Entry source qPointer rPointer uPointer vPointer divisor contents count)
+    (enough : 34*count≤source.clock) :
+    ∃ target quotient remainder,BranchResult body source target qPointer rPointer divisor contents count quotient remainder := by
+  classical
+  let iEntry:=bind source "i" 0#64
+  let jEntry:=bind iEntry "j" 0#64
+  have iModel:=checked.bindWord "i" 0#64 (by simp)
+  have jModel:=iModel.bindWord "j" 0#64 (by simp)
+  obtain ⟨branchTarget,quotient,remainder,result⟩:=branch_execute jEntry qPointer rPointer uPointer vPointer divisor contents count
+    jModel 0#64 (bind_lookup_same iEntry "j" _) enough
+  have nLocal : jEntry.locals.lookup (ofString "n")=some (.val (.word 1#64)):=jModel.nCell
+  have tested : evalHOLExact jEntry.toExact oneTest=some (.val (.word 1#64)):=by
+    simp [oneTest,localVar,evalHOLExact,toExact,nLocal,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  let selected : ProgHOL 64:=.seq (.ite oneTest oneBranch .skip) otherBranch
+  have selectedRun : evaluateHOLFiniteState jEntry selected=(some (.returned (.val (.word 0#64))),branchTarget):=by
+    change evaluateHOLFiniteState jEntry (.seq (.ite oneTest oneBranch .skip) otherBranch)=_
+    rw [evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_ite,tested]
+    simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide)]
+    rw [result.run]
+  have declaredJ:=ScalarScope.declare_execute iEntry branchTarget "j" (.const 0#64) 0#64 selected _ rfl selectedRun
+  have declaredI:=ScalarScope.declare_execute source (restore iEntry "j" branchTarget) "i" (.const 0#64) 0#64
+    (.dec (ofString "j") .one (.const 0#64) selected) _ rfl declaredJ
+  let target:=restore source "i" (restore iEntry "j" branchTarget)
+  refine ⟨target,quotient,remainder,⟨?_,?_,result.image,result.digits,result.remainderCell,
+    result.quotientEq,result.remainderEq,result.small,result.away⟩⟩
+  · rw [body_shape]
+    exact declaredI
+  · have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=target.locals}) result.state
+    change target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-34*count} at frame
+    exact frame
+
+/-- All outcomes of the original one-digit function path spend at most272
+body ticks at8digits, including failed/short-clock executions. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (checked : Entry source qPointer rPointer uPointer vPointer divisor contents count) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤34*count := by
+  by_cases enough : 34*count≤source.clock
+  · obtain ⟨target,quotient,remainder,result⟩:=execute source qPointer rPointer uPointer vPointer divisor contents count checked enough
+    rw [result.run]
+    have clock:=congrArg PanSemStateFiniteExact.clock result.state
+    change target.clock=source.clock-34*count at clock
+    change source.clock-target.clock≤34*count
+    omega
+  · omega
+
+/-- The actual normal function return derives its funding, real quotient
+image and remainder store; it cannot assume a later successful execution. -/
+theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (checked : Entry source qPointer rPointer uPointer vPointer divisor contents count)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    ∃ quotient remainder,34*count≤source.clock ∧ returned=.val (.word 0#64) ∧
+      BranchResult body source post qPointer rPointer divisor contents count quotient remainder := by
+  let fundedSource:={source with clock:=34*count}
+  obtain ⟨baseTarget,baseQ,baseR,base⟩:=execute fundedSource qPointer rPointer uPointer vPointer divisor contents count
+    (checked.withClock (34*count)) (by rfl)
+  have zero : baseTarget.clock=0:=by
+    have clock:=congrArg PanSemStateFiniteExact.clock base.state
+    change baseTarget.clock=34*count-34*count at clock
+    omega
+  have funded:=(ClockCost.normal_from_zero_clock source baseTarget post body (34*count) _ _ base.run zero
+    (by intro impossible;cases impossible) normal (by intro impossible;cases impossible)).1
+  obtain ⟨target,quotient,remainder,result⟩:=execute source qPointer rPointer uPointer vPointer divisor contents count checked funded
+  have same:=normal.symm.trans result.run
+  have returnedEq : returned=.val (.word 0#64):=by
+    simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using congrArg Prod.fst same
+  have postEq : post=target:=congrArg Prod.snd same
+  exact ⟨quotient,remainder,funded,returnedEq,postEq.symm ▸ result⟩
+
+def values (qPointer rPointer uPointer vPointer : BitVec 64) (count : Nat) : List (ValueHOL 64):=
+  [.val (.word qPointer),.val (.word rPointer),.val (.word uPointer),.val (.word (BitVec.ofNat 64 count)),.val (.word vPointer),.val (.word 1#64)]
+
+private def rawLocals (qPointer rPointer uPointer vPointer : BitVec 64) (count : Nat) (name : MlS) : Option (ValueHOL 64):=
+  if name=ofString "n" then some (.val (.word 1#64)) else
+  if name=ofString "v" then some (.val (.word vPointer)) else
+  if name=ofString "m" then some (.val (.word (BitVec.ofNat 64 count))) else
+  if name=ofString "u" then some (.val (.word uPointer)) else
+  if name=ofString "r" then some (.val (.word rPointer)) else
+  if name=ofString "q" then some (.val (.word qPointer)) else none
+
+/-- The actual six-scalar signature establishes every one-digit callee
+argument, independently of the caller's local variable names. -/
+theorem environment (codeFn : MlS→ Option (List (MlS×ShapeHOL)×ProgHOL 64×ShapeHOL))
+    (qPointer rPointer uPointer vPointer : BitVec 64) (count : Nat)
+    (code : codeFn (ofString "divmnu")=some (formals,body,.one)) :
+    ∃ callee : HolFiniteMapExact MlS (ValueHOL 64),
+      lookupCodeHOLFinite codeFn (ofString "divmnu") (values qPointer rPointer uPointer vPointer count)=some (body,callee,.one) ∧
+      callee.lookup (ofString "q")=some (.val (.word qPointer)) ∧
+      callee.lookup (ofString "r")=some (.val (.word rPointer)) ∧
+      callee.lookup (ofString "u")=some (.val (.word uPointer)) ∧
+      callee.lookup (ofString "v")=some (.val (.word vPointer)) ∧
+      callee.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 count))) ∧
+      callee.lookup (ofString "n")=some (.val (.word 1#64)) := by
+  have valid : (formals.map Prod.fst).Nodup ∧ formals.length=(values qPointer rPointer uPointer vPointer count).length ∧
+      ((formals.zip (values qPointer rPointer uPointer vPointer count)).all (fun pair=>shapeEqHOL pair.1.2 (shapeOfHOLExact pair.2)))=true:=by
+    exact ⟨by decide,rfl,by simp [formals,values,shapeOfHOLExact,shapeEqHOL_eq_true]⟩
+  have raw : lookupCodeHOLExact codeFn (ofString "divmnu") (values qPointer rPointer uPointer vPointer count)=
+      some (body,rawLocals qPointer rPointer uPointer vPointer count,.one):=by
+    simp only [lookupCodeHOLExact,code,valid]
+    rfl
+  obtain ⟨callee,called,locals⟩:=CodeEnvironment.finite_lookup codeFn _ _ _ _ _ raw
+  refine ⟨callee,called,?_,?_,?_,?_,?_,?_⟩
+  all_goals rw [locals];simp [rawLocals,ofString]
+
+private theorem callee_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (checked : Buffers source qPointer rPointer uPointer vPointer divisor contents count)
+    (callee : HolFiniteMapExact MlS (ValueHOL 64))
+    (qCell : callee.lookup (ofString "q")=some (.val (.word qPointer)))
+    (rCell : callee.lookup (ofString "r")=some (.val (.word rPointer)))
+    (uCell : callee.lookup (ofString "u")=some (.val (.word uPointer)))
+    (vCell : callee.lookup (ofString "v")=some (.val (.word vPointer)))
+    (mCell : callee.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 count))))
+    (nCell : callee.lookup (ofString "n")=some (.val (.word 1#64))) :
+    Entry (callEntryStateHOLFinite source callee) qPointer rPointer uPointer vPointer divisor contents count := by
+  exact ⟨(checked.withLocals callee).withClock (source.clock-1),qCell,rCell,uCell,vCell,mCell,nCell⟩
+
+/-- The genuine ignored-result caller costs at most273source ticks for8
+input digits, including the function's real early return and short clocks. -/
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (checked : Buffers source qPointer rPointer uPointer vPointer divisor contents count)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+      some (values qPointer rPointer uPointer vPointer count)) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "divmnu") arguments)).2.clock≤34*count+1 := by
+  obtain ⟨callee,called,qCell,rCell,uCell,vCell,mCell,nCell⟩:=environment source.code.lookup qPointer rPointer uPointer vPointer count
+    (original_code source.code checked.installed)
+  have actual:=callee_entry source qPointer rPointer uPointer vPointer divisor contents count checked callee qCell rCell uCell vCell mCell nCell
+  exact ClockCost.call_current source (some none) (ofString "divmnu") arguments _ body callee .one (34*count) args called
+    (body_cost (callEntryStateHOLFinite source callee) qPointer rPointer uPointer vPointer divisor contents count actual)
+
+structure CallerResult (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (arguments : List (ExpHOL 64)) (quotient : Nat→ BitVec 64) (remainder : BitVec 64) : Prop where
+  run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "divmnu") arguments)=(none,post)
+  state : post={source with memory:=post.memory,clock:=source.clock-(34*count+1)}
+  image : Image post qPointer quotient count
+  digits : ∀ index,index<count→ (quotient index).toNat<2^32
+  remainderCell : post.memory rPointer=.word remainder
+  quotientEq : number quotient count=number contents count/divisor.toNat
+  remainderEq : remainder.toNat=number contents count%divisor.toNat
+  small : remainder.toNat<divisor.toNat
+  away : ∀ query,(∀ index,index<count→ query≠slot qPointer index)→ query≠rPointer→ post.memory query=source.memory query
+
+/-- The real ignored-result call returns the exact quotient/remainder memory
+and canonical caller state after its actual one-digit execution. -/
+theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (checked : Buffers source qPointer rPointer uPointer vPointer divisor contents count)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+      some (values qPointer rPointer uPointer vPointer count)) (enough : 34*count+1≤source.clock) :
+    ∃ post quotient remainder,CallerResult source post qPointer rPointer divisor contents count arguments quotient remainder := by
+  obtain ⟨callee,called,qCell,rCell,uCell,vCell,mCell,nCell⟩:=environment source.code.lookup qPointer rPointer uPointer vPointer count
+    (original_code source.code checked.installed)
+  have actual:=callee_entry source qPointer rPointer uPointer vPointer divisor contents count checked callee qCell rCell uCell vCell mCell nCell
+  obtain ⟨target,quotient,remainder,result⟩:=execute (callEntryStateHOLFinite source callee) qPointer rPointer uPointer vPointer divisor contents count actual
+    (by change 34*count≤source.clock-1;omega)
+  let post:={target with locals:=source.locals}
+  have calledRun:=evaluateHOLFiniteState_call_return_caller_locals source none (ofString "divmnu") arguments _ body callee .one
+    (.val (.word 0#64)) target args called (by omega) result.run (by simp [shapeOfHOLExact,shapeEqHOL])
+  refine ⟨post,quotient,remainder,⟨calledRun,?_,result.image,result.digits,result.remainderCell,
+    result.quotientEq,result.remainderEq,result.small,result.away⟩⟩
+  have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) result.state
+  change post={source with memory:=post.memory,clock:=source.clock-1-34*count} at frame
+  simpa only [Nat.sub_sub,show 1+34*count=34*count+1 by omega] using frame
+
+/-- A genuine normal caller derives its own complete funding and physical
+quotient/remainder result from the same actual callee execution. -/
+theorem call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (qPointer rPointer uPointer vPointer divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (checked : Buffers source qPointer rPointer uPointer vPointer divisor contents count)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+      some (values qPointer rPointer uPointer vPointer count))
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "divmnu") arguments)=(none,post)) :
+    ∃ quotient remainder,34*count+1≤source.clock ∧ CallerResult source post qPointer rPointer divisor contents count arguments quotient remainder := by
+  obtain ⟨callee,called,qCell,rCell,uCell,vCell,mCell,nCell⟩:=environment source.code.lookup qPointer rPointer uPointer vPointer count
+    (original_code source.code checked.installed)
+  obtain ⟨callFunded,target,returned,bodyRun⟩:=CallNormal.ignored_callee_return source post (ofString "divmnu") arguments _ body callee .one args called normal
+  have actual:=callee_entry source qPointer rPointer uPointer vPointer divisor contents count checked callee qCell rCell uCell vCell mCell nCell
+  obtain ⟨childQ,childR,childFunded,returnedEq,childResult⟩:=body_normal (callEntryStateHOLFinite source callee) target
+    qPointer rPointer uPointer vPointer divisor contents count actual returned bodyRun
+  have funded : 34*count+1≤source.clock:=by
+    change 34*count≤source.clock-1 at childFunded
+    omega
+  obtain ⟨expected,quotient,remainder,result⟩:=call_execute source qPointer rPointer uPointer vPointer divisor contents count checked arguments args funded
+  have same : post=expected:=congrArg Prod.snd (normal.symm.trans result.run)
+  exact ⟨quotient,remainder,funded,same.symm ▸ result⟩
 
 end InitECandidate.Solver.Input.UDivMod.WideDigits.Single
 
@@ -1379,3 +1743,27 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.Single
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.loop_normal
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.LoopResult.division
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.Entry.withClock
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.Entry.bindWord
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.branch_execute
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.execute
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.body_cost
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.body_normal
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.Buffers.withClock
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.Buffers.withLocals
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.environment
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.call_cost
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.call_execute
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Single.call_normal

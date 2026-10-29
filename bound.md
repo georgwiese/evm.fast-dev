@@ -47,9 +47,10 @@ transactions and withdrawals, derived from the real trie executions.
 These are all-outcome source-clock allowances, not formal target-step bounds.
 Actual SHA state/pad globals now survive startup and this complete main prefix.
 The request encoder receives the real five-list image, with nonwrapping sizes
-and owned input slices before its incoming heap. Its loop and hashes, the
-remaining main continuation, uniform target composition, dominant-slack review
-and final cleanup remain open.
+and owned input slices before its incoming heap. Each actual iteration costs
+≤(its encoded bytes)/8+10source ticks (uniformly31456889). Normal next-model
+preservation and the complete loop/hash continuation, remaining main, uniform
+target composition, dominant-slack review and final cleanup remain open.
 
 ## Earlier checked milestones, in order
 
@@ -2031,3 +2032,33 @@ Claim infinity; no global finite target K/full verifier success. Usage48%weekly/
 0resetcredits. Next: actual prepared iteration, guarded blob allocation/copy,
 normal row/frame preservation and whole encoder, then requests SHA/BAL and
 remaining main/target composition, dominant-slack review and cleanup.
+
+## Current request blob and complete iteration source allowance
+
+The same actual two field reads and four width decisions now reach their
+specific prepared state while preserving the original iteration's complete
+nonlocal observation and remaining branch. All real p/cnt/sz/i/n/rq/arr
+bindings and prior emitted rows are derived/transported at that same state.
+
+The literal nonempty branch's own alloc(cnt*sz+8) supplies checked natural
+room, returned pointer, exact saved-caller post-state and mapped destination.
+Its actual tag store executes to the real first byte. The original memcpy
+uses the accepted input-list pointer and count product, with owned source
+and fresh destination. Its descriptor stores/increment spend no source ticks.
+The allocation/copy suffix costs≤bytes/8+10 on every outcome, including failed
+capacity checks and short clocks; room is obtained only from that same normal
+allocator return, never supplied for a future call.
+
+This composes through the complete unchanged real iteration, including its
+field/width declarations, nonempty decision and final counter increment:
+≤(counts[i]*elementSize[i]).toNat/8+10source ticks, uniformly31456889 from the
+one actual decoded byte budget. This is not yet a repeated-loop theorem:
+normal row/image/heap-frame preservation must still construct the next model.
+No request-hash return, main success or target-step bound is assumed.
+
+Validation: current-requests-iteration-cost-v1.log PASS2709jobs, permitted
+printed axioms only. Index8700modules/17981facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K/full
+verifier success. Usage48%weekly/0resetcredits. Next: same actual iteration's
+normal next model and whole encoder, requests SHA/BAL, remaining main and
+formal target composition, dominant-slack review and final cleanup.

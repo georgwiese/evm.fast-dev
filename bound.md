@@ -3655,3 +3655,42 @@ the actual prefix/suffix images and quotient stores. Final remainder
 extraction and caller/Taylor/header/main, uniform target composition, exact
 K, dominant slack review and cleanup remain. Historical untracked WIPs and
 executable/fixed premises stay untouched.
+
+
+## Literal physical normalization loops, source cost and output frames
+
+Both original VN and UN descending normalization loops are now identified
+literally. Their shared original body performs the two actual mapped digit
+loads, checked variable shifts, OR/mask store and exact i decrement. The
+32-s expression and all actual shift guards are derived from s≤31; s=0
+is included. Actual workspace geometry derives mapped slots and separation.
+
+Normal loop completions retain the input image after every real output store,
+include the final false guard, write every positive index through incoming
+i and finish with i=0. All other local bindings and every nonmemory source
+field are retained. Their exact normal cost is incoming i; every stopped/
+short-clock outcome costs≤i. Real normal returns derive their own funding
+from the pinned clock theorem. The exact recursive store image and memory
+outside those positive indices are checked. The separately stored UN top
+word survives, including the seventeenth normalized slot at length16.
+
+These loop entries describe actual input images, mapped/disjoint buffers,
+current pointer/i/s bindings and lengths≤16. The earlier caller still must
+derive them, execute the separate lowest/top-word stores and connect the
+nlz32 result before assembling the complete normalization prefix. These
+source-loop ticks still omit straight-line target work.
+
+Validation: current-normalization-physical-loop-v3.log PASS1126jobs; all15new
+printed facts use only permitted axioms. Index8700modules/18603facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage34%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: original separate VN/UN lowest-word and UN extra-top stores, actual
+nlz32 call and counter initialization, complete normalization images/values
+and frame. Then captured digit loads, outer descending quotient loop with
+its current window-range/prefix/suffix invariant, final remainder stores
+and actual two-digit caller/Taylor/header/main. Uniform target composition,
+exact K, dominant slack review and final cleanup remain. Historical untracked
+RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.

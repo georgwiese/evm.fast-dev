@@ -6,7 +6,7 @@ open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
 
 /-- Actual payload subtraction, list-length call, start subtraction, list
 writer, tuple return and all scopes. Both subtractions have natural meanings. -/
-theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (original : Memory) (header buffer : BitVec 64) (position : Nat)
+theorem suffix_execute_bounded (source : PanSemStateFiniteExact 64 Guest.HostMemory) (original : Memory) (header buffer : BitVec 64) (position : Nat)
     (context : Context source original header buffer) (codes : Codes source) (tailCodes : TailCodes source)
     (lower : 9≤position) (upper : position≤916)
     (p : source.locals.lookup (ofString "p")=some (.val (.word (address buffer position))))
@@ -14,7 +14,7 @@ theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (or
     ∃ target start encoded paid,1≤encoded ∧ encoded≤916 ∧ paid≤31 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
       evaluateHOLFiniteState source suffix=(some (.returned (encodedPair start encoded)),target) ∧
       emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with memory:=target.memory,clock:=source.clock-paid} ∧
-      OldMemory target.memory original buffer := by
+      OldMemory target.memory original buffer ∧ WitnessRadix.AllocatedBytes.Arena start encoded := by
   classical
   let payload:=position-9
   have payloadRead : eval source payloadExpression=some (.val (.word (BitVec.ofNat 64 payload))) := by
@@ -71,7 +71,7 @@ theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (or
     rw [headerRun,startDeclared]
   let target:=restore source "payload_len" th
   let paid:=headerPaid+writePaid+2
-  refine ⟨target,start,payload+hl,paid,by dsimp [payload]; omega,by dsimp [payload]; omega,by dsimp [paid]; omega,?_,?_,?_,?_⟩
+  refine ⟨target,start,payload+hl,paid,by dsimp [payload]; omega,by dsimp [payload]; omega,by dsimp [paid]; omega,?_,?_,?_,?_,?_⟩
   · rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by dsimp [payload]; omega)]
   · rw [suffix_shape]
     exact ScalarScope.declare_execute source _ "payload_len" payloadExpression (BitVec.ofNat 64 payload) _ _ payloadRead calledRun
@@ -84,6 +84,24 @@ theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (or
     have away:=before_away start query 9 buffer.toNat arena (by dsimp [start]; omega) context.geometry.bufferAligned before
     exact (memoryFrame query (by intro index small; exact (away index small).2)).trans (context.oldMemory query before)
 
+  · exact context.geometry.position_arena header buffer (9-hl) (payload+hl) (by dsimp [payload]; omega)
+
+/-- Compatibility projection of the bounded physical-output contract. -/
+theorem suffix_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (original : Memory) (header buffer : BitVec 64) (position : Nat)
+    (context : Context source original header buffer) (codes : Codes source) (tailCodes : TailCodes source)
+    (lower : 9≤position) (upper : position≤916)
+    (p : source.locals.lookup (ofString "p")=some (.val (.word (address buffer position))))
+    (buf : source.locals.lookup (ofString "buf")=some (.val (.word buffer))) (enough : 31≤source.clock) :
+    ∃ target start encoded paid,1≤encoded ∧ encoded≤916 ∧ paid≤31 ∧ (BitVec.ofNat 64 encoded).toNat=encoded ∧
+      evaluateHOLFiniteState source suffix=(some (.returned (encodedPair start encoded)),target) ∧
+      emptyLocalsHOLFinite target=emptyLocalsHOLFinite {source with memory:=target.memory,clock:=source.clock-paid} ∧
+      OldMemory target.memory original buffer := by
+  obtain ⟨target,start,encoded,paid,positive,bound,price,number,run,frame,memory,arena⟩:=
+    suffix_execute_bounded source original header buffer position context codes tailCodes lower upper p buf enough
+  exact ⟨target,start,encoded,paid,positive,bound,price,number,run,frame,memory⟩
+
 end InitECandidate.Solver.Input.HeaderEncoding
 
 #print axioms InitECandidate.Solver.Input.HeaderEncoding.suffix_execute
+
+#print axioms InitECandidate.Solver.Input.HeaderEncoding.suffix_execute_bounded

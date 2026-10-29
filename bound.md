@@ -1281,3 +1281,26 @@ closure0/fixed files unchanged. Incremental policy PASS65500entries/
 2485449386bytes. Claim infinity; no global finite target K/full verification.
 Usage35%weekly/0resetcredits. Next: complete the actual header encoder and
 block length, then indexed tries, remaining main and uniform target steps.
+
+
+## Complete unchanged current header encoder
+
+The complete current Software encode_header is now checked against its
+actual catalogue entry. All outcomes, including a failed output allocation
+or later wide temporary request, cost at most1346body source-clock ticks.
+The1024-byte allocation room is derived only from that same allocator's
+actual normal return. The first field, all20remaining base fields, the
+current-header optional pair and the final list header compose directly.
+
+Any genuine normal return derives a length1..916and a mapped output span,
+the real heap cursor after the1024-byte output allocation, all other
+nonlocal metadata and every older header/input cell. Strengthened the shared
+suffix with output-span ownership and retained its previous theorem as a
+compatibility projection. No executable bytes or semantics changed.
+
+Validation: current-rlp-header-encoder-v1.log PASS2097jobs with physical
+payload-header regression. Printed axioms permitted only. Index8669modules/
+17749facts; inventory8714/replacement closure0/fixed files unchanged. No
+global finite target K/full verification; claim infinity. Usage35%weekly,
+0resetcredits. Next: current block-length composition, indexed tries,
+remaining main and uniform target steps.

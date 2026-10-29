@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Ring
+import InitECandidate.Solver.GasBudget.U256Zero
 import InitECandidate.Solver.Input.CallResume
 import InitECandidate.Solver.Input.WordTupleFour
 import InitECandidate.Solver.GasBudget.ArithmeticClockPrice
@@ -546,3 +547,963 @@ end InitECandidate.Solver.GasBudget.U256Multiply
 #print axioms InitECandidate.Solver.GasBudget.U256Multiply.word_normal
 #print axioms InitECandidate.Solver.GasBudget.U256Multiply.from_word_code
 #print axioms InitECandidate.Solver.GasBudget.U256Multiply.from_word_execute
+
+
+namespace InitECandidate.Solver.GasBudget.U256Multiply
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+def fullBody : ProgHOL 64:=ArithmeticEffects.Kind.u256_mul_full.body
+private def dropProductCalls : Nat→ProgHOL 64→ProgHOL 64
+  | 0,program=>program
+  | count+1,.decCall _ _ _ _ rest=>dropProductCalls count rest
+  | _+1,_=>.skip
+def afterProducts : ProgHOL 64:=dropProductCalls 16 fullBody
+
+def scalarFirst (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) : BitVec 64×BitVec 64:=
+  wordAddCarryHOL (Mul64.parts (a 0) b).2 (Mul64.parts (a 1) b).1 0#64
+def scalarSecondHigh (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) : BitVec 64×BitVec 64:=
+  wordAddCarryHOL (scalarFirst a b).2 (Mul64.parts (a 1) b).2 0#64
+def scalarSecond (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) : BitVec 64×BitVec 64:=
+  wordAddCarryHOL (scalarSecondHigh a b).1 (Mul64.parts (a 2) b).1 0#64
+def scalarThirdHigh (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) : BitVec 64×BitVec 64:=
+  wordAddCarryHOL ((scalarSecondHigh a b).2+(scalarSecond a b).2) (Mul64.parts (a 2) b).2 0#64
+def scalarThird (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) : BitVec 64×BitVec 64:=
+  wordAddCarryHOL (scalarThirdHigh a b).1 (Mul64.parts (a 3) b).1 0#64
+def scalarFourth (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) : BitVec 64×BitVec 64:=
+  wordAddCarryHOL ((scalarThirdHigh a b).2+(scalarThird a b).2) (Mul64.parts (a 3) b).2 0#64
+
+def scalarValue (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) : ValueHOL 64:=
+  .rStruct [.val (.word (Mul64.parts (a 0) b).1),.val (.word (scalarFirst a b).1),
+    .val (.word (scalarSecond a b).1),.val (.word (scalarThird a b).1),
+    .val (.word (scalarFourth a b).1),.val (.word (scalarFourth a b).2),.val (.word 0#64),.val (.word 0#64)]
+
+private theorem carry_right_zero (a : BitVec 64) : wordAddCarryHOL a 0#64 0#64=(a,0#64) := by
+  have inside:=a.isLt
+  simp [wordAddCarryHOL] <;> omega
+
+private theorem carry_left_zero (a : BitVec 64) : wordAddCarryHOL 0#64 a 0#64=(a,0#64) := by
+  have inside:=a.isLt
+  simp [wordAddCarryHOL] <;> omega
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 6000000 in
+/-- Actual straight-line accumulation after the sixteen original products,
+specialized to the scalar right operand used by Taylor. -/
+theorem scalar_tail (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64)
+    (p00 : source.locals.lookup (ofString "p00")=some (Mul64.value (a 0) b))
+    (p01 : source.locals.lookup (ofString "p01")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p02 : source.locals.lookup (ofString "p02")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p03 : source.locals.lookup (ofString "p03")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p10 : source.locals.lookup (ofString "p10")=some (Mul64.value (a 1) b))
+    (p11 : source.locals.lookup (ofString "p11")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p12 : source.locals.lookup (ofString "p12")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p13 : source.locals.lookup (ofString "p13")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p20 : source.locals.lookup (ofString "p20")=some (Mul64.value (a 2) b))
+    (p21 : source.locals.lookup (ofString "p21")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p22 : source.locals.lookup (ofString "p22")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p23 : source.locals.lookup (ofString "p23")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p30 : source.locals.lookup (ofString "p30")=some (Mul64.value (a 3) b))
+    (p31 : source.locals.lookup (ofString "p31")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p32 : source.locals.lookup (ofString "p32")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    (p33 : source.locals.lookup (ofString "p33")=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]))
+    : Input.PureStraight.Returns source afterProducts (scalarValue a b) := by
+  classical
+  simp only [afterProducts,dropProductCalls,fullBody,ArithmeticEffects.Kind.body,ArithmeticEffects.Kind.signature,
+    ArithmeticEffects.Kind.original,Guest.guestFn_u256_mul_full,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil]
+  have p00Read : source.locals.lookup (MlString.implode [112#8,48#8,48#8])=some (Mul64.value (a 0) b):=p00
+  have p01Read : source.locals.lookup (MlString.implode [112#8,48#8,49#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p01
+  have p02Read : source.locals.lookup (MlString.implode [112#8,48#8,50#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p02
+  have p03Read : source.locals.lookup (MlString.implode [112#8,48#8,51#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p03
+  have p10Read : source.locals.lookup (MlString.implode [112#8,49#8,48#8])=some (Mul64.value (a 1) b):=p10
+  have p11Read : source.locals.lookup (MlString.implode [112#8,49#8,49#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p11
+  have p12Read : source.locals.lookup (MlString.implode [112#8,49#8,50#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p12
+  have p13Read : source.locals.lookup (MlString.implode [112#8,49#8,51#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p13
+  have p20Read : source.locals.lookup (MlString.implode [112#8,50#8,48#8])=some (Mul64.value (a 2) b):=p20
+  have p21Read : source.locals.lookup (MlString.implode [112#8,50#8,49#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p21
+  have p22Read : source.locals.lookup (MlString.implode [112#8,50#8,50#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p22
+  have p23Read : source.locals.lookup (MlString.implode [112#8,50#8,51#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p23
+  have p30Read : source.locals.lookup (MlString.implode [112#8,51#8,48#8])=some (Mul64.value (a 3) b):=p30
+  have p31Read : source.locals.lookup (MlString.implode [112#8,51#8,49#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p31
+  have p32Read : source.locals.lookup (MlString.implode [112#8,51#8,50#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p32
+  have p33Read : source.locals.lookup (MlString.implode [112#8,51#8,51#8])=some (.rStruct [.val (.word 0#64),.val (.word 0#64)]):=p33
+  refine Input.PureStraight.declares (.rStruct [.val (.word 0#64),.val (.word 0#64)]) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read] <;> rfl
+  generalize eq1 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word 0#64),.val (.word 0#64)]) source=s1
+  have lookup1 (key : MlS) : s1.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word 0#64),.val (.word 0#64)]) else source.locals.lookup key):=by
+    rw [←eq1]
+    rfl
+  refine Input.PureStraight.declares (.val (.word 0#64)) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read] <;> rfl
+  generalize eq2 : setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s1=s2
+  have lookup2 (key : MlS) : s2.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word 0#64)) else s1.locals.lookup key):=by
+    rw [←eq2]
+    rfl
+  refine Input.PureStraight.declares (.val (.word 0#64)) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read] <;> rfl
+  generalize eq3 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s2=s3
+  have lookup3 (key : MlS) : s3.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s2.locals.lookup key):=by
+    rw [←eq3]
+    rfl
+  refine Input.PureStraight.declares (.val (.word ((Mul64.parts (a 0) b).1))) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read] <;> rfl
+  generalize eq4 : setVarHOLFinite (ofString "r0") (.val (.word ((Mul64.parts (a 0) b).1))) s3=s4
+  have lookup4 (key : MlS) : s4.locals.lookup key=
+      (if ofString "r0"==key then some (.val (.word ((Mul64.parts (a 0) b).1))) else s3.locals.lookup key):=by
+    rw [←eq4]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word ((Mul64.parts (a 0) b).2))) s4) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read] <;> rfl
+  generalize eq5 : setVarHOLFinite (ofString "acc") (.val (.word ((Mul64.parts (a 0) b).2))) s4=s5
+  have lookup5 (key : MlS) : s5.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word ((Mul64.parts (a 0) b).2))) else s4.locals.lookup key):=by
+    rw [←eq5]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word ((Mul64.parts (a 0) b).2)),.val (.word 0#64)]) s5) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read] <;> rfl
+  generalize eq6 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word ((Mul64.parts (a 0) b).2)),.val (.word 0#64)]) s5=s6
+  have lookup6 (key : MlS) : s6.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word ((Mul64.parts (a 0) b).2)),.val (.word 0#64)]) else s5.locals.lookup key):=by
+    rw [←eq6]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word ((Mul64.parts (a 0) b).2))) s6) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read] <;> rfl
+  generalize eq7 : setVarHOLFinite (ofString "acc") (.val (.word ((Mul64.parts (a 0) b).2))) s6=s7
+  have lookup7 (key : MlS) : s7.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word ((Mul64.parts (a 0) b).2))) else s6.locals.lookup key):=by
+    rw [←eq7]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s7) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read] <;> rfl
+  generalize eq8 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s7=s8
+  have lookup8 (key : MlS) : s8.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s7.locals.lookup key):=by
+    rw [←eq8]
+    rfl
+  let c1:=wordAddCarryHOL ((Mul64.parts (a 0) b).2) ((Mul64.parts (a 1) b).1) 0#64
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c1.1),.val (.word c1.2)]) s8) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1] <;> rfl
+  generalize eq9 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c1.1),.val (.word c1.2)]) s8=s9
+  have lookup9 (key : MlS) : s9.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c1.1),.val (.word c1.2)]) else s8.locals.lookup key):=by
+    rw [←eq9]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c1.1)) s9) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1] <;> rfl
+  generalize eq10 : setVarHOLFinite (ofString "acc") (.val (.word c1.1)) s9=s10
+  have lookup10 (key : MlS) : s10.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c1.1)) else s9.locals.lookup key):=by
+    rw [←eq10]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c1.2)) s10) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1] <;> rfl
+  generalize eq11 : setVarHOLFinite (ofString "hi") (.val (.word c1.2)) s10=s11
+  have lookup11 (key : MlS) : s11.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c1.2)) else s10.locals.lookup key):=by
+    rw [←eq11]
+    rfl
+  refine Input.PureStraight.declares (.val (.word c1.1)) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1] <;> rfl
+  generalize eq12 : setVarHOLFinite (ofString "r1") (.val (.word c1.1)) s11=s12
+  have lookup12 (key : MlS) : s12.locals.lookup key=
+      (if ofString "r1"==key then some (.val (.word c1.1)) else s11.locals.lookup key):=by
+    rw [←eq12]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c1.2)) s12) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1] <;> rfl
+  generalize eq13 : setVarHOLFinite (ofString "acc") (.val (.word c1.2)) s12=s13
+  have lookup13 (key : MlS) : s13.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c1.2)) else s12.locals.lookup key):=by
+    rw [←eq13]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s13) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1] <;> rfl
+  generalize eq14 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s13=s14
+  have lookup14 (key : MlS) : s14.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s13.locals.lookup key):=by
+    rw [←eq14]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c1.2),.val (.word 0#64)]) s14) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1] <;> rfl
+  generalize eq15 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c1.2),.val (.word 0#64)]) s14=s15
+  have lookup15 (key : MlS) : s15.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c1.2),.val (.word 0#64)]) else s14.locals.lookup key):=by
+    rw [←eq15]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c1.2)) s15) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1] <;> rfl
+  generalize eq16 : setVarHOLFinite (ofString "acc") (.val (.word c1.2)) s15=s16
+  have lookup16 (key : MlS) : s16.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c1.2)) else s15.locals.lookup key):=by
+    rw [←eq16]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s16) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1] <;> rfl
+  generalize eq17 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s16=s17
+  have lookup17 (key : MlS) : s17.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s16.locals.lookup key):=by
+    rw [←eq17]
+    rfl
+  let c2:=wordAddCarryHOL c1.2 ((Mul64.parts (a 1) b).2) 0#64
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c2.1),.val (.word c2.2)]) s17) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2] <;> rfl
+  generalize eq18 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c2.1),.val (.word c2.2)]) s17=s18
+  have lookup18 (key : MlS) : s18.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c2.1),.val (.word c2.2)]) else s17.locals.lookup key):=by
+    rw [←eq18]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c2.1)) s18) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2] <;> rfl
+  generalize eq19 : setVarHOLFinite (ofString "acc") (.val (.word c2.1)) s18=s19
+  have lookup19 (key : MlS) : s19.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c2.1)) else s18.locals.lookup key):=by
+    rw [←eq19]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c2.2)) s19) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2] <;> rfl
+  generalize eq20 : setVarHOLFinite (ofString "hi") (.val (.word c2.2)) s19=s20
+  have lookup20 (key : MlS) : s20.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c2.2)) else s19.locals.lookup key):=by
+    rw [←eq20]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c2.1),.val (.word 0#64)]) s20) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2] <;> rfl
+  generalize eq21 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c2.1),.val (.word 0#64)]) s20=s21
+  have lookup21 (key : MlS) : s21.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c2.1),.val (.word 0#64)]) else s20.locals.lookup key):=by
+    rw [←eq21]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c2.1)) s21) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2] <;> rfl
+  generalize eq22 : setVarHOLFinite (ofString "acc") (.val (.word c2.1)) s21=s22
+  have lookup22 (key : MlS) : s22.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c2.1)) else s21.locals.lookup key):=by
+    rw [←eq22]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c2.2)) s22) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2] <;> rfl
+  generalize eq23 : setVarHOLFinite (ofString "hi") (.val (.word c2.2)) s22=s23
+  have lookup23 (key : MlS) : s23.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c2.2)) else s22.locals.lookup key):=by
+    rw [←eq23]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c2.1),.val (.word 0#64)]) s23) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2] <;> rfl
+  generalize eq24 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c2.1),.val (.word 0#64)]) s23=s24
+  have lookup24 (key : MlS) : s24.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c2.1),.val (.word 0#64)]) else s23.locals.lookup key):=by
+    rw [←eq24]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c2.1)) s24) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2] <;> rfl
+  generalize eq25 : setVarHOLFinite (ofString "acc") (.val (.word c2.1)) s24=s25
+  have lookup25 (key : MlS) : s25.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c2.1)) else s24.locals.lookup key):=by
+    rw [←eq25]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c2.2)) s25) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2] <;> rfl
+  generalize eq26 : setVarHOLFinite (ofString "hi") (.val (.word c2.2)) s25=s26
+  have lookup26 (key : MlS) : s26.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c2.2)) else s25.locals.lookup key):=by
+    rw [←eq26]
+    rfl
+  let c3:=wordAddCarryHOL c2.1 ((Mul64.parts (a 2) b).1) 0#64
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c3.1),.val (.word c3.2)]) s26) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq27 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c3.1),.val (.word c3.2)]) s26=s27
+  have lookup27 (key : MlS) : s27.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c3.1),.val (.word c3.2)]) else s26.locals.lookup key):=by
+    rw [←eq27]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c3.1)) s27) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq28 : setVarHOLFinite (ofString "acc") (.val (.word c3.1)) s27=s28
+  have lookup28 (key : MlS) : s28.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c3.1)) else s27.locals.lookup key):=by
+    rw [←eq28]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word (c2.2+c3.2))) s28) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq29 : setVarHOLFinite (ofString "hi") (.val (.word (c2.2+c3.2))) s28=s29
+  have lookup29 (key : MlS) : s29.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word (c2.2+c3.2))) else s28.locals.lookup key):=by
+    rw [←eq29]
+    rfl
+  refine Input.PureStraight.declares (.val (.word c3.1)) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq30 : setVarHOLFinite (ofString "r2") (.val (.word c3.1)) s29=s30
+  have lookup30 (key : MlS) : s30.locals.lookup key=
+      (if ofString "r2"==key then some (.val (.word c3.1)) else s29.locals.lookup key):=by
+    rw [←eq30]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word (c2.2+c3.2))) s30) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq31 : setVarHOLFinite (ofString "acc") (.val (.word (c2.2+c3.2))) s30=s31
+  have lookup31 (key : MlS) : s31.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word (c2.2+c3.2))) else s30.locals.lookup key):=by
+    rw [←eq31]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s31) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq32 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s31=s32
+  have lookup32 (key : MlS) : s32.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s31.locals.lookup key):=by
+    rw [←eq32]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c2.2+c3.2)),.val (.word 0#64)]) s32) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq33 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c2.2+c3.2)),.val (.word 0#64)]) s32=s33
+  have lookup33 (key : MlS) : s33.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word (c2.2+c3.2)),.val (.word 0#64)]) else s32.locals.lookup key):=by
+    rw [←eq33]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word (c2.2+c3.2))) s33) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq34 : setVarHOLFinite (ofString "acc") (.val (.word (c2.2+c3.2))) s33=s34
+  have lookup34 (key : MlS) : s34.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word (c2.2+c3.2))) else s33.locals.lookup key):=by
+    rw [←eq34]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s34) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq35 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s34=s35
+  have lookup35 (key : MlS) : s35.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s34.locals.lookup key):=by
+    rw [←eq35]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c2.2+c3.2)),.val (.word 0#64)]) s35) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq36 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c2.2+c3.2)),.val (.word 0#64)]) s35=s36
+  have lookup36 (key : MlS) : s36.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word (c2.2+c3.2)),.val (.word 0#64)]) else s35.locals.lookup key):=by
+    rw [←eq36]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word (c2.2+c3.2))) s36) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq37 : setVarHOLFinite (ofString "acc") (.val (.word (c2.2+c3.2))) s36=s37
+  have lookup37 (key : MlS) : s37.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word (c2.2+c3.2))) else s36.locals.lookup key):=by
+    rw [←eq37]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s37) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3] <;> rfl
+  generalize eq38 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s37=s38
+  have lookup38 (key : MlS) : s38.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s37.locals.lookup key):=by
+    rw [←eq38]
+    rfl
+  let c4:=wordAddCarryHOL (c2.2+c3.2) ((Mul64.parts (a 2) b).2) 0#64
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c4.1),.val (.word c4.2)]) s38) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq39 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c4.1),.val (.word c4.2)]) s38=s39
+  have lookup39 (key : MlS) : s39.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c4.1),.val (.word c4.2)]) else s38.locals.lookup key):=by
+    rw [←eq39]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c4.1)) s39) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq40 : setVarHOLFinite (ofString "acc") (.val (.word c4.1)) s39=s40
+  have lookup40 (key : MlS) : s40.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c4.1)) else s39.locals.lookup key):=by
+    rw [←eq40]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c4.2)) s40) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq41 : setVarHOLFinite (ofString "hi") (.val (.word c4.2)) s40=s41
+  have lookup41 (key : MlS) : s41.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c4.2)) else s40.locals.lookup key):=by
+    rw [←eq41]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c4.1),.val (.word 0#64)]) s41) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq42 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c4.1),.val (.word 0#64)]) s41=s42
+  have lookup42 (key : MlS) : s42.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c4.1),.val (.word 0#64)]) else s41.locals.lookup key):=by
+    rw [←eq42]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c4.1)) s42) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq43 : setVarHOLFinite (ofString "acc") (.val (.word c4.1)) s42=s43
+  have lookup43 (key : MlS) : s43.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c4.1)) else s42.locals.lookup key):=by
+    rw [←eq43]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c4.2)) s43) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq44 : setVarHOLFinite (ofString "hi") (.val (.word c4.2)) s43=s44
+  have lookup44 (key : MlS) : s44.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c4.2)) else s43.locals.lookup key):=by
+    rw [←eq44]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c4.1),.val (.word 0#64)]) s44) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq45 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c4.1),.val (.word 0#64)]) s44=s45
+  have lookup45 (key : MlS) : s45.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c4.1),.val (.word 0#64)]) else s44.locals.lookup key):=by
+    rw [←eq45]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c4.1)) s45) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq46 : setVarHOLFinite (ofString "acc") (.val (.word c4.1)) s45=s46
+  have lookup46 (key : MlS) : s46.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c4.1)) else s45.locals.lookup key):=by
+    rw [←eq46]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c4.2)) s46) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq47 : setVarHOLFinite (ofString "hi") (.val (.word c4.2)) s46=s47
+  have lookup47 (key : MlS) : s47.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c4.2)) else s46.locals.lookup key):=by
+    rw [←eq47]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c4.1),.val (.word 0#64)]) s47) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq48 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c4.1),.val (.word 0#64)]) s47=s48
+  have lookup48 (key : MlS) : s48.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c4.1),.val (.word 0#64)]) else s47.locals.lookup key):=by
+    rw [←eq48]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c4.1)) s48) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq49 : setVarHOLFinite (ofString "acc") (.val (.word c4.1)) s48=s49
+  have lookup49 (key : MlS) : s49.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c4.1)) else s48.locals.lookup key):=by
+    rw [←eq49]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c4.2)) s49) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4] <;> rfl
+  generalize eq50 : setVarHOLFinite (ofString "hi") (.val (.word c4.2)) s49=s50
+  have lookup50 (key : MlS) : s50.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c4.2)) else s49.locals.lookup key):=by
+    rw [←eq50]
+    rfl
+  let c5:=wordAddCarryHOL c4.1 ((Mul64.parts (a 3) b).1) 0#64
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c5.1),.val (.word c5.2)]) s50) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq51 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c5.1),.val (.word c5.2)]) s50=s51
+  have lookup51 (key : MlS) : s51.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c5.1),.val (.word c5.2)]) else s50.locals.lookup key):=by
+    rw [←eq51]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c5.1)) s51) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq52 : setVarHOLFinite (ofString "acc") (.val (.word c5.1)) s51=s52
+  have lookup52 (key : MlS) : s52.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c5.1)) else s51.locals.lookup key):=by
+    rw [←eq52]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word (c4.2+c5.2))) s52) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq53 : setVarHOLFinite (ofString "hi") (.val (.word (c4.2+c5.2))) s52=s53
+  have lookup53 (key : MlS) : s53.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word (c4.2+c5.2))) else s52.locals.lookup key):=by
+    rw [←eq53]
+    rfl
+  refine Input.PureStraight.declares (.val (.word c5.1)) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq54 : setVarHOLFinite (ofString "r3") (.val (.word c5.1)) s53=s54
+  have lookup54 (key : MlS) : s54.locals.lookup key=
+      (if ofString "r3"==key then some (.val (.word c5.1)) else s53.locals.lookup key):=by
+    rw [←eq54]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word (c4.2+c5.2))) s54) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq55 : setVarHOLFinite (ofString "acc") (.val (.word (c4.2+c5.2))) s54=s55
+  have lookup55 (key : MlS) : s55.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word (c4.2+c5.2))) else s54.locals.lookup key):=by
+    rw [←eq55]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s55) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq56 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s55=s56
+  have lookup56 (key : MlS) : s56.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s55.locals.lookup key):=by
+    rw [←eq56]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c4.2+c5.2)),.val (.word 0#64)]) s56) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq57 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c4.2+c5.2)),.val (.word 0#64)]) s56=s57
+  have lookup57 (key : MlS) : s57.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word (c4.2+c5.2)),.val (.word 0#64)]) else s56.locals.lookup key):=by
+    rw [←eq57]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word (c4.2+c5.2))) s57) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq58 : setVarHOLFinite (ofString "acc") (.val (.word (c4.2+c5.2))) s57=s58
+  have lookup58 (key : MlS) : s58.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word (c4.2+c5.2))) else s57.locals.lookup key):=by
+    rw [←eq58]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s58) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq59 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s58=s59
+  have lookup59 (key : MlS) : s59.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s58.locals.lookup key):=by
+    rw [←eq59]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c4.2+c5.2)),.val (.word 0#64)]) s59) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq60 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c4.2+c5.2)),.val (.word 0#64)]) s59=s60
+  have lookup60 (key : MlS) : s60.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word (c4.2+c5.2)),.val (.word 0#64)]) else s59.locals.lookup key):=by
+    rw [←eq60]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word (c4.2+c5.2))) s60) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq61 : setVarHOLFinite (ofString "acc") (.val (.word (c4.2+c5.2))) s60=s61
+  have lookup61 (key : MlS) : s61.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word (c4.2+c5.2))) else s60.locals.lookup key):=by
+    rw [←eq61]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s61) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq62 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s61=s62
+  have lookup62 (key : MlS) : s62.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s61.locals.lookup key):=by
+    rw [←eq62]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c4.2+c5.2)),.val (.word 0#64)]) s62) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq63 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word (c4.2+c5.2)),.val (.word 0#64)]) s62=s63
+  have lookup63 (key : MlS) : s63.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word (c4.2+c5.2)),.val (.word 0#64)]) else s62.locals.lookup key):=by
+    rw [←eq63]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word (c4.2+c5.2))) s63) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq64 : setVarHOLFinite (ofString "acc") (.val (.word (c4.2+c5.2))) s63=s64
+  have lookup64 (key : MlS) : s64.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word (c4.2+c5.2))) else s63.locals.lookup key):=by
+    rw [←eq64]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s64) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5] <;> rfl
+  generalize eq65 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s64=s65
+  have lookup65 (key : MlS) : s65.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s64.locals.lookup key):=by
+    rw [←eq65]
+    rfl
+  let c6:=wordAddCarryHOL (c4.2+c5.2) ((Mul64.parts (a 3) b).2) 0#64
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.1),.val (.word c6.2)]) s65) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq66 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.1),.val (.word c6.2)]) s65=s66
+  have lookup66 (key : MlS) : s66.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c6.1),.val (.word c6.2)]) else s65.locals.lookup key):=by
+    rw [←eq66]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.1)) s66) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq67 : setVarHOLFinite (ofString "acc") (.val (.word c6.1)) s66=s67
+  have lookup67 (key : MlS) : s67.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.1)) else s66.locals.lookup key):=by
+    rw [←eq67]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c6.2)) s67) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq68 : setVarHOLFinite (ofString "hi") (.val (.word c6.2)) s67=s68
+  have lookup68 (key : MlS) : s68.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c6.2)) else s67.locals.lookup key):=by
+    rw [←eq68]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.1),.val (.word 0#64)]) s68) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq69 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.1),.val (.word 0#64)]) s68=s69
+  have lookup69 (key : MlS) : s69.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c6.1),.val (.word 0#64)]) else s68.locals.lookup key):=by
+    rw [←eq69]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.1)) s69) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq70 : setVarHOLFinite (ofString "acc") (.val (.word c6.1)) s69=s70
+  have lookup70 (key : MlS) : s70.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.1)) else s69.locals.lookup key):=by
+    rw [←eq70]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c6.2)) s70) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq71 : setVarHOLFinite (ofString "hi") (.val (.word c6.2)) s70=s71
+  have lookup71 (key : MlS) : s71.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c6.2)) else s70.locals.lookup key):=by
+    rw [←eq71]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.1),.val (.word 0#64)]) s71) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq72 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.1),.val (.word 0#64)]) s71=s72
+  have lookup72 (key : MlS) : s72.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c6.1),.val (.word 0#64)]) else s71.locals.lookup key):=by
+    rw [←eq72]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.1)) s72) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq73 : setVarHOLFinite (ofString "acc") (.val (.word c6.1)) s72=s73
+  have lookup73 (key : MlS) : s73.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.1)) else s72.locals.lookup key):=by
+    rw [←eq73]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c6.2)) s73) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq74 : setVarHOLFinite (ofString "hi") (.val (.word c6.2)) s73=s74
+  have lookup74 (key : MlS) : s74.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c6.2)) else s73.locals.lookup key):=by
+    rw [←eq74]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.1),.val (.word 0#64)]) s74) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq75 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.1),.val (.word 0#64)]) s74=s75
+  have lookup75 (key : MlS) : s75.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c6.1),.val (.word 0#64)]) else s74.locals.lookup key):=by
+    rw [←eq75]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.1)) s75) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq76 : setVarHOLFinite (ofString "acc") (.val (.word c6.1)) s75=s76
+  have lookup76 (key : MlS) : s76.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.1)) else s75.locals.lookup key):=by
+    rw [←eq76]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word c6.2)) s76) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq77 : setVarHOLFinite (ofString "hi") (.val (.word c6.2)) s76=s77
+  have lookup77 (key : MlS) : s77.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word c6.2)) else s76.locals.lookup key):=by
+    rw [←eq77]
+    rfl
+  refine Input.PureStraight.declares (.val (.word c6.1)) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq78 : setVarHOLFinite (ofString "r4") (.val (.word c6.1)) s77=s78
+  have lookup78 (key : MlS) : s78.locals.lookup key=
+      (if ofString "r4"==key then some (.val (.word c6.1)) else s77.locals.lookup key):=by
+    rw [←eq78]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s78) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq79 : setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s78=s79
+  have lookup79 (key : MlS) : s79.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.2)) else s78.locals.lookup key):=by
+    rw [←eq79]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s79) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq80 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s79=s80
+  have lookup80 (key : MlS) : s80.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s79.locals.lookup key):=by
+    rw [←eq80]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s80) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq81 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s80=s81
+  have lookup81 (key : MlS) : s81.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c6.2),.val (.word 0#64)]) else s80.locals.lookup key):=by
+    rw [←eq81]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s81) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq82 : setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s81=s82
+  have lookup82 (key : MlS) : s82.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.2)) else s81.locals.lookup key):=by
+    rw [←eq82]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s82) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq83 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s82=s83
+  have lookup83 (key : MlS) : s83.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s82.locals.lookup key):=by
+    rw [←eq83]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s83) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq84 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s83=s84
+  have lookup84 (key : MlS) : s84.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c6.2),.val (.word 0#64)]) else s83.locals.lookup key):=by
+    rw [←eq84]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s84) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq85 : setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s84=s85
+  have lookup85 (key : MlS) : s85.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.2)) else s84.locals.lookup key):=by
+    rw [←eq85]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s85) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq86 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s85=s86
+  have lookup86 (key : MlS) : s86.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s85.locals.lookup key):=by
+    rw [←eq86]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s86) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq87 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s86=s87
+  have lookup87 (key : MlS) : s87.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c6.2),.val (.word 0#64)]) else s86.locals.lookup key):=by
+    rw [←eq87]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s87) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq88 : setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s87=s88
+  have lookup88 (key : MlS) : s88.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.2)) else s87.locals.lookup key):=by
+    rw [←eq88]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s88) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq89 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s88=s89
+  have lookup89 (key : MlS) : s89.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s88.locals.lookup key):=by
+    rw [←eq89]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s89) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq90 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s89=s90
+  have lookup90 (key : MlS) : s90.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c6.2),.val (.word 0#64)]) else s89.locals.lookup key):=by
+    rw [←eq90]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s90) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq91 : setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s90=s91
+  have lookup91 (key : MlS) : s91.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.2)) else s90.locals.lookup key):=by
+    rw [←eq91]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s91) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq92 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s91=s92
+  have lookup92 (key : MlS) : s92.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s91.locals.lookup key):=by
+    rw [←eq92]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s92) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq93 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word c6.2),.val (.word 0#64)]) s92=s93
+  have lookup93 (key : MlS) : s93.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word c6.2),.val (.word 0#64)]) else s92.locals.lookup key):=by
+    rw [←eq93]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s93) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq94 : setVarHOLFinite (ofString "acc") (.val (.word c6.2)) s93=s94
+  have lookup94 (key : MlS) : s94.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word c6.2)) else s93.locals.lookup key):=by
+    rw [←eq94]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s94) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq95 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s94=s95
+  have lookup95 (key : MlS) : s95.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s94.locals.lookup key):=by
+    rw [←eq95]
+    rfl
+  refine Input.PureStraight.declares (.val (.word c6.2)) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq96 : setVarHOLFinite (ofString "r5") (.val (.word c6.2)) s95=s96
+  have lookup96 (key : MlS) : s96.locals.lookup key=
+      (if ofString "r5"==key then some (.val (.word c6.2)) else s95.locals.lookup key):=by
+    rw [←eq96]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s96) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq97 : setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s96=s97
+  have lookup97 (key : MlS) : s97.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word 0#64)) else s96.locals.lookup key):=by
+    rw [←eq97]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s97) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq98 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s97=s98
+  have lookup98 (key : MlS) : s98.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s97.locals.lookup key):=by
+    rw [←eq98]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word 0#64),.val (.word 0#64)]) s98) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq99 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word 0#64),.val (.word 0#64)]) s98=s99
+  have lookup99 (key : MlS) : s99.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word 0#64),.val (.word 0#64)]) else s98.locals.lookup key):=by
+    rw [←eq99]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s99) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq100 : setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s99=s100
+  have lookup100 (key : MlS) : s100.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word 0#64)) else s99.locals.lookup key):=by
+    rw [←eq100]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s100) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq101 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s100=s101
+  have lookup101 (key : MlS) : s101.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s100.locals.lookup key):=by
+    rw [←eq101]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word 0#64),.val (.word 0#64)]) s101) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq102 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word 0#64),.val (.word 0#64)]) s101=s102
+  have lookup102 (key : MlS) : s102.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word 0#64),.val (.word 0#64)]) else s101.locals.lookup key):=by
+    rw [←eq102]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s102) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq103 : setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s102=s103
+  have lookup103 (key : MlS) : s103.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word 0#64)) else s102.locals.lookup key):=by
+    rw [←eq103]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s103) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup103,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq104 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s103=s104
+  have lookup104 (key : MlS) : s104.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s103.locals.lookup key):=by
+    rw [←eq104]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "t") (.rStruct [.val (.word 0#64),.val (.word 0#64)]) s104) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_primitive,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup104,lookup103,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq105 : setVarHOLFinite (ofString "t") (.rStruct [.val (.word 0#64),.val (.word 0#64)]) s104=s105
+  have lookup105 (key : MlS) : s105.locals.lookup key=
+      (if ofString "t"==key then some (.rStruct [.val (.word 0#64),.val (.word 0#64)]) else s104.locals.lookup key):=by
+    rw [←eq105]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s105) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup105,lookup104,lookup103,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq106 : setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s105=s106
+  have lookup106 (key : MlS) : s106.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word 0#64)) else s105.locals.lookup key):=by
+    rw [←eq106]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s106) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup106,lookup105,lookup104,lookup103,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq107 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s106=s107
+  have lookup107 (key : MlS) : s107.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s106.locals.lookup key):=by
+    rw [←eq107]
+    rfl
+  refine Input.PureStraight.declares (.val (.word 0#64)) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup107,lookup106,lookup105,lookup104,lookup103,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq108 : setVarHOLFinite (ofString "r6") (.val (.word 0#64)) s107=s108
+  have lookup108 (key : MlS) : s108.locals.lookup key=
+      (if ofString "r6"==key then some (.val (.word 0#64)) else s107.locals.lookup key):=by
+    rw [←eq108]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s108) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup108,lookup107,lookup106,lookup105,lookup104,lookup103,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq109 : setVarHOLFinite (ofString "acc") (.val (.word 0#64)) s108=s109
+  have lookup109 (key : MlS) : s109.locals.lookup key=
+      (if ofString "acc"==key then some (.val (.word 0#64)) else s108.locals.lookup key):=by
+    rw [←eq109]
+    rfl
+  refine Input.PureStraight.command (middle:=setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s109) ?_ rfl ?_
+  · simp [evaluateHOLFiniteState_assign,panPrimopHOLExact,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup109,lookup108,lookup107,lookup106,lookup105,lookup104,lookup103,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq110 : setVarHOLFinite (ofString "hi") (.val (.word 0#64)) s109=s110
+  have lookup110 (key : MlS) : s110.locals.lookup key=
+      (if ofString "hi"==key then some (.val (.word 0#64)) else s109.locals.lookup key):=by
+    rw [←eq110]
+    rfl
+  refine Input.PureStraight.declares (.val (.word 0#64)) ?_ (by simp [shapeOfHOLExact,shapeEqHOL_eq_true]) ?_
+  · simp [WitnessRadix.QueryBranch.eval,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup110,lookup109,lookup108,lookup107,lookup106,lookup105,lookup104,lookup103,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6] <;> rfl
+  generalize eq111 : setVarHOLFinite (ofString "r7") (.val (.word 0#64)) s110=s111
+  have lookup111 (key : MlS) : s111.locals.lookup key=
+      (if ofString "r7"==key then some (.val (.word 0#64)) else s110.locals.lookup key):=by
+    rw [←eq111]
+    rfl
+  refine ⟨emptyLocalsHOLFinite _,?_,rfl⟩
+  simp [evaluateHOLFiniteState_return,scalarValue,scalarFirst,scalarSecondHigh,scalarSecond,scalarThirdHigh,scalarThird,scalarFourth,sizeOfShapeWithContextHOL,evalHOLExact,evalListHOLExact,evalListHOLFinite,toExact,ofString,localVar,setVarHOLFinite,setKvarHOLFinite,HolFiniteMapExact.update,FUPDATE,isValidValueHOLFinite,lookupKvarHOLFinite,shapeOfHOLExact,shapeEqHOL_eq_true,valueWord,valueIsWord,wordOpHOL,wordOp,carry_right_zero,carry_left_zero,Mul64.value,lookup111,lookup110,lookup109,lookup108,lookup107,lookup106,lookup105,lookup104,lookup103,lookup102,lookup101,lookup100,lookup99,lookup98,lookup97,lookup96,lookup95,lookup94,lookup93,lookup92,lookup91,lookup90,lookup89,lookup88,lookup87,lookup86,lookup85,lookup84,lookup83,lookup82,lookup81,lookup80,lookup79,lookup78,lookup77,lookup76,lookup75,lookup74,lookup73,lookup72,lookup71,lookup70,lookup69,lookup68,lookup67,lookup66,lookup65,lookup64,lookup63,lookup62,lookup61,lookup60,lookup59,lookup58,lookup57,lookup56,lookup55,lookup54,lookup53,lookup52,lookup51,lookup50,lookup49,lookup48,lookup47,lookup46,lookup45,lookup44,lookup43,lookup42,lookup41,lookup40,lookup39,lookup38,lookup37,lookup36,lookup35,lookup34,lookup33,lookup32,lookup31,lookup30,lookup29,lookup28,lookup27,lookup26,lookup25,lookup24,lookup23,lookup22,lookup21,lookup20,lookup19,lookup18,lookup17,lookup16,lookup15,lookup14,lookup13,lookup12,lookup11,lookup10,lookup9,lookup8,lookup7,lookup6,lookup5,lookup4,lookup3,lookup2,lookup1,p00Read,p01Read,p02Read,p03Read,p10Read,p11Read,p12Read,p13Read,p20Read,p21Read,p22Read,p23Read,p30Read,p31Read,p32Read,p33Read,c1,c2,c3,c4,c5,c6]
+
+end InitECandidate.Solver.GasBudget.U256Multiply
+
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_tail
+
+namespace InitECandidate.Solver.GasBudget.U256Multiply
+open Flapjack
+
+private theorem carry_flag_bound (left right : BitVec 64) :
+    (wordAddCarryHOL left right 0#64).2.toNat≤1 := by
+  have represented:=Mul64.carry_number left right
+  have leftBound:=left.isLt
+  have rightBound:=right.isLt
+  omega
+
+private theorem carry_flags_number (a b c d : BitVec 64) :
+    ((wordAddCarryHOL a b 0#64).2+(wordAddCarryHOL c d 0#64).2).toNat=
+      (wordAddCarryHOL a b 0#64).2.toNat+(wordAddCarryHOL c d 0#64).2.toNat := by
+  have first:=carry_flag_bound a b
+  have second:=carry_flag_bound c d
+  rw [BitVec.toNat_add,Nat.mod_eq_of_lt (by omega)]
+
+def scalarLow (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) : Input.RlpWrite.U256Value.Words:=
+  fun index=>if index.val=0 then (Mul64.parts (a 0) b).1 else if index.val=1 then (scalarFirst a b).1
+    else if index.val=2 then (scalarSecond a b).1 else (scalarThird a b).1
+
+set_option maxRecDepth 10000 in
+set_option maxHeartbeats 1000000 in
+/-- All six actual accumulation carries give the exact full natural
+product, before the Taylor overflow guard discards its high limbs. -/
+theorem scalar_product (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) :
+    U256Zero.number (scalarLow a b)+2^256*(scalarFourth a b).1.toNat+2^320*(scalarFourth a b).2.toNat=
+      U256Zero.number a*b.toNat := by
+  have p0:=Mul64.parts_product (a 0) b
+  have p1:=Mul64.parts_product (a 1) b
+  have p2:=Mul64.parts_product (a 2) b
+  have p3:=Mul64.parts_product (a 3) b
+  have c1:=Mul64.carry_number (Mul64.parts (a 0) b).2 (Mul64.parts (a 1) b).1
+  have c2:=Mul64.carry_number (scalarFirst a b).2 (Mul64.parts (a 1) b).2
+  have c3:=Mul64.carry_number (scalarSecondHigh a b).1 (Mul64.parts (a 2) b).1
+  have c4:=Mul64.carry_number ((scalarSecondHigh a b).2+(scalarSecond a b).2) (Mul64.parts (a 2) b).2
+  have c5:=Mul64.carry_number (scalarThirdHigh a b).1 (Mul64.parts (a 3) b).1
+  have c6:=Mul64.carry_number ((scalarThirdHigh a b).2+(scalarThird a b).2) (Mul64.parts (a 3) b).2
+  have flags2:=carry_flags_number (scalarFirst a b).2 (Mul64.parts (a 1) b).2
+    (scalarSecondHigh a b).1 (Mul64.parts (a 2) b).1
+  have flags3:=carry_flags_number ((scalarSecondHigh a b).2+(scalarSecond a b).2) (Mul64.parts (a 2) b).2
+    (scalarThirdHigh a b).1 (Mul64.parts (a 3) b).1
+  change (scalarFirst a b).1.toNat+2^64*(scalarFirst a b).2.toNat=_ at c1
+  change (scalarSecondHigh a b).1.toNat+2^64*(scalarSecondHigh a b).2.toNat=_ at c2
+  change (scalarSecond a b).1.toNat+2^64*(scalarSecond a b).2.toNat=_ at c3
+  change (scalarThirdHigh a b).1.toNat+2^64*(scalarThirdHigh a b).2.toNat=_ at c4
+  change (scalarThird a b).1.toNat+2^64*(scalarThird a b).2.toNat=_ at c5
+  change (scalarFourth a b).1.toNat+2^64*(scalarFourth a b).2.toNat=_ at c6
+  change ((scalarSecondHigh a b).2+(scalarSecond a b).2).toNat=(scalarSecondHigh a b).2.toNat+(scalarSecond a b).2.toNat at flags2
+  change ((scalarThirdHigh a b).2+(scalarThird a b).2).toNat=(scalarThirdHigh a b).2.toNat+(scalarThird a b).2.toNat at flags3
+  rw [flags2] at c4
+  rw [flags3] at c6
+  have expanded : U256Zero.number a*b.toNat=
+      (a 0).toNat*b.toNat+2^64*((a 1).toNat*b.toNat)+2^128*((a 2).toNat*b.toNat)+2^192*((a 3).toNat*b.toNat) := by
+    unfold U256Zero.number
+    ring
+  rw [←p0,←p1,←p2,←p3] at expanded
+  change (Mul64.parts (a 0) b).1.toNat+2^64*(scalarFirst a b).1.toNat+2^128*(scalarSecond a b).1.toNat+
+    2^192*(scalarThird a b).1.toNat+2^256*(scalarFourth a b).1.toNat+2^320*(scalarFourth a b).2.toNat=_
+  omega
+
+/-- The actual high-limb OR test is zero precisely when the product fits
+in the four low limbs. -/
+theorem scalar_overflow (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64) :
+    (scalarFourth a b).1 ||| (scalarFourth a b).2=0#64 ↔ U256Zero.number a*b.toNat<2^256 := by
+  have product:=scalar_product a b
+  have lowBound:=U256Zero.number_lt (scalarLow a b)
+  rw [BitVec.or_eq_zero_iff]
+  constructor
+  · rintro ⟨first,second⟩
+    simp only [first,second,BitVec.toNat_zero,Nat.mul_zero,Nat.add_zero] at product
+    omega
+  · intro small
+    have first : (scalarFourth a b).1.toNat=0:=by omega
+    have second : (scalarFourth a b).2.toNat=0:=by omega
+    exact ⟨BitVec.eq_of_toNat_eq first,BitVec.eq_of_toNat_eq second⟩
+
+theorem scalar_low_product (a : Input.RlpWrite.U256Value.Words) (b : BitVec 64)
+    (fits : (scalarFourth a b).1 ||| (scalarFourth a b).2=0#64) :
+    U256Zero.number (scalarLow a b)=U256Zero.number a*b.toNat := by
+  have product:=scalar_product a b
+  obtain ⟨first,second⟩:=BitVec.or_eq_zero_iff.mp fits
+  simpa only [first,second,BitVec.toNat_zero,Nat.mul_zero,Nat.add_zero] using product
+
+end InitECandidate.Solver.GasBudget.U256Multiply
+
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_product
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_overflow
+#print axioms InitECandidate.Solver.GasBudget.U256Multiply.scalar_low_product

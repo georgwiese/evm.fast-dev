@@ -2672,3 +2672,28 @@ verifier success. Overall estimate remains50%, plausible40–60%. Usage57%
 weekly/0resetcredits. Remaining parent-header validation/execution/wrappers/
 main, uniform target composition, dominant-slack review and cleanup remain
 part of the same active goal.
+
+
+## Actual full-multiply scalar accumulation and exact overflow arithmetic
+
+The unchanged u256_mul_full straight-line tail now has a checked execution
+contract for the scalar-right-operand case needed by Taylor. After its real
+sixteen partial products have their specified values, all111local updates
+return the concrete eight-limb result and preserve every nonlocal field and
+clock. The twelve products with zero right limbs are zero; six nonzero
+carry operations remain. The proof follows the literal original tail.
+
+The corresponding natural identity is checked: the four low limbs plus
+2^256 times the fifth limb plus2^320 times the sixth limb equal the full
+256-by64-bit input product. The high-limb OR test is zero exactly when this
+product is below2^256; passing it leaves the exact mathematical product in
+the four low limbs. This supplies the numerical meaning needed by the real
+Taylor overflow guard. The sixteen-call prefix must still derive the tail's
+partial-product bindings from that same actual run; no whole-helper or
+Taylor recurrence connection is claimed yet. Numerical division remains open.
+
+Validation: current-wide-multiply-scalar-tail-v4.log PASS986jobs; all printed
+axioms permitted. Index8700modules/18284facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K or
+full verifier success. Overall estimate remains50%, plausible40–60%. Usage57%
+weekly/0resetcredits. No executable or challenge hypothesis changed.

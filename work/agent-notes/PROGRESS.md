@@ -4468,3 +4468,20 @@ current-wide-division-wrapper-zero-v3.log PASS738jobs, permitted printed
 axioms only. Index8700modules/18261facts; inventory8745/replacement closure0/
 fixed files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage56%weekly/0resetcredits.
+
+
+## Exact numerical result of the current scalar multiplication helper
+
+The actual mul64x64 execution now supplies two returned words whose natural
+value low+2^64*high is exactly the input product. The proof checks all four
+32-bit partial products, the middle carry, low-word shift and final high-word
+addition; the latter is proved not to overflow. Reusable half-word and shifted
+carry facts are included. The execution summary retains the same real return
+and full nonlocal frame, with no added entry assumption or executable change.
+This is an arithmetic bridge for the current wide multiply/Taylor proof, not
+a complete Taylor or global target-step bound.
+
+Validation: current-mul64-natural-product-v4.log PASS861jobs; all printed
+axioms permitted. Index8700modules/18268facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K or
+full verifier success. Overall estimate remains50%, plausible40–60%.

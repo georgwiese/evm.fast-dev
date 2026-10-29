@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Ring
 import InitECandidate.Solver.GasBudget.ArithmeticClockPrice
 import InitECandidate.Solver.Input.PureStraight
 
@@ -145,9 +146,14 @@ theorem carry_number (left right : BitVec 64) :
     (wordAddCarryHOL left right 0#64).1.toNat+2^64*(wordAddCarryHOL left right 0#64).2.toNat=left.toNat+right.toNat := by
   have leftBound:=left.isLt
   have rightBound:=right.isLt
+  change (left.toNat+right.toNat)%2^64+2^64*(if 2^64≤left.toNat+right.toNat then 1#64 else 0#64).toNat=left.toNat+right.toNat
   by_cases overflow : 2^64≤left.toNat+right.toNat
-  all_goals simp [wordAddCarryHOL,overflow]
-  all_goals omega
+  · rw [if_pos overflow]
+    change (left.toNat+right.toNat)%2^64+2^64=left.toNat+right.toNat
+    omega
+  · rw [if_neg overflow]
+    change (left.toNat+right.toNat)%2^64=left.toNat+right.toNat
+    omega
 
 theorem carry_low_number (left right : BitVec 64) :
     (wordAddCarryHOL left right 0#64).1.toNat=(left.toNat+right.toNat)%2^64 := by
@@ -181,3 +187,136 @@ end InitECandidate.Solver.GasBudget.Mul64
 #print axioms InitECandidate.Solver.GasBudget.Mul64.low_half_number
 #print axioms InitECandidate.Solver.GasBudget.Mul64.high_half_number
 #print axioms InitECandidate.Solver.GasBudget.Mul64.halves_number
+
+namespace InitECandidate.Solver.GasBudget.Mul64
+open Flapjack
+
+theorem low_half_lt (word : BitVec 64) : (word &&& 4294967295#64).toNat<2^32 := by
+  rw [low_half_number]
+  exact Nat.mod_lt _ (by decide)
+
+theorem high_half_lt (word : BitVec 64) : (word>>>(32:Nat)).toNat<2^32 := by
+  rw [high_half_number]
+  have bound:=word.isLt
+  omega
+
+theorem small_product_number (left right : BitVec 64) (leftBound : left.toNat<2^32) (rightBound : right.toNat<2^32) :
+    (left*right).toNat=left.toNat*right.toNat := by
+  have bounded : left.toNat*right.toNat<2^64:=by
+    calc
+      left.toNat*right.toNat≤(2^32-1)*(2^32-1):=Nat.mul_le_mul (by omega) (by omega)
+      _<2^64:=by decide
+  rw [BitVec.toNat_mul,Nat.mod_eq_of_lt bounded]
+
+theorem shift_half_number (word : BitVec 64) :
+    (word<<<(32:Nat)).toNat=(word.toNat%2^32)*2^32 := by
+  rw [BitVec.toNat_shiftLeft,Nat.shiftLeft_eq]
+  rw [show (2:Nat)^64=2^32*2^32 from Nat.pow_add 2 32 32]
+  exact Nat.mul_mod_mul_right (2^32) word.toNat (2^32)
+
+theorem shift_flag_number (word : BitVec 64) (small : word.toNat≤1) :
+    (word<<<(32:Nat)).toNat=word.toNat*2^32 := by
+  rw [BitVec.toNat_shiftLeft,Nat.shiftLeft_eq]
+  rw [Nat.mod_eq_of_lt (by omega)]
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+/-- The actual schoolbook half-word multiplication returns the exact full
+128-bit natural product, including its three source carry computations. -/
+theorem parts_product (a b : BitVec 64) :
+    (parts a b).1.toNat+2^64*(parts a b).2.toNat=a.toNat*b.toNat := by
+  let base : Nat:=2^32
+  let modulus : Nat:=2^64
+  let a0:=a &&& 4294967295#64
+  let a1:=a>>>(32:Nat)
+  let b0:=b &&& 4294967295#64
+  let b1:=b>>>(32:Nat)
+  let p00:=a0*b0
+  let p01:=a0*b1
+  let p10:=a1*b0
+  let p11:=a1*b1
+  let mid:=wordAddCarryHOL p01 p10 0#64
+  let lo:=wordAddCarryHOL p00 (mid.1<<<(32:Nat)) 0#64
+  let high:=p11.toNat+((mid.1>>>(32:Nat)).toNat+((mid.2<<<(32:Nat)).toNat+lo.2.toNat))
+  have aSplit : a0.toNat+base*a1.toNat=a.toNat:=halves_number a
+  have bSplit : b0.toNat+base*b1.toNat=b.toNat:=halves_number b
+  have p00Number : p00.toNat=a0.toNat*b0.toNat:=small_product_number a0 b0 (low_half_lt a) (low_half_lt b)
+  have p01Number : p01.toNat=a0.toNat*b1.toNat:=small_product_number a0 b1 (low_half_lt a) (high_half_lt b)
+  have p10Number : p10.toNat=a1.toNat*b0.toNat:=small_product_number a1 b0 (high_half_lt a) (low_half_lt b)
+  have p11Number : p11.toNat=a1.toNat*b1.toNat:=small_product_number a1 b1 (high_half_lt a) (high_half_lt b)
+  have expanded : a.toNat*b.toNat=p00.toNat+base*(p01.toNat+p10.toNat)+modulus*p11.toNat:=by
+    rw [←aSplit,←bSplit,p00Number,p01Number,p10Number,p11Number]
+    dsimp only [base,modulus]
+    ring
+  have midCarry : mid.1.toNat+modulus*mid.2.toNat=p01.toNat+p10.toNat:=carry_number p01 p10
+  have midSplit : mid.1.toNat%base+base*(mid.1>>>(32:Nat)).toNat=mid.1.toNat:=by
+    rw [high_half_number]
+    exact Nat.mod_add_div mid.1.toNat base
+  have lowShift : (mid.1<<<(32:Nat)).toNat=(mid.1.toNat%base)*base:=shift_half_number mid.1
+  have midFlag : mid.2.toNat≤1:=by
+    change (wordAddCarryHOL p01 p10 0#64).2.toNat≤1
+    rw [carry_high_number]
+    have first:=p01.isLt
+    have second:=p10.isLt
+    omega
+  have highShift : (mid.2<<<(32:Nat)).toNat=mid.2.toNat*base:=shift_flag_number mid.2 midFlag
+  have lowCarry : lo.1.toNat+modulus*lo.2.toNat=p00.toNat+(mid.1.toNat%base)*base:=by
+    have carry:=carry_number p00 (mid.1<<<(32:Nat))
+    rw [lowShift] at carry
+    exact carry
+  have packed : lo.1.toNat+modulus*high=a.toNat*b.toNat:=by
+    rw [expanded]
+    have weightedMid:=congrArg (fun value : Nat=>base*value) midCarry
+    have weightedSplit:=congrArg (fun value : Nat=>base*value) midSplit
+    dsimp only [high]
+    rw [highShift]
+    dsimp only [base,modulus] at *
+    omega
+  have productBound : a.toNat*b.toNat<modulus*modulus:=by
+    have first:=a.isLt
+    have second:=b.isLt
+    calc
+      a.toNat*b.toNat≤(modulus-1)*(modulus-1):=Nat.mul_le_mul (by dsimp only [modulus]; omega) (by dsimp only [modulus]; omega)
+      _<modulus*modulus:=by norm_num [modulus] <;> omega
+  have highBound : high<modulus:=by
+    dsimp only [modulus] at *
+    omega
+  have represented : (parts a b).2=BitVec.ofNat 64 high:=by
+    change p11+((mid.1>>>(32:Nat))+((mid.2<<<(32:Nat))+lo.2))=BitVec.ofNat 64 high
+    dsimp only [high]
+    simp only [BitVec.ofNat_add,BitVec.ofNat_toNat,BitVec.setWidth_eq]
+  have highNumber : (parts a b).2.toNat=high:=by
+    rw [represented,BitVec.toNat_ofNat]
+    exact Nat.mod_eq_of_lt highBound
+  rw [highNumber]
+  exact packed
+
+end InitECandidate.Solver.GasBudget.Mul64
+
+#print axioms InitECandidate.Solver.GasBudget.Mul64.low_half_lt
+#print axioms InitECandidate.Solver.GasBudget.Mul64.high_half_lt
+#print axioms InitECandidate.Solver.GasBudget.Mul64.small_product_number
+#print axioms InitECandidate.Solver.GasBudget.Mul64.parts_product
+
+#print axioms InitECandidate.Solver.GasBudget.Mul64.shift_half_number
+#print axioms InitECandidate.Solver.GasBudget.Mul64.shift_flag_number
+
+
+namespace InitECandidate.Solver.GasBudget.Mul64
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+
+/-- The same actual current software body returns limbs representing the
+full natural product and retains every physical field and its source clock. -/
+theorem execute_product (source : PanSemStateFiniteExact 64 Guest.HostMemory) (a b : BitVec 64)
+    (installed : Input.OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (.val (.word a)))
+    (bLocal : source.locals.lookup (ofString "b")=some (.val (.word b))) :
+    ∃ target low high,evaluateHOLFiniteState source body=(some (.returned (.rStruct [.val (.word low),.val (.word high)])),target) ∧
+      low.toNat+2^64*high.toNat=a.toNat*b.toNat ∧ emptyLocalsHOLFinite target=emptyLocalsHOLFinite source := by
+  obtain ⟨target,run,frame⟩:=execute source a b installed aLocal bLocal
+  exact ⟨target,(parts a b).1,(parts a b).2,run,parts_product a b,frame⟩
+
+end InitECandidate.Solver.GasBudget.Mul64
+
+#print axioms InitECandidate.Solver.GasBudget.Mul64.execute_product

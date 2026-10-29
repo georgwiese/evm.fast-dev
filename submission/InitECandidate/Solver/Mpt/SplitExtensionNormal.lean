@@ -37,7 +37,7 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
           Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
-            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ TrieWalk.Uncached target.memory heap := by
   obtain ⟨inner,continued,endpoint⟩:=field_entry_normal source target graph node member active tag nodeCell value normal
   let ready:=fieldEntry source node
   have current (name : MlS) (notSegment : name≠ofString "seg") (notLength : name≠ofString "sl") (notChild : name≠ofString "child") :
@@ -45,7 +45,7 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
   obtain ⟨segmentCell,oldLengthCell,childCell⟩:=field_entry_cells source node
   have buffer:=TrieWalk.Graph.PathBuffer.stored graph source.be pathLower heap.toNat paths pathRegions separated node member active (Or.inr tag)
   have childMember:=stored_child_member source graph node member active tag
-  obtain ⟨answer,domainEq,endianEq,codeEq,memory,finalHeap,finalHeapCell,finalArena,finalAligned,grows,finalTag,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,finalProtection⟩:=
+  obtain ⟨answer,domainEq,endianEq,codeEq,memory,finalHeap,finalHeapCell,finalArena,finalAligned,grows,finalTag,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,finalProtection,clean⟩:=
     branch_scope_normal ready inner heap (wordAt source.memory (node+32#64)) prefixLength (wordAt source.memory (node+40#64)) (wordAt source.memory (node+48#64)) key length pointer size
       graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated buffer query queryBound
       ((current _ (by decide) (by decide) (by decide)).trans keyCell) ((current _ (by decide) (by decide) (by decide)).trans lengthCell)
@@ -57,7 +57,7 @@ theorem body_path_normal (source target : PanSemStateFiniteExact 64 Guest.HostMe
     nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,
     (by
       intro address safe before away
-      exact finalProtection address safe before (safe.stored graph address node member active (Or.inr tag)) away)⟩
+      exact finalProtection address safe before (safe.stored graph address node member active (Or.inr tag)) away),clean⟩
 
 end InitECandidate.Solver.Mpt.SplitExtension
 

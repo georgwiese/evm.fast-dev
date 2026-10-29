@@ -1633,3 +1633,22 @@ Printed axioms permitted only. Usage41%weekly/0resetcredits. Claim infinity;
 no global finite target K/full verification. Next: complete extension splitting
 and insertion-loop cache evidence, actual root calculation, remaining main and
 uniform target-step composition. Five historical RLP WIPs untouched/unclaimed.
+
+
+## Current extension splitting derives its empty root caches
+
+The real old/new extension-split side outputs now carry zero-cache
+preservation through their fresh constructors, child/value stores, declarations
+and caller restoration. The whole current _split_extension normal call returns
+its actual fresh branch with empty RLP/hash caches. The insertion's actual
+optional extension wrapper likewise derives an uncached returned branch or
+fresh extension. This strengthens actual output evidence and assumes no future
+success or empty cache in an arbitrary input graph. The complete insertion
+loop still must retain its selected root's cache fields across later iterations.
+
+Validation: current-trie-extension-cache-v1.log PASS1223jobs;
+current-trie-extension-cache-regression-v1.log PASS3080jobs, including actual
+main transaction data, current indexed loop/setup and payload-to-trie regression.
+Printed axioms permitted only. Claim infinity; no global finite target K/full
+verification. Usage41%weekly/0resetcredits. Next: full insertion/root cache
+connection, actual root calculation, remaining main and uniform target steps.

@@ -49,7 +49,7 @@ theorem new_remainder_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
           Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
-            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ graph.CacheFrame target.memory := by
   have subtraction : (length-prefixLength).toNat=length.toNat-prefixLength.toNat:=BitVec.toNat_sub_of_le (by rwa [BitVec.le_def])
   have suffix:=buffer.window graph source.be pathLower heap.toNat key prefixLength length.toNat (length-prefixLength).toNat bound (by rw [subtraction])
   have read : eval source newRemainder=some (.val (.word (length-prefixLength))):=by
@@ -77,7 +77,7 @@ theorem new_remainder_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     output.heapGrows,output.branchTag,output.graph,output.oldMember,output.branchMember,output.regions,output.disjoint,⟨output.values⟩,output.paths,output.pathRegions,output.separated,output.freshMembers,
     (by
       intro address safe before away
-      exact output.protectedGraph address safe before (away.window key prefixLength address length.toNat _ bound (by rw [subtraction])))⟩
+      exact output.protectedGraph address safe before (away.window key prefixLength address length.toNat _ bound (by rw [subtraction]))),output.cacheFrame⟩
 
 end InitECandidate.Solver.Mpt.SplitExtension
 

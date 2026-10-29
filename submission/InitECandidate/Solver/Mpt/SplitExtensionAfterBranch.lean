@@ -37,7 +37,7 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
           Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
-            TrieWalk.PathWordAway segment oldLength.toNat address → TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
+            TrieWalk.PathWordAway segment oldLength.toNat address → TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ graph.CacheFrame target.memory := by
   have subtraction : (oldLength-prefixLength).toNat=oldLength.toNat-prefixLength.toNat:=BitVec.toNat_sub_of_le (by rw [BitVec.le_def]; omega)
   have suffix:=buffer.window graph source.be pathLower heap.toNat segment prefixLength oldLength.toNat (oldLength-prefixLength).toNat (by omega) (by rw [subtraction])
   have positive : 0<(oldLength-prefixLength).toNat:=by rw [subtraction]; omega
@@ -49,7 +49,7 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
   have current (name : String) (other : ofString "sal"≠ofString name) : ready.locals.lookup (ofString name)=source.locals.lookup (ofString name):=
     bind_lookup_other source "sal" name _ other
   have remainingCell : ready.locals.lookup (ofString "sal")=some (.val (.word (oldLength-prefixLength))):=bind_lookup_same source "sal" _
-  obtain ⟨answer,domainEq,endianEq,codeEq,memory,finalHeap,finalHeapCell,finalArena,finalAligned,grows,finalTag,next,members,member,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,finalProtection⟩:=
+  obtain ⟨answer,domainEq,endianEq,codeEq,memory,finalHeap,finalHeapCell,finalArena,finalAligned,grows,finalTag,next,members,member,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,finalProtection,caches⟩:=
     choices_normal ready inner heap branch segment prefixLength (oldLength-prefixLength) child key length pointer size graph limit nodeLower pathLower property
       values regions disjoint paths pathRegions separated suffix query queryBound
       ((current _ (by decide)).trans keyCell) ((current _ (by decide)).trans lengthCell) ((current _ (by decide)).trans pointerCell) ((current _ (by decide)).trans sizeCell)
@@ -61,7 +61,7 @@ theorem after_branch_normal (source target : PanSemStateFiniteExact 64 Guest.Hos
     (by
       intro address safe before oldAway queryAway
       exact finalProtection address safe before
-        (oldAway.window segment prefixLength address oldLength.toNat _ (by omega) (by rw [subtraction])) queryAway)⟩
+        (oldAway.window segment prefixLength address oldLength.toNat _ (by omega) (by rw [subtraction])) queryAway),caches⟩
 
 end InitECandidate.Solver.Mpt.SplitExtension
 

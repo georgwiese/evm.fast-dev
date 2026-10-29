@@ -33,11 +33,11 @@ theorem scoped_none_paths (source target : PanSemStateFiniteExact 64 Guest.HostM
           Nonempty (TrieWalk.Values next limit property) ∧ next.PathBytes ready.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
-            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) := by
+            TrieWalk.PathWordAway key length.toNat address → next.ProtectedWord address) ∧ TrieWalk.Uncached ready.memory heap := by
   obtain ⟨callee,called,nodeCell,keyCell,lengthCell,pointerCell,sizeCell,prefixCell⟩:=environment source node key length pointer size prefixLength (original_code source.code installed)
   obtain ⟨funded,child,returned,inner,run,checked,continued,endpoint⟩:=Input.CallNormal.scoped_none source target name .one
     (ofString "_split_extension") arguments (callValues node key length pointer size prefixLength) body continuation callee .one argsRead called normal
-  obtain ⟨answer,domainEq,endianEq,codeEq,memory,finalHeap,finalHeapCell,finalArena,finalAligned,grows,finalTag,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩:=
+  obtain ⟨answer,domainEq,endianEq,codeEq,memory,finalHeap,finalHeapCell,finalArena,finalAligned,grows,finalTag,next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection,clean⟩:=
     body_path_normal (callEntryStateHOLFinite source callee) child heap node key length prefixLength pointer size graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated
       query member active tag nodeCell keyCell lengthCell pointerCell sizeCell prefixCell strict queryBound payload extra floor empty domain heapCell frontier aligned installed returned run
   let ready:=Input.CallNormal.continuationEntry source child name returned
@@ -48,7 +48,7 @@ theorem scoped_none_paths (source target : PanSemStateFiniteExact 64 Guest.HostM
   change source.clock-1-child.clock≤236 at price
   have spent : source.clock-ready.clock≤237:=by change source.clock-child.clock≤237; omega
   exact ⟨ready,inner,localsEq,domainEq,endianEq,codeEq,spent,continued,endpoint,memory,finalHeap,finalHeapCell,finalArena,finalAligned,grows,finalTag,
-    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩
+    next,members,rootMember,nextRegions,nextDisjoint,nextValues,nextPaths,nextPathRegions,nextSeparated,provenance,protection,clean⟩
 
 end InitECandidate.Solver.Mpt.SplitExtension
 

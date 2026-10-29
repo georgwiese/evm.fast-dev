@@ -2,6 +2,7 @@ import InitECandidate.Solver.Mpt.InsertDispatchProgram
 import InitECandidate.Solver.Mpt.ExtensionAssignedPathGraph
 import InitECandidate.Solver.Input.AssignNormal
 import InitECandidate.Solver.Mpt.NodeConstructorProtected
+import InitECandidate.Solver.Mpt.TrieCacheMutation
 
 namespace InitECandidate.Solver.Mpt.Insert
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix GasBudget
@@ -34,7 +35,8 @@ theorem extension_result_normal (source target : PanSemStateFiniteExact 64 Guest
           next.PathBytes target.be ∧ next.PathRegions pathLower finalHeap.toNat ∧ next.PathSeparated ∧
           (∀ current,next.valid current → graph.valid current ∨ heap.toNat≤current.toNat) ∧
           (∀ address : BitVec 64,graph.ProtectedWord address → address.toNat<heap.toNat →
-            TrieWalk.PathWordAway segment prefixLength.toNat address → next.ProtectedWord address) := by
+            TrieWalk.PathWordAway segment prefixLength.toNat address → next.ProtectedWord address) ∧
+          (TrieWalk.Uncached source.memory branch→TrieWalk.Uncached target.memory root) := by
   by_cases zero : prefixLength=0#64
   · have selected : evaluateHOLFiniteState source extensionSplitChoice=evaluateHOLFiniteState source extensionBranchAssign:=by
       rw [extension_shapes.2.2.2.2.2.1,evaluateHOLFiniteState_ite]
@@ -44,7 +46,7 @@ theorem extension_result_normal (source target : PanSemStateFiniteExact 64 Guest
     have endpoint:=Input.assign_none source target "r" (localVar "br") branch read (selected.symm.trans normal)
     rw [endpoint]
     exact ⟨branch,rfl,rfl,rfl,rfl,(by change source.clock-source.clock≤2; omega),(by intro query before; rfl),(by intro node live active; rfl),
-      heap,heapCell,frontier,aligned,Nat.le_refl _,graph,(fun node live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro current live; exact Or.inl live),(by intro address safe _before _away; exact safe)⟩
+      heap,heapCell,frontier,aligned,Nat.le_refl _,graph,(fun node live=>live),member,regions,disjoint,⟨values⟩,paths,pathRegions,separated,(by intro current live; exact Or.inl live),(by intro address safe _before _away; exact safe),(by intro clean; exact clean)⟩
   · have positive : 0<prefixLength.toNat:=by
       by_contra bad
       have number : prefixLength.toNat=(0#64).toNat:=by change prefixLength.toNat=0; omega
@@ -81,7 +83,8 @@ theorem extension_result_normal (source target : PanSemStateFiniteExact 64 Guest
       (by
         intro address safe before away
         exact (physical.path_protected .extension (Or.inr rfl) source target heap _ graph next nodeLower regions members address safe before
-          (by simpa [NodeConstructor.extensionWords] using away)).2)⟩
+          (by simpa [NodeConstructor.extensionWords] using away)).2),
+      (fun _=>physical.uncached (Or.inr rfl))⟩
 
 end InitECandidate.Solver.Mpt.Insert
 

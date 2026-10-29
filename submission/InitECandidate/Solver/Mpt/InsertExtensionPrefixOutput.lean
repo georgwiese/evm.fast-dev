@@ -52,7 +52,7 @@ theorem extension_prefix_output (source target : PanSemStateFiniteExact 64 Guest
     have selected : evaluateHOLFiniteState source extensionPrefixChoice=evaluateHOLFiniteState source extensionSplitScope:=by
       rw [extension_shapes.2.2.2.1,evaluateHOLFiniteState_ite]
       simp [evalHOLExact,toExact,localVar,prefixCell,oldLengthCell,matched,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
-    obtain ⟨root,localsEq,domainEq,endianEq,codeEq,price,memory,tags,finalHeap,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,provenance,protection⟩:=
+    obtain ⟨root,localsEq,domainEq,endianEq,codeEq,price,memory,tags,finalHeap,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,provenance,protection,_rootClean⟩:=
       extension_split_normal source target heap node key level length prefixLength pointer size graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query
         member active tag nodeCell keyCell levelCell lengthCell pointerCell sizeCell prefixCell segmentCell before strict queryBound payload extra floor empty domain heapCell frontier aligned installed (selected.symm.trans normal)
     exact terminal_output source target heap key length level root finalHeap graph limit nodeLower pathLower property pending.node pending.slot pending.level pending.go localsEq

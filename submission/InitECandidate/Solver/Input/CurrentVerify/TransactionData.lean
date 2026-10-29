@@ -584,3 +584,199 @@ end InitECandidate.Solver.Input.CurrentVerify.HeaderHash
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.original_code
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.call_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.call_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch PayloadHeaderEntry
+
+def blockHashArguments : List (ExpHOL 64):=[localVar "hdr",localVar "bh"]
+def blockHashCall : ProgHOL 64:=.call (some (none,none)) (ofString "header_hash") blockHashArguments
+def blockHashAllocation : ProgHOL 64:=match afterPayloadHeader with | .seq _ rest=>rest | _=>.skip
+def afterBlockHashAllocation : ProgHOL 64:=match blockHashAllocation with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def afterBlockHash : ProgHOL 64:=match afterBlockHashAllocation with | .seq _ rest=>rest | _=>.skip
+def blockHashActions : List CallPrefix.Action:=[.scoped (ofString "bh") .one (ofString "alloc") [.const 32#64],.command blockHashCall]
+
+def blockHashState (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64):=
+  QueryBranch.bind (PersistentAlloc.post {source with clock:=source.clock-1} heap 32#64) "bh" heap
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem block_hash_shape : afterPayloadHeader=.seq .skip (CallPrefix.program blockHashActions afterBlockHash) := by
+  simp only [afterPayloadHeader,payloadHeaderCall,afterTransactionScan,transactionScanTail,afterTransactionCount,afterTransactionArray,
+    transactionDeclarations,afterStateInit,afterCodes,afterNodes,nodeCall,afterHeaders,headerCall,afterPayload,body,
+    Guest.Software.guestFn_run_attempt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,
+    CallPrefix.cut,↓reduceIte,blockHashActions,blockHashAllocation,afterBlockHashAllocation,afterBlockHash,CallPrefix.program,
+    blockHashCall,blockHashArguments,localVar]
+  trivial
+
+/-- The real advanced allocator cursor supplies header-encoder geometry;
+readable ordinary memory alone is not used to assume allocation funding. -/
+theorem AfterHeader.geometry_at {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded) (heap : BitVec 64)
+    (afterHeader : (headerFrontier header).toNat≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) :
+    HeaderEncoding.Geometry header heap:=
+  ⟨physical.geometry.headerLower,physical.geometry.headerAligned,by have before:=physical.geometry.headerBefore; omega,aligned,by omega⟩
+
+/-- The normal allocator callback derives its own room and exact caller
+state before invoking the existing physical header-hash contract. -/
+theorem block_hash_prefix_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded) :
+    source.clock-(evaluateHOLFiniteState source (CallPrefix.program blockHashActions .skip)).2.clock≤2306 := by
+  obtain ⟨heap,heapCell,lower,bounded,aligned⟩:=physical.heapAfter
+  obtain ⟨callee,called,amount⟩:=PersistentAlloc.environment source.code.lookup 32#64 (PersistentAlloc.original_code source.code physical.data.arena.code)
+  change source.clock-(evaluateHOLFiniteState source (.decCall (ofString "bh") .one (ofString "alloc") [.const 32#64] (.seq blockHashCall .skip))).2.clock≤2306
+  apply ClockCost.scoped_reached_current source "bh" .one (ofString "alloc") [.const 32#64] _ PersistentAlloc.body (.seq blockHashCall .skip)
+    callee .one 1 2304 rfl called (PersistentAlloc.body_price source.code physical.data.arena.code (callEntryStateHOLFinite source callee) rfl)
+  intro child returned normal checked
+  obtain ⟨answer,room,frame⟩:=PersistentAlloc.post_of_normal (callEntryStateHOLFinite source callee) child heap 32#64 amount heapCell bounded
+    (Trap.original_code source.code physical.data.arena.code) returned normal
+  have canonical : CallNormal.continuationEntry source child "bh" returned=blockHashState source heap:=by
+    rw [answer]
+    have observed:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>setVarHOLFinite (ofString "bh") (.val (.word heap)) {state with locals:=source.locals}) frame
+    simpa only [CallNormal.continuationEntry,emptyLocalsHOLFinite,callEntryStateHOLFinite,blockHashState,QueryBranch.bind,PersistentAlloc.post] using observed
+  let current:=blockHashState source heap
+  have guards:=PersistentAlloc.guards heap 32#64 room
+  have currentHeader : current.locals.lookup (ofString "hdr")=some (.val (.word header)):=
+    (bind_lookup_other _ "bh" "hdr" heap (by decide)).trans physical.headerCell
+  have currentBh : current.locals.lookup (ofString "bh")=some (.val (.word heap)):=bind_lookup_same _ _ _
+  have args : evalListHOLFinite current (h:=fun address=>Classical.propDecidable (current.memaddrs address)) blockHashArguments=some [.val (.word header),.val (.word heap)]:=by
+    simp [blockHashArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,currentHeader,currentBh]
+  have nextHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 32#64))):=by
+    simp [current,blockHashState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have geometry:=physical.geometry_at (PersistentAlloc.rounded heap 32#64) (by omega) guards.2.2.2.1 guards.2.2.2.2
+  have first:=HeaderHash.call_cost current header (PersistentAlloc.rounded heap 32#64) heap blockHashArguments args geometry
+    physical.data.arena.domain physical.data.arena.code nextHeap guards.2.2.2.1 physical.fields physical.optional
+  have price:=ClockCost.sequence_current current blockHashCall .skip 2304 0 first (ClockCost.skip current.code)
+  change CallNormal.continuationEntry source child "bh" returned=current at canonical
+  rw [←canonical] at price
+  exact price
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_hash_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.AfterHeader.geometry_at
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_hash_prefix_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch PayloadHeaderEntry
+
+/-- Real main allocation and header hashing preserve the decoded input and
+all prior header facts. Allocation funding comes from this same execution. -/
+theorem block_hash_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (execution : CallPrefix.Execution source blockHashActions post) :
+    AfterHeader input post pointer si record gasWord header boundary encoded := by
+  obtain ⟨heap,heapCell,lower,bounded,aligned⟩:=physical.heapAfter
+  have expanded : CallPrefix.Execution source
+      (.scoped (ofString "bh") .one (ofString "alloc") [.const 32#64]::[.command blockHashCall]) post:=execution
+  obtain ⟨room,remaining⟩:=expanded.alloc_next (ofString "bh") [.const 32#64] heap 32#64 [.command blockHashCall]
+    physical.data.arena.code rfl heapCell bounded
+  change CallPrefix.Execution (blockHashState source heap) [.command blockHashCall] post at remaining
+  have run : evaluateHOLFiniteState (blockHashState source heap) blockHashCall=(none,post):=by
+    have actual:=remaining.singleton
+    cases actual with | command _ _ run=>exact run
+  let current:=blockHashState source heap
+  have currentHeader : current.locals.lookup (ofString "hdr")=some (.val (.word header)):=
+    (bind_lookup_other _ "bh" "hdr" heap (by decide)).trans physical.headerCell
+  have currentBh : current.locals.lookup (ofString "bh")=some (.val (.word heap)):=bind_lookup_same _ _ _
+  have args : evalListHOLFinite current (h:=fun address=>Classical.propDecidable (current.memaddrs address)) blockHashArguments=some [.val (.word header),.val (.word heap)]:=by
+    simp [blockHashArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,currentHeader,currentBh]
+  have guards:=PersistentAlloc.guards heap 32#64 room
+  have nextHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 32#64))):=by
+    simp [current,blockHashState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have allocationGlobals : HeapGlobals source current:=by
+    intro key different
+    simp [current,blockHashState,QueryBranch.bind,PersistentAlloc.post,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different]
+  have environment : CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64:=
+    ⟨physical.data.keccak.installed,physical.data.keccak.domain,
+      (allocationGlobals _ (by decide)).trans physical.data.keccak.stateGlobal,(allocationGlobals _ (by decide)).trans physical.data.keccak.padGlobal,
+      physical.data.keccak.stateArena,physical.data.keccak.padArena,physical.data.keccak.stateAligned,physical.data.keccak.padAligned⟩
+  have outArena : AllocatedBytes.Arena heap 32:=⟨by have before:=physical.geometry.headerBefore; have lower:=physical.geometry.headerLower; omega,by omega⟩
+  have geometry:=physical.geometry_at (PersistentAlloc.rounded heap 32#64) (by omega) guards.2.2.2.1 guards.2.2.2.2
+  obtain ⟨restored,hashGlobals,memory⟩:=HeaderHash.call_normal current post header (PersistentAlloc.rounded heap 32#64) heap blockHashArguments args geometry
+    environment outArena nextHeap guards.2.2.2.1 physical.fields physical.optional run
+  have globals : HeapGlobals source post:=by intro key different; exact (hashGlobals key different).trans (allocationGlobals key different)
+  have older (query : BitVec 64) (above : 2701134824≤query.toNat) (below : query.toNat<heap.toNat) : post.memory query=source.memory query:=
+    memory query above (by omega) (outArena.away_below heap query 32 aligned below)
+  have saved (name : String) : post.locals.lookup (ofString name)=current.locals.lookup (ofString name):=
+    CallNormal.ignored_lookup current post (ofString name) (ofString "header_hash") blockHashArguments run
+  have siCell : post.locals.lookup (ofString "si")=some (.val (.word si)):=
+    (saved "si").trans ((bind_lookup_other _ "bh" "si" heap (by decide)).trans physical.data.siLocal)
+  have hdrCell : post.locals.lookup (ofString "hdr")=some (.val (.word header)):=(saved "hdr").trans currentHeader
+  have plCell : post.locals.lookup (ofString "pl")=some (.val (.word record)):=
+    (saved "pl").trans ((bind_lookup_other _ "bh" "pl" heap (by decide)).trans physical.payloadCell)
+  have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) post:=
+    ⟨PersistentAlloc.rounded heap 32#64,restored,by omega,guards.2.2.2.1,guards.2.2.2.2⟩
+  have heapData : NormalHeapEffects.AtLeast (boundary+32) post:=
+    ⟨PersistentAlloc.rounded heap 32#64,restored,by have before:=physical.before; have head:=physical.geometry.headerBefore; omega,
+      guards.2.2.2.1,guards.2.2.2.2⟩
+  have fields:=evaluation_fields current post blockHashCall none run
+  have data : Data input post pointer si record gasWord boundary:=physical.data.of_heap_frame fields.1 fields.2.1 fields.2.2.2 globals heapData siCell (by
+    intro query above below
+    exact older query above (by have before:=physical.before; have head:=physical.geometry.headerBefore; omega))
+  have cells (offset : Nat) (inside : offset≤240) : post.memory (HeaderEncoding.address header offset)=source.memory (HeaderEncoding.address header offset):=by
+    have number:=physical.geometry.header_address header (headerFrontier header) offset inside
+    apply older
+    · rw [number]
+      have before:=physical.before
+      have inputLower:=physical.data.recordInside
+      omega
+    · rw [number]
+      have before:=physical.geometry.headerBefore
+      omega
+  exact {physical with
+    data:=data,headerCell:=hdrCell,payloadCell:=plCell,heapAfter:=heapAfter,
+    fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.fields field member),
+    optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.optional field member)}
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_hash_reached
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The original main hash prefix stops or reaches its literal comparison
+continuation with the same retained decoded inputs and header facts. -/
+theorem after_header_hash_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterPayloadHeader=(outcome,post)) :
+    source.clock-post.clock≤2306 ∨ ∃ current inner,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤2306 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterBlockHash=(outcome,inner) := by
+  rw [block_hash_shape,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_skip] at run
+  rcases CallPrefix.priced_frame_trace source post blockHashActions afterBlockHash 2306 (block_hash_prefix_cost physical) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    exact Or.inr ⟨current,inner,block_hash_reached physical execution,forward,price,endpoint,continued⟩
+
+/-- Complete current main prefix through payload_header and header_hash.
+This includes all actual rejected/trapped/timed-out prefixes. -/
+theorem to_after_block_hash {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤479872713796 ∨ ∃ current inner header encoded,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤479872713796 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current afterBlockHash=(outcome,inner) := by
+  rcases to_after_payload_header data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨before,target,header,encoded,physical,forward,price,endpoint,continued⟩:=reached
+    rcases after_header_hash_trace physical outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,retained,hashForward,hashPrice,scope,rest⟩:=reached
+      have scopeClock:=scope.clock
+      exact Or.inr ⟨current,inner,header,encoded,retained,by omega,by omega,endpoint.trans scopeClock,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_header_hash_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_block_hash

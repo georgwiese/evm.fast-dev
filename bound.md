@@ -40,8 +40,8 @@ The current startup/input/header/gas/two-database/state-init path is connected
 through both actual payload-header indexed tries. The complete unchanged
 withdrawal encoder costs≤201body source ticks; its real loop costs≤203 per
 row. The actual run_attempt prefix through payload_header, both indexed tries,
-request encoding/hashing and final BAL hash either stops or reaches the original
-header-hash continuation within479872711490source ticks, retaining all decoded
+request encoding/hashing, final BAL hash and header hash either stops or reaches the original
+comparison continuation within479872713796source ticks, retaining all decoded
 inputs/header fields and the actual restored heap. The request array/count≤5 and every helper entry are derived
 from that same execution. Any reached continuation has zero actual transactions
 and withdrawals, derived from the real trie executions.
@@ -2466,7 +2466,7 @@ bounded aligned heap and the derived zero transaction/withdrawal counts.
 No later hash result, success, funding or extra entry hypothesis is assumed.
 
 The complete original prefix through that call either stops or reaches its
-unchanged header-hash continuation within479872711490source ticks. Header
+unchanged comparison continuation within479872713796source ticks. Header
 caller alone costs476485158959. These remain source-clock allowances; global
 uniform target-step composition remains open. Joining the previously separate
 proof paths exposed two identically named node-constructor shape lemmas;
@@ -2501,3 +2501,25 @@ files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage54%weekly/0resetcredits. Next: actual main bh allocation/hash
 continuation, comparison/version checks and later main, formal target
 composition, dominant-slack review and final cleanup.
+
+
+## Actual main allocation/hash continuation
+
+The original bh allocation and header_hash call now have a complete actual
+main trace. The allocation's own normal return supplies its32-byte room,
+output arena and bounded aligned advanced heap; no future funding is assumed.
+Header encoder geometry follows from that real cursor and earlier header.
+Hashing/releasing preserves all31header facts and complete earlier decoded
+inputs, with real caller SI/PL/hdr and derived zero TX/WD counts retained.
+
+This prefix costs≤2306source ticks. The complete run_attempt prefix through
+payload_header and header hashing either stops or reaches the original
+comparison continuation within479872713796source ticks. This is not a
+uniform target-step K. Main comparison/version/header validation/execution,
+formal target composition, dominant-slack review and final cleanup remain open.
+
+Validation: current-main-header-hash-prefix-v2.log PASS3090jobs and
+current-main-header-hash-complete-v1.log PASS3090jobs, permitted printed
+axioms only. Index8700modules/18196facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no full verifier success.
+Usage54%weekly/0resetcredits. No executable or entry hypothesis changed.

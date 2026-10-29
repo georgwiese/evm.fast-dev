@@ -4338,3 +4338,25 @@ files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage54%weekly/0resetcredits. Next: actual main bh allocation/hash
 continuation, comparison/version checks and later main, formal target
 composition, dominant-slack review and final cleanup.
+
+
+## Actual main allocation/hash continuation
+
+The original bh allocation and header_hash call now have a complete actual
+main trace. The allocation's own normal return supplies its32-byte room,
+output arena and bounded aligned advanced heap; no future funding is assumed.
+Header encoder geometry follows from that real cursor and earlier header.
+Hashing/releasing preserves all31header facts and complete earlier decoded
+inputs, with real caller SI/PL/hdr and derived zero TX/WD counts retained.
+
+This prefix costs≤2306source ticks. The complete run_attempt prefix through
+payload_header and header hashing either stops or reaches the original
+comparison continuation within479872713796source ticks. This is not a
+uniform target-step K. Main comparison/version/header validation/execution,
+formal target composition, dominant-slack review and final cleanup remain open.
+
+Validation: current-main-header-hash-prefix-v2.log PASS3090jobs and
+current-main-header-hash-complete-v1.log PASS3090jobs, permitted printed
+axioms only. Index8700modules/18196facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no full verifier success.
+Usage54%weekly/0resetcredits. No executable or entry hypothesis changed.

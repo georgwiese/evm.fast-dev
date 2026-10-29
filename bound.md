@@ -41,7 +41,7 @@ through both actual payload-header indexed tries. The complete unchanged
 withdrawal encoder costs≤201body source ticks; its real loop costs≤203 per
 row. The actual run_attempt prefix through payload_header, both indexed tries,
 request encoding/hashing, final BAL hash and header hash either stops or reaches the original
-version-check caller within479872713925source ticks, retaining all decoded
+header-validation caller within479872713926source ticks, retaining all decoded
 inputs/header fields and the actual restored heap. The request array/count≤5 and every helper entry are derived
 from that same execution. Any reached continuation has zero actual transactions
 and withdrawals, derived from the real trie executions.
@@ -2466,7 +2466,7 @@ bounded aligned heap and the derived zero transaction/withdrawal counts.
 No later hash result, success, funding or extra entry hypothesis is assumed.
 
 The complete original prefix through that call either stops or reaches its
-unchanged version-check caller within479872713925source ticks. Header
+unchanged header-validation caller within479872713926source ticks. Header
 caller alone costs476485158959. These remain source-clock allowances; global
 uniform target-step composition remains open. Joining the previously separate
 proof paths exposed two identically named node-constructor shape lemmas;
@@ -2514,7 +2514,7 @@ inputs, with real caller SI/PL/hdr and derived zero TX/WD counts retained.
 
 This prefix costs≤2306source ticks. The complete run_attempt prefix through
 payload_header and header hashing either stops or reaches the original
-version-check caller within479872713925source ticks. This is not a
+header-validation caller within479872713926source ticks. This is not a
 uniform target-step K. Main comparison/version/header validation/execution,
 formal target composition, dominant-slack review and final cleanup remain open.
 
@@ -2544,3 +2544,33 @@ current-main-header-compare-complete-v1.log PASS3090jobs, permitted printed
 axioms only. Index8700modules/18204facts; inventory8745/replacement closure0/
 fixed files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage54%weekly/0resetcredits.
+
+
+## Complete reached zero-transaction version check and main caller
+
+The original is_valid_versioned_hashes792 now has an all-outcome zero-source-
+clock/full-nonlocal-state observation at the actual zero transaction count
+already derived from the original tries. Its real SI/payload/transaction
+loads come from main's retained decoded image. Later vh/nvh setup reads may
+fail or return any checked word; no successful future read is assumed. The
+literal signed loop test is false at i=ntx=0, so transaction decoding/blob
+comparison calls cannot run. The original final return/guard is retained.
+A generic same-execution declaration frame handles failed reads, shape checks
+and lexical restoration without changing an entry hypothesis.
+
+The actual main vvh call and BlockErr6 guard cost≤1caller source tick and
+retain the full header/input model. Whole run_attempt either stops or reaches
+the literal validate_header caller within479872713926source ticks. Target
+straight-line work remains separate; no global finite target K exists yet.
+
+Validation: current-versioned-hashes-zero-tail-v6.log PASS3090jobs,
+current-versioned-hashes-zero-body-v1.log PASS3090jobs and
+current-versioned-hashes-complete-v1.log PASS3090jobs, permitted printed
+axioms only. Index8700modules/18226facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no full verifier success.
+Usage54%weekly/0resetcredits. Next: current validate_header and its actual
+parent-header state. Earlier validate_headers normal contracts retain physical
+row/header data, but current main Data traces only carry the earlier decoded
+input, so inspect and retain the real parent contract through the intervening
+calls. Remaining execution/wrappers/main, uniform target composition,
+dominant-slack review and final cleanup remain open.

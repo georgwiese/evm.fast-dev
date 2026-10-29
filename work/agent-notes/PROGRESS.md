@@ -4381,3 +4381,33 @@ current-main-header-compare-complete-v1.log PASS3090jobs, permitted printed
 axioms only. Index8700modules/18204facts; inventory8745/replacement closure0/
 fixed files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage54%weekly/0resetcredits.
+
+
+## Complete reached zero-transaction version check and main caller
+
+The original is_valid_versioned_hashes792 now has an all-outcome zero-source-
+clock/full-nonlocal-state observation at the actual zero transaction count
+already derived from the original tries. Its real SI/payload/transaction
+loads come from main's retained decoded image. Later vh/nvh setup reads may
+fail or return any checked word; no successful future read is assumed. The
+literal signed loop test is false at i=ntx=0, so transaction decoding/blob
+comparison calls cannot run. The original final return/guard is retained.
+A generic same-execution declaration frame handles failed reads, shape checks
+and lexical restoration without changing an entry hypothesis.
+
+The actual main vvh call and BlockErr6 guard cost≤1caller source tick and
+retain the full header/input model. Whole run_attempt either stops or reaches
+the literal validate_header caller within479872713926source ticks. Target
+straight-line work remains separate; no global finite target K exists yet.
+
+Validation: current-versioned-hashes-zero-tail-v6.log PASS3090jobs,
+current-versioned-hashes-zero-body-v1.log PASS3090jobs and
+current-versioned-hashes-complete-v1.log PASS3090jobs, permitted printed
+axioms only. Index8700modules/18226facts; inventory8745/replacement closure0/
+fixed files unchanged. Claim infinity; no full verifier success.
+Usage54%weekly/0resetcredits. Next: current validate_header and its actual
+parent-header state. Earlier validate_headers normal contracts retain physical
+row/header data, but current main Data traces only carry the earlier decoded
+input, so inspect and retain the real parent contract through the intervening
+calls. Remaining execution/wrappers/main, uniform target composition,
+dominant-slack review and final cleanup remain open.

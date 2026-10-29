@@ -921,3 +921,342 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_block_hash_compare_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_before_versioned_hashes
+
+namespace InitECandidate.Solver.Input.CurrentVerify.VersionedHashes
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_is_valid_versioned_hashes with | .function fn=>progToHOL fn.body | _=>.skip
+def afterPayload : ProgHOL 64:=match body with | .dec _ _ _ rest=>rest | _=>.skip
+def afterArray : ProgHOL 64:=match afterPayload with | .dec _ _ _ rest=>rest | _=>.skip
+def afterCount : ProgHOL 64:=match afterArray with | .dec _ _ _ rest=>rest | _=>.skip
+def afterVersionArray : ProgHOL 64:=match afterCount with | .dec _ _ _ rest=>rest | _=>.skip
+def afterVersionCount : ProgHOL 64:=match afterVersionArray with | .dec _ _ _ rest=>rest | _=>.skip
+def afterK : ProgHOL 64:=match afterVersionCount with | .dec _ _ _ rest=>rest | _=>.skip
+def afterI : ProgHOL 64:=match afterK with | .dec _ _ _ rest=>rest | _=>.skip
+def loopBody : ProgHOL 64:=match afterI with | .seq (.while _ first) _=>first | _=>.skip
+def tail : ProgHOL 64:=match afterI with | .seq _ rest=>rest | _=>.skip
+def test : ExpHOL 64:=.cmp .less (localVar "i") (localVar "ntx")
+
+theorem shapes : body=.dec (ofString "pl") .one (.load .one (Scalar.plus (localVar "si") 0)) afterPayload ∧
+    afterPayload=.dec (ofString "txs") .one (.load .one (Scalar.plus (localVar "pl") 32)) afterArray ∧
+    afterArray=.dec (ofString "ntx") .one (.load .one (Scalar.plus (localVar "pl") 40)) afterCount ∧
+    afterCount=.dec (ofString "vh") .one (.load .one (Scalar.plus (localVar "si") 8)) afterVersionArray ∧
+    afterVersionArray=.dec (ofString "nvh") .one (.load .one (Scalar.plus (localVar "si") 16)) afterVersionCount ∧
+    afterVersionCount=.dec (ofString "k") .one (.const 0#64) afterK ∧
+    afterK=.dec (ofString "i") .one (.const 0#64) afterI ∧
+    afterI=.seq (.while test loopBody) tail := by
+  simp only [body,afterPayload,afterArray,afterCount,afterVersionArray,afterVersionCount,afterK,afterI,loopBody,tail,test,
+    Guest.Software.guestFn_is_valid_versioned_hashes,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,Scalar.plus,localVar]
+  trivial
+
+theorem tail_shape : tail=.seq (.ite (.cmp .notEqual (localVar "k") (localVar "nvh")) (.return (.const 0#64)) .skip) (.return (.const 1#64)) := by
+  simp only [body,afterPayload,afterArray,afterCount,afterVersionArray,afterVersionCount,afterK,afterI,tail,
+    Guest.Software.guestFn_is_valid_versioned_hashes,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,localVar]
+
+/-- A reached scalar/tuple declaration lifts a state observation through its
+real lexical restoration. Failed reads and shape checks retain the source. -/
+theorem declared_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : MlS) (shape : ShapeHOL)
+    (expression : ExpHOL 64) (rest : ProgHOL 64)
+    (observed : ∀ value,eval source expression=some value→shapeEqHOL shape (shapeOfHOLExact value)=true→
+      CallPrefix.ScopeFrame (evaluateHOLFiniteState (setVarHOLFinite name value source) rest).2 (setVarHOLFinite name value source)) :
+    CallPrefix.ScopeFrame (evaluateHOLFiniteState source (.dec name shape expression rest)).2 source := by
+  rw [evaluateHOLFiniteState_dec_total]
+  simp only
+  split
+  · exact ⟨rfl,rfl⟩
+  · rename_i value read
+    split
+    · have actual:=observed value read (by assumption)
+      exact ⟨actual.clock,actual.metadata⟩
+    · exact ⟨rfl,rfl⟩
+
+theorem declared_word_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String)
+    (expression : ExpHOL 64) (word : BitVec 64) (rest : ProgHOL 64)
+    (read : eval source expression=some (.val (.word word)))
+    (observed : CallPrefix.ScopeFrame (evaluateHOLFiniteState (QueryBranch.bind source name word) rest).2 (QueryBranch.bind source name word)) :
+    CallPrefix.ScopeFrame (evaluateHOLFiniteState source (.dec (ofString name) .one expression rest)).2 source := by
+  apply declared_frame source (ofString name) .one expression rest
+  intro value actual checked
+  have same : value=.val (.word word):=Option.some.inj (actual.symm.trans read)
+  subst value
+  exact observed
+
+/-- The exact reached zero count makes the original signed loop test false;
+none of the transaction-decoding/hash-comparison calls can run. -/
+theorem after_i_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (counter : source.locals.lookup (ofString "i")=some (.val (.word 0#64)))
+    (count : source.locals.lookup (ofString "ntx")=some (.val (.word 0#64))) :
+    CallPrefix.ScopeFrame (evaluateHOLFiniteState source afterI).2 source := by
+  have read : eval source test=some (.val (.word 0#64)):=by
+    simp [eval,test,evalHOLExact,toExact,localVar,counter,count,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,Flapjack.Compiler.Encoders.Asm.holAsmSignedLess]
+  have stopped : evaluateHOLFiniteState source (.while test loopBody)=(none,source):=by
+    rw [evaluateHOLFiniteState_while_total]
+    change evalHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) test=some (.val (.word 0#64)) at read
+    rw [read]
+    rfl
+  rw [shapes.2.2.2.2.2.2.2,evaluateHOLFiniteState_seq_line780,stopped]
+  have quiet : QuietClock.Preserves source.code tail:=by
+    rw [tail_shape]
+    exact QuietClock.sequence source.code _ _ (QuietClock.conditional source.code _ _ _ (QuietClock.returned source.code _) (QuietClock.skip source.code))
+      (QuietClock.returned source.code _)
+  have retained : LocalEffects.Preserves source.code tail:=by
+    rw [tail_shape]
+    exact LocalEffects.sequence source.code _ _ (LocalEffects.conditional source.code _ _ _ (LocalEffects.returned source.code _) (LocalEffects.skip source.code))
+      (LocalEffects.returned source.code _)
+  exact ⟨quiet source rfl,retained source rfl⟩
+
+theorem after_k_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (count : source.locals.lookup (ofString "ntx")=some (.val (.word 0#64))) :
+    CallPrefix.ScopeFrame (evaluateHOLFiniteState source afterK).2 source := by
+  rw [shapes.2.2.2.2.2.2.1]
+  exact declared_word_frame source "i" (.const 0#64) 0#64 afterI rfl
+    (after_i_frame _ (bind_lookup_same _ _ _) ((bind_lookup_other source "i" "ntx" 0#64 (by decide)).trans count))
+
+theorem after_version_count_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (count : source.locals.lookup (ofString "ntx")=some (.val (.word 0#64))) :
+    CallPrefix.ScopeFrame (evaluateHOLFiniteState source afterVersionCount).2 source := by
+  rw [shapes.2.2.2.2.2.1]
+  exact declared_word_frame source "k" (.const 0#64) 0#64 afterK rfl
+    (after_k_frame _ ((bind_lookup_other source "k" "ntx" 0#64 (by decide)).trans count))
+
+theorem after_version_array_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (count : source.locals.lookup (ofString "ntx")=some (.val (.word 0#64))) :
+    CallPrefix.ScopeFrame (evaluateHOLFiniteState source afterVersionArray).2 source := by
+  rw [shapes.2.2.2.2.1]
+  apply declared_frame source (ofString "nvh") .one _ afterVersionCount
+  intro value read checked
+  apply after_version_count_frame
+  simpa [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,show ofString "nvh"≠ofString "ntx" from by decide] using count
+
+theorem after_count_frame (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (count : source.locals.lookup (ofString "ntx")=some (.val (.word 0#64))) :
+    CallPrefix.ScopeFrame (evaluateHOLFiniteState source afterCount).2 source := by
+  rw [shapes.2.2.2.1]
+  apply declared_frame source (ofString "vh") .one _ afterVersionArray
+  intro value read checked
+  apply after_version_array_frame
+  simpa [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,show ofString "vh"≠ofString "ntx" from by decide] using count
+
+end InitECandidate.Solver.Input.CurrentVerify.VersionedHashes
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.tail_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.declared_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.declared_word_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.after_i_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.after_k_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.after_version_count_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.after_version_array_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.after_count_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.VersionedHashes
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Complete actual version-check body at the zero transaction count already
+derived by the original tries. All setup failures retain the same observation. -/
+theorem body_frame {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (zero : VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)=0) :
+    CallPrefix.ScopeFrame (evaluateHOLFiniteState source body).2 source := by
+  obtain ⟨array,length,start,size,payload,arrayBefore,countBound,byteBound⟩:=data.payload
+  have countZero : VarList.decodedCount input start size=0:=by
+    rw [payload.transactions.startEq,payload.transactions.sizeEq]
+    exact zero
+  let txs:=VarList.decodedArray array size
+  have siRead : eval source (localVar "si")=some (.val (.word si)):=by simp [eval,evalHOLExact,toExact,localVar,data.siLocal]
+  have payloadRead : eval source (.load .one (Scalar.plus (localVar "si") 0))=some (.val (.word record)):=
+    Witness.load_word_read source _ (si+0#64) record (Scalar.plus_read source (localVar "si") si 0 siRead)
+      (AllocatedBytes.word_mapped source si 96 0 data.arena.domain data.siArena (by decide) data.siAligned (by decide))
+      (by simpa using data.payloadCell)
+  let plState:=QueryBranch.bind source "pl" record
+  have plRead : eval plState (localVar "pl")=some (.val (.word record)):=by
+    simp [eval,evalHOLExact,toExact,localVar,plState,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have arrayRead : eval plState (.load .one (Scalar.plus (localVar "pl") 32))=some (.val (.word txs)):=
+    Witness.load_word_read plState _ (record+32#64) txs (Scalar.plus_read plState (localVar "pl") record 32 plRead)
+      (AllocatedBytes.word_mapped plState record 136 32 data.arena.domain data.recordArena (by decide) data.recordAligned (by decide)) payload.transactions.txs
+  let arrayState:=QueryBranch.bind plState "txs" txs
+  have nextPl : arrayState.locals.lookup (ofString "pl")=some (.val (.word record)):=
+    (bind_lookup_other plState "txs" "pl" txs (by decide)).trans (bind_lookup_same _ _ _)
+  have nextRead : eval arrayState (localVar "pl")=some (.val (.word record)):=by simp [eval,evalHOLExact,toExact,localVar,nextPl]
+  have countRead : eval arrayState (.load .one (Scalar.plus (localVar "pl") 40))=some (.val (.word 0#64)):=
+    Witness.load_word_read arrayState _ (record+40#64) 0#64 (Scalar.plus_read arrayState (localVar "pl") record 40 nextRead)
+      (AllocatedBytes.word_mapped arrayState record 136 40 data.arena.domain data.recordArena (by decide) data.recordAligned (by decide))
+      (by have cell:=payload.transactions.count; rw [countZero] at cell; exact cell)
+  rw [shapes.1]
+  apply declared_word_frame source "pl" _ record afterPayload payloadRead
+  change CallPrefix.ScopeFrame (evaluateHOLFiniteState plState afterPayload).2 plState
+  rw [shapes.2.1]
+  apply declared_word_frame plState "txs" _ txs afterArray arrayRead
+  change CallPrefix.ScopeFrame (evaluateHOLFiniteState arrayState afterArray).2 arrayState
+  rw [shapes.2.2.1]
+  exact declared_word_frame arrayState "ntx" _ 0#64 afterCount countRead (after_count_frame _ (bind_lookup_same _ _ _))
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "is_valid_versioned_hashes")=some ([(ofString "si",.one)],body,.one) := by
+  have found:=OriginalCode.indexed code installed 792 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_is_valid_versioned_hashes) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_is_valid_versioned_hashes,paramToHOL,shapeToHOL,List.map_cons,List.map_nil] using found
+
+/-- The real reached zero-count version checker spends no source clocks;
+its straight-line target instructions still need the global target accounting. -/
+theorem body_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (zero : VarList.decodedCount input (62+Guest.GasLimit.le32 input 566) (Guest.GasLimit.le32 input 570-Guest.GasLimit.le32 input 566)=0) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤0 := by
+  rw [(body_frame data zero).clock]
+  omega
+
+end InitECandidate.Solver.Input.CurrentVerify.VersionedHashes
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.body_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.VersionedHashes.body_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def versionedHashesArguments : List (ExpHOL 64):=[localVar "si"]
+def versionedHashesGuard : ProgHOL 64:=.ite (.cmp .equal (localVar "vvh") (.const 0#64)) (.raise (ofString "BlockErr") (.const 6#64)) .skip
+def versionedHashesContinuation : ProgHOL 64:=match beforeVersionedHashes with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def beforeValidateHeader : ProgHOL 64:=match versionedHashesContinuation with | .seq _ (.seq _ (.seq _ rest))=>rest | _=>.skip
+def versionedHashesActions : List CallPrefix.Action:=[.scoped (ofString "vvh") .one (ofString "is_valid_versioned_hashes") versionedHashesArguments,
+  .command .skip,.command versionedHashesGuard,.command .skip]
+def versionedHashesSuffix : ProgHOL 64:=.seq .skip (.seq versionedHashesGuard (.seq .skip .skip))
+
+theorem versioned_hashes_shape : beforeVersionedHashes=CallPrefix.program versionedHashesActions beforeValidateHeader := by
+  simp only [afterPayloadHeader,payloadHeaderCall,afterTransactionScan,transactionScanTail,afterTransactionCount,afterTransactionArray,
+    transactionDeclarations,afterStateInit,afterCodes,afterNodes,nodeCall,afterHeaders,headerCall,afterPayload,body,
+    Guest.Software.guestFn_run_attempt,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_some,Option.map_none,
+    CallPrefix.cut,↓reduceIte,blockHashAllocation,afterBlockHashAllocation,afterBlockHash,CallPrefix.program,
+    afterBlockCompareResult,beforeVersionedHashes,versionedHashesContinuation,beforeValidateHeader,versionedHashesActions,
+    versionedHashesArguments,versionedHashesGuard,localVar]
+  trivial
+
+theorem versioned_hashes_guard_pure : PureDecision versionedHashesGuard:=.ite _ (.raised _ _) .skip
+
+theorem versioned_hashes_suffix_quiet (code) : ClockCost.Bound code versionedHashesSuffix 0:=
+  ClockCost.sequence code .skip (.seq versionedHashesGuard (.seq .skip .skip)) 0 0 (ClockCost.skip code)
+    (ClockCost.sequence code versionedHashesGuard (.seq .skip .skip) 0 0
+      (ClockCost.conditional code _ _ _ 0 0 (ClockCost.raised code _ _) (ClockCost.skip code))
+      (ClockCost.sequence code .skip .skip 0 0 (ClockCost.skip code) (ClockCost.skip code)))
+
+theorem versioned_hashes_suffix_frame (code) : LocalEffects.Preserves code versionedHashesSuffix:=
+  LocalEffects.sequence code .skip (.seq versionedHashesGuard (.seq .skip .skip)) (LocalEffects.skip code)
+    (LocalEffects.sequence code versionedHashesGuard (.seq .skip .skip)
+      (LocalEffects.conditional code _ _ _ (LocalEffects.raised code _ _) (LocalEffects.skip code))
+      (LocalEffects.sequence code .skip .skip (LocalEffects.skip code) (LocalEffects.skip code)))
+
+theorem versioned_hashes_entry {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary) :
+    ∃ callee,evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) versionedHashesArguments=some [.val (.word si)] ∧
+      lookupCodeHOLFinite source.code.lookup (ofString "is_valid_versioned_hashes") [.val (.word si)]=some (VersionedHashes.body,callee,.one) ∧
+      Data input (callEntryStateHOLFinite source callee) pointer si record gasWord boundary := by
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) versionedHashesArguments=some [.val (.word si)]:=by
+    simp [versionedHashesArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,data.siLocal]
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "is_valid_versioned_hashes") (ofString "si") VersionedHashes.body .one si
+    (VersionedHashes.original_code source.code data.arena.code)
+  exact ⟨callee,args,called,data.of_frame rfl cell⟩
+
+/-- The reached zero-count version checker and real BlockErr6 guard add
+one caller source tick, including every setup read/shape failure and timeout. -/
+theorem versioned_hashes_prefix_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded) :
+    source.clock-(evaluateHOLFiniteState source (CallPrefix.program versionedHashesActions .skip)).2.clock≤1 := by
+  obtain ⟨callee,args,called,entry⟩:=versioned_hashes_entry physical.data
+  exact ClockCost.scoped_current source (ofString "vvh") .one (ofString "is_valid_versioned_hashes") versionedHashesArguments [.val (.word si)]
+    VersionedHashes.body versionedHashesSuffix callee .one 0 0 args called (VersionedHashes.body_cost entry physical.transactionsZero)
+    (versioned_hashes_suffix_quiet source.code)
+
+theorem versioned_hashes_prefix_frame {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded) :
+    LocalEffects.erase (evaluateHOLFiniteState source (CallPrefix.program versionedHashesActions .skip)).2=LocalEffects.erase source := by
+  obtain ⟨callee,args,called,entry⟩:=versioned_hashes_entry physical.data
+  exact LocalEffects.scoped_current source (ofString "vvh") .one (ofString "is_valid_versioned_hashes") versionedHashesArguments [.val (.word si)]
+    VersionedHashes.body versionedHashesSuffix callee .one args called (VersionedHashes.body_frame entry physical.transactionsZero).metadata
+    (versioned_hashes_suffix_frame source.code)
+
+theorem versioned_hashes_reached {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (execution : CallPrefix.Execution source versionedHashesActions target) :
+    AfterHeader input target pointer si record gasWord header boundary encoded := by
+  have observed:=execution.erase .skip
+  rw [evaluateHOLFiniteState_skip] at observed
+  have frame : LocalEffects.erase target=LocalEffects.erase source:=observed.symm.trans (versioned_hashes_prefix_frame physical)
+  have saved (key : MlS) (different : key≠ofString "vvh") : target.locals.lookup key=source.locals.lookup key:=by
+    apply execution.keeps_local key
+    intro action member
+    simp [versionedHashesActions] at member
+    rcases member with rfl|rfl|rfl|rfl
+    · exact CallPrefix.KeepsLocal.scoped key (ofString "vvh") .one (ofString "is_valid_versioned_hashes") versionedHashesArguments different
+    · exact CallPrefix.KeepsLocal.decision key .skip .skip
+    · exact CallPrefix.KeepsLocal.decision key versionedHashesGuard versioned_hashes_guard_pure
+    · exact CallPrefix.KeepsLocal.decision key .skip .skip
+  exact physical.of_frame frame ((saved _ (by decide)).trans physical.data.siLocal)
+    ((saved _ (by decide)).trans physical.headerCell) ((saved _ (by decide)).trans physical.payloadCell)
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_guard_pure
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_suffix_quiet
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_suffix_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_prefix_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_reached
+
+namespace InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The actual version checker/BlockErr6 guard either stops or exposes the
+unchanged header-validation call with all physical main facts retained. -/
+theorem versioned_hashes_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source beforeVersionedHashes=(outcome,post)) :
+    source.clock-post.clock≤1 ∨ ∃ current inner,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤1 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current beforeValidateHeader=(outcome,inner) := by
+  rw [versioned_hashes_shape] at run
+  rcases CallPrefix.priced_frame_trace source post versionedHashesActions beforeValidateHeader 1
+    (versioned_hashes_prefix_cost physical) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    exact Or.inr ⟨current,inner,versioned_hashes_reached physical execution,forward,price,endpoint,continued⟩
+
+/-- Complete original main prefix through the reached zero-count version
+check and its actual rejection guard. Straight-line target work is separate. -/
+theorem to_before_validate_header {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤479872713926 ∨ ∃ current inner header encoded,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤479872713926 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeValidateHeader=(outcome,inner) := by
+  rcases to_before_versioned_hashes data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨before,target,header,encoded,physical,forward,price,endpoint,continued⟩:=reached
+    rcases versioned_hashes_trace physical outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,retained,checkForward,checkPrice,scope,rest⟩:=reached
+      have scopeClock:=scope.clock
+      exact Or.inr ⟨current,inner,header,encoded,retained,by omega,by omega,endpoint.trans scopeClock,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_before_validate_header

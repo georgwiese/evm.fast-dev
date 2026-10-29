@@ -15,9 +15,9 @@ theorem Reaches.alloc_target {source target : PanSemStateFiniteExact 64 Guest.Ho
     (installed : OriginalCode.Installed source.code)
     (argsRead : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (PersistentAlloc.values amount))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
-    (bounded : pointer.toNat≤33806089496)
+    (bounded : pointer.toNat≤2952790016)
     (reached : Reaches source (.scoped name .one (ofString "alloc") arguments) target) :
-    pointer.toNat+amount.toNat≤33806089496 ∧
+    pointer.toNat+amount.toNat≤2952790016 ∧
       target=setVarHOLFinite name (.val (.word pointer)) (PersistentAlloc.post {source with clock:=source.clock-1} pointer amount) := by
   cases reached with
   | «scoped» _ _ _ _ actualValues actualBody callee returnShape returned childTarget args called funded run checked=>
@@ -47,9 +47,9 @@ theorem Execution.alloc_next {source target : PanSemStateFiniteExact 64 Guest.Ho
     (installed : OriginalCode.Installed source.code)
     (argsRead : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (PersistentAlloc.values amount))
     (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
-    (bounded : pointer.toNat≤33806089496)
+    (bounded : pointer.toNat≤2952790016)
     (execution : Execution source (.scoped name .one (ofString "alloc") arguments::rest) target) :
-    pointer.toNat+amount.toNat≤33806089496 ∧
+    pointer.toNat+amount.toNat≤2952790016 ∧
       Execution (setVarHOLFinite name (.val (.word pointer)) (PersistentAlloc.post {source with clock:=source.clock-1} pointer amount)) rest target := by
   cases execution with
   | step first next=>

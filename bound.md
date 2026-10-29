@@ -1028,3 +1028,27 @@ No global finite target K/full verification; claim infinity.
 Usage31%weekly/0resetcredits. Next: derive actual payload/raw/header-buffer
 entries and header fields from the retained decoded payload, then compose
 block length, real indexed tries and remaining header/main work.
+
+
+## Actual payload/raw reads and first header-buffer allocation
+
+The retained current Data image now supplies payload_header's real SI/pl/raw
+loads and original local scopes at variable actual input/record addresses.
+A reached prefix derives its actual fresh248-byte header, first allocation's
+request room and full persistent/runtime frame, retaining the unchanged
+remaining action execution. Future clear/hash/array successes are not assumed.
+
+Corrected the shared reached-allocation helper's heap premise/room conclusion
+to the actual2952790016persistent ceiling. Ordinary-domain readability up to
+33806089496cannot establish allocator room. Existing unused older callers
+which supplied only that weaker ordinary-domain bound still need porting.
+
+Validation: current-payload-header-entry-v4.log PASS2697jobs, including current
+main transaction/data, actual payload_header syntax/code/cost prefix and new
+initial read/allocation contracts. Printed axioms permitted only.
+Index8639modules/17568facts; inventory8683/replacement closure0/fixed files
+unchanged. Incremental policy PASS65473entries/2485205526bytes.
+No global finite target K/full verification; claim infinity.
+Usage31%weekly/0resetcredits. Next: retain the already-proved copied input
+bytes and input/record separation in the payload image, then actual prefix
+buffer/header fields and block-length/remaining source/target composition.

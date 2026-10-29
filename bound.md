@@ -3577,3 +3577,43 @@ quotient/remainder loop invariant and final remainder extraction, then the
 actual two-digit caller/Taylor/header/main. Uniform target composition,
 exact K, dominant slack review and final cleanup remain open. Historical
 untracked RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.
+
+## Real initial quotient estimate and complete original per-digit phase
+
+The original maximum-digit branch and scoped div64by32 estimate are now
+identified literally and executed with their actual caller assignments.
+The scalar call derives both actual returned words and its33ticks from
+a genuine normal callee run, then restores the real qr binding. The maximum
+branch uses its actual wrapped remainder expression. Both branches derive
+initial estimate conservation and the upper estimate for the same physical
+three-digit/two-digit window; no future corrected quotient is assumed.
+
+These original branches are now connected through the actual again scope
+to quotient correction, carry/index initialization, both subtraction
+iterations and the real quotient/top-word stores. The complete literal
+per-digit phase costs≤38source ticks on every outcome, including failed
+and short-clock prefixes. A genuine normal phase derives its exact quotient,
+natural remainder, complete four-store memory update and all other source
+fields. Checked workspace geometry retains both low remainder words, the
+quotient digit and zero top word; every other word is protected.
+
+The entry still describes the actually normalized physical window, captured
+ujn/ujn1/ujn2 and vtop/vsec bindings, fresh zero qhat/rhat bindings and the
+outer-loop invariant window<divisor*2^32. Normalization/capture/outer-loop
+execution must derive these current-entry conditions. The whole two-digit
+divider, Taylor, main and global target bound remain unfinished. These
+source clocks still omit the straight-line target work.
+
+Validation: current-two-digit-estimate-phase-v3.log PASS1126jobs; all11new
+printed facts use only permitted axioms. Index8700modules/18579facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage34%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: actual two-digit normalization and the outer descending quotient loop,
+including captured digit loads, preserved prefix/suffix images and the
+window-range invariant; final remainder extraction and complete caller.
+Then Taylor/header/main, uniform target composition, exact K, dominant slack
+review and final cleanup. Historical untracked RlpLength/RlpWrite WIPs and
+executable/fixed challenge premises remain untouched.

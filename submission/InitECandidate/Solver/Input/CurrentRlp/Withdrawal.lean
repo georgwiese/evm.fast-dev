@@ -777,7 +777,7 @@ theorem body_normal {input : Guest.InputBlob} {source target : PanSemStateFinite
     {pointer heap : BitVec 64} {start : Nat} (entry : Entry input source pointer heap start)
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),target)) :
     ∃ encoded,1≤encoded ∧ encoded≤57 ∧ value=.rStruct [.val (.word heap),.val (.word (BitVec.ofNat 64 encoded))] ∧
-      AllocatedBytes.Arena heap 64 ∧ MemoryMetadata.erase target=MemoryMetadata.erase (PersistentAlloc.post source heap 64#64) ∧
+      AllocatedBytes.Arena heap 64 ∧ heap.toNat+64≤2952790016 ∧ MemoryMetadata.erase target=MemoryMetadata.erase (PersistentAlloc.post source heap 64#64) ∧
       ∀ query : BitVec 64,CopyGeneral.Away heap query 64→target.memory query=source.memory query := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.const 64#64]=some (PersistentAlloc.values 64#64):=by
     simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,PersistentAlloc.values]
@@ -796,7 +796,7 @@ theorem body_normal {input : Guest.InputBlob} {source target : PanSemStateFinite
     installed:=entry.installed,domain:=entry.domain,bufferArena:=owned,bufferAligned:=entry.heapAligned,inputArena:=entry.inputArena,inputBefore:=entry.inputBefore
     heap:=Blob.HeapInput.of_fields source ready input pointer rfl rfl rfl entry.image,inside:=entry.inside,wdCell:=wd,bufferCell:=buf,positionCell:=bind_lookup_same _ _ _ }
   obtain ⟨encoded,positive,bounded,pair,frame⟩:=after_buffer_normal input current inner pointer heap start model value remaining
-  refine ⟨encoded,positive,bounded,pair,owned,?_,?_⟩
+  refine ⟨encoded,positive,bounded,pair,owned,by change heap.toNat+64≤2952790016 at room; exact room,?_,?_⟩
   · rw [endpoint]
     exact frame.metadata
   · intro query away

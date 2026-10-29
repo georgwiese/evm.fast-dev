@@ -1894,3 +1894,27 @@ printed axioms only. Index8700modules/17899facts; inventory8745/replacement
 closure0/fixed files unchanged. Incremental policy65536entries/2485857622bytes
 (entry cap full). Claim infinity; no global finite target K/full verifier
 success. Usage45%weekly/0resetcredits. Final cleanup stays on the plan.
+
+## Actual withdrawal-loop encoder entry, iteration price and output
+
+The current withdrawal-loop model tracks only already filled array rows,
+owned array/current heap and the retained decoded input. Every active real
+row pointer supplies the actual current779 ABI and full input/heap entry.
+The unchanged complete iteration now costs at most202body source ticks,
+including the encoder caller, both scalar stores and counter increment,
+on every outcome. No future successful store or row is supplied.
+
+The same observed scoped encoder return derives the exact e pair, its
+positive1..57 length, own64-byte allocation and checked persistent room,
+next heap exactly64bytes later, unchanged older memory and complete retained
+Data contract before the footer. A shared Data.of_heap_frame handles actual
+heap advances while preserving all nonheap globals and decoded prefix bytes.
+The public encoder normal contract explicitly retains its own checked room.
+
+Validation: current-withdrawal-encoded-row-v1.log PASS2709jobs; permitted
+printed axioms only. Index8700modules/17907facts; inventory8745/replacement
+closure0/fixed files unchanged. Incremental policy65536entries/2485875811bytes
+(entry cap full). Claim infinity; no global finite target K/full verifier
+success. Usage45%weekly/0resetcredits. Next: actual footer stores/counter and
+full loop invariant, initialized-array entry to withdrawal trie, remaining
+header/main, target composition, dominant-slack review and cleanup.

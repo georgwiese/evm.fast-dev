@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CurrentVerify.RunInputs
+import InitECandidate.Solver.PanHeapGlobals
 
 namespace InitECandidate.Solver.Input.CurrentVerify
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -28,6 +29,29 @@ theorem Data.of_metadata {input : Guest.InputBlob} {source target : PanSemStateF
   have heap : NormalHeapEffects.AtLeast (boundary+32) target:=⟨cursor,by rw [globals]; exact cell,lower,upper,aligned⟩
   exact data.of_interval arena (endian.trans data.little) environment (by rw [globals]; exact data.mptHash) (by rw [globals]; exact data.mptKey) (by rw [globals]; exact data.mptEmpty) heap siLocal memory
 
+/-- Transport current decoded inputs through a same-execution heap
+advance and bounded fresh writes. Every other global is retained; actual
+new heap bounds and caller SI binding are supplied by that normal call. -/
+theorem Data.of_heap_frame {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (domain : target.memaddrs=source.memaddrs) (endian : target.be=source.be) (code : target.code=source.code)
+    (globals : HeapGlobals source target) (heap : NormalHeapEffects.AtLeast (boundary+32) target)
+    (siLocal : target.locals.lookup (ofString "si")=some (.val (.word si)))
+    (memory : ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<boundary→target.memory query=source.memory query) :
+    Data input target pointer si record gasWord boundary := by
+  have arena : CurrentStartup.ArenaState target:=
+    ⟨(globals _ (by decide)).trans data.arena.scratch,(globals _ (by decide)).trans data.arena.frame,
+      domain.trans data.arena.domain,by rw [code]; exact data.arena.code⟩
+  have environment : CurrentKeccak.Hash.Environment target 2701132160#64 2701132360#64:=
+    ⟨by rw [code]; exact data.keccak.installed,domain.trans data.keccak.domain,
+      (globals _ (by decide)).trans data.keccak.stateGlobal,(globals _ (by decide)).trans data.keccak.padGlobal,
+      data.keccak.stateArena,data.keccak.padArena,data.keccak.stateAligned,data.keccak.padAligned⟩
+  exact data.of_interval arena (endian.trans data.little) environment
+    ((globals _ (by decide)).trans data.mptHash) ((globals _ (by decide)).trans data.mptKey) ((globals _ (by decide)).trans data.mptEmpty)
+    heap siLocal memory
+
 end InitECandidate.Solver.Input.CurrentVerify
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.Data.of_metadata
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.of_heap_frame

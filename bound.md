@@ -36,13 +36,17 @@ Best overall effort estimate: **50%, plausible40–60%**, relative to current ma
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
-The current input/header/gas/two-database prefix is connected to the real
-state_init call. Whole current witness materialization now costs≤200229body
-source ticks; root decoding≤200544, and complete state_init≤200624 from its
-derived matching witness/table/heap entry. All are all-outcome source-clock
-bounds. Actual normal state-init returns now preserve the earlier input and advance
-the bounded heap into main’s original continuation. Later main execution and
-the uniform target-step theorem remain open.
+The current startup/input/header/gas/two-database/state-init path is connected
+through both actual payload-header indexed tries. The complete unchanged
+withdrawal encoder costs≤201body source ticks; its real loop costs≤203 per
+row. The actual payload_header execution through both tries either stops or
+reaches execution-request encoding within476207133311source ticks, retaining
+all decoded inputs and header fields. Any reached continuation has zero actual
+transactions and withdrawals, derived from the real trie executions.
+
+These are all-outcome source-clock allowances, not formal target-step bounds.
+Execution requests and hashes, the remaining main continuation, uniform target
+composition, dominant-slack review and final cleanup remain open.
 
 ## Earlier checked milestones, in order
 
@@ -1918,3 +1922,35 @@ closure0/fixed files unchanged. Incremental policy65536entries/2485875811bytes
 success. Usage45%weekly/0resetcredits. Next: actual footer stores/counter and
 full loop invariant, initialized-array entry to withdrawal trie, remaining
 header/main, target composition, dominant-slack review and cleanup.
+
+
+## Complete actual withdrawal prefix and main reaches execution requests
+
+Both original array stores and counter increment now execute with their exact
+state and retain every older initialized row. Normal iterations derive the
+next complete model; all repeated-loop outcomes cost≤203*(remaining rows),
+uniformly68115432source ticks. A normal exit has the exact original count and
+a completely initialized, owned nonempty slice array. The actual count/global-
+allocation/i=0 prefix constructs that model from the same earlier header/data;
+no future rows or allocation room are supplied.
+
+The literal withdrawal-trie call instantiates the existing complete current
+indexed-builder proof from that real array/latest heap/startup empty root and
+owned wr buffer. It costs≤12357078900caller source ticks at count≤335544.
+A true normal return forces the actual decoded withdrawal count zero and
+retains its caller metadata and earlier memory outside wr. Complete withdrawal
+work through this caller costs≤12425194334source ticks or reaches requests.
+
+Composing with the earlier actual transaction trie gives the whole original
+payload_header trace to encode_execution_requests:≤476207133311source ticks
+or a real reached continuation. It has zero transactions/withdrawals, complete
+Data, all31header cells/facts, owned buffers and actual h/pl/rh/bh/bl bindings.
+No requests, hash, EVM or main success is assumed. The actual program is unchanged.
+
+Validation: current-main-before-requests-v1.log PASS2709jobs; permitted printed
+axioms only. Index8700modules/17934facts; inventory8745/replacement closure0/
+fixed files unchanged. Incremental policy65536entries/2485933997bytes (entry
+cap full). Claim infinity; no global finite target K/full verifier success.
+Usage46%weekly/0resetcredits. Next: retain the actual decoded request image
+through Data, requests encoder/hash/BAL suffix, remaining current main, formal
+target-step composition, dominant-slack review and cleanup.

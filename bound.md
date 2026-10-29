@@ -55,7 +55,7 @@ costs≤157284452body source ticks on every outcome. Its actual normal return
 supplies the real count≤5, owned rows, checked heap and complete earlier-memory
 frame. The actual main caller connection is checked. General software SHA now has a
 complete all-outcome body source allowance2*(bytes/64)+268, plus1caller tick.
-Its complete caller memory frame, request hashes, the remaining main continuation,
+Its complete caller memory frame is checked. Request hashes, the remaining main continuation,
 uniform target composition, dominant-slack review and final cleanup remain open.
 
 ## Earlier checked milestones, in order
@@ -2269,4 +2269,31 @@ printed axioms only. Index8700modules/18101facts; inventory8745/replacement
 closure0/fixed files unchanged. Claim infinity; no global finite target K/full
 verifier success. Usage51%weekly/0resetcredits. Next: complete actual SHA
 padding/body/caller frames, request-hash and BAL/main continuation, formal
+target composition, dominant-slack review and final cleanup.
+
+
+## Complete current general SHA memory/body/caller contract
+
+The original padding selection is derived from its actual normal branch:
+total is64 or128. Its length writer targets the corresponding final8-byte
+subrange of the real128-byte pad. Actual zero/copy/marker/length/final-block/
+digest executions preserve every word outside state64, pad128 and output32.
+The real loop exit supplies remainder<64 and the actual owned input suffix;
+all length/pointer/output cells are carried through the same reached scopes.
+
+The complete unchanged sha256 body now retains this memory frame through
+its actual initializer, normal block loop, remainder declaration and every
+padding/output phase. The actual three-word p/len/out caller lifts that same
+frame through its ordinary return. No digest value, future read/store/hash
+success or extra allocation funding is assumed. Source cost remains
+≤2*(bytes/64)+268body ticks/+1caller; target static/straight-line cost remains
+separate. Main request-hash loop/caller composition is still open.
+
+Validation: current-general-sha-padding-frames-v2.log PASS2712jobs and
+current-general-sha-body-memory-v1.log PASS2712jobs, permitted printed axioms
+only. Index8700modules/18113facts; inventory8745/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage51%weekly/0resetcredits. Next: separate completed SHA into its
+own helper module while consolidating related loop utilities to retain the
+package entry cap; actual request-hash and BAL/main continuation, formal
 target composition, dominant-slack review and final cleanup.

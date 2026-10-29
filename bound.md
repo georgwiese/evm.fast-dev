@@ -1733,3 +1733,28 @@ files unchanged. Claim infinity; no global finite target K/full verification.
 Usage43%weekly/0resetcredits. Next: actual startup empty-root buffer/main
 caller, normal builder reachability and remaining main, then uniform target
 steps. Five historical RLP WIPs remain untouched/unclaimed.
+
+
+## Main derives the empty-root buffer and complete first trie allowance
+
+The same actual mpt_init startup now establishes empty_trie_root2701134640
+and its32-byte ordinary span. Shared startup/decoder/hash frames retain its
+global, and main's real decoded input contract carries it through header
+validation, both databases, state initialization and the physical payload
+header. The existing transaction-root allocation supplies the actual output
+span. Both generator sources/reports were updated and --check passes.
+
+The literal first transaction-trie call in payload_header now derives every
+complete builder condition from that same prefix and successful original scan.
+Its full ordinary caller allowance is463385007916source ticks, on every
+outcome; no empty-root-buffer oracle or later helper success is supplied.
+Actual normal builder continuation and the remaining main path are still open.
+
+Validation: current-startup-empty-root-v1.log PASS1600jobs;
+current-main-indexed-cost-v1.log PASS3084jobs, including actual main transaction
+data, current complete indexed builder/root and payload-to-trie regressions.
+Printed axioms permitted only. Index8698modules/17850facts; inventory8743/
+replacement closure0/fixed files unchanged. Claim infinity; no global finite
+target K/full verification. Usage43%weekly/0resetcredits. Next: prove positive
+row counts produce nonzero roots, derive actual normal builder continuation,
+then remaining main and uniform target-step composition.

@@ -94,7 +94,8 @@ theorem PhysicalHeader.transaction_entry {input : Guest.InputBlob} {source curre
         some (Mpt.Indexed.values array (BitVec.ofNat 64 count) (afterOmmerHeap header)) ∧
       lookupCodeHOLFinite current.code.lookup (ofString "build_mpt_indexed") (Mpt.Indexed.values array (BitVec.ofNat 64 count) (afterOmmerHeap header))=
         some (Mpt.Indexed.body,callee,.one) ∧ count≤12582752 ∧
-      Nonempty (Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite current callee) array count (afterOmmerHeap header) 251655056 slices) := by
+      Nonempty (Mpt.CurrentIndexed.Entry (callEntryStateHOLFinite current callee) array count (afterOmmerHeap header) 251655056 slices) ∧
+      Mpt.CurrentIndexed.RootInputs (callEntryStateHOLFinite current callee) (afterOmmerHeap header) 2701134640#64 := by
   have before : boundary≤(headerFrontier header).toNat:=by have a:=physical.before; have b:=physical.frontier.afterHeader; omega
   obtain ⟨array,count,slices,arrayStored,countStored,countBound,rows⟩:=physical.data.indexed_transactions (heap:=headerFrontier header) checked before
   have plRead:=local_word_read current "pl" record physical.frame.payload
@@ -117,7 +118,20 @@ theorem PhysicalHeader.transaction_entry {input : Guest.InputBlob} {source curre
     heapCell:=physical.frontier.cell,heapArena:=physical.frontier.arena,heapAligned:=physical.frontier.aligned
     heapAbove:=by have lower:=physical.data.recordInside.1; have a:=physical.data.recordInside.2; have b:=physical.before; have c:=physical.frontier.afterHeader; omega
     rows:=rows.of_band current _ array count (headerFrontier header).toNat 251655056 slices Mpt.CurrentIndexed.NonemptyRow rfl (by intros; rfl) }
-  exact ⟨array,count,slices,callee,args,called,countBound,⟨entry⟩⟩
+  have roots : Mpt.CurrentIndexed.RootInputs (callEntryStateHOLFinite current callee) (afterOmmerHeap header) 2701134640#64:={
+    arena:=⟨physical.data.arena.scratch,physical.data.arena.frame,physical.data.arena.domain,physical.data.arena.code⟩
+    emptyGlobal:=physical.data.mptEmpty,emptyArena:=⟨by decide,by decide⟩,outArena:=physical.buffers.transactions }
+  exact ⟨array,count,slices,callee,args,called,countBound,⟨entry⟩,roots⟩
+
+/-- Main's literal first transaction-trie caller instantiates the complete
+current builder allowance from its same decoded scan/header/startup evidence. -/
+theorem PhysicalHeader.transaction_cost {input : Guest.InputBlob} {source current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary : Nat}
+    (physical : PhysicalHeader input source current pointer si record gasWord boundary header) (checked : RunAttempt.TransactionsNonempty input) :
+    current.clock-(evaluateHOLFiniteState current transactionTrieCall).2.clock≤463385007916 := by
+  obtain ⟨array,count,slices,callee,args,called,countBound,⟨entry⟩,roots⟩:=physical.transaction_entry checked
+  exact ClockCost.call_current current (some none) (ofString "build_mpt_indexed") transactionTrieArguments _ Mpt.Indexed.body callee .one 463385007915
+    args called (Mpt.CurrentIndexed.uniform_body_cost entry roots countBound)
 
 end PayloadHeaderEntry
 end InitECandidate.Solver.Input.CurrentVerify
@@ -125,3 +139,4 @@ end InitECandidate.Solver.Input.CurrentVerify
 #print axioms InitECandidate.Solver.Input.CurrentVerify.Data.indexed_transactions
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.transaction_trie_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.PhysicalHeader.transaction_entry
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.PhysicalHeader.transaction_cost

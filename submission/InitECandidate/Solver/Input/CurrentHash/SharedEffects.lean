@@ -28,6 +28,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.trap_with code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptKey
+  | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.trap_with code installed .mptEmpty
 end TrapWith
 
 namespace Alloc
@@ -43,6 +44,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.alloc code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptKey
+  | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.alloc code installed .mptEmpty
 end Alloc
 
 namespace HeapMark
@@ -58,6 +60,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.heap_mark code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptKey
+  | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.heap_mark code installed .mptEmpty
 end HeapMark
 
 namespace HeapRelease
@@ -73,6 +76,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.heap_release code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptKey
+  | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.heap_release code installed .mptEmpty
 end HeapRelease
 
 namespace Memcpy
@@ -88,6 +92,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.memcpy code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptKey
+  | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.memcpy code installed .mptEmpty
 end Memcpy
 
 namespace Memzero
@@ -103,6 +108,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.memzero code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptKey
+  | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.memzero code installed .mptEmpty
 end Memzero
 
 namespace StLe32
@@ -118,6 +124,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.st_le32 code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptKey
+  | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.st_le32 code installed .mptEmpty
 end StLe32
 
 namespace StLe64
@@ -133,6 +140,7 @@ theorem preserves (cursor : Cursor) (code) (installed : OriginalCode.Installed c
   | keccakPad => exact CurrentStartup.OffsetsFrame.st_le64 code installed .keccakPad
   | mptHash => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptHash
   | mptKey => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptKey
+  | mptEmpty => exact CurrentStartup.WorkspaceFrameCore.st_le64 code installed .mptEmpty
 end StLe64
 
 end SharedEffects

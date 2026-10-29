@@ -5,6 +5,17 @@ namespace InitECandidate.Solver.Input.CurrentStartup.MptWorkspace
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
+theorem template_empty (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) :
+    (InitializerAllocations.template source cursor actions).globals.lookup (ofString "empty_trie_root")=
+      some (.val (.word (BitVec.ofNat 64 cursor))) := by
+  simp [actions,InitializerAllocations.template,InitializerAllocations.reserve,InitializerAllocations.constant,
+    putGlobal,HolFiniteMapExact.update,FUPDATE,Nat.add_assoc,
+    show ofString "heap_ptr"≠ofString "empty_trie_root" from by decide,
+    show ofString "empty_code_hash"≠ofString "empty_trie_root" from by decide,
+    show ofString "mpt_nib_scratch"≠ofString "empty_trie_root" from by decide,
+    show ofString "mpt_hash_scratch"≠ofString "empty_trie_root" from by decide,
+    show ofString "mpt_key_scratch"≠ofString "empty_trie_root" from by decide]
+
 theorem template_hash (source : PanSemStateFiniteExact 64 Guest.HostMemory) (cursor : Nat) :
     (InitializerAllocations.template source cursor actions).globals.lookup (ofString "mpt_hash_scratch") =
       some (.val (.word (BitVec.ofNat 64 (cursor+128)))) := by
@@ -30,6 +41,7 @@ theorem first_four (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
     (actual : evaluateHOLFiniteState source (withTail routines .skip) = (none,target)) :
     ∃ mptState, evaluateHOLFiniteState mptState (withTail (routines.drop 4) .skip) = (none,target) ∧
       OriginalCode.Installed mptState.code ∧ OriginalScalarGlobals.Scalars mptState.globals ∧
+      mptState.globals.lookup (ofString "empty_trie_root")=some (.val (.word (BitVec.ofNat 64 (cursor+2864)))) ∧
       mptState.globals.lookup (ofString "mpt_hash_scratch") = some (.val (.word (BitVec.ofNat 64 (cursor+2992)))) ∧
       mptState.globals.lookup (ofString "mpt_key_scratch") = some (.val (.word (BitVec.ofNat 64 (cursor+3032)))) ∧
       mptState.globals.lookup (ofString "heap_ptr") = some (.val (.word (BitVec.ofNat 64 (cursor+3048)))) ∧
@@ -44,9 +56,10 @@ theorem first_four (source target : PanSemStateFiniteExact 64 Guest.HostMemory) 
     rw [(evaluation_fields sszState mptState _ none mptRun).2.2.2]
     exact sszCode
   have hashCell := (globals _).trans (template_hash sszState (cursor+2864))
+  have emptyCell := (globals _).trans (template_empty sszState (cursor+2864))
   have keyCell := (globals _).trans (template_key sszState (cursor+2864))
   have mptHeap := (globals _).trans (InitializerAllocations.template_heap sszState (cursor+2864) actions sszHeap valid)
-  refine ⟨mptState,afterMpt,mptCode,EarlyWorkspace.written_scalars sszState mptState (cursor+2864) actions sszScalars globals,?_,?_,?_,by omega,by omega⟩
+  refine ⟨mptState,afterMpt,mptCode,EarlyWorkspace.written_scalars sszState mptState (cursor+2864) actions sszScalars globals,emptyCell,?_,?_,?_,by omega,by omega⟩
   · simpa only [Nat.add_assoc] using hashCell
   · simpa only [Nat.add_assoc] using keyCell
   · simpa [actions,InitializerAllocations.totalBytes,InitializerAllocations.constant,Nat.add_assoc] using mptHeap
@@ -91,7 +104,7 @@ theorem main_cells (input : Guest.InputBlob) (origin target : PanSemStateFiniteE
   rw [entry.base] at heap
   have zero := (Main.memory_other origin (ofString "zero_hashes") (by decide) (by decide) (by decide)).trans
     (entry.zeros (ofString "zero_hashes") OriginalScalarGlobals.ssz_names.2.2)
-  obtain ⟨mptState,suffix,code,scalars,hashCell,keyCell,heapCell,room,aligned⟩ :=
+  obtain ⟨mptState,suffix,code,scalars,emptyCell,hashCell,keyCell,heapCell,room,aligned⟩ :=
     first_four (Main.memoryState origin) target InitE.sourceBase entry.code (Main.memory_scalars input origin entry)
       heap zero (by decide) (by decide) actual
   have frame := later_prefix mptState.code code (routines.drop 4) (fun routine member => member) .mptHash mptState rfl
@@ -115,12 +128,27 @@ theorem main_key_cell (input : Guest.InputBlob) (origin target : PanSemStateFini
   rw [entry.base] at heap
   have zero := (Main.memory_other origin (ofString "zero_hashes") (by decide) (by decide) (by decide)).trans
     (entry.zeros (ofString "zero_hashes") OriginalScalarGlobals.ssz_names.2.2)
-  obtain ⟨mptState,suffix,code,scalars,hashCell,keyCell,heapCell,room,aligned⟩ :=
+  obtain ⟨mptState,suffix,code,scalars,emptyCell,hashCell,keyCell,heapCell,room,aligned⟩ :=
     first_four (Main.memoryState origin) target InitE.sourceBase entry.code (Main.memory_scalars input origin entry)
       heap zero (by decide) (by decide) actual
   have frame := later_prefix mptState.code code (routines.drop 4) (fun routine member => member) .mptKey mptState rfl
   rw [suffix] at frame
   exact (congrArg Prod.snd frame).trans keyCell
+
+theorem main_empty_cell (input : Guest.InputBlob) (origin target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (entry : Main.Entry input origin)
+    (actual : evaluateHOLFiniteState (Main.memoryState origin) (withTail routines .skip)=(none,target)) :
+    target.globals.lookup (ofString "empty_trie_root")=some (.val (.word 2701134640#64)) := by
+  have heap:=(Main.memory_globals origin).1
+  rw [entry.base] at heap
+  have zero:=(Main.memory_other origin (ofString "zero_hashes") (by decide) (by decide) (by decide)).trans
+    (entry.zeros (ofString "zero_hashes") OriginalScalarGlobals.ssz_names.2.2)
+  obtain ⟨mptState,suffix,code,scalars,emptyCell,hashCell,keyCell,heapCell,room,aligned⟩:=
+    first_four (Main.memoryState origin) target InitE.sourceBase entry.code (Main.memory_scalars input origin entry)
+      heap zero (by decide) (by decide) actual
+  have frame:=later_prefix mptState.code code (routines.drop 4) (fun routine member=>member) .mptEmpty mptState rfl
+  rw [suffix] at frame
+  exact (congrArg Prod.snd frame).trans emptyCell
 
 
 end InitECandidate.Solver.Input.CurrentStartup.MptWorkspace
@@ -130,3 +158,5 @@ end InitECandidate.Solver.Input.CurrentStartup.MptWorkspace
 
 #print axioms InitECandidate.Solver.Input.CurrentStartup.MptWorkspace.template_key
 #print axioms InitECandidate.Solver.Input.CurrentStartup.MptWorkspace.main_key_cell
+#print axioms InitECandidate.Solver.Input.CurrentStartup.MptWorkspace.template_empty
+#print axioms InitECandidate.Solver.Input.CurrentStartup.MptWorkspace.main_empty_cell

@@ -242,11 +242,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentStartup/WorkspaceFrameCore.lean",
-      "sha256": "50335be71ee11df96af6afbacfb1a089c30f573896a9e6cfd91f3f262a30da24"
+      "sha256": "919af42c5aa761a4a999d133ac6e01bc70f25f2dfa7fd56217cabfaea8c721ff"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentStartup/OffsetsFrame.lean",
-      "sha256": "619286cbdd0a8982634d9175b15a9d567ce2565536d3a5708a0123df3867f3c3"
+      "sha256": "ae8f6812c670368008b8a834138e9457667b4b97ab6d48bfdbd7758ef92f8d46"
     }
   ],
   "protected_globals": [
@@ -256,7 +256,8 @@
     "keccak_st",
     "keccak_pad",
     "mpt_hash_scratch",
-    "mpt_key_scratch"
+    "mpt_key_scratch",
+    "empty_trie_root"
   ],
   "restricted_initializer": "mpt_init preserves only the original five keys",
   "scope": "Generated actual all-outcome global frames; not proof validation, ownership or a runtime bound."

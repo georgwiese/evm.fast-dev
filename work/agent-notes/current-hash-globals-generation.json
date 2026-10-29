@@ -75,7 +75,8 @@
     "keccak_st",
     "keccak_pad",
     "mpt_hash_scratch",
-    "mpt_key_scratch"
+    "mpt_key_scratch",
+    "empty_trie_root"
   ],
   "scope": "Generator/scanner output; not proof validation, timing or a whole-program bound.",
   "generated_sources": [
@@ -85,11 +86,11 @@
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Base.lean",
-      "sha256": "b420423594f97ac494bb8798c4d7e9b019512cfe8abb3071c2e6b0489f09ef3e"
+      "sha256": "4b678075bd012f4aa79eef46b4b9e4ca6c006b9f97a126405b9c2b7dd53f0de0"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/SharedEffects.lean",
-      "sha256": "0a22eebd6e6c3da73577774a75f66494d747efc22be6eea5e8ee83e6d3b0112a"
+      "sha256": "9c77266f18407dbd8c61193bdae8d98eafe552c5061efad8cd166ed14d139152"
     },
     {
       "path": "submission/InitECandidate/Solver/Input/CurrentHash/Effects.lean",

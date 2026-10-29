@@ -5,7 +5,7 @@ namespace InitECandidate.Solver.Input.CurrentStartup.WorkspaceFrameCore
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString
 
-inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | mptHash | mptKey
+inductive WorkspaceKey where | offsets | lengthChunk | zeroHashes | keccakState | keccakPad | mptHash | mptKey | mptEmpty
 
 def workspaceKey : WorkspaceKey → MlS
   | .offsets => ofString "ssz_offs"
@@ -15,6 +15,7 @@ def workspaceKey : WorkspaceKey → MlS
   | .keccakPad => ofString "keccak_pad"
   | .mptHash => ofString "mpt_hash_scratch"
   | .mptKey => ofString "mpt_key_scratch"
+  | .mptEmpty => ofString "empty_trie_root"
 
 /-- Shared current-syntax frames, including the MPT buffer after its initializer. -/
 def fromLegacy : OffsetsFrame.WorkspaceKey → WorkspaceKey

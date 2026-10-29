@@ -6856,3 +6856,205 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.post_other
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.post_away
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.prefix_cost
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The actual restored k scope leaves every binding except i unchanged. -/
+theorem initializedPost_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) (name : String)
+    (notI : ofString name≠ofString "i") (notK : ofString name≠ofString "k") :
+    (initializedPost source base position quotient low middle divisorLow divisorHigh).locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
+  unfold initializedPost
+  rw [restore_lookup_other source _ "k" name notK]
+  exact (pairPost_other (subtractionEntry source) base position quotient low middle divisorLow divisorHigh name notI notK).trans
+    (initialize_other source name notI notK)
+
+theorem initializedPost_index (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (quotient low middle divisorLow divisorHigh : BitVec 64) :
+    (initializedPost source base position quotient low middle divisorLow divisorHigh).locals.lookup (ofString "i")=some (.val (.word 2#64)) := by
+  unfold initializedPost
+  rw [restore_lookup_other source _ "k" "i" (by decide)]
+  exact post_index _ base 1 position quotient _ middle divisorHigh
+
+private theorem corrected_endpoint (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (q r low middle top divisorLow divisorHigh : BitVec 64) (checked : Window source base position low middle top divisorLow divisorHigh)
+    (ready : QhatCorrection.Bindings source q r 1#64 divisorHigh divisorLow low) (small : q.toNat<4294967296)
+    (estimate : q.toNat*divisorHigh.toNat+r.toNat=top.toNat*4294967296+middle.toNat)
+    (upper : TwoDigitSubtract.window low middle top/TwoDigitSubtract.divisorNumber divisorLow divisorHigh≤q.toNat)
+    (normal : evaluateHOLFiniteState source corrected=(none,target)) :
+    ∃ correctionState quotient,evaluateHOLFiniteState source QhatCorrection.loop=(none,correctionState) ∧
+      target=initializedPost correctionState base position quotient low middle divisorLow divisorHigh := by
+  obtain ⟨correctionState,front,back⟩:=sequence_none source target QhatCorrection.loop initialized normal
+  obtain ⟨quotient,nextModel,qhat,qSmall,exactQuotient⟩:=correction_result source correctionState base position q r low middle top divisorLow divisorHigh
+    checked ready small estimate upper front
+  obtain ⟨funded,endpoint⟩:=initialized_normal correctionState target base position quotient low middle top divisorLow divisorHigh nextModel qhat qSmall exactQuotient back
+  exact ⟨correctionState,quotient,front,endpoint⟩
+
+/-- An actual normal correction/subtraction run retains the outer loop's
+counter/pointers and other bindings outside its real writable locals. -/
+theorem corrected_other (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (q r low middle top divisorLow divisorHigh : BitVec 64) (checked : Window source base position low middle top divisorLow divisorHigh)
+    (ready : QhatCorrection.Bindings source q r 1#64 divisorHigh divisorLow low) (small : q.toNat<4294967296)
+    (estimate : q.toNat*divisorHigh.toNat+r.toNat=top.toNat*4294967296+middle.toNat)
+    (upper : TwoDigitSubtract.window low middle top/TwoDigitSubtract.divisorNumber divisorLow divisorHigh≤q.toNat)
+    (normal : evaluateHOLFiniteState source corrected=(none,target)) (name : String)
+    (notI : ofString name≠ofString "i") (notK : ofString name≠ofString "k")
+    (notQ : ofString name≠ofString "qhat") (notR : ofString name≠ofString "rhat") (notAgain : ofString name≠ofString "again") :
+    target.locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
+  obtain ⟨correctionState,quotient,front,rfl⟩:=corrected_endpoint source target base position q r low middle top divisorLow divisorHigh checked ready small estimate upper normal
+  exact (initializedPost_other correctionState base position quotient low middle divisorLow divisorHigh name notI notK).trans
+    (QhatCorrection.loop_other source correctionState name notQ notR notAgain front)
+
+theorem corrected_index (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (q r low middle top divisorLow divisorHigh : BitVec 64) (checked : Window source base position low middle top divisorLow divisorHigh)
+    (ready : QhatCorrection.Bindings source q r 1#64 divisorHigh divisorLow low) (small : q.toNat<4294967296)
+    (estimate : q.toNat*divisorHigh.toNat+r.toNat=top.toNat*4294967296+middle.toNat)
+    (upper : TwoDigitSubtract.window low middle top/TwoDigitSubtract.divisorNumber divisorLow divisorHigh≤q.toNat)
+    (normal : evaluateHOLFiniteState source corrected=(none,target)) :
+    target.locals.lookup (ofString "i")=some (.val (.word 2#64)) := by
+  obtain ⟨correctionState,quotient,front,rfl⟩:=corrected_endpoint source target base position q r low middle top divisorLow divisorHigh checked ready small estimate upper normal
+  exact initializedPost_index correctionState base position quotient low middle divisorLow divisorHigh
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.initializedPost_other
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.initializedPost_index
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.corrected_other
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Subtract.corrected_index
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Estimate
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The real whole per-digit phase retains outer j and every pointer/count
+binding, obtained from its actual normal trace and restored again scope. -/
+theorem phase_other (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (low middle top divisorLow divisorHigh : BitVec 64) (checked : Entry source base position low middle top divisorLow divisorHigh)
+    (normal : evaluateHOLFiniteState source phase=(none,target)) (name : String)
+    (notI : ofString name≠ofString "i") (notK : ofString name≠ofString "k")
+    (notQ : ofString name≠ofString "qhat") (notR : ofString name≠ofString "rhat") (notAgain : ofString name≠ofString "again") :
+    target.locals.lookup (ofString name)=source.locals.lookup (ofString name) := by
+  obtain ⟨middleState,front,back⟩:=sequence_none source target program continuation normal
+  obtain ⟨q,r,paid,price,funded,endpoint,qSmall,balance,upper⟩:=program_normal source middleState base position low middle top divisorLow divisorHigh checked front
+  subst middleState
+  obtain ⟨window,ready⟩:=entry_after_estimate source base position low middle top divisorLow divisorHigh checked q r paid
+  obtain ⟨inner,remaining,restored⟩:=ScalarScope.declare_trace (post source q r paid) target "again" (.const 1#64) 1#64 Subtract.corrected none rfl back
+  have kept:=Subtract.corrected_other (afterEstimate source q r paid) inner base position q r low middle top divisorLow divisorHigh
+    window ready qSmall balance upper remaining name notI notK notQ notR notAgain
+  rw [restored,restore_lookup_other _ _ "again" name notAgain,kept]
+  exact (bind_lookup_other _ "again" name _ (Ne.symm notAgain)).trans (post_other source q r paid name notQ notR)
+
+/-- Every actual normal two-digit phase leaves its real inner counter at2,
+so the next outer iteration receives a genuine scalar binding. -/
+theorem phase_index (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (low middle top divisorLow divisorHigh : BitVec 64) (checked : Entry source base position low middle top divisorLow divisorHigh)
+    (normal : evaluateHOLFiniteState source phase=(none,target)) :
+    target.locals.lookup (ofString "i")=some (.val (.word 2#64)) := by
+  obtain ⟨middleState,front,back⟩:=sequence_none source target program continuation normal
+  obtain ⟨q,r,paid,price,funded,endpoint,qSmall,balance,upper⟩:=program_normal source middleState base position low middle top divisorLow divisorHigh checked front
+  subst middleState
+  obtain ⟨window,ready⟩:=entry_after_estimate source base position low middle top divisorLow divisorHigh checked q r paid
+  obtain ⟨inner,remaining,restored⟩:=ScalarScope.declare_trace (post source q r paid) target "again" (.const 1#64) 1#64 Subtract.corrected none rfl back
+  have index:=Subtract.corrected_index (afterEstimate source q r paid) inner base position q r low middle top divisorLow divisorHigh
+    window ready qSmall balance upper remaining
+  rw [restored,restore_lookup_other _ _ "again" "i" (by decide)]
+  exact index
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Estimate
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Estimate.phase_other
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Estimate.phase_index
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def previous : ExpHOL 64:=.op .sub [localVar "j",.const 1#64]
+def topIndex : ExpHOL 64:=.op .add [localVar "j",localVar "n"]
+def middleIndex : ExpHOL 64:=.op .sub [topIndex,.const 1#64]
+def lowIndex : ExpHOL 64:=.op .sub [topIndex,.const 2#64]
+def loadAt (index : ExpHOL 64) : ExpHOL 64:=.load .one (NormalizeLoop.address "un" index)
+def captures : ProgHOL 64:=.dec (ofString "ujn") .one (loadAt topIndex)
+  (.dec (ofString "ujn1") .one (loadAt middleIndex)
+    (.dec (ofString "ujn2") .one (loadAt lowIndex)
+      (.dec (ofString "qhat") .one (.const 0#64) (.dec (ofString "rhat") .one (.const 0#64) Estimate.phase))))
+def body : ProgHOL 64:=.seq (.assign .local (ofString "j") previous) captures
+def test : ExpHOL 64:=.cmp .lower (.const 0#64) (localVar "j")
+def loop : ProgHOL 64:=.while test body
+
+private def findLoop : ProgHOL 64→Option (ProgHOL 64)
+  | .while condition contents=>
+    match condition,contents with
+    | .cmp .lower (.const zero) (.var .local counter),.seq (.assign .local assigned _) (.dec captured _ _ _)=>
+      if zero=0#64 ∧ counter=ofString "j" ∧ assigned=ofString "j" ∧ captured=ofString "ujn" then some (.while condition contents) else findLoop contents
+    | _,_=>findLoop contents
+  | .dec _ _ _ rest=>findLoop rest
+  | .seq first rest=>(findLoop first).orElse (fun _=>findLoop rest)
+  | .ite _ yes no=>(findLoop yes).orElse (fun _=>findLoop no)
+  | .decCall _ _ _ _ rest=>findLoop rest
+  | _=>none
+
+set_option maxRecDepth 100000 in
+/-- Literal current outer quotient loop, including all three actual loads,
+fresh qhat/rhat scopes and the already checked per-digit phase. -/
+theorem literal_loop : findLoop Single.body=some loop := by
+  simp [findLoop,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    loop,test,body,previous,captures,loadAt,topIndex,middleIndex,lowIndex,
+    Estimate.phase,Estimate.program,Estimate.test,Estimate.maximum,Estimate.remainderExpression,Estimate.scalar,Estimate.arguments,Estimate.updates,Estimate.continuation,
+    Subtract.corrected,QhatCorrection.loop,QhatCorrection.test,QhatCorrection.body,QhatCorrection.branch,QhatCorrection.correct,
+    QhatCorrection.roomTest,QhatCorrection.estimateTest,QhatCorrection.leftEstimate,QhatCorrection.rightEstimate,
+    QhatCorrection.quotientExpression,QhatCorrection.remainderExpression,Subtract.initialized,Subtract.loop,Subtract.test,Subtract.step,Subtract.updates,
+    Subtract.productExpression,Subtract.residualExpression,Subtract.lowExpression,Subtract.carryExpression,Subtract.increment,Subtract.inputAddress,Subtract.divisorAddress,
+    Subtract.finish,Subtract.findFinish,Subtract.topAddress,Subtract.quotientAddress,Subtract.address,Subtract.difference,Subtract.negativeTest,Subtract.keep,
+    NormalizeLoop.address,returnShape,localVar]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.literal_loop
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The three original capture expressions read exactly the actual mapped
+window at j,j+1,j+2. Their n=2 arithmetic is checked at64-bit word width. -/
+theorem captures_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (position : Nat)
+    (low middle top : BitVec 64) (context : Workspace.Context source base) (inside : position+2<17)
+    (un : source.locals.lookup (ofString "un")=some (.val (.word (Workspace.pointer base .normalizedNumerator))))
+    (j : source.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 position))))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word 2#64)))
+    (lowCell : source.memory (slot (Workspace.pointer base .normalizedNumerator) position)=.word low)
+    (middleCell : source.memory (slot (Workspace.pointer base .normalizedNumerator) (position+1))=.word middle)
+    (topCell : source.memory (slot (Workspace.pointer base .normalizedNumerator) (position+2))=.word top) :
+    eval source (loadAt topIndex)=some (.val (.word top)) ∧
+      eval source (loadAt middleIndex)=some (.val (.word middle)) ∧
+      eval source (loadAt lowIndex)=some (.val (.word low)) := by
+  have topRead : eval source topIndex=some (.val (.word (BitVec.ofNat 64 (position+2)))):=by
+    simp [eval,topIndex,localVar,evalHOLExact,evalListHOLExact,toExact,j,n,valueIsWord,valueWord,wordOpHOL,wordOp,BitVec.ofNat_add]
+  have middleNumber:=BitVec.ofNat_sub_ofNat_of_le (w:=64) (position+2) 1 (by decide) (by omega)
+  have middleNatural : position+2-1=position+1:=by omega
+  rw [middleNatural] at middleNumber
+  have middleRead : eval source middleIndex=some (.val (.word (BitVec.ofNat 64 (position+1)))):=
+    Subtract.binary_read source .sub topIndex (.const 1#64) (BitVec.ofNat 64 (position+2)) 1#64 (BitVec.ofNat 64 (position+1)) topRead rfl
+      (by change some (BitVec.ofNat 64 (position+2)-1#64)=some (BitVec.ofNat 64 (position+1));rw [middleNumber])
+  have lowNumber:=BitVec.ofNat_sub_ofNat_of_le (w:=64) (position+2) 2 (by decide) (by omega)
+  simp only [Nat.add_sub_cancel] at lowNumber
+  have lowRead : eval source lowIndex=some (.val (.word (BitVec.ofNat 64 position))):=
+    Subtract.binary_read source .sub topIndex (.const 2#64) (BitVec.ofNat 64 (position+2)) 2#64 (BitVec.ofNat 64 position) topRead rfl
+      (by change some (BitVec.ofNat 64 (position+2)-2#64)=some (BitVec.ofNat 64 position);rw [lowNumber])
+  refine ⟨?_,?_,?_⟩
+  · exact Witness.load_word_read source _ _ top
+      (NormalizeLoop.indexed_address_read source "un" _ topIndex (position+2) un topRead)
+      (Workspace.slot_mapped source base context .normalizedNumerator (position+2) inside) topCell
+  · exact Witness.load_word_read source _ _ middle
+      (NormalizeLoop.indexed_address_read source "un" _ middleIndex (position+1) un middleRead)
+      (Workspace.slot_mapped source base context .normalizedNumerator (position+1) (by change position+1<17;omega)) middleCell
+  · exact Witness.load_word_read source _ _ low
+      (NormalizeLoop.indexed_address_read source "un" _ lowIndex position un lowRead)
+      (Workspace.slot_mapped source base context .normalizedNumerator position (by change position<17;omega)) lowCell
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Outer
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Outer.captures_read

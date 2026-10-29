@@ -5617,3 +5617,41 @@ remaining proof plan, not a checked outer-loop theorem.
 Final remainder extraction, complete two-digit caller/Taylor/header/main,
 uniform target composition, exact K, dominant slack review and cleanup remain.
 Historical untracked WIPs and executable/fixed premises stay untouched.
+
+
+## Actual per-digit local frame and original outer window loads
+
+The actual initialized subtraction post-state now retains the outer loop's
+unmodified bindings and leaves its real inner i counter at2. This is carried
+through the genuine correction-loop return and complete initial-estimate/
+again scope. An actual normal full per-digit phase therefore retains j and
+the real pointers/counts while supplying a typed i=2 for its successor.
+The proof derives these from the same actual normal traces; no future state
+or successful result is supplied as an extra entry condition.
+
+The complete current outer quotient loop is now identified literally,
+including j decrement, three actual UN loads, fresh qhat/rhat declarations
+and the checked per-digit phase. At an actual n=2/j window, all three real
+capture expressions now read the mapped UN[j+2],UN[j+1],UN[j] words. Their
+64-bit add/subtract/address arithmetic and physical slot bounds are checked.
+This identifies and reads the body; it is not yet an executed full outer-loop
+or complete two-digit divider theorem.
+
+Validation: current-two-digit-outer-capture-read-v1.log PASS1126jobs; all8new
+printed facts use only permitted axioms. Index8700modules/18641facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage35%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: derive the fresh captured/scalar declaration entries and execute the
+real j decrement/body. Carry two actual32-bit remainder words at UN[j] and
+UN[j+1], below the actual normalized divisor, plus the untouched lower input
+prefix. The next window is low+2^32*carry; the actual phase derives its next
+remainder and preserves all needed locals. Induct over j to produce the
+quotient image and D*Q+R identity, and prove the initial carry from the
+actual normalization images/number bound. Source clocks still omit target
+straight-line work. Final remainder extraction, complete two-digit caller/
+Taylor/header/main, uniform target composition, exact K, dominant slack
+review and cleanup remain. Historical untracked WIPs and executable/fixed
+premises stay untouched.

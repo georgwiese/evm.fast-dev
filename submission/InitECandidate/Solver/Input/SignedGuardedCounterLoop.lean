@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.GuardedCounter
 import InitECandidate.Solver.Input.CounterLoopCost
 import InitECandidate.Solver.Input.LoopInvariantNoControl
+import InitECandidate.Solver.WitnessRadix.BindingLookup
 
 namespace InitECandidate.Solver.Input.SignedGuardedCounterLoop
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -42,11 +43,12 @@ theorem transition (limit : MlS) (body : ProgHOL 64) (length : Nat)
   obtain ⟨word,counter,count,bounded⟩:=valid
   have expected:=test_read limit length small source word counter count bounded
   have active : word.toNat<length := by
-    by_contra inactive
-    rw [if_neg inactive] at expected
-    have zero : observed=0#64 := by
-      simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
-    exact nonzero zero
+    by_cases active : word.toNat<length
+    · exact active
+    · rw [if_neg active] at expected
+      have zero : observed=0#64 := by
+        simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans expected
+      exact (nonzero zero).elim
   have rankEq : rank length source=length-word.toNat := by
     simp [rank,CounterFlow.counterWord,counter,valueWord]
   refine ⟨by rw [rankEq]; omega,?_⟩

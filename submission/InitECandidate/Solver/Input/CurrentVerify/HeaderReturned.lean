@@ -52,7 +52,7 @@ theorem header_data_trace {input : Guest.InputBlob} {source post : PanSemStateFi
     (data : Data input source pointer si record gasWord boundary)
     (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
     source.clock-post.clock≤51528323 ∨ ∃ current inner,
-      Data input current pointer si record gasWord boundary ∧ current.clock≤source.clock ∧
+      Data input current pointer si record gasWord boundary ∧ current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧ current.clock≤source.clock ∧
       source.clock-current.clock≤51528323 ∧
       evaluateHOLFiniteState current afterHeaders=(outcome,inner) ∧ post.clock=inner.clock ∧
       LocalEffects.erase post=LocalEffects.erase inner := by
@@ -64,7 +64,10 @@ theorem header_data_trace {input : Guest.InputBlob} {source post : PanSemStateFi
     have nextData := after_headers_data entryData heapCell returned
     let current := CallNormal.continuationEntry (bind source "pl" record) target "vh"
       (Headers.CurrentValidate.result heap (Headers.CurrentValidate.hashesPointer heap (BitVec.ofNat 64 (VarList.decodedCount input start length))))
-    exact Or.inr ⟨current,inner,nextData,returned.forward,returned.cost,continued,by rw [endpoint]; rfl,by rw [endpoint]; rfl⟩
+    have payloadLocal : current.locals.lookup (ofString "pl")=some (.val (.word record)):=
+      (CallNormal.continuation_lookup_other (bind source "pl" record) target "vh" "pl"
+        (Headers.CurrentValidate.result heap (Headers.CurrentValidate.hashesPointer heap (BitVec.ofNat 64 (VarList.decodedCount input start length)))) (by decide)).trans (bind_lookup_same _ _ _)
+    exact Or.inr ⟨current,inner,nextData,payloadLocal,returned.forward,returned.cost,continued,by rw [endpoint]; rfl,by rw [endpoint]; rfl⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 

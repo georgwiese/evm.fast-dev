@@ -9,6 +9,7 @@ at the original state_init cut. Their source states remain explicit. -/
 def HasTables (input : Guest.InputBlob) (current : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer si record gasWord : BitVec 64) (boundary : Nat) : Prop :=
   Data input current pointer si record gasWord boundary ∧
+  current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧
   ∃ nodeSource codeSource nodeArray nodeStart nodeLength codeArray codeStart codeLength nodeTable nodeCap codeTable codeCap nodeUpper codeUpper,
     CurrentStartup.WitnessArrays.Image input current pointer si nodeArray nodeStart nodeLength boundary 40 1024 (2^31) ∧
     CurrentStartup.WitnessArrays.Image input current pointer si codeArray codeStart codeLength boundary 56 65536 (2^31) ∧
@@ -31,13 +32,13 @@ theorem to_state_init {input : Guest.InputBlob} {source post : PanSemStateFinite
       LocalEffects.erase post=LocalEffects.erase inner := by
   rcases to_nodes data outcome run with stopped|reached
   · exact Or.inl (by omega)
-  · obtain ⟨nodeSource,nodePost,nodeData,nodeForward,nodePrice,nodeRun,postClock,postFrame⟩ := reached
+  · obtain ⟨nodeSource,nodePost,nodeData,nodePayload,nodeForward,nodePrice,nodeRun,postClock,postFrame⟩ := reached
     rcases databases_trace nodeData outcome nodeRun with stopped|reached
     · exact Or.inl (by rw [postClock]; omega)
     · obtain ⟨first,current,inner,nodeArray,nodeStart,nodeLength,codeArray,codeStart,codeLength,nodeTable,nodeCap,codeTable,codeCap,nodeUpper,codeUpper,
-        currentData,nodeImage,codeImage,nodeResult,codeResult,nodeCell,codeCell,forward,price,continued,endpoint⟩ := reached
+        currentData,nodeImage,codeImage,nodeResult,codeResult,nodeCell,codeCell,payloadLocals,forward,price,continued,endpoint⟩ := reached
       have tables : HasTables input current pointer si record gasWord boundary :=
-        ⟨currentData,nodeSource,first,nodeArray,nodeStart,nodeLength,codeArray,codeStart,codeLength,nodeTable,nodeCap,codeTable,codeCap,nodeUpper,codeUpper,
+        ⟨currentData,payloadLocals.trans nodePayload,nodeSource,first,nodeArray,nodeStart,nodeLength,codeArray,codeStart,codeLength,nodeTable,nodeCap,codeTable,codeCap,nodeUpper,codeUpper,
           nodeImage,codeImage,nodeResult,codeResult,nodeCell,codeCell⟩
       have clock : nodePost.clock=inner.clock := by rw [endpoint]; rfl
       have frame : LocalEffects.erase nodePost=LocalEffects.erase inner := by rw [endpoint]; rfl

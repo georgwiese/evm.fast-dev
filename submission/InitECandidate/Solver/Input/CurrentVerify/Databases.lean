@@ -22,7 +22,7 @@ theorem databases_trace {input : Guest.InputBlob} {source post : PanSemStateFini
       CurrentTable.NodeBuild.Returned {databaseData input codeArray pointer codeStart codeLength boundary 65536 with upper:=codeUpper} first current codeTable codeCap ∧
       current.locals.lookup (ofString "nodedb")=some (.val (.word nodeTable)) ∧
       current.locals.lookup (ofString "codedb")=some (.val (.word codeTable)) ∧
-      current.clock≤source.clock ∧ source.clock-current.clock≤3323240764 ∧
+      current.locals.lookup (ofString "pl")=source.locals.lookup (ofString "pl") ∧ current.clock≤source.clock ∧ source.clock-current.clock≤3323240764 ∧
       evaluateHOLFiniteState current afterCodes=(outcome,inner) ∧
       post=restore source "nodedb" (restore first "codedb" inner) := by
   obtain ⟨nodeArray,nodeStart,nodeLength,nodeImage,nodeSmall,nodeArgs⟩ := node_arguments data
@@ -57,7 +57,7 @@ theorem databases_trace {input : Guest.InputBlob} {source post : PanSemStateFini
       have currentNode : current.locals.lookup (ofString "nodedb")=some (.val (.word nodeTable)) :=
         (codeLocals (ofString "nodedb") (by decide)).trans nodeCell
       exact Or.inr ⟨first,current,inner,nodeArray,nodeStart,nodeLength,codeArray,codeStart,codeLength,nodeTable,nodeCap,codeTable,codeCap,nodeUpper,codeUpper,
-        currentData,nextNodeImage,nextCodeImage,nextNode,codeResult,currentNode,codeCell,by omega,by omega,continued,by rw [endpoint,restored]⟩
+        currentData,nextNodeImage,nextCodeImage,nextNode,codeResult,currentNode,codeCell,(codeLocals (ofString "pl") (by decide)).trans (nodeLocals (ofString "pl") (by decide)),by omega,by omega,continued,by rw [endpoint,restored]⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 

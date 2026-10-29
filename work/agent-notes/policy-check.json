@@ -2010,6 +2010,7 @@
     "submission/InitECandidate/Solver/Input/CallPrefixGlobals.lean",
     "submission/InitECandidate/Solver/Input/CallPrefixKey.lean",
     "submission/InitECandidate/Solver/Input/CallPrefixLocalResult.lean",
+    "submission/InitECandidate/Solver/Input/CallPrefixLocals.lean",
     "submission/InitECandidate/Solver/Input/CallPrefixNormalTrace.lean",
     "submission/InitECandidate/Solver/Input/CallPrefixScopedActual.lean",
     "submission/InitECandidate/Solver/Input/CallPrefixTrace.lean",
@@ -2688,6 +2689,9 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateReturnedData.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateRootNormal.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateWorkspace.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionData.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionProgram.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionTrace.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/WitnessRootCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/WitnessRootFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/WitnessRootLookup.lean",
@@ -8728,8 +8732,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65513,
-  "package_bytes": 2485477092,
+  "package_entries": 65517,
+  "package_bytes": 2485499490,
   "claim": {
     "K": "infinity"
   },

@@ -950,3 +950,33 @@ fixed files unchanged. Incremental policy PASS65513entries/2485477092bytes.
 No global finite target K/full verification; claim infinity.
 Usage30%weekly/0resetcredits. Next: retain the actual pl local through the
 existing reached-prefix traces, then prove the original transaction scan.
+
+
+## Actual payload local and complete current transaction precheck
+
+The same actual header/gas/database prefix now retains pl=the decoded payload
+record through every reached lexical action and both database calls. Shared
+CallPrefix local preservation uses real checked callee returns/normal commands;
+HasTables retains this concrete caller binding for the state-init return.
+
+Current Software run_attempt803's unchanged signed transaction scan costs at
+most its actual decoded count≤12582752source ticks on every outcome. The
+physical payload image supplies both real pointer/count loads. Failed length
+reads, BlockErr4 for empty transactions and short clocks remain covered. Its
+normal reached suffix retains SI/pl, complete payload/witness images, gas,
+heap and hash workspaces. The whole current main prefix now stops within
+3387552531source ticks or reaches its original payload_header suffix with
+those actual data and continued execution intact.
+
+Reused the pure guarded-counter proof; removed its accidental reliance on
+an imported by_contra tactic and made binding lookup imports explicit. Current
+scan syntax/trace helpers use the actual Software declaration and narrow
+current state-call syntax, avoiding the older Guest run_attempt graph.
+
+Validation: current-main-transaction-data-v4.log PASS2688jobs/permitted printed
+axioms only. Index8682modules/17638facts; inventory8727/replacement closure0/
+fixed files unchanged. Incremental policy PASS65517entries/2485499490bytes.
+No global finite target K/full verification; claim infinity.
+Usage30%weekly/0resetcredits. Next: retire unused pre-rebase alternative path
+proofs to recover package entries, then actual payload_header/hash and later
+main/execution/target-step composition.

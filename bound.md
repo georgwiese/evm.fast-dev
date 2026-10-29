@@ -2402,3 +2402,29 @@ files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage52%weekly/0resetcredits. Next: actual BAL Keccak/complete header
 return, remaining run_attempt/main, formal target composition, dominant-slack
 review and final cleanup.
+
+
+## Complete unchanged payload_header source-clock allowance
+
+The actual final decoder offset supplies BAL pointer/length cells, a real
+owned input extent and length≤251655056. Its current Keccak caller therefore
+costs≤81418466source ticks on every outcome; no successful future input read
+or digest is supplied. The original final return adds0source ticks.
+
+The full payload_header788 body now has the checked all-outcome source
+allowance476485158958, composed from its actual main-derived inputs and
+transaction-record scan through both tries, requests and final BAL call.
+This is still source clock, not the global formal target bound.
+
+The remaining normal-return connection needs state observations through
+outer lexical scopes, in addition to the clock equality carried by current
+cost traces. Next, strengthen those trace conclusions with a ScopeFrame
+(clock plus LocalEffects metadata), finish the actual BAL/header normal
+return and connect the remaining run_attempt/main continuation. No entry
+hypothesis or executable change is required for this stronger conclusion.
+
+Validation: current-payload-header-body-cost-v1.log PASS2713jobs, permitted
+printed axioms only. Index8700modules/18166facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K/full
+verifier success. Usage52%weekly/0resetcredits. Remaining: state-carrying header
+return/main, formal target composition, dominant-slack review and final cleanup.

@@ -2648,3 +2648,119 @@ theorem to_before_balance {input : Guest.InputBlob} {source post : PanSemStateFi
 end InitECandidate.Solver.Input.CurrentVerify.RequestHash
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RequestHash.to_before_balance
+
+namespace InitECandidate.Solver.Input.CurrentVerify
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The real decoder's final offset supplies the actual BAL slice and its
+physical input extent. No later hash or successful byte read is assumed. -/
+theorem Data.bal_input {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary) :
+    ∃ bal length,source.memory (record+64#64)=.word bal ∧ source.memory (record+72#64)=.word (BitVec.ofNat 64 length) ∧
+      length≤251655056 ∧ AllocatedBytes.Arena bal length := by
+  obtain ⟨array,length,start,size,payload,before,countBound,bytesBound⟩:=data.payload
+  obtain ⟨count,remaining,division,remainder⟩:=payload.remaining
+  obtain ⟨otherArray,otherStart,otherSize,block⟩:=data.block_inputs
+  have lengthBound : length≤251655056:=by have inside:=payload.sliceUpper; have bound:=block.inputBound; omega
+  have number : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have offsetBound : (Payload.offsetWords input 3).toNat≤length:=by
+    have bound:=(payload.valid 3 (by decide)).2.1
+    rw [number] at bound
+    exact bound
+  have difference : BitVec.ofNat 64 length-Payload.offsetWords input 3=BitVec.ofNat 64 (length-(Payload.offsetWords input 3).toNat):=by
+    apply BitVec.eq_of_toNat_eq
+    rw [BitVec.toNat_sub_of_le (by change (Payload.offsetWords input 3).toNat≤(BitVec.ofNat 64 length).toNat; rw [number]; exact offsetBound),number,
+      BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have pointerNumber : (pointer+62#64+Payload.offsetWords input 3).toNat=pointer.toNat+62+(Payload.offsetWords input 3).toNat:=by
+    have exactNumber:=byteAddress_toNat pointer (62+(Payload.offsetWords input 3).toNat)
+      (by have before:=data.copied.beforeRecord; have upper:=data.recordArena.upper; have inside:=payload.sliceUpper; have minimum:=payload.minimum; omega)
+    simpa only [byteAddress,BitVec.ofNat_add,BitVec.ofNat_toNat,BitVec.setWidth_eq,BitVec.add_assoc,Nat.add_assoc] using exactNumber
+  have facts:=remaining.hash_fields
+  refine ⟨pointer+62#64+Payload.offsetWords input 3,length-(Payload.offsetWords input 3).toNat,facts.2.2.1,?_,by omega,?_⟩
+  · simpa only [difference] using facts.2.2.2
+  · constructor
+    · rw [pointerNumber]
+      have lower:=data.copied.lower
+      omega
+    · rw [pointerNumber]
+      have before:=data.copied.beforeRecord
+      have upper:=data.recordArena.upper
+      have inside:=payload.sliceUpper
+      have minimum:=payload.minimum
+      omega
+
+namespace PayloadHeaderBalance
+open PayloadHeaderEntry PayloadHeaderWithdrawals
+
+def arguments : List (ExpHOL 64):=[.load .one (.op .add [localVar "pl",.const 64#64]),
+  .load .one (.op .add [localVar "pl",.const 72#64]),localVar "bh"]
+def caller : ProgHOL 64:=.call (some (none,none)) (ofString "keccak256") arguments
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem tail_shape : RequestHash.afterHash=.seq caller (.return (localVar "h")) := by
+  simp only [RequestHash.afterHash,ExecutionRequests.afterEncode,PayloadHeaderWithdrawals.afterRoot,PayloadHeaderWithdrawals.afterLoop,
+    PayloadHeaderWithdrawals.loopAndAfter,PayloadHeaderWithdrawals.afterArray,PayloadHeaderWithdrawals.afterCount,
+    PayloadHeaderEntry.afterTransactionTrie,PayloadHeaderEntry.afterSizeGuard,PayloadHeader.afterLength,PayloadHeader.lengthCall,PayloadHeader.parts,PayloadHeader.body,
+    Guest.Software.guestFn_payload_header,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Option.map_some,CallPrefix.cut,
+    show ofString "alloc"≠ofString "block_rlp_length" from by decide,if_false,if_true,caller,arguments,localVar]
+
+theorem field_read {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header value : BitVec 64} {boundary encoded : Nat}
+    (ready : RequestHash.BeforeBalance input source pointer si record gasWord boundary header encoded) (offset : Nat)
+    (inside : offset<136) (aligned : offset%8=0) (cell : source.memory (record+BitVec.ofNat 64 offset)=.word value) :
+    eval source (.load .one (.op .add [localVar "pl",.const (BitVec.ofNat 64 offset)]))=some (.val (.word value)) := by
+  have address : eval source (.op .add [localVar "pl",.const (BitVec.ofNat 64 offset)])=some (.val (.word (record+BitVec.ofNat 64 offset))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,ready.payloadCell,valueIsWord,valueWord,wordOpHOL,wordOp]
+  exact Witness.load_word_read source _ _ _ address
+    (AllocatedBytes.word_mapped source record 136 offset ready.data.arena.domain ready.data.recordArena inside ready.data.recordAligned aligned) cell
+
+/-- Actual BAL size alone prices every Keccak outcome; its pointers need
+no successful future read or hash. Input ownership comes from the decoder. -/
+theorem caller_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (ready : RequestHash.BeforeBalance input source pointer si record gasWord boundary header encoded) :
+    source.clock-(evaluateHOLFiniteState source caller).2.clock≤81418466 := by
+  obtain ⟨bal,length,pCell,nCell,bounded,arena⟩:=ready.data.bal_input
+  have sizeRead:=field_read ready 72 (by decide) (by decide) nCell
+  have called:=CurrentKeccak.Hash.dynamic_call_cost source (.load .one (.op .add [localVar "pl",.const 64#64]))
+    (.load .one (.op .add [localVar "pl",.const 72#64])) (localVar "bh") length ready.data.keccak.installed (by omega) sizeRead
+  have allowance : CurrentKeccak.Hash.bodyPrice length+1≤81418466:=by unfold CurrentKeccak.Hash.bodyPrice; omega
+  exact Nat.le_trans called allowance
+
+theorem tail_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (ready : RequestHash.BeforeBalance input source pointer si record gasWord boundary header encoded) :
+    source.clock-(evaluateHOLFiniteState source RequestHash.afterHash).2.clock≤81418466 := by
+  rw [tail_shape]
+  exact ClockCost.sequence_current source caller (.return (localVar "h")) 81418466 0 (caller_cost ready) (ClockCost.returned source.code _)
+
+/-- Complete unchanged payload_header788 on every outcome from the real
+main-derived decoded inputs and earlier actual transaction scan. -/
+theorem body_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (checked : RunAttempt.TransactionsNonempty input) :
+    source.clock-(evaluateHOLFiniteState source PayloadHeader.body).2.clock≤476485158958 := by
+  let output:=evaluateHOLFiniteState source PayloadHeader.body
+  have actual : evaluateHOLFiniteState source PayloadHeader.body=(output.1,output.2):=rfl
+  rcases RequestHash.to_before_balance data checked output.1 actual with stopped|reached
+  · change source.clock-output.2.clock≤476485158958
+    have price:=stopped.1
+    omega
+  · obtain ⟨header,current,inner,encoded,ready,forward,price,endpoint,continued⟩:=reached
+    have tail:=tail_cost ready
+    rw [continued] at tail
+    change current.clock-inner.clock≤81418466 at tail
+    change source.clock-output.2.clock≤476485158958
+    omega
+
+end PayloadHeaderBalance
+end InitECandidate.Solver.Input.CurrentVerify
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.bal_input
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderBalance.tail_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderBalance.field_read
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderBalance.caller_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderBalance.tail_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderBalance.body_cost

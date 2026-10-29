@@ -51,7 +51,8 @@ theorem set_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
     (model : LoopModel source m array count cutoff limit slices) (small : encoded≤9)
     (lengthCell : source.locals.lookup (ofString "klen")=some (.val (.word (BitVec.ofNat 64 encoded))))
     (inside : model.index.toNat<count) (normal : evaluateHOLFiniteState source Indexed.setCall=(none,target)) :
-    ∃ next : LoopModel target m array count cutoff limit slices,next.index=model.index ∧ model.heap.toNat≤next.heap.toNat := by
+    ∃ next : LoopModel target m array count cutoff limit slices,next.index=model.index ∧ model.heap.toNat≤next.heap.toNat ∧
+      HeapGlobals source target ∧ ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<m.toNat→target.memory query=source.memory query := by
   obtain ⟨callee,called,entry,heapEq⟩:=set_entry model small lengthCell inside
   have args:=Indexed.set_arguments source array m model.index count m.toNat limit encoded slices NonemptyRow model.rows inside model.domain
     model.arrayCell model.mCell model.indexCell lengthCell model.keyGlobal
@@ -77,7 +78,7 @@ theorem set_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
     rootStored:=output.rootStored,flagStored:=(output.older (m+8#64) flagBefore flagAway).trans model.flagStored
     rows:=model.rows.of_band source _ array count m.toNat limit slices NonemptyRow output.domain rowMemory
     graph:=output.graph,member:=output.member,values:=output.values,regions:=output.regions,disjoint:=output.disjoint,paths:=output.paths,pathRegions:=output.pathRegions,separated:=output.separated }
-  exact ⟨next,rfl,grows⟩
+  exact ⟨next,rfl,grows,output.globals,rowMemory⟩
 
 end InitECandidate.Solver.Mpt.CurrentIndexed
 

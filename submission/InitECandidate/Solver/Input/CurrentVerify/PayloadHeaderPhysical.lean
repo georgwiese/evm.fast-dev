@@ -20,6 +20,24 @@ theorem HeaderFrame.data {input : Guest.InputBlob} {source current : PanSemState
     ((frame.globals _ (by decide)).trans data.mptHash) ((frame.globals _ (by decide)).trans data.mptKey) nextHeap (frame.si.trans data.siLocal)
     (fun query lower upper=>frame.older query lower (by omega))
 
+/-- The four actual scoped root-buffer bindings remain live through the
+completed header prefix and the later block-length caller restoration. -/
+structure BufferLocals (current : PanSemStateFiniteExact 64 Guest.HostMemory) (header : BitVec 64) : Prop where
+  transactions : current.locals.lookup (ofString "txr")=some (.val (.word (afterOmmerHeap header)))
+  withdrawals : current.locals.lookup (ofString "wr")=some (.val (.word (withdrawalBase header)))
+  requests : current.locals.lookup (ofString "rh")=some (.val (.word (requestsBase header)))
+  balance : current.locals.lookup (ofString "bh")=some (.val (.word (balanceBase header)))
+
+theorem complete_header_buffer_locals (source hashed : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer record header : BitVec 64) (words : RlpWrite.U256Value.Words) :
+    BufferLocals (completeHeader source hashed pointer record header words) header := by
+  constructor <;>
+    simp [completeHeader,balancePointerStored,allocatedBalance,requestsPointerStored,allocatedRequests,beforeRequests,
+      withdrawalScalarsStored,withdrawalPointerStored,allocatedWithdrawal,allocatedField,baseFeeStored,wideStored,feeEntry,
+      zeroPointerStored,clearedZero,allocatedZero,beforeZero,scalarPrefixStored,scalarFields,withdrawalScalarFields,
+      payloadFieldsStored,wideZeroStored,bloomPointerStored,receiptsPointerStored,transactionPointerStored,allocatedTransactionRoot,
+      putHeader,PersistentAlloc.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+
 /-- Physical inputs at the actual block-length caller. Geometry describes
 readable byte ranges; each allocator's persistent room is derived separately
 from that allocator's genuine successful execution. -/
@@ -33,6 +51,7 @@ structure PhysicalHeader (input : Guest.InputBlob) (source current : PanSemState
   geometry : HeaderEncoding.Geometry header (headerFrontier header)
   fields : ∀ field∈HeaderEncoding.firstField::HeaderEncoding.baseRest,HeaderEncoding.FieldFacts current.memory header field
   optional : ∀ field∈HeaderEncoding.optionalFields,HeaderEncoding.FieldFacts current.memory header field
+  locals : BufferLocals current header
 
 /-- A reached unchanged prefix derives the complete actual physical encoder
 entry, while retaining all earlier transaction/input/witness data for the
@@ -50,9 +69,11 @@ theorem physical_header {input : Guest.InputBlob} {source current : PanSemStateF
   have geometry : HeaderEncoding.Geometry header (headerFrontier header):=
     ⟨buffers.ommer.headerArena.lower,buffers.ommer.headerAligned,frontier.afterHeader,frontier.aligned,
       by have upper:=frontier.bounded; omega⟩
-  exact ⟨header,⟨frame.data data before frontier,frame,buffers,frontier,before,geometry,fields,optional⟩⟩
+  exact ⟨header,⟨frame.data data before frontier,frame,buffers,frontier,before,geometry,fields,optional,by rw [same]; exact complete_header_buffer_locals source hashed pointer record header words⟩⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.HeaderFrame.data
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.physical_header
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.complete_header_buffer_locals

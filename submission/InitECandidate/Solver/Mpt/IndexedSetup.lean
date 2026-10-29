@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Mpt.IndexedProgram
+import InitECandidate.Solver.Mpt.NodeConstructorNormal
 import InitECandidate.Solver.Input.HeapMarkPrefix
 import InitECandidate.Solver.Input.CallPrefixDeclaration
 
@@ -73,8 +74,8 @@ theorem loop_entry_heap (source : PanSemStateFiniteExact 64 Guest.HostMemory) (h
     (loopEntry source heap).globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap 16#64))) ∧
       AllocatedBytes.Arena (PersistentAlloc.rounded heap 16#64) 0 ∧ (PersistentAlloc.rounded heap 16#64).toNat%8=0 ∧
       heap.toNat+16≤(PersistentAlloc.rounded heap 16#64).toNat := by
-  have growth:=PersistentAlloc.guards heap 16#64 arena.upper
-  refine ⟨?_,⟨by have h:=arena.lower; have g:=growth.2.2.1; omega,by have h:=growth.2.2.2.1; omega⟩,growth.2.2.2.2,growth.2.2.1⟩
+  have growth:=NodeConstructor.rounded_ordinary heap 16#64 arena.upper
+  refine ⟨?_,⟨by have h:=arena.lower; have g:=growth.1; omega,by have h:=growth.2.1; omega⟩,growth.2.2,growth.1⟩
   simp [loopEntry,newEntry,NewTrie.post,QueryBranch.bind,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
 
 theorem loop_entry_globals (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) :

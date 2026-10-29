@@ -1571,3 +1571,35 @@ unchanged. Claim infinity; no global finite target K/full verification.
 Usage39%weekly/0resetcredits. Next: bound/retain the actual repeated indexed
 loop, constructor/root suffix and actual main caller; remaining main and
 uniform target steps follow. Five old untracked RLP WIPs untouched/unclaimed.
+
+
+## Complete current indexed loop and real transaction-array entry
+
+The complete unchanged indexed loop now costs at most36827*count source
+ticks on every outcome, with36826body ticks per iteration. At the actual
+derived transaction-count cap12582752 this is463385007904source ticks.
+Normal iteration and loop exits retain the actual root, registered graph,
+rows, monotone aligned heap, nonheap globals and older input memory; the
+final counter equals the original count. The constructor prefix derives its
+own successful allocation room and initializes the fresh empty loop model.
+The full builder now stops within36827*count+4or reaches its genuine final
+root-calculation suffix. That suffix is still open; this is no whole-builder
+or global target bound.
+
+The actual physical payload-header prefix now retains its four scoped root
+destinations. The real decoded transaction records, original successful
+nonempty scan and current bounded heap instantiate the indexed builder's
+complete entry, including its literal evaluated arguments and current code
+lookup. No successful future trie or allocation is assumed. Ordinary rounding
+geometry is separated from persistent allocation guards in shared setup.
+
+Validation: current-indexed-loop-v1.log PASS3073jobs;
+current-indexed-setup-v2.log PASS3078jobs;
+current-header-root-locals-v1.log PASS3078jobs;
+current-indexed-transactions-v4.log PASS3079jobs, including current main
+transaction data and payload-to-trie regressions. Printed axioms permitted
+only. Index8696modules/17815facts; inventory8741/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verification.
+Usage40%weekly/0resetcredits. Next: actual root calculation/cache evidence,
+remaining main and uniform target-step composition. Five historical untracked
+RLP WIPs remain untouched/unclaimed.

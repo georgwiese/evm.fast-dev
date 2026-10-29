@@ -40,7 +40,11 @@ theorem PhysicalHeader.after_length {input : Guest.InputBlob} {source current ch
     omega
   exact ⟨data,headerFrame,physical.buffers,physical.frontier.of_globals current ready header (headerFrontier header) globals,physical.before,physical.geometry,
     fun field member=>HeaderEncoding.FieldFacts.of_cells current.memory ready.memory header field cells (physical.fields field member),
-    fun field member=>HeaderEncoding.FieldFacts.of_cells current.memory ready.memory header field cells (physical.optional field member)⟩
+    fun field member=>HeaderEncoding.FieldFacts.of_cells current.memory ready.memory header field cells (physical.optional field member),
+    ⟨(CallNormal.continuation_lookup_other current child "bl" "txr" value (by decide)).trans physical.locals.transactions,
+      (CallNormal.continuation_lookup_other current child "bl" "wr" value (by decide)).trans physical.locals.withdrawals,
+      (CallNormal.continuation_lookup_other current child "bl" "rh" value (by decide)).trans physical.locals.requests,
+      (CallNormal.continuation_lookup_other current child "bl" "bh" value (by decide)).trans physical.locals.balance⟩⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry
 

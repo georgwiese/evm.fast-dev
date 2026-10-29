@@ -1,5 +1,6 @@
 import InitECandidate.Solver.Mpt.TrieGraphCacheOffsets
 import InitECandidate.Solver.Mpt.TrieChildSlot
+import InitECandidate.Solver.Mpt.TrieParentSlot
 import InitECandidate.Solver.Mpt.NodeConstructorPhysicalFrame
 import InitECandidate.Solver.Mpt.NodeInvalidate
 import InitECandidate.Solver.Mpt.LeafUpdateProgram
@@ -74,6 +75,19 @@ theorem Graph.cache_child_store {memory : Memory} {domain : BitVec 64→Prop}
   have bounds:=slot.bounds memory owner offset
   exact graph.cache_data_store lower upper regions disjoint owner offset child member active bounds.2.2.1 (Or.inr bounds.1)
 
+theorem Graph.ParentSlot.cache_away {memory : Memory} {domain : BitVec 64→Prop}
+    (graph : Graph memory domain) (lower upper : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (address node : BitVec 64) (slot : graph.ParentSlot address) (member : graph.valid node) (active : node≠0#64)
+    (cache : Nat) (offset : cache=8 ∨ cache=24) : address≠0#64→node+BitVec.ofNat 64 cache≠address := by
+  intro nonzero
+  rcases slot with zero|⟨owner,field,ownerMember,ownerActive,selected,equal⟩
+  · exact (nonzero zero).elim
+  · rw [equal]
+    have bounds:=selected.bounds memory owner field
+    exact (graph.cache_field_away lower upper regions disjoint node owner field cache
+      (by rcases offset with rfl|rfl <;> decide) (by rcases offset with rfl|rfl <;> decide)
+      member active ownerMember ownerActive bounds.2.2.1 (Or.inr bounds.1)).symm
+
 theorem Graph.cache_invalidate (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (graph : Graph source.memory source.memaddrs) (owner : BitVec 64) :
     graph.CacheFrame (NodeInvalidate.post source owner).memory := by
@@ -112,6 +126,18 @@ theorem Graph.cache_branch_value (source : PanSemStateFiniteExact 64 Guest.HostM
       nodeMember nodeActive member active (by rw [branch]; exact inside) (Or.inr data)).symm
   exact (BranchValueUpdate.post_away source owner pointer size _ (away 160 (by decide) (by decide)) (away 168 (by decide) (by decide))).trans zero
 
+theorem Graph.cache_branch_value_of_tags (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (graph : Graph source.memory source.memaddrs) (lower upper : Nat) (regions : graph.Regions lower upper) (disjoint : graph.Disjoint)
+    (owner pointer size : BitVec 64) (member : graph.valid owner) (active : owner≠0#64)
+    (notHash : wordAt source.memory owner≠0#64) (notLeaf : wordAt source.memory owner≠1#64) (notExtension : wordAt source.memory owner≠2#64) :
+    graph.CacheFrame (BranchValueUpdate.post source owner pointer size).memory := by
+  intro node nodeMember nodeActive cache cacheOffset zero
+  have away (offset : Nat) (inside : offset<176) (data : 32≤offset) : node+BitVec.ofNat 64 cache≠owner+BitVec.ofNat 64 offset:=by
+    exact (graph.cache_field_away lower upper regions disjoint node owner offset cache
+      (by rcases cacheOffset with rfl|rfl <;> decide) (by rcases cacheOffset with rfl|rfl <;> decide)
+      nodeMember nodeActive member active (by simpa [nodeBytes,notHash,notLeaf,notExtension] using inside) (Or.inr data)).symm
+  exact (BranchValueUpdate.post_away source owner pointer size _ (away 160 (by decide) (by decide)) (away 168 (by decide) (by decide))).trans zero
+
 /-- Fresh constructor writes cannot reach any cache in an older allocated
 node. The upper frontier bounds the complete node, including both caches. -/
 theorem Graph.cache_of_older {memory nextMemory : Memory} {domain : BitVec 64→Prop}
@@ -123,6 +149,16 @@ theorem Graph.cache_of_older {memory nextMemory : Memory} {domain : BitVec 64→
   have number:=byteAddress_toNat node offset (by have bounded:=arena.upper; rcases cache with rfl|rfl <;> omega)
   change (node+BitVec.ofNat 64 offset).toNat=node.toNat+offset at number
   exact (older _ (by rw [number]; rcases cache with rfl|rfl <;> omega)).trans zero
+
+theorem Graph.cache_of_band {memory nextMemory : Memory} {domain : BitVec 64→Prop}
+    (graph : Graph memory domain) (lower upper : Nat) (regions : graph.Regions lower upper)
+    (agree : ∀ query : BitVec 64,lower≤query.toNat→query.toNat<upper→nextMemory query=memory query) : graph.CacheFrame nextMemory := by
+  intro node member active offset cache zero
+  obtain ⟨above,arena,aligned,before⟩:=regions node member active
+  have size:=nodeBytes_bounds (wordAt memory node)
+  have number:=byteAddress_toNat node offset (by have bounded:=arena.upper; rcases cache with rfl|rfl <;> omega)
+  change (node+BitVec.ofNat 64 offset).toNat=node.toNat+offset at number
+  exact (agree _ (by rw [number]; omega) (by rw [number]; rcases cache with rfl|rfl <;> omega)).trans zero
 
 end InitECandidate.Solver.Mpt.TrieWalk
 

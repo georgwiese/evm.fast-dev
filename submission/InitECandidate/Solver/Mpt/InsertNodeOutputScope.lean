@@ -62,6 +62,9 @@ theorem NodeOutput.restore_scope (source ready inner : PanSemStateFiniteExact 64
     code:=output.code.trans (Input.LocalEffects.code_of_erase source ready frame)
     olderPrefix:=olderMemory
     oldPathFields:=fields.trans old base output.oldPathFields originalMember
+    cacheFrame:=by
+      intro node member active offset cache zero
+      exact output.cacheFrame node (originalMember node member) active offset cache (by rw [memoryEq]; exact zero)
     protectedMemory:=by
       intro address safe before
       have currentSafe:=safe.of_fields old base address same fields

@@ -15,6 +15,7 @@ theorem kind_output_normal (source target : PanSemStateFiniteExact 64 Guest.Host
     (query : graph.PathBuffer source.be pathLower heap.toNat key length.toNat)
     (pending : Pending source) (member : graph.valid node) (active : node≠0#64)
     (notHash : wordAt source.memory node≠0#64)
+    (nodeClean : TrieWalk.Uncached source.memory node)
     (tagCell : source.locals.lookup (ofString "k")=some (.val (.word (wordAt source.memory node))))
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (keyCell : source.locals.lookup (ofString "key")=some (.val (.word key)))
@@ -35,7 +36,7 @@ theorem kind_output_normal (source target : PanSemStateFiniteExact 64 Guest.Host
       rw [dispatch_shapes.2.2.2.2.2.1,evaluateHOLFiniteState_ite]
       simp [evalHOLExact,toExact,localVar,tagCell,leaf,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
     exact leaf_output_normal source target heap node key level length pointer size graph limit nodeLower pathLower property
-      values regions disjoint paths pathRegions separated query pending member active leaf nodeCell keyCell levelCell lengthCell pointerCell sizeCell
+      values regions disjoint paths pathRegions separated query pending member active leaf nodeClean nodeCell keyCell levelCell lengthCell pointerCell sizeCell
       before bounded payload extra floor empty domain installed heapCell frontier aligned (selected.symm.trans normal)
   · have selected : evaluateHOLFiniteState source kindChoice=evaluateHOLFiniteState source extensionChoice:=by
       rw [dispatch_shapes.2.2.2.2.2.1,evaluateHOLFiniteState_ite]
@@ -46,13 +47,13 @@ theorem kind_output_normal (source target : PanSemStateFiniteExact 64 Guest.Host
         rw [dispatch_shapes.2.2.2.2.2.2.2,evaluateHOLFiniteState_ite]
         simp [evalHOLExact,toExact,localVar,tagCell,extension,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
       exact extension_output_normal source target heap node key level length pointer size graph limit nodeLower pathLower property
-        values regions disjoint paths pathRegions separated query pending member active extension nodeCell keyCell levelCell lengthCell pointerCell sizeCell
+        values regions disjoint paths pathRegions separated query pending member active extension nodeClean nodeCell keyCell levelCell lengthCell pointerCell sizeCell
         before bounded payload extra floor empty domain installed heapCell frontier aligned (selected.symm.trans continued)
     · have selected : evaluateHOLFiniteState source extensionChoice=evaluateHOLFiniteState source branchChoice:=by
         rw [dispatch_shapes.2.2.2.2.2.2.2,evaluateHOLFiniteState_ite]
         simp [evalHOLExact,toExact,localVar,tagCell,extension,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
       exact branch_output_normal source target heap node key level length pointer size graph limit nodeLower pathLower property
-        values regions disjoint paths pathRegions separated query pending member active notHash leaf extension nodeCell keyCell levelCell lengthCell pointerCell sizeCell
+        values regions disjoint paths pathRegions separated query pending member active notHash leaf extension nodeClean nodeCell keyCell levelCell lengthCell pointerCell sizeCell
         before bounded payload extra heapCell frontier aligned (selected.symm.trans continued)
 
 end InitECandidate.Solver.Mpt.Insert

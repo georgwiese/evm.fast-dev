@@ -17,6 +17,7 @@ theorem NodeOutput.prepend (source ready target : PanSemStateFiniteExact 64 Gues
     (members : ∀ node,old.valid node → base.valid node)
     (same : base.valid=old.valid) (fields : old.PathFields ready.memory)
     (protectedWords : ∀ address : BitVec 64,old.ProtectedWord address → address.toNat<incoming.toNat → ready.memory address=source.memory address)
+    (caches : old.CacheFrame ready.memory)
     (output : NodeOutput ready target base current key length level limit nodeLower pathLower property) :
     Nonempty (NodeOutput source target old incoming key length level limit nodeLower pathLower property) := by
   exact ⟨{ output with
@@ -27,6 +28,7 @@ theorem NodeOutput.prepend (source ready target : PanSemStateFiniteExact 64 Gues
     heapGrows:=Nat.le_trans grows output.heapGrows
     olderPrefix:=fun query before=>(output.olderPrefix query before).trans (olderMemory query before)
     oldPathFields:=fields.trans old base output.oldPathFields members
+    cacheFrame:=caches.trans old base output.cacheFrame members
     protectedMemory:=by
       intro address safe before
       have currentSafe:=safe.of_fields old base address same fields

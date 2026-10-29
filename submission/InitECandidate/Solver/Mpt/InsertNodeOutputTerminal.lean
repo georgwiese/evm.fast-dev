@@ -26,7 +26,8 @@ theorem terminal_output (source target : PanSemStateFiniteExact 64 Guest.HostMem
     (paths : graph.PathBytes target.be) (pathRegions : graph.PathRegions pathLower heap.toNat) (separated : graph.PathSeparated)
     (freshMembers : ∀ node,graph.valid node → old.valid node ∨ incoming.toNat≤node.toNat)
     (protectedGraph : ∀ address : BitVec 64,old.ProtectedWord address → address.toNat<incoming.toNat →
-      TrieWalk.PathWordAway key length.toNat address → graph.ProtectedWord address) :
+      TrieWalk.PathWordAway key length.toNat address → graph.ProtectedWord address)
+    (caches : old.CacheFrame target.memory) (clean : TrieWalk.Uncached target.memory root) :
     Nonempty (NodeOutput source target old incoming key length level limit nodeLower pathLower property) := by
   have current (name : MlS) (other : name≠ofString "r") : target.locals.lookup name=source.locals.lookup name:=by
     rw [localsEq]
@@ -53,6 +54,8 @@ theorem terminal_output (source target : PanSemStateFiniteExact 64 Guest.HostMem
     heapGrows:=grows
     olderPrefix:=olderMemory
     oldPathFields:=oldPathFields
+    cacheFrame:=caches
+    rootUncached:=clean
     protectedMemory:=protectedMemory
     tags:=tags
     graph:=graph

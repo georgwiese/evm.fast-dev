@@ -19,6 +19,7 @@ theorem branch_output_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
     (query : graph.PathBuffer source.be pathLower heap.toNat key length.toNat)
     (pending : Pending source) (member : graph.valid node) (active : node≠0#64)
     (notHash : wordAt source.memory node≠0#64) (notLeaf : wordAt source.memory node≠1#64) (notExtension : wordAt source.memory node≠2#64)
+    (nodeClean : TrieWalk.Uncached source.memory node)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (keyCell : source.locals.lookup (ofString "key")=some (.val (.word key)))
     (levelCell : source.locals.lookup (ofString "level")=some (.val (.word level)))
@@ -60,6 +61,12 @@ theorem branch_output_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
         apply safe.of_fields graph next address same
         rw [endpoint]
         exact TrieWalk.Graph.PathFields.of_branch_value source node pointer size graph nodeLower heap.toNat regions disjoint member active notHash notLeaf notExtension)
+      (by
+        rw [endpoint]
+        exact graph.cache_branch_value_of_tags source nodeLower heap.toNat regions disjoint node pointer size member active notHash notLeaf notExtension)
+      (by
+        rw [endpoint]
+        exact (graph.cache_branch_value_of_tags source nodeLower heap.toNat regions disjoint node pointer size member active notHash notLeaf notExtension).uncached graph node member nodeClean)
   · have strict : level.toNat<length.toNat:=by
       have different : level.toNat≠length.toNat:=by intro same; exact equal (BitVec.toNat_inj.mp same)
       omega
@@ -70,7 +77,7 @@ theorem branch_output_normal (source target : PanSemStateFiniteExact 64 Guest.Ho
       query.span nodeCell keyCell levelCell strict bounded (selected.symm.trans normal)
     exact descend_output source target heap key length level node child (node+32#64+BitVec.ofNat 64 (index*8)) (level+1#64)
       graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated query member childMember slot
-      (by rw [addition]; omega) nextBound heapCell frontier aligned endpoint
+      (by rw [addition]; omega) nextBound heapCell frontier aligned nodeClean endpoint
 
 end InitECandidate.Solver.Mpt.Insert
 

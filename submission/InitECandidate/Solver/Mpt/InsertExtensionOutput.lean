@@ -15,6 +15,7 @@ theorem extension_output_normal (source target : PanSemStateFiniteExact 64 Guest
     (query : graph.PathBuffer source.be pathLower heap.toNat key length.toNat)
     (pending : Pending source) (member : graph.valid node) (active : node≠0#64)
     (tag : wordAt source.memory node=2#64)
+    (nodeClean : TrieWalk.Uncached source.memory node)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (keyCell : source.locals.lookup (ofString "key")=some (.val (.word key)))
     (levelCell : source.locals.lookup (ofString "level")=some (.val (.word level)))
@@ -54,7 +55,7 @@ theorem extension_output_normal (source target : PanSemStateFiniteExact 64 Guest
   have keyedPending:=pending.after_scalar source keyed "seg" (wordAt source.memory (node+32#64)) (by decide) (by decide) (by decide) (by decide) rfl
   have readyPending:=keyedPending.after_scalar keyed ready "sl" (wordAt source.memory (node+40#64)) (by decide) (by decide) (by decide) (by decide) rfl
   obtain ⟨output⟩:=extension_prefix_scope_output ready inner heap node key level length pointer size graph limit nodeLower pathLower property
-    values regions disjoint paths pathRegions separated query readyPending member active tag
+    values regions disjoint paths pathRegions separated query readyPending member active tag nodeClean
     ((current _ (by decide) (by decide)).trans nodeCell) ((current _ (by decide) (by decide)).trans keyCell)
     ((current _ (by decide) (by decide)).trans levelCell) ((current _ (by decide) (by decide)).trans lengthCell)
     ((current _ (by decide) (by decide)).trans pointerCell) ((current _ (by decide) (by decide)).trans sizeCell) segmentCell oldLengthCell

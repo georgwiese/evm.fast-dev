@@ -61,6 +61,7 @@ theorem empty_node_output (source target : PanSemStateFiniteExact 64 Guest.HostM
       have suffixAway:=away.window key level address length.toNat (length-level).toNat before (by rw [subtraction])
       exact (physical.path_protected .leaf (Or.inl rfl) source target heap _ graph next nodeLower regions members address safe beforeHeap
         (by simpa [NodeConstructor.leafWords] using suffixAway)).2)
+    (physical.cache_frame graph nodeLower regions) (physical.uncached (Or.inl rfl))
 
 end InitECandidate.Solver.Mpt.Insert
 

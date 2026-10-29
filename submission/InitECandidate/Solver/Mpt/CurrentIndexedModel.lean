@@ -43,6 +43,7 @@ structure LoopModel (source : PanSemStateFiniteExact 64 Guest.HostMemory) (m arr
   rows : Indexed.SliceArray source array count m.toNat limit slices NonemptyRow
   graph : TrieWalk.Graph source.memory source.memaddrs
   member : graph.valid root
+  rootUncached : TrieWalk.Uncached source.memory root
   values : TrieWalk.Values graph limit (fun _ _=>True)
   regions : graph.Regions cutoff heap.toNat
   disjoint : graph.Disjoint
@@ -115,6 +116,7 @@ theorem key_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
     flagStored:=(agree (m+8#64) (by rw [flagNumber]; have lower:=model.headerAbove; omega)).trans model.flagStored
     rows:=model.rows.of_band source target array count m.toNat limit slices NonemptyRow domain (fun query above before=>agree query above)
     graph:=graph,member:=by rw [same]; exact model.member
+    rootUncached:=(model.graph.cache_of_band cutoff model.heap.toNat model.regions (fun query above _before=>agree query (Nat.le_trans floor above))).uncached model.graph model.root model.member model.rootUncached
     values:=Classical.choice values,regions:=regions,disjoint:=disjoint,paths:=paths,pathRegions:=pathRegions,separated:=separated }
   exact ⟨encoded,next,lower,upper,cell,rfl,rfl,rfl,price⟩
 
@@ -149,6 +151,7 @@ theorem LoopModel.of_frame {source target : PanSemStateFiniteExact 64 Guest.Host
     rootStored:=(congrFun memory m).trans model.rootStored,flagStored:=(congrFun memory (m+8#64)).trans model.flagStored
     rows:=model.rows.of_band source target array count m.toNat limit slices NonemptyRow domain (fun query above before=>congrFun memory query)
     graph:=graph,member:=by rw [same]; exact model.member
+    rootUncached:=by rw [memory]; exact model.rootUncached
     values:=Classical.choice values,regions:=regions,disjoint:=disjoint,paths:=paths,pathRegions:=pathRegions,separated:=separated }
   exact ⟨next,rfl,rfl,rfl⟩
 

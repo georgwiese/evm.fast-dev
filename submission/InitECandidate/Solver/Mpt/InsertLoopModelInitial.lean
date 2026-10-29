@@ -57,6 +57,7 @@ theorem initial_loop_model (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     graph:=graph
     nodeMember:=member
     resultMember:=graph.null
+    resultUncached:=Or.inl rfl
     parentSlot:=Or.inl rfl
     values:=values
     regions:=regions

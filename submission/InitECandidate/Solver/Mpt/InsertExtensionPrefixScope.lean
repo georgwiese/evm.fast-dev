@@ -17,6 +17,7 @@ theorem extension_prefix_scope_output (source target : PanSemStateFiniteExact 64
     (query : graph.PathBuffer source.be pathLower heap.toNat key length.toNat)
     (pending : Pending source) (member : graph.valid node) (active : node≠0#64)
     (tag : wordAt source.memory node=2#64)
+    (nodeClean : TrieWalk.Uncached source.memory node)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (keyCell : source.locals.lookup (ofString "key")=some (.val (.word key)))
     (levelCell : source.locals.lookup (ofString "level")=some (.val (.word level)))
@@ -56,6 +57,7 @@ theorem extension_prefix_scope_output (source target : PanSemStateFiniteExact 64
     exact oldLengthCell
   obtain ⟨output⟩:=extension_prefix_output ready inner heap node key level length prefixLength pointer size base limit nodeLower pathLower property
     baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated currentQuery currentPending (by rw [same]; exact member) active (by rw [memoryEq]; exact tag)
+    (by rw [memoryEq]; exact nodeClean)
     ((current _ (by decide)).trans nodeCell) ((current _ (by decide)).trans keyCell) ((current _ (by decide)).trans levelCell) ((current _ (by decide)).trans lengthCell)
     ((current _ (by decide)).trans pointerCell) ((current _ (by decide)).trans sizeCell) prefixCell currentSegment currentLength (by rw [memoryEq]; exact bound)
     before bounded (by rw [domainEq]; exact payload) extra floor empty (domainEq.trans domain) (by rw [codeEq]; exact installed)

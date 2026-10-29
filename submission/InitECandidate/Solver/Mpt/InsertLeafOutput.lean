@@ -17,6 +17,7 @@ theorem leaf_output_normal (source target : PanSemStateFiniteExact 64 Guest.Host
     (query : graph.PathBuffer source.be pathLower heap.toNat key length.toNat)
     (pending : Pending source) (member : graph.valid node) (active : node≠0#64)
     (tag : wordAt source.memory node=1#64)
+    (nodeClean : TrieWalk.Uncached source.memory node)
     (nodeCell : source.locals.lookup (ofString "node")=some (.val (.word node)))
     (keyCell : source.locals.lookup (ofString "key")=some (.val (.word key)))
     (levelCell : source.locals.lookup (ofString "level")=some (.val (.word level)))
@@ -38,7 +39,7 @@ theorem leaf_output_normal (source target : PanSemStateFiniteExact 64 Guest.Host
     simp [insertLeafArguments,queryPointer,queryLength,InsertLeaf.callValues,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,
       nodeCell,keyCell,levelCell,lengthCell,pointerCell,sizeCell,valueIsWord,valueWord,wordOpHOL,wordOp]
   rw [dispatch_shapes.2.2.2.2.2.2.1] at normal
-  obtain ⟨root,localsEq,domainEq,endianEq,codeEq,price,memory,tags,finalHeap,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords,provenance,protection,_cacheFrame,_rootClean⟩:=
+  obtain ⟨root,localsEq,domainEq,endianEq,codeEq,price,memory,tags,finalHeap,finalHeapCell,finalArena,finalAligned,grows,next,members,rootMember,nextRegions,nextDisjoint,⟨nextValues⟩,nextPaths,nextPathRegions,nextSeparated,fields,protectedWords,provenance,protection,cacheFrame,rootClean⟩:=
     InsertLeaf.assigned_path_normal source target heap node (key+level) (length-level) pointer size graph limit nodeLower pathLower property values regions disjoint paths pathRegions separated
       suffix member active tag payload extra floor empty domain heapCell frontier aligned installed (by rw [subtraction]; omega) (ofString "r") insertLeafArguments args normal
   exact terminal_output source target heap key length level root finalHeap graph limit nodeLower pathLower property pending.node pending.slot pending.level pending.go localsEq
@@ -46,6 +47,7 @@ theorem leaf_output_normal (source target : PanSemStateFiniteExact 64 Guest.Host
     (by
       intro address safe beforeHeap away
       exact protection address safe beforeHeap (away.window key level address length.toNat _ before (by rw [subtraction])))
+    cacheFrame (rootClean nodeClean)
 
 end InitECandidate.Solver.Mpt.Insert
 

@@ -1652,3 +1652,29 @@ main transaction data, current indexed loop/setup and payload-to-trie regression
 Printed axioms permitted only. Claim infinity; no global finite target K/full
 verification. Usage41%weekly/0resetcredits. Next: full insertion/root cache
 connection, actual root calculation, remaining main and uniform target steps.
+
+
+## Whole insertion and actual indexed loop now retain empty root caches
+
+The actual insertion dispatch now derives its uncached visited node from
+the real node_invalidate call. Every actual terminal or descent output retains
+zero caches in old nodes and supplies its genuine uncached selected root. The
+parent child-slot store is separated from every cache field by the current
+graph geometry. The actual loop initializes its result to zero and preserves
+the selected root's empty RLP/hash caches through all later iterations, lexical
+exits, final return and assigned caller. No empty-cache premise is imposed on
+the incoming graph.
+
+The complete current setter then preserves those real empty root caches
+through the root-header store and both call scopes. The indexed builder's
+RLP key writes preserve them by actual workspace/node separation. Constructor
+setup, repeated rows and normal final loop exit now carry that same uncached
+root as checked execution evidence. This closes the previously missing cache
+invariant, but pricing/executing the actual final root suffix remains open.
+
+Validation: current-trie-cache-dispatch-v1.log PASS1325jobs;
+current-trie-cache-whole-insert-v1.log PASS1373jobs;
+current-indexed-root-cache-v1.log PASS3080jobs, including actual main transaction
+data and payload-to-trie regressions. Printed axioms permitted only. Claim
+infinity; no global finite target K/full verification. Next: current root
+calculation, remaining main and uniform target-step composition.

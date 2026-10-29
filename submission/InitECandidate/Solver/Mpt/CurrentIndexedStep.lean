@@ -77,7 +77,7 @@ theorem set_model {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {
     headerArena:=model.headerArena,headerAligned:=model.headerAligned,headerAbove:=model.headerAbove,headerBefore:=model.headerBefore,cutoffAligned:=model.cutoffAligned
     rootStored:=output.rootStored,flagStored:=(output.older (m+8#64) flagBefore flagAway).trans model.flagStored
     rows:=model.rows.of_band source _ array count m.toNat limit slices NonemptyRow output.domain rowMemory
-    graph:=output.graph,member:=output.member,values:=output.values,regions:=output.regions,disjoint:=output.disjoint,paths:=output.paths,pathRegions:=output.pathRegions,separated:=output.separated }
+    graph:=output.graph,member:=output.member,rootUncached:=output.rootUncached,values:=output.values,regions:=output.regions,disjoint:=output.disjoint,paths:=output.paths,pathRegions:=output.pathRegions,separated:=output.separated }
   exact ⟨next,rfl,grows,output.globals,rowMemory⟩
 
 end InitECandidate.Solver.Mpt.CurrentIndexed

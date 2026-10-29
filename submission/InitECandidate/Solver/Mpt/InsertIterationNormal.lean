@@ -63,6 +63,15 @@ theorem iteration_path_normal (source target : PanSemStateFiniteExact 64 Guest.H
     by_cases zero : model.slot=0#64
     · simpa only [result,if_pos zero] using output.rootMember
     · simpa only [result,if_neg zero] using output.oldMember model.result model.resultMember
+  have footerCaches : output.graph.CacheFrame finished.memory:=by
+    intro node member active offset cache zero
+    exact (footerWords _ (selected.cache_away output.graph nodeLower output.heap.toNat output.regions output.disjoint model.slot node member active offset cache)).trans zero
+  have chosenClean : TrieWalk.Uncached chosen.memory result:=by
+    by_cases zero : model.slot=0#64
+    · simpa only [result,if_pos zero] using output.rootUncached
+    · simpa only [result,if_neg zero] using output.cacheFrame.uncached model.graph model.result model.resultMember model.resultUncached
+  have chosenMember : output.graph.valid result:=by rwa [same] at nextResult
+  have resultClean:=footerCaches.uncached output.graph result chosenMember chosenClean
   have nextParent:=output.nextParent.of_tags output.graph graph output.nextSlot (by intro node live; rw [same]; exact live) tags
   have finalLookup (name : String) (notRoot : ofString name≠ofString "r") (notNode : ofString name≠ofString "next_node")
       (notSlot : ofString name≠ofString "next_slot") (notLevel : ofString name≠ofString "next_level") :
@@ -109,6 +118,7 @@ theorem iteration_path_normal (source target : PanSemStateFiniteExact 64 Guest.H
     graph:=graph
     nodeMember:=by rw [same]; exact output.nodeMember
     resultMember:=nextResult
+    resultUncached:=resultClean
     parentSlot:=nextParent
     values:=values
     regions:=regions

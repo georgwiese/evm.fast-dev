@@ -38,6 +38,7 @@ structure LoopModel (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   graph : TrieWalk.Graph source.memory source.memaddrs
   nodeMember : graph.valid node
   resultMember : graph.valid result
+  resultUncached : TrieWalk.Uncached source.memory result
   parentSlot : graph.ParentSlot slot
   values : TrieWalk.Values graph limit property
   regions : graph.Regions nodeLower heap.toNat

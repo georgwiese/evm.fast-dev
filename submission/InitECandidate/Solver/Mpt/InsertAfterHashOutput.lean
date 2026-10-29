@@ -57,7 +57,7 @@ theorem after_hash_output (source target : PanSemStateFiniteExact 64 Guest.HostM
     exact tagCell
   obtain ⟨output⟩:=kind_output_normal middle target heap node key level length pointer size base limit nodeLower pathLower property
     baseValues baseRegions baseDisjoint basePaths basePathRegions baseSeparated currentQuery currentPending (by rw [same]; exact member) active
-    (by rw [tags node member active]; exact notHash) currentTag
+    (by rw [tags node member active]; exact notHash) (by rw [middleEq]; exact TrieWalk.invalidate_uncached source node) currentTag
     (by rw [localsEq]; exact nodeCell) (by rw [localsEq]; exact keyCell) (by rw [localsEq]; exact levelCell) (by rw [localsEq]; exact lengthCell)
     (by rw [localsEq]; exact pointerCell) (by rw [localsEq]; exact sizeCell) before bounded (by rw [domainEq]; exact payload) extra floor empty (domainEq.trans domain)
     (by rw [codeEq]; exact installed) (by rw [globalsEq]; exact heapCell) frontier aligned continued
@@ -65,6 +65,7 @@ theorem after_hash_output (source target : PanSemStateFiniteExact 64 Guest.HostM
     memory tags (by intro current live; rw [same]; exact live) same
     (by rw [middleEq]; exact TrieWalk.Graph.PathFields.of_invalidate source node graph nodeLower heap.toNat regions disjoint member active)
     (by intro address safe _before; rw [middleEq]; exact safe.invalidate_memory source graph address node member active)
+    (by rw [middleEq]; exact graph.cache_invalidate source node)
 
 end InitECandidate.Solver.Mpt.Insert
 

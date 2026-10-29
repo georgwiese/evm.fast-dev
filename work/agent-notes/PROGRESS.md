@@ -3949,3 +3949,35 @@ fixed files unchanged. Incremental policy PASS65503entries/2485418086bytes.
 No global finite target K or full verification; claim infinity.
 Usage30%weekly/0resetcredits. Continue the actual state-init suffix and whole
 normal earlier-input/runtime/heap frame, then continued main/target steps.
+
+
+## Whole current state-init normal memory and retained main inputs
+
+The unchanged state_init320 now has a complete normal execution frame from
+its actual main-derived inputs: every word before its incoming heap survives,
+all nonmemory runtime metadata is retained, scratch/frame cursors have their
+real initialized values, and its actual heap advances within the persistent
+ceiling with8-byte alignment. Its normal result is the real scalar zero.
+
+This includes both workspace stores after root decoding, the first scoped
+Patricia table, the fresh80-byte block record, all seven later table calls,
+all block metadata fields,64-byte key scratch and the actual16MiB journal.
+Each allocation's room/funding comes from that same observed execution.
+Shared normal memory frames permit the initializer's genuine global writes;
+the separately checked effect frame retains its other globals.
+
+The same normal callee return now carries main's SI/payload/gas cells, all
+three witness images, hash environments, low arena cursors and advanced heap
+into its original afterStateInit continuation. The whole reached-prefix source
+allowance remains3374969779. No global finite target K yet; later current main
+and uniform target-step composition remain open. Claim infinity.
+
+Validation: current-state-init-returned-main-v2.log PASS2682jobs, including
+whole state-init normal memory, retained main inputs and existing cost/global
+proofs. Permitted printed axioms only. Index8677modules/17621facts;
+inventory8722/replacement closure0/fixed files unchanged. Incremental policy
+PASS65512entries/2485471496bytes. No full verification claimed.
+Overall effort estimate50%, plausible40–60%, relative to rebased main.
+Usage30%weekly/0resetcredits. Next: retain actual payload/transaction record
+facts needed after state_init, then transaction scan, payload header/hash,
+remaining validation/execution and uniform target steps.

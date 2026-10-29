@@ -48,7 +48,8 @@ theorem transaction_prefix_trace (source post : PanSemStateFiniteExact 64 Guest.
       LocalEffects.erase current=LocalEffects.erase source ∧
       (∀ key : MlS,key≠ofString "i" → current.locals.lookup key=(transactionScanEntry source array length).locals.lookup key) ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤length ∧ post.clock=inner.clock ∧
-      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) := by
+      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧
+      evaluateHOLFiniteState (transactionScanEntry source array length) transactionScan=(none,current) := by
   rw [transaction_shapes.1,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_skip,transaction_shapes.2.1] at run
   obtain ⟨first,firstRun,firstEnd⟩:=ScalarScope.declare_trace source post "txs" transactionArrayExpression array afterTransactionArray outcome arrayRead run
   rw [transaction_shapes.2.2.1] at firstRun
@@ -77,7 +78,7 @@ theorem transaction_prefix_trace (source post : PanSemStateFiniteExact 64 Guest.
   cases result with
   | none=>
     change evaluateHOLFiniteState current afterTransactionScan=(outcome,third) at thirdRun
-    exact Or.inr ⟨current,third,frame,fun key other=>transaction_scan_other entry current key other scanned,forward,priced,endpoint,thirdRun⟩
+    exact Or.inr ⟨current,third,frame,fun key other=>transaction_scan_other entry current key other scanned,forward,priced,endpoint,thirdRun,rfl⟩
   | some result=>
     have clocks:=congrArg (fun output=>output.2.clock) thirdRun
     change current.clock=third.clock at clocks

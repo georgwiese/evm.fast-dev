@@ -2735,6 +2735,7 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateRootNormal.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/StateWorkspace.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionData.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionNonempty.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionProgram.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/TransactionTrace.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/WitnessRootCost.lean",
@@ -5262,6 +5263,7 @@
     "submission/InitECandidate/Solver/Mpt/IndexedSetCost.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedSetEntry.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedSetModel.lean",
+    "submission/InitECandidate/Solver/Mpt/IndexedSetNormal.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedSetup.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedSliceArray.lean",
     "submission/InitECandidate/Solver/Mpt/IndexedUpdatedNormal.lean",
@@ -8739,8 +8741,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65525,
-  "package_bytes": 2485585742,
+  "package_entries": 65527,
+  "package_bytes": 2485608812,
   "claim": {
     "K": "infinity"
   },

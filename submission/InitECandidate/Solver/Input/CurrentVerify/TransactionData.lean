@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.CurrentVerify.TransactionTrace
+import InitECandidate.Solver.Input.CurrentVerify.TransactionNonempty
 import InitECandidate.Solver.Input.CurrentVerify.StateReturnedData
 import InitECandidate.Solver.Input.LoadWord
 
@@ -17,7 +17,7 @@ theorem after_state_init_transaction_trace {input : Guest.InputBlob} {source pos
     source.clock-post.clock≤12582752 ∨ ∃ current inner,
       Data input current pointer si record gasWord boundary ∧ current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤12582752 ∧ post.clock=inner.clock ∧
-      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) := by
+      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧ TransactionsNonempty input := by
   obtain ⟨array,length,start,size,payload,arrayBefore,countBound,byteBound⟩:=data.payload
   let count:=VarList.decodedCount input start size
   let actualArray:=VarList.decodedArray array size
@@ -36,7 +36,7 @@ theorem after_state_init_transaction_trace {input : Guest.InputBlob} {source pos
       (AllocatedBytes.word_mapped next record 136 40 data.arena.domain data.recordArena (by decide) data.recordAligned (by decide)) payload.transactions.count
   rcases transaction_prefix_trace source post actualArray count (by dsimp [count]; omega) arrayRead countRead outcome run with stopped|reached
   · exact Or.inl (by omega)
-  · obtain ⟨current,inner,frame,locals,forward,price,endpoint,continued⟩:=reached
+  · obtain ⟨current,inner,frame,locals,forward,price,endpoint,continued,scanRun⟩:=reached
     have entrySi : (transactionScanEntry source actualArray count).locals.lookup (ofString "si")=source.locals.lookup (ofString "si"):=
       (bind_lookup_other _ "i" "si" 0#64 (by decide)).trans
         ((bind_lookup_other _ "ntx" "si" (BitVec.ofNat 64 count) (by decide)).trans
@@ -49,7 +49,21 @@ theorem after_state_init_transaction_trace {input : Guest.InputBlob} {source pos
       (locals _ (by decide)).trans (entrySi.trans data.siLocal)
     have currentPayload : current.locals.lookup (ofString "pl")=some (.val (.word record)):=
       (locals _ (by decide)).trans (entryPayload.trans payloadLocal)
-    exact Or.inr ⟨current,inner,data.of_frame frame currentSi,currentPayload,forward,by omega,endpoint,continued⟩
+    let scanEntry:=transactionScanEntry source actualArray count
+    have scanRecords : VarList.Records scanEntry input pointer array start size:=
+      VarList.Records.of_memory source scanEntry input pointer array start size rfl payload.transactions.records
+    have scanCounter : scanEntry.locals.lookup (ofString "i")=some (.val (.word 0#64)):=bind_lookup_same _ _ _
+    have scanCount : scanEntry.locals.lookup (ofString "ntx")=some (.val (.word (BitVec.ofNat 64 count))):=
+      (bind_lookup_other _ "i" "ntx" 0#64 (by decide)).trans (bind_lookup_same _ _ _)
+    have scanArray : scanEntry.locals.lookup (ofString "txs")=some (.val (.word actualArray)):=
+      (bind_lookup_other _ "i" "txs" 0#64 (by decide)).trans
+        ((bind_lookup_other _ "ntx" "txs" (BitVec.ofNat 64 count) (by decide)).trans (bind_lookup_same _ _ _))
+    have nonempty:=transaction_records_nonempty scanEntry current input pointer array start size data.arena.domain scanRecords scanCounter scanCount scanArray scanRun
+    have checked : TransactionsNonempty input:=by
+      unfold TransactionsNonempty
+      rw [←payload.transactions.startEq,←payload.transactions.sizeEq]
+      exact nonempty
+    exact Or.inr ⟨current,inner,data.of_frame frame currentSi,currentPayload,forward,by omega,endpoint,continued,checked⟩
 
 /-- Whole real main prefix through transaction scanning: the same actual
 payload/header/gas/database/state-init run either stops within its allowance
@@ -61,18 +75,18 @@ theorem to_after_transaction_scan {input : Guest.InputBlob} {source post : PanSe
     source.clock-post.clock≤3387552531 ∨ ∃ current inner,
       Data input current pointer si record gasWord boundary ∧ current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤3387552531 ∧ post.clock=inner.clock ∧
-      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) := by
+      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧ TransactionsNonempty input := by
   rcases to_after_state_init_with_data data outcome run with stopped|reached
   · exact Or.inl (by omega)
   · obtain ⟨caller,target,inner,tables,returned,currentData,forward,price,continued,endpoint,physical⟩:=reached
     rcases after_state_init_transaction_trace currentData tables.2.1 outcome continued with stopped|reached
     · change target.clock-inner.clock≤12582752 at stopped
       exact Or.inl (by rw [endpoint]; omega)
-    · obtain ⟨current,last,lastData,payloadLocal,scanForward,scanPrice,scanClock,lastRun⟩:=reached
+    · obtain ⟨current,last,lastData,payloadLocal,scanForward,scanPrice,scanClock,lastRun,checked⟩:=reached
       change current.clock≤target.clock at scanForward
       change target.clock-current.clock≤12582752 at scanPrice
       exact Or.inr ⟨current,last,lastData,payloadLocal,by change current.clock≤source.clock; omega,
-        by change source.clock-current.clock≤3387552531; omega,endpoint.trans scanClock,lastRun⟩
+        by change source.clock-current.clock≤3387552531; omega,endpoint.trans scanClock,lastRun,checked⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 

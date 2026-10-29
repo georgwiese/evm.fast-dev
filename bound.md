@@ -1510,3 +1510,32 @@ inventory8734/replacement closure0/fixed files unchanged. Claim infinity;
 no global finite target K or full verification. Next: actual setter normal
 frame, indexed-loop invariant and main-scan nonemptiness, then remaining
 main and target-step composition. Usage38%weekly/0resetcredits.
+
+
+## Actual main scan establishes nonempty rows; complete setter normal output
+
+The current unsecured indexed setter now has its full normal-output theorem:
+its actual key conversion, insertion, root store and lexical exits return0,
+a registered root, the real monotone aligned heap and retained node/value/
+path geometry. Every earlier word below the original cutoff survives except
+the map's own root cell; all nonheap globals remain fixed. The original
+nonempty-row entry condition is still explicit for this local setter proof.
+
+The real current run_attempt transaction scan now discharges that condition
+for transactions. A normal guard reads a nonzero length even without assuming
+a valid exception shape. The real signed counter visits every decoded row;
+its successful exit proves the pure TransactionsNonempty input fact for all
+original decoded record lengths. Actual record-cell ownership supplies its
+read interface. Main's complete prefix now carries that fact to the genuine
+afterTransactionScan continuation within the same3387552531source allowance.
+No input validity or later trie success is assumed to derive the fact.
+
+Validation: current-indexed-set-normal-v4.log PASS2429jobs;
+current-transaction-nonempty-v2.log PASS2685jobs;
+current-main-transaction-nonempty-v2.log PASS3063jobs, including complete
+payload-to-trie and insertion/setter regression. Printed axioms permitted
+only. Index8691modules/17793facts; inventory8736/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verification.
+Next: actual current indexed-loop entry/key workspace and repeated-row
+invariant, then remaining main and target-step composition. Usage38%weekly/
+0resetcredits. Five historical untracked RLP WIPs untouched/unclaimed.

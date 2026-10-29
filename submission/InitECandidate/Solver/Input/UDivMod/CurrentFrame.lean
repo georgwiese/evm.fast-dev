@@ -3345,3 +3345,278 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.body_cost_eight
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.call_cost_eight
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The actual caller state immediately before binding the returned remainder. -/
+structure CallerResult (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (quotient : Nat→ BitVec 64) (remainder : BitVec 64) : Prop where
+  state : post={source with memory:=post.memory,clock:=source.clock-1-wholePrice contents count}
+  quotientImage : Image post (Workspace.pointer base .quotient) (Single.padded quotient (Length.result contents count)) 16
+  digits : ∀ index,index<Length.result contents count→ (quotient index).toNat<2^32
+  quotientEq : number quotient (Length.result contents count)=number contents count/divisor.toNat
+  remainderEq : remainder.toNat=number contents count%divisor.toNat
+  small : remainder.toNat<divisor.toNat
+  away : ∀ query,(∀ index,index<16→ query≠slot (Workspace.pointer base .quotient) index)→
+    (∀ index,index<8→ query≠slot (Workspace.pointer base .remainder) index)→
+    (∀ index,index<8→ query≠slot (Workspace.pointer base .divisor) index)→ post.memory query=source.memory query
+
+/-- Execute the actual scoped call and install its real four-word remainder
+before evaluating an arbitrary original continuation. -/
+theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (contents : Nat→ BitVec 64) (count : Nat) (checked : Buffers source base divisor contents count)
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some (values (Workspace.pointer base .numerator) count divisor))
+    (enough : wholePrice contents count+1≤source.clock) :
+    ∃ post quotient remainder,CallerResult source post base divisor contents count quotient remainder ∧
+      evaluateHOLFiniteState source (.decCall (ofString name) RlpWrite.U256Value.tupleShape (ofString "digits_divmod") arguments continuation)=
+        (let output:=evaluateHOLFiniteState (setVarHOLFinite (ofString name) (RlpWrite.U256Value.tuple (Single.remainderWords remainder)) post) continuation;
+          (output.1,restore source name output.2)) := by
+  obtain ⟨callee,called,u,m,d⟩:=environment source.code.lookup (Workspace.pointer base .numerator) count divisor
+    (original_code source.code checked.installed)
+  have actual:=callee_entry source base divisor contents count checked callee u m d
+  obtain ⟨target,quotient,remainder,result⟩:=execute (callEntryStateHOLFinite source callee) base divisor contents count actual
+    (by change wholePrice contents count≤source.clock-1;omega)
+  let post:={target with locals:=source.locals}
+  have caller:=CallNormal.return_execute source target name RlpWrite.U256Value.tupleShape (ofString "digits_divmod") arguments _
+    body continuation callee RlpWrite.U256Value.tupleShape (RlpWrite.U256Value.tuple (Single.remainderWords remainder)) args called (by omega) result.run
+    (by simp [RlpWrite.U256Value.tuple,RlpWrite.U256Value.tupleShape,shapeOfHOLExact,shapeEqHOL_eq_true])
+  refine ⟨post,quotient,remainder,⟨?_,result.quotientImage,result.digits,result.quotientEq,result.remainderEq,result.small,result.away⟩,caller⟩
+  exact congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) result.state
+
+theorem CallerResult.quotient_number {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {base divisor remainder : BitVec 64} {contents quotient : Nat→ BitVec 64} {count : Nat}
+    (result : CallerResult source post base divisor contents count quotient remainder)
+    (small : Length.result contents count≤8) :
+    quadNumber (ToWords.words (Single.padded quotient (Length.result contents count)))=number contents count/divisor.toNat := by
+  have digits : ∀ index,index<8→ (Single.padded quotient (Length.result contents count) index).toNat<2^32:=by
+    intro index inside
+    by_cases before : index<Length.result contents count
+    · simpa only [Single.padded,if_pos before] using result.digits index before
+    · simp [Single.padded,before]
+  rw [ToWords.words_number _ digits,Single.padded_number quotient (Length.result contents count) 8 small]
+  exact result.quotientEq
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.call_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.DivMod.CallerResult.quotient_number
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.U256
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def pairValue (quotient remainder : Quad) : ValueHOL 64:=.rStruct
+  [.val (.word (quotient 0)),.val (.word (quotient 1)),.val (.word (quotient 2)),.val (.word (quotient 3)),
+   .val (.word (remainder 0)),.val (.word (remainder 1)),.val (.word (remainder 2)),.val (.word (remainder 3))]
+def finish : ProgHOL 64:=.return (.rstruct
+  [.rfield 0 (localVar "q"),.rfield 1 (localVar "q"),.rfield 2 (localVar "q"),.rfield 3 (localVar "q"),
+   .rfield 0 (localVar "r"),.rfield 1 (localVar "r"),.rfield 2 (localVar "r"),.rfield 3 (localVar "r")])
+def quotientArguments : List (ExpHOL 64):=[DivMod.workspaceAddress .quotient]
+def afterDivision : ProgHOL 64:=.decCall (ofString "q") RlpWrite.U256Value.tupleShape (ofString "digits_to_u256") quotientArguments finish
+def divisionArguments : List (ExpHOL 64):=[localVar "u",.const 8#64,localVar "b"]
+def numeratorArguments : List (ExpHOL 64):=[localVar "u",localVar "a"]
+def slowTail : ProgHOL 64:=.seq (.call (some (none,none)) (ofString "u256_to_digits") numeratorArguments)
+  (.decCall (ofString "r") RlpWrite.U256Value.tupleShape (ofString "digits_divmod") divisionArguments afterDivision)
+
+theorem finish_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (quotient remainder : Quad)
+    (q : source.locals.lookup (ofString "q")=some (RlpWrite.U256Value.tuple quotient))
+    (r : source.locals.lookup (ofString "r")=some (RlpWrite.U256Value.tuple remainder)) :
+    evaluateHOLFiniteState source finish=(some (.returned (pairValue quotient remainder)),emptyLocalsHOLFinite source) := by
+  simp [finish,pairValue,evaluateHOLFiniteState_return,evalHOLExact,evalListHOLExact,toExact,localVar,q,r,
+    RlpWrite.U256Value.tuple,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.U256
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256.finish_execute
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.U256
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+structure Result (program : ProgHOL 64) (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (a : Quad) (divisor : BitVec 64) (quotient remainder : Quad) : Prop where
+  run : evaluateHOLFiniteState source program=(some (.returned (pairValue quotient remainder)),target)
+  state : target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-(DivMod.wholePrice (digit a) 8+3)}
+  quotientEq : quadNumber quotient=quadNumber a/divisor.toNat
+  remainderEq : quadNumber remainder=quadNumber a%divisor.toNat
+  small : quadNumber remainder<divisor.toNat
+  away : ∀ query,(∀ index,index<16→ query≠slot (Workspace.pointer base .quotient) index)→
+    (∀ index,index<8→ query≠slot (Workspace.pointer base .remainder) index)→
+    (∀ index,index<8→ query≠slot (Workspace.pointer base .divisor) index)→
+    (∀ index,index<8→ query≠slot (Workspace.pointer base .numerator) index)→ target.memory query=source.memory query
+
+/-- Execute the original wide u256 division tail: convert the numerator,
+call the real divider, reconstruct its quotient, and return all eight words. -/
+theorem slow_tail_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (uLocal : source.locals.lookup (ofString "u")=some (.val (.word (Workspace.pointer base .numerator))))
+    (divisorSmall : divisor.toNat<2^32) (positive : 0<divisor.toNat)
+    (enough : DivMod.wholePrice (digit a) 8+3≤source.clock) :
+    ∃ target quotient remainder,Result slowTail source target base a divisor quotient remainder := by
+  let converted:=ToDigits.callerPost source (Workspace.pointer base .numerator) a
+  have convertArgs : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) numeratorArguments=
+      some [.val (.word (Workspace.pointer base .numerator)),RlpWrite.U256Value.tuple a]:=by
+    simp [numeratorArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,uLocal,aLocal]
+  have convertedRun:=ToDigits.call_execute source (Workspace.pointer base .numerator) a numeratorArguments installed convertArgs
+    (by intro index inside;exact Workspace.slot_mapped source base context .numerator index (by change index<16;omega)) (by omega)
+  have convertedContext : Workspace.Context converted base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  have checked : DivMod.Buffers converted base divisor (digit a) 8:=
+    ⟨convertedContext,installed,by decide,by decide,ToDigits.caller_image source _ a,divisorSmall,positive,digit_small a⟩
+  have divisionArgs : evalListHOLFinite converted (h:=fun query=>Classical.propDecidable (converted.memaddrs query)) divisionArguments=
+      some (DivMod.values (Workspace.pointer base .numerator) 8 divisor):=by
+    have u : converted.locals.lookup (ofString "u")=some (.val (.word (Workspace.pointer base .numerator))):=uLocal
+    have b : converted.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)):=bLocal
+    simp [divisionArguments,DivMod.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,localVar,toExact,u,b]
+  have convertedClock : converted.clock=source.clock-1:=rfl
+  obtain ⟨post,quotient,remainder,result,divisionRun⟩:=DivMod.call_execute converted base divisor (digit a) 8 checked "r"
+    divisionArguments afterDivision divisionArgs (by change DivMod.wholePrice (digit a) 8+1≤converted.clock;omega)
+  let rEntry:=setVarHOLFinite (ofString "r") (RlpWrite.U256Value.tuple (Single.remainderWords remainder)) post
+  have postContext : Workspace.Context post base:=⟨by rw [result.state];exact context.global,
+    by rw [result.state];exact context.domain,context.arena,context.aligned⟩
+  have rContext : Workspace.Context rEntry base:=⟨postContext.global,postContext.domain,postContext.arena,postContext.aligned⟩
+  have postCode : OriginalCode.Installed post.code:=by rw [result.state];exact installed
+  have rCode : OriginalCode.Installed rEntry.code:=postCode
+  have postClock:=congrArg PanSemStateFiniteExact.clock result.state
+  change post.clock=converted.clock-1-DivMod.wholePrice (digit a) 8 at postClock
+  have rClock : rEntry.clock=source.clock-2-DivMod.wholePrice (digit a) 8:=by
+    change post.clock=source.clock-2-DivMod.wholePrice (digit a) 8
+    omega
+  have quotientArgs : evalListHOLFinite rEntry (h:=fun query=>Classical.propDecidable (rEntry.memaddrs query)) quotientArguments=
+      some [.val (.word (Workspace.pointer base .quotient))]:=by
+    have address:=DivMod.workspace_read rEntry base rContext .quotient
+    simp only [eval] at address
+    simpa only [quotientArguments,evalListHOLFinite,evalListHOLExact,address] using
+      (show some [.val (.word (Workspace.pointer base .quotient))]=some [.val (.word (Workspace.pointer base .quotient))] from rfl)
+  let qWords:=ToWords.words (Single.padded quotient (Length.result (digit a) 8))
+  let qEntry:=setVarHOLFinite (ofString "q") (RlpWrite.U256Value.tuple qWords) {rEntry with clock:=rEntry.clock-1}
+  have qCell : qEntry.locals.lookup (ofString "q")=some (RlpWrite.U256Value.tuple qWords):=by
+    simp [qEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE]
+  have rCell : qEntry.locals.lookup (ofString "r")=some (RlpWrite.U256Value.tuple (Single.remainderWords remainder)):=by
+    simp [qEntry,rEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,show ofString "q"≠ofString "r" by decide,show ofString "r"≠ofString "q" by decide]
+  have finishRun:=finish_execute qEntry qWords (Single.remainderWords remainder) qCell rCell
+  have quotientRun:=ToWords.call_execute rEntry (Workspace.pointer base .quotient) (Single.padded quotient (Length.result (digit a) 8)) "q"
+    quotientArguments finish rCode quotientArgs (by intro index inside;exact result.quotientImage index (by omega))
+    (by intro index inside;exact Workspace.slot_mapped rEntry base rContext .quotient index (by change index<16;omega)) (by change 1≤rEntry.clock;omega)
+  change evaluateHOLFiniteState rEntry afterDivision=
+    (let output:=evaluateHOLFiniteState qEntry finish;(output.1,restore rEntry "q" output.2)) at quotientRun
+  rw [finishRun] at quotientRun
+  change evaluateHOLFiniteState converted (.decCall (ofString "r") RlpWrite.U256Value.tupleShape (ofString "digits_divmod") divisionArguments afterDivision)=
+    (let output:=evaluateHOLFiniteState rEntry afterDivision;(output.1,restore converted "r" output.2)) at divisionRun
+  rw [quotientRun] at divisionRun
+  let target:=restore converted "r" (restore rEntry "q" (emptyLocalsHOLFinite qEntry))
+  refine ⟨target,qWords,Single.remainderWords remainder,⟨?_,?_,?_,?_,?_,?_⟩⟩
+  · rw [slowTail,evaluateHOLFiniteState_seq_line780,convertedRun]
+    exact divisionRun
+  · have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+        locals:=target.locals,clock:=state.clock-1}) result.state
+    change target={source with locals:=target.locals,memory:=target.memory,clock:=source.clock-1-1-DivMod.wholePrice (digit a) 8-1} at frame
+    have subtract : source.clock-1-1-DivMod.wholePrice (digit a) 8-1=source.clock-(DivMod.wholePrice (digit a) 8+3):=by omega
+    simpa only [subtract] using frame
+  · simpa only [digits_number] using result.quotient_number (Length.result_bound (digit a) 8)
+  · rw [Single.remainder_number,result.remainderEq,digits_number]
+  · simpa only [Single.remainder_number] using result.small
+  · intro query outsideQ outsideR outsideV outsideU
+    exact (result.away query outsideQ outsideR outsideV).trans (ToDigits.caller_away source (Workspace.pointer base .numerator) query a outsideU)
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.U256
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256.slow_tail_execute
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.U256
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_u256_divmod with | .function fn=>progToHOL fn.body | _=>.skip
+def slowBranch : ProgHOL 64:=.dec (ofString "u") .one (DivMod.workspaceAddress .numerator) slowTail
+
+private def findSlow : ProgHOL 64→ Option (ProgHOL 64)
+  | .dec name shape expression rest=>if name=ofString "u" then some (.dec name shape expression rest) else findSlow rest
+  | .decCall _ _ _ _ rest=>findSlow rest
+  | .seq first rest=>(findSlow first).orElse (fun _=>findSlow rest)
+  | .ite _ yes no=>(findSlow yes).orElse (fun _=>findSlow no)
+  | _=>none
+
+theorem literal_slow : findSlow body=some slowBranch := by
+  simp [findSlow,body,Guest.Software.guestFn_u256_divmod,progToHOL,expToHOL,shapeToHOL,
+    slowBranch,slowTail,numeratorArguments,divisionArguments,afterDivision,quotientArguments,finish,
+    DivMod.workspaceAddress,Workspace.offset,localVar,RlpWrite.U256Value.tupleShape]
+
+/-- Include the actual numerator-pointer declaration of the original wide
+branch; its returned quotient/remainder follow from the real memory path. -/
+theorem slow_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (divisorSmall : divisor.toNat<2^32) (positive : 0<divisor.toNat)
+    (enough : DivMod.wholePrice (digit a) 8+3≤source.clock) :
+    ∃ target quotient remainder,Result slowBranch source target base a divisor quotient remainder := by
+  let ready:=bind source "u" (Workspace.pointer base .numerator)
+  have nextContext : Workspace.Context ready base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  obtain ⟨inner,quotient,remainder,result⟩:=slow_tail_execute ready base divisor a nextContext installed
+    ((bind_lookup_other source "u" "a" _ (by decide)).trans aLocal)
+    ((bind_lookup_other source "u" "b" _ (by decide)).trans bLocal)
+    (bind_lookup_same _ _ _) divisorSmall positive enough
+  let target:=restore source "u" inner
+  have declared:=ScalarScope.declare_execute source inner "u" (DivMod.workspaceAddress .numerator) (Workspace.pointer base .numerator)
+    slowTail _ (DivMod.workspace_read source base context .numerator) result.run
+  refine ⟨target,quotient,remainder,⟨declared,?_,result.quotientEq,result.remainderEq,result.small,result.away⟩⟩
+  exact congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=target.locals}) result.state
+
+/-- The entire actual wide branch costs at most313source clocks with a
+one-digit divisor, independently of every short-clock outcome. -/
+theorem slow_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (divisorSmall : divisor.toNat<2^32) (positive : 0<divisor.toNat) :
+    source.clock-(evaluateHOLFiniteState source slowBranch).2.clock≤313 := by
+  have bound:=DivMod.wholePrice_tight (digit a) 8
+  by_cases enough : DivMod.wholePrice (digit a) 8+3≤source.clock
+  · obtain ⟨target,quotient,remainder,result⟩:=slow_execute source base divisor a context installed aLocal bLocal divisorSmall positive enough
+    rw [result.run]
+    have clock:=congrArg PanSemStateFiniteExact.clock result.state
+    change target.clock=source.clock-(DivMod.wholePrice (digit a) 8+3) at clock
+    change source.clock-target.clock≤313
+    omega
+  · omega
+
+/-- A real normal return derives this wide branch's funding, exact eight
+returned words, natural quotient/remainder and physical write frame. -/
+theorem slow_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (divisorSmall : divisor.toNat<2^32) (positive : 0<divisor.toNat)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source slowBranch=(some (.returned returned),post)) :
+    ∃ quotient remainder,DivMod.wholePrice (digit a) 8+3≤source.clock ∧
+      returned=pairValue quotient remainder ∧ Result slowBranch source post base a divisor quotient remainder := by
+  let price:=DivMod.wholePrice (digit a) 8+3
+  have nextContext : Workspace.Context {source with clock:=price} base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  obtain ⟨baseTarget,baseQ,baseR,baseResult⟩:=slow_execute {source with clock:=price} base divisor a nextContext installed aLocal bLocal divisorSmall positive (by rfl)
+  have zero : baseTarget.clock=0:=by
+    have clock:=congrArg PanSemStateFiniteExact.clock baseResult.state
+    change baseTarget.clock=price-price at clock
+    omega
+  have funded:=(ClockCost.normal_from_zero_clock source baseTarget post slowBranch price _ _ baseResult.run zero
+    (by intro impossible;cases impossible) normal (by intro impossible;cases impossible)).1
+  obtain ⟨target,quotient,remainder,result⟩:=slow_execute source base divisor a context installed aLocal bLocal divisorSmall positive funded
+  have output:=normal.symm.trans result.run
+  have same : post=target:=congrArg Prod.snd output
+  have value : returned=pairValue quotient remainder:=by
+    have values:=congrArg Prod.fst output
+    cases values
+    rfl
+  exact ⟨quotient,remainder,funded,value,same.symm ▸ result⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.U256
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256.literal_slow
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256.slow_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256.slow_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256.slow_normal

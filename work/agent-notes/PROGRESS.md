@@ -5141,3 +5141,33 @@ Next: complete the actual u256 division wrapper, the two-digit Taylor path,
 actual runtime workspace/input separation, Taylor/header/main and uniform
 target composition, exact K, dominant slack review and cleanup. Historical
 untracked RlpLength/RlpWrite WIPs and executable/fixed premises are untouched.
+
+
+## Actual scoped divider and complete wide u256 quotient/remainder branch
+
+The real scoped digits_divmod call now executes its original mixed ABI,
+installs the returned four-word remainder in the caller's r binding and
+resumes any actual continuation. Its physical caller model retains the
+complete quotient image and exact natural quotient/remainder.
+
+The unchanged u256_divmod63 wide branch is identified literally in the
+current AST. The proof executes its actual u pointer declaration, numerator
+conversion, scoped digits_divmod call, quotient reconstruction and eight-word
+return. On the one-digit-divisor path its complete body costs≤313source
+ticks on every outcome. Real normal returns derive their own funding, exact
+natural quotient/remainder, actual returned eight words and memory frame
+outside the original u/q/r/v stores. No future helper return/value is an
+entry premise. Outer comparison/scalar branches remain separate work.
+
+Validation: current-u256-wide-branch-v1.log PASS1030jobs; all8new printed
+facts have only permitted axioms. Index8700modules/18501facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage32%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: complete actual u256_divmod/u256_div outer comparison and scalar
+shortcut, then the two-digit Taylor path. Actual runtime workspace/input
+separation, Taylor/header/main, uniform target composition, exact K,
+dominant slack review and cleanup remain open. Historical untracked
+RlpLength/RlpWrite WIPs and executable/fixed premises stay untouched.

@@ -1872,3 +1872,25 @@ printed axioms only. Index8700modules/17892facts; inventory8745/replacement
 closure0/fixed files unchanged. Incremental policy65536entries/2485844740bytes
 (entry cap full). Claim infinity; no global finite target K/full verifier
 success. Usage45%weekly/0resetcredits. Five historical RLP WIPs untouched.
+
+## Whole current withdrawal encoder normal result
+
+The same genuine current779 normal return now supplies its actual pair:
+the freshly allocated incoming heap pointer and an encoded length1..57.
+The full seven-command field prefix is extracted from that run; real scalar
+calls, the exact21-byte address result, assignments and final list helper
+supply every intermediate buffer position. The original64-byte allocation
+is derived from its own capacity check. Its precise allocation metadata is
+retained, and all memory outside that64-byte span is unchanged. No normal
+later call or output-memory oracle is an entry premise.
+
+Together with the already checked201tick all-outcome bound this is the
+complete local encoder interface needed by the actual withdrawal loop.
+That loop's prefix rows/heap progression, complete indexed withdrawal trie,
+remaining header/main and uniform target-step theorem remain outstanding.
+
+Validation: current-withdrawal-encoder-normal-v1.log PASS863jobs; permitted
+printed axioms only. Index8700modules/17899facts; inventory8745/replacement
+closure0/fixed files unchanged. Incremental policy65536entries/2485857622bytes
+(entry cap full). Claim infinity; no global finite target K/full verifier
+success. Usage45%weekly/0resetcredits. Final cleanup stays on the plan.

@@ -4315,3 +4315,26 @@ fixed files unchanged. Claim infinity; no global finite target K/full verifier
 success. Usage53%weekly/0resetcredits. Next: actual header hash/comparison/
 version checks and remaining main, formal target composition, dominant-slack
 review and final cleanup.
+
+
+## Complete current header_hash body and ordinary caller
+
+The original header_hash211 now costs≤2303body/2304caller source ticks on
+every outcome. The actual encoder return supplies its real1..916-byte length;
+software Keccak costs≤954caller ticks for this same output. Its own mark,
+encoder allocation/temporary failures, release and scalar return are included.
+Normal execution restores its own saved heap and all older memory outside
+its real32-byte output and fixed lower Keccak workspaces, while preserving
+all nonheap globals and the caller's actual locals. The signature/ABI comes
+from the unchanged two-word h/out code entry. No digest value, future read,
+completed hash or allocation room is supplied as an entry premise.
+
+Validation: current-main-header-hash-cost-v1.log PASS3090jobs,
+current-main-header-hash-tail-normal-v1.log PASS3090jobs,
+current-main-header-hash-normal-v1.log PASS3090jobs and
+current-main-header-hash-call-v2.log PASS3090jobs, permitted printed axioms
+only. Index8700modules/18190facts; inventory8745/replacement closure0/fixed
+files unchanged. Claim infinity; no global finite target K/full verifier
+success. Usage54%weekly/0resetcredits. Next: actual main bh allocation/hash
+continuation, comparison/version checks and later main, formal target
+composition, dominant-slack review and final cleanup.

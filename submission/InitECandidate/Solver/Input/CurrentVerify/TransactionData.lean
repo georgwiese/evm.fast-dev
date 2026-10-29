@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CurrentRlp.HeaderCall
 import InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
 import InitECandidate.Solver.Input.CurrentVerify.TransactionNonempty
 import InitECandidate.Solver.Input.CurrentVerify.StateReturnedData
@@ -246,3 +247,340 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_transaction_scan_header_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_payload_header
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_header_hash with | .function fn=>progToHOL fn.body | _=>.skip
+def afterMark : ProgHOL 64:=match body with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def afterEncode : ProgHOL 64:=match afterMark with | .decCall _ _ _ _ rest=>rest | _=>.skip
+def hashArguments : List (ExpHOL 64):=[.rfield 0 (localVar "e"),.rfield 1 (localVar "e"),localVar "out"]
+def hashCall : ProgHOL 64:=.call (some (none,none)) (ofString "keccak256") hashArguments
+def releaseCall : ProgHOL 64:=.call (some (none,none)) (ofString "heap_release") [localVar "mark"]
+def returnZero : ProgHOL 64:=.return (.const 0#64)
+
+set_option maxRecDepth 100000 in
+theorem shapes : body=.decCall (ofString "mark") .one (ofString "heap_mark") [] afterMark ∧
+    afterMark=.decCall (ofString "e") HeaderEncoding.returnShape (ofString "encode_header") [localVar "h"] afterEncode ∧
+    afterEncode=.seq hashCall (.seq releaseCall returnZero) := by
+  simp only [body,afterMark,afterEncode,Guest.Software.guestFn_header_hash,progToHOL,expToHOL,shapeToHOL,
+    hashCall,hashArguments,releaseCall,returnZero,HeaderEncoding.returnShape,localVar,List.map_cons,List.map_nil,Option.map_none]
+  trivial
+
+/-- Only the actual encoded size is needed to price every final hash outcome.
+Malformed pointers and failed memory accesses remain included. -/
+theorem after_encode_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (start : BitVec 64) (encoded : Nat)
+    (bounded : encoded≤916) (installed : OriginalCode.Installed source.code)
+    (cell : source.locals.lookup (ofString "e")=some (HeaderEncoding.encodedPair start encoded)) :
+    source.clock-(evaluateHOLFiniteState source afterEncode).2.clock≤955 := by
+  have sizeRead : eval source (.rfield 1 (localVar "e"))=some (.val (.word (BitVec.ofNat 64 encoded))):=by
+    simp [eval,evalHOLExact,toExact,localVar,cell,HeaderEncoding.encodedPair]
+  have called:=CurrentKeccak.Hash.dynamic_call_cost source (.rfield 0 (localVar "e")) (.rfield 1 (localVar "e"))
+    (localVar "out") encoded installed (by omega) sizeRead
+  have allowance : CurrentKeccak.Hash.bodyPrice encoded+1≤954:=by unfold CurrentKeccak.Hash.bodyPrice; omega
+  have first : source.clock-(evaluateHOLFiniteState source hashCall).2.clock≤954:=Nat.le_trans called allowance
+  rw [shapes.2.2]
+  exact ClockCost.sequence_current source hashCall (.seq releaseCall returnZero) 954 1 first
+    (ClockCost.sequence source.code releaseCall returnZero 1 0 (HeapScope.release_call_cost source.code installed (some none) _)
+      (ClockCost.returned source.code _))
+
+/-- A real normal header encoder supplies the length used by this same hash.
+Its allocator room is derived inside the encoder's all-outcome contract. -/
+theorem after_mark_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap : BitVec 64)
+    (geometry : HeaderEncoding.Geometry header heap) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (installed : OriginalCode.Installed source.code)
+    (h : source.locals.lookup (ofString "h")=some (.val (.word header)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (fields : ∀ field∈HeaderEncoding.firstField::HeaderEncoding.baseRest,HeaderEncoding.FieldFacts source.memory header field)
+    (optional : ∀ field∈HeaderEncoding.optionalFields,HeaderEncoding.FieldFacts source.memory header field) :
+    source.clock-(evaluateHOLFiniteState source afterMark).2.clock≤2302 := by
+  obtain ⟨callee,called,headerCell⟩:=CurrentRlp.HeaderEncoder.environment source.code.lookup header (CurrentRlp.HeaderEncoder.original_code source.code installed)
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "h"]=some [.val (.word header)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,h]
+  rw [shapes.2.1]
+  apply ClockCost.scoped_reached_current source "e" HeaderEncoding.returnShape (ofString "encode_header") [localVar "h"] _
+    CurrentRlp.HeaderEncoder.body afterEncode callee HeaderEncoding.returnShape 1346 955 args called
+    (CurrentRlp.HeaderEncoder.body_cost (callEntryStateHOLFinite source callee) header heap geometry domain installed headerCell heapCell heapBound fields optional)
+  intro target returned normal checked
+  obtain ⟨start,encoded,positive,size,answer,arena,frame,memory⟩:=CurrentRlp.HeaderEncoder.body_normal
+    (callEntryStateHOLFinite source callee) target header heap geometry domain installed headerCell heapCell heapBound fields optional returned normal
+  have currentInstalled : OriginalCode.Installed (CallNormal.continuationEntry source target "e" returned).code:=
+    OriginalCode.after_execution (callEntryStateHOLFinite source callee) target CurrentRlp.HeaderEncoder.body _ normal installed
+  have cell : (CallNormal.continuationEntry source target "e" returned).locals.lookup (ofString "e")=some (HeaderEncoding.encodedPair start encoded):=by
+    rw [←answer]
+    exact CallNormal.continuation_lookup_same _ _ _ _
+  exact after_encode_cost _ start encoded size currentInstalled cell
+
+/-- Full original header_hash, including its own mark, encoder, software
+Keccak, heap release and return, on every outcome of this physical entry. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap : BitVec 64)
+    (geometry : HeaderEncoding.Geometry header heap) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (installed : OriginalCode.Installed source.code)
+    (h : source.locals.lookup (ofString "h")=some (.val (.word header)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (fields : ∀ field∈HeaderEncoding.firstField::HeaderEncoding.baseRest,HeaderEncoding.FieldFacts source.memory header field)
+    (optional : ∀ field∈HeaderEncoding.optionalFields,HeaderEncoding.FieldFacts source.memory header field) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤2303 := by
+  have raw : lookupCodeHOLExact source.code.lookup (ofString "heap_mark") []=some (HeapScope.markBody,(fun _=>none),.one):=by
+    simp [lookupCodeHOLExact,HeapScope.mark_original_code source.code installed]
+  obtain ⟨callee,called,locals⟩:=CodeEnvironment.finite_lookup source.code.lookup _ _ _ _ _ raw
+  rw [shapes.1]
+  apply ClockCost.scoped_reached_current source "mark" .one (ofString "heap_mark") [] [] HeapScope.markBody afterMark callee .one 0 2302
+    rfl called (HeapScope.mark_body_cost source.code (callEntryStateHOLFinite source callee) rfl)
+  intro target returned normal checked
+  rw [HeapScope.mark_shape] at normal
+  obtain ⟨read,endpoint⟩:=return_normal (callEntryStateHOLFinite source callee) target HeapScope.heapVar returned normal
+  have expected : eval (callEntryStateHOLFinite source callee) HeapScope.heapVar=some (.val (.word heap)):=by
+    simp [eval,HeapScope.heapVar,evalHOLExact,toExact,callEntryStateHOLFinite,heapCell]
+  have answer : returned=.val (.word heap):=Option.some.inj (read.symm.trans expected)
+  have canonical : CallNormal.continuationEntry source target "mark" returned=QueryBranch.bind {source with clock:=source.clock-1} "mark" heap:=by
+    rw [endpoint,answer]
+    rfl
+  have retained : (QueryBranch.bind {source with clock:=source.clock-1} "mark" heap).locals.lookup (ofString "h")=some (.val (.word header)):=
+    (bind_lookup_other _ "mark" "h" heap (by decide)).trans h
+  have price:=after_mark_cost (QueryBranch.bind {source with clock:=source.clock-1} "mark" heap) header heap geometry domain installed retained heapCell heapBound fields optional
+  rw [←canonical] at price
+  exact price
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.shapes
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.after_encode_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.after_mark_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.body_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The actual hash/release tail restores its own mark and protects every
+older word outside the real output and the fixed Keccak workspaces. -/
+theorem after_encode_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (start out heap currentHeap : BitVec 64) (encoded : Nat)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (inputArena : AllocatedBytes.Arena start encoded) (outArena : AllocatedBytes.Arena out 32)
+    (encodedCell : source.locals.lookup (ofString "e")=some (HeaderEncoding.encodedPair start encoded))
+    (outCell : source.locals.lookup (ofString "out")=some (.val (.word out)))
+    (saved : source.locals.lookup (ofString "mark")=some (.val (.word heap)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word currentHeap)))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterEncode=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→ CopyGeneral.Away out query 32→post.memory query=source.memory query := by
+  rw [shapes.2.2] at normal
+  obtain ⟨hashed,hashRun,remaining⟩:=sequence_returned source post hashCall (.seq releaseCall returnZero) value
+    ((LocalPrefix.call (key:=ofString "mark") none _ _ (by simp)).summary_full source).2.1 normal
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) hashArguments=
+      some (CurrentKeccak.Hash.values start out encoded):=by
+    simp [hashArguments,HeaderEncoding.encodedPair,CurrentKeccak.Hash.values,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,encodedCell,outCell]
+  have globals (key : MlS) : hashed.globals.lookup key=source.globals.lookup key:=by
+    have frame:=CurrentKeccak.Hash.call_globals key source.code environment.installed hashArguments source rfl
+    change GlobalEffects.erase key (evaluateHOLFiniteState source hashCall).2=GlobalEffects.erase key source at frame
+    rw [hashRun] at frame
+    exact congrArg Prod.snd frame
+  have installed : OriginalCode.Installed hashed.code:=by
+    rw [(evaluation_fields source hashed hashCall none hashRun).2.2.2]
+    exact environment.installed
+  have nextMark : hashed.locals.lookup (ofString "mark")=some (.val (.word heap)):=
+    (CallNormal.ignored_lookup source hashed (ofString "mark") (ofString "keccak256") hashArguments hashRun).trans saved
+  have nextHeap : hashed.globals.lookup (ofString "heap_ptr")=some (.val (.word currentHeap)):=(globals _).trans heapCell
+  obtain ⟨released,releaseRun,returned⟩:=sequence_returned hashed post releaseCall returnZero value
+    ((LocalPrefix.call (key:=ofString "mark") none _ _ (by simp)).summary_full hashed).2.1 remaining
+  have releaseArgs : evalListHOLFinite hashed (h:=fun address=>Classical.propDecidable (hashed.memaddrs address)) [localVar "mark"]=some [.val (.word heap)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,nextMark]
+  have releaseEq:=HeapScope.release_normal hashed released heap currentHeap [localVar "mark"] releaseArgs nextHeap installed releaseRun
+  obtain ⟨read,postEq⟩:=return_normal released post (.const 0#64) value returned
+  have answer : value=.val (.word 0#64):=by simpa only [eval,evalHOLExact,Option.some.injEq] using read.symm
+  have restored : post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)):=by
+    rw [postEq,releaseEq]
+    simp [emptyLocalsHOLFinite,HeapScope.releasePost,HolFiniteMapExact.update,FUPDATE]
+  have kept : HeapGlobals source post:=by
+    intro key different
+    rw [postEq,releaseEq]
+    simpa [emptyLocalsHOLFinite,HeapScope.releasePost,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different] using globals key
+  refine ⟨answer,restored,kept,?_⟩
+  intro query above outAway
+  have stateAway:=CopyGeneral.Away.before 2701132160#64 query 200 2701134824 (by decide) (by decide) above
+  have padAway:=CopyGeneral.Away.before 2701132360#64 query 136 2701134824 (by decide) (by decide) above
+  have memory:=(CurrentKeccak.Hash.call_frame source hashed 2701132160#64 2701132360#64 start out query encoded environment hashArguments args
+    inputArena outArena stateAway padAway outAway hashRun).memory
+  rw [postEq,releaseEq]
+  exact memory
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.after_encode_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- The real encoder return supplies its actual hash input; the following
+normal hash/release retains the whole earlier memory and saved heap. -/
+theorem after_mark_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap out : BitVec 64)
+    (geometry : HeaderEncoding.Geometry header heap)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (h : source.locals.lookup (ofString "h")=some (.val (.word header)))
+    (outCell : source.locals.lookup (ofString "out")=some (.val (.word out))) (outArena : AllocatedBytes.Arena out 32)
+    (saved : source.locals.lookup (ofString "mark")=some (.val (.word heap)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (fields : ∀ field∈HeaderEncoding.firstField::HeaderEncoding.baseRest,HeaderEncoding.FieldFacts source.memory header field)
+    (optional : ∀ field∈HeaderEncoding.optionalFields,HeaderEncoding.FieldFacts source.memory header field)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterMark=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→CopyGeneral.Away out query 32→post.memory query=source.memory query := by
+  obtain ⟨callee,called,headerCell⟩:=CurrentRlp.HeaderEncoder.environment source.code.lookup header (CurrentRlp.HeaderEncoder.original_code source.code environment.installed)
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "h"]=some [.val (.word header)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,h]
+  rw [shapes.2.1] at normal
+  obtain ⟨funded,child,returned,inner,encoderRun,checked,remaining,endpoint⟩:=CallNormal.scoped_normal source post "e" HeaderEncoding.returnShape
+    (ofString "encode_header") [localVar "h"] _ CurrentRlp.HeaderEncoder.body afterEncode callee HeaderEncoding.returnShape args called value normal
+  obtain ⟨start,encoded,positive,size,answer,arena,frame,memory⟩:=CurrentRlp.HeaderEncoder.body_normal
+    (callEntryStateHOLFinite source callee) child header heap geometry environment.domain environment.installed headerCell heapCell heapBound fields optional returned encoderRun
+  let current:=CallNormal.continuationEntry source child "e" returned
+  have metadata : MemoryMetadata.erase current=MemoryMetadata.erase (CurrentRlp.HeaderEncoder.heapPost source heap):=frame
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change current.globals=(CurrentRlp.HeaderEncoder.heapPost source heap).globals at globals
+  have code:=MemoryMetadata.code metadata
+  change current.code=source.code at code
+  have domain:=MemoryMetadata.domain metadata
+  change current.memaddrs=source.memaddrs at domain
+  have ready : CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64:=by
+    refine ⟨by rw [code]; exact environment.installed,domain.trans environment.domain,?_,?_,environment.stateArena,environment.padArena,
+      environment.stateAligned,environment.padAligned⟩
+    · rw [globals]
+      simpa [CurrentRlp.HeaderEncoder.heapPost,HolFiniteMapExact.update,FUPDATE,ofString] using environment.stateGlobal
+    · rw [globals]
+      simpa [CurrentRlp.HeaderEncoder.heapPost,HolFiniteMapExact.update,FUPDATE,ofString] using environment.padGlobal
+  have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word (HeaderEncoding.cursor heap))):=by
+    rw [globals]
+    simp [CurrentRlp.HeaderEncoder.heapPost,HolFiniteMapExact.update,FUPDATE]
+  have currentEncoded : current.locals.lookup (ofString "e")=some (HeaderEncoding.encodedPair start encoded):=by
+    rw [←answer]
+    exact CallNormal.continuation_lookup_same _ _ _ _
+  have currentOut : current.locals.lookup (ofString "out")=some (.val (.word out)):=
+    (CallNormal.continuation_lookup_other source child "e" "out" returned (by decide)).trans outCell
+  have currentMark : current.locals.lookup (ofString "mark")=some (.val (.word heap)):=
+    (CallNormal.continuation_lookup_other source child "e" "mark" returned (by decide)).trans saved
+  obtain ⟨result,restored,kept,older⟩:=after_encode_normal current inner start out heap (HeaderEncoding.cursor heap) encoded ready arena outArena
+    currentEncoded currentOut currentMark currentHeap value remaining
+  refine ⟨result,?_,?_,?_⟩
+  · rw [endpoint]
+    exact restored
+  · intro key different
+    rw [endpoint]
+    exact (kept key different).trans (by
+      rw [globals]
+      simp [CurrentRlp.HeaderEncoder.heapPost,HolFiniteMapExact.update,FUPDATE,Ne.symm different])
+  · intro query above below outAway
+    rw [endpoint]
+    exact (older query above outAway).trans (memory query below)
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.after_mark_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Complete actual header_hash normal return: its own mark is restored and
+all older input/header memory outside the output and workspaces survives. -/
+theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap out : BitVec 64)
+    (geometry : HeaderEncoding.Geometry header heap)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (h : source.locals.lookup (ofString "h")=some (.val (.word header)))
+    (outCell : source.locals.lookup (ofString "out")=some (.val (.word out))) (outArena : AllocatedBytes.Arena out 32)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (fields : ∀ field∈HeaderEncoding.firstField::HeaderEncoding.baseRest,HeaderEncoding.FieldFacts source.memory header field)
+    (optional : ∀ field∈HeaderEncoding.optionalFields,HeaderEncoding.FieldFacts source.memory header field)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→CopyGeneral.Away out query 32→post.memory query=source.memory query := by
+  have raw : lookupCodeHOLExact source.code.lookup (ofString "heap_mark") []=some (HeapScope.markBody,(fun _=>none),.one):=by
+    simp [lookupCodeHOLExact,HeapScope.mark_original_code source.code environment.installed]
+  obtain ⟨callee,called,locals⟩:=CodeEnvironment.finite_lookup source.code.lookup _ _ _ _ _ raw
+  rw [shapes.1] at normal
+  obtain ⟨funded,child,returned,inner,markRun,checked,remaining,endpoint⟩:=CallNormal.scoped_normal source post "mark" .one
+    (ofString "heap_mark") [] [] HeapScope.markBody afterMark callee .one rfl called value normal
+  rw [HeapScope.mark_shape] at markRun
+  obtain ⟨read,childEq⟩:=return_normal (callEntryStateHOLFinite source callee) child HeapScope.heapVar returned markRun
+  have expected : eval (callEntryStateHOLFinite source callee) HeapScope.heapVar=some (.val (.word heap)):=by
+    simp [eval,HeapScope.heapVar,evalHOLExact,toExact,callEntryStateHOLFinite,heapCell]
+  have answer : returned=.val (.word heap):=Option.some.inj (read.symm.trans expected)
+  let current:=QueryBranch.bind {source with clock:=source.clock-1} "mark" heap
+  have canonical : CallNormal.continuationEntry source child "mark" returned=current:=by rw [childEq,answer]; rfl
+  rw [canonical] at remaining
+  have ready : CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64:=environment.of_frame rfl
+  have hCell : current.locals.lookup (ofString "h")=some (.val (.word header)):=
+    (bind_lookup_other _ "mark" "h" heap (by decide)).trans h
+  have currentOut : current.locals.lookup (ofString "out")=some (.val (.word out)):=
+    (bind_lookup_other _ "mark" "out" heap (by decide)).trans outCell
+  have saved : current.locals.lookup (ofString "mark")=some (.val (.word heap)):=bind_lookup_same _ _ _
+  obtain ⟨result,restored,kept,memory⟩:=after_mark_normal current inner header heap out geometry ready hCell currentOut outArena saved
+    heapCell heapBound fields optional value remaining
+  rw [endpoint]
+  exact ⟨result,restored,kept,memory⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.body_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "header_hash")=some ([(ofString "h",.one),(ofString "out",.one)],body,.one) := by
+  have found:=OriginalCode.indexed code installed 211 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_header_hash) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_header_hash,paramToHOL,shapeToHOL,List.map_cons,List.map_nil] using found
+
+/-- Ordinary header-hash callers add one source tick to the complete body;
+all callee entry facts come from the actual two-word signature. -/
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap out : BitVec 64)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word header),.val (.word out)])
+    (geometry : HeaderEncoding.Geometry header heap) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (installed : OriginalCode.Installed source.code)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (fields : ∀ field∈HeaderEncoding.firstField::HeaderEncoding.baseRest,HeaderEncoding.FieldFacts source.memory header field)
+    (optional : ∀ field∈HeaderEncoding.optionalFields,HeaderEncoding.FieldFacts source.memory header field) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "header_hash") arguments)).2.clock≤2304 := by
+  obtain ⟨callee,called,h,outCell⟩:=word_pair_environment source.code.lookup (ofString "header_hash") (ofString "h") (ofString "out")
+    body .one header out (by decide) (original_code source.code installed)
+  exact ClockCost.call_current source (some none) (ofString "header_hash") arguments [.val (.word header),.val (.word out)] body callee .one 2303 args called
+    (body_cost (callEntryStateHOLFinite source callee) header heap geometry domain installed h heapCell heapBound fields optional)
+
+/-- The actual ordinary caller retains the helper's genuine heap restoration
+and protected memory through its real returned scalar and caller locals. -/
+theorem call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap out : BitVec 64)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word header),.val (.word out)])
+    (geometry : HeaderEncoding.Geometry header heap)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (outArena : AllocatedBytes.Arena out 32)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (fields : ∀ field∈HeaderEncoding.firstField::HeaderEncoding.baseRest,HeaderEncoding.FieldFacts source.memory header field)
+    (optional : ∀ field∈HeaderEncoding.optionalFields,HeaderEncoding.FieldFacts source.memory header field)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "header_hash") arguments)=(none,post)) :
+    post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→CopyGeneral.Away out query 32→post.memory query=source.memory query := by
+  obtain ⟨callee,called,h,outCell⟩:=word_pair_environment source.code.lookup (ofString "header_hash") (ofString "h") (ofString "out")
+    body .one header out (by decide) (original_code source.code environment.installed)
+  obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,target,returned,actualArgs,actualCalled,bodyRun,checked,endpoint,fieldsFrame⟩:=
+    CallNormal.ignored_data source post (ofString "header_hash") arguments normal
+  have valuesEq : actualValues=[.val (.word header),.val (.word out)]:=Option.some.inj (actualArgs.symm.trans args)
+  subst actualValues
+  have entryEq : (actualBody,actualCallee,actualShape)=(body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases entryEq
+  obtain ⟨answer,restored,globals,memory⟩:=body_normal (callEntryStateHOLFinite source callee) target header heap out geometry (environment.of_frame rfl)
+    h outCell outArena heapCell heapBound fields optional returned bodyRun
+  rw [endpoint]
+  exact ⟨restored,globals,memory⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.call_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.call_normal

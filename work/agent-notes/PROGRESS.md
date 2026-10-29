@@ -4104,3 +4104,28 @@ No global finite target K/full verification; claim infinity.
 Usage31%weekly/0resetcredits. Next: retain the already-proved copied input
 bytes and input/record separation in the payload image, then actual prefix
 buffer/header fields and block-length/remaining source/target composition.
+
+
+## Current copied input and actual header clear/ommer hash
+
+Main now retains the exact copied byte image over the encoded extent,
+its aligned pointer and separation before the actual decoded payload
+record. The real header/database/state/transaction continuations transport
+this image; no future successful read is assumed.
+
+The actual payload_header prefix now derives the full248-byte clear and
+first two stores, all31initial header words and earlier-memory protection.
+Its next two genuine allocations derive their own32/8-byte room beneath
+the persistent ceiling and exact live caller states. The actual one-byte
+ommer marker and current24-round software Keccak return retain every real
+caller local/global, current workspace, earlier copied input and the new
+header. That call costs at most690source ticks. Its original remaining
+prefix execution is retained. This does not prove later length/trie/main
+work or the final target-step bound.
+
+Validation: current-payload-header-hash-v2.log PASS2704jobs, including main
+transaction/data and state-return proofs. Printed axioms permitted only.
+Index8643modules/17597facts; inventory8687/replacement closure0/fixed files
+unchanged. Incremental policy PASS65477entries/2485243625bytes. Claim infinity; no global finite target K or full verification.
+Usage32%weekly/0resetcredits. Next: actual remaining header fields and block
+length, indexed tries, remaining main and uniform target-step composition.

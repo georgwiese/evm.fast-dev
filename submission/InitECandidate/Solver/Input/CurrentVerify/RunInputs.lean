@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentHash.MainWitnessReturned
 import InitECandidate.Solver.Input.CurrentHash.MainPayloadReturned
 import InitECandidate.Solver.Input.CurrentVerify.PayloadImage
+import InitECandidate.Solver.Input.CurrentVerify.CopiedInput
 import InitECandidate.Solver.Input.VerifyTrace
 
 namespace InitECandidate.Solver.Input.CurrentVerify
@@ -33,6 +34,7 @@ structure Data (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Gue
   gasCell : source.memory (record+88#64)=.word gasWord
   gasBound : gasWord.toNat≤200000000
   payload : PayloadImage input source pointer record boundary
+  copied : CopiedInput input source pointer record
   witnesses : Witnesses input source pointer si boundary
 
 theorem Data.of_frame {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
@@ -57,7 +59,7 @@ theorem Data.of_frame {input : Guest.InputBlob} {source post : PanSemStateFinite
   obtain ⟨nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,nodeImage,codeImage,headerImage⟩ := data.witnesses
   have interval (query : BitVec 64) (_lower : 2701134824≤query.toNat) (_upper : query.toNat<boundary) : post.memory query=source.memory query := congrFun memory query
   exact ⟨nextArena,endian.trans data.little,data.keccak.of_frame frame,(by rw [globals]; exact data.mptHash),heap,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
-    (congrFun memory _).trans data.payloadCell,(congrFun memory _).trans data.gasCell,data.gasBound,data.payload.of_frame frame,
+    (congrFun memory _).trans data.payloadCell,(congrFun memory _).trans data.gasCell,data.gasBound,data.payload.of_frame frame,data.copied.of_frame frame,
     nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
     nodeImage.of_interval (by decide) interval,codeImage.of_interval (by decide) interval,headerImage.of_interval (by decide) interval⟩
 
@@ -73,7 +75,7 @@ theorem main_inputs {input : Guest.InputBlob} {decoded current post : PanSemStat
   have recordInside : 2701134824≤record.toNat ∧ record.toNat+136≤root.toNat := by
     obtain ⟨headerSource,headerReady,headerPost,nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,data,frame,clock⟩:=ready.snapshot
     exact ⟨by have a:=data.context.pointerLower; have b:=data.context.statelessLower; have c:=data.context.recordAfter; omega,by have h:=ready.rootAfter; omega⟩
-  exact ⟨arena,next.little,next.keccak_environment,next.mptHash,heap,si,siArena,siAligned,recordArena,recordAligned,recordInside,payloadCell,gasCell,gasBound,main_payload_image ready workspace actual,
+  exact ⟨arena,next.little,next.keccak_environment,next.mptHash,heap,si,siArena,siAligned,recordArena,recordAligned,recordInside,payloadCell,gasCell,gasBound,main_payload_image ready workspace actual,main_copied_input ready workspace actual,
     CurrentHash.RootHash.main_witness_images ready workspace actual⟩
 
 /-- The genuine eight-wrapper prefix carries these same physical inputs to

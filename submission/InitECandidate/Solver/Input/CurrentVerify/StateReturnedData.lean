@@ -39,6 +39,7 @@ theorem StateInitReturned.data {input : Guest.InputBlob} {caller target : PanSem
   exact ⟨currentArena,little,environment,hashes.2.2.trans data.mptHash,heapNow,data.siLocal,data.siArena,data.siAligned,
     data.recordArena,data.recordAligned,data.recordInside,siFrame.trans data.payloadCell,gasFrame.trans data.gasCell,data.gasBound,
     data.payload.of_interval (fun query lower upper=>frame.memory query (by omega)) heapNow,
+    data.copied.of_interval boundary (by have before:=data.recordInside.2; omega) (currentArena.domain.trans data.arena.domain.symm) (little.trans data.little.symm) interval,
     nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
     nodeImage.of_interval (by decide) interval,codeImage.of_interval (by decide) interval,headerImage.of_interval (by decide) interval⟩
 

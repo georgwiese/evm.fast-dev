@@ -41,6 +41,7 @@ theorem after_headers_data {input : Guest.InputBlob} {source target : PanSemStat
   exact ⟨arena,little,environment,(returned.globals (ofString "mpt_hash_scratch") (by decide)).trans data.mptHash,nextHeapData,siLocal,data.siArena,data.siAligned,data.recordArena,data.recordAligned,data.recordInside,
     siFrame.trans data.payloadCell,gasFrame.trans data.gasCell,data.gasBound,
     data.payload.of_interval (fun query lower upper=>memory query (Nat.le_trans data.recordInside.1 lower) upper) nextHeapData,
+    data.copied.of_interval boundary (by have before:=data.recordInside.2; omega) (arena.domain.trans data.arena.domain.symm) (little.trans data.little.symm) memory,
     nodes,codes,headers,nodeStart,nodeLength,codeStart,codeLength,headerStart,headerLength,
     nodeImage.of_interval (by decide) memory,codeImage.of_interval (by decide) memory,headerImage.of_interval (by decide) memory⟩
 

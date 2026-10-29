@@ -2310,10 +2310,13 @@
     "submission/InitECandidate/Solver/Input/CurrentRlp/BeLength.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/BytesWrite.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/Code.lean",
+    "submission/InitECandidate/Solver/Input/CurrentRlp/FieldWrite.lean",
+    "submission/InitECandidate/Solver/Input/CurrentRlp/HeaderFields.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/HeaderWrite.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/HeaderWriteFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/PutBe.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/SmallSizes.lean",
+    "submission/InitECandidate/Solver/Input/CurrentRlp/WideWrite.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/WordWrite.lean",
     "submission/InitECandidate/Solver/Input/CurrentRlp/WriteFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentStartup/AddrFromWords.lean",
@@ -8711,8 +8714,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65497,
-  "package_bytes": 2485410097,
+  "package_entries": 65500,
+  "package_bytes": 2485449386,
   "claim": {
     "K": "infinity"
   },

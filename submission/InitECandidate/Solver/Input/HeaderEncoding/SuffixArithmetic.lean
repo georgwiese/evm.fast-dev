@@ -1,4 +1,4 @@
-import InitECandidate.Solver.Input.HeaderEncoding.Optional
+import InitECandidate.Solver.Input.HeaderEncoding.FieldBounds
 import InitECandidate.Solver.Input.RlpWrite.ListWrite
 import InitECandidate.Solver.Input.RlpLength.ListHeader
 

@@ -1259,3 +1259,25 @@ unchanged. Incremental policy PASS65498entries/2485424629bytes. Claim
 infinity; no global finite target K/full verification. Usage34%weekly,
 0resetcredits. Next: compose the complete actual header encoder and block
 length; indexed tries, remaining main and uniform target steps still open.
+
+
+## Current header fields compose without future-success premises
+
+Every literal header field now derives its actual call arguments from the
+retained header cells. The assigned writer costs its own allowance on every
+outcome, and a real normal return derives its encoded length, saved caller
+locals, current heap and protected older memory. The real pointer advance
+then establishes the next bounded natural output position. Literal field
+lists compose these facts and prices only along their actual normal prefix;
+aborted fields never invoke a later-field contract. Both wide fields and
+the optional fields use the same checked composition.
+
+Narrowed ListWrite and SuffixArithmetic imports: the already-proved final
+list-header suffix no longer imports unrelated whole-header field execution.
+No program or semantics changed. Validation: current-rlp-header-fields-v1.log
+PASS2087jobs; current-rlp-suffix-imports-v1.log PASS2092jobs. Printed axioms
+permitted only. Index8664modules/17726facts; inventory8709/replacement
+closure0/fixed files unchanged. Incremental policy PASS65500entries/
+2485449386bytes. Claim infinity; no global finite target K/full verification.
+Usage35%weekly/0resetcredits. Next: complete the actual header encoder and
+block length, then indexed tries, remaining main and uniform target steps.

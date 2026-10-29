@@ -2252,3 +2252,21 @@ verifier success. Usage50%weekly/0resetcredits. Next: current optimized64-bit
 length-writer memory frame, full SHA padding/body/caller frame, request-hash
 and BAL/main continuation, formal target composition, dominant-slack review
 and final cleanup.
+
+
+## Current64-bit SHA length-writer memory frame
+
+The actual optimized st_be64 shape is now checked directly. Its bswap64
+callee only changes locals; the real scoped return supplies a scalar w for
+the single-word store. Both the actual aligned fast branch and the two-BE32
+fallback preserve every memory word outside the eight output bytes. The same
+normal ordinary caller retains this frame through its actual two-word ABI.
+No mapped output, successful future writer, byte-swap value or completed SHA
+is an entry premise. This avoids importing retired arithmetic/EVM proof roots.
+
+Validation: current-general-sha-be64-memory-v3.log PASS2712jobs, permitted
+printed axioms only. Index8700modules/18101facts; inventory8745/replacement
+closure0/fixed files unchanged. Claim infinity; no global finite target K/full
+verifier success. Usage51%weekly/0resetcredits. Next: complete actual SHA
+padding/body/caller frames, request-hash and BAL/main continuation, formal
+target composition, dominant-slack review and final cleanup.

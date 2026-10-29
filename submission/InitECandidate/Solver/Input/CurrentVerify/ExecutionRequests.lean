@@ -12,6 +12,8 @@ import InitECandidate.Solver.Input.WordPairLookup
 import InitECandidate.Solver.Input.WordEnvironment
 import InitECandidate.Solver.Input.MemoryConstantLoop
 import InitECandidate.Solver.Input.CounterLoopLocal
+import InitECandidate.Solver.Input.ScopedCallNormal
+import InitECandidate.Solver.Input.StoppingPrefix
 import InitECandidate.Solver.WitnessRadix.CopyNormalCall
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
@@ -2699,3 +2701,140 @@ end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
 #print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.compression_frame
 #print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.byte_frame
 #print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.digest_frame
+
+namespace InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def be64Test : ExpHOL 64:=.cmp .equal (.op .and [localVar "p",.const 7#64]) (.const 0#64)
+def be64FastTail : ProgHOL 64:=.seq (.store (localVar "p") (localVar "w")) (.return (.const 0#64))
+def be64Fast : ProgHOL 64:=.decCall (ofString "w") .one (ofString "bswap64") [localVar "v"] be64FastTail
+def be64SlowFirst : ProgHOL 64:=.call (some (none,none)) (ofString "st_be32") [localVar "p",.shift .lsr (localVar "v") (.const 32#64)]
+def be64SlowSecond : ProgHOL 64:=.call (some (none,none)) (ofString "st_be32") [.op .add [localVar "p",.const 4#64],localVar "v"]
+def be64Slow : ProgHOL 64:=.seq be64SlowFirst (.seq be64SlowSecond (.return (.const 0#64)))
+
+set_option maxRecDepth 100000 in
+theorem be64_shape : CurrentStartup.Code.body .st_be64=.seq (.ite be64Test be64Fast .skip) be64Slow := by
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_st_be64,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
+    be64Test,be64Fast,be64FastTail,be64Slow,be64SlowFirst,be64SlowSecond,localVar]
+
+set_option maxRecDepth 100000 in
+theorem bswap_local (code) : LocalEffects.Preserves code (CurrentStartup.Code.body .bswap64) := by
+  simp only [CurrentStartup.Code.body,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,GasBudget.OriginalCodeEnvironment.originalEntry,
+    declToHOL,funDeclToHOL,Guest.Software.guestFn_bswap64,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  repeat' first | apply LocalEffects.sequence | exact LocalEffects.assign code _ _ | exact LocalEffects.returned code _
+
+theorem be64_fast_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer input query : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (pCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (vCell : source.locals.lookup (ofString "v")=some (.val (.word input)))
+    (away : query≠pointer) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source be64Fast=(some (.returned value),post)) : post.memory query=source.memory query := by
+  have code : source.code.lookup (ofString "bswap64")=some ([(ofString "x",.one)],CurrentStartup.Code.body .bswap64,.one):=by
+    simpa only [CurrentStartup.Code.name,CurrentStartup.Code.formals,CurrentStartup.Code.shape,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,
+      GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,Guest.Software.guestFn_bswap64,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+      using CurrentStartup.Code.installed source.code installed .bswap64
+  obtain ⟨callee,called,cell⟩:=word_environment source.code.lookup (ofString "bswap64") (ofString "x") (CurrentStartup.Code.body .bswap64) .one input code
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "v"]=some [.val (.word input)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,vCell]
+  obtain ⟨funded,target,returned,inner,run,checked,remaining,endpoint⟩:=CallNormal.scoped_normal source post "w" .one (ofString "bswap64")
+    [localVar "v"] [.val (.word input)] (CurrentStartup.Code.body .bswap64) be64FastTail callee .one args called value normal
+  have typed : shapeOfHOLExact returned=.one:=(shapeEqHOL_eq_true _ _).mp (Bool.and_eq_true_iff.mp checked).1
+  obtain ⟨word,rfl⟩:=ScalarShape.word returned typed
+  have pure:=(bswap_local source.code) (callEntryStateHOLFinite source callee) rfl
+  rw [run] at pure
+  have memory : target.memory query=source.memory query:=congrFun (LocalEffects.memory_of_erase (callEntryStateHOLFinite source callee) target pure) query
+  let entered:=CallNormal.continuationEntry source target "w" (.val (.word word))
+  have pointerCell : entered.locals.lookup (ofString "p")=some (.val (.word pointer)):=by
+    simpa only [entered,CallNormal.continuationEntry] using
+      (MemoryAt.set_lookup_other {target with locals:=source.locals} (ofString "w") (ofString "p") (.val (.word word)) (by decide)).trans pCell
+  have wordCell : entered.locals.lookup (ofString "w")=some (.val (.word word)):=by
+    simp [entered,CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have address : eval entered (localVar "p")=some (.val (.word pointer)):=by simp [eval,evalHOLExact,toExact,localVar,pointerCell]
+  have storedValue : eval entered (localVar "w")=some (.val (.word word)):=by simp [eval,evalHOLExact,toExact,localVar,wordCell]
+  obtain ⟨middle,stored,finished⟩:=sequence_returned entered inner (.store (localVar "p") (localVar "w")) (.return (.const 0#64)) value
+    ((LocalPrefix.store (key:=ofString "p") _ _).summary_full entered).2.1 remaining
+  have first:=MemoryAt.scalar_store_normal entered middle (localVar "p") (localVar "w") pointer query address
+    (by intro actual read; rw [storedValue] at read; cases read; simp [flattenHOL]) away stored
+  have last:=MemoryAt.return_current middle (.const 0#64) query
+  rw [finished] at last
+  rw [endpoint]
+  exact last.trans (first.trans memory)
+
+theorem be64_slow_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer query : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (pCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (away : CopyGeneral.Away pointer query 8) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source be64Slow=(some (.returned value),post)) : post.memory query=source.memory query := by
+  have safe : LocalPrefix (ofString "p") be64SlowFirst:=.call none _ _ (by simp)
+  obtain ⟨middle,first,remaining⟩:=sequence_returned source post be64SlowFirst _ value (safe.summary_full source).2.1 normal
+  have firstRead : eval source (localVar "p")=some (.val (.word pointer)):=by simp [eval,evalHOLExact,toExact,localVar,pCell]
+  have firstFrame:=be32_call_memory source middle (localVar "p") (.shift .lsr (localVar "v") (.const 32#64)) pointer query installed firstRead
+    (by simpa only [BitVec.add_zero] using CopyGeneral.Away.subrange pointer query 8 0 4 away (by decide)) first
+  have nextP : middle.locals.lookup (ofString "p")=some (.val (.word pointer)):=
+    (CallNormal.ignored_lookup source middle (ofString "p") (ofString "st_be32") [localVar "p",.shift .lsr (localVar "v") (.const 32#64)] first).trans pCell
+  have nextInstalled : OriginalCode.Installed middle.code:=by rw [(evaluation_fields source middle be64SlowFirst none first).2.2.2]; exact installed
+  have secondSafe : LocalPrefix (ofString "p") be64SlowSecond:=.call none _ _ (by simp)
+  obtain ⟨last,second,finished⟩:=sequence_returned middle post be64SlowSecond (.return (.const 0#64)) value (secondSafe.summary_full middle).2.1 remaining
+  have secondRead : eval middle (.op .add [localVar "p",.const 4#64])=some (.val (.word (pointer+4#64))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,nextP,valueIsWord,valueWord,wordOpHOL,wordOp]
+  have secondFrame:=be32_call_memory middle last (.op .add [localVar "p",.const 4#64]) (localVar "v") (pointer+4#64) query nextInstalled secondRead
+    (CopyGeneral.Away.subrange pointer query 8 4 4 away (by decide)) second
+  have finalFrame:=MemoryAt.return_current last (.const 0#64) query
+  rw [finished] at finalFrame
+  exact finalFrame.trans (secondFrame.trans firstFrame)
+
+/-- Both actual writer paths retain every word outside the eight output bytes.
+Normal return supplies any successful reads/stores; no mapping is assumed. -/
+theorem be64_body_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer input query : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (pCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (vCell : source.locals.lookup (ofString "v")=some (.val (.word input)))
+    (away : CopyGeneral.Away pointer query 8) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (CurrentStartup.Code.body .st_be64)=(some (.returned value),post)) : post.memory query=source.memory query := by
+  have test : eval source be64Test=some (.val (.word (if pointer &&& 7#64=0#64 then 1#64 else 0#64))):=by
+    by_cases aligned : pointer &&& 7#64=0#64
+    all_goals simp [eval,evalHOLExact,evalListHOLExact,toExact,be64Test,localVar,pCell,valueIsWord,valueWord,wordOpHOL,wordOp,AndOp.and,
+      Flapjack.Compiler.Encoders.Asm.wordCmpHOL,aligned]
+  simp only [eval] at test
+  rw [be64_shape] at normal
+  by_cases aligned : pointer &&& 7#64=0#64
+  · have gate : evaluateHOLFiniteState source (.ite be64Test be64Fast .skip)=evaluateHOLFiniteState source be64Fast:=by
+      rw [evaluateHOLFiniteState_ite,test,if_pos aligned]
+      simp
+    have whole : evaluateHOLFiniteState source (.seq be64Fast be64Slow)=(some (.returned value),post):=by
+      rw [evaluateHOLFiniteState_seq_line780]
+      rwa [evaluateHOLFiniteState_seq_line780,gate] at normal
+    have stops : NoFallthrough be64Fast:=NoFallthrough.scoped _ _ _ _ _ (NoFallthrough.sequence _ _ (NoFallthrough.returned _))
+    have actual:=NoFallthrough.returning_prefix source post be64Fast be64Slow stops value whole
+    have different : query≠pointer:=by simpa only [byteAddress,BitVec.add_zero] using (away 0 (by decide)).1
+    exact be64_fast_memory source post pointer input query installed pCell vCell different value actual
+  · have gate : evaluateHOLFiniteState source (.ite be64Test be64Fast .skip)=(none,source):=by
+      rw [evaluateHOLFiniteState_ite,test,if_neg aligned]
+      simp [evaluateHOLFiniteState_skip]
+    rw [StateSteps.next_sequence source source _ _ gate (Nat.le_refl _)] at normal
+    exact be64_slow_memory source post pointer query installed pCell away value normal
+
+theorem be64_call_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer input query : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word pointer),.val (.word input)])
+    (away : CopyGeneral.Away pointer query 8)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "st_be64") arguments)=(none,post)) : post.memory query=source.memory query := by
+  have code : source.code.lookup (ofString "st_be64")=some ([(ofString "p",.one),(ofString "v",.one)],CurrentStartup.Code.body .st_be64,.one):=by
+    simpa only [CurrentStartup.Code.name,CurrentStartup.Code.formals,CurrentStartup.Code.shape,CurrentStartup.Code.entry,CurrentStartup.Code.declaration,
+      GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,Guest.Software.guestFn_st_be64,paramToHOL,shapeToHOL,List.map_cons,List.map_nil]
+      using CurrentStartup.Code.installed source.code installed .st_be64
+  obtain ⟨callee,called,pCell,vCell⟩:=word_pair_environment source.code.lookup (ofString "st_be64") (ofString "p") (ofString "v")
+    (CurrentStartup.Code.body .st_be64) .one pointer input (by decide) code
+  exact MemoryAt.call_normal source post (ofString "st_be64") arguments [.val (.word pointer),.val (.word input)] (CurrentStartup.Code.body .st_be64) callee .one query args called
+    (fun target value run=>be64_body_memory (callEntryStateHOLFinite source callee) target pointer input query installed pCell vCell away value run) normal
+
+end InitECandidate.Solver.Input.CurrentVerify.GeneralSha
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be64_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.bswap_local
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be64_fast_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be64_slow_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be64_body_memory
+#print axioms InitECandidate.Solver.Input.CurrentVerify.GeneralSha.be64_call_memory

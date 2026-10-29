@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.LoadWord
 import InitECandidate.Solver.Input.IgnoredCallNormal
 import InitECandidate.Solver.Input.WordTupleFour
 import InitECandidate.Solver.WitnessRadix.StoreWord
@@ -359,3 +360,351 @@ end InitECandidate.Solver.Input.UDivMod.WideDigits.ToDigits
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToDigits.caller_image
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToDigits.caller_away
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.ToDigits.caller_away_range
+
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Length
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def result (contents : Nat→BitVec 64) : Nat→Nat
+  | 0=>0
+  | count+1=>if contents count=0#64 then result contents count else count+1
+def scans (contents : Nat→BitVec 64) : Nat→Nat
+  | 0=>0
+  | count+1=>if contents count=0#64 then scans contents count+1 else 1
+
+theorem result_bound (contents : Nat→BitVec 64) (count : Nat) : result contents count≤count := by
+  induction count with
+  | zero=>rfl
+  | succ count ih=>simp only [result];split_ifs <;> omega
+
+theorem scans_bound (contents : Nat→BitVec 64) (count : Nat) : scans contents count≤count := by
+  induction count with
+  | zero=>rfl
+  | succ count ih=>simp only [scans];split_ifs <;> omega
+
+theorem result_zero (contents : Nat→BitVec 64) (count : Nat) : result contents count=0 ↔ ∀ index,index<count→contents index=0#64 := by
+  induction count with
+  | zero=>simp [result]
+  | succ count ih=>
+    by_cases zero : contents count=0#64
+    · rw [result,if_pos zero,ih]
+      constructor
+      · intro all index inside
+        by_cases last : index=count
+        · simpa only [last] using zero
+        · exact all index (by omega)
+      · intro all index inside
+        exact all index (by omega)
+    · rw [result,if_neg zero]
+      constructor
+      · omega
+      · intro all
+        exact (zero (all count (by omega))).elim
+
+theorem result_leading (contents : Nat→BitVec 64) (count : Nat) (positive : 0<result contents count) :
+    contents (result contents count-1)≠0#64 := by
+  induction count with
+  | zero=>simp [result] at positive
+  | succ count ih=>
+    by_cases zero : contents count=0#64
+    · rw [result,if_pos zero] at positive ⊢
+      exact ih positive
+    · simpa only [result,if_neg zero,Nat.add_sub_cancel] using zero
+
+theorem result_suffix (contents : Nat→BitVec 64) (count index : Nat)
+    (after : result contents count≤index) (inside : index<count) : contents index=0#64 := by
+  induction count with
+  | zero=>omega
+  | succ count ih=>
+    by_cases zero : contents count=0#64
+    · rw [result,if_pos zero] at after
+      by_cases last : index=count
+      · simpa only [last] using zero
+      · exact ih after (by omega)
+    · rw [result,if_neg zero] at after
+      omega
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_digits_len with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "p",.one),(ofString "n",.one)]
+def loopTest : ExpHOL 64:=.cmp .lower (.const 0#64) (localVar "n")
+def previous : ExpHOL 64:=.op .sub [localVar "n",.const 1#64]
+def address : ExpHOL 64:=.op .add [localVar "p",.panop .mul [previous,.const 8#64]]
+def nonzeroTest : ExpHOL 64:=.cmp .notEqual (.load .one address) (.const 0#64)
+def guard : ProgHOL 64:=.ite nonzeroTest (.return (localVar "n")) .skip
+def loopBody : ProgHOL 64:=.seq guard (.assign .local (ofString "n") previous)
+def loop : ProgHOL 64:=.while loopTest loopBody
+def returnZero : ProgHOL 64:=.return (.const 0#64)
+
+theorem body_shape : body=.seq loop returnZero := by
+  simp only [body,Guest.Software.guestFn_digits_len,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    loop,loopTest,loopBody,guard,nonzeroTest,address,previous,returnZero,localVar]
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "digits_len")=some (formals,body,.one) := by
+  have checked:=OriginalCode.indexed code installed 60 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_digits_len) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,
+    Guest.Software.guestFn_digits_len,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+private theorem loop_test (source : PanSemStateFiniteExact 64 Guest.HostMemory) (count : Nat) (small : count≤8)
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))) :
+    evalHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) loopTest=
+      some (.val (.word (if 0<count then 1#64 else 0#64))) := by
+  have encoded : (BitVec.ofNat 64 count).toNat=count:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  rw [finite_eval]
+  simp [eval,loopTest,localVar,evalHOLExact,toExact,n,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,encoded]
+
+private theorem previous_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (count : Nat) (positive : 0<count)
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))) :
+    eval source previous=some (.val (.word (BitVec.ofNat 64 (count-1)))) := by
+  have subtraction:=BitVec.ofNat_sub_ofNat_of_le (w:=64) count 1 (by decide) positive
+  simp [eval,previous,localVar,evalHOLExact,evalListHOLExact,toExact,n,valueIsWord,valueWord,wordOpHOL,wordOp,subtraction]
+
+private theorem address_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (count : Nat) (positive : 0<count)
+    (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count)))) :
+    eval source address=some (.val (.word (slot pointer (count-1)))) := by
+  have index:=previous_read source count positive n
+  simp only [eval] at index
+  simp [eval,address,localVar,evalHOLExact,evalListHOLExact,toExact,p,index,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,
+    slot,BitVec.ofNat_mul,Nat.mul_comm]
+
+/-- Exact real body at a mapped digit, including its early caller return. -/
+theorem body_step (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64) (contents : Nat→BitVec 64) (count : Nat)
+    (positive : 0<count)
+    (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
+    (mapped : source.memaddrs (slot pointer (count-1))) (cell : source.memory (slot pointer (count-1))=.word (contents (count-1))) :
+    evaluateHOLFiniteState source loopBody=
+      if contents (count-1)=0#64 then (none,bind source "n" (BitVec.ofNat 64 (count-1)))
+      else (some (.returned (.val (.word (BitVec.ofNat 64 count)))),emptyLocalsHOLFinite source) := by
+  classical
+  have loaded:=Witness.load_word_read source address (slot pointer (count-1)) (contents (count-1)) (address_read source pointer count positive p n) mapped cell
+  have tested : eval source nonzeroTest=some (.val (.word (if contents (count-1)=0#64 then 0#64 else 1#64))):=by
+    simp only [eval] at loaded ⊢
+    rw [nonzeroTest,evalHOLExact,loaded]
+    simp [evalHOLExact,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  simp only [eval] at tested
+  rw [loopBody,evaluateHOLFiniteState_seq_line780,guard,evaluateHOLFiniteState_ite,tested]
+  by_cases zero : contents (count-1)=0#64
+  · simp only [if_pos zero,if_pos (show (0#64 : BitVec 64)=0 from rfl),evaluateHOLFiniteState_skip]
+    exact WitnessRadix.StateSteps.assign_execute source "n" previous _ _ n (previous_read source count positive n)
+  · simp only [if_neg zero,if_neg (show (1#64 : BitVec 64)≠0 by decide)]
+    have returned : evaluateHOLFiniteState source (.return (localVar "n"))=
+        (some (.returned (.val (.word (BitVec.ofNat 64 count)))),emptyLocalsHOLFinite source):=by
+      simp [evaluateHOLFiniteState_return,evalHOLExact,toExact,localVar,n,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+    rw [returned]
+
+/-- Complete actual scan, at every clock, over the initialized physical image. -/
+theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
+    (image : Image source pointer contents count)
+    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index)) :
+    evaluateHOLFiniteState source body=
+      if scans contents count≤source.clock then
+        (some (.returned (.val (.word (BitVec.ofNat 64 (result contents count))))),
+          emptyLocalsHOLFinite {source with clock:=source.clock-scans contents count})
+      else (some .timeOut,emptyLocalsHOLFinite {source with clock:=0}) := by
+  classical
+  induction count generalizing source with
+  | zero=>
+    have test:=loop_test source 0 small n
+    simp only [Nat.lt_irrefl,↓reduceIte] at test
+    rw [body_shape,evaluateHOLFiniteState_seq_line780,loop,evaluateHOLFiniteState_while_total,test]
+    simp [returnZero,evaluateHOLFiniteState_return,evalHOLExact,toExact,scans,result,
+      shapeOfHOLExact,sizeOfShapeWithContextHOL]
+  | succ count ih=>
+    have test:=loop_test source (count+1) small n
+    simp only [show 0<count+1 from by omega,↓reduceIte] at test
+    by_cases exhausted : source.clock=0
+    · rw [body_shape,evaluateHOLFiniteState_seq_line780,loop,evaluateHOLFiniteState_while_total,test]
+      have positive : 0<scans contents (count+1):=by
+        simp only [scans]; split_ifs <;> omega
+      simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide),if_pos exhausted]
+      simp only [exhausted,if_neg (show ¬scans contents (count+1)≤0 by omega)]
+      have same : source={source with clock:=0}:=by
+        exact (show source={source with clock:=source.clock} from rfl).trans
+          (congrArg (fun clock:Nat=>{source with clock:=clock}) exhausted)
+      rw [←same]
+      simp only [if_pos (show (1#64 : BitVec 64)≠0 by decide)]
+    · let entry:=decClockHOLFinite source
+      have bodyRun:=body_step entry pointer contents (count+1) (by omega) p n
+        (mapped count (by omega)) (image count (by omega))
+      simp only [Nat.add_sub_cancel] at bodyRun
+      by_cases zero : contents count=0#64
+      · let next:=bind entry "n" (BitVec.ofNat 64 count)
+        have nextP : next.locals.lookup (ofString "p")=some (.val (.word pointer)):=
+          (bind_lookup_other entry "n" "p" _ (by decide)).trans p
+        have nextN : next.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))):=
+          bind_lookup_same entry "n" _
+        have nextImage : Image next pointer contents count:=by
+          intro index inside
+          exact image index (by omega)
+        have nextMapped : ∀ index,index<count→next.memaddrs (slot pointer index):=by
+          intro index inside
+          exact mapped index (by omega)
+        have tailRun:=ih next (by omega) nextP nextN nextImage nextMapped
+        have recurrence : evaluateHOLFiniteState source body=evaluateHOLFiniteState next body:=by
+          rw [body_shape,evaluateHOLFiniteState_seq_line780,loop,evaluateHOLFiniteState_while_total,test]
+          simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide),if_neg exhausted]
+          rw [bodyRun,if_pos zero,WitnessRadix.StateSteps.fixed_clock entry next none (by rfl)]
+          simp only [if_pos (show (1#64 : BitVec 64)≠0 by decide)]
+          rw [evaluateHOLFiniteState_seq_line780]
+        rw [recurrence,tailRun]
+        have funded : scans contents count≤next.clock ↔ scans contents count+1≤source.clock:=by
+          change scans contents count≤source.clock-1 ↔ scans contents count+1≤source.clock
+          omega
+        simp only [scans,if_pos zero,result,funded]
+        split_ifs <;> simp only [next,entry,WitnessRadix.QueryBranch.bind,setVarHOLFinite,decClockHOLFinite,emptyLocalsHOLFinite] <;> congr 2 <;> omega
+      · rw [body_shape,evaluateHOLFiniteState_seq_line780,loop,evaluateHOLFiniteState_while_total,test]
+        simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide),if_neg exhausted]
+        rw [bodyRun,if_neg zero,WitnessRadix.StateSteps.fixed_clock entry (emptyLocalsHOLFinite entry)
+          (some (.returned (.val (.word (BitVec.ofNat 64 (count+1)))))) (by rfl)]
+        simp [scans,result,zero,exhausted,entry,decClockHOLFinite,emptyLocalsHOLFinite]
+
+/-- All outcomes of the real mapped scan spend at most its initial digit count. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
+    (image : Image source pointer contents count)
+    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index)) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤count := by
+  rw [execute source pointer contents count small p n image mapped]
+  have scansBound:=scans_bound contents count
+  split_ifs
+  · change source.clock-(source.clock-scans contents count)≤count
+    omega
+  · change source.clock-0≤count
+    omega
+
+/-- An actual normal return supplies its own funding, exact length and frame. -/
+theorem body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (p : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 count))))
+    (image : Image source pointer contents count)
+    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index)) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    scans contents count≤source.clock ∧ returned=.val (.word (BitVec.ofNat 64 (result contents count))) ∧
+      post=emptyLocalsHOLFinite {source with clock:=source.clock-scans contents count} := by
+  rw [execute source pointer contents count small p n image mapped] at normal
+  by_cases funded : scans contents count≤source.clock
+  · rw [if_pos funded] at normal
+    exact ⟨funded,by simpa using (congrArg Prod.fst normal).symm,(congrArg Prod.snd normal).symm⟩
+  · simp only [if_neg funded,Prod.mk.injEq,Option.some.injEq] at normal
+    cases normal.1
+
+/-- Trimming the leading zero cells does not change the represented number. -/
+theorem trimmed_number (contents : Nat→BitVec 64) (count : Nat) :
+    number contents (result contents count)=number contents count := by
+  induction count with
+  | zero=>rfl
+  | succ count ih=>
+    by_cases zero : contents count=0#64
+    · simpa [result,zero,number] using ih
+    · simp only [result,if_neg zero]
+
+theorem positive_length (contents : Nat→BitVec 64) (count : Nat) (positive : 0<number contents count) :
+    0<result contents count := by
+  by_contra zero
+  have all:=(result_zero contents count).1 (by omega)
+  have vanished:=number_zero contents count all
+  omega
+
+/-- Real scalar ABI and current physical image price the scoped caller. -/
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64) (tailPrice : Nat)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+      some [.val (.word pointer),.val (.word (BitVec.ofNat 64 count))])
+    (image : Image source pointer contents count)
+    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index))
+    (tailBound : ClockCost.Bound source.code continuation tailPrice) :
+    source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "digits_len") arguments continuation)).2.clock≤
+      count+tailPrice+1 := by
+  obtain ⟨callee,called,pCell,nCell⟩:=word_pair_environment source.code.lookup (ofString "digits_len")
+    (ofString "p") (ofString "n") body .one pointer (BitVec.ofNat 64 count) (by decide) (original_code source.code installed)
+  exact ClockCost.scoped_current source (ofString name) .one (ofString "digits_len") arguments _ body continuation callee .one count tailPrice args called
+    (body_cost (callEntryStateHOLFinite source callee) pointer contents count small pCell nCell image mapped) tailBound
+
+/-- A funded actual caller returns the real length and resumes with its exact
+scan charge. Early returns need only their actual number of scans. -/
+theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=
+      some [.val (.word pointer),.val (.word (BitVec.ofNat 64 count))])
+    (image : Image source pointer contents count)
+    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index))
+    (enough : scans contents count+1≤source.clock) :
+    evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "digits_len") arguments continuation)=
+      (let output:=evaluateHOLFiniteState (bind {source with clock:=source.clock-1-scans contents count}
+        name (BitVec.ofNat 64 (result contents count))) continuation
+       (output.1,restore source name output.2)) := by
+  obtain ⟨callee,called,pCell,nCell⟩:=word_pair_environment source.code.lookup (ofString "digits_len")
+    (ofString "p") (ofString "n") body .one pointer (BitVec.ofNat 64 count) (by decide) (original_code source.code installed)
+  have run:=execute (callEntryStateHOLFinite source callee) pointer contents count small pCell nCell image mapped
+  rw [if_pos (show scans contents count≤(callEntryStateHOLFinite source callee).clock from by
+    change scans contents count≤source.clock-1;omega)] at run
+  exact CallNormal.pure_return_execute source _ name (ofString "digits_len") arguments _ body continuation callee
+    (BitVec.ofNat 64 (result contents count)) (scans contents count) args called (by omega) run rfl
+
+/-- A real normally returning child supplies the exact caller continuation.
+The caller's own call tick is charged separately by the scoped-call rules. -/
+theorem resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (pointer : BitVec 64)
+    (contents : Nat→BitVec 64) (count : Nat) (small : count≤8)
+    (installed : OriginalCode.Installed source.code)
+    (image : Image source pointer contents count)
+    (mapped : ∀ index,index<count→source.memaddrs (slot pointer index))
+    (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "digits_len")
+      [.val (.word pointer),.val (.word (BitVec.ofNat 64 count))]=some (actual,callee,shape))
+    (returned : ValueHOL 64)
+    (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(some (.returned returned),target)) :
+    scans contents count≤source.clock-1 ∧ returned=.val (.word (BitVec.ofNat 64 (result contents count))) ∧
+      CallNormal.continuationEntry source target name returned=
+        bind {source with clock:=source.clock-1-scans contents count} name (BitVec.ofNat 64 (result contents count)) := by
+  obtain ⟨expected,lookup,pCell,nCell⟩:=word_pair_environment source.code.lookup (ofString "digits_len")
+    (ofString "p") (ofString "n") body .one pointer (BitVec.ofNat 64 count) (by decide) (original_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans lookup)
+  have bodyEq : actual=body:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at pCell nCell
+  rw [bodyEq] at run
+  obtain ⟨funded,result,post⟩:=body_normal (callEntryStateHOLFinite source callee) target pointer contents count small pCell nCell image mapped returned run
+  refine ⟨funded,result,?_⟩
+  simp only [CallNormal.continuationEntry,result,post]
+  rfl
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Length
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.result_bound
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.scans_bound
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.result_zero
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.result_leading
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.result_suffix
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.body_shape
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.original_code
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.body_step
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.execute
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.body_cost
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.body_normal
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.trimmed_number
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.positive_length
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.call_cost
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.call_execute
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Length.resume

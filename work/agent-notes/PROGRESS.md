@@ -4739,3 +4739,37 @@ workspace ownership/global/domain are needed initially, not old contents: the
 real conversion and clearing calls initialize used slots. Taylor/current
 parent-header validation/execution/wrappers/main, uniform target composition,
 dominant-slack review and cleanup remain in the same active goal.
+
+
+## Actual digits_len: physical scan, early returns and exact caller charge
+
+The unchanged digits_len(60) now has an exact execution theorem at every
+clock for the real initialized mapped digit image, for counts at most8.
+It reads the actual descending cells and either returns the genuine last
+nonzero index plus1 or times out with exhausted clock. Its scan count tracks
+early returns; it costs at most the original count body source ticks and
+at most count+1 for the actual ordinary caller, before its continuation.
+No normal return or future funding is assumed to establish that allowance.
+
+A real normal body return derives its own required scan funding, exact
+returned word and full nonlocal/remaining-clock frame. The returned count
+is at most8, positive for a nonzero represented number, identifies a
+nonzero leading digit and leaves a zero suffix. Trimming to it preserves
+the represented natural number. The real p/n scalar ABI, funded scoped
+execution and actual normal child resumption are checked. Child resumption
+does not infer the caller's own call funding when the scan count is0;
+that tick remains the obligation of the actual scoped-call execution.
+
+Validation: current-digits-length-call-v1.log PASS1022jobs; all16new printed
+facts have only permitted axioms. Index8700modules/18370facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Overall effort estimate
+remains50%, plausible40–60%. Usage30%weekly/0resetcredits, ordinary usage
+allowed. No executable or fixed challenge assumption changed.
+
+Next: actual digits_to_u256(59) mapped reads/word combination and numeric
+inverse; then real one-/two-digit divmnu array stores and next remainder
+image. Derive and retain the current640-byte u256_ws allocation/global from
+startup, then connect Taylor/current parent-header validation/execution/
+wrappers/main. Uniform target composition, exact K evaluation,
+dominant-slack review and final cleanup remain in the active goal.

@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.PureReturn
 import InitECandidate.Solver.Input.CallResume
 import InitECandidate.Solver.Input.WordTripleEnvironment
 import InitECandidate.Solver.Input.NormalWordDeclaration
@@ -463,3 +464,385 @@ end InitECandidate.Solver.Input.UDivMod.Div64By32
 #print axioms InitECandidate.Solver.Input.UDivMod.Div64By32.body_normal_digits
 #print axioms InitECandidate.Solver.Input.UDivMod.Div64By32.call_cost
 #print axioms InitECandidate.Solver.Input.UDivMod.Div64By32.resume
+
+namespace InitECandidate.Solver.Input.UDivMod.Nlz32
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+private theorem mask_test (value mask : BitVec 64) (bits : Nat)
+    (valueSmall : value.toNat<2^32) (bitsSmall : bits≤32)
+    (partition : (BitVec.ofNat 64 (2^bits-1)) ||| mask=4294967295#64)
+    (disjoint : (BitVec.ofNat 64 (2^bits-1)) &&& mask=0#64) :
+    value &&& mask=0#64 ↔ value.toNat<2^bits := by
+  have power : 2^bits≤2^32:=Nat.pow_le_pow_right (by decide) bitsSmall
+  have lowNumber : (BitVec.ofNat 64 (2^bits-1)).toNat=2^bits-1:=by
+    rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have lowHalf : (value &&& (BitVec.ofNat 64 (2^bits-1))).toNat=value.toNat%2^bits:=by
+    rw [BitVec.toNat_and,lowNumber,Nat.and_two_pow_sub_one_eq_mod]
+  have allHalf : value &&& 4294967295#64=value:=by
+    apply BitVec.eq_of_toNat_eq
+    rw [BitVec.toNat_and]
+    change value.toNat &&& (2^32-1)=value.toNat
+    rw [Nat.and_two_pow_sub_one_eq_mod,Nat.mod_eq_of_lt valueSmall]
+  constructor
+  · intro zero
+    have joined : value=(value &&& BitVec.ofNat 64 (2^bits-1)) ||| (value &&& mask):=by
+      rw [←BitVec.and_or_distrib_left,partition,allHalf]
+    rw [zero,BitVec.or_zero] at joined
+    have native:=congrArg BitVec.toNat joined
+    rw [lowHalf] at native
+    have bound:=Nat.mod_lt value.toNat (Nat.two_pow_pos bits)
+    omega
+  · intro small
+    have lowSame : value &&& (BitVec.ofNat 64 (2^bits-1))=value:=by
+      apply BitVec.eq_of_toNat_eq
+      rw [lowHalf,Nat.mod_eq_of_lt small]
+    calc value &&& mask=(value &&& BitVec.ofNat 64 (2^bits-1)) &&& mask:=
+          congrArg (fun word : BitVec 64=>word &&& mask) lowSame.symm
+      _=value &&& ((BitVec.ofNat 64 (2^bits-1)) &&& mask):=BitVec.and_assoc _ _ _
+      _=0#64:=by rw [disjoint];simp
+
+def mask (amount : Nat) : BitVec 64:=match amount with
+  | 16=>4294901760#64 | 8=>4278190080#64 | 4=>4026531840#64 | 2=>3221225472#64 | _=>2147483648#64
+
+theorem mask_zero (value : BitVec 64) (amount : Nat) (allowed : amount=16 ∨ amount=8 ∨ amount=4 ∨ amount=2 ∨ amount=1)
+    (valueSmall : value.toNat<2^32) :
+    value &&& mask amount=0#64 ↔ value.toNat<2^(32-amount) := by
+  apply mask_test value (mask amount) (32-amount) valueSmall (by omega)
+  · rcases allowed with rfl|rfl|rfl|rfl|rfl <;> decide
+  · rcases allowed with rfl|rfl|rfl|rfl|rfl <;> decide
+
+/-- The conditional shift used at each normalization stage stays within
+32bits, raises its known lower bound and conserves the original value. -/
+theorem shifted_bounds (value : BitVec 64) (amount : Nat) (positive : 0<amount) (small : 2*amount≤32)
+    (lower : 2^(32-2*amount)≤value.toNat) (upper : value.toNat<2^(32-amount)) :
+    (value<<<amount).toNat=value.toNat*2^amount ∧
+      2^(32-amount)≤(value<<<amount).toNat ∧ (value<<<amount).toNat<2^32 := by
+  have powerPos:=Nat.two_pow_pos amount
+  have upperProduct:=Nat.mul_lt_mul_of_pos_right upper powerPos
+  have lowerProduct:=Nat.mul_le_mul_right (2^amount) lower
+  have upperPower : 2^(32-amount)*2^amount=2^32:=by
+    rw [←Nat.pow_add,show 32-amount+amount=32 by omega]
+  have lowerPower : 2^(32-2*amount)*2^amount=2^(32-amount):=by
+    rw [←Nat.pow_add,show 32-2*amount+amount=32-amount by omega]
+  rw [upperPower] at upperProduct
+  rw [lowerPower] at lowerProduct
+  have represented : (value<<<amount).toNat=value.toNat*2^amount:=by
+    rw [BitVec.toNat_shiftLeft,Nat.shiftLeft_eq,Nat.mod_eq_of_lt (by omega)]
+  exact ⟨represented,by rw [represented];exact lowerProduct,by rw [represented];exact upperProduct⟩
+
+end InitECandidate.Solver.Input.UDivMod.Nlz32
+
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.mask_zero
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.shifted_bounds
+
+namespace InitECandidate.Solver.Input.UDivMod.Nlz32
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_nlz32 with | .function fn=>progToHOL fn.body | _=>.skip
+def formals : List (MlS×ShapeHOL):=[(ofString "x",.one)]
+def test (amount : Nat) : ExpHOL 64:=.cmp .equal (.op .and [localVar "x",.const (mask amount)]) (.const 0#64)
+def shiftedExpression (amount : Nat) : ExpHOL 64:=.shift .lsl (localVar "x") (.const (BitVec.ofNat 64 amount))
+def addition (amount : Nat) : ExpHOL 64:=.op .add [localVar "s",.const (BitVec.ofNat 64 amount)]
+def active (amount : Nat) : ProgHOL 64:=.seq (.assign .local (ofString "s") (addition amount)) (.assign .local (ofString "x") (shiftedExpression amount))
+def stage (amount : Nat) : ProgHOL 64:=.ite (test amount) (active amount) .skip
+def finish : ProgHOL 64:=.seq (.ite (test 1) (.assign .local (ofString "s") (addition 1)) .skip) (.return (localVar "s"))
+def stages : List Nat→ProgHOL 64
+  | []=>finish
+  | amount::rest=>.seq (stage amount) (stages rest)
+
+theorem body_shape : body=.dec (ofString "s") .one (.const 0#64) (stages [16,8,4,2]) := by
+  simp only [body,Guest.Software.guestFn_nlz32,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    stages,stage,test,active,shiftedExpression,addition,finish,mask,localVar]
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "nlz32")=some (formals,body,.one) := by
+  have checked:=OriginalCode.indexed code installed 56 (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_nlz32) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,formals,body,
+    Guest.Software.guestFn_nlz32,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+private theorem test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : BitVec 64) (amount : Nat)
+    (x : source.locals.lookup (ofString "x")=some (.val (.word value))) :
+    eval source (test amount)=some (.val (.word (if value &&& mask amount=0#64 then 1#64 else 0#64))) := by
+  have maskFold : mask amount &&& 18446744073709551615#64=mask amount:=BitVec.and_allOnes
+  simp [eval,test,localVar,evalHOLExact,evalListHOLExact,toExact,x,valueIsWord,valueWord,wordOpHOL,wordOp,AndOp.and,
+    Flapjack.Compiler.Encoders.Asm.wordCmpHOL,maskFold]
+
+theorem stage_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (origin value : BitVec 64) (count amount : Nat)
+    (allowed : amount=16 ∨ amount=8 ∨ amount=4 ∨ amount=2)
+    (valueSmall : value.toNat<2^32) (lower : 2^(32-2*amount)≤value.toNat)
+    (conserved : value.toNat=origin.toNat*2^count)
+    (x : source.locals.lookup (ofString "x")=some (.val (.word value)))
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 count)))) :
+    ∃ target nextValue nextCount,nextCount≤count+amount ∧ 2^(32-amount)≤nextValue.toNat ∧ nextValue.toNat<2^32 ∧
+      nextValue.toNat=origin.toNat*2^nextCount ∧ evaluateHOLFiniteState source (stage amount)=(none,target) ∧
+      target={source with locals:=target.locals} ∧
+      target.locals.lookup (ofString "x")=some (.val (.word nextValue)) ∧
+      target.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 nextCount))) := by
+  classical
+  have amountSmall : amount<64:=by omega
+  have positive : 0<amount:=by omega
+  have twiceSmall : 2*amount≤32:=by omega
+  have amountNumber : (BitVec.ofNat 64 amount).toNat=amount:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have testRead:=test_read source value amount x
+  simp only [eval] at testRead
+  by_cases take : value &&& mask amount=0#64
+  · have upper:=(mask_zero value amount (by tauto) valueSmall).mp take
+    obtain ⟨represented,newLower,newUpper⟩:=shifted_bounds value amount positive twiceSmall lower upper
+    have newConserved : (value<<<amount).toNat=origin.toNat*2^(count+amount):=by
+      rw [represented,conserved,Nat.pow_add,Nat.mul_assoc]
+    have addRead : eval source (addition amount)=some (.val (.word (BitVec.ofNat 64 (count+amount)))):=by
+      simp [eval,addition,localVar,evalHOLExact,evalListHOLExact,toExact,s,valueIsWord,valueWord,wordOpHOL,wordOp,←BitVec.ofNat_add]
+    let added:=bind source "s" (BitVec.ofNat 64 (count+amount))
+    have addRun:=WitnessRadix.StateSteps.assign_execute source "s" (addition amount) _ _ s addRead
+    have xAdded : added.locals.lookup (ofString "x")=some (.val (.word value)):=
+      (bind_lookup_other _ "s" "x" _ (by decide)).trans x
+    have shiftedRead : eval added (shiftedExpression amount)=some (.val (.word (value<<<amount))):=by
+      simp [eval,shiftedExpression,localVar,evalHOLExact,toExact,xAdded,wordShiftHOL,amountNumber,amountSmall]
+    have shiftRun:=WitnessRadix.StateSteps.assign_execute added "x" (shiftedExpression amount) _ _ xAdded shiftedRead
+    let target:=bind added "x" (value<<<amount)
+    have activeRun : evaluateHOLFiniteState source (active amount)=(none,target):=by
+      rw [active,WitnessRadix.StateSteps.next_sequence source added _ _ addRun (Nat.le_refl _)]
+      exact shiftRun
+    refine ⟨target,value<<<amount,count+amount,by omega,newLower,newUpper,newConserved,?_,rfl,bind_lookup_same _ _ _,?_⟩
+    · rw [stage,evaluateHOLFiniteState_ite,testRead]
+      simpa only [if_pos take,if_neg (show (1#64 : BitVec 64)≠0 by decide)] using activeRun
+    · exact (bind_lookup_other _ "x" "s" _ (by decide)).trans (bind_lookup_same _ _ _)
+  · have newLower : 2^(32-amount)≤value.toNat:=by
+      have upperNot : ¬value.toNat<2^(32-amount):=fun upper=>take ((mask_zero value amount (by tauto) valueSmall).mpr upper)
+      omega
+    refine ⟨source,value,count,by omega,newLower,valueSmall,conserved,?_,rfl,x,s⟩
+    rw [stage,evaluateHOLFiniteState_ite,testRead]
+    simp [take]
+
+end InitECandidate.Solver.Input.UDivMod.Nlz32
+
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.body_shape
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.original_code
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.stage_execute
+
+
+namespace InitECandidate.Solver.Input.UDivMod.Nlz32
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+theorem finish_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (origin value : BitVec 64) (count : Nat)
+    (countSmall : count≤30) (valueSmall : value.toNat<2^32) (lower : 2^30≤value.toNat)
+    (conserved : value.toNat=origin.toNat*2^count)
+    (x : source.locals.lookup (ofString "x")=some (.val (.word value)))
+    (s : source.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 count)))) :
+    ∃ bits,bits≤31 ∧ 2^31≤origin.toNat*2^bits ∧ origin.toNat*2^bits<2^32 ∧
+      evaluateHOLFiniteState source finish=
+        (some (.returned (.val (.word (BitVec.ofNat 64 bits)))),emptyLocalsHOLFinite source) := by
+  classical
+  have testRead:=test_read source value 1 x
+  simp only [eval] at testRead
+  by_cases take : value &&& mask 1=0#64
+  · have upper:=(mask_zero value 1 (by omega) valueSmall).mp take
+    have productEq : origin.toNat*2^(count+1)=value.toNat*2:=by
+      rw [Nat.pow_succ,←Nat.mul_assoc,←conserved]
+    have addRead : eval source (addition 1)=some (.val (.word (BitVec.ofNat 64 (count+1)))):=by
+      simp [eval,addition,localVar,evalHOLExact,evalListHOLExact,toExact,s,valueIsWord,valueWord,wordOpHOL,wordOp,←BitVec.ofNat_add]
+    let added:=bind source "s" (BitVec.ofNat 64 (count+1))
+    have addRun:=WitnessRadix.StateSteps.assign_execute source "s" (addition 1) _ _ s addRead
+    have firstRun : evaluateHOLFiniteState source (.ite (test 1) (.assign .local (ofString "s") (addition 1)) .skip)=(none,added):=by
+      rw [evaluateHOLFiniteState_ite,testRead]
+      simpa only [if_pos take,if_neg (show (1#64 : BitVec 64)≠0 by decide)] using addRun
+    have sAdded : added.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 (count+1)))):=bind_lookup_same _ _ _
+    have returnRun : evaluateHOLFiniteState added (.return (localVar "s"))=
+        (some (.returned (.val (.word (BitVec.ofNat 64 (count+1))))),emptyLocalsHOLFinite added):=by
+      simp [evaluateHOLFiniteState_return,evalHOLExact,toExact,localVar,sAdded,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+    refine ⟨count+1,by omega,?_,?_,?_⟩
+    · rw [productEq]
+      omega
+    · rw [productEq]
+      omega
+    · rw [finish,WitnessRadix.StateSteps.next_sequence source added _ _ firstRun (Nat.le_refl _)]
+      exact returnRun
+  · have low : 2^31≤value.toNat:=by
+      have bad : ¬value.toNat<2^(32-1):=fun small=>take ((mask_zero value 1 (by omega) valueSmall).mpr small)
+      omega
+    have firstRun : evaluateHOLFiniteState source (.ite (test 1) (.assign .local (ofString "s") (addition 1)) .skip)=(none,source):=by
+      rw [evaluateHOLFiniteState_ite,testRead]
+      simp [take]
+    refine ⟨count,by omega,by omega,by omega,?_⟩
+    rw [finish,WitnessRadix.StateSteps.next_sequence source source _ _ firstRun (Nat.le_refl _)]
+    simp [evaluateHOLFiniteState_return,evalHOLExact,toExact,localVar,s,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+
+end InitECandidate.Solver.Input.UDivMod.Nlz32
+
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.finish_execute
+
+
+namespace InitECandidate.Solver.Input.UDivMod.Nlz32
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+private theorem frame_clock_le (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (frame : target={source with locals:=target.locals}) : target.clock≤source.clock := by
+  have clock:=congrArg PanSemStateFiniteExact.clock frame
+  change target.clock=source.clock at clock
+  omega
+
+private theorem local_frames (source middle target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (first : middle={source with locals:=middle.locals}) (second : target={middle with locals:=target.locals}) :
+    target={source with locals:=target.locals} := by
+  rw [second,first]
+
+/-- Complete original leading-zero count on its real positive32-bit input.
+The returned count normalizes that original word into [2^31,2^32). -/
+theorem execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : BitVec 64)
+    (valueSmall : value.toNat<2^32) (positive : 0<value.toNat)
+    (x : source.locals.lookup (ofString "x")=some (.val (.word value))) :
+    ∃ target bits,bits≤31 ∧ 2^31≤value.toNat*2^bits ∧ value.toNat*2^bits<2^32 ∧
+      evaluateHOLFiniteState source body=(some (.returned (.val (.word (BitVec.ofNat 64 bits)))),target) ∧
+      emptyLocalsHOLFinite target=emptyLocalsHOLFinite source := by
+  classical
+  let entry:=bind source "s" 0#64
+  have s0 : entry.locals.lookup (ofString "s")=some (.val (.word (BitVec.ofNat 64 0))):=bind_lookup_same _ _ _
+  have x0 : entry.locals.lookup (ofString "x")=some (.val (.word value)):=
+    (bind_lookup_other source "s" "x" 0#64 (by decide)).trans x
+  obtain ⟨s16,v16,c16,c16Bound,lo16,hi16,e16,r16,f16,x16,n16⟩:=
+    stage_execute entry value value 0 16 (by decide) valueSmall (by change 1≤value.toNat;omega) (by simp) x0 s0
+  obtain ⟨s8,v8,c8,c8Bound,lo8,hi8,e8,r8,f8,x8,n8⟩:=
+    stage_execute s16 value v16 c16 8 (by decide) hi16 lo16 e16 x16 n16
+  obtain ⟨s4,v4,c4,c4Bound,lo4,hi4,e4,r4,f4,x4,n4⟩:=
+    stage_execute s8 value v8 c8 4 (by decide) hi8 lo8 e8 x8 n8
+  obtain ⟨s2,v2,c2,c2Bound,lo2,hi2,e2,r2,f2,x2,n2⟩:=
+    stage_execute s4 value v4 c4 2 (by decide) hi4 lo4 e4 x4 n4
+  obtain ⟨bits,bound,lower,upper,finishRun⟩:=finish_execute s2 value v2 c2 (by omega) hi2 lo2 e2 x2 n2
+  have sequenceRun : evaluateHOLFiniteState entry (stages [16,8,4,2])=
+      (some (.returned (.val (.word (BitVec.ofNat 64 bits)))),emptyLocalsHOLFinite s2):=by
+    simp only [stages]
+    rw [WitnessRadix.StateSteps.next_sequence entry s16 _ _ r16 (frame_clock_le _ _ f16),
+      WitnessRadix.StateSteps.next_sequence s16 s8 _ _ r8 (frame_clock_le _ _ f8),
+      WitnessRadix.StateSteps.next_sequence s8 s4 _ _ r4 (frame_clock_le _ _ f4),
+      WitnessRadix.StateSteps.next_sequence s4 s2 _ _ r2 (frame_clock_le _ _ f2)]
+    exact finishRun
+  have declared:=ScalarScope.declare_execute source _ "s" (.const 0#64) 0#64 (stages [16,8,4,2]) _ rfl sequenceRun
+  have frame8:=local_frames entry s16 s8 f16 f8
+  have frame4:=local_frames entry s8 s4 frame8 f4
+  have frame2:=local_frames entry s4 s2 frame4 f2
+  let target:=restore source "s" (emptyLocalsHOLFinite s2)
+  refine ⟨target,bits,bound,lower,upper,?_,?_⟩
+  · rw [body_shape]
+    exact declared
+  · have frame:=congrArg emptyLocalsHOLFinite frame2
+    change emptyLocalsHOLFinite s2=emptyLocalsHOLFinite source at frame ⊢
+    exact frame
+
+private theorem stage_cost (code) (amount : Nat) : ClockCost.Bound code (stage amount) 0 := by
+  unfold stage active
+  exact ClockCost.conditional code _ _ _ 0 0
+    (ClockCost.sequence code _ _ 0 0 (ClockCost.assign code _ _) (ClockCost.assign code _ _)) (ClockCost.skip code)
+
+private theorem finish_cost (code) : ClockCost.Bound code finish 0 := by
+  unfold finish
+  exact ClockCost.sequence code _ _ 0 0
+    (ClockCost.conditional code _ _ _ 0 0 (ClockCost.assign code _ _) (ClockCost.skip code)) (ClockCost.returned code _)
+
+private theorem stages_cost (code) (amounts : List Nat) : ClockCost.Bound code (stages amounts) 0 := by
+  induction amounts with
+  | nil=>exact finish_cost code
+  | cons amount rest ih=>exact ClockCost.sequence code _ _ 0 0 (stage_cost code amount) ih
+
+/-- All outcomes spend0body source ticks; target straight-line work is separate. -/
+theorem body_cost (code) : ClockCost.Bound code body 0 := by
+  rw [body_shape]
+  exact ClockCost.declared code _ _ _ _ 0 (stages_cost code _)
+
+theorem call_cost (code) (installed : OriginalCode.Installed code)
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64) (tailPrice : Nat)
+    (tailBound : ClockCost.Bound code continuation tailPrice) :
+    ClockCost.Bound code (.decCall (ofString name) .one (ofString "nlz32") arguments continuation) (tailPrice+1) := by
+  simpa only [Nat.zero_add] using ClockCost.scoped_body code (ofString name) .one (ofString "nlz32") arguments continuation
+    formals body .one 0 tailPrice (original_code code installed) (body_cost code) tailBound
+
+theorem call_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : BitVec 64)
+    (name : String) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (installed : OriginalCode.Installed source.code)
+    (valueSmall : value.toNat<2^32) (positive : 0<value.toNat)
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word value)])
+    (enough : 1≤source.clock) :
+    ∃ bits,bits≤31 ∧ 2^31≤value.toNat*2^bits ∧ value.toNat*2^bits<2^32 ∧
+      evaluateHOLFiniteState source (.decCall (ofString name) .one (ofString "nlz32") arguments continuation)=
+        (let output:=evaluateHOLFiniteState (bind {source with clock:=source.clock-1} name (BitVec.ofNat 64 bits)) continuation
+        (output.1,restore source name output.2)) := by
+  obtain ⟨callee,called,x⟩:=CallNormal.unary_environment source.code.lookup (ofString "nlz32") "x" body value (original_code source.code installed)
+  obtain ⟨target,bits,bound,lower,upper,run,frame⟩:=execute (callEntryStateHOLFinite source callee) value valueSmall positive x
+  have actual:=CallNormal.pure_return_execute source target name (ofString "nlz32") arguments _ body continuation callee
+    (BitVec.ofNat 64 bits) 0 args called enough run frame
+  exact ⟨bits,bound,lower,upper,by simpa only [Nat.sub_zero] using actual⟩
+
+end InitECandidate.Solver.Input.UDivMod.Nlz32
+
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.execute
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.body_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.call_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.call_execute
+
+
+namespace InitECandidate.Solver.Input.UDivMod.Nlz32
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+/-- The actual normalized top-digit expression includes a carry from the
+previous digit. Its mask retains the normalized leading half-bit. -/
+theorem normalized_digit (leading previous : BitVec 64) (bits : Nat) (bitsSmall : bits≤31)
+    (lower : 2^31≤leading.toNat*2^bits) (upper : leading.toNat*2^bits<2^32) :
+    2^31≤((((leading<<<bits) ||| (previous>>>(32-bits))) &&& 4294967295#64).toNat) ∧
+      ((((leading<<<bits) ||| (previous>>>(32-bits))) &&& 4294967295#64).toNat)<2^32 := by
+  have leftNumber : (leading<<<bits).toNat=leading.toNat*2^bits:=by
+    rw [BitVec.toNat_shiftLeft,Nat.shiftLeft_eq,Nat.mod_eq_of_lt (by omega)]
+  have leftMask : (leading<<<bits) &&& 4294967295#64=leading<<<bits:=by
+    apply BitVec.eq_of_toNat_eq
+    rw [BitVec.toNat_and]
+    change (leading<<<bits).toNat &&& (2^32-1)=(leading<<<bits).toNat
+    rw [Nat.and_two_pow_sub_one_eq_mod,Nat.mod_eq_of_lt (by omega)]
+  have joined : ((leading<<<bits) ||| (previous>>>(32-bits))) &&& 4294967295#64=
+      (leading<<<bits) ||| ((previous>>>(32-bits)) &&& 4294967295#64):=by
+    rw [BitVec.and_or_distrib_right,leftMask]
+  constructor
+  · rw [joined,BitVec.toNat_or]
+    have grows : (leading<<<bits).toNat≤(leading<<<bits).toNat ||| ((previous>>>(32-bits)) &&& 4294967295#64).toNat:=Nat.left_le_or
+    omega
+  · rw [BitVec.toNat_and]
+    change ((leading<<<bits) ||| (previous>>>(32-bits))).toNat &&& (2^32-1)<2^32
+    rw [Nat.and_two_pow_sub_one_eq_mod]
+    exact Nat.mod_lt _ (by decide)
+
+/-- The genuine current unary ABI exposes the actual normalization count
+and resumes its caller with exactly the one-call decrement. -/
+theorem resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) (value : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (valueSmall : value.toNat<2^32) (positive : 0<value.toNat)
+    (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "nlz32") [.val (.word value)]=some (actual,callee,shape))
+    (returned : ValueHOL 64)
+    (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(some (.returned returned),target)) :
+    ∃ bits,bits≤31 ∧ 2^31≤value.toNat*2^bits ∧ value.toNat*2^bits<2^32 ∧ returned=.val (.word (BitVec.ofNat 64 bits)) ∧
+      CallNormal.continuationEntry source target name returned=bind {source with clock:=source.clock-1} name (BitVec.ofNat 64 bits) := by
+  obtain ⟨expected,lookup,xCell⟩:=CallNormal.unary_environment source.code.lookup (ofString "nlz32") "x" body value (original_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans lookup)
+  have bodyEq : actual=body:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at xCell
+  rw [bodyEq] at run
+  obtain ⟨post,bits,bound,lower,upper,completed,frame⟩:=execute (callEntryStateHOLFinite source callee) value valueSmall positive xCell
+  have actualEq:=run.symm.trans completed
+  have result : returned=.val (.word (BitVec.ofNat 64 bits)):=by
+    simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using congrArg Prod.fst actualEq
+  have targetEq : target=post:=congrArg Prod.snd actualEq
+  rw [←targetEq] at frame
+  have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) frame
+  change {target with locals:=source.locals}={source with clock:=source.clock-1} at callerFrame
+  refine ⟨bits,bound,lower,upper,result,?_⟩
+  change setVarHOLFinite (ofString name) returned {target with locals:=source.locals}=
+    setVarHOLFinite (ofString name) (.val (.word (BitVec.ofNat 64 bits))) {source with clock:=source.clock-1}
+  rw [result,callerFrame]
+
+end InitECandidate.Solver.Input.UDivMod.Nlz32
+
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.normalized_digit
+#print axioms InitECandidate.Solver.Input.UDivMod.Nlz32.resume

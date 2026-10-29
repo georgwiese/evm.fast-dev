@@ -4607,3 +4607,43 @@ u256_ws640-byte allocation/global must also be retained from startup through
 the current main prefix; current main Data does not yet expose that model.
 Parent-header validation/execution/wrappers/main, uniform target composition,
 dominant-slack review and final cleanup remain in the same active goal.
+
+
+## Actual nlz32 normalization, returned count and caller frame
+
+The five literal top-bit masks now have exact natural threshold facts on
+32-bit inputs. Each real conditional shift raises the known lower bound,
+stays below2^32 and conserves original*2^count. The original final one-bit
+count update is included (its code does not shift x again). Complete current
+nlz32(56) execution on a positive32-bit input returns a count≤31 such that
+2^31≤original*2^count<2^32, with every nonlocal field and clock unchanged.
+Its whole body has an all-outcome0source-clock allowance, independent of
+input validity; the real call costs1tick plus its continuation. Current
+unary ABI/caller execution and actual child-return resumption are checked.
+The child-only resumption does not infer positive caller funding for a
+zero-cost child; that comes from the actual scoped parent execution.
+
+The actual normalization expression combining the shifted leading digit,
+carry from its predecessor, and32-bit mask retains the leading half-bit:
+its natural value is in[2^31,2^32). This holds for every predecessor word.
+These facts establish the numerical normalization ingredient, not yet the
+physical normalized-array image or a complete divmnu bound/correctness proof.
+The leading nonzero digit, workspace ownership and normal-store history
+still must come from the genuine surrounding digit-array execution.
+
+Validation: current-nlz32-mask-v1.log PASS975jobs,
+current-nlz32-finish-v1.log PASS975jobs and current-nlz32-complete-v3.log
+PASS976jobs; printed axioms permitted. Index8700modules/18317facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Overall estimate
+remains50%, plausible40–60%. Usage29%weekly/0resetcredits, ordinary usage
+allowed. No executable or challenge hypothesis changed.
+
+Next: literal quotient correction. A useful current-loop rank is0when
+again≠1, otherwise3when rhat<2^31,2when rhat<2^32, and1otherwise. Every
+continuing correction adds normalized vtop≥2^31 to rhat<2^32 without64-bit
+overflow; all other paths clear again. This should give≤3loop-body ticks
+(≤2actual corrections) using ClockCost.ranked_loop. The argument has not
+yet been formalized. Remaining wide-division numeric/physical contracts,
+Taylor, current parent-header validation/execution/wrappers/main, uniform
+target composition, dominant-slack review and final cleanup stay open.

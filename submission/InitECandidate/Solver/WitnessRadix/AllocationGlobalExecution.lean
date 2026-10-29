@@ -1,6 +1,9 @@
 import InitECandidate.Solver.WitnessRadix.AllocationCall
 import InitECandidate.Solver.WitnessRadix.AllocationRoundedExpected
 import InitECandidate.Solver.Input.GlobalAssign
+import InitECandidate.Solver.WitnessRadix.AllocationChecked
+import InitECandidate.Solver.WitnessRadix.AllocationCost
+import InitECandidate.Solver.Input.AssignedCallNormal
 
 namespace InitECandidate.Solver.WitnessRadix.PersistentAlloc
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -50,8 +53,40 @@ theorem global_call_execute_expected {F : Type} (source : PanSemStateFiniteExact
     (by rw [pointerNum,amountNum]; omega) (by rw [pointerNum,amountNum]; exact lower) (by rw [pointerNum,amountNum]; exact upper) aligned
   simpa only [post,rounded] using actual
 
+/-- A genuine normal global-result allocation supplies its own checked
+persistent room and exact caller update. Its destination is not assumed
+present in advance; an invalid destination simply cannot return normally. -/
+theorem global_call_normal_no_wrap (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (pointer amount : BitVec 64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (values amount))
+    (installed : Input.OriginalCode.Installed source.code)
+    (heap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word pointer)))
+    (noWrap : pointer.toNat+amount.toNat+7<2^64)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString name),none)) (ofString "alloc") arguments)=(none,target)) :
+    pointer.toNat+amount.toNat≤2952790016 ∧ 1≤source.clock ∧
+      target=Input.putGlobal (post {source with clock:=source.clock-1} pointer amount) name pointer := by
+  obtain ⟨callee,called,amountLocal⟩:=environment source.code.lookup amount (original_code source.code installed)
+  obtain ⟨funded,child,returned,run⟩:=Input.CallNormal.assigned_callee_return source target (some (.global,ofString name)) (ofString "alloc")
+    arguments _ body callee .one args called normal
+  obtain ⟨answer,room,frame⟩:=post_of_normal_no_wrap (callEntryStateHOLFinite source callee) child pointer amount amountLocal heap noWrap
+    (Input.Trap.original_code source.code installed) returned run
+  have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) frame
+  change {child with locals:=source.locals}=post {source with clock:=source.clock-1} pointer amount at callerFrame
+  rw [evaluateHOLFiniteState_call] at normal
+  simp only [args,called,if_neg (show source.clock≠0 from by omega),run,answer,shapeOfHOLExact,shapeEqHOL,ite_true] at normal
+  split at normal
+  · have endpoint:=congrArg Prod.snd normal
+    refine ⟨room,funded,?_⟩
+    change setKvarHOLFinite .global (ofString name) (.val (.word pointer)) {child with locals:=source.locals}=target at endpoint
+    rw [←endpoint]
+    change Input.putGlobal {child with locals:=source.locals} name pointer=Input.putGlobal (post {source with clock:=source.clock-1} pointer amount) name pointer
+    rw [callerFrame]
+  · cases normal
+
 end InitECandidate.Solver.WitnessRadix.PersistentAlloc
 
 #print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.global_call_execute
 
 #print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.global_call_execute_expected
+
+#print axioms InitECandidate.Solver.WitnessRadix.PersistentAlloc.global_call_normal_no_wrap

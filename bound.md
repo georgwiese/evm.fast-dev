@@ -1801,3 +1801,27 @@ import after the earlier foundation cleanup; its proof now checks. Claim
 infinity; no global finite target K/full verifier success. Usage44%weekly/
 0resetcredits. Next: withdrawal encoder/loop and trie, rest of payload_header
 and main, uniform target steps, final cleanup.
+
+## Current withdrawal input, allocation and address-size foundations
+
+The literal unchanged withdrawal prefix/loop shapes now check against
+SoftwareAst. Main's retained decoded payload supplies the actual count read
+and every owned44-byte record before the original input boundary. The actual
+wd_rlp_slices global-result allocation costs at most2source ticks; its same
+normal return derives its own checked persistent room, owned array extent
+and exact heap/global update, without an assumed initial destination binding.
+The reusable allocator normal helper includes invalid global destinations.
+
+The current RLP writer now also derives the exact21-byte encoded size of a
+20-byte withdrawal address from its actual header/copy/return path. This
+sharper normal size is needed to prove the existing64-byte buffer sufficient;
+the program and buffer size remain unchanged. Complete withdrawal writer,
+loop and trie, later header/main and uniform target composition remain open.
+
+Validation: current-withdrawal-prefix-v4.log PASS2709jobs, including rebuilding
+startup/main users of the allocator helper; printed axioms permitted only.
+Index8700modules/17864facts; inventory8745/replacement closure0/fixed files
+unchanged. Incremental policy65536entries/2485790287bytes: package entry cap
+is now exactly full; consolidate or remove an unused module before adding
+another path. Claim infinity; no global finite target K/full verifier success.
+Usage44%weekly/0resetcredits. Five historical RLP WIPs remain untouched.

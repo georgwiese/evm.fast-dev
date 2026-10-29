@@ -21,6 +21,27 @@ theorem release_call_normal (source post : PanSemStateFiniteExact 64 Guest.HostM
   rw [actual] at normal
   exact ⟨positive,(Prod.mk.inj normal).2.symm⟩
 
+/-- Releasing the genuine unchanged mark restores the same physical state.
+Only the actual caller clock is paid. -/
+theorem release_same_call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (mark : BitVec 64)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word mark)])
+    (cursor : source.globals.lookup (ofString "scratch_ptr")=some (.val (.word mark)))
+    (installed : Input.OriginalCode.Installed source.code)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "scratch_release") arguments)=(none,post)) :
+    post={source with clock:=source.clock-1} := by
+  obtain ⟨funded,endpoint⟩:=release_call_normal source post mark mark arguments args cursor installed normal
+  have globals : source.globals.update (ofString "scratch_ptr",.val (.word mark))=source.globals := by
+    apply HolFiniteMapExact.ext
+    funext key
+    simp only [HolFiniteMapExact.lookup_update_pointwise]
+    by_cases same : key=ofString "scratch_ptr"
+    · subst key
+      exact cursor.symm
+    · simp [same]
+  simpa only [released,globals] using endpoint
+
 end InitECandidate.Solver.Arenas.Scratch
 
 #print axioms InitECandidate.Solver.Arenas.Scratch.release_call_normal
+#print axioms InitECandidate.Solver.Arenas.Scratch.release_same_call_normal

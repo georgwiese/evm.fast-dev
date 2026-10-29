@@ -29,7 +29,7 @@ needed. **Do not read CLAUDE.md.** Fixed definitions govern stale prose.
   Do not claim final verification without a successful run. Existing restrictions
   on running the full verifier on this machine persist.
 
-## Current status — 2026-10-28
+## Current status — 2026-10-29
 
 **No global finite target K yet.** Claim infinity; no full verification claimed.
 Best overall effort estimate: **45%, plausible35–55%**, relative to current main.
@@ -842,3 +842,34 @@ inventory8699/replacement closure0/fixed files unchanged. No global finite
 target K/full verification; claim infinity. Usage28%weekly/0resetcredits.
 Next: actual normal witness loop/wrappers/root, followed by state_init's earlier
 input/returned-heap frame and continued main/target composition.
+
+
+## Current witness loop, wrappers and whole root normal frame
+
+The same actual current236 loop now retains its zero/fresh terminal node,
+advanced bounded/aligned persistent heap, all nonheap globals, complete runtime
+metadata and every earlier word. Current237's catch handler cannot manufacture
+successful fallthrough. Current238's genuine mark/release restores the same
+scratch cursor on normal return; no successful decode or release is assumed.
+
+Whole unchanged root239 now has that normal persistent frame, including its
+real empty-root comparison, physical Patricia lookup, bounded witness decode,
+fresh hash-cache allocation/copy and actual node-cache store. A returned node
+is zero or lies above the original entering frontier, which protects earlier
+input even when that later cache store precedes the latest allocator cursor.
+Missing or nonscalar empty-root globals cannot produce a normal return.
+
+The actual state-init workspace prefix now derives room/funding from an
+enclosing normal return, and its original root call passes this physical frame
+and returned node into the same afterRoot continuation. Shared allocation and
+keys/nodes/order metadata frames are independent of the constructor's key width.
+Full state-init suffix/input preservation, later main and uniform target-step
+composition remain open. No global finite target K; claim infinity.
+
+Validation: current-witness-root-state-main-regression-v2.log PASS2669jobs,
+including whole root normal frames, state-init normal root connection and
+current main prefix/global proofs. Permitted printed axioms only. Shared
+generator --check PASS. Index8665modules/17586facts; inventory8710/replacement
+closure0/fixed files unchanged. Incremental policy PASS65500entries/
+2485397130bytes. No full verification claimed. Usage29%weekly/0resetcredits.
+Continue the actual state-init table/allocation suffix and earlier-input frame.

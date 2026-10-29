@@ -7,6 +7,14 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 def NoFallthrough (program : ProgHOL 64) : Prop :=
   ∀ source : PanSemStateFiniteExact 64 Guest.HostMemory, (evaluateHOLFiniteState source program).1 ≠ none
 
+theorem NoFallthrough.raised (identifier : MlS) (expression : ExpHOL 64) : NoFallthrough (.raise identifier expression) := by
+  intro source
+  rw [evaluateHOLFiniteState_raise]
+  split
+  · dsimp only
+    split <;> simp
+  · simp
+
 theorem NoFallthrough.returned (expression : ExpHOL 64) : NoFallthrough (.return expression) := by
   intro source
   rw [evaluateHOLFiniteState_return]
@@ -69,6 +77,7 @@ theorem NoFallthrough.scoped (name : MlS) (shape : ShapeHOL) (function : MlS) (a
 end InitECandidate.Solver.Input
 
 #print axioms InitECandidate.Solver.Input.NoFallthrough.returned
+#print axioms InitECandidate.Solver.Input.NoFallthrough.raised
 #print axioms InitECandidate.Solver.Input.NoFallthrough.sequence
 #print axioms InitECandidate.Solver.Input.NoFallthrough.declared
 #print axioms InitECandidate.Solver.Input.NoFallthrough.scoped

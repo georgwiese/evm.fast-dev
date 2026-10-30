@@ -7093,3 +7093,38 @@ regular transaction16777216 cap. Retain genuine state/table invariants from
 real calls as needed. Then complete main/source connection, uniform formal
 target steps, exact K, dominant slack review and cleanup. Output/be exact
 field images are not separately asserted by the ownership frames yet.
+
+## Whole unchanged executor initialization priced before first system call
+
+The actual persistent lst_new body has two allocations and three stores,
+with a4source tick body bound on every outcome. No element-size/capacity or
+memory image is assumed. Original bal_init uses three real Patricia table
+constructors (8body ticks each), one allocation and a scalar global assignment:
+29body ticks,30caller. Generic body pricing now covers global-result calls
+with arbitrary actual expressions and failed ABI evaluation/lookup included.
+
+The17actual lexical actions of execute_block before its first mandatory
+beacon-roots system transaction now have an all-outcome161source tick bound.
+This includes both declarations, output allocation/zero, transaction/receipt
+arrays, log/return lists, request array, stores and full bal_init. A syntax
+proof identifies the remaining original system call. Every real executor
+outcome either stops within161ticks or supplies its genuine prefix execution
+and resumes at that continuation. The initial-cost theorem assumes only the
+original installed code, without predicting normal returns, memory images,
+room or count values. Full runtime state/table models after this prefix are
+still to be derived from that retained real execution; the source-cost trace
+does not assert they already hold and is not a whole executor or target bound.
+
+Validation: current-execute-block-initial-cost-v2.log PASS3102jobs; all9new
+printed facts use permitted axioms. Index8700modules/19118facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage43%, no
+reset credits, ordinary usage allowed. No new candidate paths; historical
+untracked WIPs untouched. Original executable unchanged.
+
+Next: derive actual post-initialization state/table/field images for mandatory
+system transactions, starting with the original beacon-roots call. Its gas is
+30000000 and reservoir97920*16, so do not substitute the regular transaction
+16777216 cap. Then mandatory calls/finalization, complete main/source,
+uniform formal target steps, exact K, dominant slack review and cleanup.

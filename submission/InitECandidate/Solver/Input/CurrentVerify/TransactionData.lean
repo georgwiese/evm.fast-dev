@@ -3470,3 +3470,180 @@ theorem body_output_trace {input : Guest.InputBlob} {source post : PanSemStateFi
 end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.body_output_trace
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- All-outcome body pricing also covers global-result assignments, with
+arbitrary actual argument expressions and failed ABI lookup included. -/
+theorem assigned_body_cost (code) (destination : Option (VarKind×MlS)) (function : MlS) (arguments : List (ExpHOL 64))
+    (formals : List (MlS×ShapeHOL)) (program : ProgHOL 64) (shape : ShapeHOL) (price : Nat)
+    (entry : code.lookup function=some (formals,program,shape)) (priced : ClockCost.Bound code program price) :
+    ClockCost.Bound code (.call (some (destination,none)) function arguments) (price+1) := by
+  intro source sameCode
+  cases args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments with
+  | none=>rw [evaluateHOLFiniteState_call,args]; simp
+  | some values=>
+    cases called : lookupCodeHOLFinite source.code.lookup function values with
+    | none=>rw [evaluateHOLFiniteState_call]; simp only [args,called]; omega
+    | some triple=>
+      obtain ⟨actual,callee,actualShape⟩:=triple
+      have sourceEntry : source.code.lookup function=some (formals,program,shape):=by rw [sameCode]; exact entry
+      have bodyEq:=LocalEffects.lookup_body source.code function formals program shape sourceEntry values actual callee actualShape called
+      exact ClockCost.assigned_current source destination function arguments values actual callee actualShape price args called
+        (by rw [bodyEq]; exact priced _ sameCode)
+
+def listBody : ProgHOL 64:=match Guest.Software.guestFn_lst_new with | .function fn=>progToHOL fn.body | _=>.skip
+def listFormals : List (MlS×ShapeHOL):=[(ofString "esz",.one),(ofString "cap",.one)]
+
+theorem list_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "lst_new")=some (listFormals,listBody,.one) := by
+  have found:=OriginalCode.indexed code installed 369
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_lst_new) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,listBody,listFormals,
+    Guest.Software.guestFn_lst_new,paramToHOL,shapeToHOL,List.map_cons,List.map_nil] using found
+
+/-- The original persistent list has two allocation calls and three stores;
+its all-outcome body bound needs no element-size/capacity or memory image. -/
+theorem list_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code listBody 4 := by
+  simp only [listBody,Guest.Software.guestFn_lst_new,progToHOL,shapeToHOL]
+  apply PersistentAlloc.scoped_price (tailPrice:=2) code installed
+  apply PersistentAlloc.scoped_price (tailPrice:=0) code installed
+  apply ClockCost.sequence (firstPrice:=0) (secondPrice:=0)
+  · exact ClockCost.store code _ _
+  · apply ClockCost.sequence (firstPrice:=0) (secondPrice:=0)
+    · exact ClockCost.store code _ _
+    · apply ClockCost.sequence (firstPrice:=0) (secondPrice:=0)
+      · exact ClockCost.store code _ _
+      · exact ClockCost.returned code _
+
+def balBody : ProgHOL 64:=match Guest.Software.guestFn_bal_init with | .function fn=>progToHOL fn.body | _=>.skip
+
+theorem bal_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "bal_init")=some ([],balBody,.one) := by
+  have found:=OriginalCode.indexed code installed 372
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_bal_init) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,balBody,
+    Guest.Software.guestFn_bal_init,paramToHOL,shapeToHOL,List.map_cons,List.map_nil] using found
+
+/-- The unchanged BAL initializer uses three real Patricia constructors
+(8body ticks each), one allocation, a scalar global assignment and return. -/
+theorem bal_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code balBody 29 := by
+  have table (destination : Option (VarKind×MlS)) (arguments : List (ExpHOL 64)) :
+      ClockCost.Bound code (.call (some (destination,none)) (ofString "htab_new") arguments) 9:=
+    assigned_body_cost code destination (ofString "htab_new") arguments CurrentTable.New.formals CurrentTable.New.body .one 8
+      (CurrentTable.New.original_code code installed) (CurrentTable.New.body_cost code installed)
+  have allocation (destination : Option (VarKind×MlS)) (arguments : List (ExpHOL 64)) :
+      ClockCost.Bound code (.call (some (destination,none)) (ofString "alloc") arguments) 2:=
+    assigned_body_cost code destination (ofString "alloc") arguments PersistentAlloc.formals PersistentAlloc.body .one 1
+      (PersistentAlloc.original_code code installed) (PersistentAlloc.body_price code installed)
+  simp only [balBody,Guest.Software.guestFn_bal_init,progToHOL]
+  apply ClockCost.sequence (firstPrice:=9) (secondPrice:=20)
+  · exact table _ _
+  · apply ClockCost.sequence (firstPrice:=9) (secondPrice:=11)
+    · exact table _ _
+    · apply ClockCost.sequence (firstPrice:=9) (secondPrice:=2)
+      · exact table _ _
+      · apply ClockCost.sequence (firstPrice:=2) (secondPrice:=0)
+        · exact allocation _ _
+        · apply ClockCost.sequence (firstPrice:=0) (secondPrice:=0)
+          · exact ClockCost.of_quiet code _ (QuietClock.assign_kind code .global _ _)
+          · exact ClockCost.returned code _
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.assigned_body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.list_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.list_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Cut the actual lexical prefix immediately before the first mandatory
+system transaction, retaining its declarations rather than flattening them. -/
+def initialActions : List CallPrefix.Action:=(CallPrefix.cutAt 17 body).1
+def beforeFirstSystem : ProgHOL 64:=(CallPrefix.cutAt 17 body).2
+
+theorem initial_shape : body=CallPrefix.program initialActions beforeFirstSystem:=
+  (CallPrefix.reconstructAt 17 body).symm
+
+theorem first_system_shape : ∃ tail,beforeFirstSystem=.seq
+    (.call (some (none,none)) (ofString "process_unchecked_system_transaction")
+      [.var .global (ofString "beacon_roots_address"),.load .one (Scalar.plus (localVar "si") 24),.const 32#64]) tail := by
+  simp only [beforeFirstSystem,body,Guest.Software.guestFn_execute_block,progToHOL,CallPrefix.cutAt,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,Scalar.plus,localVar]
+  exact ⟨_,rfl⟩
+
+/-- All original arrays, empty lists, output zeroing and BAL initialization
+are included. Failed expressions, allocation guards and stores are covered;
+no count, memory image, room or future normal return is assumed. -/
+theorem initial_cost (code) (installed : OriginalCode.Installed code) :
+    ClockCost.Bound code (CallPrefix.program initialActions .skip) 161 := by
+  have allocation (destination : Option (VarKind×MlS)) (arguments : List (ExpHOL 64)) :
+      ClockCost.Bound code (.call (some (destination,none)) (ofString "alloc") arguments) 2:=
+    assigned_body_cost code destination (ofString "alloc") arguments PersistentAlloc.formals PersistentAlloc.body .one 1
+      (PersistentAlloc.original_code code installed) (PersistentAlloc.body_price code installed)
+  have zero : ClockCost.Bound code outputZero 113:=by
+    intro source sameCode
+    have sourceInstalled : OriginalCode.Installed source.code:=by rw [sameCode]; exact installed
+    exact ZeroAny.dynamic_call_cost source (.var .global (ofString "bo")) 88 (by decide) (Zero.original_code source.code sourceInstalled)
+  have bal : ClockCost.Bound code (.call (some (none,none)) (ofString "bal_init") []) 30:=
+    assigned_body_cost code none (ofString "bal_init") [] [] balBody .one 29 (bal_code code installed) (bal_cost code installed)
+  simp only [initialActions,body,Guest.Software.guestFn_execute_block,progToHOL,CallPrefix.cutAt,CallPrefix.program,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none]
+  apply ClockCost.declared
+  apply ClockCost.declared
+  apply ClockCost.sequence (firstPrice:=2) (secondPrice:=159)
+  · exact allocation _ _
+  · apply ClockCost.sequence (firstPrice:=113) (secondPrice:=46)
+    · exact zero
+    · apply PersistentAlloc.scoped_price (tailPrice:=44) code installed
+      apply ClockCost.sequence (firstPrice:=0) (secondPrice:=44)
+      · exact ClockCost.store code _ _
+      · apply PersistentAlloc.scoped_price (tailPrice:=42) code installed
+        apply ClockCost.sequence (firstPrice:=0) (secondPrice:=42)
+        · exact ClockCost.store code _ _
+        · apply ClockCost.scoped_body (calleePrice:=4) (continuationPrice:=37) (formals:=listFormals) (body:=listBody)
+            (returnShape:=.one) (entry:=list_code code installed) (calleeBound:=list_cost code installed)
+          apply ClockCost.sequence (firstPrice:=0) (secondPrice:=37)
+          · exact ClockCost.store code _ _
+          · apply PersistentAlloc.scoped_price (tailPrice:=35) code installed
+            apply ClockCost.sequence (firstPrice:=0) (secondPrice:=35)
+            · exact ClockCost.store code _ _
+            · apply ClockCost.scoped_body (calleePrice:=4) (continuationPrice:=30) (formals:=listFormals) (body:=listBody)
+                (returnShape:=.one) (entry:=list_code code installed) (calleeBound:=list_cost code installed)
+              apply ClockCost.sequence (firstPrice:=0) (secondPrice:=30)
+              · exact ClockCost.store code _ _
+              · apply ClockCost.sequence (firstPrice:=0) (secondPrice:=30)
+                · exact ClockCost.store code _ _
+                · apply ClockCost.sequence (firstPrice:=30) (secondPrice:=0)
+                  · exact bal
+                  · exact ClockCost.sequence code .skip .skip 0 0 (ClockCost.skip code) (ClockCost.skip code)
+
+/-- Every actual executor outcome either stops during initialization within
+161source ticks or reaches its genuine first system-transaction continuation.
+The actual normal prefix is retained for subsequent state/table proofs. -/
+theorem initial_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (installed : OriginalCode.Installed source.code) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤161 ∨ ∃ current inner,CallPrefix.Execution source initialActions current ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤161 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current beforeFirstSystem=(outcome,inner) := by
+  rw [initial_shape] at run
+  rcases CallPrefix.priced_frame_trace source post initialActions beforeFirstSystem 161
+    (initial_cost source.code installed source rfl) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · exact Or.inr reached
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.initial_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.first_system_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.initial_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.initial_trace

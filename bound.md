@@ -32,7 +32,7 @@ needed. **Do not read CLAUDE.md.** Fixed definitions govern stale prose.
 ## Current status — 2026-10-30
 
 **No global finite target K yet.** Claim infinity; no full verification claimed.
-Best overall effort estimate: **50%, plausible40–60%**, relative to current main.
+Best overall effort estimate: **55%, plausible45–65%**, relative to current main.
 Module counts are bookkeeping. The old10^14–10^18 numerical guess was speculation,
 not a theorem or target ceiling.
 
@@ -4380,3 +4380,44 @@ Connect actual startup/final division/caller, finish header/main, uniform formal
 target steps, exact K, dominant slack review and cleanup. Source clocks omit
 target straight-line work. Historical untracked WIPs and executable/fixed
 premises stay untouched.
+
+
+## Actual Taylor whole-loop bound from its observed finite history
+
+The literal original iteration cannot escape by break, continue or a caller
+return; its real errors, traps and timeouts remain covered. The loop model now
+records only already executed terms, their exact natural recurrence and the
+current accumulator/counter/zero flag, fixed numerator/denominator, source
+metadata and protected outside-workspace memory.
+
+An active real guard proves the current term positive. The checked <1280
+positive-prefix arithmetic then derives the actual active counter≤1280.
+A real normal body extends that same history with its actual quotient, advances
+the true i local without wrapping, preserves the model and decreases the rank.
+The proof does not assume that the loop terminates or that future calls are
+funded. Clock exhaustion and every aborted iteration are included.
+
+The unchanged whole loop, at its actual initial i=1and true accumulator flag,
+now has a449280source-tick all-outcome allowance:1280*(350body+1while tick).
+Any genuine normal exit retains the same history/constants, complete source
+metadata and protected memory, and its actual accumulator number is zero.
+The initial scalar/tuple bindings and workspace remain current-entry facts;
+the full function still must derive them through its original startup calls.
+
+Validation: current-taylor-loop-history-v4.log PASS1145jobs; all12new printed
+facts use only permitted axioms. Index8700modules/18829facts; inventory8745/
+replacement closure0/fixed files unchanged. Claim infinity; no global finite
+target K/full verifier success. Best overall effort estimate now55%, plausible
+45–65%, relative to reference main; this is an effort estimate, not a measured
+proof percentage. Usage38%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries. Targeted builds are not
+full isolated submission verification.
+
+Next: original Taylor from-word startup, initial multiplication and actual
+loop entry; final assigned division/return, full body and actual caller.
+The loop model intentionally does not need the running sum's numerical value:
+its final division can derive a valid quad from the actual successful ABI,
+while failed reads/shape checks stop within the same allowance. Then connect
+header/main, uniform formal target steps, exact K, dominant slack review and
+cleanup. Source clocks omit target straight-line work. Historical untracked
+WIPs and executable/fixed premises stay untouched.

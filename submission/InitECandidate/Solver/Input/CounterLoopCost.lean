@@ -1101,3 +1101,306 @@ end InitECandidate.Solver.Input.TaylorCurrent
 #print axioms InitECandidate.Solver.Input.TaylorCurrent.multiply_step_normal
 #print axioms InitECandidate.Solver.Input.TaylorCurrent.iteration_cost
 #print axioms InitECandidate.Solver.Input.TaylorCurrent.iteration_normal
+
+namespace InitECandidate.Solver.Input.TaylorCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+private theorem unused_call (name : String) (function : MlS) (arguments : List (ExpHOL 64))
+    (different : ofString "unused"≠ofString name) :
+    LocalPrefix (ofString "unused") (.call (some (some (.local,ofString name),none)) function arguments) :=
+  .call (some (ofString name)) function arguments (by intro actual same;cases Option.some.inj same;exact different)
+
+/-- The literal iteration cannot escape with break, continue or a caller
+return; real helper errors/traps/timeouts remain unrestricted. -/
+theorem iteration_prefix : LocalPrefix (ofString "unused") iteration := by
+  have finish : LocalPrefix (ofString "unused") finishIteration:=.seq
+    (.assign (ofString "i") increment (by decide)) (unused_call "nz" (ofString "u256_is_zero") [localVar "acc"] (by decide))
+  have divided : LocalPrefix (ofString "unused") afterDenominator:=.seq
+    (unused_call "acc" (ofString "u256_div") [localVar "p",localVar "di"] (by decide)) finish
+  have multiplied : LocalPrefix (ofString "unused") afterWord:=.seq
+    (unused_call "di" (ofString "u256_mul") [localVar "di",localVar "den"] (by decide)) divided
+  have converted : LocalPrefix (ofString "unused") divisionStep:=.decCall (ofString "di") RlpWrite.U256Value.tupleShape (ofString "u256_from_word") [localVar "i"] (by decide) multiplied
+  have low : LocalPrefix (ofString "unused") (.dec (ofString "p") RlpWrite.U256Value.tupleShape lowProduct divisionStep):=
+    .dec (ofString "p") RlpWrite.U256Value.tupleShape lowProduct (by decide) converted
+  have guarded : LocalPrefix (ofString "unused") overflowGuard:=.ite overflowTest
+    (.call none (ofString "trap_with") [.const 3#64] (by intro name impossible;cases impossible)) .skip
+  have product : LocalPrefix (ofString "unused") afterProduct:=.seq guarded low
+  have full : LocalPrefix (ofString "unused") multiplyStep:=.decCall (ofString "prod") (.comb [.one,.one,.one,.one,.one,.one,.one,.one])
+    (ofString "u256_mul_full") [localVar "acc",localVar "num"] (by decide) product
+  exact .seq (unused_call "out" (ofString "u256_add") [localVar "out",localVar "acc"] (by decide)) full
+
+/-- The loop invariant records only already executed terms. The current
+term may be zero; all earlier terms were positive when their guards ran. -/
+structure LoopModel (origin source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (numerator : BitVec 64)
+    (index : Nat) (accumulator : Quad) (values : Nat→Nat) : Prop where
+  positive : 0<index
+  bounded : index≤1281
+  context : UDivMod.WideDigits.Workspace.Context source base
+  installed : OriginalCode.Installed source.code
+  acc : source.locals.lookup (ofString "acc")=some (RlpWrite.U256Value.tuple accumulator)
+  num : source.locals.lookup (ofString "num")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad numerator))
+  den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64))
+  i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index)))
+  nz : source.locals.lookup (ofString "nz")=some (.val (.word (GasBudget.U256Zero.resultWord accumulator)))
+  current : values (index-1)=UDivMod.WideDigits.quadNumber accumulator
+  past : ∀ step,step<index-1→0<values step ∧ values step<2^256
+  recurrence : ∀ step,step<index-1→values (step+1)=values step*numerator.toNat/(11684671*(step+1))
+  state : source={origin with
+    locals:=source.locals,memory:=source.memory,clock:=source.clock}
+  away : ∀ query,(∀ buffer current,current<UDivMod.WideDigits.Workspace.count buffer→
+    query≠UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer base buffer) current)→source.memory query=origin.memory query
+
+theorem LoopModel.withClock {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base numerator : BitVec 64}
+    {index : Nat} {accumulator : Quad} {values : Nat→Nat} (model : LoopModel origin source base numerator index accumulator values) (clock : Nat) :
+    LoopModel origin {source with clock:=clock} base numerator index accumulator values := by
+  refine ⟨model.positive,model.bounded,⟨model.context.global,model.context.domain,model.context.arena,model.context.aligned⟩,model.installed,
+    model.acc,model.num,model.den,model.i,model.nz,model.current,model.past,model.recurrence,?_,model.away⟩
+  exact congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with clock:=clock}) model.state
+
+theorem loop_test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (accumulator : Quad)
+    (nz : source.locals.lookup (ofString "nz")=some (.val (.word (GasBudget.U256Zero.resultWord accumulator)))) :
+    eval source loopTest=some (.val (.word (if 0<UDivMod.WideDigits.quadNumber accumulator then 1#64 else 0#64))) := by
+  by_cases positive : 0<UDivMod.WideDigits.quadNumber accumulator
+  · have zero:=(GasBudget.U256Zero.resultWord_zero accumulator).mpr positive
+    simp [eval,loopTest,localVar,evalHOLExact,toExact,nz,zero,positive,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  · have nonzero : GasBudget.U256Zero.resultWord accumulator≠0#64:=by
+      intro zero
+      exact positive ((GasBudget.U256Zero.resultWord_zero accumulator).mp zero)
+    simp [eval,loopTest,localVar,evalHOLExact,toExact,nz,nonzero,positive,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+
+/-- The checked finite positive-prefix arithmetic derives the current
+active index range; the loop does not assume a future iteration limit. -/
+theorem LoopModel.active_index {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base numerator : BitVec 64}
+    {index : Nat} {accumulator : Quad} {values : Nat→Nat} (model : LoopModel origin source base numerator index accumulator values)
+    (positive : 0<UDivMod.WideDigits.quadNumber accumulator) : index≤1280 := by
+  have terms : ∀ step≤index-1,0<values step ∧ values step<2^256:=by
+    intro step inside
+    by_cases earlier : step<index-1
+    · exact model.past step earlier
+    · have same : step=index-1:=by omega
+      rw [same,model.current]
+      exact ⟨positive,GasBudget.U256Zero.number_lt accumulator⟩
+  have short:=GeometricLoop.taylor_positive_prefix values numerator.toNat 11684671 (index-1) (by decide) terms model.recurrence
+  have starts:=model.positive
+  omega
+
+theorem LoopModel.active {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base numerator : BitVec 64}
+    {index : Nat} {accumulator : Quad} {values : Nat→Nat} (model : LoopModel origin source base numerator index accumulator values)
+    (word : BitVec 64)
+    (read : evalHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) loopTest=some (.val (.word word)))
+    (nonzero : word≠0#64) : 0<UDivMod.WideDigits.quadNumber accumulator ∧ index≤1280 := by
+  have tested:=loop_test_read source accumulator model.nz
+  simp only [UDivMod.finite_eval] at read
+  have positive : 0<UDivMod.WideDigits.quadNumber accumulator:=by
+    by_contra zero
+    rw [if_neg zero] at tested
+    have same : word=0#64:=by
+      simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using read.symm.trans tested
+    exact nonzero same
+  exact ⟨positive,model.active_index positive⟩
+
+def loopRank (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Nat:=
+  1281-(CounterFlow.counterWord source (ofString "i")).toNat
+
+theorem LoopModel.rank {origin source : PanSemStateFiniteExact 64 Guest.HostMemory} {base numerator : BitVec 64}
+    {index : Nat} {accumulator : Quad} {values : Nat→Nat} (model : LoopModel origin source base numerator index accumulator values) :
+    loopRank source=1281-index := by
+  have bound:=model.bounded
+  have encoded : (BitVec.ofNat 64 index).toNat=index:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  simp [loopRank,CounterFlow.counterWord,model.i,valueWord,encoded]
+
+end InitECandidate.Solver.Input.TaylorCurrent
+
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.iteration_prefix
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.LoopModel.withClock
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.loop_test_read
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.LoopModel.active_index
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.LoopModel.active
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.LoopModel.rank
+
+namespace InitECandidate.Solver.Input.TaylorCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Extend only the already observed history by the actual normal body's
+next term. The active guard supplies the former term's positivity. -/
+theorem LoopModel.advance {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base numerator : BitVec 64}
+    {index : Nat} {accumulator quotient : Quad} {values : Nat→Nat} (model : LoopModel origin source base numerator index accumulator values)
+    (positive : 0<UDivMod.WideDigits.quadNumber accumulator) (result : IterationResult source target base accumulator numerator index quotient) :
+    LoopModel origin target base numerator (index+1) quotient
+      (fun step=>if step=index then UDivMod.WideDigits.quadNumber quotient else values step) := by
+  have activeBound:=model.active_index positive
+  have starts:=model.positive
+  refine {
+    positive:=by omega, bounded:=by omega, context:=?_, installed:=?_, acc:=result.acc,
+    num:=(result.other "num" (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans model.num,
+    den:=(result.other "den" (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)).trans model.den,
+    i:=result.i,nz:=result.nz,current:=?_,past:=?_,recurrence:=?_,state:=?_,away:=?_ }
+  · exact ⟨by rw [result.state];exact model.context.global,by rw [result.state];exact model.context.domain,model.context.arena,model.context.aligned⟩
+  · rw [result.state]
+    exact model.installed
+  · simp
+  · intro step inside
+    have before : step<index:=by omega
+    simp only [if_neg (show step≠index by omega)]
+    by_cases earlier : step<index-1
+    · exact model.past step earlier
+    · have same : step=index-1:=by omega
+      rw [same,model.current]
+      exact ⟨positive,GasBudget.U256Zero.number_lt accumulator⟩
+  · intro step inside
+    have before : step<index:=by omega
+    simp only [if_neg (show step≠index by omega)]
+    by_cases last : step+1=index
+    · rw [if_pos last]
+      have same : step=index-1:=by omega
+      rw [same,model.current]
+      simpa only [show index-1+1=index by omega,Nat.mul_comm] using result.recurrence
+    · rw [if_neg last]
+      exact model.recurrence step (by omega)
+  · exact result.state.trans (congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+      locals:=target.locals,memory:=target.memory,clock:=target.clock}) model.state)
+  · intro query outside
+    exact (result.away query outside).trans (model.away query outside)
+
+/-- The actual ticked body extends the same history and preserves the
+whole model, deriving the counter bound from its actual guard. -/
+theorem LoopModel.step {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base numerator : BitVec 64}
+    {index : Nat} {accumulator : Quad} {values : Nat→Nat} (model : LoopModel origin source base numerator index accumulator values)
+    (word : BitVec 64)
+    (read : evalHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) loopTest=some (.val (.word word)))
+    (nonzero : word≠0#64) (normal : evaluateHOLFiniteState (decClockHOLFinite source) iteration=(none,target)) :
+    ∃ quotient,LoopModel origin target base numerator (index+1) quotient
+      (fun step=>if step=index then UDivMod.WideDigits.quadNumber quotient else values step) := by
+  obtain ⟨positive,bounded⟩:=model.active word read nonzero
+  have ticked:=model.withClock (source.clock-1)
+  obtain ⟨quotient,result⟩:=iteration_normal (decClockHOLFinite source) target base accumulator numerator index ticked.context ticked.installed
+    ticked.positive bounded ticked.acc ticked.num ticked.den ticked.i normal
+  exact ⟨quotient,ticked.advance positive result⟩
+
+def invariant (origin : PanSemStateFiniteExact 64 Guest.HostMemory) (base numerator : BitVec 64)
+    (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop :=
+  ∃ index accumulator values,LoopModel origin source base numerator index accumulator values
+
+/-- The actual loop has at most the remaining1280iterations. Its rank
+comes from the real i local and its bound from the observed recurrence. -/
+theorem loop_model_cost (origin source : PanSemStateFiniteExact 64 Guest.HostMemory) (base numerator : BitVec 64)
+    (index : Nat) (accumulator : Quad) (values : Nat→Nat) (model : LoopModel origin source base numerator index accumulator values) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤351*(1281-index) := by
+  have priced : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→ invariant origin base numerator current→∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) loopTest=some (.val (.word word))→
+      word≠0#64→current.clock≠0→current.clock-1-(evaluateHOLFiniteState (decClockHOLFinite current) iteration).2.clock≤350:=by
+    intro current codeEq valid word read nonzero funded
+    obtain ⟨position,term,history,checked⟩:=valid
+    obtain ⟨positive,bounded⟩:=checked.active word read nonzero
+    have ticked:=checked.withClock (current.clock-1)
+    exact iteration_cost (decClockHOLFinite current) base term numerator position ticked.context ticked.installed ticked.positive bounded ticked.acc ticked.num ticked.den ticked.i
+  have progress : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→ invariant origin base numerator current→∀ word : BitVec 64,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) loopTest=some (.val (.word word))→word≠0#64→
+      0<loopRank current ∧ (current.clock≠0→let output:=evaluateHOLFiniteState (decClockHOLFinite current) iteration
+        (output.1=none ∨ output.1=some .continue)→ invariant origin base numerator output.2 ∧ loopRank output.2<loopRank current):=by
+    intro current codeEq valid word read nonzero
+    obtain ⟨position,term,history,checked⟩:=valid
+    obtain ⟨positive,bounded⟩:=checked.active word read nonzero
+    refine ⟨by rw [checked.rank];omega,?_⟩
+    intro funded
+    dsimp only
+    intro continuing
+    let output:=evaluateHOLFiniteState (decClockHOLFinite current) iteration
+    have normalResult : output.1=none:=by
+      rcases continuing with normal|continued
+      · exact normal
+      · exact ((iteration_prefix.summary_full (decClockHOLFinite current)).2.2.2 continued).elim
+    have run : evaluateHOLFiniteState (decClockHOLFinite current) iteration=(none,output.2):=Prod.ext normalResult rfl
+    obtain ⟨quotient,next⟩:=checked.step word read nonzero run
+    refine ⟨⟨position+1,quotient,_,next⟩,?_⟩
+    rw [next.rank,checked.rank]
+    omega
+  have bound:=ClockCost.ranked_loop_current source.code loopTest iteration 350 (invariant origin base numerator) loopRank priced progress source rfl
+    ⟨index,accumulator,values,model⟩
+  change source.clock-(evaluateHOLFiniteState source loop).2.clock≤351*loopRank source at bound
+  rw [model.rank] at bound
+  exact bound
+
+/-- At its actual initial counter1and zero flag, the unchanged Taylor loop
+spends at most449280source ticks on every outcome, with no assumed loop run. -/
+theorem loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base numerator : BitVec 64) (accumulator : Quad)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (acc : source.locals.lookup (ofString "acc")=some (RlpWrite.U256Value.tuple accumulator))
+    (num : source.locals.lookup (ofString "num")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad numerator)))
+    (den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word 1#64)))
+    (nz : source.locals.lookup (ofString "nz")=some (.val (.word (GasBudget.U256Zero.resultWord accumulator)))) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤449280 := by
+  have model : LoopModel source source base numerator 1 accumulator (fun _=>UDivMod.WideDigits.quadNumber accumulator):=
+    ⟨by decide,by decide,context,installed,acc,num,den,i,nz,rfl,(by intro step impossible;omega),(by intro step impossible;omega),rfl,(by intro query outside;rfl)⟩
+  exact loop_model_cost source source base numerator 1 accumulator _ model
+
+end InitECandidate.Solver.Input.TaylorCurrent
+
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.LoopModel.advance
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.LoopModel.step
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.loop_model_cost
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.loop_cost
+
+namespace InitECandidate.Solver.Input.TaylorCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- An actual normal loop exit retains its observed history, constants,
+workspace and outside memory, and its real current accumulator is zero. -/
+theorem loop_model_normal (origin source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base numerator : BitVec 64)
+    (index : Nat) (accumulator : Quad) (values : Nat→Nat) (model : LoopModel origin source base numerator index accumulator values)
+    (normal : evaluateHOLFiniteState source loop=(none,post)) :
+    ∃ finalIndex finalAccumulator finalValues,LoopModel origin post base numerator finalIndex finalAccumulator finalValues ∧
+      UDivMod.WideDigits.quadNumber finalAccumulator=0 := by
+  have transition : ∀ current : PanSemStateFiniteExact 64 Guest.HostMemory,current.code=source.code→ invariant origin base numerator current→∀ word,
+      evalHOLFinite current (h:=fun query=>Classical.propDecidable (current.memaddrs query)) loopTest=some (.val (.word word))→
+      word≠0#64→current.clock≠0→∀ target,evaluateHOLFiniteState (decClockHOLFinite current) iteration=(none,target)→ invariant origin base numerator target:=by
+    intro current codeEq valid word read nonzero funded target run
+    obtain ⟨position,term,history,checked⟩:=valid
+    obtain ⟨quotient,next⟩:=checked.step word read nonzero run
+    exact ⟨position+1,quotient,_,next⟩
+  have retained:=loop_invariant_summary source.code (ofString "unused") loopTest iteration
+    (fun current=>iteration_prefix.summary_full current) (invariant origin base numerator) transition source post rfl ⟨index,accumulator,values,model⟩ normal
+  obtain ⟨finalIndex,finalAccumulator,finalValues,checked⟩:=retained
+  have exited:=loop_normal_exit loopTest iteration (fun current=>(iteration_prefix.summary_full current).2.2.1) source post normal
+  simp only [UDivMod.finite_eval] at exited
+  have tested:=loop_test_read post finalAccumulator checked.nz
+  have zero : UDivMod.WideDigits.quadNumber finalAccumulator=0:=by
+    by_contra nonzero
+    have positive : 0<UDivMod.WideDigits.quadNumber finalAccumulator:=by omega
+    rw [if_pos positive] at tested
+    have impossible : (1#64 : BitVec 64)=0#64:=by
+      simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using tested.symm.trans exited
+    exact (show (1#64 : BitVec 64)≠0#64 by decide) impossible
+  exact ⟨finalIndex,finalAccumulator,finalValues,checked,zero⟩
+
+end InitECandidate.Solver.Input.TaylorCurrent
+
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.loop_model_normal
+
+namespace InitECandidate.Solver.Input.TaylorCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The actual normally exiting original loop keeps all protected data,
+its fixed numerator/denominator and a zero actual accumulator. -/
+theorem loop_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base numerator : BitVec 64) (accumulator : Quad)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (acc : source.locals.lookup (ofString "acc")=some (RlpWrite.U256Value.tuple accumulator))
+    (num : source.locals.lookup (ofString "num")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad numerator)))
+    (den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word 1#64)))
+    (nz : source.locals.lookup (ofString "nz")=some (.val (.word (GasBudget.U256Zero.resultWord accumulator))))
+    (normal : evaluateHOLFiniteState source loop=(none,post)) :
+    ∃ finalIndex finalAccumulator finalValues,LoopModel source post base numerator finalIndex finalAccumulator finalValues ∧
+      UDivMod.WideDigits.quadNumber finalAccumulator=0 := by
+  have model : LoopModel source source base numerator 1 accumulator (fun _=>UDivMod.WideDigits.quadNumber accumulator):=
+    ⟨by decide,by decide,context,installed,acc,num,den,i,nz,rfl,(by intro step impossible;omega),(by intro step impossible;omega),rfl,(by intro query outside;rfl)⟩
+  exact loop_model_normal source source post base numerator 1 accumulator _ model normal
+
+end InitECandidate.Solver.Input.TaylorCurrent
+
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.loop_normal

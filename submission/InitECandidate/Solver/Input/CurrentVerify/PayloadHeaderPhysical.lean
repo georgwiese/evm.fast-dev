@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderFieldFacts
+import InitECandidate.Solver.Mpt.CurrentStateInitMemoryContext
 
 namespace InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -53,6 +54,7 @@ structure PhysicalHeader (input : Guest.InputBlob) (source current : PanSemState
   fields : ∀ field∈HeaderEncoding.firstField::HeaderEncoding.baseRest,HeaderEncoding.FieldFacts current.memory header field
   optional : ∀ field∈HeaderEncoding.optionalFields,HeaderEncoding.FieldFacts current.memory header field
   locals : BufferLocals current header
+  entryHeap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word header))
 
 /-- A reached unchanged prefix derives the complete actual physical encoder
 entry, while retaining all earlier transaction/input/witness data for the
@@ -70,7 +72,52 @@ theorem physical_header {input : Guest.InputBlob} {source current : PanSemStateF
   have geometry : HeaderEncoding.Geometry header (headerFrontier header):=
     ⟨buffers.ommer.headerArena.lower,buffers.ommer.headerAligned,frontier.afterHeader,frontier.aligned,
       by have upper:=frontier.bounded; omega⟩
-  exact ⟨header,⟨frame.data data before frontier,frame,buffers,frontier,before,geometry,fields,optional,by rw [same]; exact complete_header_buffer_locals source hashed pointer record header words⟩⟩
+  exact ⟨header,⟨frame.data data before frontier,frame,buffers,frontier,before,geometry,fields,optional,(by rw [same]; exact complete_header_buffer_locals source hashed pointer record header words),heapCell⟩⟩
+
+/-- Whole-header preservation of the actual entering heap, state globals
+and earlier persistent state/input memory above the640byte arithmetic
+workspace. Temporary workspaces below this
+interval and the withdrawal-array destination may change. -/
+structure StateFrame (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (header : BitVec 64) : Prop where
+  entryHeap : source.globals.lookup (ofString "heap_ptr")=some (.val (.word header))
+  globals : ∀ key : Flapjack.Pancake.PanLang.MlS,key≠ofString "heap_ptr"→key≠ofString "wd_rlp_slices"→target.globals.lookup key=source.globals.lookup key
+  older : ∀ query : BitVec 64,2701135464≤query.toNat→query.toNat<header.toNat→target.memory query=source.memory query
+
+def PreservesState (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (header : BitVec 64) : Prop :=
+  ∀ origin,StateFrame origin source header→StateFrame origin target header
+
+theorem StateFrame.after {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {header : BitVec 64}
+    (frame : StateFrame origin source header)
+    (globals : ∀ key : Flapjack.Pancake.PanLang.MlS,key≠ofString "heap_ptr"→key≠ofString "wd_rlp_slices"→target.globals.lookup key=source.globals.lookup key)
+    (older : ∀ query : BitVec 64,2701135464≤query.toNat→query.toNat<header.toNat→target.memory query=source.memory query) :
+    StateFrame origin target header :=
+  ⟨frame.entryHeap,fun key a b=>(globals key a b).trans (frame.globals key a b),fun query a b=>(older query a b).trans (frame.older query a b)⟩
+
+theorem StateFrame.of_erase {origin source target : PanSemStateFiniteExact 64 Guest.HostMemory} {header : BitVec 64}
+    (frame : StateFrame origin source header) (same : LocalEffects.erase target=LocalEffects.erase source) :
+    StateFrame origin target header := by
+  have globals:=congrArg PanSemStateFiniteExact.globals same
+  change target.globals=source.globals at globals
+  have memory:=LocalEffects.memory_of_erase source target same
+  exact ⟨frame.entryHeap,by intro key a b; rw [globals]; exact frame.globals key a b,
+    by intro query a b; rw [memory]; exact frame.older query a b⟩
+
+theorem PhysicalHeader.state_frame {input : Guest.InputBlob} {source current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary : Nat}
+    (physical : PhysicalHeader input source current pointer si record gasWord boundary header) : StateFrame source current header :=
+  ⟨physical.entryHeap,fun key a _=>physical.frame.globals key a,fun query a b=>physical.frame.older query (by omega) b⟩
+
+theorem StateFrame.state_records {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {header frontier ws bs : BitVec 64}
+    (frame : StateFrame source target header) (records : Mpt.StateInit.MemoryContext source frontier ws bs)
+    (arena : CurrentStartup.ArenaState target) (afterHeader : NormalHeapEffects.AtLeast header.toNat target) :
+    Mpt.StateInit.MemoryContext target frontier ws bs := by
+  obtain ⟨old,oldCell,oldLower,oldBound,oldAligned⟩:=records.afterBs
+  have sameHeap : old=header:=HolWordLab.word.inj (ValueHOL.val.inj (Option.some.inj (oldCell.symm.trans frame.entryHeap)))
+  subst old
+  obtain ⟨heap,cell,lower,bounded,aligned⟩:=afterHeader
+  exact records.of_fields arena ⟨heap,cell,by omega,bounded,aligned⟩
+    ((frame.globals _ (by decide) (by decide)).trans records.wsCell)
+    ((frame.globals _ (by decide) (by decide)).trans records.bsCell)
 
 end InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry
 
@@ -78,3 +125,7 @@ end InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.physical_header
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.complete_header_buffer_locals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.StateFrame.after
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.StateFrame.of_erase
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.PhysicalHeader.state_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry.StateFrame.state_records

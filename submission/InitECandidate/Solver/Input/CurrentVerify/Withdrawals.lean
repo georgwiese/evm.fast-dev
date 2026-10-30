@@ -723,7 +723,8 @@ theorem setup_model {input : Guest.InputBlob} {source current entered : PanSemSt
     (physical : PhysicalHeader input source current pointer si record gasWord boundary header)
     (small : Payload.withdrawalCount input≤335544) (execution : CallPrefix.Execution current actions entered) :
     ∃ model : LoopModel input entered pointer si record gasWord (headerFrontier header) boundary (Payload.withdrawalCount input),model.index=0#64 ∧ (∀ query : BitVec 64,entered.memory query=current.memory query) ∧
-      ∀ name : String,ofString "nwd"≠ofString name→ ofString "i"≠ofString name→ entered.locals.lookup (ofString name)=current.locals.lookup (ofString name) := by
+      (∀ name : String,ofString "nwd"≠ofString name→ ofString "i"≠ofString name→ entered.locals.lookup (ofString name)=current.locals.lookup (ofString name)) ∧
+      ∀ key : MlS,key≠ofString "heap_ptr"→key≠ofString "wd_rlp_slices"→entered.globals.lookup key=current.globals.lookup key := by
   let count:=Payload.withdrawalCount input
   let array:=headerFrontier header
   let amount:=BitVec.ofNat 64 (16*count+16)
@@ -797,11 +798,13 @@ theorem setup_model {input : Guest.InputBlob} {source current entered : PanSemSt
     heapBound:=by rw [number]; omega
     heapAligned:=by rw [number]; have aligned:=physical.frontier.aligned; change array.toNat%8=0 at aligned; omega
     arrayArena:=owned,arrayAligned:=physical.frontier.aligned,arrayAbove:=arrayAbove,arrayBefore:=by rw [number]
-    rows:=by simp,payload:=by simp,nonempty:=by simp },rfl,?_,?_⟩
+    rows:=by simp,payload:=by simp,nonempty:=by simp },rfl,?_,?_,?_⟩
   · intro query; rw [enteredEq]; rfl
-  intro name notCount notIndex
-  rw [enteredEq]
-  exact (bind_lookup_other _ "i" name 0#64 notIndex).trans (bind_lookup_other current "nwd" name (BitVec.ofNat 64 count) notCount)
+  · intro name notCount notIndex
+    rw [enteredEq]
+    exact (bind_lookup_other _ "i" name 0#64 notIndex).trans (bind_lookup_other current "nwd" name (BitVec.ofNat 64 count) notCount)
+  · intro key notHeap notArray
+    exact (globals key notHeap).trans (by simp [patched,HolFiniteMapExact.update,FUPDATE,Ne.symm notArray])
 
 def rootArguments : List (ExpHOL 64):=[.var .global (ofString "wd_rlp_slices"),localVar "nwd",localVar "wr"]
 def rootCall : ProgHOL 64:=.call (some (none,none)) (ofString "build_mpt_indexed") rootArguments
@@ -904,11 +907,12 @@ theorem to_after_loop {input : Guest.InputBlob} {source current post : PanSemSta
         next.locals.lookup (ofString "wr")=some (.val (.word (withdrawalBase header))) ∧
         (∀ query : BitVec 64,query.toNat<(headerFrontier header).toNat→ next.memory query=current.memory query) ∧
         (∀ name : String,ofString "nwd"≠ofString name→ ofString "i"≠ofString name→ ofString "e"≠ofString name→ next.locals.lookup (ofString name)=current.locals.lookup (ofString name)) ∧
+        (∀ key : MlS,key≠ofString "heap_ptr"→key≠ofString "wd_rlp_slices"→next.globals.lookup key=current.globals.lookup key) ∧
         evaluateHOLFiniteState next afterLoop=(outcome,inner) := by
   rcases to_loop physical outcome actual with stopped|reached
   · exact Or.inl ⟨by have price:=stopped.1; omega,stopped.2⟩
   · obtain ⟨entered,inner,execution,forward,price,endpoint,remaining⟩:=reached
-    obtain ⟨model,indexEq,setupMemory,saved⟩:=setup_model physical small execution
+    obtain ⟨model,indexEq,setupMemory,saved,setupGlobals⟩:=setup_model physical small execution
     rw [prefix_shapes.2.2.2,evaluateHOLFiniteState_seq_line780] at remaining
     have loopPrice:=model.loop_uniform
     have loopForward:=evaluateHOLFiniteState_clock_le entered (.while test loopBody)
@@ -925,7 +929,8 @@ theorem to_after_loop {input : Guest.InputBlob} {source current post : PanSemSta
         (loop_saved entered next (ofString name) (Ne.symm notIndex) (Ne.symm notE) computed).trans (saved name notCount notIndex)
       exact Or.inr ⟨next,inner,⟨final,done⟩,Nat.le_trans loopForward forward,by omega,endpoint,
         (kept "wr" (by decide) (by decide) (by decide)).trans physical.locals.withdrawals,
-        (fun query before=>(memory query before).trans (setupMemory query)),kept,remaining⟩
+        (fun query before=>(memory query before).trans (setupMemory query)),kept,
+        (fun key notHeap notArray=>(globals key notHeap).trans (setupGlobals key notHeap notArray)),remaining⟩
     | some result=>
       have clocks:=congrArg (fun output=>output.2.clock) remaining
       have observed:=congrArg Prod.fst remaining
@@ -949,10 +954,11 @@ theorem to_after_root {input : Guest.InputBlob} {source current post : PanSemSta
         (∀ name : String,ofString "nwd"≠ofString name→ ofString "i"≠ofString name→ ofString "e"≠ofString name→ next.locals.lookup (ofString name)=current.locals.lookup (ofString name)) ∧
         (∀ query : BitVec 64,query.toNat<header.toNat+248→ next.memory query=current.memory query) ∧
         next.clock≤current.clock ∧ current.clock-next.clock≤12425194334 ∧ CallPrefix.ScopeFrame post inner ∧
+        (∀ key : MlS,key≠ofString "heap_ptr"→key≠ofString "wd_rlp_slices"→next.globals.lookup key=current.globals.lookup key) ∧
         evaluateHOLFiniteState next afterRoot=(outcome,inner) := by
   rcases to_after_loop physical small outcome actual with stopped|reached
   · exact Or.inl ⟨by have price:=stopped.1; omega,stopped.2⟩
-  · obtain ⟨entered,inner,⟨model,finished⟩,forward,price,endpoint,wrCell,older,saved,remaining⟩:=reached
+  · obtain ⟨entered,inner,⟨model,finished⟩,forward,price,endpoint,wrCell,older,saved,oldGlobals,remaining⟩:=reached
     rw [root_shape,evaluateHOLFiniteState_seq_line780] at remaining
     have rootPrice:=model.root_uniform finished wrCell physical.buffers.withdrawals
     have rootForward:=evaluateHOLFiniteState_clock_le entered rootCall
@@ -985,7 +991,7 @@ theorem to_after_root {input : Guest.InputBlob} {source current post : PanSemSta
       change next.globals=entered.globals at globals
       have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) next:=
         ⟨model.heap,by rw [globals]; exact model.heapCell,by have before:=model.arrayBefore; omega,model.heapBound,model.heapAligned⟩
-      exact Or.inr ⟨next,inner,retained,heapAfter,zero,kept,headerMemory,Nat.le_trans rootForward forward,by omega,endpoint,remaining⟩
+      exact Or.inr ⟨next,inner,retained,heapAfter,zero,kept,headerMemory,Nat.le_trans rootForward forward,by omega,endpoint,(by intro key a b; rw [globals]; exact oldGlobals key a b),remaining⟩
     | some result=>
       have clocks:=congrArg (fun output=>output.2.clock) remaining
       have observed:=congrArg Prod.fst remaining
@@ -1022,20 +1028,20 @@ structure BeforeRequests (input : Guest.InputBlob) (current : PanSemStateFiniteE
 /-- Every actual payload-header outcome through both complete indexed
 tries is bounded, or reaches the unchanged requests continuation with
 zero transactions/withdrawals and all physical header/input conditions. -/
-theorem to_before_requests {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem to_before_requests_state {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
     (checked : RunAttempt.TransactionsNonempty input) (outcome : Option (PanSemResultExact 64))
     (actual : evaluateHOLFiniteState source PayloadHeader.body=(outcome,post)) :
     (source.clock-post.clock≤476207133311 ∧ ∀ value,outcome≠some (.returned value)) ∨
       ∃ header next inner encoded,BeforeRequests input next pointer si record gasWord boundary header encoded ∧
-        next.clock≤source.clock ∧ source.clock-next.clock≤476207133311 ∧ CallPrefix.ScopeFrame post inner ∧
+        PayloadHeaderEntry.StateFrame source next header ∧ next.clock≤source.clock ∧ source.clock-next.clock≤476207133311 ∧ CallPrefix.ScopeFrame post inner ∧
         evaluateHOLFiniteState next afterRoot=(outcome,inner) := by
   rcases PayloadHeaderEntry.to_after_transaction data checked outcome actual with stopped|reached
   · exact Or.inl ⟨by have priced:=stopped.1; omega,stopped.2⟩
   · obtain ⟨header,entered,outer,encoded,physical,txZero,encodedBound,wdBound,number,blCell,forward,price,endpoint,remaining⟩:=reached
     rcases to_after_root physical wdBound outcome remaining with stopped|reached
     · exact Or.inl ⟨by have priced:=stopped.1; rw [endpoint.clock]; omega,stopped.2⟩
-    · obtain ⟨next,inner,retained,heapAfter,wdZero,saved,memory,nextForward,nextPrice,nextEndpoint,continuation⟩:=reached
+    · obtain ⟨next,inner,retained,heapAfter,wdZero,saved,memory,nextForward,nextPrice,nextEndpoint,globals,continuation⟩:=reached
       have cells (offset : Nat) (small : offset≤240) : next.memory (HeaderEncoding.address header offset)=entered.memory (HeaderEncoding.address header offset):=by
         apply memory
         have address:=byteAddress_toNat header offset (by have room:=physical.buffers.ommer.headerArena.upper; omega)
@@ -1051,7 +1057,22 @@ theorem to_before_requests {input : Guest.InputBlob} {source post : PanSemStateF
         requestsCell:=(saved "rh" (by decide) (by decide) (by decide)).trans physical.locals.requests
         balanceCell:=(saved "bh" (by decide) (by decide) (by decide)).trans physical.locals.balance
         sizeCell:=(saved "bl" (by decide) (by decide) (by decide)).trans blCell,sizeBound:=encodedBound,sizeNumber:=number }
-      exact Or.inr ⟨header,next,inner,encoded,result,Nat.le_trans nextForward forward,by omega,endpoint.trans nextEndpoint,continuation⟩
+      exact Or.inr ⟨header,next,inner,encoded,result,physical.state_frame.after globals (fun query _ before=>memory query (by omega)),Nat.le_trans nextForward forward,by omega,endpoint.trans nextEndpoint,continuation⟩
+
+
+/-- Cost/physical projection of the same-run state-preserving prefix. -/
+theorem to_before_requests {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (checked : RunAttempt.TransactionsNonempty input) (outcome : Option (PanSemResultExact 64))
+    (actual : evaluateHOLFiniteState source PayloadHeader.body=(outcome,post)) :
+    (source.clock-post.clock≤476207133311 ∧ ∀ value,outcome≠some (.returned value)) ∨
+      ∃ header next inner encoded,BeforeRequests input next pointer si record gasWord boundary header encoded ∧
+        next.clock≤source.clock ∧ source.clock-next.clock≤476207133311 ∧ CallPrefix.ScopeFrame post inner ∧
+        evaluateHOLFiniteState next afterRoot=(outcome,inner) := by
+  rcases to_before_requests_state data checked outcome actual with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨header,next,inner,encoded,physical,_,forward,price,endpoint,continuation⟩:=reached
+    exact Or.inr ⟨header,next,inner,encoded,physical,forward,price,endpoint,continuation⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals
 
@@ -1133,3 +1154,5 @@ end InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals.to_after_root
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals.to_before_requests
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderWithdrawals.to_before_requests_state

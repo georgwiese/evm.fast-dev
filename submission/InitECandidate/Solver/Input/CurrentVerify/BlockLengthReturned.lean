@@ -44,7 +44,7 @@ theorem PhysicalHeader.after_length {input : Guest.InputBlob} {source current ch
     ⟨(CallNormal.continuation_lookup_other current child "bl" "txr" value (by decide)).trans physical.locals.transactions,
       (CallNormal.continuation_lookup_other current child "bl" "wr" value (by decide)).trans physical.locals.withdrawals,
       (CallNormal.continuation_lookup_other current child "bl" "rh" value (by decide)).trans physical.locals.requests,
-      (CallNormal.continuation_lookup_other current child "bl" "bh" value (by decide)).trans physical.locals.balance⟩⟩
+      (CallNormal.continuation_lookup_other current child "bl" "bh" value (by decide)).trans physical.locals.balance⟩,physical.entryHeap⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.PayloadHeaderEntry
 

@@ -103,6 +103,21 @@ theorem MemoryContext.of_frame {source target : PanSemStateFiniteExact 64 Guest.
     by rw [globals]; exact context.wsCell,by rw [globals]; exact context.bsCell,context.wsFresh,context.bsFresh,
     context.wsArena,context.wsAligned,context.bsArena,context.bsAligned,context.wsBeforeBs,extent⟩
 
+/-- Actual later metadata/global/heap facts retain these same owned
+records even when a helper writes to its own workspaces. Record contents
+are transported separately by the helper's actual memory frame. -/
+theorem MemoryContext.of_fields {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs : BitVec 64}
+    (context : MemoryContext source frontier ws bs) (arena : CurrentStartup.ArenaState target)
+    (extent : NormalHeapEffects.AtLeast (bs.toNat+80) target)
+    (wsCell : target.globals.lookup (ofString "ws")=some (.val (.word ws)))
+    (bsCell : target.globals.lookup (ofString "bs")=some (.val (.word bs))) :
+    MemoryContext target frontier ws bs := by
+  obtain ⟨heap,cell,lower,bounded,aligned⟩:=extent
+  have owned : AllocatedBytes.Arena heap 0:=⟨by have low:=context.bsArena.lower; omega,by omega⟩
+  exact ⟨arena,⟨heap,cell,owned,bounded,aligned,by have before:=context.bsFresh.1; omega⟩,wsCell,bsCell,
+    context.wsFresh,context.bsFresh,context.wsArena,context.wsAligned,context.bsArena,context.bsAligned,
+    context.wsBeforeBs,heap,cell,lower,bounded,aligned⟩
+
 end InitECandidate.Solver.Mpt.StateInit
 
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemoryContext.after_persistent
@@ -111,3 +126,4 @@ end InitECandidate.Solver.Mpt.StateInit
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemoryContext.allocate_global
 
 #print axioms InitECandidate.Solver.Mpt.StateInit.MemoryContext.of_frame
+#print axioms InitECandidate.Solver.Mpt.StateInit.MemoryContext.of_fields

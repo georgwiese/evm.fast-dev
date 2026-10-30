@@ -209,15 +209,15 @@ structure AfterHeader (input : Guest.InputBlob) (current : PanSemStateFiniteExac
 
 /-- The same actual normal hdr call supplies the returned header and all
 nonlocal fields, then restores caller SI/PL and binds that exact hdr word. -/
-theorem payload_header_reached {input : Guest.InputBlob} {source current : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem payload_header_reached_state {input : Guest.InputBlob} {source current : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
     (payload : source.locals.lookup (ofString "pl")=some (.val (.word record))) (checked : TransactionsNonempty input)
     (actual : CallPrefix.Reaches source (.scoped (ofString "hdr") .one (ofString "payload_header") payloadHeaderArguments) current) :
-    ∃ header encoded,AfterHeader input current pointer si record gasWord header boundary encoded := by
+    ∃ header encoded,AfterHeader input current pointer si record gasWord header boundary encoded ∧ StateFrame source current header := by
   obtain ⟨callee,args,called,entry⟩:=payload_header_entry data
   obtain ⟨child,returned,run,endpoint⟩:=actual.scoped_known (ofString "hdr") .one (ofString "payload_header") payloadHeaderArguments
     [.val (.word si)] PayloadHeader.body callee .one args called
-  obtain ⟨header,finished,encoded,physical,answer,scope⟩:=PayloadHeaderBalance.body_normal entry checked returned run
+  obtain ⟨header,finished,encoded,physical,answer,scope,state⟩:=PayloadHeaderBalance.body_normal_state entry checked returned run
   have frame : LocalEffects.erase current=LocalEffects.erase finished:=by
     rw [endpoint]
     exact scope.metadata
@@ -237,10 +237,21 @@ theorem payload_header_reached {input : Guest.InputBlob} {source current : PanSe
   obtain ⟨heap,cell,lower,upper,aligned⟩:=physical.heapAfter
   have heapAfter : NormalHeapEffects.AtLeast ((headerFrontier header).toNat+16) current:=⟨heap,by rw [globals]; exact cell,lower,upper,aligned⟩
   have cells (offset : Nat) (inside : offset≤240) : current.memory (HeaderEncoding.address header offset)=finished.memory (HeaderEncoding.address header offset):=congrFun memory _
-  exact ⟨header,encoded,retained,currentHeader,currentPayload,physical.buffers,physical.geometry,
+  refine ⟨header,encoded,⟨retained,currentHeader,currentPayload,physical.buffers,physical.geometry,
     (fun field member=>HeaderEncoding.FieldFacts.of_cells finished.memory current.memory header field cells (physical.fields field member)),
     (fun field member=>HeaderEncoding.FieldFacts.of_cells finished.memory current.memory header field cells (physical.optional field member)),
-    physical.before,heapAfter,physical.transactionsZero,physical.withdrawalsZero,physical.sizeBound⟩
+    physical.before,heapAfter,physical.transactionsZero,physical.withdrawalsZero,physical.sizeBound⟩,?_⟩
+  rw [endpoint]
+  exact ⟨state.entryHeap,state.globals,state.older⟩
+
+/-- Physical projection of the same actual state-preserving call. -/
+theorem payload_header_reached {input : Guest.InputBlob} {source current : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat} (data : Data input source pointer si record gasWord boundary)
+    (payload : source.locals.lookup (ofString "pl")=some (.val (.word record))) (checked : TransactionsNonempty input)
+    (actual : CallPrefix.Reaches source (.scoped (ofString "hdr") .one (ofString "payload_header") payloadHeaderArguments) current) :
+    ∃ header encoded,AfterHeader input current pointer si record gasWord header boundary encoded := by
+  obtain ⟨header,encoded,physical,_⟩:=payload_header_reached_state data payload checked actual
+  exact ⟨header,encoded,physical⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -256,6 +267,25 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 
 /-- Every actual header caller either stops within its allowance or reaches
 its original continuation with the same returned physical header. -/
+theorem after_transaction_scan_header_state_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (payload : source.locals.lookup (ofString "pl")=some (.val (.word record))) (checked : TransactionsNonempty input)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterTransactionScan=(outcome,post)) :
+    source.clock-post.clock≤476485158959 ∨ ∃ current inner header encoded,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      PayloadHeaderEntry.StateFrame source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤476485158959 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterPayloadHeader=(outcome,inner) := by
+  rw [payload_header_shape,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_skip] at run
+  rcases CallPrefix.priced_frame_trace source post payloadHeaderActions afterPayloadHeader 476485158959
+    (payload_header_prefix_cost data checked) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    have actual : CallPrefix.Reaches source (.scoped (ofString "hdr") .one (ofString "payload_header") payloadHeaderArguments) current:=
+      execution.singleton
+    obtain ⟨header,encoded,physical,state⟩:=payload_header_reached_state data payload checked actual
+    exact Or.inr ⟨current,inner,header,encoded,physical,state,forward,price,endpoint,continued⟩
+
 theorem after_transaction_scan_header_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
@@ -265,15 +295,10 @@ theorem after_transaction_scan_header_trace {input : Guest.InputBlob} {source po
       AfterHeader input current pointer si record gasWord header boundary encoded ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤476485158959 ∧ CallPrefix.ScopeFrame post inner ∧
       evaluateHOLFiniteState current afterPayloadHeader=(outcome,inner) := by
-  rw [payload_header_shape,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_skip] at run
-  rcases CallPrefix.priced_frame_trace source post payloadHeaderActions afterPayloadHeader 476485158959
-    (payload_header_prefix_cost data checked) outcome run with stopped|reached
-  · exact Or.inl stopped.1
-  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
-    have actual : CallPrefix.Reaches source (.scoped (ofString "hdr") .one (ofString "payload_header") payloadHeaderArguments) current:=
-      execution.singleton
-    obtain ⟨header,encoded,physical⟩:=payload_header_reached data payload checked actual
-    exact Or.inr ⟨current,inner,header,encoded,physical,forward,price,endpoint,continued⟩
+  rcases after_transaction_scan_header_state_trace data payload checked outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,header,encoded,physical,_,forward,price,scope,rest⟩:=reached
+    exact Or.inr ⟨current,inner,header,encoded,physical,forward,price,scope,rest⟩
 
 /-- The complete original run_attempt prefix through the real payload_header
 return. This is a source-clock allowance, with all stopped outcomes included. -/
@@ -293,6 +318,35 @@ theorem to_after_payload_header {input : Guest.InputBlob} {source post : PanSemS
     · obtain ⟨current,inner,header,encoded,physical,headerForward,headerPrice,scope,rest⟩:=reached
       have scopeClock:=scope.clock
       exact Or.inr ⟨current,inner,header,encoded,physical,by omega,by omega,endpoint.trans scopeClock,rest⟩
+
+/-- The actual initialized records survive the complete original header
+caller. Its interval frame also retains state/input contents above the
+fixed hash workspaces; no header or allocation success is a premise. -/
+theorem to_after_payload_header_with_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤479872711490 ∨ ∃ caller entered current inner ws bs header encoded,
+      HasTables input caller pointer si record gasWord boundary ∧
+      caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      Mpt.StateInit.MemoryContext entered ws ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧ PersistentMemoryFrame caller entered ws ∧
+      PayloadHeaderEntry.StateFrame entered current header ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤479872711490 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current afterPayloadHeader=(outcome,inner) := by
+  rcases to_after_transaction_scan_with_records data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨caller,entered,target,ws,bs,tables,cell,beforeData,payload,records,older,forward,price,endpoint,continued,checked⟩:=reached
+    rcases after_transaction_scan_header_state_trace beforeData payload checked outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,header,encoded,physical,frame,headerForward,headerPrice,scope,rest⟩:=reached
+      have numbers:=physical.buffers.numbers header
+      obtain ⟨heap,heapCell,lower,upper,aligned⟩:=physical.heapAfter
+      have heapAfter : NormalHeapEffects.AtLeast header.toNat current:=⟨heap,heapCell,by rw [numbers.frontier] at lower; omega,upper,aligned⟩
+      have retained:=frame.state_records records physical.data.arena heapAfter
+      have scopeClock:=scope.clock
+      exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,physical,records,retained,older,frame,
+        by omega,by omega,endpoint.trans scopeClock,rest⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -716,11 +770,11 @@ open Flapjack.Basis.Pure.MlString QueryBranch PayloadHeaderEntry
 
 /-- Real main allocation and header hashing preserve the decoded input and
 all prior header facts. Allocation funding comes from this same execution. -/
-theorem block_hash_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem block_hash_reached_state {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
     (execution : CallPrefix.Execution source blockHashActions post) :
-    AfterHeader input post pointer si record gasWord header boundary encoded := by
+    AfterHeader input post pointer si record gasWord header boundary encoded ∧ PayloadHeaderEntry.PreservesState source post header := by
   obtain ⟨heap,heapCell,lower,bounded,aligned⟩:=physical.heapAfter
   have expanded : CallPrefix.Execution source
       (.scoped (ofString "bh") .one (ofString "alloc") [.const 32#64]::[.command blockHashCall]) post:=execution
@@ -779,10 +833,24 @@ theorem block_hash_reached {input : Guest.InputBlob} {source post : PanSemStateF
     · rw [number]
       have before:=physical.geometry.headerBefore
       omega
-  exact {physical with
+  refine ⟨{physical with
     data:=data,headerCell:=hdrCell,payloadCell:=plCell,heapAfter:=heapAfter,
     fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.fields field member),
-    optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.optional field member)}
+    optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.optional field member)},?_⟩
+  intro origin frame
+  apply frame.after (fun key notHeap _=>globals key notHeap)
+  intro query above before
+  apply older query (by omega)
+  have afterHeader:=physical.geometry.headerBefore
+  omega
+
+/-- Existing physical projection of the stronger state frame. -/
+theorem block_hash_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (execution : CallPrefix.Execution source blockHashActions post) :
+    AfterHeader input post pointer si record gasWord header boundary encoded :=
+  (block_hash_reached_state physical execution).1
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -794,6 +862,21 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 
 /-- The original main hash prefix stops or reaches its literal comparison
 continuation with the same retained decoded inputs and header facts. -/
+theorem after_header_hash_trace_state {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterPayloadHeader=(outcome,post)) :
+    source.clock-post.clock≤2306 ∨ ∃ current inner,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      PayloadHeaderEntry.PreservesState source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤2306 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterBlockHash=(outcome,inner) := by
+  rw [block_hash_shape,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_skip] at run
+  rcases CallPrefix.priced_frame_trace source post blockHashActions afterBlockHash 2306 (block_hash_prefix_cost physical) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    obtain ⟨retained,frame⟩:=block_hash_reached_state physical execution
+    exact Or.inr ⟨current,inner,retained,frame,forward,price,endpoint,continued⟩
+
 theorem after_header_hash_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
@@ -802,11 +885,10 @@ theorem after_header_hash_trace {input : Guest.InputBlob} {source post : PanSemS
       AfterHeader input current pointer si record gasWord header boundary encoded ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤2306 ∧ CallPrefix.ScopeFrame post inner ∧
       evaluateHOLFiniteState current afterBlockHash=(outcome,inner) := by
-  rw [block_hash_shape,evaluateHOLFiniteState_seq_line780,evaluateHOLFiniteState_skip] at run
-  rcases CallPrefix.priced_frame_trace source post blockHashActions afterBlockHash 2306 (block_hash_prefix_cost physical) outcome run with stopped|reached
-  · exact Or.inl stopped.1
-  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
-    exact Or.inr ⟨current,inner,block_hash_reached physical execution,forward,price,endpoint,continued⟩
+  rcases after_header_hash_trace_state physical outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,retained,_,forward,price,scope,rest⟩:=reached
+    exact Or.inr ⟨current,inner,retained,forward,price,scope,rest⟩
 
 /-- Complete current main prefix through payload_header and header_hash.
 This includes all actual rejected/trapped/timed-out prefixes. -/
@@ -897,11 +979,11 @@ theorem block_compare_prefix_frame (code) (installed : OriginalCode.Installed co
 
 /-- Every actually reached comparison prefix keeps the physical main model.
 Its tested result and raised exceptions come from that same execution. -/
-theorem block_compare_reached {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem block_compare_reached_state {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
     (execution : CallPrefix.Execution source blockCompareActions target) :
-    AfterHeader input target pointer si record gasWord header boundary encoded := by
+    AfterHeader input target pointer si record gasWord header boundary encoded ∧ PayloadHeaderEntry.PreservesState source target header := by
   have observed:=execution.erase .skip
   rw [evaluateHOLFiniteState_skip] at observed
   have retained:=block_compare_prefix_frame source.code physical.data.arena.code source rfl
@@ -914,8 +996,16 @@ theorem block_compare_reached {input : Guest.InputBlob} {source target : PanSemS
     · exact CallPrefix.KeepsLocal.scoped key (ofString "eq") .one (ofString "memeq") blockCompareArguments different
     · exact CallPrefix.KeepsLocal.decision key blockCompareGuard block_compare_guard_pure
     · exact CallPrefix.KeepsLocal.decision key .skip .skip
-  exact physical.of_frame frame ((saved _ (by decide)).trans physical.data.siLocal)
-    ((saved _ (by decide)).trans physical.headerCell) ((saved _ (by decide)).trans physical.payloadCell)
+  exact ⟨physical.of_frame frame ((saved _ (by decide)).trans physical.data.siLocal)
+    ((saved _ (by decide)).trans physical.headerCell) ((saved _ (by decide)).trans physical.payloadCell),fun origin prior=>prior.of_erase frame⟩
+
+/-- Existing physical projection of the stronger state frame. -/
+theorem block_compare_reached {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (execution : CallPrefix.Execution source blockCompareActions target) :
+    AfterHeader input target pointer si record gasWord header boundary encoded :=
+  (block_compare_reached_state physical execution).1
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -932,6 +1022,22 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 
 /-- The actual block-hash comparison and BlockErr5 guard either stop or
 reach the original version check with all main/header facts retained. -/
+theorem after_block_hash_compare_trace_state {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterBlockHash=(outcome,post)) :
+    source.clock-post.clock≤129 ∨ ∃ current inner,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      PayloadHeaderEntry.PreservesState source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤129 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current beforeVersionedHashes=(outcome,inner) := by
+  rw [block_compare_shape] at run
+  rcases CallPrefix.priced_frame_trace source post blockCompareActions beforeVersionedHashes 129
+    (block_compare_prefix_cost source physical.data.arena.code) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    obtain ⟨retained,frame⟩:=block_compare_reached_state physical execution
+    exact Or.inr ⟨current,inner,retained,frame,forward,price,endpoint,continued⟩
+
 theorem after_block_hash_compare_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
@@ -940,12 +1046,10 @@ theorem after_block_hash_compare_trace {input : Guest.InputBlob} {source post : 
       AfterHeader input current pointer si record gasWord header boundary encoded ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤129 ∧ CallPrefix.ScopeFrame post inner ∧
       evaluateHOLFiniteState current beforeVersionedHashes=(outcome,inner) := by
-  rw [block_compare_shape] at run
-  rcases CallPrefix.priced_frame_trace source post blockCompareActions beforeVersionedHashes 129
-    (block_compare_prefix_cost source physical.data.arena.code) outcome run with stopped|reached
-  · exact Or.inl stopped.1
-  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
-    exact Or.inr ⟨current,inner,block_compare_reached physical execution,forward,price,endpoint,continued⟩
+  rcases after_block_hash_compare_trace_state physical outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,retained,_,forward,price,scope,rest⟩:=reached
+    exact Or.inr ⟨current,inner,retained,forward,price,scope,rest⟩
 
 /-- Whole original run_attempt prefix through the actual header-hash
 comparison; the next code is the literal is_valid_versioned_hashes caller. -/
@@ -1234,11 +1338,11 @@ theorem versioned_hashes_prefix_frame {input : Guest.InputBlob} {source : PanSem
     VersionedHashes.body versionedHashesSuffix callee .one args called (VersionedHashes.body_frame entry physical.transactionsZero).metadata
     (versioned_hashes_suffix_frame source.code)
 
-theorem versioned_hashes_reached {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem versioned_hashes_reached_state {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
     (execution : CallPrefix.Execution source versionedHashesActions target) :
-    AfterHeader input target pointer si record gasWord header boundary encoded := by
+    AfterHeader input target pointer si record gasWord header boundary encoded ∧ PayloadHeaderEntry.PreservesState source target header := by
   have observed:=execution.erase .skip
   rw [evaluateHOLFiniteState_skip] at observed
   have frame : LocalEffects.erase target=LocalEffects.erase source:=observed.symm.trans (versioned_hashes_prefix_frame physical)
@@ -1251,8 +1355,16 @@ theorem versioned_hashes_reached {input : Guest.InputBlob} {source target : PanS
     · exact CallPrefix.KeepsLocal.decision key .skip .skip
     · exact CallPrefix.KeepsLocal.decision key versionedHashesGuard versioned_hashes_guard_pure
     · exact CallPrefix.KeepsLocal.decision key .skip .skip
-  exact physical.of_frame frame ((saved _ (by decide)).trans physical.data.siLocal)
-    ((saved _ (by decide)).trans physical.headerCell) ((saved _ (by decide)).trans physical.payloadCell)
+  exact ⟨physical.of_frame frame ((saved _ (by decide)).trans physical.data.siLocal)
+    ((saved _ (by decide)).trans physical.headerCell) ((saved _ (by decide)).trans physical.payloadCell),fun origin prior=>prior.of_erase frame⟩
+
+/-- Existing physical projection of the stronger state frame. -/
+theorem versioned_hashes_reached {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (execution : CallPrefix.Execution source versionedHashesActions target) :
+    AfterHeader input target pointer si record gasWord header boundary encoded :=
+  (versioned_hashes_reached_state physical execution).1
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -1271,6 +1383,22 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 
 /-- The actual version checker/BlockErr6 guard either stops or exposes the
 unchanged header-validation call with all physical main facts retained. -/
+theorem versioned_hashes_trace_state {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source beforeVersionedHashes=(outcome,post)) :
+    source.clock-post.clock≤1 ∨ ∃ current inner,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      PayloadHeaderEntry.PreservesState source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤1 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current beforeValidateHeader=(outcome,inner) := by
+  rw [versioned_hashes_shape] at run
+  rcases CallPrefix.priced_frame_trace source post versionedHashesActions beforeValidateHeader 1
+    (versioned_hashes_prefix_cost physical) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    obtain ⟨retained,frame⟩:=versioned_hashes_reached_state physical execution
+    exact Or.inr ⟨current,inner,retained,frame,forward,price,endpoint,continued⟩
+
 theorem versioned_hashes_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
@@ -1279,12 +1407,10 @@ theorem versioned_hashes_trace {input : Guest.InputBlob} {source post : PanSemSt
       AfterHeader input current pointer si record gasWord header boundary encoded ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤1 ∧ CallPrefix.ScopeFrame post inner ∧
       evaluateHOLFiniteState current beforeValidateHeader=(outcome,inner) := by
-  rw [versioned_hashes_shape] at run
-  rcases CallPrefix.priced_frame_trace source post versionedHashesActions beforeValidateHeader 1
-    (versioned_hashes_prefix_cost physical) outcome run with stopped|reached
-  · exact Or.inl stopped.1
-  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
-    exact Or.inr ⟨current,inner,versioned_hashes_reached physical execution,forward,price,endpoint,continued⟩
+  rcases versioned_hashes_trace_state physical outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,retained,_,forward,price,scope,rest⟩:=reached
+    exact Or.inr ⟨current,inner,retained,forward,price,scope,rest⟩
 
 /-- Complete original main prefix through the reached zero-count version
 check and its actual rejection guard. Straight-line target work is separate. -/
@@ -2668,11 +2794,11 @@ theorem validate_header_prefix_cost {input : Guest.InputBlob} {source : PanSemSt
 
 /-- The actual returning validator protects all data/header cells, which
 lie after its fixed arithmetic workspace, and restores its incoming heap. -/
-theorem validate_header_normal {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem validate_header_normal_state {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
     (normal : evaluateHOLFiniteState source validateHeaderCall=(none,post)) :
-    AfterHeader input post pointer si record gasWord header boundary encoded := by
+    AfterHeader input post pointer si record gasWord header boundary encoded ∧ PayloadHeaderEntry.PreservesState source post header := by
   obtain ⟨heap,cell,lower,bounded,aligned⟩:=physical.heapAfter
   have heapLower : 2701134824≤heap.toNat:=by
     have headerLower:=physical.geometry.headerLower
@@ -2718,10 +2844,34 @@ theorem validate_header_normal {input : Guest.InputBlob} {source post : PanSemSt
     · rw [number]
       have before:=physical.geometry.headerBefore
       omega
-  exact {physical with
+  refine ⟨{physical with
     data:=data,headerCell:=hdrCell,payloadCell:=plCell,heapAfter:=heapAfter,
     fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.fields field member),
-    optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.optional field member)}
+    optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells source.memory post.memory header field cells (physical.optional field member)},?_⟩
+  intro origin frame
+  apply frame.after (fun key notHeap _=>globals key notHeap)
+  intro query above before
+  apply older query above
+  have afterHeader:=physical.geometry.headerBefore
+  omega
+
+/-- Existing physical projection of the stronger state frame. -/
+theorem validate_header_normal {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (normal : evaluateHOLFiniteState source validateHeaderCall=(none,post)) :
+    AfterHeader input post pointer si record gasWord header boundary encoded :=
+  (validate_header_normal_state physical normal).1
+
+theorem validate_header_reached_state {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (execution : CallPrefix.Execution source validateHeaderActions post) :
+    AfterHeader input post pointer si record gasWord header boundary encoded ∧ PayloadHeaderEntry.PreservesState source post header := by
+  have run : evaluateHOLFiniteState source validateHeaderCall=(none,post):=by
+    have actual:=execution.singleton
+    cases actual with | command _ _ run=>exact run
+  exact validate_header_normal_state physical run
 
 theorem validate_header_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
@@ -2735,6 +2885,21 @@ theorem validate_header_reached {input : Guest.InputBlob} {source post : PanSemS
 
 /-- Price only the actual normal main continuation after the genuine
 validator call; all stopped outcomes are already included in its allowance. -/
+theorem validate_header_trace_state {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source beforeValidateHeader=(outcome,post)) :
+    source.clock-post.clock≤54251770667 ∨ ∃ current inner,AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      PayloadHeaderEntry.PreservesState source current header ∧ current.clock≤source.clock ∧ source.clock-current.clock≤54251770667 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
+  rw [validate_header_shape] at run
+  rcases CallPrefix.priced_frame_trace source post validateHeaderActions afterValidateHeader 54251770667
+    (validate_header_prefix_cost physical) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
+    obtain ⟨retained,frame⟩:=validate_header_reached_state physical execution
+    exact Or.inr ⟨current,inner,retained,frame,forward,price,endpoint,continued⟩
+
 theorem validate_header_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
     (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
@@ -2742,12 +2907,10 @@ theorem validate_header_trace {input : Guest.InputBlob} {source post : PanSemSta
     source.clock-post.clock≤54251770667 ∨ ∃ current inner,AfterHeader input current pointer si record gasWord header boundary encoded ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤54251770667 ∧ CallPrefix.ScopeFrame post inner ∧
       evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
-  rw [validate_header_shape] at run
-  rcases CallPrefix.priced_frame_trace source post validateHeaderActions afterValidateHeader 54251770667
-    (validate_header_prefix_cost physical) outcome run with stopped|reached
-  · exact Or.inl stopped.1
-  · obtain ⟨current,inner,execution,forward,price,endpoint,continued⟩:=reached
-    exact Or.inr ⟨current,inner,validate_header_reached physical execution,forward,price,endpoint,continued⟩
+  rcases validate_header_trace_state physical outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,retained,_,forward,price,scope,rest⟩:=reached
+    exact Or.inr ⟨current,inner,retained,forward,price,scope,rest⟩
 
 /-- Complete actual original main prefix through validate_header and its
 restored physical data/header caller. Straight-line target work is separate. -/
@@ -2767,6 +2930,61 @@ theorem to_after_validate_header {input : Guest.InputBlob} {source post : PanSem
     · obtain ⟨current,inner,retained,callForward,callPrice,scope,rest⟩:=reached
       have clock:=scope.clock
       exact Or.inr ⟨current,inner,header,encoded,retained,by omega,by omega,endpoint.trans clock,rest⟩
+
+/-- The real post-header main path carries the initialized-state frame
+through hashing, comparison, version guards and header validation. -/
+theorem after_payload_header_validation_state_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header : BitVec 64} {boundary encoded : Nat}
+    (physical : AfterHeader input source pointer si record gasWord header boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterPayloadHeader=(outcome,post)) :
+    source.clock-post.clock≤54251773103 ∨ ∃ current inner,
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      PayloadHeaderEntry.PreservesState source current header ∧ current.clock≤source.clock ∧
+      source.clock-current.clock≤54251773103 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
+  rcases after_header_hash_trace_state physical outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨hashed,hashInner,hashedPhysical,hashFrame,hashForward,hashPrice,hashScope,hashRest⟩:=reached
+    rcases after_block_hash_compare_trace_state hashedPhysical outcome hashRest with stopped|reached
+    · exact Or.inl (by rw [hashScope.clock]; omega)
+    · obtain ⟨compared,compareInner,comparePhysical,compareFrame,compareForward,comparePrice,compareScope,compareRest⟩:=reached
+      rcases versioned_hashes_trace_state comparePhysical outcome compareRest with stopped|reached
+      · exact Or.inl (by rw [hashScope.clock,compareScope.clock]; omega)
+      · obtain ⟨versioned,versionInner,versionPhysical,versionFrame,versionForward,versionPrice,versionScope,versionRest⟩:=reached
+        rcases validate_header_trace_state versionPhysical outcome versionRest with stopped|reached
+        · exact Or.inl (by rw [hashScope.clock,compareScope.clock,versionScope.clock]; omega)
+        · obtain ⟨current,inner,retained,validateFrame,validateForward,validatePrice,validateScope,rest⟩:=reached
+          exact Or.inr ⟨current,inner,retained,(fun origin frame=>validateFrame origin (versionFrame origin (compareFrame origin (hashFrame origin frame)))),
+            by omega,by omega,hashScope.trans (compareScope.trans (versionScope.trans validateScope)),rest⟩
+
+/-- The complete actual main prefix through header validation retains the
+same initialized record context and earlier persistent state contents. -/
+theorem to_after_validate_header_with_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤534124484593 ∨ ∃ caller entered current inner ws bs header encoded,
+      HasTables input caller pointer si record gasWord boundary ∧
+      caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      AfterHeader input current pointer si record gasWord header boundary encoded ∧
+      Mpt.StateInit.MemoryContext entered ws ws bs ∧ Mpt.StateInit.MemoryContext current ws ws bs ∧
+      PersistentMemoryFrame caller entered ws ∧ PayloadHeaderEntry.StateFrame entered current header ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤534124484593 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current afterValidateHeader=(outcome,inner) := by
+  rcases to_after_payload_header_with_records data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨caller,entered,before,target,ws,bs,header,encoded,tables,cell,physical,entryRecords,records,older,frame,forward,price,endpoint,continued⟩:=reached
+    rcases after_payload_header_validation_state_trace physical outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,retained,preserved,nextForward,nextPrice,scope,rest⟩:=reached
+      have result:=preserved entered frame
+      have numbers:=retained.buffers.numbers header
+      obtain ⟨heap,heapCell,lower,upper,aligned⟩:=retained.heapAfter
+      have afterHeader : NormalHeapEffects.AtLeast header.toNat current:=⟨heap,heapCell,by rw [numbers.frontier] at lower; omega,upper,aligned⟩
+      have finalRecords:=result.state_records entryRecords retained.data.arena afterHeader
+      have clock:=scope.clock
+      exact Or.inr ⟨caller,entered,current,inner,ws,bs,header,encoded,tables,cell,retained,entryRecords,finalRecords,older,result,
+        by omega,by omega,endpoint.trans clock,rest⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -3193,3 +3411,19 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_state_init_transaction_frame_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_transaction_scan_with_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.payload_header_reached_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_transaction_scan_header_state_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_payload_header_with_records
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_hash_reached_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_compare_reached_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_reached_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.validate_header_normal_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.validate_header_reached_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_header_hash_trace_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_block_hash_compare_trace_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_trace_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.validate_header_trace_state
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_payload_header_validation_state_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_validate_header_with_records

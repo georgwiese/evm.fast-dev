@@ -164,7 +164,7 @@ theorem PhysicalHeader.of_older {input : Guest.InputBlob} {source current target
       payload:=by rw [localsEq]; exact physical.frame.payload
       si:=by rw [localsEq]; exact physical.frame.si
       older:=fun query lower before=>(memory query (by omega)).trans (physical.frame.older query lower before) }
-    buffers:=physical.buffers,frontier:=physical.frontier.of_globals current target header (headerFrontier header) globalsEq
+    buffers:=physical.buffers,frontier:=physical.frontier.of_globals current target header (headerFrontier header) globalsEq,entryHeap:=physical.entryHeap
     before:=physical.before,geometry:=physical.geometry
     fields:=fun field member=>HeaderEncoding.FieldFacts.of_cells current.memory target.memory header field cells (physical.fields field member)
     optional:=fun field member=>HeaderEncoding.FieldFacts.of_cells current.memory target.memory header field cells (physical.optional field member)

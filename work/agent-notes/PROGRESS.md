@@ -11,6 +11,8 @@ block environment. Header encoding, hashing, validation and their actual
 caller connections are checked. The executor initialization then either
 stops within161source ticks or reaches the original first mandatory system
 call with its physical input/output state and initialized BAL tables.
+The actual initialized ws/bs record context and earlier state memory now
+survive the complete header construction and header validation path.
 Mandatory system calls, finalization, complete main termination and the
 uniform formal target-step bound remain open. Source clocks are not target K.
 
@@ -7697,3 +7699,55 @@ system gas30000000/reservoir97920*16; finish mandatory calls/finalization,
 complete main/source, uniform formal target steps, explicit K, dominant
 slack review and final unused-code cleanup. Selected root remains
 CurrentVerify.FreshTransactionMemory, cache disabled/two workers/8GiB cap.
+
+## Actual initialized records retained through complete header validation
+
+The real header-entry heap is now retained in PhysicalHeader instead of
+being discarded. A composable StateFrame follows the actual normal header
+execution: it preserves nonheap globals except the genuine wd_rlp_slices
+assignment, and older memory above the fixed640byte arithmetic workspace
+(2701135464) and below the actual entering header heap. Hash/arithmetic
+workspaces may change. No future allocation, hash, trie or main success
+is assumed. Existing length and transaction normal transfers retain that
+same entering heap.
+
+Actual withdrawal setup, loop and indexed-root normal results now expose
+their already-proved global frames. The real request encoder, request hash,
+BAL hash, return and enclosing scopes retain and compose their actual
+older-memory/global frames. Complete normal payload_header execution now
+supplies StateFrame at its true return, with the earlier physical/cost API
+kept as a projection. Main's actual saved-caller continuation retains the
+same frame, original/current MemoryContexts and pre-workspace witness frame.
+Its complete stopped/reached prefix remains479872711490source ticks.
+
+The subsequent real header-hash allocation/call, comparison, version guard
+and header validator now also expose composable preservation results.
+The complete main prefix through actual header validation retains the real
+ws/bs global values, owned40/80byte regions, ordering, current bounded aligned
+heap and earlier state/input memory. Its all-outcome source allowance is
+unchanged534124484593. Division's actual640byte workspace exclusion is
+proved from slot numbers; no arithmetic or cryptographic oracle is used.
+Initialized record field contents/table models still require explicit
+exposure from state_init; this context alone does not claim those images.
+
+Validation: current-header-state-frame-v2.log PASS3106jobs;
+current-header-state-return-v3.log PASS3106jobs;
+current-header-validation-state-records-v1.log PASS3106jobs. New complete
+normal/caller/state results and unchanged downstream roots print only the
+permitted axioms. Index8704modules/19257facts; inventory8744, replacement
+closure0, fixed files unchanged. Incremental policy PASS65535package
+entries/2488467042bytes, not full verification. Claim infinity; no global
+finite target K/full verifier success. Effort55%, plausible45–65%, relative
+to reference main. Weekly usage46%, no reset credits, ordinary usage allowed.
+Original executable unchanged. No new candidate paths; one slot remains.
+
+Next: retain actual ws/bs and earlier state memory through block-environment
+allocation/stores and execute_block initialization into the first system
+callee. Then expose actual initialized state fields/table images, current
+20byte account-access insertion at ts+8, empty lookup at ts+16 and pre-state
+account/code access. Nonempty runtime models and88byte scratch tables remain
+open. Keep actual system gas30000000/reservoir97920*16; finish mandatory
+calls/finalization, complete main/source, uniform formal target steps,
+explicit K, dominant slack review and final unused-code cleanup. Selected
+root remains CurrentVerify.FreshTransactionMemory, cache disabled/two
+workers/8GiB cap. No full verifier or Solution root build on this host.

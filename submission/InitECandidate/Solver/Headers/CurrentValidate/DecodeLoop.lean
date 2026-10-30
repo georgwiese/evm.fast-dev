@@ -17,7 +17,8 @@ private theorem remaining_read (data : Data) (origin source : PanSemStateFiniteE
     (state : RoundState data origin source index) (layout : RoundLayout data) (bounded : index≤data.count) :
     decodeRemaining data source=201153*(data.count-index) := by
   have small : index<2^64 := by have h:=layout.count; omega
-  simp [decodeRemaining,CounterFlow.counterWord,state.indexCell,valueWord,BitVec.toNat_ofNat,Nat.mod_eq_of_lt small]
+  simp [decodeRemaining,CounterFlow.counterWord,state.indexCell,valueWord,BitVec.toNat_ofNat]
+  omega
 
 /-- Every actual first-loop outcome is bounded, including failed decoding,
 allocation, stores and hashing. Only a genuine continuing iteration supplies

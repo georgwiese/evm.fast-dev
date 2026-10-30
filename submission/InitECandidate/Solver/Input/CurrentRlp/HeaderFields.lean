@@ -14,7 +14,7 @@ structure Positioned (source current : PanSemStateFiniteExact 64 Guest.HostMemor
   context : Context current original header buffer
   metadata : MemoryMetadata.erase current=MemoryMetadata.erase source
   pointer : current.locals.lookup (ofString "p")=some (.val (.word (address buffer position)))
-  locals : ∀ name : String,ofString "p"≠ofString name→ofString "w"≠ofString name→
+  locals : ∀ name : String,ofString "p"≠ofString name→ ofString "w"≠ofString name→
     current.locals.lookup (ofString name)=source.locals.lookup (ofString name)
 
 theorem Positioned.refl (source : PanSemStateFiniteExact 64 Guest.HostMemory) (original : Memory) (header buffer : BitVec 64)

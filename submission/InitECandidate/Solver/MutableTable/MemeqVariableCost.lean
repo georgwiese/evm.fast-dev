@@ -1,4 +1,7 @@
 import InitECandidate.Solver.MutableTable.MemeqAnyCost
+import InitECandidate.Solver.MutableTable.MemeqByteRuntime.Environment
+import InitECandidate.Solver.Input.MemeqCode
+import InitECandidate.Solver.Input.ClockCostCallReached
 
 namespace InitECandidate.Solver.MutableTable.MemeqAny
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
@@ -69,3 +72,70 @@ end InitECandidate.Solver.MutableTable.MemeqAny
 #print axioms InitECandidate.Solver.MutableTable.MemeqAny.variable_block_test_reads
 #print axioms InitECandidate.Solver.MutableTable.MemeqAny.variable_byte_test_reads
 #print axioms InitECandidate.Solver.MutableTable.MemeqAny.variable_body_cost
+
+namespace InitECandidate.Solver.MutableTable.MemeqAny
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- A successful original comparison ABI supplies its actual constant
+length even when either operand expression might otherwise fail. -/
+theorem fixed_argument_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (first second : ExpHOL 64) (length : Nat)
+    (code : source.code.lookup (ofString "memeq")=some (Memeq32.formals,Memeq32.body,.one))
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [first,second,.const (BitVec.ofNat 64 length)]=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "memeq") values=some (actual,callee,shape)) :
+    actual=Memeq32.body ∧ callee.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 length))) := by
+  cases firstRead : eval source first with
+  | none=>
+    simp only [eval] at firstRead
+    simp [evalListHOLFinite,evalListHOLExact,firstRead] at args
+  | some left=>
+    cases secondRead : eval source second with
+    | none=>
+      simp only [eval] at firstRead secondRead
+      simp [evalListHOLFinite,evalListHOLExact,firstRead,secondRead] at args
+    | some right=>
+      let actualValues : List (ValueHOL 64):=[left,right,.val (.word (BitVec.ofNat 64 length))]
+      have expected : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [first,second,.const (BitVec.ofNat 64 length)]=some actualValues:=by
+        simp only [eval] at firstRead secondRead
+        simp [actualValues,evalListHOLFinite,evalListHOLExact,firstRead,secondRead,evalHOLExact]
+      have valuesEq:=Option.some.inj (args.symm.trans expected)
+      rw [valuesEq] at called
+      cases left <;> cases right
+      case val.val a b=>
+        cases a with
+        | word a=>
+          cases b with
+          | word b=>
+            obtain ⟨known,lookup,aCell,bCell,nCell⟩:=MemeqByteRuntime.environment source.code.lookup a b length code
+            have same:=Option.some.inj (called.symm.trans lookup)
+            have bodyEq : actual=Memeq32.body:=congrArg Prod.fst same
+            have calleeEq : callee=known:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+            rw [←calleeEq] at nCell
+            exact ⟨bodyEq,nCell⟩
+      all_goals
+        have failed : lookupCodeHOLFinite source.code.lookup (ofString "memeq") actualValues=none:=by
+          apply (lookupCodeHOLFinite_eq_none_iff _ _ _).mpr
+          unfold lookupCodeHOLExact
+          rw [code]
+          simp [actualValues,Memeq32.formals,shapeOfHOLExact,shapeEqHOL]
+        rw [failed] at called
+        cases called
+
+/-- Original ignored/local/tail comparison calls at any fixed length up
+to 64, including malformed or unmapped operand reads and exhausted clocks. -/
+theorem fixed_call_cost (code) (installed : Input.OriginalCode.Installed code) (destination : Option (Option MlS))
+    (first second : ExpHOL 64) (length : Nat) (small : length≤64) :
+    Input.ClockCost.Bound code (.call (Input.LocalEffects.callInfo destination) (ofString "memeq") [first,second,.const (BitVec.ofNat 64 length)]) (4*length+1) := by
+  intro source sameCode
+  apply Input.ClockCost.call_arguments_current source destination (ofString "memeq") _ (4*length)
+  intro values actual callee shape args called
+  obtain ⟨bodyEq,nCell⟩:=fixed_argument_entry source first second length
+    (original_code source.code (sameCode.symm ▸ installed)) values actual callee shape args called
+  rw [bodyEq]
+  exact variable_body_cost (callEntryStateHOLFinite source callee) length small nCell
+
+end InitECandidate.Solver.MutableTable.MemeqAny
+
+#print axioms InitECandidate.Solver.MutableTable.MemeqAny.fixed_argument_entry
+#print axioms InitECandidate.Solver.MutableTable.MemeqAny.fixed_call_cost

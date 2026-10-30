@@ -6458,3 +6458,39 @@ and protected input; reuse checked header encoding/hashing and memeq. Then
 finish the remaining main continuation, uniform formal target steps, exact K,
 dominant slack review and cleanup. Source clocks omit straight-line target
 work. Historical untracked WIPs and fixed executable premises remain untouched.
+
+## Actual header-validation prefix: 450464 source ticks
+
+The unchanged validate_header prefix through its nonce comparison now has an
+all-outcome 450464-source-tick allowance: actual excess-blob and base-fee calls,
+wide equality/zero checks, all intervening rejection guards and memeq8. Failed
+reads, ABI/return-shape checks and short clocks are included. A generic fixed-
+length memeq caller prices its actual ABI entry without pointer/mapping inputs.
+
+Both real fee returns compose their existing division-workspace frames at the
+child's actual remaining clock. A genuine reached action trace retains the
+actual h/parent bindings and every cell outside that workspace before the
+original heap_mark. The returning probe used to obtain this frame is justified
+by that same action trace; no future child execution or funding is supplied.
+The original literal body/prefix equality is checked. This stops before the
+ommer and parent-header hashing section; the complete validate_header bound
+and caller connection remain open.
+
+The wider selected dependency build also repairs old bit-vector/modulo
+simplifications, an already-closed proof goal and two arrow-token spacing
+conflicts. Their theorem statements and the fixed executable are unchanged.
+
+Validation: current-validate-header-prefix-v4.log PASS 3101 jobs; all 24 new
+printed facts use only permitted axioms. Index 8700 modules / 18953 facts;
+inventory 8745 / replacement closure 0 / fixed files unchanged. Incremental
+policy PASS, 65536 package entries. Claim infinity; no global finite target K
+or full verifier success. Effort estimate remains 55%, plausible 45–65%,
+relative to reference main. No new candidate paths. Weekly usage 40%, no reset
+credits, ordinary usage allowed. Targeted builds are not full isolated
+submission verification.
+
+Next: finish unchanged validate_header's actual temporary allocation and
+ommer/parent-header hashing section, retaining the protected main input and
+real heap. Then finish the remaining main continuation, uniform formal target
+steps, exact K, dominant slack review and cleanup. Source clocks omit
+straight-line target work. Historical untracked WIPs remain untouched.

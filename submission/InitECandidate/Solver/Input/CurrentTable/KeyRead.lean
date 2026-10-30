@@ -15,10 +15,8 @@ def mask (keyName positionName : String) : ExpHOL 64 := .op .and [.shift .lsr (l
 theorem index_word (position : Nat) (inside : position < 256) :
     (BitVec.ofNat 64 position >>> 3) = BitVec.ofNat 64 (position/8) := by
   apply BitVec.eq_of_toNat_eq
-  have small : position < 2^64 := by omega
-  have quotient : position/8 < 2^64 := by omega
-  simp [BitVec.toNat_ushiftRight,BitVec.toNat_ofNat,Nat.mod_eq_of_lt small,
-    Nat.mod_eq_of_lt quotient,Nat.shiftRight_eq_div_pow]
+  simp [BitVec.toNat_ushiftRight,BitVec.toNat_ofNat,Nat.shiftRight_eq_div_pow]
+  omega
 
 theorem digit_word (position : Nat) (inside : position < 256) :
     AndOp.and (BitVec.ofNat 64 position) 7#64 = BitVec.ofNat 64 (position%8) := by
@@ -55,7 +53,8 @@ theorem amount_read (source : PanSemStateFiniteExact 64 Guest.HostMemory)
   have difference : 7#64-BitVec.ofNat 64 (position%8) = BitVec.ofNat 64 (7-position%8) := by
     apply BitVec.eq_of_toNat_eq
     rw [BitVec.toNat_sub_of_le (by change (BitVec.ofNat 64 (position%8)).toNat ≤ 7; rw [numeral]; omega),numeral]
-    simp [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (show 7-position%8 < 2^64 from by omega)]
+    simp only [BitVec.toNat_ofNat]
+    omega
   simp only [eval] at digit ⊢
   rw [amount,evalHOLExact]
   simp only [evalListHOLExact,digit]

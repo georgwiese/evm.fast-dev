@@ -171,7 +171,7 @@ theorem Prepared.step_normal (source post : PanSemStateFiniteExact 64 Guest.Host
       MemoryMetadata.erase post=MemoryMetadata.erase source ∧
       post.locals.lookup (ofString "p")=some (.val (.word (address buffer (position+encoded)))) ∧
       post.locals.lookup (ofString "w")=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
-      (∀ name : String,ofString "p"≠ofString name→ofString "w"≠ofString name→
+      (∀ name : String,ofString "p"≠ofString name→ ofString "w"≠ofString name→
         post.locals.lookup (ofString name)=source.locals.lookup (ofString name)) := by
   obtain ⟨middle,called,advanced⟩:=sequence_none source post _ _ normal
   obtain ⟨encoded,positive,upper,nextContext,metadata,w,others⟩:=ready.call_normal source middle original header buffer field context called

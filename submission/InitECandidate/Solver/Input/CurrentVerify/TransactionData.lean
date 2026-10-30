@@ -1,4 +1,5 @@
 import InitECandidate.Solver.MutableTable.MemeqAnyCall
+import InitECandidate.Solver.MutableTable.MemeqVariableCost
 import InitECandidate.Solver.Input.MemeqReadOnly
 import InitECandidate.Solver.Input.CurrentRlp.HeaderCall
 import InitECandidate.Solver.Input.CurrentVerify.ExecutionRequests
@@ -1260,3 +1261,347 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.versioned_hashes_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_before_validate_header
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_validate_header with | .function fn=>progToHOL fn.body | _=>.skip
+def field (name : String) (offset : Nat) (shape : ShapeHOL:=.one) : ExpHOL 64:=
+  .load shape (.op .add [localVar name,.const (BitVec.ofNat 64 offset)])
+def zero (name : String) : ExpHOL 64:=.cmp .equal (localVar name) (.const 0#64)
+def guard (tag : Nat) (test : ExpHOL 64) : ProgHOL 64:=.ite test (.raise (ofString "BlockErr") (.const (BitVec.ofNat 64 tag))) .skip
+def guards : List (Nat×ExpHOL 64)→ ProgHOL 64→ ProgHOL 64
+  | [],tail=>tail
+  | (tag,test)::rest,tail=>.seq (guard tag test) (guards rest tail)
+def nonceCheck : ExpHOL 64:=.cmp .lower (field "h" 96) (.const 1#64)
+def excessChecks : List (Nat×ExpHOL 64):=
+  [(21,.cmp .notEqual (field "h" 208) (localVar "ebg")),(22,.cmp .lower (field "h" 104) (field "h" 112))]
+def baseArguments : List (ExpHOL 64):=
+  [field "h" 104,field "parent" 104,field "parent" 112,field "parent" 160 RlpWrite.U256Value.tupleShape]
+def feeArguments : List (ExpHOL 64):=[localVar "expected",field "h" 160 RlpWrite.U256Value.tupleShape]
+def feeChecks : List (Nat×ExpHOL 64):=
+  [(23,zero "eq"),(24,.cmp .notLower (field "parent" 120) (field "h" 120)),
+    (25,.cmp .notEqual (field "h" 96) (.op .add [field "parent" 96,.const 1#64])),
+    (26,.cmp .lower (.const 32#64) (field "h" 136))]
+def mixCall : ProgHOL 64:=.call (some (some (.local,ofString "eq"),none)) (ofString "memeq")
+  [field "h" 152,.var .global (ofString "hdr_zero8"),.const 8#64]
+def afterZero (tail : ProgHOL 64) : ProgHOL 64:=.seq (guard 27 (zero "dz")) (.seq mixCall (.seq (guard 28 (zero "eq")) tail))
+def afterExpected (tail : ProgHOL 64) : ProgHOL 64:=
+  .decCall (ofString "eq") .one (ofString "u256_eq") feeArguments
+    (guards feeChecks (.decCall (ofString "dz") .one (ofString "u256_is_zero") [field "h" 64 RlpWrite.U256Value.tupleShape] (afterZero tail)))
+def afterExcess (tail : ProgHOL 64) : ProgHOL 64:=
+  guards excessChecks (.decCall (ofString "expected") RlpWrite.U256Value.tupleShape (ofString "calculate_base_fee_per_gas") baseArguments (afterExpected tail))
+def checkPrefix (tail : ProgHOL 64) : ProgHOL 64:=
+  .seq (guard 20 nonceCheck) (.decCall (ofString "ebg") .one (ofString "calculate_excess_blob_gas") [localVar "parent"] (afterExcess tail))
+def beforeMark : ProgHOL 64:=(CallPrefix.cutAt 14 body).2
+def actions : List CallPrefix.Action:=
+  [.command (guard 20 nonceCheck),.scoped (ofString "ebg") .one (ofString "calculate_excess_blob_gas") [localVar "parent"],
+   .command (guard 21 (.cmp .notEqual (field "h" 208) (localVar "ebg"))),.command (guard 22 (.cmp .lower (field "h" 104) (field "h" 112))),
+   .scoped (ofString "expected") RlpWrite.U256Value.tupleShape (ofString "calculate_base_fee_per_gas") baseArguments,
+   .scoped (ofString "eq") .one (ofString "u256_eq") feeArguments,
+   .command (guard 23 (zero "eq")),.command (guard 24 (.cmp .notLower (field "parent" 120) (field "h" 120))),
+   .command (guard 25 (.cmp .notEqual (field "h" 96) (.op .add [field "parent" 96,.const 1#64]))),
+   .command (guard 26 (.cmp .lower (.const 32#64) (field "h" 136))),
+   .scoped (ofString "dz") .one (ofString "u256_is_zero") [field "h" 64 RlpWrite.U256Value.tupleShape],
+   .command (guard 27 (zero "dz")),.command mixCall,.command (guard 28 (zero "eq"))]
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem body_shape : body=checkPrefix beforeMark := by
+  simp only [body,Guest.Software.guestFn_validate_header,progToHOL,expToHOL,shapeToHOL,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none,beforeMark,CallPrefix.cutAt,
+    checkPrefix,afterExcess,excessChecks,afterExpected,feeArguments,baseArguments,feeChecks,
+    afterZero,mixCall,guard,guards,nonceCheck,zero,field,RlpWrite.U256Value.tupleShape,localVar]
+
+theorem prefix_shape (tail : ProgHOL 64) : CallPrefix.program actions tail=checkPrefix tail := by rfl
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "validate_header")=some ([(ofString "parent",.one),(ofString "h",.one)],body,.one) := by
+  have checked:=OriginalCode.indexed code installed 219
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_validate_header) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_validate_header,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+theorem guard_decision (tag : Nat) (test : ExpHOL 64) : PureDecision (guard tag test):=.ite _ (.raised _ _) .skip
+
+theorem guards_cost (code) (checks : List (Nat×ExpHOL 64)) (tail : ProgHOL 64) (price : Nat) (priced : ClockCost.Bound code tail price) :
+    ClockCost.Bound code (guards checks tail) price := by
+  induction checks with
+  | nil=>exact priced
+  | cons check rest ih=>
+    rcases check with ⟨tag,test⟩
+    simpa only [guards,Nat.zero_add] using ClockCost.sequence code _ _ 0 price (ClockCost.of_quiet code _ ((guard_decision tag test).quiet code)) ih
+
+theorem guards_readonly (code) (checks : List (Nat×ExpHOL 64)) (tail : ProgHOL 64) (readonly : LocalEffects.Preserves code tail) :
+    LocalEffects.Preserves code (guards checks tail) := by
+  induction checks with
+  | nil=>exact readonly
+  | cons check rest ih=>
+    exact LocalEffects.sequence code _ _ (LocalEffects.conditional code _ _ _ (LocalEffects.raised code _ _) (LocalEffects.skip code)) ih
+
+theorem mix_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code mixCall 33 :=
+  MutableTable.MemeqAny.fixed_call_cost code installed (some (some (ofString "eq"))) _ _ 8 (by decide)
+
+theorem mix_readonly (code) (installed : OriginalCode.Installed code) : LocalEffects.Preserves code mixCall :=
+  LocalEffects.call_body code (some (some (ofString "eq"))) _ _ _ _ _ (MutableTable.MemeqAny.original_code code installed)
+    (MutableTable.MemeqAny.readonly code)
+
+theorem after_zero_cost (code) (installed : OriginalCode.Installed code) (tail : ProgHOL 64) (price : Nat)
+    (priced : ClockCost.Bound code tail price) : ClockCost.Bound code (afterZero tail) (33+price) := by
+  have last : ClockCost.Bound code (.seq (guard 28 (zero "eq")) tail) price:=guards_cost code [(28,zero "eq")] tail price priced
+  have copied:=ClockCost.sequence code mixCall _ 33 price (mix_cost code installed) last
+  exact guards_cost code [(27,zero "dz")] _ (33+price) copied
+
+theorem after_zero_readonly (code) (installed : OriginalCode.Installed code) (tail : ProgHOL 64)
+    (readonly : LocalEffects.Preserves code tail) : LocalEffects.Preserves code (afterZero tail) := by
+  have last : LocalEffects.Preserves code (.seq (guard 28 (zero "eq")) tail):=guards_readonly code [(28,zero "eq")] tail readonly
+  exact guards_readonly code [(27,zero "dz")] _ (LocalEffects.sequence code _ _ (mix_readonly code installed) last)
+
+theorem after_expected_cost (code) (installed : OriginalCode.Installed code) (tail : ProgHOL 64) (price : Nat)
+    (priced : ClockCost.Bound code tail price) : ClockCost.Bound code (afterExpected tail) (35+price) := by
+  have environment:=GasBudget.ArithmeticEffects.current_environment code installed
+  have dz : ClockCost.Bound code (.decCall (ofString "dz") .one (ofString "u256_is_zero") [field "h" 64 RlpWrite.U256Value.tupleShape] (afterZero tail)) (34+price):=by
+    have result:=ClockCost.scoped_body code (ofString "dz") .one (ofString "u256_is_zero")
+      [field "h" 64 RlpWrite.U256Value.tupleShape] (afterZero tail) _ _ _ 0 (33+price) (environment .u256_is_zero)
+      (GasBudget.ArithmeticEffects.price_u256_is_zero code environment) (after_zero_cost code installed tail price priced)
+    exact ClockCost.mono code _ _ _ result (by omega)
+  have rest:=guards_cost code feeChecks _ (34+price) dz
+  have result:=ClockCost.scoped_body code (ofString "eq") .one (ofString "u256_eq") feeArguments _ _ _ _ 0 (34+price)
+    (environment .u256_eq) (GasBudget.ArithmeticEffects.price_u256_eq code environment) rest
+  exact ClockCost.mono code _ _ _ result (by omega)
+
+theorem after_expected_readonly (code) (installed : OriginalCode.Installed code) (tail : ProgHOL 64)
+    (readonly : LocalEffects.Preserves code tail) : LocalEffects.Preserves code (afterExpected tail) := by
+  have environment:=GasBudget.ArithmeticEffects.current_environment code installed
+  apply LocalEffects.scoped_body code _ _ _ _ _ _ _ _ (environment .u256_eq)
+    (GasBudget.ArithmeticEffects.original_preserves .u256_eq code environment)
+  apply guards_readonly code feeChecks
+  exact LocalEffects.scoped_body code _ _ _ _ _ _ _ _ (environment .u256_is_zero)
+    (GasBudget.ArithmeticEffects.original_preserves .u256_is_zero code environment) (after_zero_readonly code installed tail readonly)
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.guard_decision
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.guards_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.guards_readonly
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.mix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.mix_readonly
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.after_zero_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.after_zero_readonly
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.after_expected_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.after_expected_readonly
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+theorem guard_pure (tag : Nat) (test : ExpHOL 64) : PureGuard (guard tag test):=.ite _ (.raise _ _) .skip
+
+/-- Rejected checks stop; skipped checks retain this exact source state. -/
+theorem guards_current (source : PanSemStateFiniteExact 64 Guest.HostMemory) (checks : List (Nat×ExpHOL 64))
+    (tail : ProgHOL 64) (price : Nat) (priced : source.clock-(evaluateHOLFiniteState source tail).2.clock≤price) :
+    source.clock-(evaluateHOLFiniteState source (guards checks tail)).2.clock≤price := by
+  induction checks with
+  | nil=>exact priced
+  | cons check rest ih=>
+    have bounded:=ClockCost.stopping_guard_current source check.2
+      (.raise (ofString "BlockErr") (.const (BitVec.ofNat 64 check.1))) (guards rest tail) 0 price
+      (NoFallthrough.raised _ _ source) (ClockCost.raised source.code _ _ source rfl) ih
+    simpa only [guards,guard,Nat.zero_max] using bounded
+
+theorem guards_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (checks : List (Nat×ExpHOL 64))
+    (tail : ProgHOL 64) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (guards checks tail)=(some (.returned value),post)) :
+    evaluateHOLFiniteState source tail=(some (.returned value),post) := by
+  induction checks with
+  | nil=>exact normal
+  | cons check rest ih=>
+    exact ih ((guard_pure check.1 check.2).normal_continue source post (guards rest tail) value normal)
+
+/-- The actual base-fee child is priced only at its real ABI entry. -/
+theorem after_excess_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (tail : ProgHOL 64) (price : Nat) (priced : ClockCost.Bound source.code tail price) :
+    source.clock-(evaluateHOLFiniteState source (afterExcess tail)).2.clock≤773+price := by
+  unfold afterExcess
+  apply guards_current
+  have result:=ClockCost.scoped_arguments_current source (ofString "expected") RlpWrite.U256Value.tupleShape
+    (ofString "calculate_base_fee_per_gas") baseArguments (afterExpected tail) 737 (35+price) (by
+      intro values actual callee shape args called
+      have bodyEq:=LocalEffects.lookup_body source.code (ofString "calculate_base_fee_per_gas") _ BaseFeeCurrent.body
+        RlpWrite.U256Value.tupleShape (BaseFeeCurrent.original_code source.code installed) values actual callee shape called
+      rw [bodyEq]
+      exact BaseFeeCurrent.body_cost (callEntryStateHOLFinite source callee) base
+        ⟨context.global,context.domain,context.arena,context.aligned⟩ installed)
+    (after_expected_cost source.code installed tail price priced)
+  omega
+
+/-- Every outcome of the unchanged checkPrefix is covered, including failed
+reads, invalid return shapes and short clocks. -/
+theorem prefix_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (tail : ProgHOL 64) (price : Nat) (priced : ClockCost.Bound source.code tail price) :
+    source.clock-(evaluateHOLFiniteState source (checkPrefix tail)).2.clock≤450464+price := by
+  unfold checkPrefix
+  apply guards_current source [(20,nonceCheck)]
+  have result:=ClockCost.scoped_arguments_reached_current source "ebg" .one (ofString "calculate_excess_blob_gas")
+    [localVar "parent"] (afterExcess tail) 449690 (773+price) (by
+      intro values actual callee shape args called
+      have bodyEq:=LocalEffects.lookup_body source.code (ofString "calculate_excess_blob_gas") _ ExcessBlobCurrent.body .one
+        (ExcessBlobCurrent.original_code source.code installed) values actual callee shape called
+      rw [bodyEq]
+      exact ExcessBlobCurrent.body_cost (callEntryStateHOLFinite source callee) base
+        ⟨context.global,context.domain,context.arena,context.aligned⟩ installed) (by
+      intro values actual callee shape target returned args called run valid
+      have resumed:=ExcessBlobCurrent.resume source target base context installed "ebg" values actual callee shape called returned run
+      rw [resumed.2]
+      exact after_excess_cost (setVarHOLFinite (ofString "ebg") returned {source with memory:=target.memory,clock:=target.clock}) base
+        ⟨context.global,context.domain,context.arena,context.aligned⟩ installed tail price priced)
+  omega
+
+/-- A genuine base-fee return retains metadata and every physical cell
+outside its existing division workspace. -/
+theorem after_excess_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (tail : ProgHOL 64) (price : Nat) (readonly : LocalEffects.Preserves source.code tail)
+    (priced : ClockCost.Bound source.code tail price) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (afterExcess tail)=(some (.returned value),post)) :
+    TaylorCurrent.WorkspaceResult source post base (773+price) := by
+  have continued:=guards_returned source post excessChecks _ value normal
+  have result:=TaylorCurrent.WorkspaceResult.scoped_normal source post base "expected" RlpWrite.U256Value.tupleShape
+    (ofString "calculate_base_fee_per_gas") baseArguments (afterExpected tail) 737 (35+price) value continued (by
+      intro values actual callee shape target returned args called run
+      exact (BaseFeeCurrent.resume source target base context installed "expected" values actual callee shape called returned run).1) (by
+      intro values actual callee shape target returned inner args called run valid rest
+      have resumed:=BaseFeeCurrent.resume source target base context installed "expected" values actual callee shape called returned run
+      rw [resumed.2] at rest ⊢
+      exact TaylorCurrent.WorkspaceResult.of_readonly _ inner base (afterExpected tail) (35+price) (some (.returned value))
+        (after_expected_readonly source.code installed tail readonly) (after_expected_cost source.code installed tail price priced) rest)
+  simpa only [Nat.add_assoc,Nat.add_comm,Nat.add_left_comm] using result
+
+/-- The real excess-blob and base-fee children compose at their actual
+remaining clocks, with lexical locals restored by the original evaluator. -/
+theorem prefix_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (tail : ProgHOL 64) (price : Nat) (readonly : LocalEffects.Preserves source.code tail)
+    (priced : ClockCost.Bound source.code tail price) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (checkPrefix tail)=(some (.returned value),post)) :
+    TaylorCurrent.WorkspaceResult source post base (450464+price) := by
+  have continued:=(guard_pure 20 nonceCheck).normal_continue source post _ value normal
+  have result:=TaylorCurrent.WorkspaceResult.scoped_normal source post base "ebg" .one
+    (ofString "calculate_excess_blob_gas") [localVar "parent"] (afterExcess tail) 449690 (773+price) value continued (by
+      intro values actual callee shape target returned args called run
+      exact (ExcessBlobCurrent.resume source target base context installed "ebg" values actual callee shape called returned run).1) (by
+      intro values actual callee shape target returned inner args called run valid rest
+      have resumed:=ExcessBlobCurrent.resume source target base context installed "ebg" values actual callee shape called returned run
+      rw [resumed.2] at rest ⊢
+      exact after_excess_normal (setVarHOLFinite (ofString "ebg") returned {source with memory:=target.memory,clock:=target.clock}) inner base
+        ⟨context.global,context.domain,context.arena,context.aligned⟩ installed
+        tail price readonly priced value rest)
+  simpa only [Nat.add_assoc,Nat.add_comm,Nat.add_left_comm] using result
+
+/-- Keep an actual caller binding through every original guard and scope. -/
+theorem prefix_keeps (key : MlS) (ebg : key≠ofString "ebg") (expected : key≠ofString "expected")
+    (eq : key≠ofString "eq") (dz : key≠ofString "dz") :
+    ∀ action∈actions,CallPrefix.KeepsLocal key action := by
+  intro action member
+  simp only [actions,List.mem_cons,List.not_mem_nil,or_false] at member
+  rcases member with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl
+  · exact CallPrefix.KeepsLocal.decision key _ (guard_decision _ _)
+  · exact CallPrefix.KeepsLocal.scoped key _ _ _ _ ebg
+  · exact CallPrefix.KeepsLocal.decision key _ (guard_decision _ _)
+  · exact CallPrefix.KeepsLocal.decision key _ (guard_decision _ _)
+  · exact CallPrefix.KeepsLocal.scoped key _ _ _ _ expected
+  · exact CallPrefix.KeepsLocal.scoped key _ _ _ _ eq
+  · exact CallPrefix.KeepsLocal.decision key _ (guard_decision _ _)
+  · exact CallPrefix.KeepsLocal.decision key _ (guard_decision _ _)
+  · exact CallPrefix.KeepsLocal.decision key _ (guard_decision _ _)
+  · exact CallPrefix.KeepsLocal.decision key _ (guard_decision _ _)
+  · exact CallPrefix.KeepsLocal.scoped key _ _ _ _ dz
+  · exact CallPrefix.KeepsLocal.decision key _ (guard_decision _ _)
+  · intro source target reached
+    cases reached with
+    | command target command run=>
+      have safe : LocalPrefix key mixCall:=.call (some (ofString "eq")) _ _ (by
+        intro name same
+        cases same
+        exact eq)
+      have summary:=safe.summary source
+      rw [run] at summary
+      exact summary.1 rfl
+  · exact CallPrefix.KeepsLocal.decision key _ (guard_decision _ _)
+
+/-- A reached checkPrefix has the same physical state as its genuine returning
+probe. The probe changes only lexical restoration, which is erased here. -/
+theorem prefix_reached (source current : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (execution : CallPrefix.Execution source actions current) :
+    TaylorCurrent.WorkspaceResult source current base 450464 ∧
+      current.locals.lookup (ofString "h")=source.locals.lookup (ofString "h") ∧
+      current.locals.lookup (ofString "parent")=source.locals.lookup (ofString "parent") := by
+  let probe : ProgHOL 64:=.return (.const 0#64)
+  let target:=(evaluateHOLFiniteState source (checkPrefix probe)).2
+  have observed:=congrArg Prod.fst (execution.project probe)
+  rw [prefix_shape] at observed
+  have outcome : (evaluateHOLFiniteState source (checkPrefix probe)).1=some (.returned (.val (.word 0#64))):=by
+    simpa [CallPrefix.project,probe,evaluateHOLFiniteState_return,evalHOLExact,shapeOfHOLExact,sizeOfShapeWithContextHOL] using observed
+  have run : evaluateHOLFiniteState source (checkPrefix probe)=(some (.returned (.val (.word 0#64))),target):=Prod.ext outcome rfl
+  have frame:=prefix_normal source target base context installed probe 0
+    (LocalEffects.returned source.code _) (ClockCost.returned source.code _) (.val (.word 0#64)) run
+  have erased:=execution.erase probe
+  rw [prefix_shape] at erased
+  have same : LocalEffects.erase target=LocalEffects.erase current:=by
+    simpa [target,probe,evaluateHOLFiniteState_return,evalHOLExact,shapeOfHOLExact,sizeOfShapeWithContextHOL,LocalEffects.erase,emptyLocalsHOLFinite] using erased
+  have state:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+    locals:=current.locals,memory:=current.memory,clock:=current.clock}) same.symm
+  have old:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+    locals:=current.locals,memory:=current.memory,clock:=current.clock}) frame.state
+  have memory:=LocalEffects.memory_of_erase current target same
+  have priced:=prefix_cost source base context installed .skip 0 (ClockCost.skip source.code)
+  have clocks:=execution.skip_clock
+  rw [prefix_shape] at clocks
+  rw [clocks] at priced
+  refine ⟨⟨state.trans old,?_,by simpa only [Nat.add_zero] using priced⟩,
+    execution.keeps_local _ (prefix_keeps _ (by decide) (by decide) (by decide) (by decide)),
+    execution.keeps_local _ (prefix_keeps _ (by decide) (by decide) (by decide) (by decide))⟩
+  intro query outside
+  rw [←memory]
+  exact frame.away query outside
+
+/-- The unchanged header checks either stop or reach their original heap
+mark with the real header bindings and protected physical memory retained. -/
+theorem prefix_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤450464 ∨ ∃ current inner,
+      TaylorCurrent.WorkspaceResult source current base 450464 ∧
+      current.locals.lookup (ofString "h")=source.locals.lookup (ofString "h") ∧
+      current.locals.lookup (ofString "parent")=source.locals.lookup (ofString "parent") ∧
+      current.clock≤source.clock ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeMark=(outcome,inner) := by
+  rw [body_shape,←prefix_shape] at run
+  have priced:=prefix_cost source base context installed .skip 0 (ClockCost.skip source.code)
+  rw [←prefix_shape] at priced
+  rcases CallPrefix.priced_trace source post actions beforeMark 450464 (by simpa only [Nat.add_zero] using priced) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,cost,endpoint,continued⟩:=reached
+    obtain ⟨frame,h,parent⟩:=prefix_reached source current base context installed execution
+    exact Or.inr ⟨current,inner,frame,h,parent,forward,endpoint,continued⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.guard_pure
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.guards_current
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.guards_returned
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.after_excess_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.after_excess_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_keeps
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_reached
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_trace

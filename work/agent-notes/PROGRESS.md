@@ -6427,3 +6427,34 @@ validate_header and the remaining main continuation, uniform formal target
 steps, exact K, dominant slack review and cleanup. Source clocks omit
 straight-line target work. Historical untracked WIPs and fixed executable
 premises remain untouched.
+
+## Complete actual base-fee normal return and original header caller
+
+Normal memory frames now compose through actual calls, lexical restoration
+and selected stopping branches. Readonly and word-division scopes obtain their
+real child returns and continued caller executions from the same parent run.
+Their spent-clock bounds compose without any assumed future funding or success.
+
+Both original base-fee arithmetic branches now retain all metadata and memory
+outside the six division workspace buffers. The actual from-word startup
+supplies its exact target/eight tuples; the gas-limit check and early branches
+retain the real scalar target. The complete unchanged helper has a checked
+737-tick normal-return frame, including zero divisors and all lexical scopes.
+The real original ABI identifies that body and reconstructs the header caller
+at the child's actual remaining clock. Its source allowance remains 737 body /
+738 ordinary caller ticks. The full validate_header connection is still open.
+
+Validation: current-base-fee-full-normal-v1.log PASS 1155 jobs; all 23 new
+printed facts use only permitted axioms. Index 8700 modules / 18929 facts;
+inventory 8745 / replacement closure 0 / fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Effort estimate remains
+55%, plausible 45–65%, relative to reference main. No new candidate paths;
+package remains 65536 entries. Weekly usage 40%, no reset credits, ordinary
+usage allowed. Targeted builds are not full isolated submission verification.
+
+Next: connect the actual excess-blob and base-fee calls through unchanged
+validate_header, retaining its real parent/payload header cells, bounded heap
+and protected input; reuse checked header encoding/hashing and memeq. Then
+finish the remaining main continuation, uniform formal target steps, exact K,
+dominant slack review and cleanup. Source clocks omit straight-line target
+work. Historical untracked WIPs and fixed executable premises remain untouched.

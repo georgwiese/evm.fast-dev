@@ -5,25 +5,14 @@ Active plan: [bound.md](../../bound.md). Reference main:
 **No global finite target K yet**; claim infinity; no complete verifier run.
 Overall effort estimate: **55%, plausible45–65%**, relative to reference main.
 
-The whole unchanged encode_header now costs≤43314053975body source ticks
-from the actual installed code, ordinary domain and bounded aligned heap,
-without a decoded parent-record image or read-success premise. Its actual
-normal return derives its own1024byte allocation room, positive encoded
-length≤33806090619, output start in[buffer,buffer+8], bounded nonwrapping
-span, exact next heap and complete older-input frame. The original first
-scoped field call, all base/optional fields, pointer advances and final list
-prefix are included. Connecting this returned span to the actual parent
-hash remains open. Source clocks are not the final target K.
-
-The complete unchanged parent header_hash now costs≤54251319248body /
-54251319249caller source ticks without a decoded parent image or owned
-hash-input premise. Actual normal returns restore their own heap mark and
-retain older memory outside the real output/workspaces. The complete original
-validate_header now costs≤54251770666body source ticks from its real division/
-hash workspace, bounded aligned heap and typed parent entry. Its final normal
-return, ordinary caller and actual main input/header connection are now checked;
-the block-environment/execute_block continuation remains open. These source
-clocks are not a whole-program target K.
+The unchanged main prefix now reaches its actual execute_block call within
+534124484749source ticks, with the real decoded input/header and allocated
+block environment. Header encoding, hashing, validation and their actual
+caller connections are checked. The executor initialization then either
+stops within161source ticks or reaches the original first mandatory system
+call with its physical input/output state and initialized BAL tables.
+Mandatory system calls, finalization, complete main termination and the
+uniform formal target-step bound remain open. Source clocks are not target K.
 
 ## Complete actual header-validator cost, normal return and caller trace
 
@@ -7495,3 +7484,53 @@ mandatory calls/finalization, complete main/source, uniform formal target
 steps, exact K, dominant slack review and cleanup. Keep the selected
 CurrentVerify.BlockExecution root, cache disabled/two workers/8GiB cap;
 four candidate path slots remain.
+
+## Actual scalar Patricia constructor and initialized BAL table images
+
+The unchanged current htab_new now has an exact normal-result proof for
+arbitrary scalar key widths and capacities at least two. The same observed
+execution supplies all four allocation requests' room and four paid source
+clock ticks. Its canonical nonlocal result includes the eleven real stores,
+exact backing pointers and final allocator cursor. The88byte header's
+persistent request room is retained separately from ordinary mapped Arena
+ownership; the latter has a different, larger ceiling and is not a substitute.
+
+ScalarGeometry records the actual word-sized allocation extents, alignment
+and ordering. ScalarEmpty records those owned arrays and the initialized
+header, without treating uninitialized backing cells as live nodes. Larger
+natural-number size formulas still require their own no-overflow facts.
+Exact memory/nonlocal frames and genuine earlier-memory persistent frames
+transport this image. The original ordinary global-result htab_new call
+recovers its actual callee bindings/return and retains the same image.
+
+The three actual bal_init calls now establish empty images for20/28/60byte
+keys at capacity64. Their genuine later allocation frames retain all earlier
+header fields through the key-buffer allocation and bal_index assignment.
+BalCells carries these three images. Its return/caller transport now uses a
+full nonlocal equality, since equality of globals alone cannot retain table
+memory contents. The complete existing initialization proofs have been
+rebuilt with this stronger contract, including the actual first-system-call
+entry. The connected initialization cost is still161source ticks; mandatory
+system execution and whole-program target K remain open.
+
+Validation: current-scalar-table-image-v6.log PASS754jobs;
+current-execute-scalar-table-images-v2.log PASS3104jobs. All13new printed
+facts and the renamed/strengthened existing results use permitted axioms.
+Index8702modules/19194facts; inventory8742, replacement closure0, fixed
+files unchanged. The obsolete BalCells.of_globals index entry was removed
+when its stronger of_erase replacement was recorded. Incremental policy
+PASS65533package entries/2488363848bytes; this is not full verification.
+Claim infinity; no global finite target K or full verifier success.
+Effort55%, plausible45–65%, relative to reference main. Weekly usage45%,
+no reset credits, ordinary usage allowed. Original executable unchanged.
+
+Next: genuine initial/runtime state and current Patricia lookup/update
+images needed by the first mandatory beacon-roots system call, including
+20/28/52/60byte keys. Extend the current representation beyond the32byte
+witness model; scratch headers are88bytes, not legacy72byte headers. Keep
+actual system gas30000000 and reservoir97920*16. Then remaining mandatory
+calls/finalization, complete main/source, uniform formal target steps,
+explicit K, dominant slack review and final unused-code cleanup. Selected
+root remains CurrentVerify.BlockExecution, cache disabled/two workers/8GiB
+cap. One new Solver module uses one of the four previous candidate path
+slots; three remain after the successful incremental policy check.

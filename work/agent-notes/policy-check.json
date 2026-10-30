@@ -2579,6 +2579,7 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarCall.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarContext.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarFrame.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/NewScalarImage.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NewStores.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuild/BodyCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeBuild/Budget.lean",
@@ -8746,8 +8747,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65532,
-  "package_bytes": 2488333401,
+  "package_entries": 65533,
+  "package_bytes": 2488363848,
   "claim": {
     "K": "infinity"
   },

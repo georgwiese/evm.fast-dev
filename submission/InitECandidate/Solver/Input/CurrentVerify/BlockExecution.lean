@@ -1,4 +1,5 @@
 import InitECandidate.Solver.Input.CurrentVerify.TransactionData
+import InitECandidate.Solver.Input.CurrentTable.NewScalarImage
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 set_option maxRecDepth 100000
@@ -2031,6 +2032,9 @@ structure BalCells (source : PanSemStateFiniteExact 64 Guest.HostMemory) (accoun
   beforeStorageIndex : accountIndex.toNat+88≤storageIndex.toNat
   beforeKeyBuffer : storageIndex.toNat+88≤keyBuffer.toNat
   heapAfter : NormalHeapEffects.AtLeast (keyBuffer.toNat+64) source
+  accountsImage : CurrentTable.New.ScalarEmpty source accounts 20#64 64#64
+  accountIndexImage : CurrentTable.New.ScalarEmpty source accountIndex 28#64 64#64
+  storageIndexImage : CurrentTable.New.ScalarEmpty source storageIndex 60#64 64#64
 
 end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 
@@ -2061,17 +2065,23 @@ theorem bal_execution (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
     cases first with | command _ _ run=>exact run
   obtain ⟨locals1,accounts,owned1,runtime1,frame1,extent1,globals1⟩:=table_global_memory_normal source one "bal_accounts" 20#64 64#64 heap
     [.const 20#64,.const 64#64] rfl (by decide) context.cell context.arena context.bounded context.aligned context.runtime (by decide) run1
+  obtain ⟨image1,next1⟩:=CurrentTable.New.global_scalar_empty source one "bal_accounts" 20#64 64#64 heap
+    [.const 20#64,.const 64#64] rfl (by decide) context.cell context.arena context.bounded context.aligned context.runtime (by decide) run1
   obtain ⟨accountIndex,context1,before1⟩:=BalHeap.of_extent one (heap.toNat+88) runtime1 (by have low:=context.arena.lower; omega) extent1
   obtain ⟨two,second,rest⟩:=rest.head
   have run2 : evaluateHOLFiniteState one (balTableCall "bal_idx_accts" 28#64)=(none,two):=by
     cases second with | command _ _ run=>exact run
   obtain ⟨locals2,indexAccounts,owned2,runtime2,frame2,extent2,globals2⟩:=table_global_memory_normal one two "bal_idx_accts" 28#64 64#64 accountIndex
     [.const 28#64,.const 64#64] rfl (by decide) context1.cell context1.arena context1.bounded context1.aligned context1.runtime (by decide) run2
+  obtain ⟨image2,next2⟩:=CurrentTable.New.global_scalar_empty one two "bal_idx_accts" 28#64 64#64 accountIndex
+    [.const 28#64,.const 64#64] rfl (by decide) context1.cell context1.arena context1.bounded context1.aligned context1.runtime (by decide) run2
   obtain ⟨storageIndex,context2,before2⟩:=BalHeap.of_extent two (accountIndex.toNat+88) runtime2 (by have low:=context1.arena.lower; omega) extent2
   obtain ⟨three,third,rest⟩:=rest.head
   have run3 : evaluateHOLFiniteState two (balTableCall "bal_idx_stor" 60#64)=(none,three):=by
     cases third with | command _ _ run=>exact run
   obtain ⟨locals3,indexStorage,owned3,runtime3,frame3,extent3,globals3⟩:=table_global_memory_normal two three "bal_idx_stor" 60#64 64#64 storageIndex
+    [.const 60#64,.const 64#64] rfl (by decide) context2.cell context2.arena context2.bounded context2.aligned context2.runtime (by decide) run3
+  obtain ⟨image3,next3⟩:=CurrentTable.New.global_scalar_empty two three "bal_idx_stor" 60#64 64#64 storageIndex
     [.const 60#64,.const 64#64] rfl (by decide) context2.cell context2.arena context2.bounded context2.aligned context2.runtime (by decide) run3
   obtain ⟨keyBuffer,context3,before3⟩:=BalHeap.of_extent three (storageIndex.toNat+88) runtime3 (by have low:=context2.arena.lower; omega) extent3
   obtain ⟨four,fourth,last⟩:=rest.head
@@ -2099,9 +2109,24 @@ theorem bal_execution (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
   have extent : NormalHeapEffects.AtLeast (keyBuffer.toNat+64) post:=by
     obtain ⟨next,cell,lower,bound,aligned⟩:=extent4
     exact ⟨next,(indexOther _ (by decide)).trans cell,lower,bound,aligned⟩
+  have accountImage2:=image1.of_persistent before1 frame2
+  have accountImage3:=accountImage2.of_persistent (by omega) frame3
+  have accountImage4:=accountImage3.of_persistent (by omega) frame4
+  have accountIndexImage3:=image2.of_persistent before2 frame3
+  have accountIndexImage4:=accountIndexImage3.of_persistent (by omega) frame4
+  have storageImage4:=image3.of_persistent before3 frame4
+  have accountImage : CurrentTable.New.ScalarEmpty post heap 20#64 64#64:=by
+    rw [endpoint]
+    exact accountImage4.of_memory rfl (by intros; rfl)
+  have accountIndexImage : CurrentTable.New.ScalarEmpty post accountIndex 28#64 64#64:=by
+    rw [endpoint]
+    exact accountIndexImage4.of_memory rfl (by intros; rfl)
+  have storageImage : CurrentTable.New.ScalarEmpty post storageIndex 60#64 64#64:=by
+    rw [endpoint]
+    exact storageImage4.of_memory rfl (by intros; rfl)
   have cells : BalCells post heap accountIndex storageIndex keyBuffer:=by
     refine ⟨?_,?_,?_,?_,?_,owned1,owned2,owned3,owned4,context.aligned,context1.aligned,context2.aligned,context3.aligned,
-      before1,before2,before3,extent⟩
+      before1,before2,before3,extent,accountImage,accountIndexImage,storageImage⟩
     · exact (indexOther _ (by decide)).trans ((globals4 _ (by decide) (by decide)).trans
         ((globals3 _ (by decide) (by decide)).trans ((globals2 _ (by decide) (by decide)).trans accounts)))
     · exact (indexOther _ (by decide)).trans ((globals4 _ (by decide) (by decide)).trans ((globals3 _ (by decide) (by decide)).trans indexAccounts))
@@ -2133,13 +2158,15 @@ set_option maxHeartbeats 4000000
 open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
 open Flapjack.Basis.Pure.MlString QueryBranch
 
-theorem BalCells.of_globals {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem BalCells.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {accounts accountIndex storageIndex keyBuffer : BitVec 64}
-    (ready : BalCells source accounts accountIndex storageIndex keyBuffer) (globals : post.globals=source.globals) :
+    (ready : BalCells source accounts accountIndex storageIndex keyBuffer) (same : LocalEffects.erase post=LocalEffects.erase source) :
     BalCells post accounts accountIndex storageIndex keyBuffer := by
+  have globals:=congrArg PanSemStateFiniteExact.globals same
+  change post.globals=source.globals at globals
   have cells (key : MlS) : post.globals.lookup key=source.globals.lookup key:=by rw [globals]
   obtain ⟨heap,cell,lower,bound,aligned⟩:=ready.heapAfter
-  exact {ready with accountsCell:=(cells _).trans ready.accountsCell,accountIndexCell:=(cells _).trans ready.accountIndexCell, storageIndexCell:=(cells _).trans ready.storageIndexCell,keyBufferCell:=(cells _).trans ready.keyBufferCell, indexCell:=(cells _).trans ready.indexCell,heapAfter:=⟨heap,(cells _).trans cell,lower,bound,aligned⟩}
+  exact {ready with accountsCell:=(cells _).trans ready.accountsCell,accountIndexCell:=(cells _).trans ready.accountIndexCell, storageIndexCell:=(cells _).trans ready.storageIndexCell,keyBufferCell:=(cells _).trans ready.keyBufferCell, indexCell:=(cells _).trans ready.indexCell,heapAfter:=⟨heap,(cells _).trans cell,lower,bound,aligned⟩,accountsImage:=ready.accountsImage.of_erase same,accountIndexImage:=ready.accountIndexImage.of_erase same,storageIndexImage:=ready.storageIndexImage.of_erase same}
 
 /-- Complete real BAL body return, including its actual five commands,
 zero returned word, all assigned globals and complete older-memory frame. -/
@@ -2162,7 +2189,7 @@ theorem bal_body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemor
   have globals:=congrArg PanSemStateFiniteExact.globals physical
   change post.globals=current.globals at globals
   exact ⟨answer,runtime.of_frame physical,frame.of_erase source current source post heap rfl physical,
-    ⟨accountIndex,storageIndex,keyBuffer,cells.of_globals globals⟩,by intro key outside notHeap; rw [globals]; exact kept key outside notHeap⟩
+    ⟨accountIndex,storageIndex,keyBuffer,cells.of_erase physical⟩,by intro key outside notHeap; rw [globals]; exact kept key outside notHeap⟩
 
 structure BalReady (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer : BitVec 64)
@@ -2206,11 +2233,11 @@ theorem bal_call_normal {input : Guest.InputBlob} {source post : PanSemStateFini
     exact kept key (protected_globals_outside_bal key member) notHeap) (by
     intro key member
     rw [endpoint])
-  exact ⟨heap,accountIndex,storageIndex,keyBuffer,physical,cells.of_globals globals,lower⟩
+  exact ⟨heap,accountIndex,storageIndex,keyBuffer,physical,cells.of_erase (by rw [endpoint]; rfl),lower⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 
-#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.BalCells.of_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.BalCells.of_erase
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_body_normal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.protected_globals_outside_bal
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_call_normal

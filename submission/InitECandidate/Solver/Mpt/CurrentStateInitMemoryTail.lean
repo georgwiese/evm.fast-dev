@@ -17,7 +17,7 @@ theorem Tail.table_store (frontier ws bs : BitVec 64) (key cap offset : Nat) (in
   obtain ⟨tableCell,otherLocals,tableArena,physical⟩:=CurrentTable.New.scalar_local_normal_frame source middle "t"
     (BitVec.ofNat 64 key) (BitVec.ofNat 64 cap) heap [.const (BitVec.ofNat 64 key),.const (BitVec.ofNat 64 cap)] rfl capLower
     heapCell heapArena heapBound heapAligned context.arena firstRun
-  have current:=context.after_persistent physical before
+  have current:=context.after_persistent physical before heapCell
   have first:=physical.memory_frame.weaken source middle heap frontier before
   have tableRead : eval middle (localVar "t")=some (.val (.word heap)):=by simp [eval,evalHOLExact,localVar,toExact,tableCell]
   obtain ⟨valueEq,finalArena,last⟩:=store_suffix_normal middle post frontier ws bs current offset inside (localVar "t") heap tableRead continuation tail value continued

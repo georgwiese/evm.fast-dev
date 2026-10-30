@@ -34,13 +34,13 @@ before the original entering frontier. -/
 def Tail (frontier ws bs : BitVec 64) (program : ProgHOL 64) : Prop:=
   ∀ source post,MemoryContext source frontier ws bs → ∀ value,
     evaluateHOLFiniteState source program=(some (.returned value),post) →
-    value=.val (.word 0#64) ∧ CurrentStartup.ArenaState post ∧ PersistentMemoryFrame source post frontier
+    value=.val (.word 0#64) ∧ MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier
 
 theorem Tail.returned (frontier ws bs : BitVec 64) : Tail frontier ws bs (.return (.const 0#64)) := by
   intro source post context value normal
   obtain ⟨read,endpoint⟩:=return_normal source post (.const 0#64) value normal
   have first : PersistentMemoryFrame source source frontier:=⟨context.heap,rfl,by intros; rfl⟩
-  exact ⟨Option.some.inj read.symm,(by rw [endpoint]; exact context.arena.of_frame rfl),first.of_erase source source source post frontier rfl (by rw [endpoint]; rfl)⟩
+  exact ⟨Option.some.inj read.symm,(by rw [endpoint]; exact context.of_frame rfl),first.of_erase source source source post frontier rfl (by rw [endpoint]; rfl)⟩
 
 theorem Tail.global_constant (frontier ws bs : BitVec 64) (name : String) (word : BitVec 64) (continuation : ProgHOL 64)
     (notHeap : ofString "heap_ptr"≠ofString name) (notWs : ofString "ws"≠ofString name) (notBs : ofString "bs"≠ofString name)
@@ -64,7 +64,7 @@ theorem allocate_suffix_normal (source post : PanSemStateFiniteExact 64 Guest.Ho
     (notScratch : ofString "scratch_ptr"≠ofString name) (notFrame : ofString "frame_mem_ptr"≠ofString name)
     (tail : Tail frontier ws bs continuation) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.seq (allocate name arguments) continuation)=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ CurrentStartup.ArenaState post ∧ PersistentMemoryFrame source post frontier := by
+    value=.val (.word 0#64) ∧ MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
   have safe : LocalPrefix (ofString "_") (allocate name arguments):=.globalCall _ _ _
   obtain ⟨middle,firstRun,continued,preserved⟩:=safe.normal_continue source post continuation value normal
   obtain ⟨current,first⟩:=context.allocate_global name amount arguments args notHeap notWs notBs notScratch notFrame firstRun
@@ -75,7 +75,7 @@ theorem store_suffix_normal (source post : PanSemStateFiniteExact 64 Guest.HostM
     (context : MemoryContext source frontier ws bs) (offset : Nat) (inside : offset≤72) (expression : ExpHOL 64) (word : BitVec 64)
     (read : eval source expression=some (.val (.word word))) (continuation : ProgHOL 64) (tail : Tail frontier ws bs continuation) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source (.seq (.store (field "bs" offset) expression) continuation)=(some (.returned value),post)) :
-    value=.val (.word 0#64) ∧ CurrentStartup.ArenaState post ∧ PersistentMemoryFrame source post frontier := by
+    value=.val (.word 0#64) ∧ MemoryContext post frontier ws bs ∧ PersistentMemoryFrame source post frontier := by
   have safe : LocalPrefix (ofString "_") (.store (field "bs" offset) expression):=.store _ _
   obtain ⟨middle,firstRun,continued,preserved⟩:=safe.normal_continue source post continuation value normal
   have addressRead : eval source (field "bs" offset)=some (.val (.word (bs+BitVec.ofNat 64 offset))) := by

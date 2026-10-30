@@ -57,7 +57,48 @@ theorem to_after_state_init_with_data {input : Guest.InputBlob} {source post : P
   · obtain ⟨caller,target,inner,tables,returned,forward,price,continued,endpoint,physical⟩:=reached
     exact Or.inr ⟨caller,target,inner,tables,returned,returned.data tables.1,forward,price,continued,endpoint,physical⟩
 
+/-- Main's genuine normal state_init return supplies the actual typed and
+owned workspace/block records, their ordering and the older-memory frame.
+These are consequences of the same execution retained by the prefix trace. -/
+theorem StateInitReturned.records {input : Guest.InputBlob} {caller target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si : BitVec 64} {boundary : Nat}
+    (returned : StateInitReturned input caller target pointer si boundary) :
+    ∃ ws bs,caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      Mpt.StateInit.MemoryContext {target with locals:=caller.locals} ws ws bs ∧
+      PersistentMemoryFrame caller {target with locals:=caller.locals} ws := by
+  obtain ⟨entry,value,inputs,entryFrame,bodyRun,checked⟩:=returned
+  obtain ⟨ws,bs,heapCell,valueEq,physical,frame⟩:=state_init_normal_context inputs value bodyRun
+  have globals:=congrArg PanSemStateFiniteExact.globals entryFrame
+  change entry.globals=caller.globals at globals
+  refine ⟨ws,bs,?_,physical.of_frame rfl,frame.of_erase entry target caller _ ws entryFrame.symm rfl⟩
+  rw [←globals]
+  exact heapCell
+
+/-- Retain those actual records at main's original post-state-init program
+point, together with physical input, source price and the continued run. -/
+theorem to_after_state_init_with_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤3374969779 ∨ ∃ caller target inner ws bs,
+      HasTables input caller pointer si record gasWord boundary ∧ StateInitReturned input caller target pointer si boundary ∧
+      Data input {target with locals:=caller.locals} pointer si record gasWord boundary ∧
+      caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      Mpt.StateInit.MemoryContext {target with locals:=caller.locals} ws ws bs ∧
+      PersistentMemoryFrame caller {target with locals:=caller.locals} ws ∧
+      target.clock≤source.clock ∧ source.clock-target.clock≤3374969779 ∧
+      evaluateHOLFiniteState {target with locals:=caller.locals} afterStateInit=(outcome,inner) ∧
+      post.clock=inner.clock ∧ LocalEffects.erase post=LocalEffects.erase inner := by
+  rcases to_after_state_init_with_data data outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨caller,target,inner,tables,returned,physical,forward,price,continued,clock,scope⟩:=reached
+    obtain ⟨ws,bs,cell,records,frame⟩:=returned.records
+    exact Or.inr ⟨caller,target,inner,ws,bs,tables,returned,physical,cell,records,frame,forward,price,continued,clock,scope⟩
+
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.StateInitReturned.data
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_state_init_with_data
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.StateInitReturned.records
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_state_init_with_records

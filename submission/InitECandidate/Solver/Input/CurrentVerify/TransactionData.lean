@@ -19,7 +19,7 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 /-- The real transaction pointer/count loads come from the same decoded
 payload image retained through state_init. Failed record reads and empty
 transactions remain covered by the original scan's all-outcome bound. -/
-theorem after_state_init_transaction_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem after_state_init_transaction_frame_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord : BitVec 64} {boundary : Nat}
     (data : Data input source pointer si record gasWord boundary)
     (payloadLocal : source.locals.lookup (ofString "pl")=some (.val (.word record)))
@@ -27,7 +27,8 @@ theorem after_state_init_transaction_trace {input : Guest.InputBlob} {source pos
     source.clock-post.clock≤12582752 ∨ ∃ current inner,
       Data input current pointer si record gasWord boundary ∧ current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧
       current.clock≤source.clock ∧ source.clock-current.clock≤12582752 ∧ post.clock=inner.clock ∧
-      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧ TransactionsNonempty input := by
+      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧ TransactionsNonempty input ∧
+      LocalEffects.erase current=LocalEffects.erase source := by
   obtain ⟨array,length,start,size,payload,arrayBefore,countBound,byteBound⟩:=data.payload
   let count:=VarList.decodedCount input start size
   let actualArray:=VarList.decodedArray array size
@@ -73,7 +74,23 @@ theorem after_state_init_transaction_trace {input : Guest.InputBlob} {source pos
       unfold TransactionsNonempty
       rw [←payload.transactions.startEq,←payload.transactions.sizeEq]
       exact nonempty
-    exact Or.inr ⟨current,inner,data.of_frame frame currentSi,currentPayload,forward,by omega,endpoint,continued,checked⟩
+    exact Or.inr ⟨current,inner,data.of_frame frame currentSi,currentPayload,forward,by omega,endpoint,continued,checked,frame⟩
+
+/-- Existing consumers retain the original projection; the stronger trace
+also exposes the complete nonlocal equality of the transaction scan. -/
+theorem after_state_init_transaction_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (payloadLocal : source.locals.lookup (ofString "pl")=some (.val (.word record)))
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source afterStateInit=(outcome,post)) :
+    source.clock-post.clock≤12582752 ∨ ∃ current inner,
+      Data input current pointer si record gasWord boundary ∧ current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤12582752 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧ TransactionsNonempty input := by
+  rcases after_state_init_transaction_frame_trace data payloadLocal outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,physical,payload,forward,price,clock,continued,checked,frame⟩:=reached
+    exact Or.inr ⟨current,inner,physical,payload,forward,price,clock,continued,checked⟩
 
 /-- Whole real main prefix through transaction scanning: the same actual
 payload/header/gas/database/state-init run either stops within its allowance
@@ -97,6 +114,32 @@ theorem to_after_transaction_scan {input : Guest.InputBlob} {source post : PanSe
       change target.clock-current.clock≤12582752 at scanPrice
       exact Or.inr ⟨current,last,lastData,payloadLocal,by change current.clock≤source.clock; omega,
         by change source.clock-current.clock≤3387552531; omega,endpoint.trans scanClock,lastRun,checked⟩
+
+/-- Main's original payload_header entry now retains the actual initialized
+records and the pre-workspace witness-memory frame, as well as decoded input. -/
+theorem to_after_transaction_scan_with_records {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤3387552531 ∨ ∃ caller current inner ws bs,
+      HasTables input caller pointer si record gasWord boundary ∧
+      caller.globals.lookup (ofString "heap_ptr")=some (.val (.word ws)) ∧
+      Data input current pointer si record gasWord boundary ∧ current.locals.lookup (ofString "pl")=some (.val (.word record)) ∧
+      Mpt.StateInit.MemoryContext current ws ws bs ∧ PersistentMemoryFrame caller current ws ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤3387552531 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current afterTransactionScan=(outcome,inner) ∧ TransactionsNonempty input := by
+  rcases to_after_state_init_with_records data outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨caller,target,inner,ws,bs,tables,returned,currentData,cell,records,recordFrame,forward,price,continued,endpoint,physical⟩:=reached
+    rcases after_state_init_transaction_frame_trace currentData tables.2.1 outcome continued with stopped|reached
+    · change target.clock-inner.clock≤12582752 at stopped
+      exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,last,lastData,payload,scanForward,scanPrice,scanClock,lastRun,checked,scanFrame⟩:=reached
+      change current.clock≤target.clock at scanForward
+      change target.clock-current.clock≤12582752 at scanPrice
+      exact Or.inr ⟨caller,current,last,ws,bs,tables,cell,lastData,payload,records.of_frame scanFrame,
+        recordFrame.of_erase caller {target with locals:=caller.locals} caller current ws rfl scanFrame,
+        by omega,by omega,endpoint.trans scanClock,lastRun,checked⟩
 
 end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 
@@ -3147,3 +3190,6 @@ end InitECandidate.Solver.Input.CurrentVerify.RunAttempt
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_env_reached
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.block_env_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_before_execute_block
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.after_state_init_transaction_frame_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.RunAttempt.to_after_transaction_scan_with_records

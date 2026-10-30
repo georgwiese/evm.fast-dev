@@ -9,12 +9,12 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 its actual incoming heap, complete runtime metadata, restored scratch/frame
 cursors and a genuinely advanced bounded/aligned heap. All helper allocation
 room comes from the same observed execution and real main-derived inputs. -/
-theorem state_init_normal_memory {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+theorem state_init_normal_context {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si : BitVec 64} {boundary : Nat}
     (inputs : StateInitInputs input source pointer si boundary) (value : ValueHOL 64)
     (normal : evaluateHOLFiniteState source Mpt.StateInit.body=(some (.returned value),post)) :
-    ∃ heap,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
-      value=.val (.word 0#64) ∧ CurrentStartup.ArenaState post ∧ PersistentMemoryFrame source post heap := by
+    ∃ heap bs,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
+      value=.val (.word 0#64) ∧ Mpt.StateInit.MemoryContext post heap heap bs ∧ PersistentMemoryFrame source post heap := by
   obtain ⟨array,table,cap,root,codes,heap,start,length,arena,witness,image,heapCell,heapLower,heapUpper,aligned,inputBefore,tableBefore,nodesCell,rootCell,codesCell⟩:=inputs
   obtain ⟨room,funded,continued⟩:=Mpt.StateInit.current_root_normal_trace source post heap table root codes arena.code heapCell heapLower heapUpper aligned
     nodesCell rootCell codesCell arena.domain value normal
@@ -36,17 +36,35 @@ theorem state_init_normal_memory {input : Guest.InputBlob} {source post : PanSem
     (by omega) nextHeap nextArena checked.2.2.2.1 checked.2.2.2.2 readyArena value continued
   let called:=CallNormal.continuationEntry ready target "root" (.val (.word node))
   have wsCell : ready.globals.lookup (ofString "ws")=some (.val (.word heap)):=putGlobal.lookup_same _ _ _
+  have workspaceExtent : NormalHeapEffects.AtLeast (heap.toNat+40) called:=by
+    obtain ⟨last,cell,lastArena,lastBound,lastAligned,later⟩:=rootFrame.nextHeap
+    have allocated:=checked.2.2.1
+    change heap.toNat+40≤next.toNat at allocated
+    exact ⟨last,cell,by omega,lastBound,lastAligned⟩
   have context : Mpt.StateInit.WorkspaceContext called heap heap := by
-    refine ⟨rootFrame.current_arena readyArena,?_,(rootFrame.globals _ (by decide)).trans wsCell,⟨Nat.le_refl _,heapUpper⟩⟩
+    refine ⟨rootFrame.current_arena readyArena,?_,(rootFrame.globals _ (by decide)).trans wsCell,⟨Nat.le_refl _,heapUpper⟩,⟨by omega,by change heap.toNat+40≤2952790016 at room; omega⟩,aligned,workspaceExtent⟩
     obtain ⟨last,cell,lastArena,lastBound,lastAligned,later⟩:=rootFrame.nextHeap
     exact ⟨last,cell,lastArena,lastBound,lastAligned,Nat.le_trans grows later⟩
   have nodeCell : called.locals.lookup (ofString "root")=some (.val (.word node)):=CallNormal.continuation_lookup_same _ _ _ _
-  obtain ⟨valueEq,lastArena,lastFrame⟩:=Mpt.StateInit.MemorySuffix.after_root_memory called inner heap heap node context nodeCell value tailRun
+  obtain ⟨valueEq,bs,lastArena,lastFrame⟩:=Mpt.StateInit.MemorySuffix.after_root_context called inner heap heap node context nodeCell value tailRun
   have throughRoot:=first.trans source ready called heap next rootFrame.memory_frame grows
   have total:=throughRoot.trans source called inner heap heap lastFrame (Nat.le_refl _)
-  exact ⟨heap,heapCell,valueEq,(by rw [endpoint]; exact lastArena.of_frame rfl),
+  exact ⟨heap,bs,heapCell,valueEq,(by rw [endpoint]; exact lastArena.of_frame rfl),
     total.of_erase source inner source post heap rfl (by rw [endpoint]; rfl)⟩
+
+/-- Existing callers can retain the earlier-memory projection while new
+runtime proofs use the actual typed/owned block and workspace records. -/
+theorem state_init_normal_memory {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si : BitVec 64} {boundary : Nat}
+    (inputs : StateInitInputs input source pointer si boundary) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source Mpt.StateInit.body=(some (.returned value),post)) :
+    ∃ heap,source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧
+      value=.val (.word 0#64) ∧ CurrentStartup.ArenaState post ∧ PersistentMemoryFrame source post heap := by
+  obtain ⟨heap,bs,cell,answer,physical,frame⟩:=state_init_normal_context inputs value normal
+  exact ⟨heap,cell,answer,physical.arena,frame⟩
 
 end InitECandidate.Solver.Input.CurrentVerify
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.state_init_normal_memory
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.state_init_normal_context

@@ -5838,3 +5838,61 @@ checked BlockExecution root); cache disabled/two workers/8GiB cap. One new
 Solver module consumes one of the two previous candidate path slots; one
 slot remains. Archive only genuinely unused drafts outside the candidate
 if another split needs room, retaining their exact local bytes as before.
+
+## Actual block/workspace records retained at main's payload_header entry
+
+State initialization's actual normal suffix now retains its MemoryContext,
+instead of dropping that context to only ArenaState at the return boundary.
+WorkspaceContext carries the actual aligned40byte workspace region and the
+heap beyond it. The real bs allocation derives its aligned80byte region,
+workspace-before-block ordering, and heap beyond the full block record.
+Every later real table call, store, scratch/journal allocation and global
+reset retains those facts. Persistent preservation uses the actual incoming
+heap cell when transferring its record-frontier bounds.
+
+The complete unchanged state_init normal execution now exposes its actual
+ws/bs global values, both owned regions, ordering, bounded/aligned current
+heap and older-memory frame. Its input contract is unchanged; all new facts
+come from the same real allocations and suffix, including their derived
+room. The existing state_init_normal_memory signature is retained as a
+projection of this stronger normal result.
+
+StateInitReturned.records now recovers those same records at main's genuine
+saved-caller continuation, plus the pre-workspace witness-memory frame and
+its actual entering heap cell. The new complete main prefix retains this
+contract after state_init. Transaction scanning's actual full nonlocal
+frame is also exposed without changing the existing scan API; the stronger
+main trace transports both record context and older-memory frame to the
+original payload_header entry. Its complete source allowance remains
+3387552531on every outcome, with the same actual continued execution and
+stopped branches. No separately assumed successful future call is used.
+
+These record facts prove typed globals/ownership/order, not initialized
+block/workspace field contents or table models. Those contents, key scratch
+and journal properties still need explicit retention/derivation. In
+particular, the typed bs entry condition of the fresh-transaction theorem
+is now derived from actual main/state_init at payload_header entry; it must
+still be transported through the later header/validator/executor prefix.
+
+Validation: current-main-state-records-v1.log PASS3106jobs;
+current-main-payload-header-state-records-v1.log PASS3106jobs. All8new printed
+facts and all strengthened existing normal results use permitted axioms.
+Index8704modules/19236facts; inventory8744, replacement closure0, fixed
+files unchanged. Incremental policy PASS65535package entries/2488438182bytes,
+not full verification. Claim infinity; no global finite target K or full
+verifier success. Effort55%, plausible45–65%, relative to reference main.
+Weekly usage46%, no reset credits, ordinary usage allowed. Original
+executable unchanged. No new candidate paths; one path slot remains.
+
+Next: retain these real records through payload_header/header validation /
+executor initialization and recover actual initialized block/workspace
+fields/tables, scratch and journal. CurrentVerify.PayloadHeaderEntry.HeaderFrame
+already retains all nonheap globals and older memory below its real header
+frontier (lower2701134824); expose/use the actual normal header frame rather
+than introduce bs/ws premises at main. Then current20byte account-access
+insertion at ts+8, empty lookup at ts+16 and pre-state account/code access.
+Nonempty runtime models and88byte scratch tables remain open. Keep actual
+system gas30000000/reservoir97920*16; finish mandatory calls/finalization,
+complete main/source, uniform formal target steps, explicit K, dominant
+slack review and final unused-code cleanup. Selected root remains
+CurrentVerify.FreshTransactionMemory, cache disabled/two workers/8GiB cap.

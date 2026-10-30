@@ -5783,3 +5783,58 @@ source bound, uniform formal target steps, explicit K, dominant slack review
 and final unused-code cleanup. Selected root remains
 CurrentVerify.BlockExecution, cache disabled/two workers/8GiB cap. One new
 ScalarLookup module uses one further candidate path; two slots remain.
+
+## Complete actual fresh-transaction record/table images and system entry
+
+The current scalar constructor now has a local-result normal interface
+that retains its exact empty image, final allocator cursor and complete
+persistent caller frame. Header address bounds and the real final heap
+extent let subsequent record stores/allocations protect those images.
+
+FreshTransactionMemory proves the entire unchanged state_fresh_tx normal
+result. Its forward Context retains the actually allocated72byte record,
+block-state pointer at offset0, live bounded/aligned heap, every completed
+record/table image, full earlier-memory frame and all globals outside the
+real heap_ptr/ts/journal_n destinations. Each next actual constructor derives
+its own room; each actual pointer store preserves the already completed
+fields/headers. The real final reset and zero return retain all eight empty
+current Patricia tables for20/32/52byte keys and capacities64/16. No empty
+backing-array contents, old hash-map model, future successful call or extra
+clock/room premise is assumed.
+
+The ordinary ignored fresh-state caller restores the real caller locals
+and relates the same memory/globals back to its actual entering state.
+The original unchecked system-transaction signature at index794 and its
+ext_code_of continuation are now identified. Its genuine first command
+therefore either stops within75source ticks or reaches that continuation
+with the complete new transaction-state Context, zero journal_n and caller
+bindings. This proof uses only legitimate incoming arena/heap invariants
+and a typed scalar bs global. Deriving/retaining the latter and full block/
+workspace models from actual main/state_init remains required; it is not
+silently added to the final certificate's assumptions. The earlier74body /
+75caller all-outcome source allowance is unchanged.
+
+Validation: current-fresh-state-complete-v1.log PASS3106jobs;
+current-system-fresh-physical-v2.log PASS3106jobs. All21new printed facts
+use permitted axioms. Index8704modules/19228facts; inventory8744,
+replacement closure0, fixed files unchanged. Incremental policy PASS,
+65535package entries/2488424512bytes, not full verification. Claim infinity;
+no global finite target K or full verifier success. Overall effort55%,
+plausible45–65%, relative to reference main. Weekly usage46%, no reset credits,
+ordinary usage allowed. Original executable unchanged.
+
+Next: retain the actual initialized block/workspace state (including bs/ws,
+their table images, key scratch and journal allocation) through main/header/
+executor initialization into the system callee. ext_code_of calls get_account,
+whose first get_account_optional action is htab_set on the fresh20byte
+account-access table at ts+8, followed by the empty lookup at ts+16. Prove
+that actual current insertion and its frame, then pre-state account/code
+access and the remaining mandatory system work. Nonempty runtime table
+models and88byte scratch tables remain open. Keep actual system gas30000000
+and reservoir97920*16, then finalization, complete main/source, uniform
+formal target steps, explicit K, dominant slack review and final cleanup.
+Selected root is now CurrentVerify.FreshTransactionMemory (imports the
+checked BlockExecution root); cache disabled/two workers/8GiB cap. One new
+Solver module consumes one of the two previous candidate path slots; one
+slot remains. Archive only genuinely unused drafts outside the candidate
+if another split needs room, retaining their exact local bytes as before.

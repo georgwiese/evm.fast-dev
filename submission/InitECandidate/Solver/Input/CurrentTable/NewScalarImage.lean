@@ -5,6 +5,8 @@ import InitECandidate.Solver.Input.AssignedCallNormal
 import InitECandidate.Solver.Input.WordPairEnvironment
 import InitECandidate.Solver.Input.GlobalAssign
 import InitECandidate.Solver.Input.PersistentMemoryFrame
+import InitECandidate.Solver.Input.AssignedCallKnown
+import InitECandidate.Solver.Input.CallResumeLookup
 
 namespace InitECandidate.Solver.Input.CurrentTable.New
 set_option maxRecDepth 10000
@@ -342,6 +344,55 @@ theorem global_scalar_empty (source post : PanSemStateFiniteExact 64 Guest.HostM
     exact ⟨image.of_memory rfl (by intros; rfl),(putGlobal.lookup_other raw name heap _ notHeap).trans next⟩
   · cases normal
 
+/-- An actual local-result constructor call keeps the same initialized
+scalar image, exact allocator cursor and persistent caller frame. -/
+theorem local_scalar_empty (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (key cap heap : BitVec 64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word key),.val (.word cap)]) (atLeastTwo : 2≤cap.toNat)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016) (heapAligned : heap.toNat%8=0)
+    (arena : CurrentStartup.ArenaState source)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.local,ofString name),none)) (ofString "htab_new") arguments)=(none,post)) :
+    post.locals.lookup (ofString name)=some (.val (.word heap)) ∧ ScalarEmpty post heap key cap ∧
+      post.globals.lookup (ofString "heap_ptr")=some (.val (.word (scalarNextHeap heap key cap))) ∧
+      PersistentNormalFrame source post heap := by
+  obtain ⟨callee,called,keyCell,capCell⟩:=word_pair_environment source.code.lookup (ofString "htab_new") (ofString "key_len") (ofString "cap")
+    body .one key cap (by decide) (original_code source.code arena.code)
+  obtain ⟨funded,child,value,bodyRun,endpoint⟩:=CallNormal.local_known source post (ofString name) (ofString "htab_new") arguments _ body callee .one args called normal
+  have enteredArena : CurrentStartup.ArenaState (callEntryStateHOLFinite source callee):=
+    ⟨arena.scratch,arena.frame,arena.domain,arena.code⟩
+  obtain ⟨answer,image,next,frame⟩:=body_scalar_empty (callEntryStateHOLFinite source callee) child heap key cap
+    keyCell capCell atLeastTwo heapCell heapArena heapBound heapAligned enteredArena value bodyRun
+  refine ⟨?_,image.of_erase (by rw [endpoint]; rfl),?_,frame.of_erase _ _ source post heap rfl (by rw [endpoint]; rfl)⟩
+  · rw [endpoint,answer]
+    exact CallNormal.continuation_lookup_same source child name _
+  · rw [endpoint]; exact next
+
+theorem ScalarGeometry.header_before_end {table key cap : BitVec 64} (geometry : ScalarGeometry table key cap) :
+    table.toNat+88≤(scalarNextHeap table key cap).toNat := by
+  have first:=geometry.tableBefore
+  have second:=geometry.keysBefore
+  have third:=geometry.nodesBefore
+  have fourth:=geometry.orderBefore
+  omega
+
+/-- Every initialized metadata address is within this actual header. -/
+theorem scalar_write_lower (table key cap : BitVec 64) (entry : BitVec 64×BitVec 64)
+    (owned : AllocatedBytes.Arena table 88) (member : entry∈scalarWrites table key cap) : table.toNat≤entry.1.toNat := by
+  have addresses : (scalarWrites table key cap).map Prod.fst=
+      ([0#64,8#64,16#64,24#64,32#64,40#64,48#64,56#64,64#64,72#64,80#64] : List (BitVec 64)).map (fun offset=>table+offset):=rfl
+  have present : entry.1∈(scalarWrites table key cap).map Prod.fst:=List.mem_map.mpr ⟨entry,member,rfl⟩
+  rw [addresses] at present
+  obtain ⟨offset,inside,same⟩:=List.mem_map.mp present
+  have small : offset.toNat<88:=by
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at inside
+    rcases inside with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl
+    all_goals decide
+  have number : (table+offset).toNat=table.toNat+offset.toNat:=BitVec.toNat_add_of_lt (by have upper:=owned.upper; omega)
+  rw [←same,number]
+  omega
+
 end InitECandidate.Solver.Input.CurrentTable.New
 
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.scalar_header_normal
@@ -358,3 +409,6 @@ end InitECandidate.Solver.Input.CurrentTable.New
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarEmpty.of_erase
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarEmpty.of_persistent
 #print axioms InitECandidate.Solver.Input.CurrentTable.New.global_scalar_empty
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.local_scalar_empty
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.ScalarGeometry.header_before_end
+#print axioms InitECandidate.Solver.Input.CurrentTable.New.scalar_write_lower

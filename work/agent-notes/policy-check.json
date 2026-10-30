@@ -2697,6 +2697,7 @@
     "submission/InitECandidate/Solver/Input/CurrentVerify/DatabaseReturned.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/Databases.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/ExecutionRequests.lean",
+    "submission/InitECandidate/Solver/Input/CurrentVerify/FreshTransactionMemory.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/GasFrame.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/GasLimit.lean",
     "submission/InitECandidate/Solver/Input/CurrentVerify/GeneralSha.lean",
@@ -8748,8 +8749,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65534,
-  "package_bytes": 2488387851,
+  "package_entries": 65535,
+  "package_bytes": 2488424512,
   "claim": {
     "K": "infinity"
   },

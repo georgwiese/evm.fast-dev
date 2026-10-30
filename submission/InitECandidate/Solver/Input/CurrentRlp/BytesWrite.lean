@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.ScalarArgumentsLookup
 import InitECandidate.Solver.Input.CopyAnyCost
 import InitECandidate.Solver.Input.ContinuingDeclarationEntry
 import InitECandidate.Solver.Input.RlpWrite.U256Shape
@@ -472,3 +473,94 @@ theorem assigned_current_normal (source post : PanSemStateFiniteExact 64 Guest.H
 end InitECandidate.Solver.Input.CurrentRlp.BytesWrite
 
 #print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.assigned_current_normal
+
+namespace InitECandidate.Solver.Input.CurrentRlp.BytesWrite
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+private theorem argument_values (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (first second third : ExpHOL 64) (values : List (ValueHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [first,second,third]=some values) :
+    ∃ left middle right,eval source first=some left ∧ eval source second=some middle ∧ eval source third=some right ∧ values=[left,middle,right] := by
+  cases firstRead : eval source first with
+  | none=>
+    simp only [eval] at firstRead
+    simp [evalListHOLFinite,evalListHOLExact,firstRead] at args
+  | some left=>
+    simp only [eval] at firstRead
+    cases secondRead : eval source second with
+    | none=>
+      simp only [eval] at secondRead
+      simp [evalListHOLFinite,evalListHOLExact,firstRead,secondRead] at args
+    | some middle=>
+      simp only [eval] at secondRead
+      cases thirdRead : eval source third with
+      | none=>
+        simp only [eval] at thirdRead
+        simp [evalListHOLFinite,evalListHOLExact,firstRead,secondRead,thirdRead] at args
+      | some right=>
+        simp only [eval] at thirdRead
+        have same : [left,middle,right]=values:=by
+          simpa only [evalListHOLFinite,evalListHOLExact,firstRead,secondRead,thirdRead,Option.some.injEq] using args
+        exact ⟨left,middle,right,rfl,rfl,rfl,same.symm⟩
+
+/-- A successful actual ABI lookup derives all three word reads and their
+real callee bindings. Failed expression reads and shapes supply no entry. -/
+theorem current_argument_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (first second third : ExpHOL 64) (values : List (ValueHOL 64)) (actual : ProgHOL 64)
+    (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (installed : OriginalCode.Installed source.code)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [first,second,third]=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "rlp_encode_bytes") values=some (actual,callee,shape)) :
+    ∃ dst src count : BitVec 64,values=[.val (.word dst),.val (.word src),.val (.word count)] ∧
+      eval source first=some (.val (.word dst)) ∧ eval source second=some (.val (.word src)) ∧ eval source third=some (.val (.word count)) ∧
+      actual=body ∧ callee.lookup (ofString "dst")=some (.val (.word dst)) ∧
+      callee.lookup (ofString "src")=some (.val (.word src)) ∧ callee.lookup (ofString "n")=some (.val (.word count)) := by
+  obtain ⟨left,middle,right,firstRead,secondRead,thirdRead,valuesEq⟩:=argument_values source first second third values args
+  rw [valuesEq] at called
+  obtain ⟨dst,src,count,firstEq,secondEq,thirdEq⟩:=CallNormal.three_scalar_words source.code.lookup (ofString "rlp_encode_bytes")
+    (ofString "dst") (ofString "src") (ofString "n") body actual .one shape (original_code source.code installed) left middle right callee called
+  subst left
+  subst middle
+  subst right
+  obtain ⟨expected,expectedCall,d,s,n⟩:=RlpWrite.BytesWrite.environment source.code.lookup dst src count (original_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans expectedCall)
+  have bodyEq : actual=body:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at d s n
+  exact ⟨dst,src,count,valuesEq,firstRead,secondRead,thirdRead,bodyEq,d,s,n⟩
+
+/-- Every outcome of an actual dynamic byte-field caller, including failed
+reads and ABI checks, is bounded without pointer ownership or future success. -/
+theorem dynamic_domain_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (destination : Option (Option MlS))
+    (first second third : ExpHOL 64) (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "rlp_encode_bytes") [first,second,third])).2.clock≤43314052496 := by
+  apply ClockCost.call_arguments_current source destination (ofString "rlp_encode_bytes") [first,second,third] 43314052495
+  intro values actual callee shape args called
+  obtain ⟨dst,src,count,valuesEq,firstRead,secondRead,thirdRead,bodyEq,d,s,n⟩:=
+    current_argument_entry source first second third values actual callee shape installed args called
+  rw [bodyEq]
+  exact body_domain_cost (callEntryStateHOLFinite source callee) dst src count installed domain d s n
+
+/-- The fixed actual field length retains its smaller allowance even when
+its pointer expressions fail to read or return the wrong shapes. -/
+theorem dynamic_known_length_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (destination : Option (Option MlS))
+    (first second : ExpHOL 64) (length : Nat) (small : length+32<2^64)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "rlp_encode_bytes")
+      [first,second,.const (BitVec.ofNat 64 length)])).2.clock≤CopyAny.price length+21 := by
+  apply ClockCost.call_arguments_current source destination (ofString "rlp_encode_bytes") [first,second,.const (BitVec.ofNat 64 length)] (CopyAny.price length+20)
+  intro values actual callee shape args called
+  obtain ⟨dst,src,count,valuesEq,firstRead,secondRead,thirdRead,bodyEq,d,s,n⟩:=
+    current_argument_entry source first second (.const (BitVec.ofNat 64 length)) values actual callee shape installed args called
+  have countEq : count=BitVec.ofNat 64 length:=by
+    simpa only [eval,evalHOLExact,Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using thirdRead.symm
+  subst count
+  rw [bodyEq]
+  exact body_known_length_cost (callEntryStateHOLFinite source callee) dst src length small installed domain d s n
+
+end InitECandidate.Solver.Input.CurrentRlp.BytesWrite
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.current_argument_entry
+#print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.dynamic_domain_cost
+#print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.dynamic_known_length_cost

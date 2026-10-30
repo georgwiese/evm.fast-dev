@@ -4880,3 +4880,29 @@ Derive its returned span and old-input frame before the hash. Then finish
 the restored header caller, remaining main path, uniform formal target steps,
 exact K, dominant slack review and cleanup. Source clocks omit straight-line
 target work. Historical untracked WIPs remain untouched.
+
+## Dynamic original byte-field calls
+
+The original byte writer now prices arbitrary actual three-expression field
+arguments, including failed reads and invalid argument shapes. Successful
+lookup derives all three scalar words and their real callee bindings. The
+unknown-length call costs at most43314052496source ticks; a literal fixed
+length n costs at most CopyAny.price n+21. No input/output ownership or
+future successful run is supplied. These are source clocks, not final target
+steps.
+
+Validation: current-byte-writer-dynamic-header-replay-v1.log PASS3102jobs,
+including TransactionData and its real header-entry callers; all3new printed
+facts use permitted axioms. Index8700modules/19005facts; inventory8745,
+replacement closure0, fixed files unchanged. Incremental policy PASS with
+65536package entries. Claim infinity; no global finite target K or full
+verifier success. Effort estimate55%, plausible45–65%, relative to reference
+main. No new candidate paths. Weekly usage42%, no reset credits, ordinary
+usage allowed. Historical untracked WIPs remain untouched.
+
+Next: derive the wide writer's cost and actual return/frame without output
+ownership, using only its own real fresh scratch allocation. Then compose
+the fixed original parent-header encoding sequence, returned span and old
+input frame, actual parent hash, restored header caller and remaining main
+path; transfer to uniform formal target steps, exact K, review dominant
+slack and finish cleanup. The original executable stays unchanged.

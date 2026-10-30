@@ -158,7 +158,35 @@ open Flapjack.Basis.Pure.MlString QueryBranch RunAttempt PayloadHeaderEntry
 
 /-- Original output ownership, together with the same earlier environment
 and actual zero transaction local. Future helper success is not a premise. -/
-structure OutputBuffer (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+def outputZeroOffsets : List Nat:=[0,8,16,48,64]
+
+def OutputZeroFields (source : PanSemStateFiniteExact 64 Guest.HostMemory) (bo : BitVec 64) : Prop:=
+  ∀ offset∈outputZeroOffsets,source.memory (bo+BitVec.ofNat 64 offset)=.word 0#64
+
+theorem output_zero_offset_facts (offset : Nat) (member : offset∈outputZeroOffsets) : offset<88 ∧ offset%8=0 := by
+  simp only [outputZeroOffsets,List.mem_cons,List.not_mem_nil,or_false] at member
+  rcases member with rfl|rfl|rfl|rfl|rfl <;> decide
+
+/-- All five untouched output words follow the same actual normal clear. -/
+theorem output_zero_fields (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (bo : BitVec 64)
+    (cell : source.globals.lookup (ofString "bo")=some (.val (.word bo)))
+    (arena : AllocatedBytes.Arena bo 88) (aligned : bo.toNat%8=0)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
+    (normal : evaluateHOLFiniteState source outputZero=(none,post)) : OutputZeroFields post bo := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query))
+      [.var .global (ofString "bo"),.const 88#64]=some (Zero.values bo 88):=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,cell,Zero.values]
+  have actual:=Zero.call_normal source post _ bo 88 args (Zero.original_code source.code installed) (by decide) (by decide) aligned
+    (by intro offset inside multiple; exact AllocatedBytes.word_mapped source bo 88 offset domain arena (by omega) aligned multiple) normal
+  intro offset member
+  obtain ⟨inside,multiple⟩:=output_zero_offset_facts offset member
+  have arithmetic : 8*(offset/8)=offset:=by omega
+  have word:=MutableTable.ZeroWords.final_cell source.memory bo 88 (offset/8) (by omega)
+  rw [arithmetic] at word
+  rw [actual.2]
+  exact word
+
+structure OutputAllocation (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
     (pointer si record gasWord header be bo : BitVec 64) (boundary encoded : Nat) : Prop where
   environment : BlockEnvBuffer input source pointer si record gasWord header be boundary encoded
   cell : source.globals.lookup (ofString "bo")=some (.val (.word bo))
@@ -168,6 +196,17 @@ structure OutputBuffer (input : Guest.InputBlob) (source : PanSemStateFiniteExac
   heapAfter : NormalHeapEffects.AtLeast (bo.toNat+88) source
   count : source.locals.lookup (ofString "ntx")=some (.val (.word 0#64))
 
+structure OutputBuffer (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer si record gasWord header be bo : BitVec 64) (boundary encoded : Nat) : Prop where
+  environment : BlockEnvBuffer input source pointer si record gasWord header be boundary encoded
+  cell : source.globals.lookup (ofString "bo")=some (.val (.word bo))
+  arena : AllocatedBytes.Arena bo 88
+  aligned : bo.toNat%8=0
+  before : be.toNat+120≤bo.toNat
+  heapAfter : NormalHeapEffects.AtLeast (bo.toNat+88) source
+  count : source.locals.lookup (ofString "ntx")=some (.val (.word 0#64))
+  zeroFields : OutputZeroFields source bo
+
 /-- The actual normal allocation supplies its own room and new heap. In
 particular it follows the earlier120byte block environment in memory. -/
 theorem output_allocated {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
@@ -175,7 +214,7 @@ theorem output_allocated {input : Guest.InputBlob} {source post : PanSemStateFin
     (ready : BlockEnvBuffer input source pointer si record gasWord header be boundary encoded)
     (count : source.locals.lookup (ofString "ntx")=some (.val (.word 0#64)))
     (normal : evaluateHOLFiniteState source outputAllocation=(none,post)) :
-    ∃ bo,OutputBuffer input post pointer si record gasWord header be bo boundary encoded := by
+    ∃ bo,OutputAllocation input post pointer si record gasWord header be bo boundary encoded := by
   obtain ⟨heap,cell,lower,bounded,aligned⟩:=ready.heapAfter
   obtain ⟨room,funded,endpoint⟩:=PersistentAlloc.global_call_normal_any source post "bo" heap 88#64 [.const 88#64] rfl
     (PersistentAlloc.original_code source.code ready.physical.data.arena.code)
@@ -221,7 +260,7 @@ theorem output_allocated {input : Guest.InputBlob} {source post : PanSemStateFin
 and preserves the real heap and zero transaction local. -/
 theorem output_zeroed {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header be bo : BitVec 64} {boundary encoded : Nat}
-    (ready : OutputBuffer input source pointer si record gasWord header be bo boundary encoded)
+    (ready : OutputAllocation input source pointer si record gasWord header be bo boundary encoded)
     (normal : evaluateHOLFiniteState source outputZero=(none,post)) :
     OutputBuffer input post pointer si record gasWord header be bo boundary encoded := by
   have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [.var .global (ofString "bo"),.const 88#64]=
@@ -253,7 +292,7 @@ theorem output_zeroed {input : Guest.InputBlob} {source post : PanSemStateFinite
     ((saved "pl").trans ready.environment.physical.payloadCell) memory
   exact ⟨⟨physical,(globals _).trans ready.environment.cell,ready.environment.arena,ready.environment.aligned,
     ready.environment.before,heaps _ ready.environment.heapAfter⟩,
-    (globals _).trans ready.cell,ready.arena,ready.aligned,ready.before,heaps _ ready.heapAfter,(saved "ntx").trans ready.count⟩
+    (globals _).trans ready.cell,ready.arena,ready.aligned,ready.before,heaps _ ready.heapAfter,(saved "ntx").trans ready.count,output_zero_fields source post bo ready.cell ready.arena ready.aligned ready.environment.physical.data.arena.domain ready.environment.physical.data.arena.code normal⟩
 
 /-- Only real normal prefix executions supply the output ownership frame. -/
 theorem output_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
@@ -733,9 +772,14 @@ theorem OutputBuffer.of_persistent {input : Guest.InputBlob} {source post : PanS
   have environmentAfter : NormalHeapEffects.AtLeast (be.toNat+120) post:=
     ⟨next,nextCell,by have earlier:=ready.before; omega,nextBound,nextAligned⟩
   have outputAfter : NormalHeapEffects.AtLeast (bo.toNat+88) post:=⟨next,nextCell,by omega,nextBound,nextAligned⟩
-  exact ⟨⟨physical,(frame.globals _ (by decide)).trans ready.environment.cell,ready.environment.arena,ready.environment.aligned,
+  refine ⟨⟨physical,(frame.globals _ (by decide)).trans ready.environment.cell,ready.environment.arena,ready.environment.aligned,
     ready.environment.before,environmentAfter⟩,
-    (frame.globals _ (by decide)).trans ready.cell,ready.arena,ready.aligned,ready.before,outputAfter,countCell⟩
+    (frame.globals _ (by decide)).trans ready.cell,ready.arena,ready.aligned,ready.before,outputAfter,countCell,?_⟩
+  intro offset member
+  obtain ⟨inside,multiple⟩:=output_zero_offset_facts offset member
+  have number : (bo+BitVec.ofNat 64 offset).toNat=bo.toNat+offset:=byteAddress_toNat bo offset (by have upper:=ready.arena.upper; omega)
+  have before : (bo+BitVec.ofNat 64 offset).toNat<heap.toNat:=by rw [number]; omega
+  exact (frame.memory _ before).trans (ready.zeroFields offset member)
 
 end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 
@@ -789,7 +833,8 @@ theorem OutputBuffer.with_memory {input : Guest.InputBlob} {source : PanSemState
     {pointer si record gasWord header be bo : BitVec 64} {boundary encoded : Nat}
     (ready : OutputBuffer input source pointer si record gasWord header be bo boundary encoded)
     (memory : BitVec 64→HolWordLab 64)
-    (earlier : ∀ query : BitVec 64,query.toNat<bo.toNat→memory query=source.memory query) :
+    (earlier : ∀ query : BitVec 64,query.toNat<bo.toNat→memory query=source.memory query)
+    (counterMemory : ∀ offset∈outputZeroOffsets,memory (bo+BitVec.ofNat 64 offset)=source.memory (bo+BitVec.ofNat 64 offset)) :
     OutputBuffer input {source with memory:=memory} pointer si record gasWord header be bo boundary encoded := by
   have beforeHeader : (PayloadHeaderEntry.headerFrontier header).toNat+16≤bo.toNat:=by
     have first:=ready.environment.before
@@ -799,14 +844,14 @@ theorem OutputBuffer.with_memory {input : Guest.InputBlob} {source : PanSemState
     rfl rfl rfl (by intro key different; rfl) ready.environment.physical.heapAfter
     ready.environment.physical.data.siLocal ready.environment.physical.headerCell ready.environment.physical.payloadCell earlier
   exact ⟨⟨physical,ready.environment.cell,ready.environment.arena,ready.environment.aligned,ready.environment.before,ready.environment.heapAfter⟩,
-    ready.cell,ready.arena,ready.aligned,ready.before,ready.heapAfter,ready.count⟩
+    ready.cell,ready.arena,ready.aligned,ready.before,ready.heapAfter,ready.count,fun offset member=>(counterMemory offset member).trans (ready.zeroFields offset member)⟩
 
 /-- A real scalar output store has exactly one written word. This retains
 older input and protects newly allocated list headers at other addresses. -/
 theorem output_word_store {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
     {pointer si record gasWord header be bo : BitVec 64} {boundary encoded : Nat}
     (ready : OutputBuffer input source pointer si record gasWord header be bo boundary encoded)
-    (offset : Nat) (expression : ExpHOL 64) (value : BitVec 64) (inside : offset<88) (aligned : offset%8=0)
+    (offset : Nat) (expression : ExpHOL 64) (value : BitVec 64) (inside : offset<88) (aligned : offset%8=0) (counterSafe : offset∉outputZeroOffsets)
     (read : eval source expression=some (.val (.word value)))
     (normal : evaluateHOLFiniteState source (.store (outputAddress offset) expression)=(none,post)) :
     OutputBuffer input post pointer si record gasWord header be bo boundary encoded ∧ post.locals=source.locals ∧ post.globals=source.globals ∧
@@ -829,8 +874,21 @@ theorem output_word_store {input : Guest.InputBlob} {source post : PanSemStateFi
       rw [number] at equal
       omega
     simp [StoreWord.put,different]
+  have counterMemory (field : Nat) (member : field∈outputZeroOffsets) :
+      StoreWord.put source.memory (bo+BitVec.ofNat 64 offset) value (bo+BitVec.ofNat 64 field)=source.memory (bo+BitVec.ofNat 64 field):=by
+    have different : field≠offset:=by intro same; rw [same] at member; exact counterSafe member
+    have wordDifferent : (BitVec.ofNat 64 field : BitVec 64)≠BitVec.ofNat 64 offset:=by
+      intro same
+      have equal:=congrArg BitVec.toNat same
+      have small:=output_zero_offset_facts field member
+      simp only [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega : field<2^64),Nat.mod_eq_of_lt (by omega : offset<2^64)] at equal
+      exact different equal
+    have away : bo+BitVec.ofNat 64 field≠bo+BitVec.ofNat 64 offset:=by
+      intro same
+      exact wordDifferent ((BitVec.add_right_inj bo).mp same)
+    simp [StoreWord.put,away]
   rw [endpoint]
-  refine ⟨ready.with_memory _ earlier,rfl,rfl,?_,?_⟩
+  refine ⟨ready.with_memory _ earlier counterMemory,rfl,rfl,?_,?_⟩
   · simp [StoreWord.put]
   · intro query different
     simp [StoreWord.put,different]
@@ -931,7 +989,7 @@ theorem arrays_reached {input : Guest.InputBlob} {source post : PanSemStateFinit
     cases txStore with | command _ _ run=>exact run
   have txRead : eval txAllocated (localVar "txs")=some (.val (.word txs)):=by
     simp [eval,evalHOLExact,toExact,localVar,txCell]
-  obtain ⟨storedReady,txLocals,txGlobals,txField,txAway⟩:=output_word_store txReady 24 (localVar "txs") txs (by decide) (by decide) txRead txStoreRun
+  obtain ⟨storedReady,txLocals,txGlobals,txField,txAway⟩:=output_word_store txReady 24 (localVar "txs") txs (by decide) (by decide) (by decide) txRead txStoreRun
   have txStoredCell : txStored.locals.lookup (ofString "txs")=some (.val (.word txs)):=by rw [txLocals]; exact txCell
   have txStoredExtent : NormalHeapEffects.AtLeast (txs.toNat+16) txStored:=by
     obtain ⟨heap,cell,lower,bounded,aligned⟩:=txExtent
@@ -956,7 +1014,7 @@ theorem arrays_reached {input : Guest.InputBlob} {source post : PanSemStateFinit
     cases reached with | command _ _ run=>exact run
   have rcsRead : eval rcsAllocated (localVar "rcs")=some (.val (.word rcs)):=by
     simp [eval,evalHOLExact,toExact,localVar,rcsCell]
-  obtain ⟨finalReady,rcsLocals,rcsGlobals,rcsField,rcsAway⟩:=output_word_store rcsReady 32 (localVar "rcs") rcs (by decide) (by decide) rcsRead rcsStoreRun
+  obtain ⟨finalReady,rcsLocals,rcsGlobals,rcsField,rcsAway⟩:=output_word_store rcsReady 32 (localVar "rcs") rcs (by decide) (by decide) (by decide) rcsRead rcsStoreRun
   have finalExtent : NormalHeapEffects.AtLeast (rcs.toNat+16) post:=by
     obtain ⟨heap,cell,lower,bounded,aligned⟩:=rcsExtent
     exact ⟨heap,by rw [rcsGlobals]; exact cell,lower,bounded,aligned⟩
@@ -1124,7 +1182,7 @@ theorem logs_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteE
     cases reached with | command _ _ run=>exact run
   have read : eval allocated (localVar "logs")=some (.val (.word logs)):=by
     simp [eval,evalHOLExact,toExact,localVar,cell]
-  obtain ⟨output,locals,globals,outputField,away⟩:=output_word_store arrays.output 40 (localVar "logs") logs (by decide) (by decide) read storeRun
+  obtain ⟨output,locals,globals,outputField,away⟩:=output_word_store arrays.output 40 (localVar "logs") logs (by decide) (by decide) (by decide) read storeRun
   have different (offset : BitVec 64) (distinct : offset≠40#64) : bo+offset≠bo+40#64:=by
     intro same
     exact distinct ((BitVec.add_right_inj bo).mp same)
@@ -1358,7 +1416,7 @@ theorem requests_reached {input : Guest.InputBlob} {source post : PanSemStateFin
     cases reached with | command _ _ run=>exact run
   have read : eval allocated (localVar "reqs")=some (.val (.word reqs)):=by
     simp [eval,evalHOLExact,toExact,localVar,cell]
-  obtain ⟨output,locals,globals,outputField,away⟩:=output_word_store logReady.arrays.output 56 (localVar "reqs") reqs (by decide) (by decide) read storeRun
+  obtain ⟨output,locals,globals,outputField,away⟩:=output_word_store logReady.arrays.output 56 (localVar "reqs") reqs (by decide) (by decide) (by decide) read storeRun
   have finalLogs:=logReady.of_output_store 56 (by decide) (by decide) output locals globals away
   have finalExtent : NormalHeapEffects.AtLeast (reqs.toNat+128) post:=by
     obtain ⟨heap,cell,low,bound,align⟩:=extent
@@ -1537,14 +1595,14 @@ theorem return_list_reached {input : Guest.InputBlob} {source post : PanSemState
     cases store72 with | command _ _ run=>exact run
   have readRls : eval allocated (localVar "rls")=some (.val (.word rls)):=by
     simp [eval,evalHOLExact,toExact,localVar,cell]
-  obtain ⟨output72,locals72,globals72,field72,away72⟩:=output_word_store requests.logs.arrays.output 72 (localVar "rls") rls (by decide) (by decide) readRls store72Run
+  obtain ⟨output72,locals72,globals72,field72,away72⟩:=output_word_store requests.logs.arrays.output 72 (localVar "rls") rls (by decide) (by decide) (by decide) readRls store72Run
   have after72:=requests.of_output_store 72 (by decide) (by decide) output72 locals72 globals72 away72
   have store80Run : evaluateHOLFiniteState stored (.store (outputAddress 80) (localVar "ntx"))=(none,post):=by
     have reached:=last.singleton
     cases reached with | command _ _ run=>exact run
   have readCount : eval stored (localVar "ntx")=some (.val (.word 0#64)):=by
     simp [eval,evalHOLExact,toExact,localVar,after72.logs.arrays.output.count]
-  obtain ⟨output80,locals80,globals80,field80,away80⟩:=output_word_store after72.logs.arrays.output 80 (localVar "ntx") 0#64 (by decide) (by decide) readCount store80Run
+  obtain ⟨output80,locals80,globals80,field80,away80⟩:=output_word_store after72.logs.arrays.output 80 (localVar "ntx") 0#64 (by decide) (by decide) (by decide) readCount store80Run
   have finalRequests:=after72.of_output_store 80 (by decide) (by decide) output80 locals80 globals80 away80
   have beforeHeader : bo.toNat+88≤rls.toNat:=by
     have first:=ready.logs.arrays.beforeTxs
@@ -2242,3 +2300,24 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_caller_reached
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_caller_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.body_bal_ready_trace
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.output_zero_offset_facts
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.output_zero_fields
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+
+/-- The actual reached system-call entry retains all five untouched words
+from the real output clear, after every intervening allocation/store/BAL call. -/
+theorem BalReady.initial_zero_fields {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer : BitVec 64}
+    {boundary encoded : Nat}
+    (ready : BalReady input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer boundary encoded) :
+    source.memory bo=.word 0#64 ∧ source.memory (bo+8#64)=.word 0#64 ∧ source.memory (bo+16#64)=.word 0#64 ∧
+      source.memory (bo+48#64)=.word 0#64 ∧ source.memory (bo+64#64)=.word 0#64 := by
+  have zeros:=ready.physical.requests.logs.arrays.output.zeroFields
+  exact ⟨by simpa using zeros 0 (by decide),zeros 8 (by decide),zeros 16 (by decide),zeros 48 (by decide),zeros 64 (by decide)⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.BalReady.initial_zero_fields

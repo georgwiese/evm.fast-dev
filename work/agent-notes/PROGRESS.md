@@ -7452,3 +7452,46 @@ steps, exact K, dominant slack review and cleanup. Selected root remains
 CurrentVerify.BlockExecution, cache disabled/two workers/8GiB cap; four
 candidate path slots remain. Full executor-initialization code remains the
 original Guest.Software.guestFn_execute_block and guestFn_bal_init.
+
+## Actual output-clear image survives all executor initialization
+
+The pre-clear allocation now has its own OutputAllocation ownership contract;
+only the real successful memzero yields OutputBuffer with initialized fields.
+The exact normal aligned Zero.call_normal theorem derives its own clock
+funding by the checked clock-padding proof, so no minimum/future clock is
+added to the entry assumptions. Its canonical memory image and the generic
+zero-word theorem supply the actual zero words at bo offsets0,8,16,48,64.
+
+Those untouched fields are now part of the initialized output contract.
+Actual later persistent allocations and BAL's genuine memory frame retain
+them below the incoming frontier. All six original scalar output stores are
+at other fixed fields; their exact one-word footprints prove preservation.
+Protected global updates retain the same memory image. All existing array,
+log, request, return-list, BAL body/caller and complete first-system-entry
+proofs have been rebuilt with the stronger initialized-state contract.
+
+BalReady.initial_zero_fields exposes the five exact words at the genuine
+first mandatory system call, including the previously unasserted request
+counter at bo+64. The transaction-count word at bo+80 remains independently
+proved by its actual original ntx store. The connected initialization bound
+is still161source ticks, on every outcome. This does not assert that these
+initial fields remain zero after system execution modifies the output.
+
+Validation: current-execute-output-zero-counters-v2.log PASS3103jobs; all3new
+printed facts use permitted axioms, and all strengthened existing physical
+results retain permitted axioms. Index8701modules/19181facts; inventory8741,
+replacement closure0, fixed files unchanged. Incremental policy PASS,
+65532package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage45%, no
+reset credits, ordinary usage allowed. No new candidate paths. Original
+executable unchanged.
+
+Next: current scalar Patricia constructor/table-state images and genuine
+runtime state needed by the beacon-roots system call, including20/28/52/60
+byte keys rather than only32byte witness hashes. Current scratch headers are
+88bytes (legacy72byte models do not instantiate); actual system gas30000000
+and reservoir97920*16 must not be replaced by regular16777216 caps. Then
+mandatory calls/finalization, complete main/source, uniform formal target
+steps, exact K, dominant slack review and cleanup. Keep the selected
+CurrentVerify.BlockExecution root, cache disabled/two workers/8GiB cap;
+four candidate path slots remain.

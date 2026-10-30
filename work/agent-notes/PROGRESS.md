@@ -6179,3 +6179,40 @@ arithmetic bound. Then full Taylor/header/main, uniform formal target steps,
 exact K, dominant slack review and cleanup. Source clocks omit target
 straight-line work. Historical untracked WIPs and executable/fixed premises
 stay untouched.
+
+
+## Complete literal Taylor iteration and derived exact recurrence
+
+The actual full-multiply product is now connected through the original
+high-limb OR test, trap3and low-product declaration. A genuinely continuing
+overflow guard derives that the full product fits256bits: trap_with cannot
+fall through even if its FFI returns. The actual low limbs therefore represent
+accumulator*numerator exactly. The trap and division routes cost their maximum,
+332source ticks, including every stopped/insufficient-clock outcome.
+
+The actual scoped u256_mul_full call derives its own17-tick funding and exact
+scalar-right-operand product/caller state. The leading assigned u256_add call
+has a read-only nonlocal frame and preserves all other caller locals; its
+value is not assumed. The complete unchanged body iteration now has a350tick
+all-outcome source allowance at a current index1..1280. Its actual normal
+completion derives the true natural recurrence
+next=accumulator*numerator/(index*11684671), the exact next accumulator tuple,
+i+1counter and its real zero flag. Workspace/context metadata, protected memory
+and unchanged loop constants survive the same execution and lexical scopes.
+No future successful child, assumed low product or future funding is supplied.
+The whole-loop history still must derive the current index range.
+
+Validation: current-taylor-whole-iteration-v5.log PASS1145jobs; all10new
+printed facts use only permitted axioms. Index8700modules/18817facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. No new candidate paths; package stays65536entries.
+Targeted builds are not full isolated submission verification.
+
+Next: instantiate the actual Taylor loop with its same-execution finite
+history, derive active counters≤1280from the checked positive-prefix theorem,
+prove actual successor/history and guard progress, then bound the whole loop.
+Connect actual startup/final division/caller, finish header/main, uniform formal
+target steps, exact K, dominant slack review and cleanup. Source clocks omit
+target straight-line work. Historical untracked WIPs and executable/fixed
+premises stay untouched.

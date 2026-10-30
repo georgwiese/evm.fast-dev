@@ -1,3 +1,6 @@
+import InitECandidate.Solver.Input.TrapCost
+import InitECandidate.Solver.Input.ClockCostCurrentGuard
+import InitECandidate.Solver.Input.ContinuingDeclarationEntry
 import InitECandidate.Solver.GasBudget.Mul64Value
 import InitECandidate.Solver.Input.UDivMod.CurrentFrame
 import InitECandidate.Solver.Input.ClockCostSequenceReached
@@ -727,3 +730,374 @@ end InitECandidate.Solver.Input.TaylorCurrent
 #print axioms InitECandidate.Solver.Input.TaylorCurrent.after_word_cost
 #print axioms InitECandidate.Solver.Input.TaylorCurrent.division_step_cost
 #print axioms InitECandidate.Solver.Input.TaylorCurrent.division_step_normal
+
+namespace InitECandidate.Solver.Input.TaylorCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+theorem overflow_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (accumulator : Quad) (numerator : BitVec 64)
+    (prod : source.locals.lookup (ofString "prod")=some (GasBudget.U256Multiply.scalarValue accumulator numerator)) :
+    eval source overflowTest=some (.val (.word (if (GasBudget.U256Multiply.scalarFourth accumulator numerator).1 |||
+      (GasBudget.U256Multiply.scalarFourth accumulator numerator).2=0#64 then 0#64 else 1#64))) := by
+  by_cases zero : (GasBudget.U256Multiply.scalarFourth accumulator numerator).1 ||| (GasBudget.U256Multiply.scalarFourth accumulator numerator).2=0#64
+  all_goals simp [eval,overflowTest,localVar,evalHOLExact,evalListHOLExact,toExact,prod,GasBudget.U256Multiply.scalarValue,
+    valueIsWord,valueWord,wordOpHOL,wordOp,OrOp.or,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,zero]
+
+/-- A continuing real overflow guard necessarily skipped its trap. The
+absence of overflow is derived from that same execution. -/
+theorem overflow_guard_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (accumulator : Quad) (numerator : BitVec 64)
+    (installed : OriginalCode.Installed source.code)
+    (prod : source.locals.lookup (ofString "prod")=some (GasBudget.U256Multiply.scalarValue accumulator numerator))
+    (normal : evaluateHOLFiniteState source overflowGuard=(none,post)) :
+    (GasBudget.U256Multiply.scalarFourth accumulator numerator).1 ||| (GasBudget.U256Multiply.scalarFourth accumulator numerator).2=0#64 ∧ post=source := by
+  have tested:=overflow_read source accumulator numerator prod
+  by_cases fits : (GasBudget.U256Multiply.scalarFourth accumulator numerator).1 ||| (GasBudget.U256Multiply.scalarFourth accumulator numerator).2=0#64
+  · simp only [eval,if_pos fits] at tested
+    have skipped : evaluateHOLFiniteState source overflowGuard=(none,source):=by
+      rw [overflowGuard,evaluateHOLFiniteState_ite,tested]
+      simp [evaluateHOLFiniteState_skip]
+    exact ⟨fits,congrArg Prod.snd (normal.symm.trans skipped)⟩
+  · simp only [eval,if_neg fits] at tested
+    rw [overflowGuard,evaluateHOLFiniteState_ite,tested] at normal
+    simp only [if_neg (show (1#64 : BitVec 64)≠0 by decide)] at normal
+    exact (Trap.call_not_normal source post [.const 3#64] 3#64 (Trap.original_code source.code installed) rfl normal).elim
+
+/-- The real low-product declaration reads exactly the four physical low
+limbs of the actual eight-word multiply result. -/
+theorem low_product_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (accumulator : Quad) (numerator : BitVec 64)
+    (prod : source.locals.lookup (ofString "prod")=some (GasBudget.U256Multiply.scalarValue accumulator numerator)) :
+    eval source lowProduct=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.scalarLow accumulator numerator)) := by
+  simp [eval,lowProduct,localVar,evalHOLExact,evalListHOLExact,toExact,prod,GasBudget.U256Multiply.scalarValue,
+    GasBudget.U256Multiply.scalarLow,RlpWrite.U256Value.tuple,
+    show ((3 : Fin 4) : Nat)≠1 by decide,show ((3 : Fin 4) : Nat)≠2 by decide]
+
+/-- The original overflow trap and low-product/division route cost their
+maximum: the genuine trap cannot fall through and costs only one tick. -/
+theorem after_product_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (accumulator : Quad) (numerator : BitVec 64) (index : Nat)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (positive : 0<index) (bounded : index≤1280)
+    (prod : source.locals.lookup (ofString "prod")=some (GasBudget.U256Multiply.scalarValue accumulator numerator))
+    (den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index)))) :
+    source.clock-(evaluateHOLFiniteState source afterProduct).2.clock≤332 := by
+  let ready:=setVarHOLFinite (ofString "p") (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.scalarLow accumulator numerator)) source
+  have readyContext : UDivMod.WideDigits.Workspace.Context ready base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  have readyP : ready.locals.lookup (ofString "p")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.scalarLow accumulator numerator)):=by
+    simp [ready,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE]
+  have readyDen : ready.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)):=by
+    simpa [ready,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,ofString] using den
+  have readyI : ready.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))):=by
+    simpa [ready,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,ofString] using i
+  have back:=ClockCost.declared_value_current source (ofString "p") RlpWrite.U256Value.tupleShape lowProduct
+    (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.scalarLow accumulator numerator)) divisionStep 332 (low_product_read source accumulator numerator prod)
+    (division_step_cost ready base (GasBudget.U256Multiply.scalarLow accumulator numerator) index readyContext installed positive bounded readyP readyDen readyI)
+  have stops : (evaluateHOLFiniteState source (.call (some (none,none)) (ofString "trap_with") [.const 3#64])).1≠none:=by
+    intro noneResult
+    have run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "trap_with") [.const 3#64])=
+        (none,(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "trap_with") [.const 3#64])).2):=Prod.ext noneResult rfl
+    exact Trap.call_not_normal source _ [.const 3#64] 3#64 (Trap.original_code source.code installed) rfl run
+  exact ClockCost.stopping_guard_current source overflowTest (.call (some (none,none)) (ofString "trap_with") [.const 3#64])
+    (.dec (ofString "p") RlpWrite.U256Value.tupleShape lowProduct divisionStep) 1 332 stops (Trap.call_price source.code installed _ source rfl) back
+
+end InitECandidate.Solver.Input.TaylorCurrent
+
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.overflow_read
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.overflow_guard_normal
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.low_product_read
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.after_product_cost
+
+namespace InitECandidate.Solver.Input.TaylorCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Result of the unchanged product guard and arithmetic suffix at its
+actual current product: the natural recurrence is a derived output fact. -/
+structure ProductResult (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (accumulator : Quad) (numerator : BitVec 64) (index : Nat) (quotient : Quad) : Prop where
+  state : post={source with
+    locals:=post.locals,memory:=post.memory,clock:=post.clock}
+  fits : UDivMod.WideDigits.quadNumber accumulator*numerator.toNat<2^256
+  acc : post.locals.lookup (ofString "acc")=some (RlpWrite.U256Value.tuple quotient)
+  i : post.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 (index+1))))
+  nz : post.locals.lookup (ofString "nz")=some (.val (.word (GasBudget.U256Zero.resultWord quotient)))
+  recurrence : UDivMod.WideDigits.quadNumber quotient=
+    UDivMod.WideDigits.quadNumber accumulator*numerator.toNat/(index*11684671)
+  other : ∀ key : String,ofString key≠ofString "acc"→ ofString key≠ofString "i"→ ofString key≠ofString "nz"→
+    ofString key≠ofString "p"→ ofString key≠ofString "di"→post.locals.lookup (ofString key)=source.locals.lookup (ofString key)
+  away : ∀ query,(∀ buffer current,current<UDivMod.WideDigits.Workspace.count buffer→
+    query≠UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer base buffer) current)→post.memory query=source.memory query
+  cost : source.clock-post.clock≤332
+
+/-- A genuinely completed guarded product suffix derives non-overflow,
+the true natural next term and its actual counter/zero flag. All reads,
+scopes, workspace writes and child returns come from that same execution. -/
+theorem after_product_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (accumulator : Quad) (numerator : BitVec 64) (index : Nat)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (positive : 0<index) (bounded : index≤1280)
+    (prod : source.locals.lookup (ofString "prod")=some (GasBudget.U256Multiply.scalarValue accumulator numerator))
+    (den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))))
+    (normal : evaluateHOLFiniteState source afterProduct=(none,post)) :
+    ∃ quotient,ProductResult source post base accumulator numerator index quotient := by
+  obtain ⟨guardPost,guardRun,declaredRun⟩:=sequence_none source post overflowGuard (.dec (ofString "p") RlpWrite.U256Value.tupleShape lowProduct divisionStep) normal
+  obtain ⟨fits,guardEq⟩:=overflow_guard_normal source guardPost accumulator numerator installed prod guardRun
+  subst guardPost
+  obtain ⟨declared,inner,read,valid,stepRun,restoredP⟩:=CallNormal.declaration_continuing_entry source post "p" RlpWrite.U256Value.tupleShape lowProduct divisionStep declaredRun
+  have actualRead:=low_product_read source accumulator numerator prod
+  have valueEq : declared=RlpWrite.U256Value.tuple (GasBudget.U256Multiply.scalarLow accumulator numerator):=Option.some.inj (read.symm.trans actualRead)
+  subst declared
+  let pEntry:=setVarHOLFinite (ofString "p") (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.scalarLow accumulator numerator)) source
+  have entryContext : UDivMod.WideDigits.Workspace.Context pEntry base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  have entryP : pEntry.locals.lookup (ofString "p")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.scalarLow accumulator numerator)):=by
+    simp [pEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE]
+  have entryDen : pEntry.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)):=by
+    simpa [pEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,ofString] using den
+  have entryI : pEntry.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))):=by
+    simpa [pEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,ofString] using i
+  obtain ⟨divisionSource,divisionPost,quotient,wordFunded,multiplyFunded,divisionSourceEq,division,restoredDi,accCell,iCell,nzCell⟩:=
+    division_step_normal pEntry inner base (GasBudget.U256Multiply.scalarLow accumulator numerator) index entryContext installed positive bounded entryP entryDen entryI stepRun
+  have finalFrame : post={divisionPost with
+      locals:=post.locals,memory:=post.memory,clock:=post.clock}:=by rw [restoredP,restoredDi];rfl
+  have projected:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+    locals:=post.locals,memory:=post.memory,clock:=post.clock}) division.state
+  rw [divisionSourceEq] at projected
+  change {divisionPost with locals:=post.locals,memory:=post.memory,clock:=post.clock}={source with
+    locals:=post.locals,memory:=post.memory,clock:=post.clock} at projected
+  have fitsNumber:= (GasBudget.U256Multiply.scalar_overflow accumulator numerator).mp fits
+  have fullProduct:=GasBudget.U256Multiply.scalar_low_product accumulator numerator fits
+  change UDivMod.WideDigits.quadNumber (GasBudget.U256Multiply.scalarLow accumulator numerator)=UDivMod.WideDigits.quadNumber accumulator*numerator.toNat at fullProduct
+  have recurrence:=division.quotientEq
+  rw [fullProduct] at recurrence
+  have price:=after_product_cost source base accumulator numerator index context installed positive bounded prod den i
+  rw [normal] at price
+  refine ⟨quotient,⟨finalFrame.trans projected,fitsNumber,?_,?_,?_,recurrence,?_,?_,price⟩⟩
+  · rw [restoredP]
+    exact (restore_lookup_other source inner "p" "acc" (by decide)).trans accCell
+  · rw [restoredP]
+    exact (restore_lookup_other source inner "p" "i" (by decide)).trans iCell
+  · rw [restoredP]
+    exact (restore_lookup_other source inner "p" "nz" (by decide)).trans nzCell
+  · intro key notAcc notI notNz notP notDi
+    rw [restoredP,restore_lookup_other source inner "p" key notP,restoredDi,restore_lookup_other pEntry divisionPost "di" key notDi,
+      division.other (ofString key) notAcc notI notNz,divisionSourceEq]
+    simp [wordEntry,pEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,notP,notDi,Ne.symm notP,Ne.symm notDi]
+  · intro query outside
+    have postMemory : post.memory=divisionPost.memory:=by rw [restoredP,restoredDi];rfl
+    have entryMemory : divisionSource.memory=source.memory:=by rw [divisionSourceEq];rfl
+    rw [postMemory]
+    have kept:=division.away query (outside .normalizedNumerator) (outside .normalizedDivisor) (outside .quotient)
+      (outside .remainder) (outside .divisor) (by intro current inside;exact outside .numerator current (by change current<16;omega))
+    exact kept.trans (congrFun entryMemory query)
+
+end InitECandidate.Solver.Input.TaylorCurrent
+
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.after_product_normal
+
+namespace InitECandidate.Solver.Input.TaylorCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def outAdd : ProgHOL 64:=.call (some (some (.local,ofString "out"),none)) (ofString "u256_add") [localVar "out",localVar "acc"]
+def multiplyStep : ProgHOL 64:=.decCall (ofString "prod") (.comb [.one,.one,.one,.one,.one,.one,.one,.one])
+  (ofString "u256_mul_full") [localVar "acc",localVar "num"] afterProduct
+
+theorem iteration_split : iteration=.seq outAdd multiplyStep := rfl
+
+private theorem out_add_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code outAdd 1 := by
+  let kind:=GasBudget.ArithmeticEffects.Kind.u256_add
+  have environment:=GasBudget.ArithmeticEffects.current_environment code installed
+  exact ClockCost.call_body code (some (some (ofString "out"))) (ofString "u256_add") [localVar "out",localVar "acc"]
+    kind.signature.1 kind.body kind.signature.2.2 0 (environment kind) (GasBudget.ArithmeticEffects.price_u256_add code environment)
+
+private theorem out_add_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (installed : OriginalCode.Installed source.code) (normal : evaluateHOLFiniteState source outAdd=(none,target)) :
+    LocalEffects.erase target=LocalEffects.erase source := by
+  let kind:=GasBudget.ArithmeticEffects.Kind.u256_add
+  have environment:=GasBudget.ArithmeticEffects.current_environment source.code installed
+  have pure:=LocalEffects.call_body source.code (some (some (ofString "out"))) (ofString "u256_add") [localVar "out",localVar "acc"]
+    kind.signature.1 kind.body kind.signature.2.2 (environment kind) (GasBudget.ArithmeticEffects.original_preserves kind source.code environment)
+  have frame:=pure source rfl
+  change LocalEffects.erase (evaluateHOLFiniteState source outAdd).2=LocalEffects.erase source at frame
+  simpa only [normal] using frame
+
+private theorem out_add_other (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (key : MlS)
+    (other : key≠ofString "out") (normal : evaluateHOLFiniteState source outAdd=(none,target)) :
+    target.locals.lookup key=source.locals.lookup key := by
+  have safe : LocalPrefix key outAdd:=.call (some (ofString "out")) (ofString "u256_add") [localVar "out",localVar "acc"]
+    (by intro name same;cases Option.some.inj same;exact other)
+  have kept:=(safe.summary_full source).1 (by rw [normal])
+  simpa only [normal] using kept
+
+private theorem context_of_erase (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (frame : LocalEffects.erase target=LocalEffects.erase source) :
+    UDivMod.WideDigits.Workspace.Context target base := by
+  have globals:=congrArg PanSemStateFiniteExact.globals frame
+  change target.globals=source.globals at globals
+  have domain:=congrArg PanSemStateFiniteExact.memaddrs frame
+  change target.memaddrs=source.memaddrs at domain
+  exact ⟨by rw [globals];exact context.global,domain.trans context.domain,context.arena,context.aligned⟩
+
+def productEntry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (accumulator : Quad) (numerator : BitVec 64) :=
+  setVarHOLFinite (ofString "prod") (GasBudget.U256Multiply.scalarValue accumulator numerator) {source with clock:=source.clock-17}
+
+/-- The genuine full multiply call supplies the exact current product for
+the checked guard/suffix; every stopped and short-clock outcome is priced. -/
+theorem multiply_step_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (accumulator : Quad) (numerator : BitVec 64) (index : Nat)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (positive : 0<index) (bounded : index≤1280)
+    (acc : source.locals.lookup (ofString "acc")=some (RlpWrite.U256Value.tuple accumulator))
+    (num : source.locals.lookup (ofString "num")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad numerator)))
+    (den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index)))) :
+    source.clock-(evaluateHOLFiniteState source multiplyStep).2.clock≤349 := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "acc",localVar "num"]=
+      some [RlpWrite.U256Value.tuple accumulator,RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad numerator)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,acc,num]
+  obtain ⟨callee,called,aCell,bCell⟩:=RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_mul_full") GasBudget.U256Multiply.fullBody
+    (.comb [.one,.one,.one,.one,.one,.one,.one,.one]) accumulator (GasBudget.U256Multiply.wordQuad numerator) (GasBudget.U256Multiply.full_code source.code installed)
+  have price:=GasBudget.ArithmeticEffects.price_u256_mul_full source.code (GasBudget.ArithmeticEffects.current_environment source.code installed)
+  apply ClockCost.scoped_reached_current source "prod" (.comb [.one,.one,.one,.one,.one,.one,.one,.one]) (ofString "u256_mul_full") [localVar "acc",localVar "num"] _
+    GasBudget.U256Multiply.fullBody afterProduct callee (.comb [.one,.one,.one,.one,.one,.one,.one,.one]) 16 332 args called (price _ rfl)
+  intro target returned run valid
+  obtain ⟨returnedEq,funded,entryEq⟩:=GasBudget.U256Multiply.scalar_resume source target "prod" accumulator numerator installed GasBudget.U256Multiply.fullBody callee
+    (.comb [.one,.one,.one,.one,.one,.one,.one,.one]) called returned run
+  let ready:=productEntry source accumulator numerator
+  have readyContext : UDivMod.WideDigits.Workspace.Context ready base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  have prod : ready.locals.lookup (ofString "prod")=some (GasBudget.U256Multiply.scalarValue accumulator numerator):=by
+    simp [ready,productEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE]
+  have nextDen : ready.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)):=by
+    simpa [ready,productEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,ofString] using den
+  have nextI : ready.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))):=by
+    simpa [ready,productEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,ofString] using i
+  have back:=after_product_cost ready base accumulator numerator index readyContext installed positive bounded prod nextDen nextI
+  rw [entryEq]
+  have boundaryClock:=congrArg PanSemStateFiniteExact.clock entryEq
+  have clock : target.clock=ready.clock:=boundaryClock
+  rw [clock]
+  exact back
+
+/-- A real normal full-multiply scope derives the exact scalar product,
+completed guarded arithmetic result and actual restoration of prod. -/
+theorem multiply_step_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (accumulator : Quad) (numerator : BitVec 64) (index : Nat)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (positive : 0<index) (bounded : index≤1280)
+    (acc : source.locals.lookup (ofString "acc")=some (RlpWrite.U256Value.tuple accumulator))
+    (num : source.locals.lookup (ofString "num")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad numerator)))
+    (den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))))
+    (normal : evaluateHOLFiniteState source multiplyStep=(none,post)) :
+    ∃ inner quotient,17≤source.clock ∧ ProductResult (productEntry source accumulator numerator) inner base accumulator numerator index quotient ∧
+      post=restore source "prod" inner := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "acc",localVar "num"]=
+      some [RlpWrite.U256Value.tuple accumulator,RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad numerator)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,acc,num]
+  obtain ⟨callee,called,aCell,bCell⟩:=RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_mul_full") GasBudget.U256Multiply.fullBody
+    (.comb [.one,.one,.one,.one,.one,.one,.one,.one]) accumulator (GasBudget.U256Multiply.wordQuad numerator) (GasBudget.U256Multiply.full_code source.code installed)
+  obtain ⟨callFunded,target,returned,inner,run,valid,tailRun,restored⟩:=CallNormal.scoped_none source post "prod" (.comb [.one,.one,.one,.one,.one,.one,.one,.one])
+    (ofString "u256_mul_full") [localVar "acc",localVar "num"] _ GasBudget.U256Multiply.fullBody afterProduct callee (.comb [.one,.one,.one,.one,.one,.one,.one,.one]) args called normal
+  obtain ⟨returnedEq,funded,entryEq⟩:=GasBudget.U256Multiply.scalar_resume source target "prod" accumulator numerator installed GasBudget.U256Multiply.fullBody callee
+    (.comb [.one,.one,.one,.one,.one,.one,.one,.one]) called returned run
+  rw [entryEq] at tailRun
+  let ready:=productEntry source accumulator numerator
+  have readyContext : UDivMod.WideDigits.Workspace.Context ready base:=⟨context.global,context.domain,context.arena,context.aligned⟩
+  have prod : ready.locals.lookup (ofString "prod")=some (GasBudget.U256Multiply.scalarValue accumulator numerator):=by
+    simp [ready,productEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE]
+  have nextDen : ready.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)):=by
+    simpa [ready,productEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,ofString] using den
+  have nextI : ready.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))):=by
+    simpa [ready,productEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,ofString] using i
+  obtain ⟨quotient,result⟩:=after_product_normal ready inner base accumulator numerator index readyContext installed positive bounded prod nextDen nextI tailRun
+  exact ⟨inner,quotient,funded,result,restored⟩
+
+/-- Every outcome of the complete unchanged Taylor body iteration costs
+at most350source ticks at a current valid counter/accumulator entry. -/
+theorem iteration_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (accumulator : Quad) (numerator : BitVec 64) (index : Nat)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (positive : 0<index) (bounded : index≤1280)
+    (acc : source.locals.lookup (ofString "acc")=some (RlpWrite.U256Value.tuple accumulator))
+    (num : source.locals.lookup (ofString "num")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad numerator)))
+    (den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index)))) :
+    source.clock-(evaluateHOLFiniteState source iteration).2.clock≤350 := by
+  rw [iteration_split]
+  apply ClockCost.sequence_reached_current source outAdd multiplyStep 1 349 (out_add_cost source.code installed source rfl)
+  intro middle normal
+  have frame:=out_add_frame source middle installed normal
+  have nextContext:=context_of_erase source middle base context frame
+  have nextCode : OriginalCode.Installed middle.code:=by rw [LocalEffects.code_of_erase source middle frame];exact installed
+  exact multiply_step_cost middle base accumulator numerator index nextContext nextCode positive bounded
+    ((out_add_other source middle (ofString "acc") (by decide) normal).trans acc)
+    ((out_add_other source middle (ofString "num") (by decide) normal).trans num)
+    ((out_add_other source middle (ofString "den") (by decide) normal).trans den)
+    ((out_add_other source middle (ofString "i") (by decide) normal).trans i)
+
+structure IterationResult (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (accumulator : Quad) (numerator : BitVec 64) (index : Nat) (quotient : Quad) : Prop where
+  state : post={source with
+    locals:=post.locals,memory:=post.memory,clock:=post.clock}
+  fits : UDivMod.WideDigits.quadNumber accumulator*numerator.toNat<2^256
+  acc : post.locals.lookup (ofString "acc")=some (RlpWrite.U256Value.tuple quotient)
+  i : post.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 (index+1))))
+  nz : post.locals.lookup (ofString "nz")=some (.val (.word (GasBudget.U256Zero.resultWord quotient)))
+  recurrence : UDivMod.WideDigits.quadNumber quotient=UDivMod.WideDigits.quadNumber accumulator*numerator.toNat/(index*11684671)
+  other : ∀ key : String,ofString key≠ofString "acc"→ ofString key≠ofString "i"→ ofString key≠ofString "nz"→
+    ofString key≠ofString "out"→ ofString key≠ofString "prod"→ ofString key≠ofString "p"→ ofString key≠ofString "di"→
+    post.locals.lookup (ofString key)=source.locals.lookup (ofString key)
+  away : ∀ query,(∀ buffer current,current<UDivMod.WideDigits.Workspace.count buffer→
+    query≠UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer base buffer) current)→post.memory query=source.memory query
+  cost : source.clock-post.clock≤350
+
+/-- An actual continuing whole iteration derives the true recurrence and
+next guard/counter from its real addition, multiply, trap test and division. -/
+theorem iteration_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (accumulator : Quad) (numerator : BitVec 64) (index : Nat)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (positive : 0<index) (bounded : index≤1280)
+    (acc : source.locals.lookup (ofString "acc")=some (RlpWrite.U256Value.tuple accumulator))
+    (num : source.locals.lookup (ofString "num")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad numerator)))
+    (den : source.locals.lookup (ofString "den")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 11684671#64)))
+    (i : source.locals.lookup (ofString "i")=some (.val (.word (BitVec.ofNat 64 index))))
+    (normal : evaluateHOLFiniteState source iteration=(none,post)) :
+    ∃ quotient,IterationResult source post base accumulator numerator index quotient := by
+  obtain ⟨middle,addRun,multiplyRun⟩:=sequence_none source post outAdd multiplyStep normal
+  have frame:=out_add_frame source middle installed addRun
+  have nextContext:=context_of_erase source middle base context frame
+  have nextCode : OriginalCode.Installed middle.code:=by rw [LocalEffects.code_of_erase source middle frame];exact installed
+  obtain ⟨inner,quotient,funded,result,restored⟩:=multiply_step_normal middle post base accumulator numerator index nextContext nextCode positive bounded
+    ((out_add_other source middle (ofString "acc") (by decide) addRun).trans acc)
+    ((out_add_other source middle (ofString "num") (by decide) addRun).trans num)
+    ((out_add_other source middle (ofString "den") (by decide) addRun).trans den)
+    ((out_add_other source middle (ofString "i") (by decide) addRun).trans i) multiplyRun
+  have middleFrame : middle={source with locals:=middle.locals,clock:=middle.clock}:=
+    congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=middle.locals,clock:=middle.clock}) frame
+  have finalFrame : post={inner with
+      locals:=post.locals,memory:=post.memory,clock:=post.clock}:=by rw [restored];rfl
+  have projected:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+    locals:=post.locals,memory:=post.memory,clock:=post.clock}) result.state
+  rw [middleFrame] at projected
+  change {inner with locals:=post.locals,memory:=post.memory,clock:=post.clock}={source with
+    locals:=post.locals,memory:=post.memory,clock:=post.clock} at projected
+  have price:=iteration_cost source base accumulator numerator index context installed positive bounded acc num den i
+  rw [normal] at price
+  refine ⟨quotient,⟨finalFrame.trans projected,result.fits,?_,?_,?_,result.recurrence,?_,?_,price⟩⟩
+  · rw [restored]
+    exact (restore_lookup_other middle inner "prod" "acc" (by decide)).trans result.acc
+  · rw [restored]
+    exact (restore_lookup_other middle inner "prod" "i" (by decide)).trans result.i
+  · rw [restored]
+    exact (restore_lookup_other middle inner "prod" "nz" (by decide)).trans result.nz
+  · intro key notAcc notI notNz notOut notProd notP notDi
+    rw [restored,restore_lookup_other middle inner "prod" key notProd,result.other key notAcc notI notNz notP notDi]
+    have saved : (productEntry middle accumulator numerator).locals.lookup (ofString key)=middle.locals.lookup (ofString key):=by
+      simp [productEntry,setVarHOLFinite,HolFiniteMapExact.lookup_update_pointwise,FUPDATE,notProd,Ne.symm notProd]
+    exact saved.trans (out_add_other source middle (ofString key) notOut addRun)
+  · intro query outside
+    rw [restored]
+    exact (result.away query outside).trans (congrFun (LocalEffects.memory_of_erase source middle frame) query)
+
+end InitECandidate.Solver.Input.TaylorCurrent
+
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.iteration_split
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.multiply_step_cost
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.multiply_step_normal
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.iteration_cost
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.iteration_normal

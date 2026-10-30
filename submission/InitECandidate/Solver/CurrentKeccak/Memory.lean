@@ -9,16 +9,16 @@ set_option maxRecDepth 10000
 
 /-- The complete unchanged software hash protects every word outside its
 actual state/padding buffers and digest output. Every prefix is exposed from
-this real return; the input remainder is derived from its actual block exit. -/
+this real return; the input remainder is derived from its actual block exit.
+Only the numerical count bound is required, independently of input ownership. -/
 theorem body_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad pointer out query : BitVec 64) (length : Nat)
     (environment : Environment source stp pad)
     (pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer)))
     (countCell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 length))))
     (outCell : source.locals.lookup (ofString "out")=some (.val (.word out)))
-    (inputArena : AllocatedBytes.Arena pointer length) (outArena : AllocatedBytes.Arena out 32)
+    (small : length+136<2^64) (outArena : AllocatedBytes.Arena out 32)
     (stateAway : CopyGeneral.Away stp query 200) (padAway : CopyGeneral.Away pad query 136) (outAway : CopyGeneral.Away out query 32)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source body=(some (.returned value),post)) : post.memory query=source.memory query := by
-  have small : length+136<2^64 := by have lower:=inputArena.lower; have upper:=inputArena.upper; omega
   rw [body_shape] at run
   have stateRead : eval source (.var .global (ofString "keccak_st"))=some (.val (.word stp)) := by
     simp [eval,evalHOLExact,toExact,environment.stateGlobal]
@@ -71,12 +71,7 @@ theorem body_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (
      (bind_lookup_other middle "rem" "p" _ (by decide)).trans middlePointer,
      (bind_lookup_other middle "rem" "i" _ (by decide)).trans indexCell,
      (bind_lookup_other middle "rem" "out" _ (by decide)).trans middleOut,bind_lookup_same _ _ _⟩
-  have inputNumber : (pointer+index).toNat=pointer.toNat+index.toNat :=
-    BitVec.toNat_add_of_lt (by have upper:=inputArena.upper; omega)
-  have remainingArena : AllocatedBytes.Arena (pointer+index) (length-index.toNat) :=
-    ⟨by rw [inputNumber]; have lower:=inputArena.lower; omega,
-     by rw [inputNumber]; have upper:=inputArena.upper; omega⟩
-  have third:=padding_memory paddingEntry final stp pad pointer index out query (length-index.toNat) paddingEnvironment cells short remainingArena outArena
+  have third:=padding_memory paddingEntry final stp pad pointer index out query (length-index.toNat) paddingEnvironment cells short outArena
     (by intro offset inside aligned; exact (stateAway offset inside).1) padAway outAway value paddingRun
   rw [endpoint,iRestored,remRestored]
   exact third.trans (second.trans first.memory)

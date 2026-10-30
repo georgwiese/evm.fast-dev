@@ -6882,3 +6882,32 @@ retaining the actual owned hash state/pad/output buffers. Then whole restored
 header caller and remaining main path; uniform formal target steps, exact K,
 dominant slack review and cleanup. Source ticks omit straight-line target
 work. The original executable stays unchanged.
+
+## Exact normal copy spans and software hash without input ownership
+
+The actual memcpy loops now derive an exact destination-span frame for any
+known count n with n+32<2^64, without source/destination ownership or mapping
+premises. The real guard and normal stores derive their bounded cursor and
+writes; actual ABI/caller restoration supplies the full ignored-call frame.
+
+The software hash padding copy uses that stronger contract. Its normal
+memory proof no longer assumes an input arena, including for the derived
+short remainder. The whole hash body needs only n+136<2^64 numerically plus
+its actual owned state, pad and output buffers. It still protects every word
+outside those actual write spans. A new caller contract exposes this weaker
+entry; the old owned-input caller is a compatibility wrapper. Redundant input
+subrange/arithmetical facts were removed from the body proof. The real source
+reads may fail or wrap; successful normal execution supplies its own reads.
+
+Validation: current-keccak-no-input-arena-v2.log PASS1240jobs; all4new printed
+facts and strengthened existing facts use permitted axioms. Index8700modules/
+19048facts; inventory8745, replacement closure0, fixed files unchanged.
+Incremental policy PASS, 65536package entries. Claim infinity; no global finite
+target K/full verifier success. Effort55%, plausible45–65%, relative to main.
+Weekly usage42%, no reset credits, ordinary usage allowed. No new candidate
+paths; historical untracked WIPs untouched. Source clocks omit straight-line
+target work; original executable unchanged.
+
+Next: compose the actual parent-header hash from the arbitrary-read encoder
+and weaker normal hash contract, then whole restored header caller/remaining
+main, uniform formal target steps, exact K, dominant slack review and cleanup.

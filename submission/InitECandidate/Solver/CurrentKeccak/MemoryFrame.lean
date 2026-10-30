@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.CopyAnyCost
 import InitECandidate.Solver.CurrentKeccak.OutputMemory
 import InitECandidate.Solver.Input.ByteStoreFrame
 
@@ -26,14 +27,16 @@ theorem zero_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (s
    MemoryAt.zero_normal source post arguments dst query length args environment.installed environment.domain arena aligned multiple away run,
    fun key=>CallNormal.ignored_lookup source post key (ofString "memzero") arguments run⟩
 
+/-- Actual normal copy writes are confined to the known destination span.
+No input or output arena is needed to derive this successful-run frame. -/
 theorem copy_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad src dst query : BitVec 64) (length : Nat)
     (environment : Environment source stp pad) (arguments : List (ExpHOL 64))
     (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some (CopyGeneral.values dst src length))
-    (inputArena : AllocatedBytes.Arena src length) (outArena : AllocatedBytes.Arena dst length) (away : CopyGeneral.Away dst query length)
-    (run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "memcpy") arguments)=(none,post)) : Frame source post stp pad query :=
-  ⟨environment.after _ _ (fun key=>copy_call_globals key source.code environment.installed arguments) run,
-   MemoryAt.copy_normal source post arguments src dst query length args environment.installed environment.domain inputArena outArena away run,
-   fun key=>CallNormal.ignored_lookup source post key (ofString "memcpy") arguments run⟩
+    (small : length+32<2^64) (away : CopyGeneral.Away dst query length)
+    (run : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "memcpy") arguments)=(none,post)) : Frame source post stp pad query := by
+  have span:=CopyAny.call_span_normal source post dst src length small arguments args environment.installed run
+  exact ⟨environment.after _ _ (fun key=>copy_call_globals key source.code environment.installed arguments) run,
+    span.1.memory query away,fun key=>CallNormal.ignored_lookup source post key (ofString "memcpy") arguments run⟩
 
 theorem absorb_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad blk query : BitVec 64)
     (environment : Environment source stp pad) (arguments : List (ExpHOL 64))

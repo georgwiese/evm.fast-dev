@@ -16,11 +16,12 @@ theorem PaddingLocals.after {source target : PanSemStateFiniteExact 64 Guest.Hos
   ⟨step.cell _ _ cells.state,step.cell _ _ cells.pointer,step.cell _ _ cells.index,step.cell _ _ cells.out,step.cell _ _ cells.remainder⟩
 
 /-- Real padding, final absorption and digest output preserve every word
-outside the two workspace buffers and output. The short remainder and current
-input extent must be derived from the actual preceding block-loop exit. -/
+outside the two workspace buffers and output. The short remainder must be
+derived from the actual preceding block-loop exit.
+Input ownership is not needed for the real normal-copy write frame. -/
 theorem padding_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (stp pad pointer index out query : BitVec 64) (rem : Nat)
     (environment : Environment source stp pad) (cells : PaddingLocals source stp pointer index out rem)
-    (short : rem<136) (inputArena : AllocatedBytes.Arena (pointer+index) rem) (outArena : AllocatedBytes.Arena out 32)
+    (short : rem<136) (outArena : AllocatedBytes.Arena out 32)
     (stateAway : ∀ offset : Nat,offset<200 → offset%8=0 → query≠stp+BitVec.ofNat 64 offset)
     (padAway : CopyGeneral.Away pad query 136) (outAway : CopyGeneral.Away out query 32)
     (value : ValueHOL 64) (run : evaluateHOLFiniteState source paddingTail=(some (.returned value),post)) : post.memory query=source.memory query := by
@@ -37,8 +38,7 @@ theorem padding_memory (source post : PanSemStateFiniteExact 64 Guest.HostMemory
       [Hash.pad,.op .add [localVar "p",localVar "i"],localVar "rem"]=some (CopyGeneral.values pad (pointer+index) rem) := by
     simp [Hash.pad,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,first.environment.padGlobal,cells1.pointer,cells1.index,cells1.remainder,
       localVar,CopyGeneral.values,valueIsWord,valueWord,wordOpHOL,wordOp]
-  have padRem : AllocatedBytes.Arena pad rem := ⟨environment.padArena.lower,by have h:=environment.padArena.upper; omega⟩
-  have second:=copy_frame zeroed copied stp pad (pointer+index) pad query rem first.environment _ copyArgs inputArena padRem
+  have second:=copy_frame zeroed copied stp pad (pointer+index) pad query rem first.environment _ copyArgs (by omega)
     (by intro offset inside; exact padAway offset (by omega)) copyRun
   have cells2:=cells1.after second
   obtain ⟨marked,markRun,afterMark⟩:=Input.sequence_returned copied post padFirst _ value

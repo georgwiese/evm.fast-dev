@@ -555,3 +555,121 @@ end InitECandidate.Solver.Input.CopyAny
 #print axioms InitECandidate.Solver.Input.CopyAny.Loop.spatial_loop_frame
 #print axioms InitECandidate.Solver.Input.CopyAny.body_domain_normal
 #print axioms InitECandidate.Solver.Input.CopyAny.call_domain_normal
+
+namespace InitECandidate.Solver.Input.CopyAny
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch CounterFlow
+
+/-- A real known-length copy loop writes only its actual destination span.
+Successful source reads and destination stores are derived from this run. -/
+theorem Loop.span_frame (loop : Loop) (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (dst : BitVec 64) (length : Nat) (small : length+32<2^64)
+    (dstCell : source.locals.lookup (ofString "dst")=some (.val (.word dst))) (valid : StrideInvariant length source)
+    (normal : evaluateHOLFiniteState source loop.program=(none,target)) :
+    Copy32Span.Frame source target dst length ∧ target.locals.lookup (ofString "dst")=some (.val (.word dst)) ∧ StrideInvariant length target := by
+  have block:=loop.block_model source.code
+  let invariant:=fun current=>Copy32Span.Frame source current dst length ∧
+    current.locals.lookup (ofString "dst")=some (.val (.word dst)) ∧ StrideInvariant length current
+  rw [Loop.shape] at normal
+  apply loop_invariant_no_control source.code loop.zeroLoop.test loop.block (fun current=>(block.summary current).2.2)
+    invariant ?_ source target rfl ⟨Copy32Span.Frame.refl source dst length,dstCell,valid⟩ normal
+  intro current installed reached observed actual nonzero funded post bodyRun
+  obtain ⟨earlier,currentDst,currentCounter⟩:=reached
+  have saved:=currentCounter
+  obtain ⟨index,iCell,nCell,bounded⟩:=saved
+  have reads : StrideReads loop.zeroLoop.test loop.stride length:=loop.zeroLoop.reads length small
+  have expected:=reads current index iCell nCell bounded
+  have active : index.toNat+loop.stride≤length:=by
+    by_contra inactive
+    rw [if_neg inactive] at expected
+    have zero : observed=0#64:=by simpa only [Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using actual.symm.trans expected
+    exact nonzero zero
+  obtain ⟨written,nextDst⟩:=loop.writes.normal (decClockHOLFinite current) post dst index length active currentDst iCell bodyRun
+  have kept : Copy32Span.Frame current post dst length:=⟨written.fields,written.memory⟩
+  have transition:=(stride_transition loop.zeroLoop.test loop.block loop.stride length (by cases loop <;> decide) (by omega)
+    block.advance block.summary reads current currentCounter observed actual nonzero).2 funded
+  rw [bodyRun] at transition
+  exact ⟨earlier.trans source current post dst length kept,nextDst,(transition (Or.inl rfl)).1⟩
+
+private theorem alignment_span_frame (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (dst : BitVec 64) (length : Nat) (small : length+32<2^64)
+    (dstCell : source.locals.lookup (ofString "dst")=some (.val (.word dst))) (valid : StrideInvariant length source)
+    (normal : evaluateHOLFiniteState source (.ite Copy32.alignment (.seq Copy32.loop32 Copy32.loopWord) .skip)=(none,target)) :
+    Copy32Span.Frame source target dst length ∧ target.locals.lookup (ofString "dst")=some (.val (.word dst)) ∧ StrideInvariant length target := by
+  rcases conditional_none source target Copy32.alignment (.seq Copy32.loop32 Copy32.loopWord) .skip normal with copied|skipped
+  · obtain ⟨middle,front,back⟩:=sequence_none source target _ _ copied
+    obtain ⟨first,middleDst,middleValid⟩:=Loop.block32.span_frame source middle dst length small dstCell valid front
+    obtain ⟨second,lastDst,lastValid⟩:=Loop.word.span_frame middle target dst length small middleDst middleValid back
+    exact ⟨first.trans source middle target dst length second,lastDst,lastValid⟩
+  · have same : target=source:=by simpa only [evaluateHOLFiniteState_skip] using (congrArg Prod.snd skipped).symm
+    rw [same]
+    exact ⟨Copy32Span.Frame.refl source dst length,dstCell,valid⟩
+
+private theorem Loop.span_summary (loop : Loop) (source : PanSemStateFiniteExact 64 Guest.HostMemory) :
+    LocalSummary (ofString "dst") loop.program source := by
+  rw [Loop.shape]
+  exact while_local_summary (ofString "dst") loop.zeroLoop.test loop.block loop.destination_summary source
+
+/-- Complete real normal memcpy at any known nonwrapping count. Neither
+input/output ownership nor mapping is a premise of its exact write frame. -/
+theorem body_span_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (dst : BitVec 64) (length : Nat)
+    (small : length+32<2^64)
+    (dstCell : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (lengthCell : source.locals.lookup (ofString "n")=some (.val (.word (BitVec.ofNat 64 length))))
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source Copy32.body=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ Copy32Span.Frame source post dst length := by
+  rw [Copy32.body_shape] at normal
+  obtain ⟨inner,remaining,endpoint⟩:=declaration_return_word source post "i" (.const 0#64) 0#64 _ value rfl normal
+  let entry:=bind source "i" 0#64
+  have entryDst : entry.locals.lookup (ofString "dst")=some (.val (.word dst)):=
+    (bind_lookup_other source "i" "dst" 0#64 (by decide)).trans dstCell
+  have initial : StrideInvariant length entry:=⟨0#64,bind_lookup_same _ _ _,
+    (bind_lookup_other source "i" "n" 0#64 (by decide)).trans lengthCell,by simp⟩
+  have alignedSummary:=local_summary_sequence (ofString "dst") Copy32.loop32 Copy32.loopWord
+    Loop.block32.span_summary Loop.word.span_summary
+  have choiceSummary:=local_summary_conditional (ofString "dst") Copy32.alignment (.seq Copy32.loop32 Copy32.loopWord) .skip
+    alignedSummary LocalPrefix.skip.summary_full
+  obtain ⟨middle,choiceRun,byteTail⟩:=sequence_returned entry inner _ _ value (choiceSummary entry).2.1 remaining
+  obtain ⟨front,middleDst,middleValid⟩:=alignment_span_frame entry middle dst length small entryDst initial choiceRun
+  obtain ⟨last,byteRun,tailReturn⟩:=sequence_returned middle inner _ _ value (Loop.bytes.span_summary middle).2.1 byteTail
+  obtain ⟨bytesFrame,lastDst,lastValid⟩:=Loop.bytes.span_frame middle last dst length small middleDst middleValid byteRun
+  obtain ⟨finish,tailRun,returned⟩:=sequence_returned last inner _ _ value (Loop.tail.span_summary last).2.1 tailReturn
+  obtain ⟨tailFrame,finishDst,finishValid⟩:=Loop.tail.span_frame last finish dst length small lastDst lastValid tailRun
+  obtain ⟨read,innerEq⟩:=return_normal finish inner (.const 0#64) value returned
+  have valueEq : value=.val (.word 0#64):=Option.some.inj read.symm
+  have full:=(front.trans entry middle last dst length bytesFrame).trans entry last finish dst length tailFrame
+  refine ⟨valueEq,?_,?_⟩
+  · rw [endpoint,innerEq]
+    exact full.fields
+  · intro query away
+    rw [endpoint,innerEq]
+    exact full.memory query away
+
+/-- Actual ignored caller, with exact span frame and restored caller locals,
+without source/destination mapping or allocation assumptions. -/
+theorem call_span_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (dst src : BitVec 64) (length : Nat)
+    (small : length+32<2^64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (CopyGeneral.values dst src length))
+    (installed : OriginalCode.Installed source.code)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "memcpy") arguments)=(none,post)) :
+    Copy32Span.Frame source post dst length ∧ post.locals=source.locals := by
+  obtain ⟨callee,called,dstCell,srcCell,lengthCell⟩:=CopyGeneral.environment source.code.lookup dst src length (CopyGeneral.original_code source.code installed)
+  obtain ⟨funded,values,actual,actualCallee,shape,target,value,actualArgs,actualCalled,bodyRun,checked,endpoint,fields⟩:=CallNormal.ignored_data source post (ofString "memcpy") arguments normal
+  have sameValues : values=CopyGeneral.values dst src length:=Option.some.inj (actualArgs.symm.trans args)
+  subst values
+  have same : (actual,actualCallee,shape)=(Copy32.body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases same
+  obtain ⟨valueEq,frame⟩:=body_span_normal (callEntryStateHOLFinite source callee) target dst length small dstCell lengthCell value bodyRun
+  refine ⟨⟨?_,?_⟩,?_⟩
+  · rw [endpoint]
+    exact frame.fields
+  · intro query away
+    rw [endpoint]
+    exact frame.memory query away
+  · rw [endpoint]
+
+end InitECandidate.Solver.Input.CopyAny
+
+#print axioms InitECandidate.Solver.Input.CopyAny.Loop.span_frame
+#print axioms InitECandidate.Solver.Input.CopyAny.body_span_normal
+#print axioms InitECandidate.Solver.Input.CopyAny.call_span_normal

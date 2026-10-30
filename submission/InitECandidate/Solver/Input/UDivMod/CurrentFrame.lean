@@ -1,3 +1,4 @@
+import Flapjack.Pancake.Semantics.PanProps.EvaluateAddClockEq
 import Flapjack.Pancake.Semantics.PanSem.ClockTimeout
 import InitECandidate.Solver.WitnessRadix.RestoreLookup
 import InitECandidate.Solver.Input.ClockCostCurrent
@@ -8354,3 +8355,404 @@ theorem of_outer_loop (source target : PanSemStateFiniteExact 64 Guest.HostMemor
 end InitECandidate.Solver.Input.UDivMod.WideDigits.Remainder
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Remainder.of_outer_loop
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def address : ExpHOL 64:=NormalizeLoop.address "q" (localVar "j")
+def increment : ExpHOL 64:=.op .add [localVar "j",.const 1#64]
+def body : ProgHOL 64:=.seq (.store address (.const 0#64)) (.assign .local (ofString "j") increment)
+def test : ExpHOL 64:=.cmp .lower (localVar "j") (localVar "m")
+def loop : ProgHOL 64:=.while test body
+
+def post (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat) :=
+  bind {source with memory:=StoreWord.put source.memory (slot (Workspace.pointer base .quotient) (length-1)) 0#64,clock:=source.clock-1} "j" (BitVec.ofNat 64 length)
+
+structure Ready (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat) : Prop where
+  context : Workspace.Context source base
+  large : 2≤length
+  small : length≤16
+  q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient)))
+  m : source.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 length)))
+  n : source.locals.lookup (ofString "n")=some (.val (.word 2#64))
+
+theorem Ready.withClock {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {length : Nat}
+    (checked : Ready source base length) (clock : Nat) : Ready {source with clock:=clock} base length :=
+  ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.large,checked.small,checked.q,checked.m,checked.n⟩
+
+theorem Ready.bindJ {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {length : Nat}
+    (checked : Ready source base length) (word : BitVec 64) : Ready (bind source "j" word) base length :=
+  ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.large,checked.small,
+    (bind_lookup_other source "j" "q" word (by decide)).trans checked.q,
+    (bind_lookup_other source "j" "m" word (by decide)).trans checked.m,
+    (bind_lookup_other source "j" "n" word (by decide)).trans checked.n⟩
+
+theorem post_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat) (name : String)
+    (notJ : ofString name≠ofString "j") : (post source base length).locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
+  bind_lookup_other _ "j" name _ (Ne.symm notJ)
+
+theorem post_away (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat) (query : BitVec 64)
+    (outside : query≠slot (Workspace.pointer base .quotient) (length-1)) : (post source base length).memory query=source.memory query := by
+  simp only [post,WitnessRadix.QueryBranch.bind,setVarHOLFinite,StoreWord.put,if_neg outside]
+
+private theorem test_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (length index : Nat) (small : length≤16) (inside : index≤16)
+    (j : source.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 index))))
+    (m : source.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 length)))) :
+    evalHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) test=some (.val (.word (if index<length then 1#64 else 0#64))) := by
+  have indexNumber : (BitVec.ofNat 64 index).toNat=index:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have lengthNumber : (BitVec.ofNat 64 length).toNat=length:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  rw [finite_eval]
+  simp [eval,test,localVar,evalHOLExact,toExact,j,m,Flapjack.Compiler.Encoders.Asm.wordCmpHOL,BitVec.lt_def,indexNumber,lengthNumber]
+
+private theorem body_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat)
+    (checked : Ready source base length) (j : source.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 (length-1))))) :
+    evaluateHOLFiniteState source body=(none,post {source with clock:=source.clock+1} base length) := by
+  have addressRead : eval source address=some (.val (.word (slot (Workspace.pointer base .quotient) (length-1)))):=by
+    simp [eval,address,NormalizeLoop.address,localVar,evalHOLExact,evalListHOLExact,toExact,checked.q,j,valueIsWord,valueWord,wordOpHOL,wordOp,panOpHOL,slot,BitVec.ofNat_mul,Nat.mul_comm]
+  have next : eval source increment=some (.val (.word (BitVec.ofNat 64 length))):=by
+    have same : BitVec.ofNat 64 (length-1)+1#64=BitVec.ofNat 64 length:=by
+      rw [←BitVec.ofNat_add,show length-1+1=length by have h:=checked.large;omega]
+    simp [eval,increment,localVar,evalHOLExact,evalListHOLExact,toExact,j,valueIsWord,valueWord,wordOpHOL,wordOp,same]
+  have stored:=StoreWord.execute source address (.const 0#64) _ 0#64 addressRead rfl
+    (Workspace.slot_mapped source base checked.context .quotient (length-1) (by change length-1<16;have large:=checked.large;have small:=checked.small;omega))
+  rw [body,evaluateHOLFiniteState_seq_line780,stored]
+  exact StateSteps.assign_execute _ "j" increment _ _ j next
+
+/-- At n=2 the original trailing quotient-clear loop makes exactly one
+real mapped zero store, increments j to m and observes its false guard. -/
+theorem loop_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat)
+    (checked : Ready source base length) (j : source.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 (length-1))))) (enough : 1≤source.clock) :
+    evaluateHOLFiniteState source loop=(none,post source base length) := by
+  let target:=post source base length
+  have bodyRun:=body_execute (decClockHOLFinite source) base length (checked.withClock (source.clock-1)) j
+  have reset : {decClockHOLFinite source with clock:=(decClockHOLFinite source).clock+1}=source:=by
+    simp only [decClockHOLFinite]
+    have clock : source.clock-1+1=source.clock:=by omega
+    simp only [clock]
+  rw [reset] at bodyRun
+  have read:=test_read source length (length-1) checked.small (by have large:=checked.large;have small:=checked.small;omega) j checked.m
+  simp only [if_pos (show length-1<length by have h:=checked.large;omega)] at read
+  have finalRead:=test_read target length length checked.small checked.small (bind_lookup_same _ _ _) ((post_other source base length "m" (by decide)).trans checked.m)
+  simp only [if_neg (by omega : ¬length<length)] at finalRead
+  have done : evaluateHOLFiniteState target loop=(none,target):=Subtract.while_done target test body finalRead
+  exact Subtract.while_next source target target test body read (by omega) bodyRun done
+
+theorem loop_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat)
+    (checked : Ready source base length) (j : source.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 (length-1))))) :
+    source.clock-(evaluateHOLFiniteState source loop).2.clock≤1 := by
+  by_cases enough : 1≤source.clock
+  · rw [loop_execute source base length checked j enough]
+    change source.clock-(source.clock-1)≤1
+    omega
+  · omega
+
+theorem loop_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat)
+    (checked : Ready source base length) (j : source.locals.lookup (ofString "j")=some (.val (.word (BitVec.ofNat 64 (length-1)))))
+    (normal : evaluateHOLFiniteState source loop=(none,target)) : 1≤source.clock ∧ target=post source base length := by
+  let fundedSource:={source with clock:=1}
+  have baseRun:=loop_execute fundedSource base length (checked.withClock 1) j (by rfl)
+  have funded:=(ClockCost.normal_from_zero_clock source (post fundedSource base length) target loop 1 none none baseRun rfl (by decide) normal (by decide)).1
+  have actual:=loop_execute source base length checked j funded
+  exact ⟨funded,congrArg Prod.snd (normal.symm.trans actual)⟩
+
+def block (continuation : ProgHOL 64) : ProgHOL 64:=
+  .seq (.assign .local (ofString "j") Outer.countExpression) (.seq loop continuation)
+
+/-- The exact original right-associated counter/clear prefix resumes any
+original continuation from its real one-store post-state. -/
+theorem block_continue (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat)
+    (checked : Ready source base length) (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old))) (enough : 1≤source.clock) (continuation : ProgHOL 64) :
+    evaluateHOLFiniteState source (block continuation)=evaluateHOLFiniteState (post (bind source "j" (BitVec.ofNat 64 (length-1))) base length) continuation := by
+  let entered:=bind source "j" (BitVec.ofNat 64 (length-1))
+  let target:=post entered base length
+  obtain ⟨old,j⟩:=j
+  have assigned:=StateSteps.assign_execute source "j" Outer.countExpression old (BitVec.ofNat 64 (length-1)) j (Outer.count_read source length checked.large checked.m checked.n)
+  have loopRun:=loop_execute entered base length (checked.bindJ _) (bind_lookup_same _ _ _) enough
+  have forward:=evaluateHOLFiniteState_clock_le entered loop
+  rw [loopRun] at forward
+  rw [block,StateSteps.next_sequence source entered _ _ assigned (by rfl),StateSteps.next_sequence entered target _ _ loopRun forward]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.loop_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.loop_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.loop_normal
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.block_continue
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The actual preceding outer loop retains the real quotient pointer,
+original m and n=2 needed by the trailing-clear guard and assignment. -/
+theorem of_outer_loop (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v quotient : Nat→BitVec 64) (length bits : Nat) (low high : BitVec 64)
+    (normalized : Normalization.Ready source base u v length bits)
+    (checked : Outer.LoopResult (Outer.start source v length bits) target base (Normalized.extended u bits length) (length-1)
+      (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+      (Normalized.digit v bits 0) (Normalized.digit v bits 1) quotient low high) : Ready target base length := by
+  have mKept:=checked.other "m" (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)
+  have sourceM:=(Outer.start_other source v length bits "m" (by decide) (by decide) (by decide)).trans normalized.entry.m
+  exact ⟨checked.entry.context,normalized.entry.large,normalized.entry.small,checked.entry.q,mKept.trans sourceM,checked.entry.n⟩
+
+def cleared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat) :=
+  post (bind source "j" (BitVec.ofNat 64 (length-1))) base length
+
+private theorem cleared_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (length : Nat) (name : String)
+    (notJ : ofString name≠ofString "j") : (cleared source base length).locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
+  (post_other _ base length name notJ).trans (bind_lookup_other source "j" name _ (Ne.symm notJ))
+
+/-- The genuine quotient zero store leaves the complete physical remainder
+entry intact, using actual Q/UN workspace separation. -/
+theorem remainder_after (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base low high : BitVec 64) (length bits : Nat)
+    (checked : Ready source base length) (ready : Remainder.Ready source base low high bits) :
+    Remainder.Ready (cleared source base length) base low high bits := by
+  have large:=checked.large
+  have small:=checked.small
+  have cells (index : Nat) (inside : index<17) :
+      (cleared source base length).memory (slot (Workspace.pointer base .normalizedNumerator) index)=source.memory (slot (Workspace.pointer base .normalizedNumerator) index):=
+    post_away _ base length _ (Workspace.separate base .normalizedNumerator .quotient (by intro same;cases same) index (length-1) inside (by change length-1<16;omega))
+  exact ⟨⟨ready.context.global,ready.context.domain,ready.context.arena,ready.context.aligned⟩,ready.bitsSmall,
+    (cleared_other source base length "un" (by decide)).trans ready.un,
+    (cleared_other source base length "r" (by decide)).trans ready.r,
+    (cleared_other source base length "n" (by decide)).trans ready.n,
+    (cleared_other source base length "s" (by decide)).trans ready.s,
+    (cells 0 (by decide)).trans ready.lowCell,(cells 1 (by decide)).trans ready.highCell,(cells 2 (by decide)).trans ready.zeroCell,ready.lowSmall,ready.highSmall⟩
+
+def finish : ProgHOL 64:=block Remainder.complete
+def finishPost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base low high : BitVec 64) (length bits : Nat) :=
+  emptyLocalsHOLFinite (Remainder.pairPost (bind (cleared source base length) "i" 0#64) base low high bits)
+
+theorem finishPost_clock (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base low high : BitVec 64) (length bits : Nat) :
+    (finishPost source base low high length bits).clock=source.clock-3 := by
+  change source.clock-1-1-1=source.clock-3
+  omega
+
+private def findFinish : ProgHOL 64→Option (ProgHOL 64)
+  | .seq (.assign .local name expression) (.seq (.while (.cmp .lower (.var .local counter) (.var .local bound)) contents) rest)=>
+    if name=ofString "j" ∧ counter=ofString "j" ∧ bound=ofString "m" then
+      some (.seq (.assign .local name expression) (.seq (.while (.cmp .lower (.var .local counter) (.var .local bound)) contents) rest))
+    else (findFinish contents).orElse (fun _=>findFinish rest)
+  | .dec _ _ _ rest=>findFinish rest
+  | .seq first rest=>(findFinish first).orElse (fun _=>findFinish rest)
+  | .ite _ yes no=>(findFinish yes).orElse (fun _=>findFinish no)
+  | .while _ contents=>findFinish contents
+  | .decCall _ _ _ _ rest=>findFinish rest
+  | _=>none
+
+set_option maxRecDepth 100000 in
+/-- The complete original final quotient-clear and remainder-return suffix. -/
+theorem literal_finish : findFinish Single.body=some finish := by
+  have notI : ofString "i"≠ofString "j":=by decide
+  simp [findFinish,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    finish,block,loop,test,body,address,increment,Outer.countExpression,
+    Remainder.complete,Remainder.loop,Remainder.test,Remainder.step,Remainder.expression,Remainder.inputAddress,Remainder.nextAddress,Remainder.outputAddress,Remainder.nextIndex,
+    NormalizeLoop.remaining,NormalizeLoop.address,localVar,notI]
+
+/-- All three actual final loop ticks execute through the original zero
+store, both remainder stores and return0, with its genuine local clearing. -/
+theorem finish_execute (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base low high : BitVec 64) (length bits : Nat)
+    (checked : Ready source base length) (ready : Remainder.Ready source base low high bits)
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old)))
+    (i : ∃ old,source.locals.lookup (ofString "i")=some (.val (.word old))) (enough : 3≤source.clock) :
+    evaluateHOLFiniteState source finish=(some (.returned (.val (.word 0#64))),finishPost source base low high length bits) := by
+  have nextReady:=remainder_after source base low high length bits checked ready
+  have nextI : ∃ old,(cleared source base length).locals.lookup (ofString "i")=some (.val (.word old)):=by
+    obtain ⟨old,i⟩:=i
+    exact ⟨old,(cleared_other source base length "i" (by decide)).trans i⟩
+  have nextFunded : 2≤(cleared source base length).clock:=by change 2≤source.clock-1;omega
+  rw [finish,block_continue source base length checked j (by omega) Remainder.complete]
+  exact Remainder.complete_execute _ base low high bits nextReady nextI nextFunded
+
+/-- The original final clear/remainder suffix costs≤3ticks on every outcome. -/
+theorem finish_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base low high : BitVec 64) (length bits : Nat)
+    (checked : Ready source base length) (ready : Remainder.Ready source base low high bits)
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old)))
+    (i : ∃ old,source.locals.lookup (ofString "i")=some (.val (.word old))) :
+    source.clock-(evaluateHOLFiniteState source finish).2.clock≤3 := by
+  by_cases enough : 3≤source.clock
+  · rw [finish_execute source base low high length bits checked ready j i enough]
+    change source.clock-(finishPost source base low high length bits).clock≤3
+    rw [finishPost_clock]
+    omega
+  · omega
+
+/-- Actual returned suffixes derive their own funding, result and memory
+post-state, rather than assuming a future successful final block. -/
+theorem finish_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base low high : BitVec 64) (length bits : Nat)
+    (checked : Ready source base length) (ready : Remainder.Ready source base low high bits)
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old)))
+    (i : ∃ old,source.locals.lookup (ofString "i")=some (.val (.word old))) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source finish=(some (.returned value),target)) :
+    3≤source.clock ∧ value=.val (.word 0#64) ∧ target=finishPost source base low high length bits := by
+  let fundedSource:={source with clock:=3}
+  let paid:=finishPost fundedSource base low high length bits
+  have baseRun:=finish_execute fundedSource base low high length bits (checked.withClock 3) (ready.withClock 3) j i (by rfl)
+  have zero : paid.clock=0:=by rw [finishPost_clock];rfl
+  have funded:=(ClockCost.normal_from_zero_clock source paid target finish 3 (some (.returned (.val (.word 0#64)))) (some (.returned value)) baseRun zero
+    (by intro impossible;cases impossible) normal (by intro impossible;cases impossible)).1
+  have actual:=finish_execute source base low high length bits checked ready j i funded
+  have observed:=congrArg Prod.fst (normal.symm.trans actual)
+  have valueEq : value=.val (.word 0#64):=by simpa only [Prod.fst,Option.some.injEq,PanSemResultExact.returned.injEq] using observed
+  exact ⟨funded,valueEq,congrArg Prod.snd (normal.symm.trans actual)⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.of_outer_loop
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.remainder_after
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.literal_finish
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.finish_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.finish_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Trailing.finish_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def continuation : ProgHOL 64:=.seq Outer.loop Trailing.finish
+def postNormalization : ProgHOL 64:=Outer.leading continuation
+
+set_option maxRecDepth 100000 in
+/-- The complete literal original continuation after normalization. -/
+theorem literal_postNormalization : Outer.findLeading Single.body=some postNormalization := by
+  have not_i : ofString "i"≠ofString "vtop":=by decide
+  have not_j : ofString "j"≠ofString "vtop":=by decide
+  have not_d : ofString "d"≠ofString "vtop":=by decide
+  have not_k : ofString "k"≠ofString "vtop":=by decide
+  have not_un : ofString "un"≠ofString "vtop":=by decide
+  have not_vn : ofString "vn"≠ofString "vtop":=by decide
+  simp [Outer.findLeading,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    postNormalization,continuation,Outer.leading,Outer.topLoad,Outer.secondLoad,Outer.countExpression,
+    Outer.loop,Outer.test,Outer.body,Outer.previous,Outer.captures,Outer.loadAt,Outer.topIndex,Outer.middleIndex,Outer.lowIndex,
+    Estimate.phase,Estimate.program,Estimate.test,Estimate.maximum,Estimate.remainderExpression,Estimate.scalar,Estimate.arguments,Estimate.updates,Estimate.continuation,
+    Subtract.corrected,QhatCorrection.loop,QhatCorrection.test,QhatCorrection.body,QhatCorrection.branch,QhatCorrection.correct,
+    QhatCorrection.roomTest,QhatCorrection.estimateTest,QhatCorrection.leftEstimate,QhatCorrection.rightEstimate,
+    QhatCorrection.quotientExpression,QhatCorrection.remainderExpression,Subtract.initialized,Subtract.loop,Subtract.test,Subtract.step,Subtract.updates,
+    Subtract.productExpression,Subtract.residualExpression,Subtract.lowExpression,Subtract.carryExpression,Subtract.increment,Subtract.inputAddress,Subtract.divisorAddress,
+    Subtract.finish,Subtract.findFinish,Subtract.topAddress,Subtract.quotientAddress,Subtract.address,Subtract.difference,Subtract.negativeTest,Subtract.keep,
+    Trailing.finish,Trailing.block,Trailing.loop,Trailing.test,Trailing.body,Trailing.address,Trailing.increment,
+    Remainder.complete,Remainder.loop,Remainder.test,Remainder.step,Remainder.expression,Remainder.inputAddress,Remainder.nextAddress,Remainder.outputAddress,Remainder.nextIndex,
+    NormalizeLoop.remaining,NormalizeLoop.address,returnShape,localVar,not_i,not_j,not_d,not_k,not_un,not_vn]
+
+/-- The whole original continuation from physical normalized arrays, on
+all actual outcomes and at every clock, including all final stores. -/
+theorem postNormalization_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (ready : Normalization.Ready source base u v length bits)
+    (installed : OriginalCode.Installed source.code)
+    (q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient))))
+    (r : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder))))
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old))) :
+    source.clock-(evaluateHOLFiniteState source postNormalization).2.clock≤39*(length-1)+3 := by
+  let entered:=Outer.start source v length bits
+  have checked:=Outer.normalization_entry source base u v length bits ready installed q
+  let output:=evaluateHOLFiniteState entered continuation
+  have actual:=Outer.leading_execute source output.2 base u v length bits ready j continuation output.1 rfl
+  have price : source.clock-output.2.clock≤39*(length-1)+3:=by
+    have front:=Outer.loop_cost entered base (Normalized.extended u bits length) (length-1)
+      (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+      (Normalized.digit v bits 0) (Normalized.digit v bits 1) checked
+    have forward:=evaluateHOLFiniteState_clock_le entered Outer.loop
+    change source.clock-(evaluateHOLFiniteState entered continuation).2.clock≤39*(length-1)+3
+    rw [continuation,evaluateHOLFiniteState_seq_line780]
+    generalize computed : evaluateHOLFiniteState entered Outer.loop=loopOutput at front forward ⊢
+    obtain ⟨result,middle⟩:=loopOutput
+    cases result with
+    | none=>
+      obtain ⟨quotient,low,high,loopResult⟩:=Outer.loop_normal entered middle base (Normalized.extended u bits length) (length-1)
+        (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+        (Normalized.digit v bits 0) (Normalized.digit v bits 1) checked computed
+      have trailingReady:=Trailing.of_outer_loop source middle base u v quotient length bits low high ready loopResult
+      have remainderReady:=Remainder.of_outer_loop source middle base u v quotient length bits low high ready loopResult r
+      have back:=Trailing.finish_cost middle base low high length bits trailingReady remainderReady ⟨0#64,loopResult.entry.j⟩ loopResult.entry.i
+      have lastForward:=evaluateHOLFiniteState_clock_le middle Trailing.finish
+      change source.clock-middle.clock≤39*(length-1) at front
+      change middle.clock≤source.clock at forward
+      change source.clock-(evaluateHOLFiniteState middle Trailing.finish).2.clock≤39*(length-1)+3
+      omega
+    | some result=>
+      change source.clock-middle.clock≤39*(length-1)+3
+      change source.clock-middle.clock≤39*(length-1) at front
+      omega
+  change source.clock-(evaluateHOLFiniteState source (Outer.leading continuation)).2.clock≤39*(length-1)+3
+  rw [actual]
+  exact price
+
+/-- A genuine returned complete post-normalization continuation exposes
+its actual quotient-loop result and exact three-store final suffix. -/
+theorem postNormalization_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (ready : Normalization.Ready source base u v length bits)
+    (installed : OriginalCode.Installed source.code)
+    (q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient))))
+    (r : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder))))
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old))) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source postNormalization=(some (.returned value),target)) :
+    ∃ middle quotient low high,
+      Outer.LoopResult (Outer.start source v length bits) middle base (Normalized.extended u bits length) (length-1)
+        (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+        (Normalized.digit v bits 0) (Normalized.digit v bits 1) quotient low high ∧
+      value=.val (.word 0#64) ∧ target=Outer.startRestored source (Trailing.finishPost middle base low high length bits) v bits ∧
+      source.clock-target.clock≤39*(length-1)+3 := by
+  let entered:=Outer.start source v length bits
+  let output:=evaluateHOLFiniteState entered continuation
+  have actual:=Outer.leading_execute source output.2 base u v length bits ready j continuation output.1 rfl
+  have observed : output.1=some (.returned value):=congrArg Prod.fst (actual.symm.trans normal)
+  have innerRun : evaluateHOLFiniteState entered continuation=(some (.returned value),output.2):=Prod.ext observed rfl
+  have safe : LocalPrefix (ofString "u") Outer.loop:=.loop Outer.test Outer.body_safe
+  obtain ⟨middle,loopRun,finishRun,kept⟩:=safe.normal_continue entered output.2 Trailing.finish value innerRun
+  obtain ⟨quotient,low,high,loopResult⟩:=Outer.loop_normal entered middle base (Normalized.extended u bits length) (length-1)
+    (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+    (Normalized.digit v bits 0) (Normalized.digit v bits 1) (Outer.normalization_entry source base u v length bits ready installed q) loopRun
+  have trailingReady:=Trailing.of_outer_loop source middle base u v quotient length bits low high ready loopResult
+  have remainderReady:=Remainder.of_outer_loop source middle base u v quotient length bits low high ready loopResult r
+  obtain ⟨funded,valueEq,endpoint⟩:=Trailing.finish_normal middle output.2 base low high length bits trailingReady remainderReady ⟨0#64,loopResult.entry.j⟩ loopResult.entry.i value finishRun
+  have targetEq : target=Outer.startRestored source (Trailing.finishPost middle base low high length bits) v bits:=by
+    have frame:=congrArg Prod.snd (normal.symm.trans actual)
+    rw [endpoint] at frame
+    exact frame
+  have price:=postNormalization_cost source base u v length bits ready installed q r j
+  rw [normal] at price
+  exact ⟨middle,quotient,low,high,loopResult,valueEq,targetEq,price⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.literal_postNormalization
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.postNormalization_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.postNormalization_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- A real non-timeout enclosing execution derives the normalization
+prefix's own funding. Clock padding exposes the actual fixed prefix before
+any continuation, without assuming a future successful normalization result. -/
+theorem prefix_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length : Nat) (checked : Entry source base u v length)
+    (installed : OriginalCode.Installed source.code) (continuation : ProgHOL 64) (result : Option (PanSemResultExact 64))
+    (normal : evaluateHOLFiniteState source (call continuation)=(result,target)) (notTimeout : result≠some .timeOut) :
+    ∃ bits inner,length+1≤source.clock ∧
+      Ready (post (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits) base u v length bits ∧
+      (post (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits).clock=source.clock-(length+1) ∧
+      evaluateHOLFiniteState (post (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits) continuation=(result,inner) ∧
+      target=restore source "s" inner := by
+  let paddedSource:={source with clock:=source.clock+(length+1)}
+  have padded:=panPropsEvaluateAddClockEq (call continuation) source result target (length+1) ⟨normal,notTimeout⟩
+  obtain ⟨paddedBits,paddedReady,paddedClock,prefixRun⟩:=prefix_execute paddedSource base u v length (checked.withClock (source.clock+(length+1))) installed
+    (by change length+1≤source.clock+(length+1);omega) continuation
+  let boundary:=post (bind {paddedSource with clock:=paddedSource.clock-1} "s" (BitVec.ofNat 64 paddedBits)) base u v length paddedBits
+  have compared:=congrArg (fun output : Option (PanSemResultExact 64)×PanSemStateFiniteExact 64 Guest.HostMemory=>output.2.clock) (prefixRun.symm.trans padded)
+  change (evaluateHOLFiniteState boundary continuation).2.clock=target.clock+(length+1) at compared
+  have forward:=evaluateHOLFiniteState_clock_le boundary continuation
+  change boundary.clock=(source.clock+(length+1))-(length+1) at paddedClock
+  have funded : length+1≤source.clock:=by omega
+  obtain ⟨bits,ready,clock,actual⟩:=prefix_execute source base u v length checked installed funded continuation
+  let entered:=post (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits
+  let output:=evaluateHOLFiniteState entered continuation
+  have observed : output.1=result:=congrArg Prod.fst (actual.symm.trans normal)
+  have endpoint : target=restore source "s" output.2:=congrArg Prod.snd (normal.symm.trans actual)
+  exact ⟨bits,output.2,funded,ready,clock,Prod.ext observed rfl,endpoint⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.prefix_normal

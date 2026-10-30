@@ -5815,3 +5815,50 @@ return and ordinary/scoped callers. Continue through digits_divmod/u256,
 Taylor/header/main, uniform target-step composition, exact K, dominant slack
 review and final cleanup. Source-clock allowances omit straight-line target
 work. Historical untracked WIPs and executable/fixed premises stay untouched.
+
+
+## Complete original post-normalization continuation and prefix funding
+
+At n=2 the original trailing j=m-n+1 assignment and quotient-clear loop
+now execute exactly one real Q[m-1]=0 store, increment j to m and observe the
+false guard. All-outcome cost≤1; normal completion derives its own funding
+and exact physical post-state. The literal right-associated prefix resumes
+any original continuation without reassociating executable bytes.
+
+Actual Q/UN workspace separation proves that store retains the entire
+previously derived remainder entry. The same preceding outer-loop result
+supplies q/m/n and typed i/j. The complete literal quotient-clear/remainder/
+return suffix now executes in3ticks and returns0 with the genuine cleared
+locals and exact physical post-state. Every stopped outcome costs≤3; actual
+returned outcomes derive their own funding and result.
+
+The full original continuation after normalization is now identified
+literally: leading VN captures/j initialization, complete outer quotient
+loop, quotient clear, both final remainder stores and return. At every clock
+and on every outcome its source allowance is39*(m-1)+3. Actual returns expose
+the genuine outer-loop quotient/remainder result and exact final suffix
+state inside the real restored leading scopes. All entries follow from that
+same normalized image and actual loop; no future result oracle is supplied.
+
+A generic actual non-timeout normalization-call trace now derives m+1
+funding, the real nlz32 shift, complete normalized images, exact boundary
+clock and actual continuation trace/restoration. The proof pads the actual
+execution using the pinned evaluator clock theorem, runs the already proved
+fixed prefix, and derives funding from clock monotonicity before replaying
+that same real prefix at the original clock. It assumes no future
+normalization result or successful funding.
+
+Validation: current-two-digit-post-normalization-v4.log PASS1127jobs;
+all14new printed facts have only permitted axioms. Index8700modules/
+18697facts; inventory8745/replacement closure0/fixed files unchanged.
+Claim infinity; no global finite target K/full verifier success. Effort
+estimate remains50%, plausible40–60%. Usage36%weekly/0resetcredits,
+ordinary usage allowed. No new candidate paths; package stays65536entries.
+
+Next: connect the complete nlz32/normalization call to this literal suffix
+and its actual normal result, then introduce the original i/j/un/vn scopes
+and n=1 guard to finish the actual two-digit divmnu callee and callers.
+Continue through digits_divmod/u256, Taylor/header/main, uniform target-step
+composition, exact K, dominant slack review and final cleanup. Source-clock
+allowances omit straight-line target work. Historical untracked WIPs and
+executable/fixed premises stay untouched.

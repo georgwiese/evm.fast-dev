@@ -5501,3 +5501,45 @@ Next: original return-list/ntx stores and BAL initialization, untouched zeroed
 output-counter images, real state/table facts for system execution (gas30000000,
 above several legacy regular16777216 interfaces), then finalization, complete
 main/source, uniform formal target steps, exact K, dominant slack and cleanup.
+
+## Original executor reaches BAL with both real empty lists and output count
+
+Later actual persistent calls and exact scalar stores now retain the complete
+request extent/output pointer as well as the existing empty-log/array/input
+contract, using actual caller-name and memory frames. The original rls
+constructor supplies an aligned owned24byte header and128byte backing after
+the request array, with exact pointer/length0/capacity16 fields and heap beyond
+the backing. Its real bo+72 store and original ntx store at bo+80 retain those
+fields and every preceding request/log/array/header/input/be/bo fact. The
+stored transaction count is the actual already-proved zero word; no new
+future-success, room, count or initialized-backing premise is introduced.
+
+Every return-list-prefix outcome either stops within5source ticks or reaches
+the original BAL initializer with that full physical contract. The complete
+actual executor prefix connected so far therefore costs131source ticks.
+The independent all-outcome whole-initialization cost161 remains checked;
+BAL physical initialization, mandatory system execution and target K are open.
+
+Validation: current-execute-block-return-list-v1.log PASS3103jobs; all7new
+printed facts use permitted axioms. Index8701modules/19156facts; inventory
+8741, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65532package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage44%, no
+reset credits, ordinary usage allowed. Original executable unchanged.
+
+Additional compatibility evidence: current Guest.Software.guestFn_htab_new_scratch
+allocates88bytes and current htab_get calls htab_find_leaf (Patricia tables).
+The older ScratchTable.Program.actions allocates72bytes. Several legacy
+GasBudget/root-frame interfaces use that older table model, so their actual
+code/model entry requirements must be ported before use, alongside the
+already-known system gas30000000 versus regular16777216 cap. Do not assume
+these older interfaces instantiate on the current code just because they
+were previously checked. Pure arithmetic/rank results may still be reused.
+
+Next: real BAL global-result table/allocation calls and zero bal_index,
+retaining this complete physical state. Then untouched zeroed output-counter
+images and actual state/table facts, current-code system gas/table interfaces,
+mandatory calls/finalization, complete main/source, uniform formal target
+steps, exact K, dominant slack review and cleanup. Selected executor root is
+InitECandidate.Solver.Input.CurrentVerify.BlockExecution; retain two workers,
+artifact cache disabled and8GiB resource cap. Four candidate path slots remain.

@@ -5984,3 +5984,40 @@ Continue through full-multiply/Taylor/header/main, uniform target-step
 composition, exact K, dominant slack review and cleanup. Source-clock
 allowances omit target straight-line work. Historical untracked WIPs and
 executable/fixed premises stay untouched.
+
+
+## Actual two-digit wrapper clears, both branches and returned remainder
+
+The original post-scan digits_divmod prefix now executes both real clears
+and the actual mm<n guard. On the reached large branch, the real Q[0..15]
+and R[0..7] zero stores supply divmnu's padded input requirements. Its actual
+ignored-result call and physical digits_to_u256 reconstruction supply the
+returned remainder quad, complete quotient image, natural U/D and U%D,
+remainder<D, metadata and outside-memory preservation. Actual normal traces
+derive their own clear funding and lexical restoration. The complete reached
+post-scan large branch spends at most40*mm-9source ticks on every outcome.
+Quotient cells above the original numerator width remain zero.
+
+When the real numerator scan finds zero or one digit, the original guard
+returns the physical numerator quad after quotient clearing, before either
+remainder clearing or division. This branch spends exactly17ticks when
+funded and at most17on every outcome. Any actual normal return derives its
+own funding and returned quad. The actual short image proves U<D, so its
+natural quotient is0and remainder isU; eight-word reconstruction equals the
+full original numerator number. These are proved branch results rather than
+assumptions of future successful calls.
+
+Validation: current-two-digit-large-tail-v5.log PASS1127jobs; all16new
+printed facts use only permitted axioms. Index8700modules/18749facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage37%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: combine both post-scan result contracts and their physical memory
+frames with the already checked converter/two-scan prefix, using the actual
+scan/trim coupling for the complete digits_divmod allowance. Connect original
+workspace declarations and u256/full-multiply callers, then actual
+Taylor/header/main, uniform target-step composition, exact K, dominant slack
+review and cleanup. Source-clock allowances omit target straight-line work.
+Historical untracked WIPs and executable/fixed premises stay untouched.

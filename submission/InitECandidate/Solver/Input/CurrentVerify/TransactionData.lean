@@ -3719,7 +3719,7 @@ theorem list_body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
     (value : ValueHOL 64) (normal : evaluateHOLFiniteState source listBody=(some (.returned value),post)) :
     value=.val (.word heap) ∧ AllocatedBytes.Arena heap 24 ∧ PersistentNormalFrame source post heap ∧
       ∃ buffer,AllocatedBytes.Arena buffer (size*cap).toNat ∧ heap.toNat+24≤buffer.toNat ∧
-        post.memory heap=.word buffer ∧ post.memory (heap+8#64)=.word 0#64 ∧ post.memory (heap+16#64)=.word cap := by
+        NormalHeapEffects.AtLeast (buffer.toNat+(size*cap).toNat) post ∧ post.memory heap=.word buffer ∧ post.memory (heap+8#64)=.word 0#64 ∧ post.memory (heap+16#64)=.word cap := by
   rw [(list_shapes 0#64 cap).1] at normal
   rcases CurrentAlloc.scoped_classified source post "l" [.const 24#64] listAfterHeader heap 24#64 rfl installed heapCell heapBound _ normal with stopped|reached
   · exact (stopped.2 value rfl).elim
@@ -3799,6 +3799,7 @@ theorem list_body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemo
         rw [memoryEq]
         exact WordWrites.write_unique source.memory writes entry (list_writes_distinct heap buffer cap) member
       exact ⟨answer,headerArena,frame,buffer,backingArena,beforeBuffer,
+        ⟨next,nextCell,bufferGuards.2.2.1,bufferGuards.2.2.2.1,bufferGuards.2.2.2.2⟩,
         by simpa using fields (heap+0#64,buffer) (by simp [writes,FieldStores.writes,listFields,FieldStores.Value.word]),
         fields (heap+8#64,0#64) (by simp [writes,FieldStores.writes,listFields,FieldStores.Value.word]),
         fields (heap+16#64,cap) (by simp [writes,FieldStores.writes,listFields,FieldStores.Value.word])⟩
@@ -3831,15 +3832,18 @@ theorem list_scoped_reached (source post : PanSemStateFiniteExact 64 Guest.HostM
       (∀ key : MlS,key≠ofString name→post.locals.lookup key=source.locals.lookup key) ∧
       AllocatedBytes.Arena heap 24 ∧ PersistentNormalFrame source post heap ∧
       ∃ buffer,AllocatedBytes.Arena buffer (size*cap).toNat ∧ heap.toNat+24≤buffer.toNat ∧
-        post.memory heap=.word buffer ∧ post.memory (heap+8#64)=.word 0#64 ∧ post.memory (heap+16#64)=.word cap := by
+        NormalHeapEffects.AtLeast (buffer.toNat+(size*cap).toNat) post ∧ post.memory heap=.word buffer ∧ post.memory (heap+8#64)=.word 0#64 ∧ post.memory (heap+16#64)=.word cap := by
   obtain ⟨callee,called,sizeCell,capCell⟩:=word_pair_environment source.code.lookup (ofString "lst_new") (ofString "esz") (ofString "cap")
     listBody .one size cap (by decide) (list_code source.code arena.code)
   obtain ⟨child,value,normal,endpoint⟩:=reached.scoped_known (ofString name) .one (ofString "lst_new") arguments _ listBody callee .one args called
-  obtain ⟨answer,headerArena,frame,buffer,backingArena,before,first,count,capacity⟩:=list_body_normal (callEntryStateHOLFinite source callee)
+  obtain ⟨answer,headerArena,frame,buffer,backingArena,before,extent,first,count,capacity⟩:=list_body_normal (callEntryStateHOLFinite source callee)
     child heap size cap sizeCell capCell heapCell heapArena heapBound heapAligned arena.domain arena.code value normal
   have callerFrame : PersistentNormalFrame source post heap:=frame.of_erase _ _ source post heap rfl (by rw [endpoint]; rfl)
   have memory : post.memory=child.memory:=by rw [endpoint]; rfl
-  refine ⟨?_,?_,headerArena,callerFrame,buffer,backingArena,before,?_,?_,?_⟩
+  have callerExtent : NormalHeapEffects.AtLeast (buffer.toNat+(size*cap).toNat) post:=by
+    obtain ⟨next,cell,lower,bounded,aligned⟩:=extent
+    exact ⟨next,by rw [endpoint]; exact cell,lower,bounded,aligned⟩
+  refine ⟨?_,?_,headerArena,callerFrame,buffer,backingArena,before,callerExtent,?_,?_,?_⟩
   · rw [endpoint,answer]
     simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
   · intro key other
@@ -4163,3 +4167,190 @@ end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.arrays_cost
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.arrays_trace
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.body_arrays_trace
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Later real persistent helpers retain both earlier array pointer cells
+and their owned extents. Their actual preserved caller bindings are explicit. -/
+theorem Arrays.of_persistent {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs heap : BitVec 64} {boundary encoded : Nat}
+    (ready : Arrays input source pointer si record gasWord header be bo txs rcs boundary encoded)
+    (beforeHeap : rcs.toNat+16≤heap.toNat) (frame : PersistentNormalFrame source post heap)
+    (siCell : post.locals.lookup (ofString "si")=some (.val (.word si)))
+    (headerCell : post.locals.lookup (ofString "hdr")=some (.val (.word header)))
+    (payloadCell : post.locals.lookup (ofString "pl")=some (.val (.word record)))
+    (countCell : post.locals.lookup (ofString "ntx")=some (.val (.word 0#64)))
+    (txsCell : post.locals.lookup (ofString "txs")=some (.val (.word txs)))
+    (rcsCell : post.locals.lookup (ofString "rcs")=some (.val (.word rcs))) :
+    Arrays input post pointer si record gasWord header be bo txs rcs boundary encoded := by
+  have outputBefore : bo.toNat+88≤heap.toNat:=by
+    have first:=ready.beforeTxs
+    have second:=ready.beforeRcs
+    omega
+  have output:=ready.output.of_persistent outputBefore frame siCell headerCell payloadCell countCell
+  obtain ⟨next,nextCell,nextArena,nextBound,nextAligned,advanced⟩:=frame.nextHeap
+  have afterRcs : NormalHeapEffects.AtLeast (rcs.toNat+16) post:=⟨next,nextCell,by omega,nextBound,nextAligned⟩
+  have earlier (offset : Nat) (inside : offset<88) : (bo+BitVec.ofNat 64 offset).toNat<heap.toNat:=by
+    have number:=byteAddress_toNat bo offset (by have upper:=ready.output.arena.upper; omega)
+    change (bo+BitVec.ofNat 64 offset).toNat=bo.toNat+offset at number
+    rw [number]
+    omega
+  exact ⟨output,txsCell,rcsCell,ready.txsArena,ready.rcsArena,ready.txsAligned,ready.rcsAligned,
+    ready.beforeTxs,ready.beforeRcs,afterRcs,(frame.memory _ (earlier 24 (by decide))).trans ready.txsField,
+    (frame.memory _ (earlier 32 (by decide))).trans ready.rcsField⟩
+
+/-- Exact normal store observations lift the physical array contract.
+Only the two actual protected pointer cells need memory transport. -/
+theorem Arrays.of_store_frame {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs : BitVec 64} {boundary encoded : Nat}
+    (ready : Arrays input source pointer si record gasWord header be bo txs rcs boundary encoded)
+    (output : OutputBuffer input post pointer si record gasWord header be bo boundary encoded)
+    (locals : post.locals=source.locals) (globals : post.globals=source.globals)
+    (txsMemory : post.memory (bo+24#64)=source.memory (bo+24#64))
+    (rcsMemory : post.memory (bo+32#64)=source.memory (bo+32#64)) :
+    Arrays input post pointer si record gasWord header be bo txs rcs boundary encoded := by
+  obtain ⟨heap,cell,lower,bounded,aligned⟩:=ready.heapAfter
+  exact ⟨output,by rw [locals]; exact ready.txsCell,by rw [locals]; exact ready.rcsCell,
+    ready.txsArena,ready.rcsArena,ready.txsAligned,ready.rcsAligned,ready.beforeTxs,ready.beforeRcs,
+    ⟨heap,by rw [globals]; exact cell,lower,bounded,aligned⟩,txsMemory.trans ready.txsField,rcsMemory.trans ready.rcsField⟩
+
+def logActions : List CallPrefix.Action:=
+  [.scoped (ofString "logs") .one (ofString "lst_new") [.const 8#64,.const 16#64],
+   .command (.store (outputAddress 40) (localVar "logs"))]
+def beforeRequests : ProgHOL 64:=(CallPrefix.cutAt 2 beforeLogs).2
+
+theorem logs_shape : beforeLogs=CallPrefix.program logActions beforeRequests := by
+  simp only [beforeLogs,beforeArrays,afterCount,afterPayload,body,Guest.Software.guestFn_execute_block,progToHOL,
+    expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,CallPrefix.cutAt,CallPrefix.program,
+    logActions,beforeRequests,outputAddress,Scalar.plus,localVar] <;> trivial
+
+structure Logs (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer si record gasWord header be bo txs rcs logs buffer : BitVec 64) (boundary encoded : Nat) : Prop where
+  arrays : Arrays input source pointer si record gasWord header be bo txs rcs boundary encoded
+  cell : source.locals.lookup (ofString "logs")=some (.val (.word logs))
+  arena : AllocatedBytes.Arena logs 24
+  aligned : logs.toNat%8=0
+  backing : AllocatedBytes.Arena buffer 128
+  before : rcs.toNat+16≤logs.toNat
+  headerBefore : logs.toNat+24≤buffer.toNat
+  heapAfter : NormalHeapEffects.AtLeast (buffer.toNat+128) source
+  pointerField : source.memory logs=.word buffer
+  countField : source.memory (logs+8#64)=.word 0#64
+  capacityField : source.memory (logs+16#64)=.word 16#64
+  outputField : source.memory (bo+40#64)=.word logs
+
+/-- The original log constructor and output store retain the real empty
+list, its backing extent and heap, all earlier arrays and input/header data. -/
+theorem logs_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs : BitVec 64} {boundary encoded : Nat}
+    (ready : Arrays input source pointer si record gasWord header be bo txs rcs boundary encoded)
+    (execution : CallPrefix.Execution source logActions post) :
+    ∃ logs buffer,Logs input post pointer si record gasWord header be bo txs rcs logs buffer boundary encoded := by
+  change CallPrefix.Execution source
+    (.scoped (ofString "logs") .one (ofString "lst_new") [.const 8#64,.const 16#64]::
+      [.command (.store (outputAddress 40) (localVar "logs"))]) post at execution
+  obtain ⟨allocated,allocation,last⟩:=execution.head
+  obtain ⟨logs,heapCell,lower,bounded,aligned⟩:=ready.heapAfter
+  have cursorArena : AllocatedBytes.Arena logs 0:=⟨by have low:=ready.rcsArena.lower; omega,by omega⟩
+  obtain ⟨cell,other,headerArena,frame,buffer,backingArena,headerBefore,extent,pointerCell,countCell,capacityCell⟩:=
+    list_scoped_reached source allocated "logs" logs 8#64 16#64 [.const 8#64,.const 16#64] rfl
+      heapCell cursorArena bounded aligned ready.output.environment.physical.data.arena allocation
+  change AllocatedBytes.Arena buffer 128 at backingArena
+  change NormalHeapEffects.AtLeast (buffer.toNat+128) allocated at extent
+  have arrays:=ready.of_persistent lower frame
+    ((other _ (by decide)).trans ready.output.environment.physical.data.siLocal)
+    ((other _ (by decide)).trans ready.output.environment.physical.headerCell)
+    ((other _ (by decide)).trans ready.output.environment.physical.payloadCell)
+    ((other _ (by decide)).trans ready.output.count)
+    ((other _ (by decide)).trans ready.txsCell) ((other _ (by decide)).trans ready.rcsCell)
+  have storeRun : evaluateHOLFiniteState allocated (.store (outputAddress 40) (localVar "logs"))=(none,post):=by
+    have reached:=last.singleton
+    cases reached with | command _ _ run=>exact run
+  have read : eval allocated (localVar "logs")=some (.val (.word logs)):=by
+    simp [eval,evalHOLExact,toExact,localVar,cell]
+  obtain ⟨output,locals,globals,outputField,away⟩:=output_word_store arrays.output 40 (localVar "logs") logs (by decide) (by decide) read storeRun
+  have different (offset : BitVec 64) (distinct : offset≠40#64) : bo+offset≠bo+40#64:=by
+    intro same
+    exact distinct ((BitVec.add_right_inj bo).mp same)
+  have finalArrays:=arrays.of_store_frame output locals globals (away _ (different 24#64 (by decide))) (away _ (different 32#64 (by decide)))
+  have headerAway (offset : Nat) (inside : offset<24) : logs+BitVec.ofNat 64 offset≠bo+40#64:=by
+    have headerNumber : (logs+BitVec.ofNat 64 offset).toNat=logs.toNat+offset:=byteAddress_toNat logs offset (by have upper:=headerArena.upper; omega)
+    have outputNumber : (bo+40#64).toNat=bo.toNat+40:=byteAddress_toNat bo 40 (by have upper:=ready.output.arena.upper; omega)
+    have first:=ready.beforeTxs
+    have second:=ready.beforeRcs
+    intro same
+    have equal:=congrArg BitVec.toNat same
+    rw [headerNumber,outputNumber] at equal
+    omega
+  have finalExtent : NormalHeapEffects.AtLeast (buffer.toNat+128) post:=by
+    obtain ⟨heap,cell,low,bound,align⟩:=extent
+    exact ⟨heap,by rw [globals]; exact cell,low,bound,align⟩
+  exact ⟨logs,buffer,finalArrays,by rw [locals]; exact cell,headerArena,aligned,backingArena,lower,headerBefore,finalExtent,
+    (away _ (by simpa using headerAway 0 (by decide))).trans pointerCell,
+    (away _ (headerAway 8 (by decide))).trans countCell,(away _ (headerAway 16 (by decide))).trans capacityCell,outputField⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.Arrays.of_persistent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.Arrays.of_store_frame
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.logs_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.logs_reached
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Full list caller and its actual output store, with every failed/short
+outcome included in the original five-tick caller allowance. -/
+theorem logs_cost (code) (installed : OriginalCode.Installed code) :
+    ClockCost.Bound code (CallPrefix.program logActions .skip) 5 := by
+  simp only [logActions,CallPrefix.program]
+  apply ClockCost.scoped_body (calleePrice:=4) (continuationPrice:=0) (formals:=listFormals) (body:=listBody)
+    (returnShape:=.one) (entry:=list_code code installed) (calleeBound:=list_cost code installed)
+  exact ClockCost.sequence code _ _ 0 0 (ClockCost.store code _ _) (ClockCost.skip code)
+
+/-- The real log prefix either stops within five source ticks or supplies
+its empty list and both earlier arrays at the original request allocation. -/
+theorem logs_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs : BitVec 64} {boundary encoded : Nat}
+    (ready : Arrays input source pointer si record gasWord header be bo txs rcs boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source beforeLogs=(outcome,post)) :
+    source.clock-post.clock≤5 ∨ ∃ current inner logs buffer,Logs input current pointer si record gasWord header be bo txs rcs logs buffer boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤5 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current beforeRequests=(outcome,inner) := by
+  rw [logs_shape] at run
+  rcases CallPrefix.priced_frame_trace source post logActions beforeRequests 5
+    (logs_cost source.code ready.output.environment.physical.data.arena.code source rfl) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,scope,rest⟩:=reached
+    obtain ⟨logs,buffer,physical⟩:=logs_reached ready execution
+    exact Or.inr ⟨current,inner,logs,buffer,physical,forward,price,scope,rest⟩
+
+/-- Entire actual original executor prefix through log-list initialization,
+retaining its empty header/backing and every earlier physical input fact. -/
+theorem body_logs_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be : BitVec 64} {boundary encoded : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (ready : RunAttempt.BlockEnvBuffer input (declarationEntry source record) pointer si record gasWord header be boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤124 ∨ ∃ current inner bo txs rcs logs buffer,
+      Logs input current pointer si record gasWord header be bo txs rcs logs buffer boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤124 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeRequests=(outcome,inner) := by
+  rcases body_arrays_trace data ready outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨before,target,bo,txs,rcs,arrays,forward,price,endpoint,continued⟩:=reached
+    rcases logs_trace arrays outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,logs,buffer,physical,logForward,logPrice,scope,rest⟩:=reached
+      exact Or.inr ⟨current,inner,bo,txs,rcs,logs,buffer,physical,by omega,by omega,endpoint.trans scope.clock,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.logs_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.logs_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.body_logs_trace

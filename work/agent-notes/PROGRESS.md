@@ -7203,3 +7203,41 @@ empty header images and heap beyond backing extents. Then request allocation,
 BAL/state/table facts for the first mandatory system call (gas30000000, not
 the regular16777216 cap), remaining calls/finalization, complete main/source,
 uniform formal target steps, exact K, dominant slack review and cleanup.
+
+## Original executor reaches request allocation with its real empty log list
+
+The actual normal list body/caller now additionally retains the bounded
+aligned heap beyond its backing allocation. This is a derived conclusion
+from the same actual second allocation, with no added entry premise. It
+prevents later fresh persistent allocations from aliasing the live backing
+buffer. Both generic list normal interfaces and their earlier callers have
+been rechecked with that stronger conclusion.
+
+Real persistent helpers and exact output stores now transport both array
+pointer cells, their caller bindings and full earlier physical state. The
+original lst_new(8,16) call and bo+40 store supply the exact empty24byte log
+header (backing pointer, length0, capacity16), owned128byte backing, aligned
+ordered header after both arrays, actual logs binding/output pointer, and a
+heap beyond the backing. Every earlier input/header/be/bo/array fact survives
+that same real prefix execution; backing contents remain unspecified.
+
+The actual log prefix costs≤5source ticks on every outcome. Composed with
+the complete original prefix already connected, execute_block either stops
+within124source ticks or reaches its original request allocation with the
+full physical log/array/input contract. Whole initialization still has its
+separate161tick cost; mandatory system execution and target K remain open.
+
+Validation: current-execute-block-logs-trace-v1.log PASS3102jobs; all7new
+printed facts use permitted axioms. Index8700modules/19141facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage44%, no
+reset credits, ordinary usage allowed. No new candidate paths; historical
+untracked WIPs untouched. Original executable unchanged.
+
+Next: connect real request-array/return-list setup and output stores. Derive
+images of untouched zeroed output counters (not yet asserted by the ownership
+contracts), then BAL/state/table facts for the first system call. Its original
+gas is30000000, above the regular16777216 logical cap in some legacy budget
+interfaces. Continue mandatory calls/finalization, complete main/source,
+uniform formal target steps, exact K, dominant slack review and cleanup.

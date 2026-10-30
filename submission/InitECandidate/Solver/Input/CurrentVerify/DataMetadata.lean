@@ -1,6 +1,7 @@
 import InitECandidate.Solver.Input.CurrentVerify.RunInputs
 import InitECandidate.Solver.PanHeapGlobals
 import InitECandidate.Solver.Input.UDivMod.CurrentFrame
+import InitECandidate.Solver.Input.CounterLoopCost
 
 namespace InitECandidate.Solver.Input.CurrentVerify
 open Flapjack PanSemStateFiniteExact WitnessRadix
@@ -224,3 +225,44 @@ theorem Data.after_word_division {input : Guest.InputBlob} {source post : PanSem
 end InitECandidate.Solver.Input.CurrentVerify
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.Data.after_word_division
+
+namespace InitECandidate.Solver.Input.CurrentVerify
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+
+/-- A genuine whole-helper workspace frame protects every decoded main
+input. Its separate SI binding belongs to the restored caller, not the child. -/
+theorem Data.of_workspace_result {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary price : Nat} (data : Data input source pointer si record gasWord boundary)
+    (result : TaylorCurrent.WorkspaceResult source post 2701134824#64 price)
+    (siLocal : post.locals.lookup (ofString "si")=some (.val (.word si))) :
+    Data input post pointer si record gasWord boundary := by
+  have metadata : MemoryMetadata.erase post=MemoryMetadata.erase source:=by
+    rw [result.state]
+    rfl
+  apply data.of_workspace_metadata metadata siLocal
+  intro query afterWorkspace beforeBoundary
+  apply result.away query
+  intro buffer index inside hit
+  have number:=UDivMod.WideDigits.Workspace.slot_number source 2701134824#64 data.u256_workspace buffer index inside
+  change (UDivMod.WideDigits.slot (UDivMod.WideDigits.Workspace.pointer 2701134824#64 buffer) index).toNat=
+    2701134824+UDivMod.WideDigits.Workspace.offset buffer+8*index at number
+  have extent:=UDivMod.WideDigits.Workspace.fits buffer
+  have same:=congrArg BitVec.toNat hit
+  omega
+
+/-- The same actual child return supplies the real caller entry and retains
+all main-input data. No SI local is assumed inside the helper's environment. -/
+theorem Data.after_workspace_return {input : Guest.InputBlob} {source target : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord : BitVec 64} {boundary price : Nat} (data : Data input source pointer si record gasWord boundary)
+    (callee : HolFiniteMapExact MlS (ValueHOL 64)) (name : String) (returned : ValueHOL 64)
+    (notSi : ofString name≠ofString "si") (funded : 1≤source.clock)
+    (result : TaylorCurrent.WorkspaceResult (callEntryStateHOLFinite source callee) target 2701134824#64 price) :
+    Data input (CallNormal.continuationEntry source target name returned) pointer si record gasWord boundary := by
+  apply data.of_workspace_result (result.caller callee name returned funded)
+  simpa [CallNormal.continuationEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,notSi,Ne.symm notSi] using data.siLocal
+
+end InitECandidate.Solver.Input.CurrentVerify
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.of_workspace_result
+#print axioms InitECandidate.Solver.Input.CurrentVerify.Data.after_workspace_return

@@ -61,6 +61,13 @@ Its complete caller memory frame is checked. Request hashing and the full physic
 header return are connected; the remaining main continuation,
 uniform target composition, dominant-slack review and final cleanup remain open.
 
+The complete unchanged Taylor body now costs at most 449602 source ticks;
+its original blob-price caller costs 449604, and calculate_excess_blob_gas
+costs 449690 body / 449691 caller ticks. Actual returns preserve all source
+metadata and memory outside the fixed division workspace. The restored caller
+can retain its complete decoded main-input record from the same execution.
+Base-fee/header validation and the remaining main continuation are still open.
+
 ## Earlier checked milestones, in order
 
 Unchanged decode_header208 costs≤195*inputLength+473
@@ -4518,6 +4525,40 @@ Targeted builds are not full isolated submission verification.
 
 Next: actual excess-blob-gas normal-return memory frame and header caller;
 then the remaining header/main continuation, uniform formal target steps,
+exact K, dominant slack review and cleanup. Source clocks omit straight-line
+target work. Historical untracked WIPs and fixed executable premises remain
+untouched.
+
+## Complete actual excess-blob-gas return and retained main inputs
+
+The actual post-price arithmetic now preserves every memory cell and global,
+including the real nonzero scalar division. Genuine returned price scopes
+retain the blob-price result's outside-workspace frame through that arithmetic
+and lexical restoration. The original early-return decision either finishes
+without memory changes or reaches the same real price scope. All four actual
+parent-header declarations then supply the complete helper normal-return frame.
+
+The original helper's scoped caller receives unchanged metadata and protected
+physical memory at the child's actual remaining clock. A shared caller-frame
+rule adds only its own funded call tick. The current main-input record now
+consumes any such whole-helper workspace frame and retains all decoded input,
+heap, hash workspace and gas facts. SI is required only at the restored caller;
+no SI binding is assumed in the helper's actual formal environment.
+
+Validation: current-excess-blob-main-frame-v1.log PASS 1907 jobs, including
+shared startup/input/hash dependencies and both changed proof modules. All 10
+new printed facts use only permitted axioms. Index 8700 modules / 18880 facts;
+inventory 8745 / replacement closure 0 / fixed files unchanged. Claim infinity;
+no global finite target K or full verifier success. Effort estimate remains
+55%, plausible 45–65%, relative to reference main. No new candidate paths;
+package remains 65536 entries. Weekly usage 39%, no reset credits, ordinary
+usage allowed. Targeted builds are not full isolated submission verification.
+
+Next: bound the original calculate_base_fee_per_gas helper using the checked
+word-divisor implementation. Its parent target is the actual 64-bit parent
+gas limit shifted right once, hence below 2^63; zero divisors must take their
+real trap path. Preserve its workspace frame and connect validate_header,
+then finish the remaining main continuation, uniform formal target steps,
 exact K, dominant slack review and cleanup. Source clocks omit straight-line
 target work. Historical untracked WIPs and fixed executable premises remain
 untouched.

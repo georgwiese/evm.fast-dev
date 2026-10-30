@@ -9,6 +9,7 @@ import InitECandidate.Solver.Input.ClockCostSequenceReached
 import InitECandidate.Solver.Input.ClockCostScopedReached
 import InitECandidate.Solver.Input.ClockCostCurrentValue
 import InitECandidate.Solver.Input.ClockCostDeclaredReached
+import InitECandidate.Solver.Input.PureDecision
 import InitECandidate.Solver.Input.ClockCostCurrentLoop
 import InitECandidate.Solver.Input.CounterFlow
 import InitECandidate.Solver.Input.LocalFlow
@@ -2402,3 +2403,283 @@ end InitECandidate.Solver.Input.ExcessBlobCurrent
 
 #print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.call_cost
 #print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.scoped_cost
+
+namespace InitECandidate.Solver.Input.ExcessBlobCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The literal scalar division has divisor 21 even when its first read
+fails. Every reached child therefore preserves the full nonlocal state. -/
+theorem quotient_frame (code) (installed : OriginalCode.Installed code) : LocalEffects.Preserves code quotientCall := by
+  classical
+  intro source sameCode
+  have divCode:=UDivMod.Divide.original_code source.code (sameCode.symm ▸ installed)
+  cases read : eval source quotientArgument with
+  | none=>
+    simp only [eval] at read
+    rw [quotientCall,evaluateHOLFiniteState_decCall_fixClockRewrite]
+    simp [evalListHOLFinite,evalListHOLExact,read]
+  | some value=>
+    let actualValues : List (ValueHOL 64):=[value,.val (.word 21#64)]
+    have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [quotientArgument,.const 21#64]=some actualValues:=by
+      simp only [eval] at read
+      simp [actualValues,evalListHOLFinite,evalListHOLExact,read,evalHOLExact]
+    cases value with
+    | val payload=>
+      cases payload with
+      | word left=>
+        obtain ⟨callee,called,a,b⟩:=word_pair_environment source.code.lookup (ofString "udiv") (ofString "a") (ofString "b")
+          UDivMod.Divide.body .one left 21#64 (by decide) divCode
+        rw [quotientCall]
+        exact LocalEffects.scoped_current source (ofString "q") .one (ofString "udiv") [quotientArgument,.const 21#64] _
+          UDivMod.Divide.body quotientReturn callee .one args called
+          (UDivMod.Divide.nonzero_frame (callEntryStateHOLFinite source callee) left 21#64 a b (by decide)
+            (UDivMod.original_code source.code (sameCode.symm ▸ installed))) (LocalEffects.returned source.code _)
+    | rStruct fields | nStruct constructor fields=>
+      have failed : lookupCodeHOLFinite source.code.lookup (ofString "udiv") actualValues=none:=by
+        apply (lookupCodeHOLFinite_eq_none_iff _ _ _).mpr
+        unfold lookupCodeHOLExact
+        rw [divCode]
+        simp [actualValues,UDivMod.formals,shapeOfHOLExact,shapeEqHOL]
+      rw [quotientCall,evaluateHOLFiniteState_decCall_fixClockRewrite,args]
+      simp only [failed]
+
+/-- After the real blob-price call, the unchanged arithmetic and nonzero
+scalar division preserve every memory cell, global and other nonlocal field. -/
+theorem after_price_frame (code) (installed : OriginalCode.Installed code) : LocalEffects.Preserves code afterPrice := by
+  have environment:=GasBudget.ArithmeticEffects.current_environment code installed
+  have tail : LocalEffects.Preserves code finish:=by
+    unfold finish
+    exact LocalEffects.sequence code _ _
+      (LocalEffects.conditional code _ _ _ (quotient_frame code installed) (LocalEffects.skip code)) (LocalEffects.returned code _)
+  unfold afterPrice
+  refine LocalEffects.scoped_body code _ _ _ _ _ _ _ _ (environment .u256_from_word)
+    (GasBudget.ArithmeticEffects.original_preserves .u256_from_word code environment) ?_
+  refine LocalEffects.scoped_body code _ _ _ _ _ _ _ _ (environment .u256_mul)
+    (GasBudget.ArithmeticEffects.original_preserves .u256_mul code environment) ?_
+  refine LocalEffects.scoped_body code _ _ _ _ _ _ _ _ (environment .u256_from_word)
+    (GasBudget.ArithmeticEffects.original_preserves .u256_from_word code environment) ?_
+  refine LocalEffects.scoped_body code _ _ _ _ _ _ _ _ (environment .u256_mul)
+    (GasBudget.ArithmeticEffects.original_preserves .u256_mul code environment) ?_
+  exact LocalEffects.scoped_body code _ _ _ _ _ _ _ _ (environment .u256_gt)
+    (GasBudget.ArithmeticEffects.original_preserves .u256_gt code environment) tail
+
+end InitECandidate.Solver.Input.ExcessBlobCurrent
+
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.quotient_frame
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.after_price_frame
+
+namespace InitECandidate.Solver.Input.TaylorCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+
+theorem WorkspaceResult.of_erase {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {price : Nat}
+    (frame : LocalEffects.erase post=LocalEffects.erase source) (cost : source.clock-post.clock≤price) :
+    WorkspaceResult source post base price := by
+  refine ⟨?_,?_,cost⟩
+  · have projected:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+      locals:=post.locals,memory:=post.memory,clock:=post.clock}) frame
+    exact projected
+  · intro query outside
+    exact congrFun (LocalEffects.memory_of_erase source post frame) query
+
+end InitECandidate.Solver.Input.TaylorCurrent
+
+namespace InitECandidate.Solver.Input.ExcessBlobCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The actual returned price scope preserves the caller's protected
+memory through its genuine arithmetic continuation and lexical restoration. -/
+theorem price_call_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source priceCall=(some (.returned returned),post)) :
+    TaylorCurrent.WorkspaceResult source post base 449690 := by
+  classical
+  cases read : eval source (localVar "excess") with
+  | none=>
+    simp only [eval] at read
+    rw [priceCall,evaluateHOLFiniteState_decCall_fixClockRewrite] at normal
+    simp [evalListHOLFinite,evalListHOLExact,read] at normal
+  | some value=>
+    let actualValues : List (ValueHOL 64):=[value]
+    have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "excess"]=some actualValues:=by
+      simp only [eval] at read
+      simp [actualValues,evalListHOLFinite,evalListHOLExact,read]
+    cases value with
+    | val payload=>
+      cases payload with
+      | word numerator=>
+        obtain ⟨callee,called,excess⟩:=word_environment source.code.lookup (ofString "calculate_blob_gas_price") (ofString "excess_blob_gas")
+          BlobPriceCurrent.body RlpWrite.U256Value.tupleShape numerator (BlobPriceCurrent.original_code source.code installed)
+        obtain ⟨funded,target,child,inner,childRun,valid,tailRun,restored⟩:=CallNormal.scoped_returned source post "price"
+          RlpWrite.U256Value.tupleShape (ofString "calculate_blob_gas_price") [localVar "excess"] _ BlobPriceCurrent.body afterPrice
+          callee RlpWrite.U256Value.tupleShape args called returned normal
+        obtain ⟨quotient,childEq,result,entryEq⟩:=BlobPriceCurrent.resume source target base numerator context installed "price"
+          BlobPriceCurrent.body callee RlpWrite.U256Value.tupleShape called child childRun
+        let ready:=CallNormal.continuationEntry source target "price" child
+        have code : ready.code=source.code:=by
+          change (CallNormal.continuationEntry source target "price" child).code=source.code
+          rw [entryEq]
+          rfl
+        have unchanged:=after_price_frame source.code installed ready code
+        rw [tailRun] at unchanged
+        have finalFrame : post={inner with
+            locals:=post.locals,memory:=post.memory,clock:=post.clock}:=by rw [restored];rfl
+        have projected:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+          locals:=post.locals,memory:=post.memory,clock:=post.clock}) unchanged
+        change {inner with locals:=post.locals,memory:=post.memory,clock:=post.clock}={ready with
+          locals:=post.locals,memory:=post.memory,clock:=post.clock} at projected
+        have original : {ready with locals:=post.locals,memory:=post.memory,clock:=post.clock}={source with
+            locals:=post.locals,memory:=post.memory,clock:=post.clock}:=by
+          change {CallNormal.continuationEntry source target "price" child with
+            locals:=post.locals,memory:=post.memory,clock:=post.clock}=_
+          rw [entryEq]
+          rfl
+        have price:=BlobPriceCurrent.scoped_cost source base context installed "price" (localVar "excess") afterPrice 86
+          (after_price_cost source.code installed)
+        change source.clock-(evaluateHOLFiniteState source priceCall).2.clock≤449690 at price
+        rw [normal] at price
+        refine ⟨finalFrame.trans (projected.trans original),?_,price⟩
+        intro query outside
+        rw [restored]
+        exact (congrFun (LocalEffects.memory_of_erase ready inner unchanged) query).trans (result.away query outside)
+    | rStruct fields | nStruct constructor fields=>
+      have failed : lookupCodeHOLFinite source.code.lookup (ofString "calculate_blob_gas_price") actualValues=none:=by
+        apply (lookupCodeHOLFinite_eq_none_iff _ _ _).mpr
+        unfold lookupCodeHOLExact
+        rw [BlobPriceCurrent.original_code source.code installed]
+        simp [actualValues,shapeOfHOLExact,shapeEqHOL]
+      rw [priceCall,evaluateHOLFiniteState_decCall_fixClockRewrite,args] at normal
+      simp only [failed] at normal
+      cases normal
+
+/-- The actual early-return decision either finishes without touching
+memory or reaches the real price scope at the identical current state. -/
+theorem after_parent_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source afterParent=(some (.returned returned),post)) :
+    TaylorCurrent.WorkspaceResult source post base 449690 := by
+  let guard : ProgHOL 64:=.ite (.cmp .lower (localVar "parent_blob_gas") (.const 1835008#64)) (.return (.const 0#64)) .skip
+  have decision : PureDecision guard:=.ite _ (.returned _) .skip
+  have unchanged:=decision.summary source
+  have pureFrame : LocalEffects.Preserves source.code guard:=
+    LocalEffects.conditional source.code (.cmp .lower (localVar "parent_blob_gas") (.const 1835008#64)) _ _
+      (LocalEffects.returned source.code (.const 0#64)) (LocalEffects.skip source.code)
+  have frame:=pureFrame source rfl
+  have price:=after_parent_cost source base context installed
+  rw [normal] at price
+  change evaluateHOLFiniteState source (.seq guard priceCall)=(some (.returned returned),post) at normal
+  rw [evaluateHOLFiniteState_seq_line780] at normal
+  generalize observed : evaluateHOLFiniteState source guard=output at unchanged frame normal
+  obtain ⟨result,middle⟩:=output
+  cases result with
+  | none=>
+    have same : middle=source:=unchanged.1 rfl
+    subst middle
+    exact price_call_normal source post base context installed returned normal
+  | some result=>
+    have endpoint : middle=post:=congrArg Prod.snd normal
+    rw [endpoint] at frame
+    exact TaylorCurrent.WorkspaceResult.of_erase frame price
+
+private theorem declared_result (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (name : String) (shape : ShapeHOL) (expression : ExpHOL 64) (continuation : ProgHOL 64) (price : Nat) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (.dec (ofString name) shape expression continuation)=(some (.returned returned),post))
+    (reached : ∀ declared inner,eval source expression=some declared → shapeEqHOL shape (shapeOfHOLExact declared)=true →
+      evaluateHOLFiniteState (setVarHOLFinite (ofString name) declared source) continuation=(some (.returned returned),inner) →
+      TaylorCurrent.WorkspaceResult (setVarHOLFinite (ofString name) declared source) inner base price) :
+    TaylorCurrent.WorkspaceResult source post base price := by
+  obtain ⟨declared,inner,read,typed,run,restored⟩:=CallNormal.declaration_normal_entry source post name shape expression continuation returned normal
+  have result:=reached declared inner read typed run
+  have finalFrame : post={inner with
+      locals:=post.locals,memory:=post.memory,clock:=post.clock}:=by rw [restored];rfl
+  have projected:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+    locals:=post.locals,memory:=post.memory,clock:=post.clock}) result.state
+  change {inner with locals:=post.locals,memory:=post.memory,clock:=post.clock}={source with
+    locals:=post.locals,memory:=post.memory,clock:=post.clock} at projected
+  refine ⟨finalFrame.trans projected,?_,?_⟩
+  · intro query outside
+    rw [restored]
+    exact result.away query outside
+  · rw [restored]
+    exact result.cost
+
+/-- A genuine original helper return derives all four real declaration
+entries, its selected branch and the complete outside-workspace memory frame. -/
+theorem body_normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (returned : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned returned),post)) :
+    TaylorCurrent.WorkspaceResult source post base 449690 := by
+  rw [body_shape] at normal
+  apply declared_result source post base "excess" .one (field 208) _ 449690 returned normal
+  intro excess excessInner excessRead excessShape excessRun
+  apply declared_result _ excessInner base "used" .one (field 200) _ 449690 returned excessRun
+  intro used usedInner usedRead usedShape usedRun
+  apply declared_result _ usedInner base "base_fee" RlpWrite.U256Value.tupleShape baseFee _ 449690 returned usedRun
+  intro fee feeInner feeRead feeShape feeRun
+  apply declared_result _ feeInner base "parent_blob_gas" .one (.op .add [localVar "excess",localVar "used"]) _ 449690 returned feeRun
+  intro parent parentInner parentRead parentShape parentRun
+  exact after_parent_normal _ parentInner base ⟨context.global,context.domain,context.arena,context.aligned⟩ installed returned parentRun
+
+end InitECandidate.Solver.Input.ExcessBlobCurrent
+
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.WorkspaceResult.of_erase
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.price_call_normal
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.after_parent_normal
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.body_normal_frame
+
+namespace InitECandidate.Solver.Input.ExcessBlobCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Actual normal child returns retain the original header caller's
+metadata and protected memory at that child's real remaining clock. -/
+theorem resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (name : String) (values : List (ValueHOL 64)) (actual : ProgHOL 64)
+    (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "calculate_excess_blob_gas") values=some (actual,callee,shape))
+    (returned : ValueHOL 64)
+    (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(some (.returned returned),target)) :
+    TaylorCurrent.WorkspaceResult (callEntryStateHOLFinite source callee) target base 449690 ∧
+      CallNormal.continuationEntry source target name returned=
+        setVarHOLFinite (ofString name) returned {source with memory:=target.memory,clock:=target.clock} := by
+  have bodyEq:=LocalEffects.lookup_body source.code (ofString "calculate_excess_blob_gas") [(ofString "parent",.one)] body .one
+    (original_code source.code installed) values actual callee shape called
+  rw [bodyEq] at run
+  have result:=body_normal_frame (callEntryStateHOLFinite source callee) target base
+    ⟨context.global,context.domain,context.arena,context.aligned⟩ installed returned run
+  refine ⟨result,?_⟩
+  have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) result.state
+  change {target with locals:=source.locals}={source with memory:=target.memory,clock:=target.clock} at frame
+  rw [CallNormal.continuationEntry,frame]
+
+end InitECandidate.Solver.Input.ExcessBlobCurrent
+
+#print axioms InitECandidate.Solver.Input.ExcessBlobCurrent.resume
+
+namespace InitECandidate.Solver.Input.TaylorCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open WitnessRadix.QueryBranch
+
+/-- Reinsert the actual caller locals and returned binding around a real
+child frame. Only the caller's own tick is added to its actual spent clock. -/
+theorem WorkspaceResult.caller {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {price : Nat}
+    (callee : HolFiniteMapExact MlS (ValueHOL 64)) (name : String) (returned : ValueHOL 64)
+    (funded : 1≤source.clock) (result : WorkspaceResult (callEntryStateHOLFinite source callee) target base price) :
+    WorkspaceResult source (CallNormal.continuationEntry source target name returned) base (price+1) := by
+  let ready:=CallNormal.continuationEntry source target name returned
+  have projected:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+    locals:=ready.locals,memory:=ready.memory,clock:=ready.clock}) result.state
+  change ready={source with locals:=ready.locals,memory:=ready.memory,clock:=ready.clock} at projected
+  refine ⟨projected,?_,?_⟩
+  · intro query outside
+    exact result.away query outside
+  · have cost:=result.cost
+    change source.clock-1-target.clock≤price at cost
+    change source.clock-target.clock≤price+1
+    omega
+
+end InitECandidate.Solver.Input.TaylorCurrent
+
+#print axioms InitECandidate.Solver.Input.TaylorCurrent.WorkspaceResult.caller

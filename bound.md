@@ -5733,3 +5733,53 @@ explicit K, dominant slack review and final unused-code cleanup. Selected
 root remains CurrentVerify.BlockExecution, cache disabled/two workers/8GiB
 cap. One new Solver module uses one of the four previous candidate path
 slots; three remain after the successful incremental policy check.
+
+## Runtime scalar empty lookup and actual fresh-transaction prefix
+
+The unchanged htab_find_leaf header prefix now derives keybits from its
+actual arbitrary scalar key width, with all original declaration scopes.
+An empty ScalarEmpty image then proves a literal zero return, zero body
+source ticks even at clock0, and the complete nonlocal frame. Neither query
+byte mapping nor initialized node-array cells are required. The original
+scoped caller retains its genuine continuation and one-call-tick allowance;
+an enclosing normal return cannot use the cheap stopped branch instead.
+
+The complete unchanged htab_get now has the corresponding arbitrary-width
+empty-table result: at most1body source tick on every outcome, literal
+absentValue on each genuine normal return, exact normal clock decrement
+and the full physical frame. Ordinary/scoped get callers cost at most2,
+including failures/short clocks; their real absent result/continuation are
+retained. These results are instantiated from the actual20/28/60byte BAL
+images at the original first-system-call entry, for unrestricted scalar
+query pointers. This is an initial empty-table result, not an invariant
+for later nonempty tables or updates.
+
+The actual original state_fresh_tx at index321 now costs at most74body /
+75caller source ticks on every outcome. The proof uses its unchanged72byte
+record allocation, eight current Patricia constructors at the actual key
+widths/capacities, all nine record stores and the journal_n reset. No old
+hash-map constructor or future allocation-room premise is substituted.
+The opening of the actual unchecked system-transaction body now either
+stops within75source ticks or reaches its unchanged ext_code_of continuation
+with a genuine prefix execution, forward clock and full scope observation.
+The fresh transaction's normal physical record/table images still need to
+be derived; this new trace proves the actual prefix cost, not those images.
+
+Validation: current-scalar-empty-lookup-v1.log PASS1317jobs;
+current-execute-scalar-lookup-and-fresh-v2.log PASS3105jobs. All13new printed
+facts use permitted axioms. Index8703modules/19207facts; inventory8743,
+replacement closure0, fixed files unchanged. Incremental policy PASS,
+65534package entries/2488387851bytes, not full verification. Claim infinity;
+no global finite target K or full verifier success. Overall effort55%,
+plausible45–65%, relative to reference main. Weekly usage45%, no reset
+credits, ordinary usage allowed. Original executable unchanged.
+
+Next: actual normal fresh-transaction record/table images and retained
+initial block/workspace state needed for ext_code_of/get_account. Extend
+current lookup/update models to nonempty20/28/52/60byte runtime tables and
+the current88byte scratch representation. Retain actual system gas30000000
+and reservoir97920*16. Then mandatory calls/finalization, complete main /
+source bound, uniform formal target steps, explicit K, dominant slack review
+and final unused-code cleanup. Selected root remains
+CurrentVerify.BlockExecution, cache disabled/two workers/8GiB cap. One new
+ScalarLookup module uses one further candidate path; two slots remain.

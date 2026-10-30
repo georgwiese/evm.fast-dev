@@ -2615,6 +2615,7 @@
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeLookup/RowsRead.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/NodeStores.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Routing.lean",
+    "submission/InitECandidate/Solver/Input/CurrentTable/ScalarLookup.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/CallCost.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/CallReturned.lean",
     "submission/InitECandidate/Solver/Input/CurrentTable/Set/ComparisonEntry.lean",
@@ -8747,8 +8748,8 @@
     "submission/InitECandidate/Solver/WordToStackBound/StoreConsts.lean",
     "submission/InitECandidate/Solver/WordToWordBound/Entry.lean"
   ],
-  "package_entries": 65533,
-  "package_bytes": 2488363848,
+  "package_entries": 65534,
+  "package_bytes": 2488387851,
   "claim": {
     "K": "infinity"
   },

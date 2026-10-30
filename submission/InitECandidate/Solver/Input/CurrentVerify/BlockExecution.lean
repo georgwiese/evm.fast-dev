@@ -1,5 +1,5 @@
 import InitECandidate.Solver.Input.CurrentVerify.TransactionData
-import InitECandidate.Solver.Input.CurrentTable.NewScalarImage
+import InitECandidate.Solver.Input.CurrentTable.ScalarLookup
 
 namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 set_option maxRecDepth 100000
@@ -2348,3 +2348,142 @@ theorem BalReady.initial_zero_fields {input : Guest.InputBlob} {source : PanSemS
 end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.BalReady.initial_zero_fields
+
+namespace InitECandidate.Solver.Input.CurrentVerify.FreshTransaction
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 100000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_state_fresh_tx with | .function fn=>progToHOL fn.body | _=>.skip
+
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "state_fresh_tx")=some ([],body,.one) := by
+  have found:=OriginalCode.indexed code installed 321
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_state_fresh_tx) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,
+    Guest.Software.guestFn_state_fresh_tx,shapeToHOL,paramToHOL,List.map_nil] using found
+
+private theorem store_tail (code) (address value : ExpHOL 64) (tail : ProgHOL 64) (price : Nat)
+    (back : ClockCost.Bound code tail price) : ClockCost.Bound code (.seq (.store address value) tail) price := by
+  simpa only [Nat.zero_add] using ClockCost.sequence code _ _ 0 price (ClockCost.store code _ _) back
+
+private theorem table_tail (code) (installed : OriginalCode.Installed code)
+    (destination : Option (VarKind×MlS)) (arguments : List (ExpHOL 64)) (tail : ProgHOL 64) (price : Nat)
+    (back : ClockCost.Bound code tail price) :
+    ClockCost.Bound code (.seq (.call (some (destination,none)) (ofString "htab_new") arguments) tail) (9+price) :=
+  ClockCost.sequence code _ _ 9 price
+    (ClockCost.assigned_body code destination (ofString "htab_new") arguments CurrentTable.New.formals CurrentTable.New.body .one 8
+      (CurrentTable.New.original_code code installed) (CurrentTable.New.body_cost code installed)) back
+
+/-- Complete unchanged transaction-state initialization: the record,
+eight current Patricia constructors, all stores and journal counter reset.
+All failures and short clocks are included without allocation-room premises. -/
+theorem body_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code body 74 := by
+  simp only [body,Guest.Software.guestFn_state_fresh_tx,progToHOL,shapeToHOL,Option.map_some,Option.map_none]
+  apply ClockCost.sequence (firstPrice:=2) (secondPrice:=72)
+  · exact ClockCost.assigned_body code _ (ofString "alloc") _ PersistentAlloc.formals PersistentAlloc.body .one 1
+      (PersistentAlloc.original_code code installed) (PersistentAlloc.body_price code installed)
+  · apply store_tail
+    apply ClockCost.scoped_body (calleePrice:=8) (continuationPrice:=63) (formals:=CurrentTable.New.formals) (body:=CurrentTable.New.body) (returnShape:=.one)
+    · exact CurrentTable.New.original_code code installed
+    · exact CurrentTable.New.body_cost code installed
+    · apply store_tail
+      apply table_tail (price:=54) code installed
+      apply store_tail
+      apply table_tail (price:=45) code installed
+      apply store_tail
+      apply table_tail (price:=36) code installed
+      apply store_tail
+      apply table_tail (price:=27) code installed
+      apply store_tail
+      apply table_tail (price:=18) code installed
+      apply store_tail
+      apply table_tail (price:=9) code installed
+      apply store_tail
+      apply table_tail (price:=0) code installed
+      apply store_tail
+      apply ClockCost.sequence (firstPrice:=0) (secondPrice:=0)
+      · exact ClockCost.of_quiet code _ (QuietClock.assign_kind code .global _ _)
+      · exact ClockCost.returned code _
+
+theorem call_cost (code) (installed : OriginalCode.Installed code) :
+    ClockCost.Bound code (.call (some (none,none)) (ofString "state_fresh_tx") []) 75 :=
+  ClockCost.assigned_body code none (ofString "state_fresh_tx") [] [] body .one 74
+    (original_code code installed) (body_cost code installed)
+
+end InitECandidate.Solver.Input.CurrentVerify.FreshTransaction
+
+namespace InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+set_option maxRecDepth 100000
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_process_unchecked_system_transaction with | .function fn=>progToHOL fn.body | _=>.skip
+def afterFresh : ProgHOL 64:=match body with | .seq _ rest=>rest | _=>.skip
+def actions : List CallPrefix.Action:=[.command (.call (some (none,none)) (ofString "state_fresh_tx") [])]
+
+theorem prefix_shape : body=CallPrefix.program actions afterFresh := by
+  simp only [body,afterFresh,actions,Guest.Software.guestFn_process_unchecked_system_transaction,progToHOL,shapeToHOL,
+    Option.map_none,CallPrefix.program,List.map_nil]
+
+/-- The real unchecked system transaction first completes its actual
+fresh-state call or stops within75source ticks. The reached continuation
+is the unchanged ext_code_of call, with the genuine prefix execution. -/
+theorem fresh_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (installed : OriginalCode.Installed source.code) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤75 ∨ ∃ current inner,CallPrefix.Execution source actions current ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤75 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterFresh=(outcome,inner) := by
+  rw [prefix_shape] at run
+  have price : ClockCost.Bound source.code (CallPrefix.program actions .skip) 75:=by
+    simp only [actions,CallPrefix.program]
+    exact ClockCost.sequence source.code _ _ 75 0 (FreshTransaction.call_cost source.code installed) (ClockCost.skip source.code)
+  rcases CallPrefix.priced_frame_trace source post actions afterFresh 75 (price source rfl) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · exact Or.inr reached
+
+end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FreshTransaction.original_code
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FreshTransaction.body_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.FreshTransaction.call_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.prefix_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.fresh_trace
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+
+/-- The three actual initialized BAL globals select their proved empty
+scalar images, with their distinct runtime key widths. -/
+theorem BalCells.empty_table {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {accounts accountIndex storageIndex keyBuffer : BitVec 64}
+    (ready : BalCells source accounts accountIndex storageIndex keyBuffer) (name : MlS)
+    (member : name∈[ofString "bal_accounts",ofString "bal_idx_accts",ofString "bal_idx_stor"]) :
+    ∃ table key,source.globals.lookup name=some (.val (.word table)) ∧ CurrentTable.New.ScalarEmpty source table key 64#64 := by
+  simp only [List.mem_cons,List.not_mem_nil,or_false] at member
+  rcases member with rfl|rfl|rfl
+  · exact ⟨accounts,20#64,ready.accountsCell,ready.accountsImage⟩
+  · exact ⟨accountIndex,28#64,ready.accountIndexCell,ready.accountIndexImage⟩
+  · exact ⟨storageIndex,60#64,ready.storageIndexCell,ready.storageIndexImage⟩
+
+/-- At the genuine first-system-call entry, each initial BAL table lookup
+has the actual empty-table allowance for any scalar query pointer. -/
+theorem BalReady.initial_get_cost {input : Guest.InputBlob} {source : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer : BitVec 64}
+    {boundary encoded : Nat}
+    (ready : BalReady input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer boundary encoded)
+    (name : MlS) (member : name∈[ofString "bal_accounts",ofString "bal_idx_accts",ofString "bal_idx_stor"])
+    (query : BitVec 64) (destination : Option (Option MlS)) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "htab_get")
+      [.var .global name,.const query])).2.clock≤2 := by
+  obtain ⟨table,key,cell,image⟩:=ready.cells.empty_table name member
+  apply CurrentTable.Get.call_scalar_empty_cost source table key 64#64 query image
+    ready.physical.requests.logs.arrays.output.environment.physical.data.arena.code destination
+  simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,cell]
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.BalCells.empty_table
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.BalReady.initial_get_cost

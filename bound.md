@@ -5593,3 +5593,50 @@ system gas30000000 versus regular16777216), mandatory calls/finalization,
 complete main/source, uniform formal target steps, exact K, dominant slack
 review and cleanup. Selected root remains CurrentVerify.BlockExecution with
 two workers, artifact cache disabled and8GiB cap; four path slots remain.
+
+## Whole original executor initialization reaches first system call physically
+
+The actual BAL command sequence now has a full physical execution proof in
+its own callee scope: three current Patricia constructors at20/28/60byte keys
+and capacity64, the real64byte bal_key_buf allocation, then bal_index=0. Each
+next cursor, owned88byte table header, allocation room and bounded/aligned
+heap follows from the same observed normal call. All three table-header
+regions and the key buffer are ordered/disjoint; the final five BAL globals
+have their actual returned words. Runtime arena, complete memory before the
+incoming heap, caller locals and every global outside BAL's destinations/
+heap are retained. Table entry contents/models beyond owned header geometry
+are not additionally asserted by this contract.
+
+The complete BAL body returns the actual zero word and retains that result
+through its original return. Its real ordinary caller restores the executor's
+own bindings and uses the genuine memory frame/retained globals to recover
+all input/header/be/bo/array/request/empty-log/empty-return-list facts. The
+actual trailing skip reaches the original first mandatory system call with
+those same physical facts and initialized BAL allocations. No main-local
+bindings inside the no-argument BAL callee are assumed.
+
+Every BAL caller outcome costs≤30source ticks, including failures/timeouts.
+The connected original executor prefix now either stops within161source
+ticks or reaches beforeFirstSystem with full BalReady physical state. This
+matches the previously independent whole-initialization cost, now joined to
+the actual runtime state. Mandatory system execution, finalization and the
+uniform formal target-step bound remain open; this is not global target K.
+
+Validation: current-execute-first-system-physical-v1.log PASS3103jobs; all14new
+printed facts use permitted axioms. Index8701modules/19178facts; inventory
+8741, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65532package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage45%, no
+reset credits, ordinary usage allowed. Original executable unchanged.
+
+Next: derive untouched zeroed output counters and actual runtime state/table
+images needed by the first mandatory beacon-roots system call. Use current
+Patricia/scratch-table interfaces (88byte headers, not legacy72byte models)
+and actual system gas30000000/reservoir97920*16, not regular16777216 root
+caps. Retain the actual original prefix executions when obtaining stronger
+field/table images; ownership alone does not assert contents. Then remaining
+mandatory calls/finalization, complete main/source, uniform formal target
+steps, exact K, dominant slack review and cleanup. Selected root remains
+CurrentVerify.BlockExecution, cache disabled/two workers/8GiB cap; four
+candidate path slots remain. Full executor-initialization code remains the
+original Guest.Software.guestFn_execute_block and guestFn_bal_init.

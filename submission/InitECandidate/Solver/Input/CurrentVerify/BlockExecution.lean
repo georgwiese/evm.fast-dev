@@ -1879,3 +1879,366 @@ theorem table_global_memory_normal (source post : PanSemStateFiniteExact 64 Gues
 end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.table_global_memory_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Current allocation with a genuine global result, in BAL's own scope. -/
+theorem allocation_global_memory_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (heap amount : BitVec 64) (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some (PersistentAlloc.values amount))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapArena : AllocatedBytes.Arena heap 0) (heapBound : heap.toNat≤2952790016)
+    (arena : CurrentStartup.ArenaState source)
+    (different : ofString "heap_ptr"≠ofString name ∧ ofString "scratch_ptr"≠ofString name ∧ ofString "frame_mem_ptr"≠ofString name)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.global,ofString name),none)) (ofString "alloc") arguments)=(none,post)) :
+    post.locals=source.locals ∧ post.globals.lookup (ofString name)=some (.val (.word heap)) ∧
+      AllocatedBytes.Arena heap amount.toNat ∧ CurrentStartup.ArenaState post ∧ PersistentMemoryFrame source post heap ∧
+      NormalHeapEffects.AtLeast (heap.toNat+amount.toNat) post ∧
+      ∀ global : MlS,global≠ofString name→global≠ofString "heap_ptr"→post.globals.lookup global=source.globals.lookup global := by
+  obtain ⟨room,funded,endpoint⟩:=PersistentAlloc.global_call_normal_any source post name heap amount arguments args
+    (PersistentAlloc.original_code source.code arena.code) (Trap.original_code source.code arena.code) heapCell heapBound normal
+  let raw:=PersistentAlloc.post {source with clock:=source.clock-1} heap amount
+  have frame : PersistentNormalFrame source raw heap:=
+    (PersistentAlloc.post_persistent_frame {source with clock:=source.clock-1} heap amount heapArena room).of_erase _ _ source raw heap rfl rfl
+  have rawArena:=frame.current_arena arena
+  have resultArena : CurrentStartup.ArenaState (putGlobal raw name heap):=
+    ⟨(putGlobal.lookup_other raw name heap _ different.2.1).trans rawArena.scratch,
+      (putGlobal.lookup_other raw name heap _ different.2.2).trans rawArena.frame,rawArena.domain,rawArena.code⟩
+  have guards:=PersistentAlloc.guards heap amount room
+  have rawCell : raw.globals.lookup (ofString "heap_ptr")=some (.val (.word (PersistentAlloc.rounded heap amount))):=by
+    simp [raw,PersistentAlloc.post,HolFiniteMapExact.update,FUPDATE]
+  have extent : NormalHeapEffects.AtLeast (heap.toNat+amount.toNat) (putGlobal raw name heap):=
+    ⟨PersistentAlloc.rounded heap amount,(putGlobal.lookup_other raw name heap _ different.1).trans rawCell,
+      guards.2.2.1,guards.2.2.2.1,guards.2.2.2.2⟩
+  rw [endpoint]
+  refine ⟨rfl,putGlobal.lookup_same raw name heap,⟨heapArena.lower,by omega⟩,resultArena,
+    frame.memory_frame.put_global source raw heap name heap different.1,extent,?_⟩
+  intro global notName notHeap
+  exact (putGlobal.lookup_other raw name heap global notName).trans (frame.globals global notHeap)
+
+structure BalHeap (source : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64) : Prop where
+  runtime : CurrentStartup.ArenaState source
+  cell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))
+  arena : AllocatedBytes.Arena heap 0
+  bounded : heap.toNat≤2952790016
+  aligned : heap.toNat%8=0
+
+theorem BalHeap.of_extent (source : PanSemStateFiniteExact 64 Guest.HostMemory) (floor : Nat)
+    (runtime : CurrentStartup.ArenaState source) (lower : 2701131776≤floor)
+    (extent : NormalHeapEffects.AtLeast floor source) :
+    ∃ heap,BalHeap source heap ∧ floor≤heap.toNat := by
+  obtain ⟨heap,cell,before,bounded,aligned⟩:=extent
+  exact ⟨heap,⟨runtime,cell,⟨by omega,by omega⟩,bounded,aligned⟩,before⟩
+
+def balTableCall (name : String) (key : BitVec 64) : ProgHOL 64:=
+  .call (some (some (.global,ofString name),none)) (ofString "htab_new") [.const key,.const 64#64]
+def balBufferCall : ProgHOL 64:=.call (some (some (.global,ofString "bal_key_buf"),none)) (ofString "alloc") [.const 64#64]
+def balZero : ProgHOL 64:=.assign .global (ofString "bal_index") (.const 0#64)
+def balActions : List CallPrefix.Action:=
+  [.command (balTableCall "bal_accounts" 20#64),.command (balTableCall "bal_idx_accts" 28#64),
+   .command (balTableCall "bal_idx_stor" 60#64),.command balBufferCall,.command balZero]
+def balReturn : ProgHOL 64:=.return (.const 0#64)
+def balGlobals : List MlS:=[ofString "bal_accounts",ofString "bal_idx_accts",ofString "bal_idx_stor",ofString "bal_key_buf",ofString "bal_index"]
+
+theorem bal_body_shape : balBody=CallPrefix.program balActions balReturn := by
+  simp only [balBody,Guest.Software.guestFn_bal_init,progToHOL,expToHOL,List.map_cons,List.map_nil,
+    Option.map_some,Option.map_none,balActions,balTableCall,balBufferCall,balZero,balReturn,CallPrefix.program]
+
+theorem bal_prefix_never : NoReturn.Never (CallPrefix.program balActions .skip) := by
+  have safe : LocalPrefix (ofString "_") (CallPrefix.program balActions .skip):=by
+    simp only [balActions,CallPrefix.program,balTableCall,balBufferCall,balZero]
+    exact .seq (.globalCall _ _ _) (.seq (.globalCall _ _ _) (.seq (.globalCall _ _ _) (.seq (.globalCall _ _ _) (.seq (.globalAssign _ _) .skip))))
+  intro F source value
+  exact (safe.summary source).2 value
+
+structure BalCells (source : PanSemStateFiniteExact 64 Guest.HostMemory) (accounts accountIndex storageIndex keyBuffer : BitVec 64) : Prop where
+  accountsCell : source.globals.lookup (ofString "bal_accounts")=some (.val (.word accounts))
+  accountIndexCell : source.globals.lookup (ofString "bal_idx_accts")=some (.val (.word accountIndex))
+  storageIndexCell : source.globals.lookup (ofString "bal_idx_stor")=some (.val (.word storageIndex))
+  keyBufferCell : source.globals.lookup (ofString "bal_key_buf")=some (.val (.word keyBuffer))
+  indexCell : source.globals.lookup (ofString "bal_index")=some (.val (.word 0#64))
+  accountsArena : AllocatedBytes.Arena accounts 88
+  accountIndexArena : AllocatedBytes.Arena accountIndex 88
+  storageIndexArena : AllocatedBytes.Arena storageIndex 88
+  keyBufferArena : AllocatedBytes.Arena keyBuffer 64
+  accountsAligned : accounts.toNat%8=0
+  accountIndexAligned : accountIndex.toNat%8=0
+  storageIndexAligned : storageIndex.toNat%8=0
+  keyBufferAligned : keyBuffer.toNat%8=0
+  beforeAccountIndex : accounts.toNat+88≤accountIndex.toNat
+  beforeStorageIndex : accountIndex.toNat+88≤storageIndex.toNat
+  beforeKeyBuffer : storageIndex.toNat+88≤keyBuffer.toNat
+  heapAfter : NormalHeapEffects.AtLeast (keyBuffer.toNat+64) source
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.allocation_global_memory_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.BalHeap.of_extent
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_body_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_prefix_never
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Replay the five actual normal BAL commands in their own callee scope.
+Each next frontier and allocation room follows from the same observed call;
+all final globals and disjoint owned extents are conclusions. -/
+theorem bal_execution (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (context : BalHeap source heap) (execution : CallPrefix.Execution source balActions post) :
+    CurrentStartup.ArenaState post ∧ PersistentMemoryFrame source post heap ∧ post.locals=source.locals ∧
+      (∃ accountIndex storageIndex keyBuffer,BalCells post heap accountIndex storageIndex keyBuffer) ∧
+      ∀ key : MlS,key∉balGlobals→key≠ofString "heap_ptr"→post.globals.lookup key=source.globals.lookup key := by
+  change CallPrefix.Execution source
+    (.command (balTableCall "bal_accounts" 20#64)::.command (balTableCall "bal_idx_accts" 28#64)::
+      .command (balTableCall "bal_idx_stor" 60#64)::.command balBufferCall::[.command balZero]) post at execution
+  obtain ⟨one,first,rest⟩:=execution.head
+  have run1 : evaluateHOLFiniteState source (balTableCall "bal_accounts" 20#64)=(none,one):=by
+    cases first with | command _ _ run=>exact run
+  obtain ⟨locals1,accounts,owned1,runtime1,frame1,extent1,globals1⟩:=table_global_memory_normal source one "bal_accounts" 20#64 64#64 heap
+    [.const 20#64,.const 64#64] rfl (by decide) context.cell context.arena context.bounded context.aligned context.runtime (by decide) run1
+  obtain ⟨accountIndex,context1,before1⟩:=BalHeap.of_extent one (heap.toNat+88) runtime1 (by have low:=context.arena.lower; omega) extent1
+  obtain ⟨two,second,rest⟩:=rest.head
+  have run2 : evaluateHOLFiniteState one (balTableCall "bal_idx_accts" 28#64)=(none,two):=by
+    cases second with | command _ _ run=>exact run
+  obtain ⟨locals2,indexAccounts,owned2,runtime2,frame2,extent2,globals2⟩:=table_global_memory_normal one two "bal_idx_accts" 28#64 64#64 accountIndex
+    [.const 28#64,.const 64#64] rfl (by decide) context1.cell context1.arena context1.bounded context1.aligned context1.runtime (by decide) run2
+  obtain ⟨storageIndex,context2,before2⟩:=BalHeap.of_extent two (accountIndex.toNat+88) runtime2 (by have low:=context1.arena.lower; omega) extent2
+  obtain ⟨three,third,rest⟩:=rest.head
+  have run3 : evaluateHOLFiniteState two (balTableCall "bal_idx_stor" 60#64)=(none,three):=by
+    cases third with | command _ _ run=>exact run
+  obtain ⟨locals3,indexStorage,owned3,runtime3,frame3,extent3,globals3⟩:=table_global_memory_normal two three "bal_idx_stor" 60#64 64#64 storageIndex
+    [.const 60#64,.const 64#64] rfl (by decide) context2.cell context2.arena context2.bounded context2.aligned context2.runtime (by decide) run3
+  obtain ⟨keyBuffer,context3,before3⟩:=BalHeap.of_extent three (storageIndex.toNat+88) runtime3 (by have low:=context2.arena.lower; omega) extent3
+  obtain ⟨four,fourth,last⟩:=rest.head
+  have run4 : evaluateHOLFiniteState three balBufferCall=(none,four):=by
+    cases fourth with | command _ _ run=>exact run
+  obtain ⟨locals4,bufferCell,owned4,runtime4,frame4,extent4,globals4⟩:=allocation_global_memory_normal three four "bal_key_buf" keyBuffer 64#64
+    [.const 64#64] rfl context3.cell context3.arena context3.bounded context3.runtime (by decide) run4
+  have run5 : evaluateHOLFiniteState four balZero=(none,post):=by
+    have last:=last.singleton
+    cases last with | command _ _ run=>exact run
+  have endpoint : post=putGlobal four "bal_index" 0#64:=global_assign_none four post "bal_index" (.const 0#64) 0#64 rfl run5
+  have indexOther (key : MlS) (different : key≠ofString "bal_index") : post.globals.lookup key=four.globals.lookup key:=by
+    rw [endpoint]
+    exact putGlobal.lookup_other four "bal_index" 0#64 key different
+  have runtime : CurrentStartup.ArenaState post:=by
+    rw [endpoint]
+    exact ⟨(putGlobal.lookup_other four "bal_index" 0#64 _ (by decide)).trans runtime4.scratch,
+      (putGlobal.lookup_other four "bal_index" 0#64 _ (by decide)).trans runtime4.frame,runtime4.domain,runtime4.code⟩
+  have total12:=frame1.trans source one two heap accountIndex frame2 (by omega)
+  have total123:=total12.trans source two three heap storageIndex frame3 (by omega)
+  have total1234:=total123.trans source three four heap keyBuffer frame4 (by omega)
+  have total : PersistentMemoryFrame source post heap:=by
+    rw [endpoint]
+    exact total1234.put_global source four heap "bal_index" 0#64 (by decide)
+  have extent : NormalHeapEffects.AtLeast (keyBuffer.toNat+64) post:=by
+    obtain ⟨next,cell,lower,bound,aligned⟩:=extent4
+    exact ⟨next,(indexOther _ (by decide)).trans cell,lower,bound,aligned⟩
+  have cells : BalCells post heap accountIndex storageIndex keyBuffer:=by
+    refine ⟨?_,?_,?_,?_,?_,owned1,owned2,owned3,owned4,context.aligned,context1.aligned,context2.aligned,context3.aligned,
+      before1,before2,before3,extent⟩
+    · exact (indexOther _ (by decide)).trans ((globals4 _ (by decide) (by decide)).trans
+        ((globals3 _ (by decide) (by decide)).trans ((globals2 _ (by decide) (by decide)).trans accounts)))
+    · exact (indexOther _ (by decide)).trans ((globals4 _ (by decide) (by decide)).trans ((globals3 _ (by decide) (by decide)).trans indexAccounts))
+    · exact (indexOther _ (by decide)).trans ((globals4 _ (by decide) (by decide)).trans indexStorage)
+    · exact (indexOther _ (by decide)).trans bufferCell
+    · rw [endpoint]; exact putGlobal.lookup_same four "bal_index" 0#64
+  refine ⟨runtime,total,?_,⟨accountIndex,storageIndex,keyBuffer,cells⟩,?_⟩
+  · rw [endpoint]
+    exact locals4.trans (locals3.trans (locals2.trans locals1))
+  · intro key outside notHeap
+    have different (name : MlS) (member : name∈balGlobals) : key≠name:=by
+      intro same
+      apply outside
+      rw [same]
+      exact member
+    exact (indexOther _ (different _ (by simp [balGlobals]))).trans
+      ((globals4 _ (different _ (by simp [balGlobals])) notHeap).trans
+        ((globals3 _ (different _ (by simp [balGlobals])) notHeap).trans
+          ((globals2 _ (different _ (by simp [balGlobals])) notHeap).trans
+            (globals1 _ (different _ (by simp [balGlobals])) notHeap))))
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_execution
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem BalCells.of_globals {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {accounts accountIndex storageIndex keyBuffer : BitVec 64}
+    (ready : BalCells source accounts accountIndex storageIndex keyBuffer) (globals : post.globals=source.globals) :
+    BalCells post accounts accountIndex storageIndex keyBuffer := by
+  have cells (key : MlS) : post.globals.lookup key=source.globals.lookup key:=by rw [globals]
+  obtain ⟨heap,cell,lower,bound,aligned⟩:=ready.heapAfter
+  exact {ready with accountsCell:=(cells _).trans ready.accountsCell,accountIndexCell:=(cells _).trans ready.accountIndexCell, storageIndexCell:=(cells _).trans ready.storageIndexCell,keyBufferCell:=(cells _).trans ready.keyBufferCell, indexCell:=(cells _).trans ready.indexCell,heapAfter:=⟨heap,(cells _).trans cell,lower,bound,aligned⟩}
+
+/-- Complete real BAL body return, including its actual five commands,
+zero returned word, all assigned globals and complete older-memory frame. -/
+theorem bal_body_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (heap : BitVec 64)
+    (context : BalHeap source heap) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source balBody=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ CurrentStartup.ArenaState post ∧ PersistentMemoryFrame source post heap ∧
+      (∃ accountIndex storageIndex keyBuffer,BalCells post heap accountIndex storageIndex keyBuffer) ∧
+      ∀ key : MlS,key∉balGlobals→key≠ofString "heap_ptr"→post.globals.lookup key=source.globals.lookup key := by
+  rw [bal_body_shape] at normal
+  obtain ⟨current,inner,execution,clock,continued⟩:=CallPrefix.normal_trace source post balActions balReturn value bal_prefix_never normal
+  obtain ⟨runtime,frame,locals,⟨accountIndex,storageIndex,keyBuffer,cells⟩,kept⟩:=bal_execution source current heap context execution
+  have returned : evaluateHOLFiniteState current balReturn=(some (.returned (.val (.word 0#64))),emptyLocalsHOLFinite current):=by
+    simp [balReturn,evaluateHOLFiniteState_return,evalHOLExact,shapeOfHOLExact,sizeOfShapeWithContextHOL]
+  have answer : value=.val (.word 0#64):=by
+    simpa only [Option.some.injEq,PanSemResultExact.returned.injEq] using congrArg Prod.fst (continued.symm.trans returned)
+  have physical:=execution.erase balReturn
+  rw [normal,returned] at physical
+  change LocalEffects.erase post=LocalEffects.erase current at physical
+  have globals:=congrArg PanSemStateFiniteExact.globals physical
+  change post.globals=current.globals at globals
+  exact ⟨answer,runtime.of_frame physical,frame.of_erase source current source post heap rfl physical,
+    ⟨accountIndex,storageIndex,keyBuffer,cells.of_globals globals⟩,by intro key outside notHeap; rw [globals]; exact kept key outside notHeap⟩
+
+structure BalReady (input : Guest.InputBlob) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer : BitVec 64)
+    (boundary encoded : Nat) : Prop where
+  physical : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded
+  cells : BalCells source accounts accountIndex storageIndex keyBuffer
+  before : returnBuffer.toNat+128≤accounts.toNat
+
+/-- None of BAL's five actual destination names belongs to the input,
+heap or block-environment/output globals retained by the physical contract. -/
+theorem protected_globals_outside_bal (key : MlS) (member : key∈keptExecutionGlobals) : key∉balGlobals := by
+  simp only [keptExecutionGlobals,dataGlobals,List.mem_append,List.mem_cons,List.not_mem_nil,or_false] at member
+  rcases member with (rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl)|(rfl|rfl)
+  all_goals decide
+
+/-- Actual ordinary BAL return restores the executor's own locals and
+retains its full earlier state with the newly initialized BAL globals. -/
+theorem bal_call_normal {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer : BitVec 64} {boundary encoded : Nat}
+    (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "bal_init") [])=(none,post)) :
+    ∃ accounts accountIndex storageIndex keyBuffer,
+      BalReady input post pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer boundary encoded := by
+  obtain ⟨heap,heapCell,lower,bound,aligned⟩:=ready.heapAfter
+  have heapArena : AllocatedBytes.Arena heap 0:=⟨by have low:=ready.backing.lower; omega,by omega⟩
+  let arena:=ready.requests.logs.arrays.output.environment.physical.data.arena
+  obtain ⟨funded,values,actual,callee,shape,target,value,args,called,bodyRun,checked,endpoint,fields⟩:=CallNormal.ignored_data source post (ofString "bal_init") [] normal
+  have valuesEq : values=[]:=by
+    change some ([] : List (ValueHOL 64))=some values at args
+    exact Option.some.inj args.symm
+  subst values
+  have bodyEq:=LocalEffects.lookup_body source.code (ofString "bal_init") [] balBody .one (bal_code source.code arena.code) [] actual callee shape called
+  rw [bodyEq] at bodyRun
+  have context : BalHeap (callEntryStateHOLFinite source callee) heap:=⟨arena.of_frame rfl,heapCell,heapArena,bound,aligned⟩
+  obtain ⟨answer,runtime,frame,⟨accountIndex,storageIndex,keyBuffer,cells⟩,kept⟩:=bal_body_normal (callEntryStateHOLFinite source callee) target heap context value bodyRun
+  have callerFrame : PersistentMemoryFrame source post heap:=frame.of_erase _ _ source post heap rfl (by rw [endpoint]; rfl)
+  have globals : post.globals=target.globals:=by rw [endpoint]
+  have physical:=ready.of_memory_frame lower callerFrame (by
+    intro key member notHeap
+    rw [globals]
+    exact kept key (protected_globals_outside_bal key member) notHeap) (by
+    intro key member
+    rw [endpoint])
+  exact ⟨heap,accountIndex,storageIndex,keyBuffer,physical,cells.of_globals globals,lower⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.BalCells.of_globals
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_body_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.protected_globals_outside_bal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_call_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+set_option maxRecDepth 100000
+set_option maxHeartbeats 4000000
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def balCaller : ProgHOL 64:=.call (some (none,none)) (ofString "bal_init") []
+def balCallerActions : List CallPrefix.Action:=[.command balCaller,.command .skip]
+
+theorem bal_caller_shape : beforeBalInit=CallPrefix.program balCallerActions beforeFirstSystem := by
+  simp only [beforeBalInit,beforeReturnList,beforeRequests,beforeLogs,beforeArrays,afterCount,afterPayload,body,
+    Guest.Software.guestFn_execute_block,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,Option.map_none,
+    CallPrefix.cutAt,CallPrefix.program,beforeFirstSystem,balCallerActions,balCaller] <;> trivial
+
+theorem bal_caller_cost (code) (installed : OriginalCode.Installed code) :
+    ClockCost.Bound code (CallPrefix.program balCallerActions .skip) 30 := by
+  have callCost : ClockCost.Bound code balCaller 30:=assigned_body_cost code none (ofString "bal_init") [] [] balBody .one 29
+    (bal_code code installed) (bal_cost code installed)
+  exact ClockCost.sequence code _ _ 30 0 callCost
+    (ClockCost.sequence code .skip .skip 0 0 (ClockCost.skip code) (ClockCost.skip code))
+
+/-- Only real normal BAL/skip executions supply the final initialized state. -/
+theorem bal_caller_reached {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer : BitVec 64} {boundary encoded : Nat}
+    (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
+    (execution : CallPrefix.Execution source balCallerActions post) :
+    ∃ accounts accountIndex storageIndex keyBuffer,
+      BalReady input post pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer boundary encoded := by
+  change CallPrefix.Execution source [.command balCaller,.command .skip] post at execution
+  obtain ⟨current,call,remaining⟩:=execution.head
+  have normal : evaluateHOLFiniteState source balCaller=(none,current):=by
+    cases call with | command _ _ run=>exact run
+  obtain ⟨accounts,accountIndex,storageIndex,keyBuffer,physical⟩:=bal_call_normal ready normal
+  have skipped : evaluateHOLFiniteState current .skip=(none,post):=by
+    have reached:=remaining.singleton
+    cases reached with | command _ _ run=>exact run
+  have same : post=current:=by simpa only [evaluateHOLFiniteState_skip] using (congrArg Prod.snd skipped).symm
+  rw [same]
+  exact ⟨accounts,accountIndex,storageIndex,keyBuffer,physical⟩
+
+/-- Every actual BAL caller outcome either stops within30source ticks or
+reaches the first mandatory system call with the complete physical result. -/
+theorem bal_caller_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer : BitVec 64} {boundary encoded : Nat}
+    (ready : ReturnList input source pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source beforeBalInit=(outcome,post)) :
+    source.clock-post.clock≤30 ∨ ∃ current inner accounts accountIndex storageIndex keyBuffer,
+      BalReady input current pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤30 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current beforeFirstSystem=(outcome,inner) := by
+  rw [bal_caller_shape] at run
+  rcases CallPrefix.priced_frame_trace source post balCallerActions beforeFirstSystem 30
+    (bal_caller_cost source.code ready.requests.logs.arrays.output.environment.physical.data.arena.code source rfl) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · obtain ⟨current,inner,execution,forward,price,scope,rest⟩:=reached
+    obtain ⟨accounts,accountIndex,storageIndex,keyBuffer,physical⟩:=bal_caller_reached ready execution
+    exact Or.inr ⟨current,inner,accounts,accountIndex,storageIndex,keyBuffer,physical,forward,price,scope,rest⟩
+
+/-- Entire unchanged executor initialization, connected through the actual
+first system-call continuation with complete input, list and BAL ownership. -/
+theorem body_bal_ready_trace {input : Guest.InputBlob} {source post : PanSemStateFiniteExact 64 Guest.HostMemory}
+    {pointer si record gasWord header be : BitVec 64} {boundary encoded : Nat}
+    (data : Data input source pointer si record gasWord boundary)
+    (ready : RunAttempt.BlockEnvBuffer input (declarationEntry source record) pointer si record gasWord header be boundary encoded)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤161 ∨ ∃ current inner bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer,
+      BalReady input current pointer si record gasWord header be bo txs rcs logs buffer reqs rls returnBuffer accounts accountIndex storageIndex keyBuffer boundary encoded ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤161 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeFirstSystem=(outcome,inner) := by
+  rcases body_return_list_trace data ready outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨before,target,bo,txs,rcs,logs,buffer,reqs,rls,returnBuffer,physical,forward,price,endpoint,continued⟩:=reached
+    rcases bal_caller_trace physical outcome continued with stopped|reached
+    · exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,accounts,accountIndex,storageIndex,keyBuffer,physical,balForward,balPrice,scope,rest⟩:=reached
+      exact Or.inr ⟨current,inner,bo,txs,rcs,logs,buffer,reqs,rls,returnBuffer,accounts,accountIndex,storageIndex,keyBuffer,
+        physical,by omega,by omega,endpoint.trans scope.clock,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_caller_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_caller_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_caller_reached
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.bal_caller_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.ExecuteBlock.body_bal_ready_trace

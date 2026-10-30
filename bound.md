@@ -3940,3 +3940,42 @@ and ordinary/scoped callers. Continue through digits_divmod/u256 wrappers,
 Taylor/header/main, uniform target-step composition, exact K, dominant slack
 review and final cleanup. Source-clock allowances omit straight-line target
 work. Historical untracked WIPs and executable/fixed premises stay untouched.
+
+
+## Complete physical two-digit remainder stores, loop and return
+
+The original final two-load right-shift/left-shift/mask/OR expression now
+reads the actual mapped UN[i]/UN[i+1] cells, writes the actual R[i] cell and
+increments the typed original i, at every body clock. Both variable shift
+guards and all three physical UN cells are checked, including s=0.
+
+The two real final iterations and their false guard now execute exactly.
+Their physical post-state writes only R[0]/R[1], retains all other locals
+inside the loop and pays exactly2ticks. Every stopped/short-clock outcome
+costs≤2; an actual normal loop completion derives its own funding and exact
+post-state. Both stored words and the complete outside-memory frame check.
+
+The entire original i=0 initialization, final loop and return0 are identified
+literally and executed. The result includes the evaluator's genuine clearing
+of locals on return. An actual returned computation derives its own2ticks,
+returned0 and exact two-store memory; no future successful return or funding
+is supplied as an entry oracle. The same actual preceding outer-loop result
+supplies the normalized remainder words, their32-bit bounds, derived zero
+UN[2], mapped context and retained un/r/n/s bindings. The intervening actual
+quotient-clearing block still must be executed and retain this entry.
+
+Validation: current-two-digit-remainder-complete-v3.log PASS1126jobs; all16new
+printed facts have only permitted axioms. Index8700modules/18683facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage36%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: original post-loop j=m-n+1 assignment and trailing quotient clear;
+for n=2 it executes exactly one real zero store. Retain the remainder entry
+through that actual store, and compose the right-associated clear/remainder
+continuation. Then assemble current two-digit divmnu normalization/outer/
+return and ordinary/scoped callers. Continue through digits_divmod/u256,
+Taylor/header/main, uniform target-step composition, exact K, dominant slack
+review and final cleanup. Source-clock allowances omit straight-line target
+work. Historical untracked WIPs and executable/fixed premises stay untouched.

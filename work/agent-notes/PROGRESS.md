@@ -7895,3 +7895,77 @@ journal models as needed by the real system paths. Keep mandatory gas
 main/source and uniform formal target steps, explicit K, dominant slack
 review and final unused-code cleanup. Selected main root remains
 CurrentVerify.FreshTransactionMemory; cache disabled/two workers/8GiB cap.
+
+## Complete first scalar insertion frame and actual account-cache miss prefix
+
+FreshTransaction.Context now retains the complete constructor end of every
+finished table and pairwise separation of all its actual table regions,
+including key/node/order backing allocations. Every real constructor uses
+the previous live heap to establish separation from earlier regions; real
+pointer stores, later allocation, journal reset and lexical/caller frames
+retain it. No pairwise disjointness is assumed as an unexplained main entry
+condition. Actual table pointers and other-header words have checked
+separation projections.
+
+The first scalar leaf now has a complete actual normal execution proof.
+The real no-grow node call yields its exact metadata increment and node1;
+the two original declarations expose the actual variable-length copy.
+CopyAny's real normal caller supplies a span frame and saved locals. Its
+constructor-derived key region preserves header fields and every word
+outside the complete table region. The original six leaf/order/count stores
+use real scalar node/order arrays and marker key*8 (160for20byte keys).
+Their actual mapped addresses and scalar values derive the normal node1
+return and full memory footprint. Natural key-width≤60/capacity≤2^32 facts
+are instantiated by the actual small constructor constants; no successful
+future copy, store or allocation is an entry premise. Metadata simplification
+uses an explicit memory-only model lemma instead of expensive implicit
+unfolding. Copy-argument derivation is shared with the existing cost proof.
+
+The genuine setter's zero-leaf branch, actual leaf caller and root store
+now compose that same normal frame through all declaration/caller scopes.
+The complete ignored first-set caller retains all globals/heap, caller
+locals and every word outside its actual constructor region. Successful
+AccountAccess insertion then retains all seven other fresh table images,
+actual transaction fields, complete earlier-memory frame and region
+separation. The modified access table is excluded from the remaining
+empty-image context, rather than asserted empty again.
+
+The real get_account_optional340 ABI retains the same context at its own
+callee entry. Its genuine first setter still costs≤29source caller ticks.
+The following actual ts+16 cache lookup derives its image/arguments from
+the retained transaction, returns the literal absent pair and retains all
+nonlocal fields. The actual cache guard then selects the pre-state call.
+Complete to_pre_state either stops within31source ticks (with no returned
+value) or reaches that exact unchanged continuation with the remaining
+seven images, actual address local, paid/forward clock, full scope frame
+and earlier persistent state. No pre-state call or future success is assumed.
+
+Validation: current-fresh-table-regions-v1.log PASS3108jobs;
+current-scalar-first-key-region-v1.log PASS3108jobs;
+current-scalar-leaf-copy-trace-v1.log PASS3108jobs;
+current-scalar-leaf-copied-state-v1.log PASS3108jobs;
+current-scalar-leaf-stores-v2.log PASS3108jobs;
+current-scalar-first-set-frame-v2.log PASS3108jobs;
+current-first-account-cache-miss-v3.log PASS3108jobs. All40new checked facts,
+stronger existing context results and unchanged downstream roots print
+permitted axioms. Index8705modules/19346facts; inventory8745/replacement
+closure0/fixed files unchanged. Incremental policy PASS65536package entries/
+2488618276bytes, not full verification. Claim infinity; no whole-system/VM/
+main source bound or finite target K/full verifier success. Effort55%,
+plausible45–65%, relative to reference main. Weekly usage47%, no reset
+credits, ordinary usage allowed. No new paths; at the package entry cap.
+
+Next: get_pre_state_account_optional372 begins by repeating htab_set on
+the already nonempty ts+8 table, before its bs+16 lookup and world-state
+access. Derive the first insertion's singleton header/node rank facts and
+actual nonempty scalar traversal/update/insertion bounds. Runtime leaf
+markers use the real key-bit widths160/224/256/416/480; carry structural
+rank/footprint facts wherever full key-byte/routing semantics are unnecessary.
+Later growth needs actual relocated buffer geometry; the first-constructor
+region frame is not a general grow model. Expose/retain initial bs/ws field,
+table, scratch/journal and world-root facts for real pre-state/code paths.
+Keep mandatory gas30000000/reservoir97920*16; finish all mandatory calls/
+finalization, complete main/source and uniform formal target steps,
+explicit K, dominant slack review and final unused-code cleanup. Selected
+root CurrentVerify.FreshTransactionMemory; cache disabled/two workers/8GiB
+cap. Do not run full verifier/Solution root on this host.

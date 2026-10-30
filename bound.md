@@ -70,8 +70,9 @@ The unchanged base-fee helper now costs at most 737 body / 738 caller source
 ticks, including its actual zero-divisor return path. Its complete normal-return workspace frame and original ABI/caller are now
 checked too. The actual header-validation prefix through the nonce comparison
 is now bounded by 450464 source ticks, with its original header bindings and
-outside-workspace memory retained. Its remaining hashing section and the main
-continuation remain open.
+outside-workspace memory retained. The empty-ommer hash/check adds at most
+823 ticks, giving 451287 through the actual parent-header hash entry. Its
+physical temporary/hash frame, parent hashing and main continuation remain open.
 
 ## Earlier checked milestones, in order
 
@@ -4669,3 +4670,34 @@ ommer/parent-header hashing section, retaining the protected main input and
 real heap. Then finish the remaining main continuation, uniform formal target
 steps, exact K, dominant slack review and cleanup. Source clocks omit
 straight-line target work. Historical untracked WIPs remain untouched.
+
+## Actual empty-ommer hash check and parent-hash entry trace
+
+The unchanged validate_header heap mark, temporary 64-byte allocation, marker
+write, one-byte software Keccak call, memeq32 and rejecting release/BlockErr29
+branch now cost at most 823 source ticks on every outcome. The hash's literal
+length and actual ABI give its 690-tick caller allowance; arbitrary failed
+temporary reads and malformed shapes are included. A reached rejecting guard
+must have skipped its genuinely stopping failure branch.
+
+The complete unchanged header prefix through that check now either stops
+within 451287 source ticks or exposes the actual parent-header hashing suffix.
+It retains the fee-entry workspace frame and the real mark/allocation/hash/
+comparison action trace. The later physical memory frame is still to be
+derived from those same actual actions; no future allocation or hash success
+is an input to the runtime bound.
+
+Validation: current-validate-header-ommer-v2.log PASS 3101 jobs; all 10 new
+printed facts use only permitted axioms. Index 8700 modules / 18963 facts;
+inventory 8745 / replacement closure 0 / fixed files unchanged. Incremental
+policy PASS, 65536 package entries. Claim infinity; no global finite target K
+or full verifier success. Effort estimate remains 55%, plausible 45–65%,
+relative to reference main. No new candidate paths. Weekly usage 40%, no reset
+credits, ordinary usage allowed. Targeted builds are not full isolated
+submission verification.
+
+Next: retain the actual temporary allocation/hash memory frame, then finish
+the original parent-header hash and restored header caller. Continue the
+remaining main path, uniform formal target steps, exact K, dominant slack
+review and cleanup. Source clocks omit straight-line target work. Historical
+untracked WIPs remain untouched.

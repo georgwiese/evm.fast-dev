@@ -1605,3 +1605,124 @@ end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_keeps
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_reached
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.prefix_trace
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString WitnessRadix.QueryBranch
+
+def temporaryOutput : ExpHOL 64:=.op .add [localVar "tmp",.const 32#64]
+def ommerByte : ProgHOL 64:=.storeByte (localVar "tmp") (.const 192#64)
+def ommerHash : ProgHOL 64:=.call (some (none,none)) (ofString "keccak256") [localVar "tmp",.const 1#64,temporaryOutput]
+def ommerCompare : ProgHOL 64:=.call (some (some (.local,ofString "eq"),none)) (ofString "memeq") [field "h" 16,temporaryOutput,.const 32#64]
+def releaseMark : ProgHOL 64:=.call (some (none,none)) (ofString "heap_release") [localVar "mark"]
+def ommerFailure : ProgHOL 64:=.seq releaseMark (.raise (ofString "BlockErr") (.const 29#64))
+def ommerGuard : ProgHOL 64:=.ite (zero "eq") ommerFailure .skip
+def ommerTail (tail : ProgHOL 64) : ProgHOL 64:=.seq ommerByte (.seq ommerHash (.seq ommerCompare (.seq ommerGuard tail)))
+def ommerPrefix (tail : ProgHOL 64) : ProgHOL 64:=
+  .decCall (ofString "mark") .one (ofString "heap_mark") []
+    (.decCall (ofString "tmp") .one (ofString "alloc") [.const 64#64] (ommerTail tail))
+def beforeParentHash : ProgHOL 64:=(CallPrefix.cutAt 6 beforeMark).2
+def ommerActions : List CallPrefix.Action:=
+  [.scoped (ofString "mark") .one (ofString "heap_mark") [],
+   .scoped (ofString "tmp") .one (ofString "alloc") [.const 64#64],
+   .command ommerByte,.command ommerHash,.command ommerCompare,.command ommerGuard]
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem ommer_shape : beforeMark=ommerPrefix beforeParentHash := by
+  simp only [beforeMark,beforeParentHash,body,Guest.Software.guestFn_validate_header,progToHOL,expToHOL,shapeToHOL,
+    List.map_cons,List.map_nil,Option.map_some,Option.map_none,CallPrefix.cutAt,
+    ommerPrefix,ommerTail,ommerGuard,ommerFailure,releaseMark,ommerCompare,ommerHash,ommerByte,temporaryOutput,zero,field,localVar]
+
+theorem ommer_prefix_shape (tail : ProgHOL 64) : CallPrefix.program ommerActions tail=ommerPrefix tail := by rfl
+
+/-- The actual software hash length is the literal one-byte RLP marker.
+Malformed temporary reads and failed ABI checks remain covered. -/
+theorem ommer_hash_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code ommerHash 690 := by
+  intro source codeEq
+  have currentInstalled : OriginalCode.Installed source.code:=by rw [codeEq]; exact installed
+  exact CurrentKeccak.Hash.dynamic_call_cost source (localVar "tmp") (.const 1#64) temporaryOutput 1 currentInstalled (by decide) rfl
+
+theorem ommer_compare_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code ommerCompare 129 :=
+  MutableTable.MemeqAny.fixed_call_cost code installed (some (some (ofString "eq"))) _ _ 32 (by decide)
+
+theorem ommer_failure_stops : NoFallthrough ommerFailure:=NoFallthrough.sequence _ _ (NoFallthrough.raised _ _)
+
+theorem ommer_guard_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code ommerGuard 1 := by
+  have rejected : ClockCost.Bound code ommerFailure 1:=ClockCost.sequence code releaseMark _ 1 0
+    (HeapScope.release_call_cost code installed (some none) [localVar "mark"]) (ClockCost.raised code _ _)
+  exact ClockCost.conditional code _ _ _ 1 0 rejected (ClockCost.skip code)
+
+/-- Snapshot, allocation, marker write, software hash, comparison and the
+real rejecting release are priced on every original execution outcome. -/
+theorem ommer_prefix_cost (code) (installed : OriginalCode.Installed code) (tail : ProgHOL 64) (price : Nat)
+    (priced : ClockCost.Bound code tail price) : ClockCost.Bound code (ommerPrefix tail) (823+price) := by
+  have last:=ClockCost.sequence code ommerGuard tail 1 price (ommer_guard_cost code installed) priced
+  have compared:=ClockCost.sequence code ommerCompare _ 129 (1+price) (ommer_compare_cost code installed) last
+  have hashed:=ClockCost.sequence code ommerHash _ 690 (129+(1+price)) (ommer_hash_cost code installed) compared
+  have written:=ClockCost.sequence code ommerByte _ 0 (690+(129+(1+price)))
+    (ClockCost.of_quiet code _ (QuietClock.store_byte code _ _)) hashed
+  have allocated:=PersistentAlloc.scoped_price code installed (ofString "tmp") .one [.const 64#64] _ _ written
+  have marked:=ClockCost.scoped_body code (ofString "mark") .one (ofString "heap_mark") [] _ [] HeapScope.markBody .one 0 _
+    (HeapScope.mark_original_code code installed) (HeapScope.mark_body_cost code) allocated
+  exact ClockCost.mono code _ _ _ marked (by omega)
+
+/-- A real normal ommer guard skipped its stopping failure branch. -/
+theorem ommer_guard_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (normal : evaluateHOLFiniteState source ommerGuard=(none,target)) : target=source := by
+  rcases conditional_none source target (zero "eq") ommerFailure .skip normal with rejected|skipped
+  · exact (ommer_failure_stops source (congrArg Prod.fst rejected)).elim
+  · simpa only [evaluateHOLFiniteState_skip] using (congrArg Prod.snd skipped).symm
+
+/-- Retain the actual lexical trace for the remaining parent-header call;
+its physical allocation/hash frame can be derived from this same trace. -/
+theorem ommer_trace (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (installed : OriginalCode.Installed source.code) (outcome : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState source beforeMark=(outcome,post)) :
+    source.clock-post.clock≤823 ∨ ∃ current inner,CallPrefix.Execution source ommerActions current ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤823 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeParentHash=(outcome,inner) := by
+  rw [ommer_shape,←ommer_prefix_shape] at run
+  have priced:=ommer_prefix_cost source.code installed .skip 0 (ClockCost.skip source.code) source rfl
+  rw [←ommer_prefix_shape] at priced
+  rcases CallPrefix.priced_trace source post ommerActions beforeParentHash 823 (by simpa only [Nat.add_zero] using priced) outcome run with stopped|reached
+  · exact Or.inl stopped.1
+  · exact Or.inr reached
+
+/-- Complete unchanged header prefix through both real fee calculations
+and the empty-ommer hash check. The parent-hash suffix remains explicit. -/
+theorem to_before_parent_hash (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤451287 ∨ ∃ feeEntry current inner,
+      TaylorCurrent.WorkspaceResult source feeEntry base 450464 ∧
+      feeEntry.locals.lookup (ofString "h")=source.locals.lookup (ofString "h") ∧
+      feeEntry.locals.lookup (ofString "parent")=source.locals.lookup (ofString "parent") ∧
+      CallPrefix.Execution feeEntry ommerActions current ∧ current.clock≤source.clock ∧
+      source.clock-current.clock≤451287 ∧ post.clock=inner.clock ∧
+      evaluateHOLFiniteState current beforeParentHash=(outcome,inner) := by
+  rcases prefix_trace source post base context installed outcome run with stopped|reached
+  · exact Or.inl (by omega)
+  · obtain ⟨feeEntry,feePost,frame,h,parent,forward,endpoint,continued⟩:=reached
+    have sameCode:=congrArg PanSemStateFiniteExact.code frame.state
+    change feeEntry.code=source.code at sameCode
+    have feeInstalled : OriginalCode.Installed feeEntry.code:=by rw [sameCode]; exact installed
+    rcases ommer_trace feeEntry feePost feeInstalled outcome continued with stopped|reached
+    · have price:=frame.cost
+      exact Or.inl (by rw [endpoint]; omega)
+    · obtain ⟨current,inner,execution,hashForward,hashPrice,hashClock,rest⟩:=reached
+      have price:=frame.cost
+      exact Or.inr ⟨feeEntry,current,inner,frame,h,parent,execution,by omega,by omega,endpoint.trans hashClock,rest⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_prefix_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_hash_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_compare_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_failure_stops
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_guard_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_prefix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_guard_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.ommer_trace
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.to_before_parent_hash

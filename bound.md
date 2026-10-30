@@ -4220,3 +4220,39 @@ finish actual counter/product/Taylor/header/main, compose uniform formal
 target steps, evaluate exact K, review dominant slack and complete cleanup.
 Source-clock allowances omit target straight-line work. Historical untracked
 WIPs and executable/fixed premises stay untouched.
+
+
+## Actual wide u256 division: physical input, both calls and complete return
+
+The original u256_divmod wide branch now has a325source-tick all-outcome
+allowance for a genuine two-digit64-bit divisor. Its actual numerator
+conversion supplies the real eight-digit U image. The actual scoped
+mixed scalar/quad digits_divmod call supplies its true padded quotient,
+returned remainder and variable remaining clock. A second real scoped
+call physically reads the quotient; the original eight-word return
+contains precisely the natural A/D and A%D, with remainder<D. The entire
+write frame through UN/VN/Q/R/V/U is retained, including the original
+numerator-pointer scope restoration. No future helper return or worst-case
+funding is assumed in the input requirements.
+
+A shared inversion lemma derives funding, child return, shape checks and
+the actual continuation from a genuine returned scoped call. The existing
+read-only scalar fast-path proof was generalized to its actual D≤2^63
+requirement; the one-digit theorem is now a wrapper around it. This avoids
+duplicating the scalar proof and supports the later actual Taylor divisor
+bound (below2^34). The executable and its branch tests are unchanged.
+
+Validation: current-u256-two-digit-wide-v2.log PASS1127jobs; all7new
+printed facts use only permitted axioms. Index8700modules/18774facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage37%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: combine the actual zero/magnitude/scalar tests and wide branch into
+complete u256_divmod and u256_div contracts, including assigned callers.
+Then connect one-/two-digit divisors to the actual Taylor loop, counter and
+product bounds, finish header/main, compose uniform formal target steps,
+evaluate exact K, review dominant slack and complete cleanup. Source-clock
+allowances omit target straight-line work. Historical untracked WIPs and
+executable/fixed premises stay untouched.

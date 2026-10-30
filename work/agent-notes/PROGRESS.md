@@ -6621,3 +6621,40 @@ copy costs where the actual length is available. Continue the remaining main
 path, uniform formal target steps, exact K, dominant slack review and cleanup.
 Source clocks omit straight-line target work. Historical untracked WIPs
 remain untouched.
+
+## Actual byte writer: arbitrary pointers and requested lengths
+
+The unchanged rlp_encode_bytes single-byte decision now has a checked
+zero-tick all-outcome cost. A real fallthrough skipped the writing/returning
+branch and restored its b local, leaving the exact source state. Its actual
+header child costs at most 18 body ticks and supplies its real 1..9-byte scalar
+return, metadata and resumed clock before the original memcpy/return suffix.
+
+The complete byte-writer body now costs at most 43314052495 source ticks for
+arbitrary requested lengths, with +1 for ignored, assigned and tail callers.
+Known lengths retain the smaller CopyAny.price(length)+20 body / +21 caller
+allowance. Both rules use the proved original copy bodies at the actual ABI
+entry. No source/destination ownership, mapped-pointer oracle or future
+successful read/header/copy/funding is supplied. The generic composition's
+copy callback is explicitly discharged by these checked bodies.
+
+Validation: current-byte-writer-any-caller-v1.log PASS 1197 jobs; all 8 new
+printed facts use only permitted axioms. Index 8700 modules / 18998 facts;
+inventory 8745 / replacement closure 0 / fixed files unchanged. Incremental
+policy PASS, 65536 package entries. Claim infinity; no global finite target K
+or full verifier success. Effort estimate remains 55%, plausible 45–65%,
+relative to reference main. No new candidate paths. Weekly usage 41%, no reset
+credits, ordinary usage allowed. Targeted builds are not full isolated
+submission verification.
+
+Next: the same writer's genuine encoded-length and earlier-memory frame.
+Use the parent encoder's fixed field sequence with the smaller costs for
+fixed byte lengths and the domain fallback for its one extra-data length.
+This can bound arbitrary actual parent-header reads without assuming a parent
+record image discarded by the earlier main trace. Normal copies derive small
+lengths before later hashing; protect memory below the real output buffer.
+Then finish parent encoding/hashing, the restored header caller, remaining
+main path, uniform formal target steps, exact K, dominant slack review and
+cleanup. Source clocks omit straight-line target work. Historical untracked
+WIPs remain untouched. Review the coarse final-copy tail allowance when
+reviewing dominant slack; the actual byte-loop exit can give a shorter tail.

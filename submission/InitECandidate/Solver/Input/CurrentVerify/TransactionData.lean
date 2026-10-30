@@ -363,7 +363,7 @@ open Flapjack.Basis.Pure.MlString QueryBranch
 older word outside the real output and the fixed Keccak workspaces. -/
 theorem after_encode_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (start out heap currentHeap : BitVec 64) (encoded : Nat)
     (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
-    (inputArena : AllocatedBytes.Arena start encoded) (outArena : AllocatedBytes.Arena out 32)
+    (small : encoded+136<2^64) (outArena : AllocatedBytes.Arena out 32)
     (encodedCell : source.locals.lookup (ofString "e")=some (HeaderEncoding.encodedPair start encoded))
     (outCell : source.locals.lookup (ofString "out")=some (.val (.word out)))
     (saved : source.locals.lookup (ofString "mark")=some (.val (.word heap)))
@@ -406,8 +406,8 @@ theorem after_encode_normal (source post : PanSemStateFiniteExact 64 Guest.HostM
   intro query above outAway
   have stateAway:=CopyGeneral.Away.before 2701132160#64 query 200 2701134824 (by decide) (by decide) above
   have padAway:=CopyGeneral.Away.before 2701132360#64 query 136 2701134824 (by decide) (by decide) above
-  have memory:=(CurrentKeccak.Hash.call_frame source hashed 2701132160#64 2701132360#64 start out query encoded environment hashArguments args
-    inputArena outArena stateAway padAway outAway hashRun).memory
+  have memory:=(CurrentKeccak.Hash.call_span_frame source hashed 2701132160#64 2701132360#64 start out query encoded environment hashArguments args
+    small outArena stateAway padAway outAway hashRun).memory
   rw [postEq,releaseEq]
   exact memory
 
@@ -466,7 +466,7 @@ theorem after_mark_normal (source post : PanSemStateFiniteExact 64 Guest.HostMem
     (CallNormal.continuation_lookup_other source child "e" "out" returned (by decide)).trans outCell
   have currentMark : current.locals.lookup (ofString "mark")=some (.val (.word heap)):=
     (CallNormal.continuation_lookup_other source child "e" "mark" returned (by decide)).trans saved
-  obtain ⟨result,restored,kept,older⟩:=after_encode_normal current inner start out heap (HeaderEncoding.cursor heap) encoded ready arena outArena
+  obtain ⟨result,restored,kept,older⟩:=after_encode_normal current inner start out heap (HeaderEncoding.cursor heap) encoded ready (by omega) outArena
     currentEncoded currentOut currentMark currentHeap value remaining
   refine ⟨result,?_,?_,?_⟩
   · rw [endpoint]
@@ -1935,3 +1935,302 @@ theorem to_parent_hash_physical (source post : PanSemStateFiniteExact 64 Guest.H
 end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.to_parent_hash_physical
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- Price the actual returned arbitrary-read encoding. The bound includes
+all failed pointer/output reads and hash outcomes before the real release. -/
+theorem after_encode_current_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (start : BitVec 64) (encoded : Nat)
+    (bounded : encoded≤33806090619) (installed : OriginalCode.Installed source.code)
+    (cell : source.locals.lookup (ofString "e")=some (HeaderEncoding.encodedPair start encoded)) :
+    source.clock-(evaluateHOLFiniteState source afterEncode).2.clock≤10937265271 := by
+  have sizeRead : eval source (.rfield 1 (localVar "e"))=some (.val (.word (BitVec.ofNat 64 encoded))):=by
+    simp [eval,evalHOLExact,toExact,localVar,cell,HeaderEncoding.encodedPair]
+  have called:=CurrentKeccak.Hash.dynamic_call_cost source (.rfield 0 (localVar "e")) (.rfield 1 (localVar "e")) (localVar "out") encoded installed (by omega) sizeRead
+  have allowance : CurrentKeccak.Hash.bodyPrice encoded+1≤10937265270:=by unfold CurrentKeccak.Hash.bodyPrice; omega
+  have first : source.clock-(evaluateHOLFiniteState source hashCall).2.clock≤10937265270:=Nat.le_trans called allowance
+  rw [shapes.2.2]
+  exact ClockCost.sequence_current source hashCall (.seq releaseCall returnZero) 10937265270 1 first
+    (ClockCost.sequence source.code releaseCall returnZero 1 0 (HeapScope.release_call_cost source.code installed (some none) _) (ClockCost.returned source.code _))
+
+/-- The real normal encoder supplies its finite length to this same hash.
+No decoded parent image, owned hash input or future success is supplied. -/
+theorem after_mark_current_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap : BitVec 64)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
+    (h : source.locals.lookup (ofString "h")=some (.val (.word header)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) :
+    source.clock-(evaluateHOLFiniteState source afterMark).2.clock≤54251319247 := by
+  obtain ⟨callee,called,headerCell⟩:=CurrentRlp.HeaderEncoder.environment source.code.lookup header (CurrentRlp.HeaderEncoder.original_code source.code installed)
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "h"]=some [.val (.word header)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,h]
+  rw [shapes.2.1]
+  apply ClockCost.scoped_reached_current source "e" HeaderEncoding.returnShape (ofString "encode_header") [localVar "h"] _
+    CurrentRlp.HeaderEncoder.body afterEncode callee HeaderEncoding.returnShape 43314053975 10937265271 args called
+    (CurrentRlp.HeaderEncoder.body_current_cost (callEntryStateHOLFinite source callee) heap installed domain heapCell heapLower heapBound aligned)
+  intro target returned normal checked
+  obtain ⟨start,encoded,positive,size,startLower,startUpper,endUpper,answer,room,frame,memory⟩:=CurrentRlp.HeaderEncoder.body_current_normal
+    (callEntryStateHOLFinite source callee) target heap installed domain heapCell heapLower heapBound aligned returned normal
+  have currentInstalled : OriginalCode.Installed (CallNormal.continuationEntry source target "e" returned).code:=
+    OriginalCode.after_execution (callEntryStateHOLFinite source callee) target CurrentRlp.HeaderEncoder.body _ normal installed
+  have cell : (CallNormal.continuationEntry source target "e" returned).locals.lookup (ofString "e")=some (HeaderEncoding.encodedPair start encoded):=by
+    rw [←answer]
+    exact CallNormal.continuation_lookup_same _ _ _ _
+  exact after_encode_current_cost _ start encoded size currentInstalled cell
+
+/-- Complete unchanged parent-header hash on every actual outcome. Its own
+mark, arbitrary-read encoder, software hash and release are all charged. -/
+theorem body_current_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap : BitVec 64)
+    (domain : source.memaddrs=InitE.ordinaryDomain) (installed : OriginalCode.Installed source.code)
+    (h : source.locals.lookup (ofString "h")=some (.val (.word header)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (heapLower : 2701131776≤heap.toNat) (heapBound : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤54251319248 := by
+  by_cases funded : 1≤source.clock
+  · have markedRun:=HeapScope.mark_call_execute source heap "mark" afterMark heapCell (HeapScope.mark_original_code source.code installed) funded
+    let current:=QueryBranch.bind {source with clock:=source.clock-1} "mark" heap
+    have currentH : current.locals.lookup (ofString "h")=some (.val (.word header)):=
+      (bind_lookup_other _ "mark" "h" heap (by decide)).trans h
+    have price:=after_mark_current_cost current header heap domain installed currentH heapCell heapLower heapBound aligned
+    rw [shapes.1,markedRun]
+    change source.clock-(evaluateHOLFiniteState current afterMark).2.clock≤54251319248
+    have clock : current.clock=source.clock-1:=rfl
+    have decreases:=evaluateHOLFiniteState_clock_le current afterMark
+    omega
+  · omega
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.after_encode_current_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.after_mark_current_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.body_current_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem after_mark_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap out : BitVec 64)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (h : source.locals.lookup (ofString "h")=some (.val (.word header)))
+    (outCell : source.locals.lookup (ofString "out")=some (.val (.word out))) (outArena : AllocatedBytes.Arena out 32)
+    (saved : source.locals.lookup (ofString "mark")=some (.val (.word heap)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (heapLower : 2701131776≤heap.toNat) (aligned : heap.toNat%8=0)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source afterMark=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→CopyGeneral.Away out query 32→post.memory query=source.memory query := by
+  obtain ⟨callee,called,headerCell⟩:=CurrentRlp.HeaderEncoder.environment source.code.lookup header (CurrentRlp.HeaderEncoder.original_code source.code environment.installed)
+  have args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) [localVar "h"]=some [.val (.word header)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,h]
+  rw [shapes.2.1] at normal
+  obtain ⟨funded,child,returned,inner,encoderRun,checked,remaining,endpoint⟩:=CallNormal.scoped_normal source post "e" HeaderEncoding.returnShape
+    (ofString "encode_header") [localVar "h"] _ CurrentRlp.HeaderEncoder.body afterEncode callee HeaderEncoding.returnShape args called value normal
+  obtain ⟨start,encoded,positive,size,startLower,startUpper,endUpper,answer,room,frame,memory⟩:=CurrentRlp.HeaderEncoder.body_current_normal
+    (callEntryStateHOLFinite source callee) child heap environment.installed environment.domain heapCell heapLower heapBound aligned returned encoderRun
+  let current:=CallNormal.continuationEntry source child "e" returned
+  have metadata : MemoryMetadata.erase current=MemoryMetadata.erase (CurrentRlp.HeaderEncoder.heapPost source heap):=frame
+  have globals:=congrArg PanSemStateFiniteExact.globals metadata
+  change current.globals=(CurrentRlp.HeaderEncoder.heapPost source heap).globals at globals
+  have code:=MemoryMetadata.code metadata
+  change current.code=source.code at code
+  have domain:=MemoryMetadata.domain metadata
+  change current.memaddrs=source.memaddrs at domain
+  have ready : CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64:=by
+    refine ⟨by rw [code]; exact environment.installed,domain.trans environment.domain,?_,?_,environment.stateArena,environment.padArena,
+      environment.stateAligned,environment.padAligned⟩
+    · rw [globals]
+      simpa [CurrentRlp.HeaderEncoder.heapPost,HolFiniteMapExact.update,FUPDATE,ofString] using environment.stateGlobal
+    · rw [globals]
+      simpa [CurrentRlp.HeaderEncoder.heapPost,HolFiniteMapExact.update,FUPDATE,ofString] using environment.padGlobal
+  have currentHeap : current.globals.lookup (ofString "heap_ptr")=some (.val (.word (HeaderEncoding.cursor heap))):=by
+    rw [globals]
+    simp [CurrentRlp.HeaderEncoder.heapPost,HolFiniteMapExact.update,FUPDATE]
+  have currentEncoded : current.locals.lookup (ofString "e")=some (HeaderEncoding.encodedPair start encoded):=by
+    rw [←answer]
+    exact CallNormal.continuation_lookup_same _ _ _ _
+  have currentOut : current.locals.lookup (ofString "out")=some (.val (.word out)):=
+    (CallNormal.continuation_lookup_other source child "e" "out" returned (by decide)).trans outCell
+  have currentMark : current.locals.lookup (ofString "mark")=some (.val (.word heap)):=
+    (CallNormal.continuation_lookup_other source child "e" "mark" returned (by decide)).trans saved
+  obtain ⟨result,restored,kept,older⟩:=after_encode_normal current inner start out heap (HeaderEncoding.cursor heap) encoded ready (by omega) outArena
+    currentEncoded currentOut currentMark currentHeap value remaining
+  refine ⟨result,?_,?_,?_⟩
+  · rw [endpoint]
+    exact restored
+  · intro key different
+    rw [endpoint]
+    exact (kept key different).trans (by
+      rw [globals]
+      simp [CurrentRlp.HeaderEncoder.heapPost,HolFiniteMapExact.update,FUPDATE,Ne.symm different])
+  · intro query above below outAway
+    rw [endpoint]
+    exact (older query above outAway).trans (memory query below)
+
+
+theorem body_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap out : BitVec 64)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (h : source.locals.lookup (ofString "h")=some (.val (.word header)))
+    (outCell : source.locals.lookup (ofString "out")=some (.val (.word out))) (outArena : AllocatedBytes.Arena out 32)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (heapLower : 2701131776≤heap.toNat) (aligned : heap.toNat%8=0)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    value=.val (.word 0#64) ∧ post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→CopyGeneral.Away out query 32→post.memory query=source.memory query := by
+  have raw : lookupCodeHOLExact source.code.lookup (ofString "heap_mark") []=some (HeapScope.markBody,(fun _=>none),.one):=by
+    simp [lookupCodeHOLExact,HeapScope.mark_original_code source.code environment.installed]
+  obtain ⟨callee,called,locals⟩:=CodeEnvironment.finite_lookup source.code.lookup _ _ _ _ _ raw
+  rw [shapes.1] at normal
+  obtain ⟨funded,child,returned,inner,markRun,checked,remaining,endpoint⟩:=CallNormal.scoped_normal source post "mark" .one
+    (ofString "heap_mark") [] [] HeapScope.markBody afterMark callee .one rfl called value normal
+  rw [HeapScope.mark_shape] at markRun
+  obtain ⟨read,childEq⟩:=return_normal (callEntryStateHOLFinite source callee) child HeapScope.heapVar returned markRun
+  have expected : eval (callEntryStateHOLFinite source callee) HeapScope.heapVar=some (.val (.word heap)):=by
+    simp [eval,HeapScope.heapVar,evalHOLExact,toExact,callEntryStateHOLFinite,heapCell]
+  have answer : returned=.val (.word heap):=Option.some.inj (read.symm.trans expected)
+  let current:=QueryBranch.bind {source with clock:=source.clock-1} "mark" heap
+  have canonical : CallNormal.continuationEntry source child "mark" returned=current:=by rw [childEq,answer]; rfl
+  rw [canonical] at remaining
+  have ready : CurrentKeccak.Hash.Environment current 2701132160#64 2701132360#64:=environment.of_frame rfl
+  have hCell : current.locals.lookup (ofString "h")=some (.val (.word header)):=
+    (bind_lookup_other _ "mark" "h" heap (by decide)).trans h
+  have currentOut : current.locals.lookup (ofString "out")=some (.val (.word out)):=
+    (bind_lookup_other _ "mark" "out" heap (by decide)).trans outCell
+  have saved : current.locals.lookup (ofString "mark")=some (.val (.word heap)):=bind_lookup_same _ _ _
+  obtain ⟨result,restored,kept,memory⟩:=after_mark_current_normal current inner header heap out ready hCell currentOut outArena saved
+    heapCell heapBound heapLower aligned value remaining
+  rw [endpoint]
+  exact ⟨result,restored,kept,memory⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.after_mark_current_normal
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.body_current_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem call_current_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap out : BitVec 64)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word header),.val (.word out)])
+    (domain : source.memaddrs=InitE.ordinaryDomain)
+    (installed : OriginalCode.Installed source.code)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (heapLower : 2701131776≤heap.toNat) (aligned : heap.toNat%8=0) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "header_hash") arguments)).2.clock≤54251319249 := by
+  obtain ⟨callee,called,h,outCell⟩:=word_pair_environment source.code.lookup (ofString "header_hash") (ofString "h") (ofString "out")
+    body .one header out (by decide) (original_code source.code installed)
+  exact ClockCost.call_current source (some none) (ofString "header_hash") arguments [.val (.word header),.val (.word out)] body callee .one 54251319248 args called
+    (body_current_cost (callEntryStateHOLFinite source callee) header heap domain installed h heapCell heapLower heapBound aligned)
+
+
+theorem call_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (header heap out : BitVec 64)
+    (arguments : List (ExpHOL 64))
+    (args : evalListHOLFinite source (h:=fun address=>Classical.propDecidable (source.memaddrs address)) arguments=some [.val (.word header),.val (.word out)])
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (outArena : AllocatedBytes.Arena out 32)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap))) (heapBound : heap.toNat≤2952790016)
+    (heapLower : 2701131776≤heap.toNat) (aligned : heap.toNat%8=0)
+    (normal : evaluateHOLFiniteState source (.call (some (none,none)) (ofString "header_hash") arguments)=(none,post)) :
+    post.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)) ∧ HeapGlobals source post ∧
+      ∀ query : BitVec 64,2701134824≤query.toNat→query.toNat<heap.toNat→CopyGeneral.Away out query 32→post.memory query=source.memory query := by
+  obtain ⟨callee,called,h,outCell⟩:=word_pair_environment source.code.lookup (ofString "header_hash") (ofString "h") (ofString "out")
+    body .one header out (by decide) (original_code source.code environment.installed)
+  obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,target,returned,actualArgs,actualCalled,bodyRun,checked,endpoint,fieldsFrame⟩:=
+    CallNormal.ignored_data source post (ofString "header_hash") arguments normal
+  have valuesEq : actualValues=[.val (.word header),.val (.word out)]:=Option.some.inj (actualArgs.symm.trans args)
+  subst actualValues
+  have entryEq : (actualBody,actualCallee,actualShape)=(body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases entryEq
+  obtain ⟨answer,restored,globals,memory⟩:=body_current_normal (callEntryStateHOLFinite source callee) target header heap out (environment.of_frame rfl)
+    h outCell outArena heapCell heapBound heapLower aligned returned bodyRun
+  rw [endpoint]
+  exact ⟨restored,globals,memory⟩
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderHash
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.call_current_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderHash.call_current_normal
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+def parentHashArguments : List (ExpHOL 64):=[localVar "parent",localVar "tmp"]
+def parentHashCall : ProgHOL 64:=.call (some (none,none)) (ofString "header_hash") parentHashArguments
+def parentCompare : ProgHOL 64:=.call (some (some (.local,ofString "eq"),none)) (ofString "memeq") [field "h" 8,localVar "tmp",.const 32#64]
+def parentTail : ProgHOL 64:=.seq parentCompare (.seq releaseMark (.seq (guard 30 (zero "eq")) (.return (.const 0#64))))
+
+set_option maxRecDepth 100000 in
+set_option maxHeartbeats 4000000 in
+theorem parent_shape : beforeParentHash=.seq parentHashCall parentTail := by
+  simp only [beforeParentHash,beforeMark,body,Guest.Software.guestFn_validate_header,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    CallPrefix.cutAt,parentHashCall,parentHashArguments,parentTail,parentCompare,releaseMark,guard,zero,field,localVar,
+    RlpWrite.U256Value.tupleShape,Option.map_some,Option.map_none]
+
+theorem parent_tail_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code parentTail 130 := by
+  have compare:=MutableTable.MemeqAny.fixed_call_cost code installed (some (some (ofString "eq"))) (field "h" 8) (localVar "tmp") 32 (by decide)
+  have released:=HeapScope.release_call_cost code installed (some none) [localVar "mark"]
+  have checked : ClockCost.Bound code (.seq (guard 30 (zero "eq")) (.return (.const 0#64))) 0:=
+    ClockCost.sequence code _ _ 0 0
+      (ClockCost.conditional code _ _ _ 0 0 (ClockCost.raised code _ _) (ClockCost.skip code)) (ClockCost.returned code _)
+  exact ClockCost.sequence code parentCompare _ 129 1 compare (ClockCost.sequence code releaseMark _ 1 0 released checked)
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.parent_shape
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.parent_tail_cost
+
+namespace InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+theorem parent_suffix_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (parent tmp heap : BitVec 64)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (parentCell : source.locals.lookup (ofString "parent")=some (.val (.word parent)))
+    (tmpCell : source.locals.lookup (ofString "tmp")=some (.val (.word tmp)))
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (lower : 2701131776≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) :
+    source.clock-(evaluateHOLFiniteState source beforeParentHash).2.clock≤54251319379 := by
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) parentHashArguments=
+      some [.val (.word parent),.val (.word tmp)]:=by
+    simp [parentHashArguments,evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,parentCell,tmpCell]
+  have price:=HeaderHash.call_current_cost source parent heap tmp parentHashArguments args domain installed heapCell bounded lower aligned
+  rw [parent_shape]
+  exact ClockCost.sequence_current source parentHashCall parentTail 54251319249 130 price (parent_tail_cost source.code installed)
+
+/-- Complete actual unchanged validate_header, including its real parent
+encoding/hash and all early guards, failed reads, allocator stops and clocks. -/
+theorem body_current_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base heap parent : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base)
+    (environment : CurrentKeccak.Hash.Environment source 2701132160#64 2701132360#64)
+    (heapCell : source.globals.lookup (ofString "heap_ptr")=some (.val (.word heap)))
+    (parentCell : source.locals.lookup (ofString "parent")=some (.val (.word parent)))
+    (lower : 2701134824≤heap.toNat) (bounded : heap.toNat≤2952790016) (aligned : heap.toNat%8=0) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤54251770666 := by
+  generalize run : evaluateHOLFiniteState source body=output
+  obtain ⟨outcome,post⟩:=output
+  rcases to_parent_hash_physical source post base heap context environment heapCell lower bounded aligned outcome run with stopped|reached
+  · change source.clock-post.clock≤54251770666
+    omega
+  · obtain ⟨feeEntry,current,inner,fees,ready,h,p,forward,price,endpoint,remaining⟩:=reached
+    have exactRound:=PersistentAlloc.rounded_expected heap 64#64 (heap.toNat+64)
+      (by have room:=ready.room; change heap.toNat+64+7<2^64; omega) (by change heap.toNat+64≤heap.toNat+64; omega)
+      (by change heap.toNat+64<heap.toNat+64+8; omega) (by rw [Nat.add_mod,aligned])
+    have number : (PersistentAlloc.rounded heap 64#64).toNat=heap.toNat+64:=by
+      rw [exactRound,BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by have room:=ready.room; omega)]
+    have currentParent:=(p.trans parentCell)
+    have suffix:=parent_suffix_cost current parent heap (PersistentAlloc.rounded heap 64#64) ready.environment.installed ready.environment.domain
+      currentParent ready.temporary ready.heapCell (by rw [number]; omega) (by rw [number]; exact ready.room)
+      (by rw [number,Nat.add_mod,aligned])
+    rw [remaining] at suffix
+    change current.clock-inner.clock≤54251319379 at suffix
+    change source.clock-post.clock≤54251770666
+    omega
+
+end InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.parent_suffix_cost
+#print axioms InitECandidate.Solver.Input.CurrentVerify.HeaderValidateCurrent.body_current_cost

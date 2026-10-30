@@ -15,6 +15,15 @@ scoped field call, all base/optional fields, pointer advances and final list
 prefix are included. Connecting this returned span to the actual parent
 hash remains open. Source clocks are not the final target K.
 
+The complete unchanged parent header_hash now costs≤54251319248body /
+54251319249caller source ticks without a decoded parent image or owned
+hash-input premise. Actual normal returns restore their own heap mark and
+retain older memory outside the real output/workspaces. The complete original
+validate_header now costs≤54251770666body source ticks from its real division/
+hash workspace, bounded aligned heap and typed parent entry. Its final normal
+return frame and restored main-caller connection remain open. These source
+clocks are not a whole-program target K.
+
 ## Complete actual header-validator cost, normal return and caller trace
 
 The unchanged Software validate_headers212 now costs≤51528322body ticks and
@@ -6911,3 +6920,37 @@ target work; original executable unchanged.
 Next: compose the actual parent-header hash from the arbitrary-read encoder
 and weaker normal hash contract, then whole restored header caller/remaining
 main, uniform formal target steps, exact K, dominant slack review and cleanup.
+
+## Actual parent hash complete; whole header-validator source cost
+
+The original parent header_hash now costs54251319248body /54251319249caller
+source ticks. The actual arbitrary-read encoder return supplies encoded
+length≤33806090619; the software hash then costs≤10937265269body ticks, with
+its own real call/release tail. Failed reads, ABI checks, allocation and all
+hash outcomes are covered; no decoded parent image, owned input span or
+future successful/funded execution is assumed.
+
+A genuine normal hash restores its actual saved heap mark and protects the
+older input outside the real output/state/pad writes. Its actual caller
+retains those facts with real local restoration. The old after-encode normal
+helper was strengthened to the numerical length premise and new hash frame.
+
+The unchanged validate_header parent-hash/comparison/release/final-guard tail
+now costs54251319379source ticks. Its real earlier451287tick physical prefix
+derives that same heap, temporary bindings and typed parent entry. Thus every
+outcome of the complete original validate_header costs≤54251770666body ticks.
+Normal-return memory/frame and restored main-caller composition remain open.
+
+Validation: current-parent-header-hash-complete-v1.log PASS3102jobs, including
+the full earlier main/hash/transaction/header caller graph; all11new printed
+facts and strengthened helpers use permitted axioms. Index8700modules/19059
+facts; inventory8745, replacement closure0, fixed files unchanged. Incremental
+policy PASS, 65536package entries. Claim infinity; no global finite target K/
+full verifier success. Effort55%, plausible45–65%, relative to main. Weekly
+usage42%, no reset credits, ordinary usage allowed. No new candidate paths;
+historical untracked WIPs untouched. Source clocks omit straight-line target
+work; original executable unchanged.
+
+Next: derive the real normal parent-comparison/release tail and whole current
+validate_header physical frame, restore its main caller, then remaining main,
+uniform formal target steps, exact K, dominant slack review and cleanup.

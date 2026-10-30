@@ -36,9 +36,12 @@ theorem after_header_none_outside (source target : PanSemStateFiniteExact 64 Gue
   refine ⟨nextCursor,Arena.of_fields afterInner target nextCursor limit nextArena ?_ ?_,smaller,?_⟩
   · rw [payloadRestore,afterRestore]; rfl
   · rw [payloadRestore,afterRestore]; rfl
-  · intro query upper
-    rw [payloadRestore,afterRestore]
-    exact above query upper
+  · refine ⟨?_, ?_⟩
+    · rw [payloadRestore,afterRestore]
+      exact above.runtime
+    · intro query upper
+      rw [payloadRestore,afterRestore]
+      exact above query upper
 
 end InitECandidate.Solver.Rlp.Validation
 

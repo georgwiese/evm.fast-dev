@@ -22,9 +22,12 @@ theorem caught_normal_outside (source target : PanSemStateFiniteExact 64 Guest.H
   refine ⟨by rw [restored],nextCursor,Validation.Arena.of_fields calleePost target nextCursor limit nextArena ?_ ?_,bounded,?_⟩
   · rw [restored]
   · rw [restored]
-  · intro query upper
-    rw [restored]
-    exact above query upper
+  · refine ⟨?_, ?_⟩
+    · rw [restored]
+      exact above.runtime
+    · intro query upper
+      rw [restored]
+      exact above query upper
 
 end InitECandidate.Solver.Rlp.Validate
 

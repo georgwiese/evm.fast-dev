@@ -8026,3 +8026,50 @@ transport. Then resume structural table invariants, pre-state/system calls,
 VM/finalization, complete source and uniform target bounds, explicit K,
 dominant-slack review and final unused-code cleanup. Do not run the full
 verifier or Solution root on this host. No new candidate paths were added.
+
+## Mapped scratch runtime frames and complete current list counter
+
+The actual nested RLP proof now retains every runtime field apart from the
+temporary cursor globals, memory, locals and clock. This includes the full
+FFI state/events. The public validator's real saved-mark return restores all
+globals, so its checked normal frame is complete MemoryMetadata plus memory
+outside [2952790016,2965299200). Temporary scratch bytes may change.
+
+Current rlp_item_total now costs<=28*length+30 body ticks; its real normal
+return derives a positive consumed size, price at that actual size, runtime
+frame and outside memory. Its scoped caller retains its actual callee memory
+and pays<=28*consumed+31. No canonical equality with the original entire
+memory is asserted. The initialized arena transfers via runtime metadata.
+The actual list counter derives each positive size and real offset/count
+updates, sharing one potential of60*remainingBytes. The whole unchanged
+rlp_list_count costs<=60*length body / +1 ordinary caller ticks on all outcomes.
+Normal returns derive count<=length, complete runtime/outside-memory frames,
+actual callee states and real continuations. No future successful parse,
+allocation, mapped input or encoded-list image is an entry premise.
+
+Cleanup removed eight unused flat-only CurrentValidation modules (490lines),
+after checking their imports and preserving exact local bytes in
+work/agent-notes/archive/current-flat-validation-3b28334fa.tar.gz. Their small
+word lookup helper now lives in the list-counter state module which uses it.
+
+Validation: current-rlp-runtime-frame-v1.log PASS1240jobs;
+current-rlp-item-normal-v2.log PASS1255jobs;
+current-rlp-list-count-cost-v1.log PASS1264jobs;
+current-rlp-list-count-caller-v1.log PASS1266jobs, permitted printed axioms.
+Incremental policy PASS65528entries/2488589340bytes. Inventory8737modules,
+replacement AST reverse closure0, fixed files identical to reference6957805e.
+322indexed modules/1503printed facts have selected-build evidence at this
+reference; historical index8697/19366 is not whole-library revalidation.
+Claim infinity; no complete main source bound, finite target K or full verifier
+success. Weekly usage48%, no reset credits, ordinary usage allowed.
+
+Next: reconnect encoded-item/list provenance and downstream item/decode
+callers to the actual returned memory. Derive byte preservation for the
+input extent below the frame cursor from its real ownership; do not assume
+whole-memory equality or unchanged source bytes for arbitrary scratch-overlapping
+input. Update later cost allowances and models through actual decoder/main
+contexts. Witness/trie/message/frame/VM paths and changed target bootstrap
+still require porting; the old main prefix and empty-input consequences remain
+unrevalidated. Then complete the remaining system/VM/finalization, source and
+uniform target bound, explicit K, slack review and final cleanup. No full
+verifier or Solution root on this host.

@@ -37,7 +37,8 @@ theorem loop_none_outside (source target : PanSemStateFiniteExact 64 Guest.HostM
       simpa only [globalWord,currentView.arena.cursorGlobal] using currentBound
     refine ⟨next,?_,?_⟩
     · simpa only [globalWord,nextArena.cursorGlobal] using decreases.trans upper
-    · intro query beyond
+    · refine ⟨above.runtime.trans model.2.2.runtime, ?_⟩
+      intro query beyond
       have currentOutside : query.toNat < limit.toNat ∨ currentCursor.toNat ≤ query.toNat := by
         rcases beyond with before | beyond
         · exact Or.inl before

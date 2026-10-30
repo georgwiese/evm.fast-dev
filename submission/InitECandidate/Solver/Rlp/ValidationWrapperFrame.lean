@@ -59,9 +59,12 @@ theorem body_normal_outside (source target : PanSemStateFiniteExact 64 Guest.Hos
     rfl
   · rw [targetRestore,errorRestore,returned]
     rfl
-  · intro query upper
-    rw [targetRestore,errorRestore,returned,released]
-    exact above query upper
+  · refine ⟨?_, ?_⟩
+    · rw [targetRestore,errorRestore,returned,released]
+      exact above.runtime
+    · intro query upper
+      rw [targetRestore,errorRestore,returned,released]
+      exact above query upper
 
 
 theorem body_normal_above (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)

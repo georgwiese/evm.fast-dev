@@ -15,7 +15,7 @@
   "previous_reference": "f892870c8682517186860842a3ff5f0dea1aa3eb",
   "software_guest_retargeting_complete": false,
   "historical_proof_checks_require_revalidation": true,
-  "solver_modules": 8745,
+  "solver_modules": 8737,
   "missing_solver_imports": [],
   "module_families": {
     "Arenas": 18,
@@ -72,7 +72,7 @@
     "PanState": 1,
     "PanTraversal": 1,
     "RiscVEvaluatorCosts": 1,
-    "Rlp": 215,
+    "Rlp": 207,
     "ScratchList": 2,
     "ScratchTable": 8,
     "ShiftLslImmediateCost": 1,

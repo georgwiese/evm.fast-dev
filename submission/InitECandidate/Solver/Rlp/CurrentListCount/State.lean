@@ -6,7 +6,7 @@ open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
 open Flapjack.Basis.Pure.MlString Input WitnessRadix WitnessRadix.QueryBranch
 
 /-- The current real list counter, with original input extent and initialized
-arenas. Count cannot exceed already consumed bytes; no mapped scratch is used. -/
+arenas. Count cannot exceed already consumed bytes; real mapped scratch is temporary. -/
 structure View (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length offset count : BitVec 64) : Prop where
   arena : CurrentStartup.ArenaState source
   pointerCell : source.locals.lookup (ofString "p")=some (.val (.word pointer))
@@ -38,15 +38,29 @@ theorem View.restored (data : View source pointer length offset count) (saved : 
     (restore_lookup_other saved source "total" "off" (by decide)).trans data.offsetCell,
     (restore_lookup_other saved source "total" "count" (by decide)).trans data.countCell,data.counted,data.bounded,data.fits⟩
 
-def Invariant (pointer length : BitVec 64) (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop := ∃ offset count,View source pointer length offset count
-def allowance (length : BitVec 64) (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Nat :=
-  46*(length.toNat-(CurrentValidation.wordAt source "off").toNat)
+/-- Transfer the current local counter into the actual returned callee state,
+using its runtime frame while retaining the caller's own local bindings. -/
+theorem View.at_caller (data : View source pointer length offset count)
+    (target : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (metadata : MemoryMetadata.erase target=MemoryMetadata.erase source) :
+    View {target with locals:=source.locals} pointer length offset count :=
+  ⟨data.arena.of_metadata metadata,data.pointerCell,data.lengthCell,data.offsetCell,data.countCell,
+    data.counted,data.bounded,data.fits⟩
 
-theorem View.allowance_eq (data : View source pointer length offset count) : allowance length source=46*(length.toNat-offset.toNat) := by
-  simp only [allowance,CurrentValidation.wordAt,data.offsetCell]
+def Invariant (pointer length : BitVec 64) (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Prop := ∃ offset count,View source pointer length offset count
+def wordAt (source : PanSemStateFiniteExact 64 Guest.HostMemory) (name : String) : BitVec 64 :=
+  match source.locals.lookup (ofString name) with | some (.val (.word word))=>word | _=>0#64
+
+def allowance (length : BitVec 64) (source : PanSemStateFiniteExact 64 Guest.HostMemory) : Nat :=
+  60*(length.toNat-(wordAt source "off").toNat)
+
+theorem View.allowance_eq (data : View source pointer length offset count) : allowance length source=60*(length.toNat-offset.toNat) := by
+  simp only [allowance,wordAt,data.offsetCell]
 
 end InitECandidate.Solver.Rlp.CurrentListCount
 
 #print axioms InitECandidate.Solver.Rlp.CurrentListCount.View.at_clock
 #print axioms InitECandidate.Solver.Rlp.CurrentListCount.View.bound
 #print axioms InitECandidate.Solver.Rlp.CurrentListCount.View.restored
+
+#print axioms InitECandidate.Solver.Rlp.CurrentListCount.View.at_caller

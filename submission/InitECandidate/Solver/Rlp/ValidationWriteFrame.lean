@@ -20,6 +20,7 @@ theorem push_none_outside (source target : PanSemStateFiniteExact 64 Guest.HostM
   change pointer.toNat+24≤cursor.toNat at below
   rw [same]
   refine ⟨pointer,push_post_arena source cursor limit position ending (topOf frames) payload after view.arena room,by omega,?_⟩
+  refine ⟨rfl, ?_⟩
   intro query outside
   change WitnessRadix.WordWrites.write source.memory (recordWrites pointer after ending (topOf frames)) query=source.memory query
   rcases outside with before | beyond
@@ -44,7 +45,7 @@ theorem choose_none_outside (source target : PanSemStateFiniteExact 64 Guest.Hos
     have assigned := WitnessRadix.StateSteps.assign_execute source "pos" (localVar "after") position after view.positionCell readAfter
     have same : target=bind source "pos" after := (Prod.mk.inj (normal.symm.trans assigned)).2
     rw [same]
-    exact ⟨cursor,Arena.of_fields source _ cursor limit view.arena rfl rfl,Nat.le_refl _,fun _ _=>rfl⟩
+    exact ⟨cursor,Arena.of_fields source _ cursor limit view.arena rfl rfl,Nat.le_refl _,⟨rfl,fun _ _=>rfl⟩⟩
   · rw [if_pos zero] at normal
     exact push_none_outside source target rootEnd cursor limit position ending payload after frames view payloadCell afterCell installed normal
 

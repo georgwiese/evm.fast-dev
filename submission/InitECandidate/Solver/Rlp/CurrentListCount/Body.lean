@@ -20,7 +20,7 @@ theorem arguments_fit (source : PanSemStateFiniteExact 64 Guest.HostMemory) (poi
 
 theorem loop_body_price (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length offset count : BitVec 64)
     (view : View source pointer length offset count) :
-    source.clock-(evaluateHOLFiniteState source ListCount.loopBody).2.clock≤14*(length.toNat-offset.toNat)+31 := by
+    source.clock-(evaluateHOLFiniteState source ListCount.loopBody).2.clock≤28*(length.toNat-offset.toNat)+31 := by
   have paid:=CurrentItemTotal.scoped_cost source (pointer+offset) (length-offset) view.arena (arguments_fit source pointer length offset count view)
     (ofString "total") ListCount.arguments ListCount.advance 0 (arguments_read source pointer length offset count view) (ListCount.advance_price source.code)
   rwa [BitVec.toNat_sub_of_le view.bounded] at paid
@@ -35,11 +35,12 @@ theorem loop_body_none (source post : PanSemStateFiniteExact 64 Guest.HostMemory
     (view : View source pointer length offset count) (normal : evaluateHOLFiniteState source ListCount.loopBody=(none,post)) :
     ∃ size : BitVec 64,1≤size.toNat ∧ size.toNat≤(length-offset).toNat ∧
       View post pointer length (offset+size) (count+1#64) ∧ (offset+size).toNat=offset.toNat+size.toNat ∧
-      source.clock-post.clock≤45*size.toNat ∧ LocalEffects.erase post=LocalEffects.erase source := by
-  obtain ⟨size,paid,inner,positive,bounded,minimum,maximum,spent,continuation,endpoint⟩ := CurrentItemTotal.scoped_none source post (pointer+offset) (length-offset)
+      source.clock-post.clock≤59*size.toNat ∧ MemoryMetadata.erase post=MemoryMetadata.erase source ∧
+      Validation.Outside source post 2952790016 2965299200 := by
+  obtain ⟨size,paid,calleePost,inner,positive,bounded,minimum,maximum,spent,clock,metadata,outside,continuation,endpoint⟩ := CurrentItemTotal.scoped_none source post (pointer+offset) (length-offset)
     view.arena (arguments_fit source pointer length offset count view) "total" ListCount.arguments ListCount.advance (arguments_read source pointer length offset count view) normal
-  let ready:=bind {source with clock:=source.clock-paid} "total" size
-  have readyView : View ready pointer length offset count := (view.at_clock (source.clock-paid)).bound "total" size (by decide)
+  let ready:=bind {calleePost with locals:=source.locals} "total" size
+  have readyView : View ready pointer length offset count := (view.at_caller calleePost metadata).bound "total" size (by decide)
   have execution:=ListCount.advance_execute ready offset count size readyView.offsetCell readyView.countCell (bind_lookup_same _ _ _)
   rw [execution] at continuation
   have innerEq : inner=ListCount.advancePost ready offset count size := (Prod.mk.inj continuation).2.symm
@@ -47,12 +48,18 @@ theorem loop_body_none (source post : PanSemStateFiniteExact 64 Guest.HostMemory
   obtain ⟨advanced,number⟩ := advance_view ready pointer length offset count size readyView positive bounded
   have targetView:=advanced.restored source
   rw [←endpoint] at targetView
-  have clockEq : post.clock=source.clock-paid := by rw [endpoint]; rfl
-  refine ⟨size,positive,bounded,targetView,number,?_,?_⟩
-  · rw [clockEq]
+  have clockEq : post.clock=calleePost.clock := by rw [endpoint]; rfl
+  refine ⟨size,positive,bounded,targetView,number,?_,?_,?_⟩
+  · rw [clockEq,clock]
     omega
   · rw [endpoint]
-    rfl
+    exact metadata
+  · refine ⟨?_,?_⟩
+    · rw [endpoint]
+      exact outside.runtime
+    · intro query outsideQuery
+      rw [endpoint]
+      exact outside query outsideQuery
 
 end InitECandidate.Solver.Rlp.CurrentListCount
 

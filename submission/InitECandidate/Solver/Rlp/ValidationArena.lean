@@ -1,3 +1,4 @@
+import InitECandidate.Solver.Input.MemoryMetadata
 import InitECandidate.Solver.Arenas.ScopedNone
 import InitECandidate.Solver.WitnessRadix.AllocationDomain
 
@@ -15,13 +16,30 @@ theorem Above.trans (source middle target : PanSemStateFiniteExact 64 Guest.Host
   fun query upper=>(second query upper).trans (first query upper)
 
 
-/-- Scratch writes preserve words below the live frame-memory cursor as
-well as words at or above the incoming downward scratch cursor. -/
-def Outside (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (lower upper : Nat) : Prop :=
-  ∀ query, query.toNat < lower ∨ upper ≤ query.toNat → target.memory query = source.memory query
+/-- Runtime fields retained by scratch work, apart from its temporary
+cursor globals, memory contents, locals and clock. -/
+def scratchMetadata (source : PanSemStateFiniteExact 64 Guest.HostMemory) :=
+  Input.MemoryMetadata.erase {source with globals := HolFiniteMapExact.empty}
+
+/-- Actual scratch work retains the runtime and protects both sides of the
+interval between the frame cursor and entering scratch cursor. -/
+structure Outside (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (lower upper : Nat) : Prop where
+  runtime : scratchMetadata target = scratchMetadata source
+  memory : ∀ query, query.toNat < lower ∨ upper ≤ query.toNat → target.memory query = source.memory query
+
+instance {source target : PanSemStateFiniteExact 64 Guest.HostMemory} {lower upper : Nat} :
+    CoeFun (Outside source target lower upper)
+      (fun _ => ∀ query : BitVec 64, query.toNat < lower ∨ upper ≤ query.toNat → target.memory query = source.memory query) where
+  coe frame := frame.memory
 
 theorem Outside.refl (source : PanSemStateFiniteExact 64 Guest.HostMemory) (lower upper : Nat) :
-    Outside source source lower upper := fun _ _ => rfl
+    Outside source source lower upper := ⟨rfl, fun _ _ => rfl⟩
+
+theorem Outside.of_readonly {source target : PanSemStateFiniteExact 64 Guest.HostMemory} (lower upper : Nat)
+    (frame : Input.LocalEffects.erase target = Input.LocalEffects.erase source) : Outside source target lower upper := by
+  have runtime := congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory =>
+    {state with globals := HolFiniteMapExact.empty}) (Input.MemoryMetadata.of_frame frame)
+  exact ⟨runtime, fun query _ => congrFun (Input.LocalEffects.memory_of_erase source target frame) query⟩
 
 /-- Current original scratch/frame cursors and fixed ordinary domain.
 These entry facts do not assert room for a future record allocation. -/
@@ -92,3 +110,5 @@ end InitECandidate.Solver.Rlp.Validation
 #print axioms InitECandidate.Solver.Rlp.Validation.Arena.after_allocation
 
 #print axioms InitECandidate.Solver.Rlp.Validation.Outside.refl
+
+#print axioms InitECandidate.Solver.Rlp.Validation.Outside.of_readonly

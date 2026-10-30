@@ -29,9 +29,12 @@ theorem parse_none_outside (source target : PanSemStateFiniteExact 64 Guest.Host
   refine ⟨nextCursor,Arena.of_fields inner target nextCursor limit nextArena ?_ ?_,smaller,?_⟩
   · rw [restored]; rfl
   · rw [restored]; rfl
-  · intro query upper
-    rw [restored]
-    exact above query upper
+  · refine ⟨?_, ?_⟩
+    · rw [restored]
+      exact above.runtime
+    · intro query upper
+      rw [restored]
+      exact above query upper
 
 theorem at_end_readonly (code) : Input.LocalEffects.Preserves code atEnd := by
   simp only [atEnd,stop,pop]
@@ -56,7 +59,7 @@ theorem loop_body_none_outside (source target : PanSemStateFiniteExact 64 Guest.
     have domain := congrArg PanSemStateFiniteExact.memaddrs fields
     have globals := congrArg PanSemStateFiniteExact.globals fields
     have memory := congrArg PanSemStateFiniteExact.memory fields
-    exact ⟨cursor,Arena.of_fields source target cursor limit view.arena domain globals,Nat.le_refl _,fun query _=>congrFun memory query⟩
+    exact ⟨cursor,Arena.of_fields source target cursor limit view.arena domain globals,Nat.le_refl _,Outside.of_readonly limit.toNat cursor.toNat fields⟩
   · rw [if_neg same] at normal
     exact parse_none_outside source target rootEnd cursor limit position ending frames view installed normal
 

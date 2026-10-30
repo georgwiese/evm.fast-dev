@@ -29,9 +29,12 @@ theorem ignored_normal_outside (source post : PanSemStateFiniteExact 64 Guest.Ho
   refine ⟨positive,by rw [same],Validation.Arena.of_fields target post cursor limit nextArena ?_ ?_,?_,price⟩
   · rw [same]
   · rw [same]
-  · intro query upper
-    rw [same]
-    exact above query upper
+  · refine ⟨?_, ?_⟩
+    · rw [same]
+      exact above.runtime
+    · intro query upper
+      rw [same]
+      exact above query upper
 
 
 theorem ignored_normal_above (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer length cursor limit : BitVec 64)

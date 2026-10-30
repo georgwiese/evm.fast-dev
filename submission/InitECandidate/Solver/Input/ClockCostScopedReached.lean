@@ -85,7 +85,41 @@ theorem scoped_arguments_current (source : PanSemStateFiniteExact 64 Guest.HostM
       exact scoped_current source name shape function arguments values body continuation callee returnShape calleePrice continuationPrice
         args called (priced values body callee returnShape args called) tail
 
+/-- Dynamic arguments with a continuation priced only after this execution's
+genuine checked child return. Invalid reads/ABI checks stop immediately. -/
+theorem scoped_arguments_reached_current (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (shape : ShapeHOL) (function : MlS) (arguments : List (ExpHOL 64)) (continuation : ProgHOL 64)
+    (calleePrice continuationPrice : Nat)
+    (priced : ∀ values body callee returnShape,
+      evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some values →
+      lookupCodeHOLFinite source.code.lookup function values=some (body,callee,returnShape) →
+      (callEntryStateHOLFinite source callee).clock-(evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body).2.clock≤calleePrice)
+    (tail : ∀ values body callee returnShape target returned,
+      evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=some values →
+      lookupCodeHOLFinite source.code.lookup function values=some (body,callee,returnShape) →
+      evaluateHOLFiniteState (callEntryStateHOLFinite source callee) body=(some (.returned returned),target) →
+      (shapeEqHOL (shapeOfHOLExact returned) shape && shapeEqHOL (shapeOfHOLExact returned) returnShape)=true →
+      target.clock-(evaluateHOLFiniteState (CallNormal.continuationEntry source target name returned) continuation).2.clock≤continuationPrice) :
+    source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) shape function arguments continuation)).2.clock≤calleePrice+continuationPrice+1 := by
+  cases args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments with
+  | none=>
+    rw [evaluateHOLFiniteState_decCall_fixClockRewrite,args]
+    simp
+  | some values=>
+    cases called : lookupCodeHOLFinite source.code.lookup function values with
+    | none=>
+      rw [evaluateHOLFiniteState_decCall_fixClockRewrite,args]
+      simp only [called]
+      omega
+    | some triple=>
+      obtain ⟨body,callee,returnShape⟩:=triple
+      apply scoped_reached_current source name shape function arguments values body continuation callee returnShape calleePrice continuationPrice
+        args called (priced values body callee returnShape args called)
+      intro target returned run valid
+      exact tail values body callee returnShape target returned args called run valid
+
 end InitECandidate.Solver.Input.ClockCost
 
 #print axioms InitECandidate.Solver.Input.ClockCost.scoped_reached_current
 #print axioms InitECandidate.Solver.Input.ClockCost.scoped_arguments_current
+#print axioms InitECandidate.Solver.Input.ClockCost.scoped_arguments_reached_current

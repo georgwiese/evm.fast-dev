@@ -10,6 +10,8 @@ import InitECandidate.Solver.Input.ClockCostScopedReached
 import InitECandidate.Solver.Input.ClockCostCurrentValue
 import InitECandidate.Solver.Input.ClockCostDeclaredReached
 import InitECandidate.Solver.Input.PureDecision
+import InitECandidate.Solver.Input.NoFallthrough
+import InitECandidate.Solver.Input.CurrentVerify.GasFrame
 import InitECandidate.Solver.Input.ClockCostCurrentLoop
 import InitECandidate.Solver.Input.CounterFlow
 import InitECandidate.Solver.Input.LocalFlow
@@ -2411,38 +2413,15 @@ open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
 /-- The literal scalar division has divisor 21 even when its first read
 fails. Every reached child therefore preserves the full nonlocal state. -/
 theorem quotient_frame (code) (installed : OriginalCode.Installed code) : LocalEffects.Preserves code quotientCall := by
-  classical
   intro source sameCode
-  have divCode:=UDivMod.Divide.original_code source.code (sameCode.symm ▸ installed)
-  cases read : eval source quotientArgument with
-  | none=>
-    simp only [eval] at read
-    rw [quotientCall,evaluateHOLFiniteState_decCall_fixClockRewrite]
-    simp [evalListHOLFinite,evalListHOLExact,read]
-  | some value=>
-    let actualValues : List (ValueHOL 64):=[value,.val (.word 21#64)]
-    have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [quotientArgument,.const 21#64]=some actualValues:=by
-      simp only [eval] at read
-      simp [actualValues,evalListHOLFinite,evalListHOLExact,read,evalHOLExact]
-    cases value with
-    | val payload=>
-      cases payload with
-      | word left=>
-        obtain ⟨callee,called,a,b⟩:=word_pair_environment source.code.lookup (ofString "udiv") (ofString "a") (ofString "b")
-          UDivMod.Divide.body .one left 21#64 (by decide) divCode
-        rw [quotientCall]
-        exact LocalEffects.scoped_current source (ofString "q") .one (ofString "udiv") [quotientArgument,.const 21#64] _
-          UDivMod.Divide.body quotientReturn callee .one args called
-          (UDivMod.Divide.nonzero_frame (callEntryStateHOLFinite source callee) left 21#64 a b (by decide)
-            (UDivMod.original_code source.code (sameCode.symm ▸ installed))) (LocalEffects.returned source.code _)
-    | rStruct fields | nStruct constructor fields=>
-      have failed : lookupCodeHOLFinite source.code.lookup (ofString "udiv") actualValues=none:=by
-        apply (lookupCodeHOLFinite_eq_none_iff _ _ _).mpr
-        unfold lookupCodeHOLExact
-        rw [divCode]
-        simp [actualValues,UDivMod.formals,shapeOfHOLExact,shapeEqHOL]
-      rw [quotientCall,evaluateHOLFiniteState_decCall_fixClockRewrite,args]
-      simp only [failed]
+  rw [quotientCall]
+  apply LocalEffects.word_pair_const source (ofString "udiv") (ofString "a") (ofString "b") (ofString "q")
+    UDivMod.Divide.body quotientReturn .one .one quotientArgument 21#64 (by decide)
+    (UDivMod.Divide.original_code source.code (sameCode.symm ▸ installed))
+  · intro entry left codeEq a b
+    exact UDivMod.Divide.nonzero_frame entry left 21#64 a b (by decide)
+      (UDivMod.original_code entry.code (by rw [codeEq,sameCode];exact installed))
+  · exact LocalEffects.returned source.code _
 
 /-- After the real blob-price call, the unchanged arithmetic and nonzero
 scalar division preserve every memory cell, global and other nonlocal field. -/
@@ -2683,3 +2662,514 @@ theorem WorkspaceResult.caller {source target : PanSemStateFiniteExact 64 Guest.
 end InitECandidate.Solver.Input.TaylorCurrent
 
 #print axioms InitECandidate.Solver.Input.TaylorCurrent.WorkspaceResult.caller
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+private theorem zero_words : Single.remainderWords 0#64=GasBudget.U256Division.zeroWords := by
+  funext index
+  simp [Single.remainderWords,GasBudget.U256Division.zeroWords]
+
+/-- The actual word-divisor wrapper covers zero as well as both positive
+digit widths. Its real zero-divisor path returns zero without touching memory. -/
+theorem divide_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (small : divisor.toNat≤2^63) :
+    source.clock-(evaluateHOLFiniteState source GasBudget.U256Division.divBody).2.clock≤327 := by
+  by_cases zero : divisor=0#64
+  · subst divisor
+    rw [zero_words] at bLocal
+    have cost:=GasBudget.U256Division.div_zero_cost source a aLocal bLocal installed
+    omega
+  · have positive : 0<divisor.toNat:=by
+      by_contra absent
+      apply zero
+      apply BitVec.eq_of_toNat_eq
+      simp only [BitVec.toNat_ofNat,Nat.zero_mod]
+      omega
+    by_cases one : divisor.toNat<4294967296
+    · have cost:=U256.divide_cost source base divisor a context installed aLocal bLocal one positive
+      omega
+    · exact U256Double.divide_cost source base divisor a context installed aLocal bLocal (by omega) small
+
+/-- A genuine return supplies the real quotient quad and the same physical
+workspace frame for zero, one-digit and two-digit word divisors. -/
+theorem divide_normal_frame (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (aLocal : source.locals.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a))
+    (bLocal : source.locals.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (small : divisor.toNat≤2^63) (returned : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source GasBudget.U256Division.divBody=(some (.returned returned),post)) :
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧ TaylorCurrent.WorkspaceResult source post base 327 := by
+  have cost:=divide_cost source base divisor a context installed aLocal bLocal small
+  rw [normal] at cost
+  by_cases zero : divisor=0#64
+  · subst divisor
+    rw [zero_words] at bLocal
+    have returnedEq:=GasBudget.U256Division.div_zero_normal source post a aLocal bLocal installed returned normal
+    have frame:=GasBudget.U256Division.div_zero_frame source a aLocal bLocal installed
+    rw [normal] at frame
+    exact ⟨GasBudget.U256Division.zeroWords,returnedEq,TaylorCurrent.WorkspaceResult.of_erase frame cost⟩
+  · have positive : 0<divisor.toNat:=by
+      by_contra absent
+      apply zero
+      apply BitVec.eq_of_toNat_eq
+      simp only [BitVec.toNat_ofNat,Nat.zero_mod]
+      omega
+    by_cases one : divisor.toNat<4294967296
+    · obtain ⟨quotient,funded,returnedEq,result⟩:=U256.divide_normal source post base divisor a context installed aLocal bLocal one positive returned normal
+      have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+        locals:=post.locals,memory:=post.memory,clock:=post.clock}) result.state
+      change post={source with locals:=post.locals,memory:=post.memory,clock:=post.clock} at frame
+      refine ⟨quotient,returnedEq,⟨frame,?_,cost⟩⟩
+      intro query outside
+      exact result.away query (outside .quotient) (outside .remainder) (outside .divisor)
+        (by intro index inside;exact outside .numerator index (by change index<16;omega))
+    · obtain ⟨quotient,returnedEq,result⟩:=U256Double.divide_normal source post base divisor a context installed aLocal bLocal (by omega) small returned normal
+      refine ⟨quotient,returnedEq,⟨result.state,?_,cost⟩⟩
+      intro query outside
+      exact result.away query (outside .normalizedNumerator) (outside .normalizedDivisor) (outside .quotient)
+        (outside .remainder) (outside .divisor) (by intro index inside;exact outside .numerator index (by change index<16;omega))
+
+/-- Real scoped calls reconstruct the current quotient caller at the
+child's actual clock, with no assumed future success or worst-case funding. -/
+theorem resume (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64) (a : Quad)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code) (small : divisor.toNat≤2^63)
+    (name : String) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "u256_div")
+      [RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)]=some (actual,callee,shape))
+    (returned : ValueHOL 64)
+    (run : evaluateHOLFiniteState (callEntryStateHOLFinite source callee) actual=(some (.returned returned),target)) :
+    ∃ quotient,returned=RlpWrite.U256Value.tuple quotient ∧
+      TaylorCurrent.WorkspaceResult (callEntryStateHOLFinite source callee) target base 327 ∧
+      CallNormal.continuationEntry source target name returned=
+        setVarHOLFinite (ofString name) (RlpWrite.U256Value.tuple quotient) {source with memory:=target.memory,clock:=target.clock} := by
+  obtain ⟨expected,lookup,aCell,bCell⟩:=RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_div")
+    GasBudget.U256Division.divBody RlpWrite.U256Value.tupleShape a (Single.remainderWords divisor) (GasBudget.U256Division.div_code source.code installed)
+  have same:=Option.some.inj (called.symm.trans lookup)
+  have bodyEq : actual=GasBudget.U256Division.divBody:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at aCell bCell
+  rw [bodyEq] at run
+  obtain ⟨quotient,returnedEq,result⟩:=divide_normal_frame (callEntryStateHOLFinite source callee) target base divisor a
+    ⟨context.global,context.domain,context.arena,context.aligned⟩ installed aCell bCell small returned run
+  refine ⟨quotient,returnedEq,result,?_⟩
+  have frame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with locals:=source.locals}) result.state
+  change {target with locals:=source.locals}={source with memory:=target.memory,clock:=target.clock} at frame
+  rw [CallNormal.continuationEntry,returnedEq,frame]
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word.divide_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word.divide_normal_frame
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word.resume
+
+namespace InitECandidate.Solver.Input.ClockCost
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- A checked readonly child changes only the caller's new local binding and
+clock. Its genuine checked return supplies the current continuation entry. -/
+theorem scoped_readonly_current (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (name : String) (shape : ShapeHOL) (function : MlS) (arguments : List (ExpHOL 64))
+    (formals : List (MlS×ShapeHOL)) (body continuation : ProgHOL 64) (returnShape : ShapeHOL) (price tailPrice : Nat)
+    (code : source.code.lookup function=some (formals,body,returnShape))
+    (priced : Bound source.code body price) (readonly : LocalEffects.Preserves source.code body)
+    (tail : ∀ clock returned,shapeEqHOL (shapeOfHOLExact returned) shape=true →
+      (setVarHOLFinite (ofString name) returned {source with clock:=clock}).clock-
+        (evaluateHOLFiniteState (setVarHOLFinite (ofString name) returned {source with clock:=clock}) continuation).2.clock≤tailPrice) :
+    source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) shape function arguments continuation)).2.clock≤price+tailPrice+1 := by
+  apply scoped_arguments_reached_current source name shape function arguments continuation price tailPrice
+  · intro values actual callee actualShape args called
+    have bodyEq:=LocalEffects.lookup_body source.code function formals body returnShape code values actual callee actualShape called
+    rw [bodyEq]
+    exact priced (callEntryStateHOLFinite source callee) rfl
+  · intro values actual callee actualShape target returned args called run valid
+    have bodyEq:=LocalEffects.lookup_body source.code function formals body returnShape code values actual callee actualShape called
+    rw [bodyEq] at run
+    have frame:=readonly (callEntryStateHOLFinite source callee) rfl
+    rw [run] at frame
+    change LocalEffects.erase target=LocalEffects.erase source at frame
+    have callerFrame:=congrArg (fun state : PanSemStateFiniteExact 64 Guest.HostMemory=>{state with
+      locals:=source.locals,clock:=target.clock}) frame
+    have entryEq : CallNormal.continuationEntry source target name returned=
+        setVarHOLFinite (ofString name) returned {source with clock:=target.clock}:=
+      congrArg (setVarHOLFinite (ofString name) returned) callerFrame
+    rw [entryEq]
+    exact tail target.clock returned (Bool.and_eq_true_iff.mp valid).1
+
+end InitECandidate.Solver.Input.ClockCost
+
+namespace InitECandidate.Solver.GasBudget.ArithmeticEffects
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString
+
+/-- Current arithmetic scopes specialize the shared readonly-child rule. -/
+theorem scoped_cost_current (kind : Kind) (source : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (environment : Environment source.code) (name : String) (shape : ShapeHOL) (arguments : List (ExpHOL 64))
+    (continuation : ProgHOL 64) (price tailPrice : Nat) (checked : kind.fixedPrice=some price)
+    (tail : ∀ clock returned,shapeEqHOL (shapeOfHOLExact returned) shape=true →
+      (setVarHOLFinite (ofString name) returned {source with clock:=clock}).clock-
+        (evaluateHOLFiniteState (setVarHOLFinite (ofString name) returned {source with clock:=clock}) continuation).2.clock≤tailPrice) :
+    source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) shape kind.name arguments continuation)).2.clock≤price+tailPrice+1 :=
+  Input.ClockCost.scoped_readonly_current source name shape kind.name arguments kind.signature.1 kind.body continuation kind.signature.2.2 price tailPrice
+    (environment kind) (fixed_price kind price source.code environment checked) (original_preserves kind source.code environment) tail
+
+end InitECandidate.Solver.GasBudget.ArithmeticEffects
+
+#print axioms InitECandidate.Solver.Input.ClockCost.scoped_readonly_current
+#print axioms InitECandidate.Solver.GasBudget.ArithmeticEffects.scoped_cost_current
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+private theorem argument_entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (divisor : BitVec 64)
+    (first second : ExpHOL 64) (installed : OriginalCode.Installed source.code)
+    (den : eval source second=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (values : List (ValueHOL 64)) (actual : ProgHOL 64) (callee : HolFiniteMapExact MlS (ValueHOL 64)) (shape : ShapeHOL)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [first,second]=some values)
+    (called : lookupCodeHOLFinite source.code.lookup (ofString "u256_div") values=some (actual,callee,shape)) :
+    ∃ a : Quad,values=[RlpWrite.U256Value.tuple a,RlpWrite.U256Value.tuple (Single.remainderWords divisor)] ∧
+      actual=GasBudget.U256Division.divBody ∧
+      callee.lookup (ofString "a")=some (RlpWrite.U256Value.tuple a) ∧
+      callee.lookup (ofString "b")=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)) := by
+  cases read : eval source first with
+  | none=>
+    simp only [eval] at read
+    simp [evalListHOLFinite,evalListHOLExact,read] at args
+  | some value=>
+    have actualArgs : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [first,second]=
+        some [value,RlpWrite.U256Value.tuple (Single.remainderWords divisor)]:=by
+      simp only [eval] at read den
+      simp [evalListHOLFinite,evalListHOLExact,read,den]
+    have valuesEq:=Option.some.inj (args.symm.trans actualArgs)
+    subst values
+    obtain ⟨a,valueEq⟩:=TaylorCurrent.first_quad source.code.lookup (ofString "u256_div") GasBudget.U256Division.divBody value
+      (Single.remainderWords divisor) actual callee shape (GasBudget.U256Division.div_code source.code installed) called
+    subst value
+    obtain ⟨expected,lookup,aCell,bCell⟩:=RlpWrite.U256Value.pair_environment source.code.lookup (ofString "u256_div")
+      GasBudget.U256Division.divBody RlpWrite.U256Value.tupleShape a (Single.remainderWords divisor) (GasBudget.U256Division.div_code source.code installed)
+    have same:=Option.some.inj (called.symm.trans lookup)
+    have bodyEq : actual=GasBudget.U256Division.divBody:=congrArg Prod.fst same
+    have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+    rw [←calleeEq] at aCell bCell
+    exact ⟨a,rfl,bodyEq,aCell,bCell⟩
+
+/-- A current scalar denominator prices the real two-quad scoped ABI.
+Only a successful current lookup derives its numerator quad. The normal
+continuation may depend on its actual quotient and restored caller locals. -/
+theorem scoped_cost_current (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base divisor : BitVec 64)
+    (context : Workspace.Context source base) (installed : OriginalCode.Installed source.code) (small : divisor.toNat≤2^63)
+    (name : String) (first second : ExpHOL 64) (continuation : ProgHOL 64) (tailPrice : Nat)
+    (den : eval source second=some (RlpWrite.U256Value.tuple (Single.remainderWords divisor)))
+    (tail : ∀ memory clock quotient,
+      (setVarHOLFinite (ofString name) (RlpWrite.U256Value.tuple quotient) {source with memory:=memory,clock:=clock}).clock-
+        (evaluateHOLFiniteState (setVarHOLFinite (ofString name) (RlpWrite.U256Value.tuple quotient) {source with memory:=memory,clock:=clock}) continuation).2.clock≤tailPrice) :
+    source.clock-(evaluateHOLFiniteState source (.decCall (ofString name) RlpWrite.U256Value.tupleShape
+      (ofString "u256_div") [first,second] continuation)).2.clock≤327+tailPrice+1 := by
+  apply ClockCost.scoped_arguments_reached_current source name RlpWrite.U256Value.tupleShape (ofString "u256_div") [first,second] continuation 327 tailPrice
+  · intro values actual callee shape args called
+    obtain ⟨a,valuesEq,bodyEq,aCell,bCell⟩:=argument_entry source divisor first second installed den values actual callee shape args called
+    rw [bodyEq]
+    exact divide_cost (callEntryStateHOLFinite source callee) base divisor a
+      ⟨context.global,context.domain,context.arena,context.aligned⟩ installed aCell bCell small
+  · intro values actual callee shape target returned args called run valid
+    obtain ⟨a,valuesEq,bodyEq,aCell,bCell⟩:=argument_entry source divisor first second installed den values actual callee shape args called
+    rw [valuesEq] at called
+    obtain ⟨quotient,returnedEq,result,entryEq⟩:=resume source target base divisor a context installed small name actual callee shape called returned run
+    rw [entryEq]
+    exact tail target.memory target.clock quotient
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.U256Word.scoped_cost_current
+
+namespace InitECandidate.Solver.Input.BaseFeeCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def body : ProgHOL 64:=match Guest.Software.guestFn_calculate_base_fee_per_gas with | .function fn=>progToHOL fn.body | _=>.skip
+def targetExpression : ExpHOL 64:=.shift .lsr (localVar "parent_gas_limit") (.const 1#64)
+def increaseSum : ProgHOL 64:=.decCall (ofString "r") RlpWrite.U256Value.tupleShape (ofString "u256_add")
+  [localVar "parent_base_fee",localVar "bfd"] (.return (localVar "r"))
+def increaseFinish : ProgHOL 64:=.seq
+  (.ite (.cmp .notEqual (localVar "z") (.const 0#64))
+    (.call (some (some (.local,ofString "bfd"),none)) (ofString "u256_from_word") [.const 1#64]) .skip) increaseSum
+def increaseAfterSecond : ProgHOL 64:=.decCall (ofString "z") .one (ofString "u256_is_zero") [localVar "bfd"] increaseFinish
+def increaseAfterFirst : ProgHOL 64:=.decCall (ofString "bfd") RlpWrite.U256Value.tupleShape (ofString "u256_div")
+  [localVar "tfd",localVar "eight"] increaseAfterSecond
+def increaseAfterProduct : ProgHOL 64:=.decCall (ofString "tfd") RlpWrite.U256Value.tupleShape (ofString "u256_div")
+  [localVar "pfd",localVar "tgt"] increaseAfterFirst
+def increaseAfterDelta : ProgHOL 64:=.decCall (ofString "pfd") RlpWrite.U256Value.tupleShape (ofString "u256_mul")
+  [localVar "parent_base_fee",localVar "delta"] increaseAfterProduct
+def increase : ProgHOL 64:=.decCall (ofString "delta") RlpWrite.U256Value.tupleShape (ofString "u256_from_word")
+  [.op .sub [localVar "parent_gas_used",localVar "parent_gas_target"]] increaseAfterDelta
+def decreaseSum : ProgHOL 64:=.decCall (ofString "r2") RlpWrite.U256Value.tupleShape (ofString "u256_sub")
+  [localVar "parent_base_fee",localVar "bfd2"] (.return (localVar "r2"))
+def decreaseAfterFirst : ProgHOL 64:=.decCall (ofString "bfd2") RlpWrite.U256Value.tupleShape (ofString "u256_div")
+  [localVar "tfd2",localVar "eight"] decreaseSum
+def decreaseAfterProduct : ProgHOL 64:=.decCall (ofString "tfd2") RlpWrite.U256Value.tupleShape (ofString "u256_div")
+  [localVar "pfd2",localVar "tgt"] decreaseAfterFirst
+def decreaseAfterDelta : ProgHOL 64:=.decCall (ofString "pfd2") RlpWrite.U256Value.tupleShape (ofString "u256_mul")
+  [localVar "parent_base_fee",localVar "delta2"] decreaseAfterProduct
+def decrease : ProgHOL 64:=.decCall (ofString "delta2") RlpWrite.U256Value.tupleShape (ofString "u256_from_word")
+  [.op .sub [localVar "parent_gas_target",localVar "parent_gas_used"]] decreaseAfterDelta
+def arithmetic : ProgHOL 64:=.seq
+  (.ite (.cmp .lower (localVar "parent_gas_target") (localVar "parent_gas_used")) increase .skip) decrease
+def afterTargetQuad : ProgHOL 64:=.decCall (ofString "eight") RlpWrite.U256Value.tupleShape (ofString "u256_from_word") [.const 8#64] arithmetic
+def conversions : ProgHOL 64:=.decCall (ofString "tgt") RlpWrite.U256Value.tupleShape (ofString "u256_from_word") [localVar "parent_gas_target"] afterTargetQuad
+def afterCheck : ProgHOL 64:=.seq
+  (.ite (.cmp .equal (localVar "ok") (.const 0#64)) (.raise (ofString "BlockErr") (.const 10#64)) .skip)
+  (.seq (.ite (.cmp .equal (localVar "parent_gas_used") (localVar "parent_gas_target")) (.return (localVar "parent_base_fee")) .skip) conversions)
+def afterTarget : ProgHOL 64:=.decCall (ofString "ok") .one (ofString "check_gas_limit")
+  [localVar "block_gas_limit",localVar "parent_gas_limit"] afterCheck
+
+theorem body_shape : body=.dec (ofString "parent_gas_target") .one targetExpression afterTarget := by
+  simp [body,Guest.Software.guestFn_calculate_base_fee_per_gas,progToHOL,expToHOL,shapeToHOL,List.map_cons,List.map_nil,
+    targetExpression,afterTarget,afterCheck,conversions,afterTargetQuad,arithmetic,increase,increaseAfterDelta,increaseAfterProduct,
+    increaseAfterFirst,increaseAfterSecond,increaseFinish,increaseSum,decrease,decreaseAfterDelta,decreaseAfterProduct,
+    decreaseAfterFirst,decreaseSum,localVar,RlpWrite.U256Value.tupleShape]
+
+/-- Only the actual denominator tuples and their genuine workspace are
+needed for arithmetic pricing. Other malformed values stop at their real ABI. -/
+structure Model (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64) : Prop where
+  context : UDivMod.WideDigits.Workspace.Context source base
+  installed : OriginalCode.Installed source.code
+  small : target.toNat≤2^63
+  targetCell : source.locals.lookup (ofString "tgt")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad target))
+  eightCell : source.locals.lookup (ofString "eight")=some (RlpWrite.U256Value.tuple (GasBudget.U256Multiply.wordQuad 8#64))
+
+theorem Model.stage {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base target : BitVec 64} (model : Model source base target)
+    (memory : BitVec 64→HolWordLab 64) (clock : Nat) (name : MlS) (value : ValueHOL 64)
+    (notTarget : name≠ofString "tgt") (notEight : name≠ofString "eight") :
+    Model (setVarHOLFinite name value {source with memory:=memory,clock:=clock}) base target := by
+  refine ⟨⟨model.context.global,model.context.domain,model.context.arena,model.context.aligned⟩,model.installed,model.small,?_,?_⟩
+  · simpa [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,notTarget,Ne.symm notTarget] using model.targetCell
+  · simpa [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,notEight,Ne.symm notEight] using model.eightCell
+
+private theorem Model.target_read {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base target : BitVec 64} (model : Model source base target) :
+    eval source (localVar "tgt")=some (RlpWrite.U256Value.tuple (UDivMod.WideDigits.Single.remainderWords target)) := by
+  have cell:=model.targetCell
+  rw [GasBudget.U256Multiply.wordQuad_remainder] at cell
+  simp [eval,localVar,evalHOLExact,toExact,cell]
+
+private theorem Model.eight_read {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base target : BitVec 64} (model : Model source base target) :
+    eval source (localVar "eight")=some (RlpWrite.U256Value.tuple (UDivMod.WideDigits.Single.remainderWords 8#64)) := by
+  have cell:=model.eightCell
+  rw [GasBudget.U256Multiply.wordQuad_remainder] at cell
+  simp [eval,localVar,evalHOLExact,toExact,cell]
+
+/-- A selected increasing-fee branch always stops or returns. It cannot
+fall through and execute the decreasing-fee branch in the same run. -/
+theorem increase_stops : NoFallthrough increase := by
+  unfold increase increaseAfterDelta increaseAfterProduct increaseAfterFirst increaseAfterSecond increaseFinish increaseSum
+  repeat first | apply NoFallthrough.scoped | apply NoFallthrough.sequence | exact NoFallthrough.returned _
+
+theorem increase_after_second_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code increaseAfterSecond 3 := by
+  have environment:=GasBudget.ArithmeticEffects.current_environment code installed
+  have sum : ClockCost.Bound code increaseSum 1:=
+    ClockCost.scoped_body code _ _ _ _ _ _ _ _ 0 0 (environment .u256_add)
+      (GasBudget.ArithmeticEffects.price_u256_add code environment) (ClockCost.returned code _)
+  have assigned : ClockCost.Bound code (.call (some (some (.local,ofString "bfd"),none)) (ofString "u256_from_word") [.const 1#64]) 1:=
+    ClockCost.call_body code (some (some (ofString "bfd"))) _ _ _ _ _ 0 (environment .u256_from_word)
+      (GasBudget.ArithmeticEffects.price_u256_from_word code environment)
+  have finish : ClockCost.Bound code increaseFinish 2:=
+    ClockCost.sequence code _ _ 1 1 (ClockCost.conditional code _ _ _ 1 0 assigned (ClockCost.skip code)) sum
+  exact ClockCost.scoped_body code _ _ _ _ _ _ _ _ 0 2 (environment .u256_is_zero)
+    (GasBudget.ArithmeticEffects.price_u256_is_zero code environment) finish
+
+theorem increase_after_first_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64) (model : Model source base target) :
+    source.clock-(evaluateHOLFiniteState source increaseAfterFirst).2.clock≤331 := by
+  apply UDivMod.WideDigits.U256Word.scoped_cost_current source base 8#64 model.context model.installed (by decide)
+    "bfd" (localVar "tfd") (localVar "eight") increaseAfterSecond 3 model.eight_read
+  intro memory clock quotient
+  exact increase_after_second_cost source.code model.installed _ rfl
+
+theorem increase_after_product_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64) (model : Model source base target) :
+    source.clock-(evaluateHOLFiniteState source increaseAfterProduct).2.clock≤659 := by
+  apply UDivMod.WideDigits.U256Word.scoped_cost_current source base target model.context model.installed model.small
+    "tfd" (localVar "pfd") (localVar "tgt") increaseAfterFirst 331 model.target_read
+  intro memory clock quotient
+  exact increase_after_first_cost _ base target (model.stage memory clock (ofString "tfd") _ (by decide) (by decide))
+
+theorem increase_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64) (model : Model source base target) :
+    source.clock-(evaluateHOLFiniteState source increase).2.clock≤668 := by
+  apply GasBudget.ArithmeticEffects.scoped_cost_current .u256_from_word source
+    (GasBudget.ArithmeticEffects.current_environment source.code model.installed) "delta" RlpWrite.U256Value.tupleShape _ increaseAfterDelta 0 667 rfl
+  intro clock delta typed
+  have next:=model.stage source.memory clock (ofString "delta") delta (by decide) (by decide)
+  apply GasBudget.ArithmeticEffects.scoped_cost_current .u256_mul _
+    (GasBudget.ArithmeticEffects.current_environment _ next.installed) "pfd" RlpWrite.U256Value.tupleShape _ increaseAfterProduct 7 659 rfl
+  intro secondClock product productTyped
+  exact increase_after_product_cost _ base target (next.stage _ secondClock (ofString "pfd") product (by decide) (by decide))
+
+theorem decrease_sum_cost (code) (installed : OriginalCode.Installed code) : ClockCost.Bound code decreaseSum 1 := by
+  have environment:=GasBudget.ArithmeticEffects.current_environment code installed
+  exact ClockCost.scoped_body code _ _ _ _ _ _ _ _ 0 0 (environment .u256_sub)
+    (GasBudget.ArithmeticEffects.price_u256_sub code environment) (ClockCost.returned code _)
+
+theorem decrease_after_first_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64) (model : Model source base target) :
+    source.clock-(evaluateHOLFiniteState source decreaseAfterFirst).2.clock≤329 := by
+  apply UDivMod.WideDigits.U256Word.scoped_cost_current source base 8#64 model.context model.installed (by decide)
+    "bfd2" (localVar "tfd2") (localVar "eight") decreaseSum 1 model.eight_read
+  intro memory clock quotient
+  exact decrease_sum_cost source.code model.installed _ rfl
+
+theorem decrease_after_product_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64) (model : Model source base target) :
+    source.clock-(evaluateHOLFiniteState source decreaseAfterProduct).2.clock≤657 := by
+  apply UDivMod.WideDigits.U256Word.scoped_cost_current source base target model.context model.installed model.small
+    "tfd2" (localVar "pfd2") (localVar "tgt") decreaseAfterFirst 329 model.target_read
+  intro memory clock quotient
+  exact decrease_after_first_cost _ base target (model.stage memory clock (ofString "tfd2") _ (by decide) (by decide))
+
+theorem decrease_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64) (model : Model source base target) :
+    source.clock-(evaluateHOLFiniteState source decrease).2.clock≤666 := by
+  apply GasBudget.ArithmeticEffects.scoped_cost_current .u256_from_word source
+    (GasBudget.ArithmeticEffects.current_environment source.code model.installed) "delta2" RlpWrite.U256Value.tupleShape _ decreaseAfterDelta 0 665 rfl
+  intro clock delta typed
+  have next:=model.stage source.memory clock (ofString "delta2") delta (by decide) (by decide)
+  apply GasBudget.ArithmeticEffects.scoped_cost_current .u256_mul _
+    (GasBudget.ArithmeticEffects.current_environment _ next.installed) "pfd2" RlpWrite.U256Value.tupleShape _ decreaseAfterProduct 7 657 rfl
+  intro secondClock product productTyped
+  exact decrease_after_product_cost _ base target (next.stage _ secondClock (ofString "pfd2") product (by decide) (by decide))
+
+theorem arithmetic_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64) (model : Model source base target) :
+    source.clock-(evaluateHOLFiniteState source arithmetic).2.clock≤668 :=
+  ClockCost.stopping_guard_current source _ increase decrease 668 666 (increase_stops source)
+    (increase_cost source base target model) (decrease_cost source base target model)
+
+end InitECandidate.Solver.Input.BaseFeeCurrent
+
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.body_shape
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.Model.stage
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.increase_stops
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.increase_after_second_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.increase_after_first_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.increase_after_product_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.increase_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.decrease_sum_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.decrease_after_first_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.decrease_after_product_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.decrease_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.arithmetic_cost
+
+namespace InitECandidate.Solver.Input.BaseFeeCurrent
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- The original shift produces a scalar strictly below 2^63 whenever
+its actual read succeeds, independently of later gas-limit acceptance. -/
+theorem target_read_small (source : PanSemStateFiniteExact 64 Guest.HostMemory) (value : ValueHOL 64)
+    (read : eval source targetExpression=some value) :
+    ∃ target : BitVec 64,value=.val (.word target) ∧ target.toNat≤2^63 := by
+  cases cell : source.locals.lookup (ofString "parent_gas_limit") with
+  | none=>simp [eval,targetExpression,evalHOLExact,toExact,localVar,cell] at read
+  | some original=>
+    cases original with
+    | val payload=>
+      cases payload with
+      | word limit=>
+        have expected : eval source targetExpression=some (.val (.word (limit>>>(1:Nat)))):=by
+          simp [eval,targetExpression,evalHOLExact,toExact,localVar,cell,wordShiftHOL]
+        refine ⟨limit>>>(1:Nat),Option.some.inj (read.symm.trans expected),?_⟩
+        rw [BitVec.toNat_ushiftRight,Nat.shiftRight_eq_div_pow]
+        have bounded:=limit.isLt
+        omega
+    | rStruct fields | nStruct constructor fields=>simp [eval,targetExpression,evalHOLExact,toExact,localVar,cell] at read
+
+/-- Both actual from-word declarations introduce the genuine denominator
+tuples. No future successful arithmetic call or loop result is supplied. -/
+theorem conversions_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (small : target.toNat≤2^63)
+    (targetCell : source.locals.lookup (ofString "parent_gas_target")=some (.val (.word target))) :
+    source.clock-(evaluateHOLFiniteState source conversions).2.clock≤670 := by
+  let withTarget:=TaylorCurrent.tupleEntry source "tgt" target
+  let withEight:=TaylorCurrent.tupleEntry withTarget "eight" 8#64
+  have model : Model withEight base target:=by
+    refine ⟨⟨context.global,context.domain,context.arena,context.aligned⟩,installed,small,?_,?_⟩
+    · simp [withEight,withTarget,TaylorCurrent.tupleEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString]
+    · simp [withEight,TaylorCurrent.tupleEntry,setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  have tail:=arithmetic_cost withEight base target model
+  have eightCost:=TaylorCurrent.from_word_cost withTarget 8#64 installed "eight" [.const 8#64] arithmetic 668 rfl tail
+  have args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) [localVar "parent_gas_target"]=some [.val (.word target)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,targetCell]
+  exact TaylorCurrent.from_word_cost source target installed "tgt" [localVar "parent_gas_target"] afterTargetQuad 669 args eightCost
+
+theorem after_check_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (small : target.toNat≤2^63)
+    (targetCell : source.locals.lookup (ofString "parent_gas_target")=some (.val (.word target))) :
+    source.clock-(evaluateHOLFiniteState source afterCheck).2.clock≤670 := by
+  unfold afterCheck
+  apply ClockCost.stopping_guard_current source _ (.raise (ofString "BlockErr") (.const 10#64)) _ 0 670
+    (NoFallthrough.raised _ _ source) (ClockCost.raised _ _ _ source rfl)
+  exact ClockCost.stopping_guard_current source _ (.return (localVar "parent_base_fee")) conversions 0 670
+    (NoFallthrough.returned _ source) (ClockCost.returned _ _ source rfl)
+    (conversions_cost source base target context installed small targetCell)
+
+/-- The real gas-limit check is readonly and costs 66 body ticks. Its
+actual checked scope preserves the already derived scalar target. -/
+theorem after_target_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base target : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (small : target.toNat≤2^63)
+    (targetCell : source.locals.lookup (ofString "parent_gas_target")=some (.val (.word target))) :
+    source.clock-(evaluateHOLFiniteState source afterTarget).2.clock≤737 := by
+  apply ClockCost.scoped_readonly_current source "ok" .one (ofString "check_gas_limit") _ CurrentVerify.GasLimit.formals
+    CurrentVerify.GasLimit.body afterCheck .one 66 670 (CurrentVerify.GasLimit.original_code source.code installed)
+    (CurrentVerify.GasLimit.body_cost source.code installed) (CurrentVerify.GasLimit.readonly source.code installed)
+  intro clock returned typed
+  apply after_check_cost (setVarHOLFinite (ofString "ok") returned {source with clock:=clock}) base target
+    ⟨context.global,context.domain,context.arena,context.aligned⟩ installed small
+  simpa [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,ofString] using targetCell
+
+/-- Complete unchanged base-fee calculation at every incoming clock. Its
+actual shift supplies the word-divisor range; zero returns zero, and either
+real increasing/decreasing branch is bounded without future-success inputs. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code) :
+    source.clock-(evaluateHOLFiniteState source body).2.clock≤737 := by
+  rw [body_shape]
+  apply ClockCost.declared_reached_current
+  intro value read typed
+  obtain ⟨target,rfl,small⟩:=target_read_small source value read
+  apply after_target_cost (setVarHOLFinite (ofString "parent_gas_target") (.val (.word target)) source) base target
+    ⟨context.global,context.domain,context.arena,context.aligned⟩ installed small
+  simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+
+set_option maxRecDepth 100000 in
+theorem original_code (code) (installed : OriginalCode.Installed code) :
+    code.lookup (ofString "calculate_base_fee_per_gas")=some
+      ([(ofString "block_gas_limit",.one),(ofString "parent_gas_limit",.one),(ofString "parent_gas_used",.one),
+        (ofString "parent_base_fee",RlpWrite.U256Value.tupleShape)],body,RlpWrite.U256Value.tupleShape) := by
+  have checked:=OriginalCode.indexed code installed 217
+    (GasBudget.OriginalCodeEnvironment.originalEntry Guest.Software.guestFn_calculate_base_fee_per_gas) (by rfl)
+  simpa only [GasBudget.OriginalCodeEnvironment.originalEntry,declToHOL,funDeclToHOL,body,RlpWrite.U256Value.tupleShape,
+    Guest.Software.guestFn_calculate_base_fee_per_gas,shapeToHOL,paramToHOL,List.map_cons,List.map_nil] using checked
+
+/-- Every ordinary caller form adds its own real call tick. Failed ABI
+checks and malformed helper inputs stop within the same bound. -/
+theorem call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (context : UDivMod.WideDigits.Workspace.Context source base) (installed : OriginalCode.Installed source.code)
+    (destination : Option (Option MlS)) (arguments : List (ExpHOL 64)) :
+    source.clock-(evaluateHOLFiniteState source (.call (LocalEffects.callInfo destination) (ofString "calculate_base_fee_per_gas") arguments)).2.clock≤738 := by
+  apply ClockCost.call_arguments_current source destination (ofString "calculate_base_fee_per_gas") arguments 737
+  intro values actual callee shape args called
+  have same:=LocalEffects.lookup_body source.code (ofString "calculate_base_fee_per_gas") _ body RlpWrite.U256Value.tupleShape
+    (original_code source.code installed) values actual callee shape called
+  rw [same]
+  exact body_cost (callEntryStateHOLFinite source callee) base ⟨context.global,context.domain,context.arena,context.aligned⟩ installed
+
+end InitECandidate.Solver.Input.BaseFeeCurrent
+
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.target_read_small
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.conversions_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.after_check_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.after_target_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.body_cost
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.original_code
+#print axioms InitECandidate.Solver.Input.BaseFeeCurrent.call_cost

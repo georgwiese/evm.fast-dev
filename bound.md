@@ -66,7 +66,9 @@ its original blob-price caller costs 449604, and calculate_excess_blob_gas
 costs 449690 body / 449691 caller ticks. Actual returns preserve all source
 metadata and memory outside the fixed division workspace. The restored caller
 can retain its complete decoded main-input record from the same execution.
-Base-fee/header validation and the remaining main continuation are still open.
+The unchanged base-fee helper now costs at most 737 body / 738 caller source
+ticks, including its actual zero-divisor return path. Its full returned-state
+frame, header validation and the remaining main continuation are still open.
 
 ## Earlier checked milestones, in order
 
@@ -438,7 +440,7 @@ build evidence, not complete verification.
   every commit**, using the existing credential helper without printing tokens.
   Do not run Yukon submission or merge a PR.
 - Check account usage regularly with /tmp/init-e-account-usage.py. The requested
-  reset means an account usage-limit reset. Latest:50%weekly,0resetcredits,
+  reset means an account usage-limit reset. Latest:39%weekly,0resetcredits,
   ordinary usage allowed. Do not claim to control a reset without a tool.
 - One selected build at a time, two Lean slots, cache disabled, **8GiB whole-host
   used-memory stop guard**. Stop disk>85%. Poll live builds; do not restart them
@@ -4556,9 +4558,44 @@ usage allowed. Targeted builds are not full isolated submission verification.
 
 Next: bound the original calculate_base_fee_per_gas helper using the checked
 word-divisor implementation. Its parent target is the actual 64-bit parent
-gas limit shifted right once, hence below 2^63; zero divisors must take their
-real trap path. Preserve its workspace frame and connect validate_header,
+gas limit shifted right once, hence below 2^63; zero divisors take their
+real zero-result return path. Preserve its workspace frame and connect validate_header,
 then finish the remaining main continuation, uniform formal target steps,
 exact K, dominant slack review and cleanup. Source clocks omit straight-line
 target work. Historical untracked WIPs and fixed executable premises remain
 untouched.
+
+## Complete unchanged base-fee calculation: 737 body source ticks
+
+The shared word-divisor body/caller interface now covers zero, positive
+one-digit and positive two-digit values through 2^63. Zero wide division
+returns the real zero quotient; it does not trap. Genuine normal returns
+supply their actual quotient quad, metadata and full outside-workspace frame.
+Current scoped arguments derive their numerator shape only when the real ABI
+lookup succeeds. No future child return or worst-case funding is supplied.
+
+A common readonly-child rule preserves actual caller locals, memory and clock
+for arithmetic and gas-limit checks. The original base-fee syntax is checked:
+the actual parent-limit shift derives its target range, both real from-word
+calls construct its denominator tuples, and the increasing/decreasing branches
+cost at most 668/666 ticks. A selected increasing branch cannot fall through
+into the decreasing branch. The real gas-limit call and early-return/raise
+guards complete the all-outcome 737-body / 738-caller source allowance.
+Malformed reads, shape checks and short clocks are included. Cleanup replaces
+the duplicated excess-blob scalar-division frame with the existing shared
+constant-divisor rule.
+
+Validation: current-base-fee-body-v2.log PASS 1154 jobs; all 26 new printed
+facts use only permitted axioms. Index 8700 modules / 18906 facts; inventory
+8745 / replacement closure 0 / fixed files unchanged. Claim infinity; no global
+finite target K or full verifier success. Effort estimate remains 55%, plausible
+45–65%, relative to reference main. No new candidate paths; package remains
+65536 entries. Weekly usage 39%, no reset credits, ordinary usage allowed.
+Targeted builds are not full isolated submission verification.
+
+Next: the actual base-fee normal-return workspace frame and original header
+caller. The existing zero-divisor normal proof is reusable. Then finish
+validate_header and the remaining main continuation, uniform formal target
+steps, exact K, dominant slack review and cleanup. Source clocks omit
+straight-line target work. Historical untracked WIPs and fixed executable
+premises remain untouched.

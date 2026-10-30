@@ -280,3 +280,195 @@ end InitECandidate.Solver.Input.CurrentRlp.BytesWrite
 
 #print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.call_domain_cost
 #print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.call_known_length_cost
+
+namespace InitECandidate.Solver.Input.CurrentRlp.BytesWrite
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch RlpWrite.BytesWrite
+
+private theorem conditional_return (source post : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (test : ExpHOL 64) (yes no : ProgHOL 64) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source (.ite test yes no)=(some (.returned value),post)) :
+    evaluateHOLFiniteState source yes=(some (.returned value),post) ∨
+      evaluateHOLFiniteState source no=(some (.returned value),post) := by
+  rw [evaluateHOLFiniteState_ite] at normal
+  generalize read : @evalHOLExact 64 Guest.HostMemory _ source.toExact
+    (fun query=>Classical.propDecidable (source.memaddrs query)) test=observed at normal
+  cases observed with
+  | none=>cases normal
+  | some observed=>
+    cases observed with
+    | rStruct fields=>cases normal
+    | nStruct name fields=>cases normal
+    | val payload=>
+      cases payload with
+      | word word=>
+        simp only at normal
+        by_cases zero : word=0
+        · rw [if_pos zero] at normal; exact Or.inr normal
+        · rw [if_neg zero] at normal; exact Or.inl normal
+
+/-- A genuine returning special case wrote one byte and returned its real
+scalar one. The source-byte read and branch success come from this run. -/
+theorem first_guard_returned (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (dst : BitVec 64)
+    (d : source.locals.lookup (ofString "dst")=some (.val (.word dst))) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source firstGuard=(some (.returned value),post)) :
+    value=.val (.word 1#64) ∧ WriteFrame source post dst 9 := by
+  rcases conditional_return source post oneTest oneBranch .skip value normal with one|skipped
+  · obtain ⟨declared,inner,read,checked,continued,endpoint⟩:=CallNormal.declaration_normal_entry source post "b" .one
+      (.loadByte (localVar "src")) byteBranch value one
+    obtain ⟨word,rfl⟩:=RlpWrite.U256Value.scalar_word declared ((shapeEqHOL_eq_true _ _).mp checked).symm
+    let entry:=bind source "b" word
+    have entryD : entry.locals.lookup (ofString "dst")=some (.val (.word dst)):=
+      (bind_lookup_other source "b" "dst" word (by decide)).trans d
+    rcases conditional_return entry inner byteTest (RlpWrite.shortForm (localVar "b")) .skip value continued with short|skipped
+    · obtain ⟨answer,frame⟩:=HeaderWrite.short_normal entry inner dst (localVar "b") entryD value short
+      rw [endpoint]
+      exact ⟨answer,frame.metadata,frame.memory⟩
+    · simp [evaluateHOLFiniteState_skip] at skipped
+  · simp [evaluateHOLFiniteState_skip] at skipped
+
+/-- The header's actual scalar length and the real normal copy derive the
+encoded byte count and full earlier-memory frame, without input ownership. -/
+theorem general_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (dst src count query : BitVec 64) (floor : Nat)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (d : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (s : source.locals.lookup (ofString "src")=some (.val (.word src)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word count)))
+    (headerFits : dst.toNat+9<2^64) (aligned : floor%8=0) (afterFloor : floor≤dst.toNat) (beforeFloor : query.toNat<floor)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source generalTail=(some (.returned value),post)) :
+    ∃ encoded,1≤encoded ∧ encoded≤count.toNat+9 ∧ encoded≤CopyAny.ordinaryEnd+40 ∧
+      value=.val (.word (BitVec.ofNat 64 encoded)) ∧ MemoryMetadata.erase post=MemoryMetadata.erase source ∧
+      post.memory query=source.memory query := by
+  have headerCode : source.code.lookup (ofString "rlp_write_header")=some (RlpWrite.HeaderWrite.formals,RlpWrite.HeaderWrite.body,.one):=
+    HeaderWrite.original_code source.code installed
+  obtain ⟨callee,called,childD,childBase,childN⟩:=RlpWrite.HeaderWrite.environment source.code.lookup dst 128#64 count headerCode
+  have args : evalListHOLFinite source (h:=fun current=>Classical.propDecidable (source.memaddrs current))
+      [localVar "dst",.const 128#64,localVar "n"]=some [.val (.word dst),.val (.word 128#64),.val (.word count)]:=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,d,n]
+  obtain ⟨funded,child,headerValue,inner,headerRun,checked,continued,endpoint⟩:=CallNormal.scoped_normal source post "h" .one
+    (ofString "rlp_write_header") [localVar "dst",.const 128#64,localVar "n"] _ RlpWrite.HeaderWrite.body generalAfterHeader callee .one args called value normal
+  obtain ⟨header,positive,small,answer,price,frame⟩:=HeaderWrite.body_normal (callEntryStateHOLFinite source callee) child dst count installed childD childN headerValue headerRun
+  let ready:=CallNormal.continuationEntry source child "h" headerValue
+  change evaluateHOLFiniteState ready generalAfterHeader=(some (.returned value),inner) at continued
+  have codeEq : ready.code=source.code:=MemoryMetadata.code frame.metadata
+  have currentDomain : ready.memaddrs=InitE.ordinaryDomain:=(MemoryMetadata.domain frame.metadata).trans domain
+  have currentInstalled : OriginalCode.Installed ready.code:=by rw [codeEq]; exact installed
+  have currentD : ready.locals.lookup (ofString "dst")=some (.val (.word dst)):=
+    (CallNormal.continuation_lookup_other source child "h" "dst" headerValue (by decide)).trans d
+  have currentS : ready.locals.lookup (ofString "src")=some (.val (.word src)):=
+    (CallNormal.continuation_lookup_other source child "h" "src" headerValue (by decide)).trans s
+  have currentN : ready.locals.lookup (ofString "n")=some (.val (.word count)):=
+    (CallNormal.continuation_lookup_other source child "h" "n" headerValue (by decide)).trans n
+  have currentH : ready.locals.lookup (ofString "h")=some (.val (.word (BitVec.ofNat 64 header))):=
+    (CallNormal.continuation_lookup_same source child "h" headerValue).trans (congrArg some answer)
+  let output:=dst+BitVec.ofNat 64 header
+  have headerNumber : (BitVec.ofNat 64 header).toNat=header:=by rw [BitVec.toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  have outputNumber : output.toNat=dst.toNat+header:=by
+    rw [BitVec.toNat_add_of_lt (by rw [headerNumber]; omega),headerNumber]
+  have copyArgs : evalListHOLFinite ready (h:=fun current=>Classical.propDecidable (ready.memaddrs current))
+      [.op .add [localVar "dst",localVar "h"],localVar "src",localVar "n"]=some (CopyGeneral.values output src count.toNat):=by
+    simp [evalListHOLFinite,evalListHOLExact,evalHOLExact,toExact,localVar,currentD,currentS,currentN,currentH,
+      valueIsWord,valueWord,wordOpHOL,wordOp,CopyGeneral.values,output]
+  have ignored : LocalPrefix (ofString "_") (.call (some (none,none)) (ofString "memcpy")
+      [.op .add [localVar "dst",localVar "h"],localVar "src",localVar "n"]):=.call none _ _ (by intro name impossible; cases impossible)
+  obtain ⟨copied,copyRun,returned⟩:=sequence_returned ready inner _ _ value (ignored.summary_full ready).2.1 continued
+  obtain ⟨countBound,copyFrame,copyMemory⟩:=CopyAny.call_domain_normal ready copied _ output src query count.toNat floor currentDomain copyArgs
+    (CopyGeneral.original_code ready.code currentInstalled) aligned (by rw [outputNumber]; omega) beforeFloor copyRun
+  simp only [BitVec.ofNat_toNat,BitVec.setWidth_eq] at countBound
+  have afterH : copied.locals.lookup (ofString "h")=some (.val (.word (BitVec.ofNat 64 header))):=
+    (CallNormal.ignored_lookup ready copied (ofString "h") (ofString "memcpy") _ copyRun).trans currentH
+  have afterN : copied.locals.lookup (ofString "n")=some (.val (.word count)):=
+    (CallNormal.ignored_lookup ready copied (ofString "n") (ofString "memcpy") _ copyRun).trans currentN
+  let encoded:=header+count.toNat
+  have returnedRead : eval copied (.op .add [localVar "h",localVar "n"])=some (.val (.word (BitVec.ofNat 64 encoded))):=by
+    simp [eval,evalHOLExact,evalListHOLExact,toExact,localVar,afterH,afterN,valueIsWord,valueWord,wordOpHOL,wordOp,encoded,BitVec.ofNat_add]
+  obtain ⟨actualRead,innerEq⟩:=return_normal copied inner (.op .add [localVar "h",localVar "n"]) value returned
+  have valueEq : value=.val (.word (BitVec.ofNat 64 encoded)):=Option.some.inj (actualRead.symm.trans returnedRead)
+  have roomBound : CopyAny.room output≤CopyAny.ordinaryEnd:=Nat.sub_le _ _
+  have away : CopyGeneral.Away dst query 9:=CopyGeneral.Away.after_floor dst query 9 floor aligned afterFloor headerFits beforeFloor
+  rw [endpoint,innerEq]
+  exact ⟨encoded,by dsimp [encoded]; omega,by dsimp [encoded]; omega,by dsimp [encoded]; omega,valueEq,
+    copyFrame.trans frame.metadata,copyMemory.trans (frame.memory query away)⟩
+
+theorem body_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (dst src count query : BitVec 64) (floor : Nat)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (d : source.locals.lookup (ofString "dst")=some (.val (.word dst)))
+    (s : source.locals.lookup (ofString "src")=some (.val (.word src)))
+    (n : source.locals.lookup (ofString "n")=some (.val (.word count)))
+    (headerFits : dst.toNat+9<2^64) (aligned : floor%8=0) (afterFloor : floor≤dst.toNat) (beforeFloor : query.toNat<floor)
+    (value : ValueHOL 64) (normal : evaluateHOLFiniteState source body=(some (.returned value),post)) :
+    ∃ encoded,1≤encoded ∧ encoded≤count.toNat+9 ∧ encoded≤CopyAny.ordinaryEnd+40 ∧
+      value=.val (.word (BitVec.ofNat 64 encoded)) ∧ MemoryMetadata.erase post=MemoryMetadata.erase source ∧
+      post.memory query=source.memory query := by
+  rw [current_body,RlpWrite.BytesWrite.body_shape,evaluateHOLFiniteState_seq_line780] at normal
+  generalize front : evaluateHOLFiniteState source firstGuard=output at normal
+  obtain ⟨result,current⟩:=output
+  cases result with
+  | none=>
+    have same:=first_guard_normal source current front
+    subst current
+    exact general_current_normal source post dst src count query floor installed domain d s n headerFits aligned afterFloor beforeFloor value normal
+  | some result=>
+    cases result with
+    | returned actual=>
+      cases normal
+      obtain ⟨answer,frame⟩:=first_guard_returned source post dst d value front
+      have away : CopyGeneral.Away dst query 9:=CopyGeneral.Away.after_floor dst query 9 floor aligned afterFloor headerFits beforeFloor
+      exact ⟨1,by decide,by omega,by unfold CopyAny.ordinaryEnd; omega,answer,frame.metadata,frame.memory query away⟩
+    | error=>cases normal
+    | timeOut=>cases normal
+    | «break»=>cases normal
+    | «continue»=>cases normal
+    | exception identifier payload=>cases normal
+    | finalFfi event=>cases normal
+
+end InitECandidate.Solver.Input.CurrentRlp.BytesWrite
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.first_guard_returned
+#print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.general_current_normal
+#print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.body_current_normal
+
+namespace InitECandidate.Solver.Input.CurrentRlp.BytesWrite
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- A genuine assigned field-writer call derives one encoded length for its
+real returned word and protects every earlier word below the output frontier. -/
+theorem assigned_current_normal (source post : PanSemStateFiniteExact 64 Guest.HostMemory) (name : MlS)
+    (arguments : List (ExpHOL 64)) (dst src count : BitVec 64) (floor : Nat)
+    (installed : OriginalCode.Installed source.code) (domain : source.memaddrs=InitE.ordinaryDomain)
+    (args : evalListHOLFinite source (h:=fun query=>Classical.propDecidable (source.memaddrs query)) arguments=
+      some [.val (.word dst),.val (.word src),.val (.word count)])
+    (headerFits : dst.toNat+9<2^64) (positiveFloor : 0<floor) (aligned : floor%8=0) (afterFloor : floor≤dst.toNat)
+    (normal : evaluateHOLFiniteState source (.call (some (some (.local,name),none)) (ofString "rlp_encode_bytes") arguments)=(none,post)) :
+    ∃ encoded,1≤encoded ∧ encoded≤count.toNat+9 ∧ encoded≤CopyAny.ordinaryEnd+40 ∧
+      post.locals.lookup name=some (.val (.word (BitVec.ofNat 64 encoded))) ∧
+      MemoryMetadata.erase post=MemoryMetadata.erase source ∧
+      (∀ query : BitVec 64,query.toNat<floor→post.memory query=source.memory query) ∧
+      ∀ key : MlS,key≠name→post.locals.lookup key=source.locals.lookup key := by
+  obtain ⟨callee,called,d,s,n⟩:=RlpWrite.BytesWrite.environment source.code.lookup dst src count (original_code source.code installed)
+  obtain ⟨funded,actualValues,actualBody,actualCallee,actualShape,child,returned,actualArgs,actualCalled,run,checked,endpoint⟩:=
+    CallNormal.local_data source post name (ofString "rlp_encode_bytes") arguments normal
+  have sameValues : actualValues=[.val (.word dst),.val (.word src),.val (.word count)]:=Option.some.inj (actualArgs.symm.trans args)
+  subst actualValues
+  have same : (actualBody,actualCallee,actualShape)=(body,callee,.one):=Option.some.inj (actualCalled.symm.trans called)
+  cases same
+  obtain ⟨encoded,positive,upper,uniform,answer,metadata,memory⟩:=body_current_normal (callEntryStateHOLFinite source callee) child
+    dst src count 0#64 floor installed domain d s n headerFits aligned afterFloor positiveFloor returned run
+  refine ⟨encoded,positive,upper,uniform,?_,?_,?_,?_⟩
+  · rw [endpoint,answer]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE]
+  · rw [endpoint]
+    exact metadata
+  · intro query before
+    obtain ⟨_,_,_,_,_,_,otherMemory⟩:=body_current_normal (callEntryStateHOLFinite source callee) child
+      dst src count query floor installed domain d s n headerFits aligned afterFloor before returned run
+    rw [endpoint]
+    exact otherMemory
+  · intro key different
+    rw [endpoint]
+    simp [setVarHOLFinite,HolFiniteMapExact.update,FUPDATE,different,Ne.symm different]
+
+end InitECandidate.Solver.Input.CurrentRlp.BytesWrite
+
+#print axioms InitECandidate.Solver.Input.CurrentRlp.BytesWrite.assigned_current_normal

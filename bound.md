@@ -82,7 +82,9 @@ bounds remain available. Actual normal returns now derive the finite
 requested-length bound and complete runtime/earlier-memory frame. The
 parent-header byte writer now has checked arbitrary-pointer/length body and
 caller costs (43314052495 / 43314052496 ticks), with smaller known-length
-variants. Its normal frame and the encoder/hash connection remain open. This is not a whole-program target K.
+variants. Actual returns now derive their positive encoded length, full metadata,
+assigned result and earlier-memory frame without input ownership. The
+encoder must derive its output-cursor conditions; encoding/hashing remain open. This is not a whole-program target K.
 
 ## Earlier checked milestones, in order
 
@@ -4844,3 +4846,37 @@ main path, uniform formal target steps, exact K, dominant slack review and
 cleanup. Source clocks omit straight-line target work. Historical untracked
 WIPs remain untouched. Review the coarse final-copy tail allowance when
 reviewing dominant slack; the actual byte-loop exit can give a shorter tail.
+
+## Actual byte-writer return and assigned caller without input ownership
+
+A real returning single-byte branch supplies its actual scalar one and
+nine-byte write frame. Every real fallthrough leaves the exact original
+source state. On the general path, the genuine header return gives length
+1..9; the actual normal copy then bounds its requested length. The real
+add/return derives a positive encoded natural at most count.toNat+9 and at
+most ordinaryEnd+40, together with the exact returned word and full metadata.
+
+The writer retains every word below an earlier aligned output frontier. Its
+current destination's nine-byte header extent must not wrap; the encoder's
+real cursor still has to discharge that numerical condition. No source or
+destination ownership/mapping oracle, later success or worst-case funding is
+supplied. The assigned caller derives one actual encoded word, retains all
+other caller locals and protects the complete earlier-memory interval.
+
+Validation: current-byte-writer-any-frame-caller-v2.log PASS 1197 jobs; all 4
+new printed facts use only permitted axioms. Index 8700 modules / 19002 facts;
+inventory 8745 / replacement closure 0 / fixed files unchanged. Incremental
+policy PASS, 65536 package entries. Claim infinity; no global finite target K
+or full verifier success. Effort estimate remains 55%, plausible 45–65%,
+relative to reference main. No new candidate paths. Weekly usage 41%, no reset
+credits, ordinary usage allowed. Targeted builds are not full isolated
+submission verification.
+
+Next: price dynamic byte-field arguments on every outcome, then the fixed
+parent-header encoding sequence using its real allocated output cursor and
+these weaker writer contracts. The actual encode_header prepends its list
+header in the reserved prefix; it does not compact with a final memcpy.
+Derive its returned span and old-input frame before the hash. Then finish
+the restored header caller, remaining main path, uniform formal target steps,
+exact K, dominant slack review and cleanup. Source clocks omit straight-line
+target work. Historical untracked WIPs remain untouched.

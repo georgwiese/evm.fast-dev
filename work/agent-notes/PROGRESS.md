@@ -5862,3 +5862,42 @@ Continue through digits_divmod/u256, Taylor/header/main, uniform target-step
 composition, exact K, dominant slack review and final cleanup. Source-clock
 allowances omit straight-line target work. Historical untracked WIPs and
 executable/fixed premises stay untouched.
+
+
+## Full unchanged two-digit divmnu body:605source ticks at width16
+
+The complete original nlz32/normalization call now resumes the checked
+literal final continuation. At n=2 and2≤m≤16 its all-outcome source allowance
+is40*m-35. Actual returns derive the real shift, normalized arrays, physical
+quotient-loop result, exact final suffix stores and every original s/vtop/
+vsec restoration. Funding is derived from the same real non-timeout trace.
+
+The original whole divmnu body is now connected: i/j declarations, the actual
+false n=1 guard, global u256_ws reads and UN/VN declarations all execute into
+that same normalized program. Their actual lexical restorations are retained
+on every outcome. No incoming i/j/un/vn bindings or future normalization,
+helper result or paid clock are supplied as entry premises.
+
+The whole unchanged function therefore costs≤40*m-35source call/loop ticks
+at the real two-digit divisor entry:285at m=8 and605at m=16. It assumes actual
+physical original U/V images with32-bit digits, nonzero high divisor digit,
+current q/r/u/v/m/n formals, installed code and the allocated workspace. The
+earlier actual digits_divmod caller must derive those entries. Normal returned
+runs derive returned0, the complete physical normalized-loop/final-store
+state, ordinary natural quotient U/D and denormalized remainder U%D. This is
+the original function, not a replacement arithmetic implementation.
+
+Validation: current-two-digit-full-body-v3.log PASS1127jobs; all7new printed
+facts use only permitted axioms. Index8700modules/18704facts;
+inventory8745/replacement closure0/fixed files unchanged. Claim infinity;
+no global finite target K/full verifier success. Effort estimate remains50%,
+plausible40–60%. Usage36%weekly/0resetcredits, ordinary usage allowed.
+No new candidate paths; package stays65536entries.
+
+Next: output Q/R images, zero padding and full memory frame from this actual
+whole-function result; ordinary/scoped divmnu caller connection and the real
+2-digit digits_len/digits_divmod branch. Continue through u256/full-multiply
+wrappers and actual Taylor/header/main, then uniform target-step composition,
+exact K, dominant slack review and final cleanup. Source-clock allowances omit
+straight-line target work. Historical untracked WIPs and executable/fixed
+premises stay untouched.

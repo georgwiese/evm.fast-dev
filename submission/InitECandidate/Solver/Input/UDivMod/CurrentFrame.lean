@@ -8756,3 +8756,266 @@ theorem prefix_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemor
 end InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization
 
 #print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.Normalization.prefix_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+def normalizedProgram : ProgHOL 64:=Normalization.call postNormalization
+def boundary (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length bits : Nat) :=
+  Normalization.post (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits
+
+set_option maxRecDepth 100000 in
+/-- The original wide branch introduces its actual UN/VN scopes around the
+complete checked nlz32/normalization/quotient/remainder/return program. -/
+theorem otherBranch_shape : Single.otherBranch=
+    .dec (ofString "un") .one (.op .add [.var .global (ofString "u256_ws"),.const 0#64])
+      (.dec (ofString "vn") .one (.op .add [.var .global (ofString "u256_ws"),.const 144#64]) normalizedProgram) := by
+  simp [Single.otherBranch,normalizedProgram,Normalization.call,Normalization.arguments,Normalization.body,
+    NormalizeLoop.loop,NormalizeLoop.body,NormalizeLoop.test,NormalizeLoop.expression,NormalizeLoop.previous,NormalizeLoop.firstStore,NormalizeLoop.firstExpression,NormalizeLoop.topStore,NormalizeLoop.topExpression,Single.body,Guest.Software.guestFn_divmnu,progToHOL,expToHOL,shapeToHOL,
+    postNormalization,continuation,Outer.leading,Outer.topLoad,Outer.secondLoad,Outer.countExpression,
+    Outer.loop,Outer.test,Outer.body,Outer.previous,Outer.captures,Outer.loadAt,Outer.topIndex,Outer.middleIndex,Outer.lowIndex,
+    Estimate.phase,Estimate.program,Estimate.test,Estimate.maximum,Estimate.remainderExpression,Estimate.scalar,Estimate.arguments,Estimate.updates,Estimate.continuation,
+    Subtract.corrected,QhatCorrection.loop,QhatCorrection.test,QhatCorrection.body,QhatCorrection.branch,QhatCorrection.correct,
+    QhatCorrection.roomTest,QhatCorrection.estimateTest,QhatCorrection.leftEstimate,QhatCorrection.rightEstimate,
+    QhatCorrection.quotientExpression,QhatCorrection.remainderExpression,Subtract.initialized,Subtract.loop,Subtract.test,Subtract.step,Subtract.updates,
+    Subtract.productExpression,Subtract.residualExpression,Subtract.lowExpression,Subtract.carryExpression,Subtract.increment,Subtract.inputAddress,Subtract.divisorAddress,
+    Subtract.finish,Subtract.findFinish,Subtract.topAddress,Subtract.quotientAddress,Subtract.address,Subtract.difference,Subtract.negativeTest,Subtract.keep,
+    Trailing.finish,Trailing.block,Trailing.loop,Trailing.test,Trailing.body,Trailing.address,Trailing.increment,
+    Remainder.complete,Remainder.loop,Remainder.test,Remainder.step,Remainder.expression,Remainder.inputAddress,Remainder.nextAddress,Remainder.outputAddress,Remainder.nextIndex,
+    NormalizeLoop.remaining,NormalizeLoop.address,returnShape,localVar]
+
+private theorem boundary_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (name : String)
+    (notI : ofString name≠ofString "i") (notS : ofString name≠ofString "s") :
+    (boundary source base u v length bits).locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
+  (Normalization.post_other _ base u v length bits name (Ne.symm notI)).trans (bind_lookup_other _ "s" name _ (Ne.symm notS))
+
+private theorem boundary_installed (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (positive : 0<length) (installed : OriginalCode.Installed source.code) :
+    OriginalCode.Installed (boundary source base u v length bits).code := by
+  have frame:=Normalization.post_frame (bind {source with clock:=source.clock-1} "s" (BitVec.ofNat 64 bits)) base u v length bits positive
+  have code:=congrArg PanSemStateFiniteExact.code frame
+  change (boundary source base u v length bits).code=source.code at code
+  rw [code]
+  exact installed
+
+/-- Complete original normalization call through the actual final return,
+including every short-clock/stopped outcome, at n=2 and2≤m≤16. -/
+theorem normalized_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length : Nat) (checked : Normalization.Entry source base u v length)
+    (installed : OriginalCode.Installed source.code)
+    (q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient))))
+    (r : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder))))
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old))) :
+    source.clock-(evaluateHOLFiniteState source normalizedProgram).2.clock≤40*length-35 := by
+  have large:=checked.large
+  by_cases enough : length+1≤source.clock
+  · obtain ⟨bits,ready,clock,actual⟩:=Normalization.prefix_execute source base u v length checked installed enough postNormalization
+    have qNext:=(boundary_other source base u v length bits "q" (by decide) (by decide)).trans q
+    have rNext:=(boundary_other source base u v length bits "r" (by decide) (by decide)).trans r
+    have jNext : ∃ old,(boundary source base u v length bits).locals.lookup (ofString "j")=some (.val (.word old)):=by
+      obtain ⟨old,j⟩:=j
+      exact ⟨old,(boundary_other source base u v length bits "j" (by decide) (by decide)).trans j⟩
+    have back:=postNormalization_cost (boundary source base u v length bits) base u v length bits ready
+      (boundary_installed source base u v length bits (by omega) installed) qNext rNext jNext
+    have forward:=evaluateHOLFiniteState_clock_le (boundary source base u v length bits) postNormalization
+    rw [normalizedProgram,actual]
+    change source.clock-(evaluateHOLFiniteState (boundary source base u v length bits) postNormalization).2.clock≤40*length-35
+    change (boundary source base u v length bits).clock=source.clock-(length+1) at clock
+    omega
+  · omega
+
+/-- A genuine returned complete normalization program exposes the same
+real shift, normalized arrays, quotient-loop result and exact final stores. -/
+theorem normalized_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length : Nat) (checked : Normalization.Entry source base u v length)
+    (installed : OriginalCode.Installed source.code)
+    (q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient))))
+    (r : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder))))
+    (j : ∃ old,source.locals.lookup (ofString "j")=some (.val (.word old))) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source normalizedProgram=(some (.returned value),target)) :
+    ∃ bits middle quotient low high,
+      Normalization.Ready (boundary source base u v length bits) base u v length bits ∧
+      Outer.LoopResult (Outer.start (boundary source base u v length bits) v length bits) middle base (Normalized.extended u bits length) (length-1)
+        (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+        (Normalized.digit v bits 0) (Normalized.digit v bits 1) quotient low high ∧
+      value=.val (.word 0#64) ∧
+      target=restore source "s" (Outer.startRestored (boundary source base u v length bits) (Trailing.finishPost middle base low high length bits) v bits) ∧
+      source.clock-target.clock≤40*length-35 := by
+  obtain ⟨bits,inner,funded,ready,clock,continuationRun,restored⟩:=Normalization.prefix_normal source target base u v length checked installed postNormalization
+    (some (.returned value)) normal (by intro impossible;cases impossible)
+  have qNext:=(boundary_other source base u v length bits "q" (by decide) (by decide)).trans q
+  have rNext:=(boundary_other source base u v length bits "r" (by decide) (by decide)).trans r
+  have jNext : ∃ old,(boundary source base u v length bits).locals.lookup (ofString "j")=some (.val (.word old)):=by
+    obtain ⟨old,j⟩:=j
+    exact ⟨old,(boundary_other source base u v length bits "j" (by decide) (by decide)).trans j⟩
+  obtain ⟨middle,quotient,low,high,loopResult,valueEq,endpoint,paid⟩:=postNormalization_normal (boundary source base u v length bits) inner base u v length bits ready
+    (boundary_installed source base u v length bits (by have h:=checked.large;omega) installed) qNext rNext jNext value continuationRun
+  have price:=normalized_cost source base u v length checked installed q r j
+  rw [normal] at price
+  rw [endpoint] at restored
+  exact ⟨bits,middle,quotient,low,high,ready,loopResult,valueEq,restored,price⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.otherBranch_shape
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.normalized_cost
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.normalized_normal
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Actual function formals and physical original inputs before any local
+or normalized workspace declaration; no future helper result is assumed. -/
+structure Entry (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (u v : Nat→BitVec 64) (length : Nat) : Prop where
+  context : Workspace.Context source base
+  installed : OriginalCode.Installed source.code
+  large : 2≤length
+  small : length≤16
+  q : source.locals.lookup (ofString "q")=some (.val (.word (Workspace.pointer base .quotient)))
+  r : source.locals.lookup (ofString "r")=some (.val (.word (Workspace.pointer base .remainder)))
+  uCell : source.locals.lookup (ofString "u")=some (.val (.word (Workspace.pointer base .numerator)))
+  vCell : source.locals.lookup (ofString "v")=some (.val (.word (Workspace.pointer base .divisor)))
+  m : source.locals.lookup (ofString "m")=some (.val (.word (BitVec.ofNat 64 length)))
+  n : source.locals.lookup (ofString "n")=some (.val (.word 2#64))
+  uImage : Image source (Workspace.pointer base .numerator) u length
+  vImage : Image source (Workspace.pointer base .divisor) v 2
+  uSmall : ∀ index,index<length→(u index).toNat<4294967296
+  vSmall : ∀ index,index<2→(v index).toNat<4294967296
+  leadingPositive : 0<(v 1).toNat
+
+def prepared (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) :=
+  bind (bind (bind (bind source "i" 0#64) "j" 0#64) "un" (Workspace.pointer base .normalizedNumerator)) "vn" (Workspace.pointer base .normalizedDivisor)
+
+def restored (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) :=
+  restore source "i" (restore (bind source "i" 0#64) "j" (restore (bind (bind source "i" 0#64) "j" 0#64) "un"
+    (restore (bind (bind (bind source "i" 0#64) "j" 0#64) "un" (Workspace.pointer base .normalizedNumerator)) "vn" target)))
+
+private theorem prepared_other (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (name : String)
+    (notI : ofString name≠ofString "i") (notJ : ofString name≠ofString "j")
+    (notUn : ofString name≠ofString "un") (notVn : ofString name≠ofString "vn") :
+    (prepared source base).locals.lookup (ofString name)=source.locals.lookup (ofString name) :=
+  (bind_lookup_other _ "vn" name _ (Ne.symm notVn)).trans ((bind_lookup_other _ "un" name _ (Ne.symm notUn)).trans
+    ((bind_lookup_other _ "j" name _ (Ne.symm notJ)).trans (bind_lookup_other _ "i" name _ (Ne.symm notI))))
+
+private theorem prepared_j (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) :
+    (prepared source base).locals.lookup (ofString "j")=some (.val (.word 0#64)) :=
+  (bind_lookup_other _ "vn" "j" _ (by decide)).trans ((bind_lookup_other _ "un" "j" _ (by decide)).trans (bind_lookup_same _ _ _))
+
+/-- The genuine original declarations supply the actual normalization entry. -/
+theorem Entry.normalization {source : PanSemStateFiniteExact 64 Guest.HostMemory} {base : BitVec 64} {u v : Nat→BitVec 64} {length : Nat}
+    (checked : Entry source base u v length) : Normalization.Entry (prepared source base) base u v length := by
+  refine ⟨⟨checked.context.global,checked.context.domain,checked.context.arena,checked.context.aligned⟩,checked.large,checked.small,
+    ?_,bind_lookup_same _ _ _,?_,?_,?_,?_,?_,checked.uImage,checked.vImage,checked.uSmall,checked.vSmall,checked.leadingPositive⟩
+  · exact (bind_lookup_other _ "vn" "un" _ (by decide)).trans (bind_lookup_same _ _ _)
+  · exact (prepared_other source base "u" (by decide) (by decide) (by decide) (by decide)).trans checked.uCell
+  · exact (prepared_other source base "v" (by decide) (by decide) (by decide) (by decide)).trans checked.vCell
+  · exact (prepared_other source base "m" (by decide) (by decide) (by decide) (by decide)).trans checked.m
+  · exact (prepared_other source base "n" (by decide) (by decide) (by decide) (by decide)).trans checked.n
+  · exact ⟨0#64,(bind_lookup_other _ "vn" "i" _ (by decide)).trans ((bind_lookup_other _ "un" "i" _ (by decide)).trans
+      ((bind_lookup_other _ "j" "i" _ (by decide)).trans (bind_lookup_same _ _ _)))⟩
+
+def workspaceExpression (offset : Nat) : ExpHOL 64:=.op .add [.var .global (ofString "u256_ws"),.const (BitVec.ofNat 64 offset)]
+
+private theorem workspace_read (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64) (buffer : Workspace.Buffer)
+    (global : source.globals.lookup (ofString "u256_ws")=some (.val (.word base))) :
+    eval source (workspaceExpression (Workspace.offset buffer))=some (.val (.word (Workspace.pointer base buffer))) := by
+  simp [eval,workspaceExpression,evalHOLExact,evalListHOLExact,toExact,global,valueIsWord,valueWord,wordOpHOL,wordOp,Workspace.pointer]
+
+/-- Actual i/j declarations, false n=1 guard and UN/VN declarations resume
+the unchanged normalized program with their true lexical restorations. -/
+theorem preamble_execute (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length : Nat) (checked : Entry source base u v length) (result : Option (PanSemResultExact 64))
+    (run : evaluateHOLFiniteState (prepared source base) normalizedProgram=(result,target)) :
+    evaluateHOLFiniteState source Single.body=(result,restored source target base) := by
+  let first:=bind source "i" 0#64
+  let second:=bind first "j" 0#64
+  let third:=bind second "un" (Workspace.pointer base .normalizedNumerator)
+  have n : second.locals.lookup (ofString "n")=some (.val (.word 2#64)):=
+    (bind_lookup_other _ "j" "n" _ (by decide)).trans ((bind_lookup_other _ "i" "n" _ (by decide)).trans checked.n)
+  have falseTest : eval second Single.oneTest=some (.val (.word 0#64)):=by
+    simp [eval,Single.oneTest,localVar,evalHOLExact,toExact,n,Flapjack.Compiler.Encoders.Asm.wordCmpHOL]
+  have skipped : evaluateHOLFiniteState second (.ite Single.oneTest Single.oneBranch .skip)=(none,second):=by
+    simp only [eval] at falseTest
+    rw [evaluateHOLFiniteState_ite,falseTest]
+    simp [evaluateHOLFiniteState_skip]
+  have unRead:=workspace_read second base .normalizedNumerator checked.context.global
+  have vnRead:=workspace_read third base .normalizedDivisor checked.context.global
+  have declaredVn:=ScalarScope.declare_execute third target "vn" (workspaceExpression 144) (Workspace.pointer base .normalizedDivisor) normalizedProgram result vnRead run
+  have declaredUn:=ScalarScope.declare_execute second _ "un" (workspaceExpression 0) (Workspace.pointer base .normalizedNumerator)
+    (.dec (ofString "vn") .one (workspaceExpression 144) normalizedProgram) result unRead declaredVn
+  have guarded : evaluateHOLFiniteState second (.seq (.ite Single.oneTest Single.oneBranch .skip) Single.otherBranch)=
+      (result,restore second "un" (restore third "vn" target)):=by
+    rw [StateSteps.next_sequence second second _ _ skipped (by rfl),otherBranch_shape]
+    exact declaredUn
+  have declaredJ:=ScalarScope.declare_execute first _ "j" (.const 0#64) 0#64 (.seq (.ite Single.oneTest Single.oneBranch .skip) Single.otherBranch) result rfl guarded
+  rw [Single.body_shape]
+  exact ScalarScope.declare_execute source _ "i" (.const 0#64) 0#64
+    (.dec (ofString "j") .one (.const 0#64) (.seq (.ite Single.oneTest Single.oneBranch .skip) Single.otherBranch)) result rfl declaredJ
+
+/-- Uniform all-outcome source allowance for the unchanged full divmnu
+function at the actual two-digit divisor entry. -/
+theorem body_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length : Nat) (checked : Entry source base u v length) :
+    source.clock-(evaluateHOLFiniteState source Single.body).2.clock≤40*length-35 := by
+  let output:=evaluateHOLFiniteState (prepared source base) normalizedProgram
+  have actual:=preamble_execute source output.2 base u v length checked output.1 rfl
+  have price:=normalized_cost (prepared source base) base u v length checked.normalization checked.installed
+    ((prepared_other source base "q" (by decide) (by decide) (by decide) (by decide)).trans checked.q)
+    ((prepared_other source base "r" (by decide) (by decide) (by decide) (by decide)).trans checked.r) ⟨0#64,prepared_j source base⟩
+  rw [actual]
+  exact price
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.Entry.normalization
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.preamble_execute
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.body_cost
+
+namespace InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact
+open Flapjack.Basis.Pure.MlString WitnessRadix WitnessRadix.QueryBranch
+
+/-- Physical result of the unchanged whole two-digit divmnu function,
+with its true lexical restorations and natural quotient/remainder values. -/
+structure Result (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length bits : Nat) (middle : PanSemStateFiniteExact 64 Guest.HostMemory)
+    (quotient : Nat→BitVec 64) (low high : BitVec 64) : Prop where
+  ready : Normalization.Ready (boundary (prepared source base) base u v length bits) base u v length bits
+  loop : Outer.LoopResult (Outer.start (boundary (prepared source base) base u v length bits) v length bits) middle base (Normalized.extended u bits length) (length-1)
+    (Normalized.extended u bits length (length-1)) (Normalized.extended u bits length length)
+    (Normalized.digit v bits 0) (Normalized.digit v bits 1) quotient low high
+  state : target=restored source (restore (prepared source base) "s"
+    (Outer.startRestored (boundary (prepared source base) base u v length bits) (Trailing.finishPost middle base low high length bits) v bits)) base
+  quotientEq : number quotient (length-1)=number u length/number v 2
+  remainderEq : (Denormalize.digit low high bits).toNat+4294967296*(Denormalize.digit high 0#64 bits).toNat=number u length%number v 2
+  cost : source.clock-target.clock≤40*length-35
+
+/-- The genuine returned unchanged function derives its exact physical
+result and ordinary quotient/remainder; no future callee result is assumed. -/
+theorem body_normal (source target : PanSemStateFiniteExact 64 Guest.HostMemory) (base : BitVec 64)
+    (u v : Nat→BitVec 64) (length : Nat) (checked : Entry source base u v length) (value : ValueHOL 64)
+    (normal : evaluateHOLFiniteState source Single.body=(some (.returned value),target)) :
+    ∃ bits middle quotient low high,value=.val (.word 0#64) ∧ Result source target base u v length bits middle quotient low high := by
+  let output:=evaluateHOLFiniteState (prepared source base) normalizedProgram
+  have actual:=preamble_execute source output.2 base u v length checked output.1 rfl
+  have observed : output.1=some (.returned value):=congrArg Prod.fst (actual.symm.trans normal)
+  have run : evaluateHOLFiniteState (prepared source base) normalizedProgram=(some (.returned value),output.2):=Prod.ext observed rfl
+  obtain ⟨bits,middle,quotient,low,high,ready,loopResult,valueEq,endpoint,paid⟩:=normalized_normal (prepared source base) output.2 base u v length checked.normalization checked.installed
+    ((prepared_other source base "q" (by decide) (by decide) (by decide) (by decide)).trans checked.q)
+    ((prepared_other source base "r" (by decide) (by decide) (by decide) (by decide)).trans checked.r) ⟨0#64,prepared_j source base⟩ value run
+  have state : target=restored source (restore (prepared source base) "s"
+      (Outer.startRestored (boundary (prepared source base) base u v length bits) (Trailing.finishPost middle base low high length bits) v bits)) base:=by
+    have frame:=congrArg Prod.snd (normal.symm.trans actual)
+    rw [endpoint] at frame
+    exact frame
+  have division:=Outer.normalization_division (boundary (prepared source base) base u v length bits) middle base u v quotient length bits low high ready loopResult
+  have price:=body_cost source base u v length checked
+  rw [normal] at price
+  exact ⟨bits,middle,quotient,low,high,valueEq,⟨ready,loopResult,state,division.1,division.2.2,price⟩⟩
+
+end InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit
+
+#print axioms InitECandidate.Solver.Input.UDivMod.WideDigits.TwoDigit.body_normal

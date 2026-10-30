@@ -41,9 +41,9 @@ through both actual payload-header indexed tries. The complete unchanged
 withdrawal encoder costs≤201body source ticks; its real loop costs≤203 per
 row. The actual run_attempt prefix through payload_header, both indexed tries,
 request encoding/hashing, BAL/header hashing, version check and complete
-header-validation caller either stops or reaches the original afterValidateHeader
-continuation within534124484593source ticks, retaining all decoded inputs/
-header fields and the actual restored heap. The request array/count≤5 and every helper entry are derived
+header-validation caller and block-environment setup either stop or reach the
+original execute_block call within534124484749source ticks, retaining all decoded
+inputs/header fields, the actual bounded heap and real block-environment buffer. The request array/count≤5 and every helper entry are derived
 from that same execution. Any reached continuation has zero actual transactions
 and withdrawals, derived from the real trie executions.
 
@@ -5211,3 +5211,38 @@ execute_block. Its transaction/withdrawal loops receive the real zero counts,
 but mandatory system transactions and block-finalization helpers remain to
 be bounded from their actual entries. Continue whole-main completion,
 uniform formal target steps, exact K, dominant slack review and cleanup.
+
+## Complete main setup reaches the actual execute_block call
+
+The unchanged block-environment prefix allocates its real120byte be buffer,
+zeroes it and performs12literal field stores. Every outcome costs≤156source
+ticks, including failed pointer reads, shapes, allocation/zero/store failures
+and short clocks. The fixed-length dynamic zero caller needs no pointer image.
+
+A normal ordinary word-store list cannot wrap across the unmapped gap and
+write before its initial address. Actual mapped stores derive this fact even
+when a read global's flattened value width was not separately retained. Thus
+all real be field stores protect earlier input without adding shape or future
+read/store-success assumptions. Normal allocation derives room and its exact
+new heap/be globals. Actual zero/store prefixes retain full physical decoded
+Data/header facts, all caller locals and the owned aligned output buffer.
+
+The original main now either stops or reaches its actual execute_block call
+within534124484749source ticks, with zero actual user transaction/withdrawal
+counts, complete earlier input/header facts and the real be buffer. Mandatory
+system transactions and block-finalization helpers are still unbounded here;
+this is not a complete main bound or formal target K.
+
+Validation: current-main-block-environment-entry-v2.log PASS3102jobs; all19new
+printed facts use permitted axioms. Index8700modules/19097facts; inventory
+8745, replacement closure0, fixed files unchanged. Incremental policy PASS,
+65536package entries. Claim infinity; no global finite target K/full verifier
+success. Effort55%, plausible45–65%, relative to main. Weekly usage43%, no
+reset credits, ordinary usage allowed. No new candidate paths; historical
+untracked WIPs untouched. Source clocks omit straight-line target work;
+original executable unchanged.
+
+Next: actual execute_block entry/init and its mandatory system transactions,
+using genuine runtime gas/state/table facts and the existing budget library.
+Then block-finalization helpers, complete main/source connection, uniform
+formal target steps, exact K, dominant slack review and cleanup.

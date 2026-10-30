@@ -1,3 +1,5 @@
+import InitECandidate.Solver.Input.ClockCostCallReached
+import InitECandidate.Solver.Input.ScalarArgumentsLookup
 import InitECandidate.Solver.Input.ConditionalNone
 import InitECandidate.Solver.Input.ZeroAnyFlow
 import InitECandidate.Solver.Input.ClockCostCurrentConditional
@@ -86,3 +88,35 @@ end InitECandidate.Solver.Input.ZeroAny
 #print axioms InitECandidate.Solver.Input.ZeroAny.after_alignment_cost
 #print axioms InitECandidate.Solver.Input.ZeroAny.body_cost
 #print axioms InitECandidate.Solver.Input.ZeroAny.call_cost
+
+namespace InitECandidate.Solver.Input.ZeroAny
+open Flapjack Flapjack.Pancake.PanLang PanSemStateFiniteExact WitnessRadix
+open Flapjack.Basis.Pure.MlString QueryBranch
+
+/-- A literal actual zero length retains its allowance even when the
+pointer expression fails to read or has the wrong shape. -/
+theorem dynamic_call_cost (source : PanSemStateFiniteExact 64 Guest.HostMemory) (pointer : ExpHOL 64) (length : Nat)
+    (small : length+32<2^64) (code : source.code.lookup (ofString "memzero")=some (Zero.formals,Zero.body,.one)) :
+    source.clock-(evaluateHOLFiniteState source (.call (some (none,none)) (ofString "memzero") [pointer,.const (BitVec.ofNat 64 length)])).2.clock≤price length+1 := by
+  apply ClockCost.call_arguments_current source (some none) (ofString "memzero") [pointer,.const (BitVec.ofNat 64 length)] (price length)
+  intro values actual callee shape args called
+  obtain ⟨left,right,firstRead,secondRead,valuesEq⟩:=CallNormal.two_argument_values source pointer (.const (BitVec.ofNat 64 length)) values args
+  rw [valuesEq] at called
+  obtain ⟨dst,count,leftEq,rightEq⟩:=CallNormal.two_scalar_words source.code.lookup (ofString "memzero") (ofString "dst") (ofString "n")
+    Zero.body actual .one shape code left right callee called
+  subst left
+  subst right
+  have countEq : count=BitVec.ofNat 64 length:=by
+    simpa only [eval,evalHOLExact,Option.some.injEq,ValueHOL.val.injEq,HolWordLab.word.injEq] using secondRead.symm
+  subst count
+  obtain ⟨expected,expectedCall,dstCell,lengthCell⟩:=Zero.environment source.code.lookup dst length code
+  have same:=Option.some.inj (called.symm.trans expectedCall)
+  have bodyEq : actual=Zero.body:=congrArg Prod.fst same
+  have calleeEq : callee=expected:=congrArg (fun triple : ProgHOL 64×HolFiniteMapExact MlS (ValueHOL 64)×ShapeHOL=>triple.2.1) same
+  rw [←calleeEq] at lengthCell
+  rw [bodyEq]
+  exact body_cost (callEntryStateHOLFinite source callee) length small lengthCell
+
+end InitECandidate.Solver.Input.ZeroAny
+
+#print axioms InitECandidate.Solver.Input.ZeroAny.dynamic_call_cost

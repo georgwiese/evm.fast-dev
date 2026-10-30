@@ -12,7 +12,8 @@ caller connections are checked. The executor initialization then either
 stops within161source ticks or reaches the original first mandatory system
 call with its physical input/output state and initialized BAL tables.
 The actual initialized ws/bs record context and earlier state memory now
-survive the complete header construction and header validation path.
+survive the complete header construction/validation and executor setup
+through its first mandatory system-call entry.
 Mandatory system calls, finalization, complete main termination and the
 uniform formal target-step bound remain open. Source clocks are not target K.
 
@@ -7785,3 +7786,58 @@ entry of its first fresh transaction, then initialized state field/table
 images, account-access insertion/pre-state/code access, all mandatory
 system calls/finalization and uniform formal target-step composition.
 Dominant slack review and final unused-code cleanup remain in the plan.
+
+## Actual initialized records retained through complete executor initialization
+
+The actual execute_block opening declarations, output allocation and zero
+now carry RetainedRecords. Persistent helpers use the observed entering
+heap cell and current physical heap floor; output stores derive their
+scalar destination/read from the same real store and protect the earlier
+state interval. The common transfers retain actual ws/bs, owned records,
+ordering, bounded/aligned heap and earlier contents without assuming later
+allocation/copy/store success.
+
+Both real array allocations/stores, log-list creation/store, request-array
+allocation/store and return-list creation/two stores compose these frames.
+The actual BAL initializer may reset its own globals; its separately
+checked outside-BAL frame preserves ws/bs and its actual older-memory
+frame preserves the earlier initialized state. Complete actual body
+traces now retain that context up to beforeFirstSystem on every reached
+outcome, with the original161source allowance including stopped outcomes.
+The physical-only APIs remain projections of the stronger checked results.
+
+UncheckedSystem.fresh_records_trace derives its actual entering heap and
+typed bs global from the retained MemoryContext. It invokes the existing
+real fresh-transaction physical proof and reaches ext_code_of with the
+actual72byte transaction record/eight empty tables, journal_n0 and callee
+locals. Its all-outcome75source allowance is unchanged. At actual callee
+entry, MemoryContext.of_frame handles the callee's own local environment.
+Initialized bs/ws field/table contents still require explicit exposure
+from state_init and retention/recovery in the account/code models; the
+context alone is not a field-content proof. No whole system/VM/main bound
+or target K is claimed.
+
+Validation: current-executor-output-state-records-v1.log PASS3106jobs;
+current-executor-lists-state-records-v1.log PASS3106jobs;
+current-executor-bal-state-records-v1.log PASS3106jobs;
+current-executor-system-state-records-v1.log PASS3106jobs. All24new printed
+results and downstream roots use permitted axioms. Index8704modules/19292
+facts; inventory8744/replacement closure0/fixed files unchanged. Incremental
+policy PASS65535package entries/2488511116bytes, not full verification.
+Claim infinity; no global finite target K/full verifier success. Effort55%,
+plausible45–65%, relative to reference main. Weekly usage47%, no reset
+credits, ordinary usage allowed. Original executable unchanged. No new
+candidate paths; one slot remains.
+
+Next: current20byte account-access insertion at fresh ts+8, then empty
+account-cache lookup at ts+16 and real pre-state/code work. Existing
+NewNode.Context/no-grow execution is already width-independent and can be
+derived from ScalarEmpty. Existing NewLeaf.Fields/model hard-code32byte
+keys/256bit leaf markers, so port its actual scalar key copy/leaf stores
+and first insertion rather than assume the32byte model for20byte data.
+Expose actual initialized bs/ws field/table/scratch/journal images as
+needed by these real paths. Keep mandatory system gas30000000 and
+reservoir97920*16; finish all mandatory calls/finalization, complete main/
+source and uniform formal target steps, explicit K, dominant slack review
+and final unused-code cleanup. Selected root remains
+CurrentVerify.FreshTransactionMemory; cache disabled/two workers/8GiB cap.

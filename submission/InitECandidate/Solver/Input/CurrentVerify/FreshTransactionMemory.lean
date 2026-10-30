@@ -448,8 +448,28 @@ theorem fresh_physical_trace (source post : PanSemStateFiniteExact 64 Guest.Host
     obtain ⟨next,physical,counter,locals⟩:=FreshTransaction.call_normal source current record bs runtime heapCell heapArena heapBound heapAligned blockState callRun
     exact Or.inr ⟨current,inner,next,physical,counter,locals,forward,price,scope,continued⟩
 
+/-- The current initialized-state context supplies the genuine fresh
+transaction's heap and typed block-state global. Its values are derived
+from the actual earlier state initialization and retained main prefix. -/
+theorem fresh_records_trace {source post : PanSemStateFiniteExact 64 Guest.HostMemory} {frontier ws bs : BitVec 64}
+    (records : Mpt.StateInit.MemoryContext source frontier ws bs)
+    (outcome : Option (PanSemResultExact 64)) (run : evaluateHOLFiniteState source body=(outcome,post)) :
+    source.clock-post.clock≤75 ∨ ∃ record current inner next,
+      source.globals.lookup (ofString "heap_ptr")=some (.val (.word record)) ∧
+      FreshTransaction.Context source current record bs next FreshTransaction.tables ∧
+      current.globals.lookup (ofString "journal_n")=some (.val (.word 0#64)) ∧ current.locals=source.locals ∧
+      current.clock≤source.clock ∧ source.clock-current.clock≤75 ∧ CallPrefix.ScopeFrame post inner ∧
+      evaluateHOLFiniteState current afterFresh=(outcome,inner) := by
+  obtain ⟨record,cell,arena,bounded,aligned,afterFrontier⟩:=records.heap
+  rcases fresh_physical_trace source post record bs records.arena cell arena bounded aligned records.bsCell outcome run with stopped|reached
+  · exact Or.inl stopped
+  · obtain ⟨current,inner,next,physical,counter,locals,forward,price,scope,continued⟩:=reached
+    exact Or.inr ⟨record,current,inner,next,cell,physical,counter,locals,forward,price,scope,continued⟩
+
 end InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem
 
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.original_code
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.after_fresh_shape
 #print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.fresh_physical_trace
+
+#print axioms InitECandidate.Solver.Input.CurrentVerify.UncheckedSystem.fresh_records_trace
